@@ -1,0 +1,176 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './partials/flex-row-items-centered-mixin';
+@import './partials/horizontal-children-separator';
+@import './partials/horizontal-radio-separator';
+
+:host {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: 1px;
+    margin-top: 2px;
+    > * {
+        padding-top: 0.35rem;
+    }
+    > * {
+        padding-bottom: 0.35rem;
+    }
+    > :nth-child(odd) {
+        padding-right: 0.6rem;
+    }
+    > :nth-child(even) {
+        padding-left: 0.6rem;
+    }
+    > :nth-child(4n) {
+        background-color: var(--color-grid-base-bkgd);
+    }
+    > :nth-child(4n + 1) {
+        background-color: var(--color-grid-base-alt-bkgd);
+    }
+    > :nth-child(4n + 2) {
+        background-color: var(--color-grid-base-alt-bkgd);
+    }
+    > :nth-child(4n + 3) {
+        background-color: var(--color-grid-base-bkgd);
+    }
+}
+
+#accountDiv {
+    display: flex;
+    flex-direction: column;
+
+    .accountIdControl {
+        width: 15em;
+    }
+
+    #accountNameLabel {
+        margin-top: 0.3em;
+    }
+}
+
+#sideDiv {
+    @include flexRowItemsCenteredMixin;
+}
+
+#symbolDiv {
+    display: flex;
+    flex-direction: column;
+
+    #symbolRoutedIvemIdDiv {
+        @include flexRowItemsCenteredMixin;
+
+        #symbolControl {
+            width: 12em;
+        }
+
+        #routeControl {
+            width: 7em;
+        }
+    }
+
+    #symbolNameDiv {
+        margin-top: 0.3em;
+    }
+}
+
+#quantityDiv {
+    @include flexRowItemsCenteredMixin;
+}
+
+#orderTypeDiv {
+    display: flex;
+    flex-direction: column;
+
+    #orderTypeRadioDiv {
+        @include horizontalRadioSeparatorMixin;
+    }
+
+    #orderTypeControl {
+        width: 11em;
+        margin-top: 0.3em;
+    }
+}
+
+#priceDiv {
+    @include flexRowItemsCenteredMixin;
+    #priceControl {
+        width: 9em
+    }
+}
+
+#timeInForceDiv {
+    display: flex;
+    flex-direction: column;
+    height: 4.6em;
+
+    > * {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex: 1 1 0;
+        max-height: 33.33%;
+    }
+}
+
+#triggerDiv {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5em;
+
+    #triggerTypeDiv {
+        #triggerTypeRadioDiv {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex: 1 1 0;
+        }
+    }
+
+    #priceTriggerTypeDiv {
+        display: flex;
+        flex-direction: column;
+        gap: 0.4em;
+
+        #priceTriggerValueDiv {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            flex: 1 1 0;
+            gap: 1em;
+
+            #triggerValueControl {
+                width: 9em
+            }
+        }
+
+        #triggerFieldMovementDiv {
+            display: grid;
+            grid-template-columns: max-content max-content max-content;
+            column-gap: 1em;
+            row-gap: 0.4em;
+            align-items: center;
+        }
+    }
+}
+
+#errorsDiv {
+    display: flex;
+    flex-direction: row;
+
+    #errorsControl {
+        width: 100%;
+
+        #errorsInput {
+            box-sizing: border-box; // required for Chrome to size correctly
+        }
+    }
+}
+
+#sendDiv {
+    display: flex;
+    flex-direction: row;
+}

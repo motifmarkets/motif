@@ -1,0 +1,30 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="inputDiv" [style.display]="!isLayoutEditorVisible ? null : 'none'">
+    <div id="mainToolbarDiv">
+        <app-lit-ivem-id-select #symbolInput id="symbolInput"></app-lit-ivem-id-select>
+        <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
+
+        <div id="historyDateDiv">
+            <app-date-input #historicalDateInput></app-date-input>
+        </div>
+
+        <div id="columnButtonsDiv">
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </div>
+
+        <div id="linkButtonsDiv">
+            <app-svg-button #symbolLinkButton></app-svg-button>
+        </div>
+    </div>
+
+    <app-trades #tradesContent id="table"></app-trades>
+</div>
+<div id="layoutEditorDiv" [style.display]="isLayoutEditorVisible ? null : 'none'">
+    <ng-template #layoutEditorContainer></ng-template>
+</div>

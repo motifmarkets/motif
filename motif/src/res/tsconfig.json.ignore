@@ -1,0 +1,14 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "files": [
+        "i18n-strings.ts",
+        "internal-api.ts",
+        "res-static-initialise.ts"
+    ]
+
+}

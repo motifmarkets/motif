@@ -1,0 +1,25 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-delayed-badness #delayedBadness></app-delayed-badness>
+<div id="statusAndOrderIdDiv">
+    <app-caption-label #statusLabel for="statusInput"></app-caption-label>
+    <app-text-input #statusInput inputId="statusInput"></app-text-input>
+    <app-caption-label #orderIdLabel for="orderIdInput"></app-caption-label>
+    <app-text-input #orderIdInput inputId="orderIdInput" (click)="uiOrderIdClick()"></app-text-input>
+</div>
+<div id="errorsDiv">
+    <app-caption-label #errorsLabel></app-caption-label>
+    <textarea
+        id="errorsTextArea"
+        [title]="errorsTitle"
+        spellCheck="false"
+        readonly
+        wrap="off"
+        [style.background-color]="errorsTextAreaBkgdColor"
+        [style.color]="errorsTextAreaForeColor"
+    >{{errorsText}}</textarea>
+</div>

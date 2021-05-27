@@ -1,0 +1,15 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@mixin horizontalChildrenSeparatorMixin {
+    > :not(:first-child) {
+        margin-left: 1.2em;
+    }
+}
+
+.horizontalChildrenSeparator {
+    @include horizontalChildrenSeparatorMixin;
+}

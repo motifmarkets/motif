@@ -1,0 +1,22 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="mainDiv">
+    <div id="mainToolbarDiv">
+        <app-brokerage-account-group-input #accountGroupInput id="accountGroupInput" inputId="accountGroupInput"></app-brokerage-account-group-input>
+
+        <app-svg-button #accountLinkButton></app-svg-button>
+        <app-svg-button #symbolLinkButton></app-svg-button>
+    </div>
+    <as-split unit="pixel" direction="vertical" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">
+        <as-split-area [size]="balancesHeight">
+            <app-table #balancesTable id="balancesTable" [style.visibility]="balancesVisible ? 'visible' : 'hidden'"></app-table>
+        </as-split-area>
+        <as-split-area [size]="null">
+            <app-table #holdingsTable id="holdingsTable"></app-table>
+        </as-split-area>
+    </as-split>
+</div>

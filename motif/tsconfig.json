@@ -1,0 +1,81 @@
+{
+  "compileOnSave": false,
+  "compilerOptions": {
+    "target": "es2017",
+    "module": "es2020",
+    "downlevelIteration": true,
+    "resolveJsonModule": true,
+    "importHelpers": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "noImplicitAny": true,
+    "noImplicitThis": true,
+    "strictBindCallApply": true,
+    "alwaysStrict": true,
+    "noImplicitReturns": true,
+    "strictFunctionTypes": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "strictPropertyInitialization": false,
+    "noUnusedLocals": false,
+    "allowSyntheticDefaultImports": true, // used for RollBar
+    "baseUrl": ".",
+    "sourceMap": true,
+    "declaration": false,
+    "declarationMap": false,
+    "moduleResolution": "node",
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "typeRoots": [
+        "node_modules/@types",
+        "node_definitions/@types"
+    ],
+    "lib": [
+        "es2018",
+        "dom"
+    ],
+    "rootDir": ".",
+    "paths": {
+    //   "#version/internal-api": ["src/version"],
+    //   "#res/internal-api": ["src/res/internal-api"],
+    //   "#sys/internal-api": ["src/sys/internal-api"],
+    //   "#sys/extension-api": ["src/sys/extension-api"],
+    //   "#adi/internal-api": ["src/adi/internal-api"],
+    //   "#adi/extension-api": ["src/adi/extension-api"],
+    //   "#core/internal-api": ["src/core/internal-api"],
+    //   "#core/extension-api": ["src/core/extension-api"],
+    //   "#component-services/internal-api": ["src/component-services/internal-api"],
+    //   "#component-services/ng-api": ["src/component-services/ng-api"],
+    //   "#controls/internal-api": ["src/controls/internal-api"],
+    //   "#controls/ng-api": ["src/controls/ng-api"],
+    //   "#component/internal-api": ["src/component/internal-api"],
+    //   "#content/internal-api": ["src/content/internal-api"],
+    //   "#content/ng-api": ["src/content/ng-api"],
+    //   "#ditem/internal-api": ["src/ditem/internal-api"],
+    //   "#ditem/ng-api": ["src/ditem/ng-api"],
+    //   "#desktop/ng-api": ["src/desktop/ng-api"]
+      // make sure we do not import the CommonJS decimal.js-light
+      "decimal.js-light": ["node_modules/decimal.js-light/decimal.mjs"]
+    }
+    // "traceResolution": true, // can use this to debug paths below
+    //// the following entries allow you to link in revgrid without copying dist to Motif.
+    // "paths": {
+    //     "@angular/*": [
+    //         "./node_modules/@angular/*"
+    //     ],
+    //     "revgrid": [
+    //         "../../../RevGrid/ng/dist/revgrid"
+    //     ]
+    // }
+    //// revgrid entries end
+  },
+  "exclude": [
+      "custom_modules",
+      "lib/**/*"
+  ],
+  "angularCompilerOptions": {
+      "fullTemplateTypeCheck": true,
+      "strictTemplates": true,
+      "strictInjectionParameters": true
+  }
+}

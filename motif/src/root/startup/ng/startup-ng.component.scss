@@ -1,0 +1,26 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+:host {
+    font-family: monospace;
+    font-size: 13px;
+}
+
+#kickedOffDiv {
+    text-align: center;
+    background-color: red;
+    margin-bottom: 2px;
+    color: gray;
+    font-weight: 700;
+}
+
+#logTextArea {
+    height: 30em;
+    width: 70em;
+    resize: none;
+    display: inline-block;
+    box-sizing: border-box;
+}

@@ -1,0 +1,20 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "references": [
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+        { "path": "../component-services" },
+        { "path": "../controls" }
+    ]
+}

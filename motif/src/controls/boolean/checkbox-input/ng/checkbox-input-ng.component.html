@@ -1,0 +1,16 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<input
+    #checkboxInput
+    type="checkbox"
+    [id]="inputId"
+    [title]="title"
+    [checked]="checked"
+    [disabled]="disabled"
+    [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
+    (change)="onChange(checkboxInput.checked)"
+>

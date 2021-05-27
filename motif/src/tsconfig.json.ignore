@@ -1,0 +1,18 @@
+{
+    "extends": "../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "files": [
+        "main.ts",
+        "polyfills.ts",
+        "app.feature.ts",
+    ],
+
+    "references": [
+        { "path": "root" },
+        { "path": "environments" },
+    ]
+}

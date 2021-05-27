@@ -1,0 +1,48 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="topLevelDiv">
+    <div id="topFlexDiv">
+        <div id="mainInputDiv">
+            <app-ivem-id-input #symbolInput id="symbolInput"></app-ivem-id-input>
+            <app-svg-button #symbolLinkButton></app-svg-button>
+            <div id="toolButtonsDiv">
+                <app-svg-button #todayModeButton></app-svg-button>
+                <app-svg-button #historicalModeButton></app-svg-button>
+                <app-svg-button #compareModeButton></app-svg-button>
+                <app-svg-button #detailsModeButton></app-svg-button>
+            </div>
+        </div>
+
+        <div id="historyCompareDiv" [style.display]="historicalOrCompareModeActive ? null : 'none'">
+            <div id=historyDateDiv>
+                <app-date-input #historicalDateInput></app-date-input>
+            </div>
+            <div id="compareDateDiv" class="controlLeftPadding" [style.display]="compareModeActive ? null : 'none'">
+                <app-date-input #compareDateInput></app-date-input>
+            </div>
+            <div>
+                <app-svg-button id="historyCompareButton" #historyCompareButton></app-svg-button>
+            </div>
+        </div>
+
+        <div id="topShareholdersDiv" [style.display]="detailsModeActive ? 'none' : null">
+            <div>
+                <p>{{ caption }}</p>
+            </div>
+            <app-table id="topShareholdersTable" #topShareholdersTableContent></app-table>
+        </div>
+
+        <div id="detailsDiv" [style.display]="detailsModeActive ? null : 'none'">
+            <div>Code</div>
+            <div>{{ details.symbolText }}</div>
+            <div>Name</div>
+            <div>{{ details.name }}</div>
+            <div>Class</div>
+            <div>{{ details.class }}</div>
+        </div>
+    </div>
+</div>

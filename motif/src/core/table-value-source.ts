@@ -1,0 +1,67 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+import { AdiService } from 'src/adi/internal-api';
+import { Integer } from 'src/sys/internal-api';
+import { TableGridValue } from './table-grid-value';
+
+export abstract class TableValueSource {
+    beginValuesChangeEvent: TableValueSource.BeginValuesChangeEvent;
+    endValuesChangeEvent: TableValueSource.EndValuesChangeEvent;
+    valuesChangeEvent: TableValueSource.ValuesChangeEvent;
+    allValuesChangeEvent: TableValueSource.AllValuesChangeEvent;
+    firstUsableEvent: TableValueSource.FirstUsableEvent;
+
+    protected _firstUsable = false; // this has not been implemented.  Only used for tables to resize columns when all data good
+
+    constructor(private readonly _firstFieldIndexOffset: Integer ) { }
+
+    get firstUsable(): boolean { return this._firstUsable; }
+    get fieldCount() { return this.getfieldCount(); }
+    get firstFieldIndexOffset() { return this._firstFieldIndexOffset; }
+
+    protected notifyBeginValuesChangeEvent() {
+        this.beginValuesChangeEvent();
+    }
+
+    protected notifyEndValuesChangeEvent() {
+        this.beginValuesChangeEvent();
+    }
+
+    protected notifyValuesChangeEvent(changedValues: TableValueSource.ChangedValue[]) {
+        for (let i = 0; i < changedValues.length; i++) {
+            changedValues[i].fieldIdx += this._firstFieldIndexOffset;
+        }
+        this.valuesChangeEvent(changedValues);
+    }
+
+    protected notifyAllValuesChangeEvent(newValues: TableGridValue[]) {
+        this.allValuesChangeEvent(this._firstFieldIndexOffset, newValues);
+    }
+
+    protected notifyFirstUsable() {
+        this.firstUsableEvent();
+    }
+
+    abstract activate(): TableGridValue[];
+    abstract deactivate(): void;
+    abstract getAllValues(): TableGridValue[];
+
+    protected abstract getfieldCount(): Integer;
+}
+
+export namespace TableValueSource {
+    export interface ChangedValue {
+        fieldIdx: Integer;
+        newValue: TableGridValue;
+    }
+    export type BeginValuesChangeEvent = (this: void) => void;
+    export type EndValuesChangeEvent = (this: void) => void;
+    export type ValuesChangeEvent = (changedValues: ChangedValue[]) => void;
+    export type AllValuesChangeEvent = (firstFieldIdxOffset: Integer, newValues: TableGridValue[]) => void;
+    export type FirstUsableEvent = (this: void) => void;
+    export type Constructor = new(firstFieldIdxOffset: Integer, recordIdx: Integer, adi: AdiService) => TableValueSource;
+}

@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "files": [
+        "../../package.json",
+        "build-info.ts",
+        "version.ts",
+        "internal-api.ts",
+    ],
+
+}

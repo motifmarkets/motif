@@ -1,0 +1,28 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "./**/*.ts"
+    ],
+
+    "exclude": [
+        "news-body-ditem/internal-api.ts",
+        "news-headlines-ditem/internal-api.ts",
+        "ng/ditem-ng.service.ts",
+    ],
+
+    "references": [
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+        { "path": "../component-services" },
+        { "path": "../controls" },
+        { "path": "../component" },
+        { "path": "../content" },
+    ]
+}

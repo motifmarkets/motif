@@ -1,0 +1,69 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy } from '@angular/core';
+import { ComponentContainer } from 'golden-layout';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { JsonElement } from 'src/sys/internal-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
+import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
+import { NewsHeadlinesDitemFrame } from '../news-headlines-ditem-frame';
+
+@Component({
+    selector: 'app-news-headlines-ditem',
+    templateUrl: './news-headlines-ditem-ng.component.html',
+    styleUrls: ['./news-headlines-ditem-ng.component.scss'],
+
+    changeDetection: ChangeDetectionStrategy.OnPush
+})
+export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy {
+    private _frame: NewsHeadlinesDitemFrame;
+
+    protected get stateSchemaVersion() { return NewsHeadlinesDitemNgComponent.stateSchemaVersion; }
+    get ditemFrame() { return this._frame; }
+
+    constructor(
+        cdr: ChangeDetectorRef,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        settingsNgService: SettingsNgService,
+        commandRegisterNgService: CommandRegisterNgService,
+        desktopAccessNgService: DesktopAccessNgService,
+        symbolsNgService: SymbolsNgService,
+        adiNgService: AdiNgService,
+    ) {
+        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+
+        this._frame = new NewsHeadlinesDitemFrame(this, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this.constructLoad(this.getInitialComponentStateJsonElement());
+    }
+
+    ngOnDestroy() {
+        this.finalise();
+    }
+
+    protected initialise() {
+        super.initialise();
+    }
+
+    protected finalise() {
+        this._frame.finalise();
+        super.finalise();
+    }
+
+    protected constructLoad(element: JsonElement | undefined) {
+        // nothing to load
+    }
+
+    protected save(element: JsonElement) {
+        // nothing to save
+    }
+}
+
+export namespace NewsHeadlinesDitemNgComponent {
+    export const stateSchemaVersion = '2';
+}

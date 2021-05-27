@@ -1,0 +1,93 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+:host {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+#requestTypePara {
+    text-align: center;
+    margin: auto;
+    font-size: x-large;
+}
+
+#orderPadGrid {
+    display: grid;
+    grid-template-columns: max-content auto;
+    column-gap: 1px;
+    margin-top: 2px;
+    > * {
+        padding-top: 0.35rem;
+    }
+    > * {
+        padding-bottom: 0.35rem;
+    }
+    > :nth-child(odd) {
+        padding-right: 0.6rem;
+    }
+    > :nth-child(even) {
+        padding-left: 0.6rem;
+    }
+    > :nth-child(4n) {
+        background-color: var(--color-grid-base-bkgd);
+    }
+    > :nth-child(4n + 1) {
+        background-color: var(--color-grid-base-alt-bkgd);
+    }
+    > :nth-child(4n + 2) {
+        background-color: var(--color-grid-base-alt-bkgd);
+    }
+    > :nth-child(4n + 3) {
+        background-color: var(--color-grid-base-bkgd);
+    }
+
+    .vertical-center {
+        display: flex;
+        align-items: center;
+    }
+
+    .text-center {
+        text-align: center;
+        padding-left: 0;
+    }
+
+    #accountValueSection {
+        display: flex;
+        flex-direction: column;
+
+        #accountNameSpan {
+            font-style: italic;
+        }
+    }
+
+    #sideSpan {
+        background-color: var(--color-grid-order-side);
+    }
+
+    #symbolValueSection {
+        display: flex;
+        flex-direction: column;
+
+        #symbolCodeSpan {
+            font-size: larger;
+        }
+        #symbolNameSpan {
+            font-style: italic;
+        }
+    }
+
+    #timeInForceSection {
+        #expiryDateSpan {
+            margin-left: 1.5em;
+        }
+    }
+
+    #orderIdSpan {
+        font-size: large;
+    }
+}

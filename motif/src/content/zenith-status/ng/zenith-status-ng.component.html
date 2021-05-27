@@ -1,0 +1,102 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-delayed-badness #delayedBadness></app-delayed-badness>
+
+<section id="long">
+    <div class="nameValuePairs">
+        <span>Endpoint:</span>
+        <span>{{ endpoint }}</span>
+    </div>
+</section>
+
+<section id="serverAndStatus">
+    <section id="server">
+        <span class="nameValuePairsSectionHeading">Server</span>
+        <div class="nameValuePairs">
+            <span>Server Name:</span>
+            <span>{{ serverName }}</span>
+            <span>Server Class:</span>
+            <span>{{ serverClass }}</span>
+            <span>Server Version:</span>
+            <span>{{ softwareVersion }}</span>
+            <span>Protocol Version:</span>
+            <span>{{ protocolVersion }}</span>
+        </div>
+    </section>
+
+    <section id="status">
+        <span class="nameValuePairsSectionHeading">Connection</span>
+        <div class="nameValuePairs">
+            <span>Online/Offline:</span>
+            <span>{{ publisherOnline }}</span>
+            <span>State:</span>
+            <span>{{ publisherStateId }}</span>
+            <span>Token Expiry Time:</span>
+            <span>{{ accessTokenExpiryTime }}</span>
+            <span>Last Timedout State:</span>
+            <span>{{ lastTimeoutStateId }}</span>
+            <span>Last Reconnect Reason:</span>
+            <span>{{ lastReconnectReasonId }}</span>
+            <span>Kicked off:</span>
+            <span>{{ sessionKickedOff }}</span>
+        </div>
+    </section>
+</section>
+
+<section id="counts">
+    <section id="connectionErrorCounts">
+        <span class="nameValuePairsSectionHeading">Connection Error Counts</span>
+        <div class="nameValuePairs">
+            <span>Auth Fetch Successive Failure:</span>
+            <span>{{ authFetchSuccessiveFailureCount }}</span>
+            <span>Socket Open Successive Failure:</span>
+            <span>{{ socketOpenSuccessiveFailureCount }}</span>
+            <span>Token Fetch Successive Failure:</span>
+            <span>{{ zenithTokenFetchSuccessiveFailureCount }}</span>
+            <span>Token Refresh Successive Failure:</span>
+            <span>{{ zenithTokenRefreshSuccessiveFailureCount }}</span>
+            <span>Socket Close Successive Failure:</span>
+            <span>{{ socketCloseSuccessiveFailureCount }}</span>
+            <span>Unexpected Socket Close:</span>
+            <span>{{ unexpectedSocketCloseCount }}</span>
+            <span>timeouts:</span>
+            <span>{{ timeoutCount }}</span>
+        </div>
+    </section>
+
+    <section id="messageErrorCounts">
+        <span class="nameValuePairsSectionHeading">Message Error Counts</span>
+        <div class="nameValuePairs">
+            <span>Internal Subscription:</span>
+            <span>{{ internalSubscriptionErrorCount }}</span>
+            <span>Request Timeout:</span>
+            <span>{{ requestTimeoutSubscriptionErrorCount }}</span>
+            <span>Offlined Subscription:</span>
+            <span>{{ offlinedSubscriptionErrorCount }}</span>
+            <span>Publish Request:</span>
+            <span>{{ publishRequestErrorSubscriptionErrorCount }}</span>
+            <span>Sub Request:</span>
+            <span>{{ subRequestErrorSubscriptionErrorCount }}</span>
+            <span>User Not Authorised:</span>
+            <span>{{ userNotAuthorisedSubscriptionErrorCount }}</span>
+            <span>Server Warning:</span>
+            <span>{{ serverWarningSubscriptionErrorCount }}</span>
+            <span>Data Error:</span>
+            <span>{{ dataErrorSubscriptionErrorCount }}</span>
+        </div>
+    </section>
+
+    <section id="packetCounts">
+        <div class="nameValuePairsSectionHeading">Packet Counts</div>
+        <div class="nameValuePairs">
+            <div>Send:</div>
+            <div>{{ sendPacketCount }}</div>
+            <div>Receive:</div>
+            <div>{{ receivePacketCount }}</div>
+        </div>
+    </section>
+</section>

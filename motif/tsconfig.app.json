@@ -1,0 +1,62 @@
+{
+    "extends": "./tsconfig.json",
+    "compilerOptions": {
+        "outDir": "./out-tsc/app",
+        // Uncomment the declaration and declarationMap if using Project References
+        // "declaration": true,
+        // "declarationMap": true,
+    },
+    "files": [ // Specify entry points.  Not needed if Typescript Project References are used
+        "src/main.ts",
+        "src/polyfills.ts",
+        "src/extensions/api/extension-api.ts",
+    ],
+    "include": ["src/**/*.ts"],
+    "exclude": [
+        "src/test.ts",
+        "src/**/*.spec.ts",
+        "src/**/*.spec_disabled.ts",
+        "src/environments/environment.prod.ts", // angular replacement
+        "src/extension/extension.ts", // required for extension feature
+        "src/pulse/command/command-register.ts", // required for key shortcuts feature
+        "src/adi/chart-history-accessor-mock.ts", // possible future use
+        "src/adi/publishers/zenith/physical-message/zenith-market-asx.ts", // possible future use
+        "src/adi/publishers/zenith/physical-message/zenith-market-nzx.ts", // possible future use
+        "src/pulse/nullable-table-grid-value.ts", // possible future use
+        "src/pulse/nullable-table-grid-field.ts", // possible future use
+        "src/pulse/order-request-result-frame.ts", // possible future use
+        "src/sys/scheduler.ts", // possible future use
+        "src/pulse/allowed-exchanges-enum-array-ui-action.ts", // possible future use
+        "src/pulse/chart-frame_Old.ts", // delete when confirmed not needed
+        "src/app/chart/chart.component_Old.ts", // delete when confirmed not needed
+        "src/component-services/base-ng.service.ts",
+        "src/component-services/registration-ng.service.ts",
+        "src/component-services/ng/registerable-ng-service.ts",
+        "src/content/report/report-frame.ts",
+        "src/desktop/desktop/internal-desktop-command.ts",
+        "src/desktop/open-table-dialog/open-table-dialog.component.ts",
+        "src/desktop/save-table-dialog/save-table-dialog.component.ts",
+        "src/ditem/news-body-ditem/internal-api.ts",
+        "src/ditem/news-headlines-ditem/internal-api.ts",
+        "src/ditem/ng/ditem-ng.service.ts",
+        "src/extension/api-error.ts",
+        "src/extension/api.ts",
+        "src/extension/internal-api.ts",
+        "src/root/internal-api.ts",
+        "src/root/ng-api.ts",
+        "src/desktop/open-table-dialog/open-table-dialog-ng.component.ts",
+        "src/desktop/save-table-dialog/save-table-dialog-ng.component.ts",
+        "src/extensions/api/exposed/core/icon-button-ui-action-api.ts",
+        "src/extensions/implementation/exposed/core/order-pad-api-implementation.ts",
+        "src/extensions/api/exposed/core/order-pad-api.ts",
+        "e2e/app.po.ts",
+        "e2e/app.e2e-spec.ts",
+        "webpack.config.dev.ts"
+    ],
+    "types": [
+        "highcharts",
+    ],
+    // "references": [
+    //     { "path": "src" }
+    // ]
+}

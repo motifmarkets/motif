@@ -1,0 +1,19 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-delayed-badness #delayedBadness></app-delayed-badness>
+<as-split unit="percent" direction="horizontal" [gutterSize]="splitterGutterSize">
+    <as-split-area [size]="bidWidthPercent">
+        <div #bidDiv id="bidDiv">
+            <app-depth-side #bidSide id="bidSide" [style.width]="bidActiveWidth"></app-depth-side>
+        </div>
+    </as-split-area>
+    <as-split-area [size]="askWidthPercent">
+        <div #askDiv id="askDiv">
+            <app-depth-side #askSide id="askSide" [style.width]="askActiveWidth"></app-depth-side>
+        </div>
+    </as-split-area>
+</as-split>

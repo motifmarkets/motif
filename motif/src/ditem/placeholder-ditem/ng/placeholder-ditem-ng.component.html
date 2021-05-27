@@ -1,0 +1,25 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<p id="titlePara">{{componentIsNotAvailable}}</p>
+
+<section id="details">
+    <span>{{placeheldExtensionPublisherCaption}}</span>
+    <span>{{placeheldExtensionPublisher}}</span>
+    <span>{{placeheldExtensionNameCaption}}</span>
+    <span>{{placeheldExtensionName}}</span>
+    <span>{{placeheldConstructionMethodCaption}}</span>
+    <span>{{placeheldConstructionMethod}}</span>
+    <span>{{placeheldComponentTypeNameCaption}}</span>
+    <span>{{placeheldComponentTypeName}}</span>
+    <span>{{placeheldReasonCaption}}</span>
+    <span>{{placeheldReason}}</span>
+</section>
+
+<section *ngIf="invalid" id="invalid" [style.color]="invalidColor">
+    <span id="invalidCaptionSpan">{{invalidCaption}}: </span>
+    <span>{{invalidReason}}</span>
+</section>

@@ -1,0 +1,18 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div #topDiv id="topDiv">
+    <div id="bkgdDiv" [style.visibility]="hasBkgd ? 'visible' : 'hidden'">
+        <app-color-selector #bkgdColorSelector id="bkgdColorSelector"></app-color-selector>
+    </div>
+    <div id="inBetweenDiv">
+        <app-caption-label #readabilityLabel for="readabilityInput"></app-caption-label>
+        <app-number-input #readabilityInput inputId="readabilityInput" size="8"></app-number-input>
+    </div>
+    <div id="foreDiv" [style.visibility]="hasFore ? 'visible' : 'hidden'">
+        <app-color-selector #foreColorSelector id="foreColorSelector"></app-color-selector>
+    </div>
+</div>

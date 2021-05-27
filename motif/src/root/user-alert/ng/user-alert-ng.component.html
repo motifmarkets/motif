@@ -1,0 +1,15 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="restartSection" [style.display]="restartDisplay">
+    <button id="restartButton" (click)="restart()">{{restartCaption}}</button>
+    <span id="restartRequiredReasonSpan">{{restartRequiredReason}}</span>
+</section>
+<span id="errorCountText" [style.display]="errorCountDisplay">
+    {{errorCountText}}
+</span>
+<textarea id="alertTexts" spellCheck="false" readonly wrap="off">{{alertTexts}}</textarea>
+<button id="hideButton" (click)="hide()" [style.display]="hideButtonDisplay">{{hideCaption}}</button>

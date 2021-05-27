@@ -1,0 +1,31 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-delayed-badness #delayedBadness></app-delayed-badness>
+<section id="statusDiv">
+    <div>Service:</div>
+    <div><span [title]="serviceDescription">{{ serviceName }}</span></div>
+    <div>Exchange Environment:</div>
+    <div>{{ exchangeEnvironment }}</div>
+    <div>User Full Name:</div>
+    <div>{{ userFullName }}</div>
+    <div>User signin:</div>
+    <div>{{ username }}</div>
+    <div>Version:</div>
+    <div>{{ clientVersion }}</div>
+    <div>Server Name:</div>
+    <div>{{ serverName }}</div>
+    <div>Connection Online/Offline:</div>
+    <div>{{ publisherOnline }}</div>
+    <div>Connection Status:</div>
+    <div>{{ publisherStateId }}</div>
+    <!-- <div>Markets:</div>
+    <div>{{ statusPanel.serverName }}</div>
+    <div>Trading Markets:</div>
+    <div>{{ statusPanel.serverName }}</div>
+    <div>Feeds:</div>
+    <div>{{ statusPanel.serverName }}</div> -->
+</section>

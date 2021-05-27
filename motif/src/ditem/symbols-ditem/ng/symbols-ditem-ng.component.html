@@ -1,0 +1,100 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="mainSection" [style.display]="isMainMode() ? null : 'none'">
+    <section id="mainToolbarSection">
+        <section id="queryOrSubscribeSection">
+            <app-captioned-radio #queryControl inputId="queryRadio"></app-captioned-radio>
+            <app-captioned-radio #subscribeControl inputId="subscribeRadio"></app-captioned-radio>
+        </section>
+
+        <app-svg-button #toolbarQueryButton></app-svg-button>
+        <section id="firstIconSet">
+            <app-svg-button #symbolLinkButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </section>
+    </section>
+
+    <section id="querySection" [style.display]="isQuerySearchType ? null : 'none'">
+        <section id="queryParametersSection">
+            <app-caption-label #exchangeLabel for="exchangeInput"></app-caption-label>
+            <section id="exchangeSection">
+                <app-captioned-radio #defaultExchangeControl inputId="defaultExchangeRadio" name="exchange"></app-captioned-radio>
+                <app-enum-input #exchangeControl inputId="exchangeInput"></app-enum-input>
+            </section>
+            <app-caption-label #queryMarketsLabel for="queryMarketsInput"></app-caption-label>
+            <section id="marketsSection">
+                <app-captioned-enum-array-checkbox #defaultMarketControl inputId="defaultMarketCheckbox"></app-captioned-enum-array-checkbox>
+                <app-enum-array-input #queryMarketsControl inputId="queryMarketsInput" inputSize="4em"></app-enum-array-input>
+            </section>
+            <app-caption-label #cfiLabel for="cfiInput"></app-caption-label>
+            <app-text-input #cfiControl id="cfiControl" inputId="cfiInput" size="8"></app-text-input>
+            <app-caption-label #fieldsLabel for="fieldsInput"></app-caption-label>
+            <section id="fieldsSection">
+                <app-captioned-enum-array-checkbox #codeControl inputId="codeCheckbox"></app-captioned-enum-array-checkbox>
+                <app-captioned-enum-array-checkbox #nameControl inputId="nameCheckbox"></app-captioned-enum-array-checkbox>
+                <app-enum-array-input #fieldsControl inputId="fieldsInput" inputSize="3em"></app-enum-array-input>
+            </section>
+            <app-caption-label #optionsLabel></app-caption-label>
+            <section id="optionsSection">
+                <app-captioned-checkbox #partialControl inputId="partialCheckbox"></app-captioned-checkbox>
+                <app-captioned-checkbox #preferExactControl inputId="preferExactCheckbox"></app-captioned-checkbox>
+                <app-captioned-checkbox #showFullControl inputId="showFullCheckbox"></app-captioned-checkbox>
+            </section>
+            <app-caption-label #searchTextLabel for="searchTextInput"></app-caption-label>
+            <section id="searchSection">
+                <section id="searchTextSection">
+                    <app-text-input #searchTextControl id="searchTextControl" inputId="searchTextInput" size="10"></app-text-input>
+                    <app-svg-button #searchTextQueryButton></app-svg-button>
+                </section>
+                <section id="pageSizeSection">
+                    <app-caption-label #pageSizeLabel for="pageSizeInput"></app-caption-label>
+                    <app-integer-text-input #pageSizeControl id="pageSizeControl" inputId="pageSizeInput" spellCheck="false" size="4"></app-integer-text-input>
+                </section>
+            </section>
+        </section>
+        <section id="queryResultSection">
+            <app-caption-label #queryDescriptionLabel id="queryDescriptionLabel"></app-caption-label>
+            <section id="queryTopPageSection">
+                <app-caption-label #queryTopPageLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
+                <app-integer-label #queryTopPageNumberLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
+                <app-caption-label #queryTopOfLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
+                <app-integer-label #queryTopPageCountLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
+                <app-button-input #queryTopNextButton [style.display]="paginationActive ? null : 'none'"></app-button-input>
+            </section>
+            <app-table #queryTable id="queryTable"></app-table>
+            <section id="queryBottomPageSection">
+                <app-caption-label #queryBottomPageLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
+                <app-integer-label #queryBottomPageNumberLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
+                <app-caption-label #queryBottomOfLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
+                <app-integer-label #queryBottomPageCountLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
+                <app-button-input #queryBottomNextButton [style.display]="paginationActive ? null : 'none'"></app-button-input>
+            </section>
+        </section>
+    </section>
+    <section id="subscribeSection" [style.display]="isSubscribeSearchType ? null : 'none'">
+        <section id="subscribeParametersSection">
+            <section id="subscribeMarketAndClassSection">
+                <section id="subscribeMarketSection">
+                    <app-caption-label #subscribeMarketLabel for="subscribeMarketInput"></app-caption-label>
+                    <app-enum-input #subscribeMarketControl inputId="subscribeMarketInput"></app-enum-input>
+                </section>
+                <section id="classSection">
+                    <app-caption-label #classLabel for="classInput"></app-caption-label>
+                    <app-enum-input #classControl inputId="classInput"></app-enum-input>
+                </section>
+            </section>
+            <app-svg-button #subscribeButton id="subscribeButton"></app-svg-button>
+        </section>
+        <section id="subscriptionResultSection">
+            <app-caption-label #subscriptionDescriptionLabel id="subscriptionDescriptionLabel"></app-caption-label>
+            <app-table #subscriptionTable id="subscriptionTable"></app-table>
+        </section>
+    </section>
+</section>
+<section id="layoutEditorSection" [style.display]="isLayoutEditorMode() ? null : 'none'">
+    <ng-template #layoutEditorContainer></ng-template>
+</section>

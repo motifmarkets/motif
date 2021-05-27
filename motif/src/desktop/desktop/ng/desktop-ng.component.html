@@ -1,0 +1,18 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-environment-display #environmentDisplay></app-environment-display>
+<section id="bar" [style.color]="barForeColor" [style.background-color]="barBkgdColor">
+    <section id="leftControls">
+        <app-menu-bar-root-menu #menuBarRootMenu id="menuBarRootMenu"></app-menu-bar-root-menu>
+        <app-command-bar #commandBar id="commandBar"></app-command-bar>
+    </section>
+    <section id="rightControls">
+        <app-button-input #signOutButton id="signOutButton"></app-button-input>
+    </section>
+</section>
+
+<app-golden-layout-host #layoutHost id="layout-host"></app-golden-layout-host>

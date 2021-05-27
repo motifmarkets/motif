@@ -1,0 +1,19 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "exclude": [
+        "scheduler.ts", // possible future use
+    ],
+
+    "references": [
+        { "path": "../res" }
+    ]
+}

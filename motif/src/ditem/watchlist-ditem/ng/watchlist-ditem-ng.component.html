@@ -1,0 +1,38 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="inputDiv" [style.display]="!isInputMode() ? 'none' : null">
+    <div id="mainToolbarDiv">
+        <app-lit-ivem-id-select #symbolInput id="symbolSelect"></app-lit-ivem-id-select>
+        <div id="toolButtonsDiv">
+            <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
+            <app-svg-button #deleteButton id="deleteButton"></app-svg-button>
+            <div id="listButtonsDiv">
+                <app-svg-button #newButton></app-svg-button>
+                <app-svg-button #openButton></app-svg-button>
+                <app-svg-button #saveButton></app-svg-button>
+            </div>
+            <div id="columnButtonsDiv">
+                <app-svg-button #columnsButton></app-svg-button>
+                <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            </div>
+            <div id="linkButtonsDiv">
+                <app-svg-button #symbolLinkButton></app-svg-button>
+            </div>
+            <span id="watchlistDescriptonSpan" [title]="WatchListFullDescription">{{watchlistAbbreviatedDescription}}</span>
+        </div>
+    </div>
+    <app-table id="table" #table></app-table>
+</div>
+<div id="layoutEditorDiv" [style.display]="!isLayoutEditorMode() ? 'none' : null">
+    <ng-template #layoutEditorContainer></ng-template>
+</div>
+<div id="openDialogDiv" [style.display]="!isOpenDialogMode() ? 'none' : null">
+    <!-- TODO:MED Add open dialog -->
+</div>
+<div id="saveDialogDiv" [style.display]="!isSaveDialogMode() ? 'none' : null">
+    <!-- TODO:MED Add save dialog -->
+</div>

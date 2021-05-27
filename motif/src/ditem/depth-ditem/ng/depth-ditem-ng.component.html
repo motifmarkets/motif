@@ -1,0 +1,32 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="inputDiv" [style.display]="isLayoutEditorVisible ? 'none' : null">
+    <div id="mainToolbarDiv">
+        <app-lit-ivem-id-select #symbolEdit id="symbolEdit"></app-lit-ivem-id-select>
+        <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
+        <section id="rollUpDownButtonSection">
+            <app-svg-button #rollUpButton id="rollUpButton"></app-svg-button>
+            <app-svg-button #rollDownButton id="rollDownButton"></app-svg-button>
+        </section>
+        <section id="filterSection">
+            <app-svg-button #filterButton id="filterButton"></app-svg-button>
+            <app-text-input #filterEdit></app-text-input>
+        </section>
+        <section id="columnButtonsSection">
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </section>
+        <section id="linkButtonsSection">
+            <app-svg-button #symbolLinkButton></app-svg-button>
+        </section>
+    </div>
+
+    <app-depth #depthContent id="depthContent"></app-depth>
+</div>
+<div id="layoutEditorDiv" [style.display]="!isLayoutEditorVisible ? 'none' : null">
+    <ng-template #layoutEditorContainer></ng-template>
+</div>

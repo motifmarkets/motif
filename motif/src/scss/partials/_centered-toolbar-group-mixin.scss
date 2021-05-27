@@ -1,0 +1,17 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './variables';
+
+@mixin centeredToolbarGroupMixin {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    :not(:first-child) {
+        margin-left: $toolbar-button-separation;
+    }
+}

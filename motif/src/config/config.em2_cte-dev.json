@@ -1,0 +1,72 @@
+{
+    "configFormatVersion": "2",
+    "configComment": "",
+    "service": {
+        "name": "EM2 Customer Test (Development)",
+        "description": "Empower Hub Customer Test (Development)"
+    },
+    "exchange": {
+        "environment": "demo",
+        "defaultDefault": "Myx"
+    },
+    "endpoints": {
+        "motifServices": [
+            "https://motif-services.em2.asia"
+        ],
+        "zenith": [
+            "wss://ws-cte.em2.asia/Zenith?version=2.0"
+        ]
+    },
+    "openId": {
+        "authority": "https://passport.em2.asia/",
+        "clientId": "MotifDev$Web",
+        "redirectUri": "http://localhost:4200/auth-callback",
+        "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+        "scope": "openid profile roles ZenithCTE/Trading ZenithCTE/Market ZenithCTE/News ZenithCTE/OrderPad MotifSvc/RestAPI"
+    },
+    "defaultLayout": {
+        "instanceName": "Default",
+        "linkedSymbol": {
+            "code": "0002",
+            "market": "MyxNormal"
+        },
+        "watchlist": [
+            { "code": "0002", "market": "MyxNormal" },
+            { "code": "0060", "market": "MyxNormal" },
+            { "code": "1015", "market": "MyxNormal" }
+        ]
+    },
+    "bundledExtensions": [
+        {
+            "info": {
+                "publisherType": "Organisation",
+                "publisherName": "Paritech",
+                "name": "Highcharts",
+                "version": "0.0.1",
+                "apiVersion": "1",
+                "shortDescription": "Highcharts Charting",
+                "longDescription": "Highcharts Charting",
+                "urlPath": "/extensions/highcharts/dist/highcharts.js"
+            },
+            "install": true
+        },
+        {
+            "info": {
+                "publisherType": "Organisation",
+                "publisherName": "Paritech",
+                "name": "TsDemo",
+                "version": "0.0.1",
+                "apiVersion": "1",
+                "shortDescription": "TypeScript Demo",
+                "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
+                "urlPath": "/extensions/tstest/dist/tsdemo.js"
+            },
+            "install": false
+        }
+    ],
+    "diagnostics": {
+        "telemetryEnabled": false,
+        "zenithLogLevel": "off",
+        "dataSubscriptionCachingDisabled": true
+    }
+}

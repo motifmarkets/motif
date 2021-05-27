@@ -1,0 +1,28 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="groupSelectorButtonsDiv" class="horizontalChildrenSeparator">
+    <button [ngClass]="{ 'selected': generalGroupActive }"
+        (click)="handleGeneralSettingsClick()">
+        General
+    </button>
+    <button [ngClass]="{ 'selected': gridGroupActive }"
+        (click)="handleGridSettingsClick()">
+        Grid
+    </button>
+    <button [ngClass]="{ 'selected': orderPadGroupActive }"
+        (click)="handleOrderPadSettingsClick()">
+        Order Pad
+    </button>
+    <button [ngClass]="{ 'selected': colorGroupActive }"
+        (click)="handleColorSettingsClick()">
+        Color
+    </button>
+</div>
+
+<div id="groupDiv">
+    <ng-template #groupContainer></ng-template>
+</div>

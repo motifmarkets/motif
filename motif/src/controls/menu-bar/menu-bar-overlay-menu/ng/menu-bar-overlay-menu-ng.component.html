@@ -1,0 +1,12 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-container id="menu" [style.top]="top" [style.left]="left" *ngFor="let menuItem of menuItems" [ngSwitch]="menuItem.typeId">
+    <app-menu-bar-overlay-command-item *ngSwitchCase="MenuItemTypeId.Command" [menuItemId]="menuItem.id"></app-menu-bar-overlay-command-item>
+    <app-menu-bar-overlay-child-item *ngSwitchCase="MenuItemTypeId.ChildMenu" [menuItemId]="menuItem.id"></app-menu-bar-overlay-child-item>
+    <app-menu-bar-overlay-divider-item *ngSwitchCase="MenuItemTypeId.Divider"></app-menu-bar-overlay-divider-item>
+</ng-container>
+

@@ -1,0 +1,13 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div class="app-loading">
+    <img class="loading-logo" src="/assets/img/logo.png">
+    <div id="kickedOffDiv" *ngIf="kickedOff">
+        {{ kickedOffText }}
+    </div>
+    <textarea id="logTextArea" class="text-block" spellCheck="false" readonly>{{log}}</textarea>
+</div>

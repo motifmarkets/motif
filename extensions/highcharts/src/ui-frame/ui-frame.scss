@@ -1,0 +1,38 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+.ui-frame-root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    .ui-frame-controls {
+        flex: 0 0 auto;
+        display: flex;
+
+        .ui-frame-lit-ivem-id-select {
+            width: 10em;
+        }
+    }    
+
+    .badness-and-chart {
+        flex: 1 1 auto;
+        display: flex;
+        flex-direction: column;
+        height: 1px; // weird but fixes problem with chart tools up/down arrow
+
+        .delayed-badness {
+            flex: 0 0 auto;
+        }
+
+        .chart-frame {
+            height: 100%;
+            flex: 1 1 auto;
+            position: relative;
+        }
+    }
+}
+

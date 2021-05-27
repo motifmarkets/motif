@@ -1,0 +1,17 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="headingSection">
+    <span id="headingSpan">{{headingCaption}}</span>
+</section>
+<ng-container id="menu" *ngFor="let info of infos">
+    <app-extension-list-info-item
+        [info]=info
+        (installSignalEmitter)="handleInstallSignal($event)"
+        (focusEmitter)="handleFocus($event)"
+    ></app-extension-list-info-item>
+</ng-container>
+

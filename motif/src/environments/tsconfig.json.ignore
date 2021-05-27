@@ -1,0 +1,12 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "files": [
+        "environment.ts",
+    ],
+
+}

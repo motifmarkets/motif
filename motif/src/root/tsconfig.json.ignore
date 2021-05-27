@@ -1,0 +1,32 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "./**/*.ts"
+    ],
+
+    "exclude": [
+        "internal-api.ts",
+        "ng-api.ts"
+    ],
+
+    "references": [
+        { "path": "../generated" },
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+        { "path": "../component-services" },
+        { "path": "../controls" },
+        { "path": "../component" },
+        { "path": "../content" },
+        { "path": "../ditem" },
+        { "path": "../desktop" },
+        { "path": "../overlay" },
+        { "path": "../extension" },
+    ]
+}

@@ -1,0 +1,26 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-select #ngSelect
+           id="ngSelect"
+           [items]="namedGroups"
+           [virtualScroll]="true"
+           [labelForId]="inputId"
+           [readonly]="readonly"
+           [title]="title"
+           [loading]="loading"
+           bindLabel="id"
+           [clearable]="false"
+           [placeholder]="placeholderText"
+           [searchFn]="customSearchFtn"
+           [(ngModel)]="selected"
+           (change)="handleSelectChangeEvent($event)"
+           (search)="handleSelectSearchEvent($event)"
+           (open)="handleSelectOpenEvent()">
+    <ng-template ng-option-tmp let-item="item">
+        <span class="ngSelectBoldFirstColumn">{{item.id}}</span>{{item.name}}
+    </ng-template>
+</ng-select>

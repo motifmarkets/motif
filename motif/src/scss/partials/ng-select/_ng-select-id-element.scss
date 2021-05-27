@@ -1,0 +1,66 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+/*ng-select {
+    // --ng-select-highlight: #007eff;
+    // --ng-select-primary-text: #333333;
+    // --ng-select-primary-text-lighten60: #cccccc; // lighten($ng-select-primary-text, 60);
+    // --ng-select-disabled-text: #f9f9f9;
+    // --ng-select-border: #cccccc;
+    // --ng-select-border-lighten5: #d9d9d9; // lighten($ng-select-border, 5);
+    // --ng-select-border-lighten10: #e6e6e6; // lighten($ng-select-border, 10);
+    // --ng-select-border-darken10: #b3b3b3; // darken($ng-select-border, 10);
+    // --ng-select-border-darken20: #999999; // darken($ng-select-border, 20);
+    // --ng-select-border-darken40: ##666666; // darken($ng-select-border, 40);
+    // --ng-select-border-darken60: #333333; // darken($ng-select-border, 60);
+    --ng-select-border-radius: 1px;
+    // --ng-select-bg: #ffffff;
+    // --ng-select-selected: #ebf5ff; // lighten($ng-select-highlight, 46);
+    // --ng-select-selected-darken5: #d1e8ff; // darken($ng-select-selected, 5);
+    // --ng-select-selected-darken10: #b8dbff; // darken($ng-select-selected, 10);
+    --ng-select-clear-hover: #D0021B;
+    // --ng-select-marked: #f5faff; // lighten($ng-select-highlight, 48);
+    // --ng-select-black-white-fore: #000000;
+    --ng-select-box-focused-shadow2-color: #007EFF;
+    --ng-select-box-focused-shadow: inset 0 1px 1px var(--ng-select-full-fore)13, 0 0 0 3px var(--ng-select-box-focused-shadow-color2)26;
+    // --ng-select-placeholder: #999999; // lighten($ng-select-primary-text, 40);
+    --ng-select-height: 22px;
+    --ng-select-value-padding-left: 10px;
+    --ng-select-value-font-size: 0.9em;
+}*/
+
+$ng-select-highlight: var(--ng-select-highlight); // #007eff !default;
+$ng-select-primary-text: var(--ng-select-primary-text); // red !default;
+$ng-select-primary-text-lighten60: var(--ng-select-primary-text-lighten60); // lighten($ng-select-primary-text, 60) !default;
+$ng-select-disabled-text: var(--ng-select-disabled-text); // #f9f9f9 !default;
+$ng-select-border: var(--ng-select-border); // #ccc !default;
+$ng-select-border-lighten5: var(--ng-select-border-lighten5); // lighten($ng-select-border, 5) !default;
+$ng-select-border-lighten10: var(--ng-select-border-lighten10); // lighten($ng-select-border, 10) !default;
+$ng-select-border-darken10: var(--ng-select-border-darken10); // darken($ng-select-border, 10) !default;
+$ng-select-border-darken20: var(--ng-select-border-darken20); // darken($ng-select-border, 20) !default;
+$ng-select-border-darken40: var(--ng-select-border-darken40); // darken($ng-select-border, 40) !default;
+$ng-select-border-darken60: var(--ng-select-border-darken60); // darken($ng-select-border, 60) !default;
+$ng-select-border-radius: 1px; // var(--ng-select-border-radius); // 4px !default;
+$ng-select-bg: var(--ng-select-bg); // #ffffff !default;
+// $ng-select-black-white-fore: var(--ng-select-black-white-fore); // #black !default;
+$ng-select-selected: var(--ng-select-selected); // lighten($ng-select-highlight, 46) !default;
+$ng-select-selected-darken5: var(--ng-select-selected-darken5); // darken($ng-select-selected, 5) !default;
+$ng-select-selected-darken10: var(--ng-select-selected-darken10); // darken($ng-select-selected, 10) !default;
+$ng-select-marked: var(--ng-select-marked); // lighten($ng-select-highlight, 48) !default;
+$ng-select-placeholder: var(--ng-select-placeholder); // lighten($ng-select-primary-text, 40) !default;
+$ng-select-clear-hover: #D0021B; // var(--ng-select-clear-hover); // #D0021B !default;
+// $ng-select-box-shadow2-color: #007EFF;
+$ng-select-box-shadow: none; // inset 0 1px 1px rgba($ng-select-black-white-fore, 0.075), 0 0 0 3px rgba($ng-select-box-shadow2-color, 0.1);
+$ng-select-container-hover-box-shadow: none; // var(--ng-select-container-hover-box-shadow); // rgba($ng-select-black-white-fore, 0.06) !default;
+$ng-select-dropdown-panel-box-shadow: none; // var(--ng-select-dropdown-panel-box-shadow); // rgba($ng-select-black-white-fore, 0.06) !default;
+$ng-select-dropdown-panel-items-optgroup: var(--ng-select-dropdown-panel-items-optgroup); // rgba($ng-select-black-white-fore, 0.54) !default;
+$ng-select-dropdown-panel-items-option: var(--ng-select-dropdown-panel-items-option); // rgba($ng-select-black-white-fore, 0.87) !default;
+$ng-select-height: 22px; // var(--ng-select-height); // 36px !default;
+$ng-select-value-padding-left: 10px; // var(--ng-select-value-padding-left); // 10px !default;
+$ng-select-value-font-size: 0.9em; // var(--ng-select-value-font-size); // 0.9em !default;
+
+
+@import "./_default.theme";

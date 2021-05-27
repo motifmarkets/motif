@@ -1,0 +1,29 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="summarySection">
+    <section id="nameSection">
+        <span id="nameSpan">{{name}}</span>
+    </section>
+    <section id="publisherStatsVersionSection">
+        <span id="publisherSpan">{{publisherName}} ({{publisherTypeDisplay}})</span>
+        <span class="separator">|</span>
+        <span id="versionSpan">{{version}}</span>
+    </section>
+    <section id="shortDescriptionSection">
+        <span id="shortDescriptionSpan">{{shortDescription}}</span>
+    </section>
+    <section id="controlsSection">
+        <button *ngIf="isInstallable" (click)="handleInstallClick()">{{installCaption}}</button>
+        <button *ngIf="isDisabled" (click)="handleEnableClick()">{{enableCaption}}</button>
+        <button *ngIf="isEnabled" (click)="handleDisableClick()">{{disableCaption}}</button>
+        <button *ngIf="isInstalled" (click)="handleUninstallClick()">{{uninstallCaption}}</button>
+    </section>
+</section>
+<section id="detailSection" [style.border-top-color]="detailSectionBorderTypeColor">
+    <span id="longDescription">{{longDescription}}</span>
+</section>
+

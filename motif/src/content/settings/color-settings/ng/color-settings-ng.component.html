@@ -1,0 +1,28 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div #leftAndRightDiv id="leftAndRightDiv" [style.display]="isPresetCodeVisible ? 'none' : null">
+    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize">
+        <as-split-area [size]="null"> <!-- was size="*"-->
+            <div id="leftDiv">
+                <app-color-scheme-grid #grid id="grid"></app-color-scheme-grid>
+                <div id="loadSaveDiv">
+                    <select #loadSelect id="loadSelect" (change)="handleGuiLoadSelectChange(loadSelect.value)">
+                        <option>&lt;Dark&gt;</option>
+                        <option>&lt;Light&gt;</option>
+                    </select>
+                    <app-svg-button #saveSchemeButton id="saveSchemeButton"></app-svg-button>
+                </div>
+            </div>
+        </as-split-area>
+        <as-split-area [size]="propertiesSize">
+            <app-color-scheme-item-properties #itemProperties id="itemProperties"></app-color-scheme-item-properties>
+        </as-split-area>
+    </as-split>
+</div>
+<div id="presetCodeDiv" [style.display]="isPresetCodeVisible ? null : 'none'">
+    <ng-template #presetCodeContainer></ng-template>
+</div>

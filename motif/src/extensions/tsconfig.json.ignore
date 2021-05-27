@@ -1,0 +1,21 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "exclude": [
+        "api-error.ts",
+        "api.ts",
+        "internal-api.ts",
+    ],
+
+    "references": [
+        { "path": "../res" }
+    ]
+}

@@ -1,0 +1,14 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="rootDiv">
+    <div id="toolBarDiv">
+        <app-svg-button #returnButton id="returnButton"></app-svg-button>
+        <div id="dialogTitleCaption">{{dialogCaption}}</div>
+        <app-svg-button #copyToClipboardButton id="copyToClipboardButton"></app-svg-button>
+    </div>
+    <textarea #presetCodeTextArea id="presetCodeTextArea" spellCheck="false" readonly wrap="off">{{presetCode}}</textarea>
+</div>

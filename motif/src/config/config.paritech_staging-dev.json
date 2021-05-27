@@ -1,0 +1,69 @@
+{
+    "configFormatVersion": "2",
+    "configComment": "",
+    "service": {
+        "name": "Paritech Staging (Development)",
+        "description": "Paritech Staging (Development)"
+    },
+    "exchange": {
+        "environment": "demo",
+        "defaultDefault": "Asx"
+    },
+    "endpoints": {
+        "motifServices": [
+            "https://motif-services.paritech.com"
+        ],
+        "zenith": [
+            "wss://wsapistaging.paritech.com:443/Zenith?version=2.0"
+        ]
+    },
+    "openId": {
+        "authority": "https://passport.paritech.com",
+        "clientId": "MotifDev$Web",
+        "redirectUri": "http://localhost:4200/auth-callback",
+        "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+        "scope": "openid profile roles ZenithStaging/Trading ZenithStaging/Market ZenithStaging/News ZenithStaging/OrderPad MotifSvc/RestAPI"
+    },
+    "defaultLayout": {
+        "instanceName": "Default",
+        "linkedSymbol": {
+            "code": "BHP",
+            "market": "AsxTradeMatch"
+        },
+        "watchlist": [{ "code": "BHP", "market": "AsxTradeMatch" },
+            { "code": "QAN", "market": "AsxTradeMatch" },
+            { "code": "NAB", "market": "AsxTradeMatch" }
+        ]
+    },
+    "bundledExtensions": [
+        {
+            "info": {
+                "publisherType": "Organisation",
+                "publisherName": "Paritech",
+                "name": "Highcharts",
+                "version": "0.0.1",
+                "apiVersion": "1",
+                "shortDescription": "Highcharts Charting",
+                "longDescription": "Highcharts Charting",
+                "urlPath": "/extensions/highcharts/dist/highcharts.js"
+            },
+            "install": true
+        },
+        {
+            "info": {
+                "publisherType": "Organisation",
+                "publisherName": "Paritech",
+                "name": "TsDemo",
+                "version": "0.0.1",
+                "apiVersion": "1",
+                "shortDescription": "TypeScript Demo",
+                "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
+                "urlPath": "/extensions/tstest/dist/tsdemo.js"
+            },
+            "install": false
+        }
+    ],
+    "diagnostics": {
+        "telemetryEnabled": false
+    }
+}

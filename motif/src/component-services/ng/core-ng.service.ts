@@ -1,0 +1,39 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+import { Injectable, OnDestroy } from '@angular/core';
+import { AdiService } from 'src/adi/internal-api';
+import {
+    AppStorageService,
+    CommandRegisterService,
+    CoreService,
+    MotifServicesService,
+    SettingsService,
+    SymbolsService
+} from 'src/core/internal-api';
+
+@Injectable({
+    providedIn: 'root'
+})
+export class CoreNgService implements OnDestroy {
+    private _service: CoreService;
+
+    get service() { return this._service; }
+    get settingsService(): SettingsService { return this._service.settingsService; }
+    get motifServicesService(): MotifServicesService { return this._service.motifServicesService; }
+    get appStorageService(): AppStorageService { return this._service.applicationStateStorage; }
+    get adi(): AdiService { return this._service.adi; }
+    get symbolsManager(): SymbolsService { return this._service.symbolsManager; }
+    get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
+
+    constructor() {
+        this._service = new CoreService();
+    }
+
+    ngOnDestroy() {
+        this._service.finalise();
+    }
+}

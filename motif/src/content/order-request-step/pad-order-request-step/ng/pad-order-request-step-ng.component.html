@@ -1,0 +1,98 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-caption-label #accountLabel for="accountIdInput"></app-caption-label>
+<div id="accountDiv">
+    <app-brokerage-account-group-input #accountIdInput class="accountIdControl" inputId="accountIdInput"></app-brokerage-account-group-input>
+    <app-brokerage-account-group-name-label #accountNameLabel id="accountNameLabel"></app-brokerage-account-group-name-label>
+</div>
+<app-caption-label #sideLabel></app-caption-label>
+<div id="sideDiv" class="horizontalChildrenSeparator">
+    <app-captioned-radio #buySideRadio inputId="buySideRadio" name="side"></app-captioned-radio>
+    <app-captioned-radio #sellSideRadio inputId="sellSideRadio" name="side"></app-captioned-radio>
+    <app-captioned-radio #shortSellSideRadio inputId="shortSellSideRadio" name="side"></app-captioned-radio>
+</div>
+<app-caption-label #symbolLabel for="symbolInput"></app-caption-label>
+<div id="symbolDiv">
+    <div id="symbolRoutedIvemIdDiv">
+        <app-routed-ivem-id-select #symbolInput id="symbolControl" inputId="symbolInput"></app-routed-ivem-id-select>
+        <app-order-route-input #routeInput id="routeControl"></app-order-route-input>
+    </div>
+    <div id="symbolNameDiv">
+        <app-symbol-name-label #symbolNameLabel id="symbolNameLabel"></app-symbol-name-label>
+    </div>
+</div>
+<app-caption-label #quantityLabel for="quantityInput"></app-caption-label>
+<div id="quantityDiv">
+    <app-integer-text-input #quantityInput inputId="quantityInput"></app-integer-text-input>
+</div>
+<app-caption-label #orderTypeLabel for="orderTypeInput"></app-caption-label>
+<div id="orderTypeDiv">
+    <div id="orderTypeRadioDiv">
+        <app-captioned-radio #limitOrderTypeRadio inputId="limitOrderTypeRadio" name="orderType"></app-captioned-radio>
+        <app-captioned-radio #marketOrderTypeRadio inputId="marketOrderTypeRadio" name="orderType"></app-captioned-radio>
+    </div>
+    <app-enum-input #orderTypeInput id="orderTypeControl" inputId="orderTypeInput"></app-enum-input>
+</div>
+<app-caption-label #priceLabel for="priceInput"></app-caption-label>
+<div id="priceDiv">
+    <app-decimal-input #priceInput id="priceControl" inputId="priceInput"></app-decimal-input>
+    <app-caption-label #priceUnitLabel></app-caption-label>
+</div>
+<app-caption-label #timeInForceLabel></app-caption-label>
+<div id="timeInForceDiv">
+    <div id="timeInForceRow1Div" class="horizontalRadioSeparator">
+        <app-captioned-radio #untilCancelRadio inputId="untilCancelRadio" name="timeInForce"></app-captioned-radio>
+        <app-captioned-radio #fillAndKillRadio inputId="fillAndKillRadio" name="timeInForce"></app-captioned-radio>
+    </div>
+    <div id="timeInForceRow2Div" class="horizontalRadioSeparator">
+        <app-captioned-radio #fillOrKillRadio inputId="fillOrKillRadio" name="timeInForce"></app-captioned-radio>
+        <app-captioned-radio #dayRadio inputId="dayRadio" name="timeInForce"></app-captioned-radio>
+    </div>
+    <div id="timeInForceRow3Div" class="horizontalChildrenSeparator">
+        <app-captioned-radio #untilDateRadio inputId="untilDateRadio" name="timeInForce"></app-captioned-radio>
+        <app-date-input #expiryDateInput></app-date-input>
+    </div>
+</div>
+<app-caption-label #triggerLabel for="triggerTypeInput"></app-caption-label>
+<div id="triggerDiv">
+    <div id="triggerTypeDiv">
+        <div id="triggerTypeRadioDiv" class="horizontalRadioSeparator">
+            <app-captioned-radio #immediateTriggerTypeRadio inputId="immediateTriggerTypeRadio" name="triggerType"></app-captioned-radio>
+            <app-captioned-radio #priceTriggerTypeRadio inputId="priceTriggerTypeRadio" name="triggerType"></app-captioned-radio>
+        </div>
+        <!-- <app-enum-input #triggerTypeInput id="triggerTypeControl" inputId="triggerTypeInput"></app-enum-input> -->
+    </div>
+    <div id="priceTriggerTypeDiv" [style.display]="priceTriggerTypeVisible ? null : 'none'">
+        <div id="priceTriggerValueDiv">
+            <app-caption-label #triggerValueLabel for="triggerValueInput"></app-caption-label>
+            <app-decimal-input #triggerValueInput id="triggerValueControl" inputId="triggerValueInput"></app-decimal-input>
+        </div>
+        <!-- <app-enum-input #triggerFieldSelect id="triggerFieldControl" inputId="triggerFieldSelect"></app-enum-input> -->
+        <div id="triggerFieldMovementDiv">
+            <app-captioned-radio #lastTriggerFieldRadio inputId="lastTriggerFieldRadio" name="triggerField"></app-captioned-radio>
+            <app-captioned-radio #bestBidTriggerFieldRadio inputId="bestBidTriggerFieldRadio" name="triggerField"></app-captioned-radio>
+            <app-captioned-radio #bestAskTriggerFieldRadio inputId="bestAskTriggerFieldRadio" name="triggerField"></app-captioned-radio>
+            <app-captioned-radio #noneTriggerMovementRadio inputId="noneTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
+            <app-captioned-radio #upTriggerMovementRadio inputId="upTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
+            <app-captioned-radio #downTriggerMovementRadio inputId="downTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
+        </div>
+    </div>
+</div>
+<app-caption-label #existingOrderLabel [style.display]="existingOrderVisible ? null : 'none'"></app-caption-label>
+<app-text-input #existingOrderIdControl [style.display]="existingOrderVisible ? null : 'none'"></app-text-input>
+<app-caption-label #destinationAccountLabel [style.display]="destinationAccountVisible ? null : 'none'"
+    for="destinationAccountIdControl"></app-caption-label>
+<div [style.display]="destinationAccountVisible ? null : 'none'">
+    <app-brokerage-account-group-input #destinationAccountIdControl inputId="destinationAccountIdControl"></app-brokerage-account-group-input>
+    <app-brokerage-account-group-name-label #destinationAccountNameLabel></app-brokerage-account-group-name-label>
+</div>
+<app-caption-label #errorsLabel for="errorsInput"></app-caption-label>
+<div id="errorsDiv">
+    <app-integer-label #errorCountLabel for="errorsInput"></app-integer-label>
+    <app-text-input #errorsInput id="errorsControl" inputId="errorsInput"></app-text-input>
+    <!--<app-caption-label #noErrorsLabel></app-caption-label>-->
+</div>

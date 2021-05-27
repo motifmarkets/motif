@@ -1,0 +1,24 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "exclude": [
+        "base-ng.service.ts",
+        "registration-ng.service.ts",
+        "ng/registerable-ng-service.ts"
+    ],
+
+    "references": [
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+    ]
+}

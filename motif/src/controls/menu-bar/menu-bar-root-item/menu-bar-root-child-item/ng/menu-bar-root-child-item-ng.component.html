@@ -1,0 +1,15 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-template [ngIf]="keyboardActive" [ngIfElse]="keyboardNotActiveTemplate">
+    <span>{{accessibleCaption.preAccessKey}}</span>
+    <span class="accessKey">{{accessibleCaption.accessKey}}</span>
+    <span>{{accessibleCaption.postAccessKey}}</span>
+</ng-template>
+
+<ng-template #keyboardNotActiveTemplate>
+    <span>{{caption}}</span>
+</ng-template>

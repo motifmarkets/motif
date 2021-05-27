@@ -1,0 +1,15 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "references": [
+        { "path": "../res" }
+    ]
+}

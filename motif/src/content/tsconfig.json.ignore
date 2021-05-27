@@ -1,0 +1,26 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "exclude": [
+        "report-frame.ts"
+    ],
+
+    "references": [
+        { "path": "../generated" },
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+        { "path": "../component-services" },
+        { "path": "../controls" },
+        { "path": "../component" },
+    ]
+}

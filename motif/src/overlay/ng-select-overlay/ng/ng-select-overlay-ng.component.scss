@@ -1,0 +1,44 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import "./partials/ng-select/_ng-select-id-element";
+
+#measureCanvas {
+    display: inline-block;
+    height: 0;
+    width: 0;
+}
+
+#measureBoldCanvas {
+    display: inline-block;
+    height: 0;
+    width: 0;
+    font-weight: bold;
+}
+
+// Use scope to get higher specificity. Could also use !important
+:scope {
+    .ng-dropdown-panel {
+        width: var(--ngSelectDropDownPanelWidth) !important; // width is set in style so need to override
+    }
+
+    .ngSelectBoldFirstColumn {
+        display: inline-block;
+        font-weight: 700;
+        width: var(--ngSelectBoldFirstColumnWidth);
+    }
+
+    .ng-dropdown-panel {
+        .ng-dropdown-panel-items {
+            .ng-optgroup {
+                padding: 1px 1px;
+            }
+            .ng-option {
+                padding: 1px 1px;
+            }
+        }
+    }
+}

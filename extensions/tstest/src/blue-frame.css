@@ -1,0 +1,14 @@
+.root {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    background-color: blue;
+}
+
+.main-para {
+    font-size: larger;
+}
+
+.symbol-select {
+    width: 12em;
+}

@@ -1,0 +1,34 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-delayed-badness #delayedBadness></app-delayed-badness>
+<div *ngIf="displayRecords.length === 0; then noMarketsAvailableBlock else marketsAvailableBlock">
+</div>
+
+<ng-template #noMarketsAvailableBlock>
+    <span class='alert alert-warning'>No markets available.</span>
+</ng-template>
+
+<ng-template #marketsAvailableBlock>
+    <div id="markets">
+        <span class="tableHeading">Market</span>
+        <span class="tableHeading">Status</span>
+        <span class="tableHeading">Reason</span>
+        <span class="tableHeading">Allows</span>
+        <span class="tableHeading">Feed</span>
+        <span class="tableHeading">Trading Date</span>
+        <span class="tableHeading">Market Time</span>
+        <ng-container *ngFor="let record of displayRecords">
+            <span [ngClass]="record.board ? 'marketBoardName' : 'marketName'">{{ record.name }}</span>
+            <span class="marketCell">{{ record.status }}</span>
+            <span class="marketCell">{{ record.reason }}</span>
+            <span class="marketCell">{{ record.allows }}</span>
+            <span class="marketCell">{{ record.feedStatus }}</span>
+            <span class="marketCell">{{ record.tradingDate }}</span>
+            <span class="marketCell">{{ record.marketTime }}</span>
+        </ng-container>
+    </div>
+</ng-template>

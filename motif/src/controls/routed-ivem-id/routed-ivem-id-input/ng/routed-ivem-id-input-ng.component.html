@@ -1,0 +1,19 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<input #routedIvemIdInput
+    type="text"
+    spellCheck="false"
+    [id]="inputId"
+    [title]="title"
+    [disabled]="disabled == true ? true : null"
+    [readonly]="readonly == true ? true : null"
+    [size]="size"
+    [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
+    [value]="symbol"
+    (input)="onInput(routedIvemIdInput.value)"
+    (keydown.enter)="onEnterKeyDown(routedIvemIdInput.value)"
+    (change)="onChange(routedIvemIdInput.value)">

@@ -1,0 +1,50 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './partials/horizontal-radio-separator';
+
+:host {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: 2rem;
+    row-gap: 0.5rem;
+    align-items: center;
+
+    app-caption-label {
+        grid-column: 1;
+    }
+    app-text-input {
+        grid-column: 2;
+    }
+}
+
+#fontFamilyControl {
+    width: 30em;
+}
+
+#fontSizeControl {
+    width: 12em;
+}
+
+#defaultExchangeControl {
+    width: 14em;
+}
+
+#exchangeHideModeControl {
+    width: 14em;
+}
+
+#minimumPriceFractionDigitsCountControl {
+    width: 12em;
+}
+
+#settingsProfileDiv {
+    width: 14em;
+}
+
+#dateTimeTimezoneMode {
+    @include horizontalRadioSeparatorMixin;
+}

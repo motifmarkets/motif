@@ -1,0 +1,67 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-template [ngIf]="zenithMessageActive" [ngIfElse]="orderPadTemplate">
+    <app-review-order-zenith-message-definition
+        [zenithMessageTitle]="zenithMessageTitle"
+        [zenithMessageText]="zenithMessageText"
+    >
+    </app-review-order-zenith-message-definition>
+</ng-template>
+
+<ng-template #orderPadTemplate>
+    <p id="requestTypePara">{{requestType}}</p>
+    <section id="orderPadGrid">
+        <div class="vertical-center">
+            <span>{{orderIdCaption}}</span>
+        </div>
+        <span>{{orderId}}</span>
+        <div class="vertical-center">
+            <span>{{accountCaption}}</span>
+        </div>
+        <section id="accountValueSection">
+            <span id="accountIdSpan" class="text-center">{{accountId}}</span>
+            <span id="accountNameSpan" class="text-center">{{accountName}}</span>
+        </section>
+        <div class="vertical-center">
+            <span>{{sideCaption}}</span>
+        </div>
+        <span id="sideSpan">{{side}}</span>
+        <div class="vertical-center">
+            <span>{{symbolCaption}}</span>
+        </div>
+        <section id="symbolValueSection">
+            <span id="symbolCodeSpan" class="text-center">{{symbolCode}}</span>
+            <span id="symbolNameSpan" class="text-center">{{symbolName}}</span>
+        </section>
+        <div class="vertical-center">
+            <span>{{orderTypeCaption}}</span>
+        </div>
+        <span id="orderTypeSpan">{{orderType}}</span>
+        <div class="vertical-center">
+            <span>{{timeInForceCaption}}</span>
+        </div>
+        <section id="timeInForceSection">
+            <span id="timeInForceSpan">{{timeInForce}}</span>
+            <span id="expiryDateSpan">{{expiryDate}}</span>
+        </section>
+        <div class="vertical-center">
+            <span>{{quantityCaption}}</span>
+        </div>
+        <span id="quantitySpan">{{quantity}}</span>
+        <div class="vertical-center">
+            <span>{{priceCaption}}</span>
+        </div>
+        <span id="priceSpan">{{price}}</span>
+        <div class="vertical-center">
+            <span>{{destinationAccountCaption}}</span>
+        </div>
+        <section id="destinationAccountValueSection">
+            <span id="destinationAccountIdSpan" class="text-center">{{destinationAccountId}}</span>
+            <span id="destinationAccountNameSpan" class="text-center">{{destinationAccountName}}</span>
+        </section>
+    </section>
+</ng-template>

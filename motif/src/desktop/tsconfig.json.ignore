@@ -1,0 +1,29 @@
+{
+    "extends": "../../tsconfig.app.json",
+
+    "compilerOptions": {
+        "composite": true
+    },
+
+    "include": [
+        "**/*.ts"
+    ],
+
+    "exclude": [
+        "desktop/internal-desktop-command.ts",
+        "open-table-dialog/open-table-dialog.component.ts",
+        "save-table-dialog/save-table-dialog.component.ts",
+    ],
+
+    "references": [
+        { "path": "../res" },
+        { "path": "../sys" },
+        { "path": "../adi" },
+        { "path": "../core" },
+        { "path": "../component-services" },
+        { "path": "../controls" },
+        { "path": "../component" },
+        { "path": "../content" },
+        { "path": "../ditem" },
+    ]
+}

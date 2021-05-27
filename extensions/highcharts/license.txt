@@ -1,0 +1,6 @@
+This is the source code repository for MotifMarkets' Motif product and associated packages.
+
+This source code is available either under license specified by contract or a non-commercial/personal/educational use only license.
+
+Licensing details are specified at:
+- https://motionite.trade/motif/license
