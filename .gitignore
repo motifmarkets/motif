@@ -2,7 +2,7 @@
 node_modules/
 /motif/releases/
 /motif/dist/
-/motif/dev_static/_config-do-not-delete
+/motif/dev_static/_config-do-not-delete/config.json
 /motif/debug.log
 /motif/api/
 /motif/lib/

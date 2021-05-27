@@ -17,18 +17,21 @@ More information:
 
 ## Installation and build
 
-* Clone Motif repository
-* Change directory to the `motif` sub-folder in the cloned repository.
-* Run `npm install` to install the required dependencies.
-* Run `build:dev` script to build a development distribution.
+1. Clone the Motif repository.
+1. Change directory to the `motif` sub-folder in the cloned repository.
+1. Run `npm install` to install the required dependencies.
+1. Run `build:dev` script to build a development distribution.
 
-## Running the development environment
+## Running Motif in the development environment
 
-* Install and ensure you can create a development distribution.
-* Run one of the following 2 scripts to start Motif and connect to a server:
-    1. `start:em2_cte-dev` to connect to an EM2 server.  Use this if you have an EM2 account.
-    1. `start:paritech_staging-dev` to connect to a Paritech server.
-* Ensure you are connected to a Demo environment.  A yellow line with the word **demo** will be visible at the top of the window.
+1. Ensure the development environment is set up as [above](#installation-and-build).
+1. Ensure you are in the repository's `motif` sub-folder
+1. Run one of the following scripts to start a development server which hosts Motif:
+    * `start:em2_cte-dev` to connect to an EM2 server.  Use this if you have an EM2 account.
+    * `start:paritech_staging-dev` to connect to a Paritech server.
+1. Start a browser (preferably Chrome) and go to URL: `http://localhost:4200`.
+1. Use your brokerage account credentials to log into Passport.
+1. The main Motif page (desktop) will then appear.  Confirm you are logged into a Demo environment.  A yellow line with the word **demo** will be visible at the top of the window.
 
 ## **DO NOT CONNECT TO PRODUCTION FROM DEVELOPMENT ENVIRONMENT**
 
