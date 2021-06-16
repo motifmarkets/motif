@@ -9,7 +9,8 @@ import { Handle } from '../sys/extension-api';
 /** @public */
 export const enum FeedIdEnum {
     Null = 'Null',
-    Authority_TradingAuthority = 'Authority_TradingAuthority',
+    Authority_Trading = 'Authority_Trading',
+    Authority_Watchlist = 'Authority_Watchlist',
     Trading_Motif = 'Trading_Motif',
     Trading_Malacca = 'Trading_Malacca',
     Market_AsxTradeMatch = 'Market_AsxTradeMatch',

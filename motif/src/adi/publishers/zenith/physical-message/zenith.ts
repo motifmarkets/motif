@@ -266,6 +266,7 @@ export namespace Zenith {
 
             export const enum AuthorityFeed {
                 TradingAuthority = 'TradingAuthority',
+                Watchlist = 'Watchlist',
             }
 
             export const enum TradingFeed {

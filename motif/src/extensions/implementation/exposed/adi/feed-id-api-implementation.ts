@@ -17,7 +17,8 @@ export namespace FeedIdImplementation {
     export function toApi(value: FeedId): FeedIdApi {
         switch (value) {
             case FeedId.Null: return FeedIdEnumApi.Null;
-            case FeedId.Authority_TradingAuthority: return FeedIdEnumApi.Authority_TradingAuthority;
+            case FeedId.Authority_Trading: return FeedIdEnumApi.Authority_Trading;
+            case FeedId.Authority_Watchlist: return FeedIdEnumApi.Authority_Watchlist;
             case FeedId.Trading_Motif: return FeedIdEnumApi.Trading_Motif;
             case FeedId.Trading_Malacca: return FeedIdEnumApi.Trading_Malacca;
             case FeedId.Market_AsxBookBuild: throw new AssertInternalError('FIAITAABB5662349843');
@@ -58,7 +59,8 @@ export namespace FeedIdImplementation {
         const enumValue = value as FeedIdEnumApi;
         switch (enumValue) {
             case FeedIdEnumApi.Null: return FeedId.Null;
-            case FeedIdEnumApi.Authority_TradingAuthority: return FeedId.Authority_TradingAuthority;
+            case FeedIdEnumApi.Authority_Trading: return FeedId.Authority_Trading;
+            case FeedIdEnumApi.Authority_Watchlist: return FeedId.Authority_Watchlist;
             case FeedIdEnumApi.Trading_Motif: return FeedId.Trading_Motif;
             case FeedIdEnumApi.Trading_Malacca: return FeedId.Trading_Malacca;
             case FeedIdEnumApi.Market_AsxTradeMatch: return FeedId.Market_AsxTradeMatch;
