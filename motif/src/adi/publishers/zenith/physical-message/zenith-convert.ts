@@ -1523,7 +1523,8 @@ export namespace ZenithConvert {
         export namespace AuthorityFeed {
             export function toId(value: Zenith.ZenithController.Feeds.AuthorityFeed) {
                 switch (value) {
-                    case Zenith.ZenithController.Feeds.AuthorityFeed.TradingAuthority: return FeedId.Authority_TradingAuthority;
+                    case Zenith.ZenithController.Feeds.AuthorityFeed.TradingAuthority: return FeedId.Authority_Trading;
+                    case Zenith.ZenithController.Feeds.AuthorityFeed.Watchlist: return FeedId.Authority_Watchlist;
                     default:
                         throw new UnreachableCaseError('ZCFTFTIU787833333952', value);
                 }

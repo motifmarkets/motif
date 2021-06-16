@@ -281,7 +281,8 @@ export const enum OrderTriggerTypeId {
 
 export const enum FeedId {
     Null,
-    Authority_TradingAuthority, // Authority
+    Authority_Trading, // Authority
+    Authority_Watchlist, // Authority
     // MYX[Demo], // Market //
     // MYX:OD[Demo], // Market // oddlot
     // MYX:BI[Demo], // Market // buyin
@@ -2862,11 +2863,17 @@ export namespace FeedInfo {
             name: 'Null',
             displayId: StringId.FeedDisplay_Null,
         },
-        Authority_TradingAuthority: {
-            id: FeedId.Authority_TradingAuthority,
+        Authority_Trading: {
+            id: FeedId.Authority_Trading,
             classId: FeedClassId.Authority,
             name: 'Authority_TradingAuthority',
-            displayId: StringId.FeedDisplay_Authority_TradingAuthority,
+            displayId: StringId.FeedDisplay_Authority_Trading,
+        },
+        Authority_Watchlist: {
+            id: FeedId.Authority_Watchlist,
+            classId: FeedClassId.Authority,
+            name: 'Authority_Watchlist',
+            displayId: StringId.FeedDisplay_Authority_Watchlist,
         },
         Trading_Motif: {
             id: FeedId.Trading_Motif,

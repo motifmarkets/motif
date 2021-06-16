@@ -362,7 +362,8 @@ export const enum StringId {
     ExchangeEnvironmentDisplay_DelayedProduction,
     ExchangeEnvironmentDisplay_Demo,
     FeedDisplay_Null,
-    FeedDisplay_Authority_TradingAuthority,
+    FeedDisplay_Authority_Trading,
+    FeedDisplay_Authority_Watchlist,
     FeedDisplay_Trading_Motif,
     FeedDisplay_Trading_Malacca,
     FeedDisplay_Market_AsxBookBuild,
@@ -3500,9 +3501,14 @@ export namespace I18nStrings {
                 en: 'Null',
             }
         },
-        FeedDisplay_Authority_TradingAuthority: {
-            id: StringId.FeedDisplay_Authority_TradingAuthority, translations: {
-                en: 'TradingAuthority',
+        FeedDisplay_Authority_Trading: {
+            id: StringId.FeedDisplay_Authority_Trading, translations: {
+                en: 'Trading Authority',
+            }
+        },
+        FeedDisplay_Authority_Watchlist: {
+            id: StringId.FeedDisplay_Authority_Watchlist, translations: {
+                en: 'Watchlist Authority',
             }
         },
         FeedDisplay_Trading_Motif: {
