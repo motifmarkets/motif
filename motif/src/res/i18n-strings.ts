@@ -926,7 +926,7 @@ export const enum StringId {
     ZenithPublisherStateDisplay_SocketClose,
     ZenithPublisherStateDisplay_Finalised,
     ZenithPublisherReconnectReasonDisplay_ConnectionSubscription,
-    ZenithPublisherReconnectReasonDisplay_MotifServicesTokenFailure,
+    ZenithPublisherReconnectReasonDisplay_PassportTokenFailure,
     ZenithPublisherReconnectReasonDisplay_SocketOpenFailure,
     ZenithPublisherReconnectReasonDisplay_ZenithTokenFetchFailure,
     ZenithPublisherReconnectReasonDisplay_UnexpectedSocketClose,
@@ -6321,9 +6321,9 @@ export namespace I18nStrings {
                 en: 'Connection Subscription',
             }
         },
-        ZenithPublisherReconnectReasonDisplay_MotifServicesTokenFailure: {
-            id: StringId.ZenithPublisherReconnectReasonDisplay_MotifServicesTokenFailure, translations: {
-                en: 'Motif Services Token Failure',
+        ZenithPublisherReconnectReasonDisplay_PassportTokenFailure: {
+            id: StringId.ZenithPublisherReconnectReasonDisplay_PassportTokenFailure, translations: {
+                en: 'Passport Token Failure',
             }
         },
         ZenithPublisherReconnectReasonDisplay_SocketOpenFailure: {

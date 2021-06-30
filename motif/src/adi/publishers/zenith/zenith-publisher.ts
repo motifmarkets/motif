@@ -53,8 +53,6 @@ export class ZenithPublisher extends Publisher {
     private _connectionDataItemRequestNr: Integer;
 
     private _authAccessToken = '';
-    private _activeProvider: string; // in future, may way to cache provider from MotifServices
-    private _activePassportAccessToken: string;
 
     private _counterIntervalHandle: NodeJS.Timeout | undefined;
     private _dataMessages = new DataMessages();
@@ -400,9 +398,7 @@ export class ZenithPublisher extends Publisher {
                     this.logError('MotifServices: Undefined provider');
                     this._stateEngine.adviseAuthFetchFailure();
                 } else {
-                    this._activeProvider = provider;
-                    this._activePassportAccessToken = this._authAccessToken;
-                    this._stateEngine.adviseAuthTokenFetchSuccess(provider, this._authAccessToken);
+                    this._stateEngine.adviseAuthTokenFetchSuccess();
                 }
             }
         }
@@ -475,8 +471,8 @@ export class ZenithPublisher extends Publisher {
 
     private fetchZenithTokenUsingAuthToken(waitId: Integer) {
         const transactionId = this._requestEngine.getNextTransactionId();
-        const provider = this._stateEngine.provider;
-        const accessToken = this._stateEngine.accessToken;
+        const provider = Zenith.AuthController.Provider.Bearer;
+        const accessToken = this._authAccessToken;
         const msgContainer = AuthTokenMessageConvert.createMessage(transactionId, provider, accessToken);
         const msg = JSON.stringify(msgContainer);
         this.logInfo('Fetching Zenith Token using AuthToken');
@@ -497,16 +493,20 @@ export class ZenithPublisher extends Publisher {
 
     private processZenithAuthFetchMessageReceived(msg: Zenith.MessageContainer) {
         let identify: Zenith.AuthController.Identify | undefined;
+        let authToken: boolean;
         switch (msg.Topic) {
             case Zenith.AuthController.TopicName.AuthToken:
                 identify = AuthTokenMessageConvert.parseMessage(msg as Zenith.AuthController.AuthToken.PublishPayloadMessageContainer);
+                authToken = true;
                 break;
             case Zenith.AuthController.TopicName.AuthOwner:
                 identify = AuthOwnerMessageConvert.parseMessage(msg as Zenith.AuthController.AuthOwner.PublishPayloadMessageContainer);
+                authToken = false;
                 break;
             default:
                 this.logError('Unexpected Zenith Auth Fetch response topic: "' + msg.Topic + '". Stopping');
                 this._stateEngine.adviseZenithTokenFetchFailure(true);
+                authToken = false;
         }
 
         if (identify === undefined) {
@@ -514,7 +514,7 @@ export class ZenithPublisher extends Publisher {
             this._stateEngine.adviseZenithTokenFetchFailure(true);
         } else {
             if (identify.Result === Zenith.AuthController.IdentifyResult.Rejected) {
-                const token = this._activePassportAccessToken ?? '';
+                const token = authToken ? this._authAccessToken : this._stateEngine.accessToken;
                 this.logError('Zenith Auth Fetch rejected. Stopping. Active Passport Access Token: "' + token + '"');
                 this._stateEngine.adviseZenithTokenFetchFailure(true);
             } else {
@@ -557,7 +557,10 @@ export class ZenithPublisher extends Publisher {
                 } else {
                     const expiresInSpan = this.calculateZenithTokenExpiresInSpan(identify.ExpiresIn);
                     const expiryTime = this.calculateZenithTokenExpiryTime(expiresInSpan);
-                    this._stateEngine.adviseZenithTokenFetchSuccess(identify.AccessToken, expiryTime);
+                    // this._stateEngine.adviseZenithTokenFetchSuccess(identify.AccessToken, expiryTime);
+                    // Do not use returned token if AuthToken
+                    const accessToken = authToken ? this._authAccessToken : identify.AccessToken;
+                    this._stateEngine.adviseZenithTokenFetchSuccess(accessToken, expiryTime);
                 }
             }
         }
@@ -649,7 +652,7 @@ export class ZenithPublisher extends Publisher {
     private refreshZenithToken(waitId: Integer) {
         switch (this._stateEngine.authenticationTypeId) {
             case ZenithConnectionStateEngine.AuthenticationTypeId.AuthToken:
-                this.sendAuthTokenMessage(waitId, 'Bearer', this._authAccessToken);
+                this.sendAuthTokenMessage(waitId, Zenith.AuthController.Provider.Bearer, this._authAccessToken);
                 break;
             case ZenithConnectionStateEngine.AuthenticationTypeId.AuthOwner:
                 this.sendAuthTokenMessage(waitId, this._stateEngine.provider, this._stateEngine.accessToken);

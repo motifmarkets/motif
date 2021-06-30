@@ -148,10 +148,8 @@ export class ZenithConnectionStateEngine {
         }
     }
 
-    adviseAuthTokenFetchSuccess(provider: string, accessToken: string) {
+    adviseAuthTokenFetchSuccess() {
         if (this.stateId === ZenithPublisherStateId.AuthFetch) {
-            this._provider = provider;
-            this._accessToken = accessToken;
             this._authFetchSuccessiveFailureCount = 0;
             this.action(ZenithConnectionStateEngine.ActionId.SocketOpen);
         }
@@ -171,7 +169,7 @@ export class ZenithConnectionStateEngine {
             this._authFetchSuccessiveFailureCount++;
             switch (this.authenticationTypeId) {
                 case ZenithConnectionStateEngine.AuthenticationTypeId.AuthToken:
-                    this.reconnect(ZenithPublisherReconnectReasonId.MotifServicesTokenFailure);
+                    this.reconnect(ZenithPublisherReconnectReasonId.PassportTokenFailure);
                     break;
                 case ZenithConnectionStateEngine.AuthenticationTypeId.AuthOwner:
                     this.finalise(false);

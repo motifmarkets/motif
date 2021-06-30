@@ -1010,7 +1010,7 @@ export const enum ZenithPublisherStateId {
 
 export const enum ZenithPublisherReconnectReasonId {
     ConnectionSubscription,
-    MotifServicesTokenFailure,
+    PassportTokenFailure,
     SocketOpenFailure,
     ZenithTokenFetchFailure,
     UnexpectedSocketClose,
@@ -6445,9 +6445,9 @@ export namespace ZenithPublisherReconnectReason {
             displayId: StringId.ZenithPublisherReconnectReasonDisplay_ConnectionSubscription,
             normal: true,
         },
-        MotifServicesTokenFailure: {
-            id: ZenithPublisherReconnectReasonId.MotifServicesTokenFailure,
-            displayId: StringId.ZenithPublisherReconnectReasonDisplay_MotifServicesTokenFailure,
+        PassportTokenFailure: {
+            id: ZenithPublisherReconnectReasonId.PassportTokenFailure,
+            displayId: StringId.ZenithPublisherReconnectReasonDisplay_PassportTokenFailure,
             normal: false,
         },
         SocketOpenFailure: {
