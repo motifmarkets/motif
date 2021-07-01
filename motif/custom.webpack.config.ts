@@ -91,6 +91,10 @@ declare interface DevServer extends WebpackDevServer {
  */
 
 function customizeWebpackConfig(config: webpack.WebpackOptionsNormalized) {
+    console.log(new Date().toLocaleTimeString());
+    console.log('Pre');
+    console.log(config);
+
     let development: boolean;
     if (config.mode === undefined) {
         config.mode = productionMode;
@@ -100,11 +104,14 @@ function customizeWebpackConfig(config: webpack.WebpackOptionsNormalized) {
     }
     updateRules(config, development);
     updatePlugins(config, development);
+    updateDevTools(config, development);
 
     if (development) {
         updateDevServer(config);
     }
 
+    console.log('Post');
+    console.log(config);
     return config;
 }
 
@@ -194,6 +201,12 @@ function addPluginForJavaScriptObfuscator(plugins: (
 ) {
     // const plugin = new JavaScriptObfuscator(getOptionsByPreset('default'), []);
     // plugins.push(plugin);
+}
+
+function updateDevTools(config: webpack.WebpackOptionsNormalized, development: boolean) {
+    if (!development) {
+        config.devtool = 'source-map';
+    }
 }
 
 function updateDevServer(config: webpack.WebpackOptionsNormalized) {
