@@ -11,8 +11,10 @@
 @import './partials/caption-followed-by-input';
 
 :host {
-    height: 100%;
     display: block;
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
 }
 
 #mainSection {

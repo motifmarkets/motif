@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, InjectionToken } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { ColorScheme, CommandRegisterService, SettingsService } from 'src/core/internal-api';
 import { Json, JsonElement, MultiEvent } from 'src/sys/internal-api';
@@ -14,6 +14,8 @@ import { DitemFrame } from '../ditem-frame';
 
 @Directive()
 export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFrame.ComponentAccess, DitemComponent {
+    private readonly _rootHtmlElement: HTMLElement;
+
     private _focused = false;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -23,14 +25,18 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFra
 
     abstract get ditemFrame(): BuiltinDitemFrame;
     get container() { return this._container; }
+    get rootHtmlElement() { return this._rootHtmlElement; }
     get focused() { return this._focused; }
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         private readonly _container: ComponentContainer,
+        private readonly _elRef: ElementRef,
         private readonly _settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
     ) {
+        this._rootHtmlElement = this._elRef.nativeElement;
+
         this._container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
 
         this._container.addEventListener('show', this._containerShownEventListener);
@@ -60,6 +66,8 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFra
     public processPrimaryChanged() {
         // descendants can override as necessary
     }
+
+    protected get elRef() { return this._elRef; }
 
     protected initialise() {
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(

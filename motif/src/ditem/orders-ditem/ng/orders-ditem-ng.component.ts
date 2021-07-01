@@ -6,7 +6,7 @@
 
 import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, Inject, OnDestroy, ViewChild, ViewContainerRef
+    ComponentFactoryResolver, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
@@ -62,6 +62,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -69,7 +70,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolsNgService: SymbolsNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new OrdersDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);

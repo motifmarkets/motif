@@ -9,6 +9,9 @@
 @import './partials/centered-toolbar-group-mixin';
 
 :host {
+    display: block;
+    position: absolute;
+    overflow: hidden;
     height: 100%;
 }
 

@@ -7,8 +7,10 @@
 @import 'partials/variables';
 
 :host {
-    width: max-content;
     display: flex;
+    position: absolute;
+    overflow: hidden;
+    width: max-content;
     flex-direction: column;
 }
 

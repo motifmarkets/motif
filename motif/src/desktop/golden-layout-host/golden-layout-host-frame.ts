@@ -6,13 +6,14 @@
 
 import {
     ComponentContainer,
-    ComponentItemConfig, ContentItem,
-    GoldenLayout,
+    ComponentItemConfig,
+    ContentItem,
     Json,
     JsonValue,
     LayoutConfig,
     LayoutManager,
-    ResolvedLayoutConfig
+    ResolvedLayoutConfig,
+    VirtualLayout
 } from 'golden-layout';
 import { SessionInfoService } from 'src/component-services/internal-api';
 import { ExtensionsAccessService } from 'src/content/internal-api';
@@ -37,7 +38,7 @@ import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from
 export class GoldenLayoutHostFrame {
     constructor(
         private readonly _componentAccess: GoldenLayoutHostFrame.ComponentAccess,
-        private readonly _goldenLayout: GoldenLayout,
+        private readonly _goldenLayout: VirtualLayout,
         private readonly _defaultLayoutConfig: SessionInfoService.DefaultLayout,
         private readonly _extensionsAccessService: ExtensionsAccessService,
         private readonly _desktopAccessService: DesktopAccessService,

@@ -7,6 +7,8 @@
 import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
 
+    ElementRef,
+
     Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
@@ -63,13 +65,14 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         private _resolver: ComponentFactoryResolver,
         desktopAccessNgService: DesktopAccessNgService,
         pulseService: CoreNgService
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new DepthDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);

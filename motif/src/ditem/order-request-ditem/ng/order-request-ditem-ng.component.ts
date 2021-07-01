@@ -99,15 +99,15 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
 
     constructor(
         cdr: ChangeDetectorRef,
-        private _elRef: ElementRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new OrderRequestDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
@@ -150,11 +150,11 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
             this.hostHeight = HtmlTypes.Height.MaxContent;
         } else {
             if (this.stepId === OrderRequestStepFrame.StepId.Pad) {
-                const hostWidth = this._elRef.nativeElement.offsetWidth;
+                const hostWidth = this.elRef.nativeElement.offsetWidth;
                 if (hostWidth > 0) {
                     this.hostWidth = numberToPixels(hostWidth);
                 }
-                const hostHeight = this._elRef.nativeElement.offsetHeight;
+                const hostHeight = this.elRef.nativeElement.offsetHeight;
                 if (hostHeight > 0) {
                     this.hostHeight = numberToPixels(hostHeight);
                 }
