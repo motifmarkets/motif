@@ -11,6 +11,8 @@ import {
     Component,
     ComponentFactoryResolver,
 
+    ElementRef,
+
     Inject,
     OnDestroy,
     ViewChild,
@@ -55,6 +57,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -62,7 +65,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         adiNgService: AdiNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
         this._frame = new SettingsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
 

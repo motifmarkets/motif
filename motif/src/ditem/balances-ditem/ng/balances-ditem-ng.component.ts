@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
@@ -41,12 +41,13 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         pulseService: CoreNgService
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BalancesDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { TableNgComponent } from 'src/content/ng-api';
@@ -36,12 +36,13 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         pulseService: CoreNgService
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BrokerageAccountsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);

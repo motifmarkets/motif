@@ -4,6 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
+:host {
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
+}
+
 #titlePara {
     font-size: larger;
 }

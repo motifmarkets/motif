@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostBinding,
     Inject,
     OnDestroy,
@@ -55,13 +56,14 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new ExtensionsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);

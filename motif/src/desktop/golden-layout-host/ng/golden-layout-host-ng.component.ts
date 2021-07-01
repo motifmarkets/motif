@@ -11,18 +11,18 @@ import {
     Component,
     ComponentRef,
     ElementRef,
-    EmbeddedViewRef,
     HostListener,
     OnDestroy,
-
+    ViewChild,
+    ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
 import {
     ComponentContainer,
-    ComponentItem,
-    GoldenLayout,
     JsonValue,
-    ResolvedComponentItemConfig
+    LogicalZIndex,
+    ResolvedComponentItemConfig,
+    VirtualLayout
 } from 'golden-layout';
 import { SessionInfoNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { ExtensionId } from 'src/content/internal-api';
@@ -49,7 +49,7 @@ import {
     getElementDocumentPosition,
     Json,
     MultiEvent,
-    UnreachableCaseError
+    numberToPixels, UnreachableCaseError
 } from 'src/sys/internal-api';
 import { FrameExtensionsAccessService } from '../frame-extension-access-service';
 import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
@@ -63,9 +63,11 @@ import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
     encapsulation: ViewEncapsulation.None,
 })
 export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostFrame.ComponentAccess {
+    @ViewChild('componentsViewContainer', { read: ViewContainerRef, static: true }) private _componentsViewContainerRef: ViewContainerRef;
 
     private readonly _frame: GoldenLayoutHostFrame;
-    private readonly _goldenLayout: GoldenLayout;
+    private readonly _componentsParentHtmlElement: HTMLElement;
+    private readonly _virtualLayout: VirtualLayout;
 
     private readonly _containerMap = new Map<ComponentContainer, GoldenLayoutHostNgComponent.ContainedDitemComponent>();
 
@@ -74,6 +76,7 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
     private readonly _extensionsAccessService: FrameExtensionsAccessService;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private _componentsParentBoundingClientRect: DOMRect = new DOMRect();
 
     get frame() { return this._frame; }
 
@@ -87,15 +90,20 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
     ) {
+        this._componentsParentHtmlElement = this._elRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
         this._extensionsAccessService = extensionsAccessNgService.service;
 
-        this._goldenLayout = new GoldenLayout(this._elRef.nativeElement);
-        this._goldenLayout.getComponentEvent = (container, itemConfig) => this.handleGetComponentEvent(container, itemConfig);
-        this._goldenLayout.releaseComponentEvent = (container, component) => this.handleReleaseComponentEvent(container, component);
+        this._virtualLayout = new VirtualLayout(
+            this._componentsParentHtmlElement,
+            this._bindComponentEventListener,
+            this._unbindComponentEventListener
+        );
 
-        this._frame = new GoldenLayoutHostFrame(this, this._goldenLayout, sessionNgService.service.defaultLayout,
+        this._virtualLayout.beforeVirtualRectingEvent = (count) => this.handleBeforeVirtualRectingEvent(count);
+
+        this._frame = new GoldenLayoutHostFrame(this, this._virtualLayout, sessionNgService.service.defaultLayout,
             this._extensionsAccessService, desktopAccessNgService.service);
 
         this.registerDitemComponents();
@@ -107,18 +115,18 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         const { left: layoutLeft, top: layoutTop} = getElementDocumentPosition(this._elRef.nativeElement);
         const bodyWidth = document.body.offsetWidth;
         const bodyHeight = document.body.offsetHeight;
-        this._goldenLayout.setSize(bodyWidth - layoutLeft, bodyHeight - layoutTop);
+        this._virtualLayout.setSize(bodyWidth - layoutLeft, bodyHeight - layoutTop);
     }
 
     ngOnDestroy() {
         this._frame.finalise();
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-        this._goldenLayout.destroy();
+        this._virtualLayout.destroy();
     }
 
     // Component Access functions
     public getDitemFrameByComponentId(componentId: string): DitemFrame | undefined {
-        const componentItem = this._goldenLayout.findFirstComponentItemById(componentId);
+        const componentItem = this._virtualLayout.findFirstComponentItemById(componentId);
         if (componentItem === undefined) {
             return undefined;
         } else {
@@ -161,7 +169,24 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         return result;
     }
 
-    private handleGetComponentEvent(container: ComponentContainer, itemConfig: ResolvedComponentItemConfig): ComponentItem.Component {
+    private readonly _bindComponentEventListener =
+        (container: ComponentContainer, itemConfig: ResolvedComponentItemConfig) => this.handleBindComponentEvent(container, itemConfig);
+    private readonly _unbindComponentEventListener =
+        (container: ComponentContainer) => this.handleUnbindComponentEvent(container);
+
+    private handleBindComponentEvent(
+        componentContainer: ComponentContainer,
+        itemConfig: ResolvedComponentItemConfig
+    ): ComponentContainer.BindableComponent {
+
+        componentContainer.virtualRectingRequiredEvent =
+            (container, width, height) => this.handleContainerVirtualRectingRequiredEvent(container, width, height);
+        componentContainer.virtualVisibilityChangeRequiredEvent =
+            (container, visible) => this.handleContainerVirtualVisibilityChangeRequiredEvent(container, visible);
+        componentContainer.virtualZIndexChangeRequiredEvent =
+            (container, logicalZIndex, defaultZIndex) =>
+                this.handleContainerVirtualZIndexChangeRequiredEvent(container, logicalZIndex, defaultZIndex);
+
         const parseResult = this.parseGoldenLayoutComponentType(itemConfig.componentType);
         const componentDefinition = parseResult.definition;
 
@@ -177,6 +202,9 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
             }
         }
 
+        let containedDitemComponent: GoldenLayoutHostNgComponent.ContainedDitemComponent;
+        let component: ComponentContainer.Component;
+
         if (parseResult.errorText !== undefined) {
             const placeheld: PlaceholderDitemFrame.Placeheld = {
                 definition: componentDefinition,
@@ -185,18 +213,35 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
                 reason: parseResult.errorText,
                 invalidReason: undefined,
             };
-            return this.getPlaceholderComponent(container, placeheld);
+            const builtinComponentRef = this.attachPlaceholderComponent(componentContainer, placeheld);
+            containedDitemComponent = {
+                builtinComponentRef,
+                extensionComponent: undefined,
+            };
+            component = builtinComponentRef.instance;
         } else {
             switch (componentDefinition.constructionMethodId) {
-                case DitemComponent.ConstructionMethodId.Invalid:
+                case DitemComponent.ConstructionMethodId.Invalid: {
                     throw new AssertInternalError('GLHCHGCE78533009');
-                case DitemComponent.ConstructionMethodId.Builtin1:
-                    return this.getBuiltinComponent(container, componentDefinition);
+                }
+                case DitemComponent.ConstructionMethodId.Builtin1: {
+                    const builtinComponentRef = this.attachBuiltinComponent(componentContainer, componentDefinition);
+                    containedDitemComponent = {
+                        builtinComponentRef,
+                        extensionComponent: undefined,
+                    };
+                    component = builtinComponentRef.instance;
+                    break;
+                }
                 case DitemComponent.ConstructionMethodId.Extension1: {
-                    const getComponentResult = this.getExtensionComponent(container, componentDefinition);
-                    const component = getComponentResult.component;
-                    if (component !== undefined) {
-                        return component;
+                    const getComponentResult = this.attachExtensionComponent(componentContainer, componentDefinition);
+                    const extensionComponent = getComponentResult.component;
+                    if (extensionComponent !== undefined) {
+                        containedDitemComponent = {
+                            builtinComponentRef: undefined,
+                            extensionComponent,
+                        };
+                        component = extensionComponent;
                     } else {
                         // Need to create a placeholder
                         const errorText = getComponentResult.errorText;
@@ -209,16 +254,31 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
                             reason,
                             invalidReason: undefined,
                         };
-                        return this.getPlaceholderComponent(container, placeheld);
+
+                        const builtinComponentRef = this.attachPlaceholderComponent(componentContainer, placeheld);
+
+                        containedDitemComponent = {
+                            builtinComponentRef,
+                            extensionComponent: undefined,
+                        };
+                        component = builtinComponentRef.instance;
                     }
+                    break;
                 }
                 default:
                     throw new UnreachableCaseError('GLHCHGCEU199533', componentDefinition.constructionMethodId);
             }
         }
+
+        this._containerMap.set(componentContainer, containedDitemComponent);
+
+        return {
+            component,
+            virtual: true,
+        };
     }
 
-    private handleReleaseComponentEvent(container: ComponentContainer, component: ComponentItem.Component) {
+    private handleUnbindComponentEvent(container: ComponentContainer) {
         const containedDitemComponent = this._containerMap.get(container);
         if (containedDitemComponent === undefined) {
             const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
@@ -226,11 +286,11 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         } else {
             const componentRef = containedDitemComponent.builtinComponentRef;
             if (componentRef !== undefined) {
-                this.releaseBuiltinComponent(container, componentRef);
+                this.detachBuiltinComponent(componentRef);
             } else {
                 const extensionDitemComponent = containedDitemComponent.extensionComponent;
                 if (extensionDitemComponent !== undefined) {
-                    this.releaseExtensionComponent(container, extensionDitemComponent);
+                    this.detachExtensionComponent(extensionDitemComponent);
                 } else {
                     const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
                     throw new AssertInternalError('GLHCHRCEE313122', componentTypeAsStr);
@@ -238,6 +298,85 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
             }
 
             this._containerMap.delete(container);
+        }
+    }
+
+    private handleBeforeVirtualRectingEvent(count: number) {
+        this._componentsParentBoundingClientRect = this._componentsParentHtmlElement.getBoundingClientRect();
+    }
+
+    private handleContainerVirtualRectingRequiredEvent(container: ComponentContainer, width: number, height: number) {
+        const containerBoundingClientRect = container.element.getBoundingClientRect();
+        const left = containerBoundingClientRect.left - this._componentsParentBoundingClientRect.left;
+        const top = containerBoundingClientRect.top - this._componentsParentBoundingClientRect.top;
+
+        const containedDitemComponent = this._containerMap.get(container);
+        if (containedDitemComponent === undefined) {
+            const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+            throw new AssertInternalError('GLHCHCVRREF8883222', componentTypeAsStr);
+        } else {
+            const componentRef = containedDitemComponent.builtinComponentRef;
+            let componentRootHtmlElement: HTMLElement;
+            if (componentRef !== undefined) {
+                componentRootHtmlElement = componentRef.instance.rootHtmlElement;
+            } else {
+                const extensionDitemComponent = containedDitemComponent.extensionComponent;
+                if (extensionDitemComponent !== undefined) {
+                    componentRootHtmlElement = extensionDitemComponent.rootHtmlElement;
+                } else {
+                    const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+                    throw new AssertInternalError('GLHCHCVRREU8883222', componentTypeAsStr);
+                }
+            }
+            this.setComponentPositionAndSize(componentRootHtmlElement, left, top, width, height);
+        }
+    }
+
+    private handleContainerVirtualVisibilityChangeRequiredEvent(container: ComponentContainer, visible: boolean) {
+        const containedDitemComponent = this._containerMap.get(container);
+        if (containedDitemComponent === undefined) {
+            const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+            throw new AssertInternalError('GLHCHCVVCREF8883222', componentTypeAsStr);
+        } else {
+            const componentRef = containedDitemComponent.builtinComponentRef;
+            let componentRootHtmlElement: HTMLElement;
+            if (componentRef !== undefined) {
+                componentRootHtmlElement = componentRef.instance.rootHtmlElement;
+            } else {
+                const extensionDitemComponent = containedDitemComponent.extensionComponent;
+                if (extensionDitemComponent !== undefined) {
+                    componentRootHtmlElement = extensionDitemComponent.rootHtmlElement;
+                } else {
+                    const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+                    throw new AssertInternalError('GLHCHCVVCREU8883222', componentTypeAsStr);
+                }
+            }
+            this.setComponentVisibility(componentRootHtmlElement, visible);
+        }
+    }
+
+    private handleContainerVirtualZIndexChangeRequiredEvent(container: ComponentContainer,
+        logicalZIndex: LogicalZIndex, defaultZIndex: string
+    ) {
+        const containedDitemComponent = this._containerMap.get(container);
+        if (containedDitemComponent === undefined) {
+            const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+            throw new AssertInternalError('GLHCHCVZICREF8883222', componentTypeAsStr);
+        } else {
+            const componentRef = containedDitemComponent.builtinComponentRef;
+            let componentRootHtmlElement: HTMLElement;
+            if (componentRef !== undefined) {
+                componentRootHtmlElement = componentRef.instance.rootHtmlElement;
+            } else {
+                const extensionDitemComponent = containedDitemComponent.extensionComponent;
+                if (extensionDitemComponent !== undefined) {
+                    componentRootHtmlElement = extensionDitemComponent.rootHtmlElement;
+                } else {
+                    const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
+                    throw new AssertInternalError('GLHCHCVZICREU8883222', componentTypeAsStr);
+                }
+            }
+            this.setComponentZIndex(componentRootHtmlElement, defaultZIndex);
         }
     }
 
@@ -252,6 +391,25 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
             const name = BuiltinDitemFrame.BuiltinType.idToName(id);
             factoryService.registerDitemComponentType(name, type);
         }
+    }
+
+    private setComponentPositionAndSize(componentRootHtmlElement: HTMLElement, left: number, top: number, width: number, height: number) {
+        componentRootHtmlElement.style.left = numberToPixels(left);
+        componentRootHtmlElement.style.top = numberToPixels(top);
+        componentRootHtmlElement.style.width = numberToPixels(width);
+        componentRootHtmlElement.style.height = numberToPixels(height);
+    }
+
+    private setComponentVisibility(componentRootHtmlElement: HTMLElement, visible: boolean) {
+        if (visible) {
+            componentRootHtmlElement.style.display = '';
+        } else {
+            componentRootHtmlElement.style.display = 'none';
+        }
+    }
+
+    private setComponentZIndex(componentRootHtmlElement: HTMLElement, value: string) {
+        componentRootHtmlElement.style.zIndex = value;
     }
 
     private applySettings() {
@@ -303,37 +461,45 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         return result;
     }
 
-    private getBuiltinComponent(
+    private attachBuiltinComponent(
         container: ComponentContainer,
         componentDefinition: DitemComponent.Definition,
     ) {
         const componentTypeName = componentDefinition.componentTypeName;
         const componentRef = this._ditemComponentFactoryNgService.createComponent(componentTypeName, container);
 
-        this._appRef.attachView(componentRef.hostView);
+        if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
+            this._componentsViewContainerRef.insert(componentRef.hostView);
+        } else {
+            this._appRef.attachView(componentRef.hostView);
+            const component = componentRef.instance;
+            const componentRootElement = component.rootHtmlElement;
+            this._componentsParentHtmlElement.appendChild(componentRootElement);
+        }
 
-        const componentRootElement = (componentRef.hostView as EmbeddedViewRef<unknown>).rootNodes[0] as HTMLElement;
-        container.element.appendChild(componentRootElement);
-
-        const containedDitemComponent: GoldenLayoutHostNgComponent.ContainedDitemComponent = {
-            builtinComponentRef: componentRef,
-            extensionComponent: undefined,
-        };
-
-        this._containerMap.set(container, containedDitemComponent);
-
-        return componentRef.instance;
+        return componentRef;
     }
 
-    private releaseBuiltinComponent(container: ComponentContainer, componentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective>) {
-        const componentRootElement = (componentRef.hostView as EmbeddedViewRef<unknown>).rootNodes[0] as HTMLElement;
-        container.element.removeChild(componentRootElement);
+    private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective>) {
+        const hostView = componentRef.hostView;
 
-        this._appRef.detachView(componentRef.hostView);
+        if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
+            const viewRefIndex = this._componentsViewContainerRef.indexOf(hostView);
+            if (viewRefIndex < 0) {
+                throw new Error('Could not unbind component. ViewRef not found');
+            }
+            this._componentsViewContainerRef.remove(viewRefIndex);
+        } else {
+            const component = componentRef.instance;
+            const componentRootElement = component.rootHtmlElement;
+            this._componentsParentHtmlElement.removeChild(componentRootElement);
+            this._appRef.detachView(hostView);
+        }
+
         componentRef.destroy();
     }
 
-    private getExtensionComponent(container: ComponentContainer, componentDefinition: DitemComponent.Definition) {
+    private attachExtensionComponent(container: ComponentContainer, componentDefinition: DitemComponent.Definition) {
         const getComponentResult = this._extensionsAccessService.getFrame(container,
             componentDefinition.extensionId, componentDefinition.componentTypeName
         );
@@ -341,32 +507,27 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         const extensionDitemComponent = getComponentResult.component;
         if (extensionDitemComponent !== undefined) {
             const frameRootHtmlElement = extensionDitemComponent.rootHtmlElement;
-            container.element.appendChild(frameRootHtmlElement);
-
-            const containedDitemComponent: GoldenLayoutHostNgComponent.ContainedDitemComponent = {
-                builtinComponentRef: undefined,
-                extensionComponent: extensionDitemComponent,
-            };
-
-            this._containerMap.set(container, containedDitemComponent);
+            this._componentsParentHtmlElement.appendChild(frameRootHtmlElement);
         }
+
         return getComponentResult;
     }
 
-    private releaseExtensionComponent(container: ComponentContainer, extensionDitemComponent: ExtensionDitemComponent) {
+    private detachExtensionComponent(extensionDitemComponent: ExtensionDitemComponent) {
         const frameRootHtmlElement = extensionDitemComponent.rootHtmlElement;
-        container.element.removeChild(frameRootHtmlElement);
+        this._componentsParentHtmlElement.removeChild(frameRootHtmlElement);
 
         this._extensionsAccessService.releaseFrame(extensionDitemComponent);
     }
 
-    private getPlaceholderComponent(container: ComponentContainer, placeHeld: PlaceholderDitemFrame.Placeheld) {
+    private attachPlaceholderComponent(container: ComponentContainer, placeHeld: PlaceholderDitemFrame.Placeheld) {
         const placeholderDefinition = this.createPlaceholderComponentDefinition();
-        const component = this.getBuiltinComponent(container, placeholderDefinition) as PlaceholderDitemNgComponent;
+        const builtinComponentRef = this.attachBuiltinComponent(container, placeholderDefinition);
+        const component = builtinComponentRef.instance as PlaceholderDitemNgComponent;
 
         component.ditemFrame.setPlaceheld(placeHeld);
 
-        return component;
+        return builtinComponentRef;
     }
 }
 
@@ -375,6 +536,8 @@ export namespace GoldenLayoutHostNgComponent {
         builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective> | undefined;
         extensionComponent: ExtensionDitemComponent | undefined;
     }
+
+    export const viewContainerRefActive = false;
 
     export const layoutColorSchemeItems: ColorScheme.ItemId[] = [
         ColorScheme.ItemId.Layout_Base,
