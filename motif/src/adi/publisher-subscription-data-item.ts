@@ -609,7 +609,7 @@ export namespace PublisherSubscriptionDataItem {
                 activatedOrOfflining: false,
                 activated: false,
                 dataItemOnline: false,
-                badnessReasonId: Badness.Reason.nullId,
+                badnessReasonId: Badness.ReasonId.PublisherSubscriptionState_Unexpected,
             },
             PublisherOnlineWaiting: {
                 id: SubscriptionStateId.PublisherOnlineWaiting,
@@ -625,7 +625,7 @@ export namespace PublisherSubscriptionDataItem {
                 activatedOrOfflining: false,
                 activated: false,
                 dataItemOnline: false,
-                badnessReasonId: Badness.Reason.nullId,
+                badnessReasonId: Badness.ReasonId.PublisherSubscriptionState_Unexpected,
             },
             RetryDelayWaiting: {
                 id: SubscriptionStateId.RetryDelayWaiting,
@@ -633,7 +633,7 @@ export namespace PublisherSubscriptionDataItem {
                 activatedOrOfflining: false,
                 activated: false,
                 dataItemOnline: false,
-                badnessReasonId: Badness.Reason.nullId,
+                badnessReasonId: Badness.ReasonId.PublisherSubscriptionState_Unexpected,
             },
             PublisherOfflining: {
                 id: SubscriptionStateId.PublisherOfflining,
@@ -706,7 +706,7 @@ export namespace PublisherSubscriptionDataItem {
 
         export function idToBadnessReasonId(id: Id) {
             const reasonId = infos[id].badnessReasonId;
-            if (reasonId === Badness.Reason.nullId) {
+            if (reasonId === Badness.ReasonId.PublisherSubscriptionState_Unexpected) {
                 throw new AssertInternalError('PSDISSITBRI4377277727');
             } else {
                 return reasonId;

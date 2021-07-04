@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { Account } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { Command, ProcessorCommandUiAction, UiAction } from 'src/core/internal-api';
 import { extStrings } from 'src/res/internal-api';

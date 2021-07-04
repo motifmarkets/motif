@@ -2845,8 +2845,6 @@ export namespace OrderTriggerType {
 export namespace FeedInfo {
     export type Id = FeedId;
 
-    export const nullFeedId = -1;
-
     interface Info {
         readonly id: Id;
         readonly classId: FeedClassId;

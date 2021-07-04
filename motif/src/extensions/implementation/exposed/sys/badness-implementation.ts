@@ -68,6 +68,8 @@ export namespace BadnessImplementation {
                     return BadnessApi.ReasonEnum.PublisherSubscriptionState_Synchronised;
                 case Badness.ReasonId.PublisherSubscriptionState_UnsubscribedSynchronised:
                     return BadnessApi.ReasonEnum.PublisherSubscriptionState_UnsubscribedSynchronised;
+                case Badness.ReasonId.PublisherSubscriptionState_Unexpected:
+                    return BadnessApi.ReasonEnum.PublisherSubscriptionState_Unexpected;
                 case Badness.ReasonId.PreUsable_Clear: return BadnessApi.ReasonEnum.PreUsable_Clear;
                 case Badness.ReasonId.PreUsable_Add: return BadnessApi.ReasonEnum.PreUsable_Add;
                 case Badness.ReasonId.ConnectionOffline: return BadnessApi.ReasonEnum.ConnectionOffline;
@@ -159,6 +161,8 @@ export namespace BadnessImplementation {
                     return Badness.ReasonId.PublisherSubscriptionState_Synchronised;
                 case BadnessApi.ReasonEnum.PublisherSubscriptionState_UnsubscribedSynchronised:
                     return Badness.ReasonId.PublisherSubscriptionState_UnsubscribedSynchronised;
+                case BadnessApi.ReasonEnum.PublisherSubscriptionState_Unexpected:
+                    return Badness.ReasonId.PublisherSubscriptionState_Unexpected;
                 case BadnessApi.ReasonEnum.PreUsable_Clear: return Badness.ReasonId.PreUsable_Clear;
                 case BadnessApi.ReasonEnum.PreUsable_Add: return Badness.ReasonId.PreUsable_Add;
                 case BadnessApi.ReasonEnum.ConnectionOffline: return Badness.ReasonId.ConnectionOffline;
