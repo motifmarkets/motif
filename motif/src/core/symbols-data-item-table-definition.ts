@@ -31,7 +31,7 @@ export class SymbolsDataItemTableDefinition extends SingleDataItemTableDefinitio
         super(listOrId);
     }
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof SymbolsDataItemTableRecordDefinitionList)) {
             throw new AssertInternalError('SDITDL99577482779');

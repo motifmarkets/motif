@@ -133,7 +133,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this.pushValues();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolsService.unsubscribeAllowedExchangeIdsChangedEvent(this._allowedExchangeIdsChangedSubscriptionId);
 
         this._fontFamilyUiAction.finalise();

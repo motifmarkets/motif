@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { GridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
@@ -91,7 +100,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         return this._modeId === EtoPriceQuotationDitemNgComponent.ModeId.LayoutEditor;
     }
 
-    protected initialise() {
+    protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         this._frame.initialise(this._watchContentComponent.frame, this._callPutContentComponent.frame, frameElement);
@@ -105,7 +114,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolEditUiAction.finalise();
         this._applySymbolUiAction.finalise();
         this._selectColumnsUiAction.finalise();

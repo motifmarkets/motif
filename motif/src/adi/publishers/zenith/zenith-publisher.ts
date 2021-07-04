@@ -92,7 +92,7 @@ export class ZenithPublisher extends Publisher {
         this._websocket.errorEvent = (errorType) => this.handleWebsocketErrorEvent(errorType);
     }
 
-    finalise(): boolean { // virtual
+    override finalise(): boolean { // virtual
         if (this._counterIntervalHandle !== undefined) {
             clearInterval(this._counterIntervalHandle);
             this._counterIntervalHandle = undefined;

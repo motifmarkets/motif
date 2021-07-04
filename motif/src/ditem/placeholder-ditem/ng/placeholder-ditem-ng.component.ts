@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, OnDestroy } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    InjectionToken,
+    OnDestroy
+} from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import { ColorScheme } from 'src/core/color-scheme';
@@ -74,7 +83,7 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
         delay1Tick(() => this.initialise());
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._frame.finalise();
         super.finalise();
     }
@@ -89,7 +98,7 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
         this._frame.save(element);
     }
 
-    protected applySettings() {
+    protected override applySettings() {
         this.invalidColor = this.settingsService.color.getFore(ColorScheme.ItemId.Caution_Error);
         this.markForCheck();
     }

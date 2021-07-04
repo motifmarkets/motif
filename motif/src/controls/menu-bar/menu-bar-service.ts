@@ -1062,7 +1062,7 @@ export namespace MenuBarService {
             super(MenuItem.TypeId.Command, defaultPosition);
         }
 
-        finalise() {
+        override finalise() {
             this.disconnect();
         }
 

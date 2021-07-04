@@ -27,7 +27,7 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
 
     private _pushTextEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as StringUiAction; }
+    public override get uiAction() { return super.uiAction as StringUiAction; }
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -56,7 +56,7 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
         this.uiAction.cancelEdit();
     }
 
-    protected setUiAction(action: StringUiAction) {
+    protected override setUiAction(action: StringUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: StringUiAction.PushEventHandlersInterface = {
@@ -67,7 +67,7 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushTextEventsSubscriptionId);
         super.finalise();
     }

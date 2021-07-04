@@ -78,7 +78,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
 
     private _value: boolean | undefined;
 
-    public get uiAction() { return super.uiAction as IconButtonUiAction; }
+    public override get uiAction() { return super.uiAction as IconButtonUiAction; }
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -121,12 +121,12 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         }
     }
 
-    protected applyStateId(newState: UiAction.StateId) {
+    protected override applyStateId(newState: UiAction.StateId) {
         super.applyStateId(newState);
         this.updateButtonClass();
     }
 
-    protected applySettingColors() {
+    protected override applySettingColors() {
         const bkgdColor = this.getBkgdColor(SvgButtonNgComponent.buttonColorItemId);
         const foreColor = this.getForeColor(SvgButtonNgComponent.buttonColorItemId);
         const selectedBorderForeColor = this.getForeColor(SvgButtonNgComponent.selectedBorderColorItemId);
@@ -138,7 +138,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this.markForCheck();
     }
 
-    protected setUiAction(action: IconButtonUiAction) {
+    protected override setUiAction(action: IconButtonUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: IconButtonUiAction.PushEventHandlersInterface = {
@@ -153,7 +153,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         }
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushFaButtonEventsSubscriptionId);
         super.finalise();
     }

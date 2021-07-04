@@ -67,7 +67,7 @@ export abstract class PublisherSubscriptionDataItem extends DataItem {
         }
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         switch (msg.typeId) {
             case DataMessageTypeId.Synchronised:
                 if (!(msg instanceof SynchronisedPublisherSubscriptionDataMessage)) {
@@ -111,18 +111,18 @@ export abstract class PublisherSubscriptionDataItem extends DataItem {
         }
     }
 
-    protected start() {
+    protected override start() {
         this.subscribeSubscription();
 
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         this.unsubscribeSubscription();
     }
 
     /** Used by DataMgr to determine whether a subscription can be cached */
-    protected getOnline() {
+    protected override getOnline() {
         return PublisherSubscriptionDataItem.SubscriptionState.idIsDataItemOnline(this._publisherSubscriptionStateId);
     }
 

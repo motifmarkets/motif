@@ -13,7 +13,7 @@ import { Holding } from './holding';
 export class BrokerageAccountHoldingsDataItem extends DataRecordsBrokerageAccountSubscriptionDataItem<Holding>
     implements BrokerageAccountGroupHoldingList {
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.Holdings) {
             super.processMessage(msg);
         } else {

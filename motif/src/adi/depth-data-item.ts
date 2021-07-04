@@ -72,7 +72,7 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    processSubscriptionPreOnline() { // virtual
+    override processSubscriptionPreOnline() { // virtual
         this.beginUpdate();
         try {
             this.clearOrders();
@@ -82,7 +82,7 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.Depth) {
             super.processMessage(msg);
 

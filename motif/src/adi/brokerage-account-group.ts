@@ -195,7 +195,7 @@ export class SingleBrokerageAccountGroup extends BrokerageAccountGroup {
         super(SingleBrokerageAccountGroup.typeId);
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         const accountKeyElement = element.newElement(SingleBrokerageAccountGroup.SingleJsonTag.AccountKey);
         this.accountKey.saveToJson(accountKeyElement);

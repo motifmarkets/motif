@@ -20,7 +20,7 @@ export class FeedTableDefinition extends SingleDataItemTableDefinition {
 
     private _feedTableRecordDefinitionList: FeedTableRecordDefinitionList;
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof FeedTableRecordDefinitionList)) {
             throw new AssertInternalError('FTDLRDL87875340', list.name);

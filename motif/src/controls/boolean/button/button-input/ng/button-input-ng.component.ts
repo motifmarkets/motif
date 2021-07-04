@@ -28,7 +28,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
 
     private get value() { return this._value; }
 
-    public get uiAction() { return super.uiAction as ButtonUiAction; }
+    public override get uiAction() { return super.uiAction as ButtonUiAction; }
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -66,7 +66,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         }
     }
 
-    protected setUiAction(action: ButtonUiAction) {
+    protected override setUiAction(action: ButtonUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BooleanUiAction.PushEventHandlersInterface = {
@@ -77,7 +77,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushButtonEventsSubscriptionId);
         super.finalise();
     }

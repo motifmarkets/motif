@@ -23,7 +23,7 @@ export class BrokerageAccountTableDefinition extends SingleDataItemTableDefiniti
 
     private _brokerageAccountTableRecordDefinitionList: BrokerageAccountTableRecordDefinitionList;
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof BrokerageAccountTableRecordDefinitionList)) {
             throw new AssertInternalError('BATDLRDL87875340', list.name);

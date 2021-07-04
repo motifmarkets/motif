@@ -37,12 +37,12 @@ export class BrokerageAccountGroupUiAction extends UiAction {
         this.notifyOptionsPush();
     }
 
-    subscribePushEvents(handlersInterface: BrokerageAccountGroupUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: BrokerageAccountGroupUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._brokerageAccountIdPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._brokerageAccountIdPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

@@ -27,7 +27,7 @@ export class HoldingTableValueSource extends DataRecordTableValueSource<Holding>
         super(firstFieldIndexOffset);
     }
 
-    activate() {
+    override activate() {
         this._holdingChangedEventSubscriptionId = this._holding.subscribeChangedEvent(
             (changedFieldIds) => this.handleHoldingChangedEvent(changedFieldIds)
         );
@@ -35,7 +35,7 @@ export class HoldingTableValueSource extends DataRecordTableValueSource<Holding>
         return super.activate();
     }
 
-    deactivate() {
+    override deactivate() {
         this._holding.unsubscribeChangedEvent(this._holdingChangedEventSubscriptionId);
         this._holdingChangedEventSubscriptionId = undefined;
 

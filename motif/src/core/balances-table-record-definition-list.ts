@@ -26,7 +26,7 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class BalancesTableRecordDefinitionList extends BrokerageAccountGroupDataRecordTableRecordDefinitionList<Balances> {
     private static _constructCount = 0;
 
-    get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupBalancesList; }
+    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupBalancesList; }
 
     constructor(private _adi: AdiService) {
         super(TableRecordDefinitionList.TypeId.Balances);

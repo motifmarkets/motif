@@ -67,7 +67,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         this.pushValues();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._reviewEnabledUiAction.finalise();
         this._defaultOrderTypeIdUiAction.finalise();
         this._defaultTimeInForceIdUiAction.finalise();

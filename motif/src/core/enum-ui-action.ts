@@ -37,12 +37,12 @@ export abstract class EnumUiAction extends UiAction {
         this.notifyFilterPush();
     }
 
-    subscribePushEvents(handlersInterface: EnumUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: EnumUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._enumPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._enumPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

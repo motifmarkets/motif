@@ -17,7 +17,7 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
 
     private _filter: readonly Integer[] | undefined;
 
-    protected get uiAction() { return super.uiAction as EnumUiAction; }
+    protected override get uiAction() { return super.uiAction as EnumUiAction; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -59,7 +59,7 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         }
     }
 
-    protected setUiAction(action: EnumUiAction) {
+    protected override setUiAction(action: EnumUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: EnumUiAction.PushEventHandlersInterface = {
@@ -74,7 +74,7 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         this.applyFilter(action.filter);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushEnumEventsSubscriptionId);
         super.finalise();
     }

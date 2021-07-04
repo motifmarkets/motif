@@ -33,7 +33,7 @@ export class CloseIntervalHistorySequenceSeries extends IntervalHistorySequenceS
         );
     }
 
-    finalise() {
+    override finalise() {
         this.intervalSequencer.unsubscribePointInsertedEvent(this._pointInsertedEventSubscriptionId);
         this._pointInsertedEventSubscriptionId = undefined;
         this.intervalSequencer.unsubscribePointUpdatedEvent(this._pointUpdatedEventSubscriptionId);

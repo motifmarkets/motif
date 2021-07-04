@@ -28,7 +28,7 @@ export class FeedsFrame extends ContentFrame {
         this.newTable(false);
     }
 
-    finalise() {
+    override finalise() {
         this.checkUnsubscribeRecordListBadnessChangeEvent();
         super.finalise();
     }

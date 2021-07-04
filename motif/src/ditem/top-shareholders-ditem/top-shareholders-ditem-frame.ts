@@ -55,11 +55,11 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    public finalise() {
+    public override finalise() {
         super.finalise();
     }
 
-    save(config: JsonElement) {
+    override save(config: JsonElement) {
         super.save(config);
 
         const contentElement = config.newElement(TopShareholdersDitemFrame.JsonName.content);
@@ -88,7 +88,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, SelfInitiated: boolean): boolean {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, SelfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, SelfInitiated);
         if (!this._componentAccess.canNewTableOnLitIvemIdApply()) {
             return false;

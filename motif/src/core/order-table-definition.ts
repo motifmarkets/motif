@@ -24,7 +24,7 @@ export class OrderTableDefinition extends SingleDataItemTableDefinition {
         super(listOrId);
     }
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof OrderTableRecordDefinitionList)) {
             throw new AssertInternalError('OTDLRDL449388227');

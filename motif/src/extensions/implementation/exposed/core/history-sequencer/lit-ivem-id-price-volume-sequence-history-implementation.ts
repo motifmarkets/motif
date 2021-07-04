@@ -22,7 +22,7 @@ import { SequenceHistoryImplementation } from './sequence-history-implementation
 export class LitIvemIdPriceVolumeSequenceHistoryImplementation extends SequenceHistoryImplementation
     implements LitIvemIdPriceVolumeSequenceHistoryApi {
 
-    get actual() { return this._actual; }
+    override get actual() { return this._actual; }
 
     get active() { return this._actual.active; }
     get litIvemId() { return LitIvemIdImplementation.toApi(this._actual.litIvemId); }
@@ -31,7 +31,7 @@ export class LitIvemIdPriceVolumeSequenceHistoryImplementation extends SequenceH
         super(_actual);
     }
 
-    finalise() {
+    override finalise() {
         this.setSequencer(undefined);
         this.deactivate();
 

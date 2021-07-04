@@ -102,13 +102,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise(): void {
+    override finalise(): void {
         this._holdingsTableFrame.closeTable(false);
         this._balancesTableFrame.closeTable(false);
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const holdingsElement = element.newElement(
@@ -121,7 +121,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         this._balancesTableFrame.saveLayoutConfig(balancesElement);
     }
 
-    protected applyBrokerageAccountGroup(
+    protected override applyBrokerageAccountGroup(
         group: BrokerageAccountGroup | undefined,
         selfInitiated: boolean
     ): boolean {

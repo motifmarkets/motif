@@ -225,15 +225,15 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         this._reviewZenithMessageActiveUiAction.pushValue(value);
     }
 
-    public processPrimaryChanged() {
+    public override processPrimaryChanged() {
         this.pushPrimarySelectState();
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkedSelectState();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkedSelectState();
     }
 
@@ -276,7 +276,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         }
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._stepComponentList.changes.subscribe(() => this.handleStepComponentChange());
         const componentStateElement = this.getInitialComponentStateJsonElement();
         this._frame.initialise(componentStateElement);
@@ -294,7 +294,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._primaryUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
         this._toggleAccountLinkingUiAction.finalise();
@@ -318,7 +318,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         this._frame.save(frameElement);
     }
 
-    protected applySettings() {
+    protected override applySettings() {
         this.panelDividerColor = this.settingsService.color.getFore(ColorScheme.ItemId.Panel_Divider);
         this.markForCheck();
         super.applySettings();

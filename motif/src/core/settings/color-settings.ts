@@ -25,14 +25,14 @@ export class ColorSettings extends SettingsGroup {
         super(SettingsGroup.Type.Id.Color, ColorSettings.groupName);
     }
 
-    beginChanges() {
+    override beginChanges() {
         this._beginChangeCount++;
         if (this._beginChangeCount === 1) {
             super.beginChanges();
         }
     }
 
-    endChanges() {
+    override endChanges() {
         if (--this._beginChangeCount === 0) {
             if (this._changed) {
                 this.resolve();
@@ -86,7 +86,7 @@ export class ColorSettings extends SettingsGroup {
         }
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
         element.setString(ColorSettings.JsonName.BaseName, this._baseScheme.name);
         element.setBoolean(ColorSettings.JsonName.BaseIsBuiltIn, this._baseScheme.builtIn);

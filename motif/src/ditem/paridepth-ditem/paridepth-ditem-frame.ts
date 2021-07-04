@@ -81,7 +81,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const watchlistElement = element.newElement(ParidepthDitemFrame.JsonName.watchlist);
@@ -174,7 +174,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         setTimeout(() => this._depthFrame.initialiseWidths(), 3000);
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, SelfInitiated: boolean): boolean {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, SelfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, SelfInitiated);
         if (litIvemId === undefined) {
             return false;

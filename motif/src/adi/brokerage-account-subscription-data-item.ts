@@ -64,7 +64,7 @@ export class BrokerageAccountSubscriptionDataItem extends SubscribabilityExtentS
         }
     }
 
-    protected start() {
+    protected override start() {
         const accountsDataDefinition = new BrokerageAccountsDataDefinition();
         this._accountsDataItem = this.subscribeDataItem(
             accountsDataDefinition
@@ -88,7 +88,7 @@ export class BrokerageAccountSubscriptionDataItem extends SubscribabilityExtentS
         }
     }
 
-    protected stop() {
+    protected override stop() {
         super.stop();
 
         this.clearAccount();
@@ -112,7 +112,7 @@ export class BrokerageAccountSubscriptionDataItem extends SubscribabilityExtentS
     /** Give descendants an opportunity to initialise data using Feed */
     protected processAccountBecameAvailable() {}
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         // Normally would priortise badness from base class.  However subscription cannot come online without Feed or Feed Data
         // So if Feed or Feed Data not available, prioritise this badness
         if (this._account === undefined) {

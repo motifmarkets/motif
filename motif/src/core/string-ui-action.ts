@@ -30,12 +30,12 @@ export class StringUiAction extends UiAction {
         this.pushAutoAcceptance();
     }
 
-    subscribePushEvents(handlersInterface: StringUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: StringUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._stringPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._stringPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

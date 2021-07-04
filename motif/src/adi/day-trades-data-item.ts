@@ -89,7 +89,7 @@ export class DayTradesDataItem extends DataItem {
     //     this._listChangeMultiEvent.unsubscribe(subscriptionId);
     // }
 
-    protected start() {
+    protected override start() {
         if (this._date === undefined) {
             const latestDefinition = new LatestTradingDayTradesDataDefinition();
             latestDefinition.litIvemId = this._litIvemId;
@@ -124,7 +124,7 @@ export class DayTradesDataItem extends DataItem {
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         if (this._dataItemRecordAccess !== undefined) {
             this._dataItemRecordAccess.unsubscribeListChangeEvent(this._listChangeSubscriptionId);
             this._dataItemRecordAccess.unsubscribeRecordChangeEvent(this._recordChangeSubscriptionId);
@@ -144,7 +144,7 @@ export class DayTradesDataItem extends DataItem {
         return this._dataItemRecordAccess.badness;
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this._recordCount;

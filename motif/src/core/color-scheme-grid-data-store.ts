@@ -127,7 +127,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemId);
         }
 
-        GetFieldValue(record: Record): IntegerRenderValue {
+        override GetFieldValue(record: Record): IntegerRenderValue {
             return new IntegerRenderValue(record.itemId);
         }
     }
@@ -142,7 +142,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.name);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             return new StringRenderValue(ColorScheme.Item.idToName(record.itemId));
         }
     }
@@ -157,7 +157,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.display);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             return new StringRenderValue(ColorScheme.Item.idToDisplay(record.itemId));
         }
     }
@@ -172,7 +172,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemBkgdColorText);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             return new StringRenderValue(this.colorSettings.getItemBkgd(record.itemId));
         }
     }
@@ -187,7 +187,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemBkgdColorText);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             const stateId = this.colorSettings.getBkgdItemStateId(record.itemId);
             let attribute: RenderValue.GreyedOutAttribute | undefined;
             let value: string;
@@ -230,7 +230,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemForeColorText);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             return new StringRenderValue(this.colorSettings.getItemFore(record.itemId));
         }
     }
@@ -245,7 +245,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemForeColorText);
         }
 
-        GetFieldValue(record: Record): StringRenderValue {
+        override GetFieldValue(record: Record): StringRenderValue {
             const stateId = this.colorSettings.getForeItemStateId(record.itemId);
             let attribute: RenderValue.GreyedOutAttribute | undefined;
             let value: string;
@@ -288,7 +288,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemBkgdColor);
         }
 
-        GetFieldValue(record: Record): ColorRenderValue {
+        override GetFieldValue(record: Record): ColorRenderValue {
             return new ColorRenderValue(this.colorSettings.getItemBkgd(record.itemId));
         }
     }
@@ -303,7 +303,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemBkgdColor);
         }
 
-        GetFieldValue(record: Record): ColorRenderValue {
+        override GetFieldValue(record: Record): ColorRenderValue {
             return new ColorRenderValue(this.colorSettings.getBkgd(record.itemId));
         }
     }
@@ -318,7 +318,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemForeColor);
         }
 
-        GetFieldValue(record: Record): ColorRenderValue {
+        override GetFieldValue(record: Record): ColorRenderValue {
             return new ColorRenderValue(this.colorSettings.getItemFore(record.itemId));
         }
     }
@@ -333,7 +333,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.itemForeColor);
         }
 
-        GetFieldValue(record: Record): ColorRenderValue {
+        override GetFieldValue(record: Record): ColorRenderValue {
             return new ColorRenderValue(this.colorSettings.getFore(record.itemId));
         }
     }
@@ -348,7 +348,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.bkgdState);
         }
 
-        GetFieldValue(record: Record) {
+        override GetFieldValue(record: Record) {
             const stateId = this.colorSettings.getBkgdItemStateId(record.itemId);
             return new ColorSettingsItemStateIdRenderValue(stateId);
         }
@@ -364,7 +364,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.foreState);
         }
 
-        GetFieldValue(record: Record) {
+        override GetFieldValue(record: Record) {
             const stateId = this.colorSettings.getForeItemStateId(record.itemId);
             return new ColorSettingsItemStateIdRenderValue(stateId);
         }
@@ -380,7 +380,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.readability);
         }
 
-        GetFieldValue(record: Record): NumberRenderValue {
+        override GetFieldValue(record: Record): NumberRenderValue {
             if (ColorScheme.Item.idHasBkgd(record.itemId) && ColorScheme.Item.idHasFore(record.itemId)) {
                 const resolvedBkgdColor = this.colorSettings.getBkgd(record.itemId);
                 const resolvedForeColor = this.colorSettings.getFore(record.itemId);
@@ -402,7 +402,7 @@ export namespace ColorSchemeGridDataStore {
             super(scheme, FieldName.isReadable);
         }
 
-        GetFieldValue(record: Record): IsReadableRenderValue {
+        override GetFieldValue(record: Record): IsReadableRenderValue {
             if (ColorScheme.Item.idHasBkgd(record.itemId) && ColorScheme.Item.idHasFore(record.itemId)) {
                 const resolvedBkgdColor = this.colorSettings.getBkgd(record.itemId);
                 const resolvedForeColor = this.colorSettings.getFore(record.itemId);

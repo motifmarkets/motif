@@ -25,7 +25,7 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as BooleanUiAction; }
+    public override get uiAction() { return super.uiAction as BooleanUiAction; }
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
@@ -40,7 +40,7 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
         this.commitValue(checked);
     }
 
-    protected setUiAction(action: BooleanUiAction) {
+    protected override setUiAction(action: BooleanUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BooleanUiAction.PushEventHandlersInterface = {
@@ -51,7 +51,7 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushCheckboxEventsSubscriptionId);
         super.finalise();
     }

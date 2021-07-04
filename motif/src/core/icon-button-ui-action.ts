@@ -25,12 +25,12 @@ export class IconButtonUiAction extends ButtonUiAction {
         this.notifyIconPush();
     }
 
-    subscribePushEvents(handlersInterface: IconButtonUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: IconButtonUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._faButtonPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._faButtonPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

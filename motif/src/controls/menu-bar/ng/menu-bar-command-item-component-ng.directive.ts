@@ -30,14 +30,14 @@ export abstract class MenuBarCommandItemComponentNgDirective extends MenuBarMenu
         this.menuItem.onMouseLeave();
     }
 
-    finalise() {
+    override finalise() {
         this._menuItem.titleChangedEvent = undefined;
         this._menuItem.valueChangedEvent = undefined;
 
         super.finalise();
     }
 
-    protected initialise() {
+    protected override initialise() {
         const menuItem = this.menuBarService.getMenuItem(this.menuItemId);
         if (menuItem === undefined) {
             // It is possible (but very unlikely) that menuItem is deleted in the short interval initiating Menu and rendering

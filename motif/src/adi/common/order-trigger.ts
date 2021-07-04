@@ -53,7 +53,7 @@ export class ImmediateOrderTrigger extends OrderTrigger {
         super(OrderTriggerTypeId.Immediate);
     }
 
-    static isEqual(left: ImmediateOrderTrigger, right: ImmediateOrderTrigger) {
+    static override isEqual(left: ImmediateOrderTrigger, right: ImmediateOrderTrigger) {
         return true;
     }
 
@@ -175,7 +175,7 @@ export class TrailingPriceOrderTrigger extends OrderTrigger {
         super(OrderTriggerTypeId.TrailingPrice);
     }
 
-    static isEqual(left: TrailingPriceOrderTrigger, right: TrailingPriceOrderTrigger) {
+    static override isEqual(left: TrailingPriceOrderTrigger, right: TrailingPriceOrderTrigger) {
         return isDecimalEqual(left.value, right.value)
                && isDecimalEqual(left.limit, right.limit)
                && isUndefinableDecimalEqual(left.stop, right.stop);
@@ -201,7 +201,7 @@ export class PercentageTrailingPriceOrderTrigger extends OrderTrigger {
         super(OrderTriggerTypeId.PercentageTrailingPrice);
     }
 
-    static isEqual(left: PercentageTrailingPriceOrderTrigger, right: PercentageTrailingPriceOrderTrigger) {
+    static override isEqual(left: PercentageTrailingPriceOrderTrigger, right: PercentageTrailingPriceOrderTrigger) {
         return isDecimalEqual(left.value, right.value)
                && isDecimalEqual(left.limit, right.limit)
                && isUndefinableDecimalEqual(left.stop, right.stop);
@@ -223,7 +223,7 @@ export class OvernightOrderTrigger extends OrderTrigger {
         super(OrderTriggerTypeId.Immediate);
     }
 
-    static isEqual(left: OvernightOrderTrigger, right: OvernightOrderTrigger) {
+    static override isEqual(left: OvernightOrderTrigger, right: OvernightOrderTrigger) {
         return true;
     }
 

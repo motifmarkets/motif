@@ -103,7 +103,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         }
     }
 
-    protected initialise() {
+    protected override initialise() {
         this.checkSetSidebarPixelWidth();
 
         // this._detailSplitAreaDirective.size = null;
@@ -111,7 +111,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._frame.finalise();
         super.finalise();
     }
@@ -124,13 +124,13 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         // nothing to save yet
     }
 
-    protected applySettings() {
+    protected override applySettings() {
         this.splitterBackgroundColor = this.settingsService.color.getBkgd(ColorScheme.ItemId.Panel_Hoisted);
         super.applySettings();
         this.markForCheck();
     }
 
-    protected processShown() {
+    protected override processShown() {
         if (this._splitterComponent !== undefined) {
             this.checkSetSidebarPixelWidth();
         }

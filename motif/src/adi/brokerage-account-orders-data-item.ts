@@ -13,7 +13,7 @@ import { Order } from './order';
 export class BrokerageAccountOrdersDataItem extends DataRecordsBrokerageAccountSubscriptionDataItem<Order>
     implements BrokerageAccountGroupOrderList {
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.Orders) {
             super.processMessage(msg);
         } else {

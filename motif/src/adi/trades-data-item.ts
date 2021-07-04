@@ -72,7 +72,7 @@ export class TradesDataItem extends MarketSubscriptionDataItem implements Trades
         return this._records[idx];
     }
 
-    processSubscriptionPreOnline() { // virtual
+    override processSubscriptionPreOnline() { // virtual
         this.beginUpdate();
         try {
             this.notifyUpdateChange();
@@ -83,7 +83,7 @@ export class TradesDataItem extends MarketSubscriptionDataItem implements Trades
         }
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.Trades) {
             super.processMessage(msg);
 
@@ -136,7 +136,7 @@ export class TradesDataItem extends MarketSubscriptionDataItem implements Trades
         this._outOfRangeUpdateChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this._recordCount;

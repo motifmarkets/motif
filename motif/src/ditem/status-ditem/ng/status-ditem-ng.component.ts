@@ -105,12 +105,12 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         return element;
     }
 
-    protected initialise() {
+    protected override initialise() {
         this.showSummary();
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._statusContainer.clear();
         this._frame.finalise();
         super.finalise();

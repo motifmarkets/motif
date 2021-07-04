@@ -24,7 +24,7 @@ export class BalancesTableDefinition extends SingleDataItemTableDefinition {
         super(listOrId);
     }
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof BalancesTableRecordDefinitionList)) {
             throw new AssertInternalError('ACBTDLRDL100119537');

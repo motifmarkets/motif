@@ -31,7 +31,7 @@ export class OrderTableValueSource extends DataRecordTableValueSource<Order> {
         super(firstFieldIndexOffset);
     }
 
-    activate() {
+    override activate() {
         this._orderChangedEventSubscriptionId = this._order.subscribeChangedEvent(
             (changedFieldIds) => this.handleOrderChangedEvent(changedFieldIds)
         );
@@ -39,7 +39,7 @@ export class OrderTableValueSource extends DataRecordTableValueSource<Order> {
         return super.activate();
     }
 
-    deactivate() {
+    override deactivate() {
         this._order.unsubscribeChangedEvent(this._orderChangedEventSubscriptionId);
         this._orderChangedEventSubscriptionId = undefined;
 

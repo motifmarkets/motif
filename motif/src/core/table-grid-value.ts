@@ -112,9 +112,9 @@ export class DateTableGridValue extends GenericTableGridValue<Date> {
         return new DateRenderValue(this.data);
     }
 
-    get data() { return super.data; }
+    override get data() { return super.data; }
 
-    set data(value: Date | undefined) {
+    override set data(value: Date | undefined) {
         super.data = newUndefinableDate(value);
     }
 }
@@ -123,8 +123,8 @@ export class IvemIdTableGridValue extends GenericTableGridValue<IvemId> {
         return new IvemIdRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: IvemId | undefined) {
+    override get data() { return super.data; }
+    override set data(value: IvemId | undefined) {
         super.data = value?.createCopy();
     }
 }
@@ -133,8 +133,8 @@ export class LitIvemIdTableGridValue extends GenericTableGridValue<LitIvemId> {
         return new LitIvemIdRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: LitIvemId | undefined) {
+    override get data() { return super.data; }
+    override set data(value: LitIvemId | undefined) {
         super.data = value?.createCopy();
     }
 }
@@ -144,9 +144,9 @@ export abstract class BaseDecimalTableGridValue extends GenericTableGridValue<De
     //     return new DecimalRenderValue(this.data);
     // }
 
-    get data() { return super.data; }
+    override get data() { return super.data; }
 
-    set data(value: Decimal | undefined) {
+    override set data(value: Decimal | undefined) {
         super.data = newUndefinableDecimal(value);
     }
 }
@@ -283,16 +283,16 @@ export class DateCorrectnessTableGridValue extends GenericCorrectnessTableGridVa
         return new DateRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: Date | undefined) {
+    override get data() { return super.data; }
+    override set data(value: Date | undefined) {
         super.data = newUndefinableDate(value);
     }
 }
 export abstract class BaseSourceTzOffsetDateTimeCorrectnessTableGridValue
         extends GenericCorrectnessTableGridValue<SourceTzOffsetDateTime> {
 
-    get data() { return super.data; }
-    set data(value: SourceTzOffsetDateTime | undefined) {
+    override get data() { return super.data; }
+    override set data(value: SourceTzOffsetDateTime | undefined) {
         super.data = SourceTzOffsetDateTime.newUndefinable(value);
     }
 }
@@ -306,8 +306,8 @@ export class SourceTzOffsetDateCorrectnessTableGridValue extends GenericCorrectn
         return new SourceTzOffsetDateRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: SourceTzOffsetDate | undefined) {
+    override get data() { return super.data; }
+    override set data(value: SourceTzOffsetDate | undefined) {
         super.data = SourceTzOffsetDate.newUndefinable(value);
     }
 }
@@ -316,8 +316,8 @@ export class IvemIdCorrectnessTableGridValue extends GenericCorrectnessTableGrid
         return new IvemIdRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: IvemId | undefined) {
+    override get data() { return super.data; }
+    override set data(value: IvemId | undefined) {
         super.data = value?.createCopy();
     }
 }
@@ -326,8 +326,8 @@ export class LitIvemIdCorrectnessTableGridValue extends GenericCorrectnessTableG
         return new LitIvemIdRenderValue(this.data);
     }
 
-    get data() { return super.data; }
-    set data(value: LitIvemId | undefined) {
+    override get data() { return super.data; }
+    override set data(value: LitIvemId | undefined) {
         super.data = value?.createCopy();
     }
 }
@@ -363,9 +363,9 @@ export abstract class BaseDecimalCorrectnessTableGridValue extends GenericCorrec
     //     return new DecimalRenderValue(this.data);
     // }
 
-    get data() { return super.data; }
+    override get data() { return super.data; }
 
-    set data(value: Decimal | undefined) {
+    override set data(value: Decimal | undefined) {
         super.data = newUndefinableDecimal(value);
     }
 }

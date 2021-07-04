@@ -26,7 +26,7 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class OrderTableRecordDefinitionList extends BrokerageAccountGroupDataRecordTableRecordDefinitionList<Order> {
     private static _constructCount = 0;
 
-    get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupOrderList; }
+    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupOrderList; }
 
     constructor(private _adi: AdiService) {
         super(TableRecordDefinitionList.TypeId.Order);

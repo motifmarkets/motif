@@ -115,15 +115,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         return this._modeId === OrdersDitemNgComponent.ModeId.LayoutEditor;
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._buyButtonComponent.initialise(this._buyUiAction);
         this._sellButtonComponent.initialise(this._sellUiAction);
@@ -144,7 +144,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._buyUiAction.finalise();
         this._sellUiAction.finalise();

@@ -32,7 +32,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
-    get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
     get initialised() { return this._tableFrame !== undefined; }
     get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
 
@@ -64,12 +64,12 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise() {
+    override finalise() {
         this._tableFrame.closeTable(false);
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentConfig = element.newElement(OrdersDitemFrame.JsonName.content);
@@ -158,7 +158,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         return this._tableFrame.getGridLayoutWithHeadings();
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         if (this._currentFocusedLitIvemIdAccountGroupSetting) {
             return false;
         } else {

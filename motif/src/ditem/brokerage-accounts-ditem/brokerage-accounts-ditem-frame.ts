@@ -56,7 +56,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean { // override
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean { // override
         if (this._tableFrame.layoutConfigLoading || this._currentFocusedAccountIdSetting || group === undefined) {
             return false;
         } else {

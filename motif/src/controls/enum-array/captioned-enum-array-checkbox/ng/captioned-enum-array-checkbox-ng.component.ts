@@ -28,7 +28,7 @@ export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementCompo
         this.inputId = 'CaptionedEnumArrayCheckbox' + this.instanceNumber.toString(10);
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 
@@ -52,7 +52,7 @@ export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementCompo
         this.commitValue(newValue);
     }
 
-    protected applyValue(value: Integer[] | undefined) {
+    protected override applyValue(value: Integer[] | undefined) {
         super.applyValue(value);
         const newChecked = value === undefined ? false : value.includes(this.element);
 
@@ -62,21 +62,21 @@ export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementCompo
         }
     }
 
-    protected applyStateId(newStateId: UiAction.StateId) {
+    protected override applyStateId(newStateId: UiAction.StateId) {
         super.applyStateId(newStateId);
     }
 
-    protected applyFilter(filter: Integer[] | undefined) {
+    protected override applyFilter(filter: Integer[] | undefined) {
         super.applyFilter(filter);
         this.updateCheckboxDisabled();
     }
 
-    protected applyElements() {
+    protected override applyElements() {
         super.applyElements();
         this.updateCheckboxDisabled();
     }
 
-    protected finalise() {
+    protected override finalise() {
         super.finalise();
     }
 

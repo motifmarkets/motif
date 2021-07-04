@@ -28,7 +28,7 @@ export class BrokerageAccountsDataItem extends DataRecordsFeedSubscriptionDataIt
         return this.getRecordByMapKey(accountKey.mapKey);
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.BrokerageAccounts) {
             super.processMessage(msg);
         } else {
@@ -44,7 +44,7 @@ export class BrokerageAccountsDataItem extends DataRecordsFeedSubscriptionDataIt
         }
     }
 
-    protected processFeedsBecameUsable() {
+    protected override processFeedsBecameUsable() {
         let feedId: FeedId | undefined;
         for (const feed of this.feeds) {
             if (feed.classId === FeedClassId.Authority) {

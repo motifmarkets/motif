@@ -4,7 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridAttribute, GridDataStore, GridField, GridFieldNameToHeaderMap, GridFieldState, GridLayout, TRecordIndex } from '@motifmarkets/revgrid';
+import {
+    GridAttribute,
+    GridDataStore,
+    GridField,
+    GridFieldNameToHeaderMap,
+    GridFieldState,
+    GridLayout,
+    TRecordIndex
+} from '@motifmarkets/revgrid';
 import { IntegerRenderValue, StringRenderValue } from './render-value';
 
 export class GridLayoutDataStore implements GridDataStore {
@@ -87,7 +95,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.position);
         }
 
-        GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
+        override GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
             const index = this._layout.IndexOfColumn(record);
             return new IntegerRenderValue(index);
         }
@@ -98,7 +106,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.name);
         }
 
-        GetFieldValue(record: GridLayout.Column): StringRenderValue {
+        override GetFieldValue(record: GridLayout.Column): StringRenderValue {
             return new StringRenderValue(record.Field.Name);
         }
     }
@@ -108,7 +116,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.heading);
         }
 
-        GetFieldValue(record: GridLayout.Column): StringRenderValue {
+        override GetFieldValue(record: GridLayout.Column): StringRenderValue {
             const heading = this._headersMap.get(record.Field.Name);
             return new StringRenderValue(heading === undefined ? record.Field.Name : heading);
         }
@@ -119,7 +127,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.visible);
         }
 
-        GetFieldValue(record: GridLayout.Column): StringRenderValue {
+        override GetFieldValue(record: GridLayout.Column): StringRenderValue {
             return new StringRenderValue(record.Visible ? 'Y' : '');
         }
     }
@@ -129,7 +137,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.width);
         }
 
-        GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
+        override GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
             return new IntegerRenderValue(record.Width);
         }
     }
@@ -139,7 +147,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.sortPriority);
         }
 
-        GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
+        override GetFieldValue(record: GridLayout.Column): IntegerRenderValue {
             return new IntegerRenderValue(record.SortPriority);
         }
     }
@@ -149,7 +157,7 @@ export namespace GridLayoutDataStore {
             super(FieldName.sortAscending);
         }
 
-        GetFieldValue(record: GridLayout.Column): StringRenderValue {
+        override GetFieldValue(record: GridLayout.Column): StringRenderValue {
             const sortAscending = record.SortAscending;
             let value: string | undefined;
             if (sortAscending === undefined) {

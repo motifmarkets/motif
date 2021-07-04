@@ -29,12 +29,12 @@ export class DateUiAction extends UiAction {
         this.pushAutoAcceptance();
     }
 
-    subscribePushEvents(handlersInterface: DateUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: DateUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._datePushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._datePushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

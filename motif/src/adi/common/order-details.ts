@@ -54,7 +54,7 @@ export class MarketOrderDetails extends OrderDetails {
         return result;
     }
 
-    protected assign(other: MarketOrderDetails) {
+    protected override assign(other: MarketOrderDetails) {
         super.assign(other);
         this.typeId = other.typeId;
         this.limitPrice = newUndefinableDecimal(other.limitPrice);
@@ -83,7 +83,7 @@ export class ManagedFundOrderDetails extends OrderDetails {
         return result;
     }
 
-    protected assign(other: ManagedFundOrderDetails) {
+    protected override assign(other: ManagedFundOrderDetails) {
         super.assign(other);
         this.unitTypeId = other.unitTypeId;
         this.unitAmount = other.unitAmount;

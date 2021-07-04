@@ -36,7 +36,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _symbolsManager: SymbolsService;
     private _pushIvemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as IvemIdUiAction; }
+    public override get uiAction() { return super.uiAction as IvemIdUiAction; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -66,12 +66,12 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.tryCommitText(value, UiAction.CommitTypeId.Implicit);
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyValue(this.uiAction.value, false);
     }
 
-    protected setUiAction(action: IvemIdUiAction) {
+    protected override setUiAction(action: IvemIdUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: IvemIdUiAction.PushEventHandlersInterface = {
@@ -82,7 +82,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushIvemidEventsSubscriptionId);
         super.finalise();
     }

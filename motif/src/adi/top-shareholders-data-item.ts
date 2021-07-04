@@ -39,7 +39,7 @@ export class TopShareholdersDataItem extends DataItem {
         return this._topShareholders ? this._topShareholders.length : 0;
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         super.processMessage(msg);
     }
 
@@ -90,7 +90,7 @@ export class TopShareholdersDataItem extends DataItem {
     //     }
     // }
 
-    protected stop() {
+    protected override stop() {
         assert(this.active, 'ID:5131162510');
         this.releaseDataItems();
         super.stop();
@@ -104,7 +104,7 @@ export class TopShareholdersDataItem extends DataItem {
         }
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             if (this.count > 0) {

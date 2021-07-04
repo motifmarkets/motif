@@ -43,7 +43,7 @@ export class DepthSideFrame extends ContentFrame {
         this.activateStyle(DepthSideFrame.initialDepthStyleId);
     }
 
-    finalise() {
+    override finalise() {
         if (this._activeStore !== undefined) {
             this._activeStore.finalise();
         }

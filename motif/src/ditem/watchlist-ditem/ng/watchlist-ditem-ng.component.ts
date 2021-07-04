@@ -144,11 +144,11 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         return undefined;
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkSelectState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         this._frame.initialise(this._contentComponent.frame, frameElement);
@@ -162,7 +162,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolEditUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._deleteSymbolUiAction.finalise();

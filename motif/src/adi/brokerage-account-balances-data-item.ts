@@ -26,7 +26,7 @@ export class BrokerageAccountBalancesDataItem
     implements BrokerageAccountGroupBalancesList {
     private _defaultCurrencyId: CurrencyId;
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         // virtual;
         if (msg.typeId !== DataMessageTypeId.Balances) {
             super.processMessage(msg);
@@ -49,7 +49,7 @@ export class BrokerageAccountBalancesDataItem
         }
     }
 
-    protected processAccountBecameAvailable() {
+    protected override processAccountBecameAvailable() {
         const account = this.account;
         if (account === undefined) {
             throw new AssertInternalError('BABDIPABA2228853');
@@ -435,7 +435,7 @@ export namespace BalancesDataItem {
             super(AddUpdateDeleteList.compareItems);
         }
 
-        sort() {
+        override sort() {
             if (this.count === 0) {
                 this._firstDeleteIndex = -1;
                 this._deleteCount = 0;

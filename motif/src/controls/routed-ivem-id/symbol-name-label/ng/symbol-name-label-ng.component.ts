@@ -31,11 +31,11 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsManagerService);
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 
-    protected applyValue(value: RoutedIvemId | undefined, selectAll: boolean) {
+    protected override applyValue(value: RoutedIvemId | undefined, selectAll: boolean) {
         super.applyValue(value, selectAll);
 
         if (value === undefined) {

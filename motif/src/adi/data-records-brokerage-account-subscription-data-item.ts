@@ -62,17 +62,17 @@ export abstract class DataRecordsBrokerageAccountSubscriptionDataItem<Record ext
         this._afterRecordChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected stop() {
+    protected override stop() {
         this.clearRecords(); // make sure disposed
         super.stop();
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         this.clearRecords();
         super.processSubscriptionPreOnline();
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             if (this.count > 0) {
@@ -84,7 +84,7 @@ export abstract class DataRecordsBrokerageAccountSubscriptionDataItem<Record ext
         }
     }
 
-    protected processCorrectnessChange() {
+    protected override processCorrectnessChange() {
         super.processCorrectnessChange();
 
         const correctnessId = this.correctnessId;

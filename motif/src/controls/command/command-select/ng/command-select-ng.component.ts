@@ -78,13 +78,13 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
         this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectDropDownPanelWidth);
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected applyValue(value: ProcessorCommandUiAction.Item | undefined) {
+    protected override applyValue(value: ProcessorCommandUiAction.Item | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
             this.selected = value;
@@ -98,19 +98,19 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
         }
     }
 
-    protected applyItemCaption(command: Command, caption: string) {
+    protected override applyItemCaption(command: Command, caption: string) {
         super.applyItemCaption(command, caption);
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected applyItems() {
+    protected override applyItems() {
         super.applyItems();
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(this._measureCanvasContextsEventSubscriptionId);
         super.finalise();
     }

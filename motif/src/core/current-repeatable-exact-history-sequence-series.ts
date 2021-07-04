@@ -30,7 +30,7 @@ export class CurrentRepeatableExactHistorySequenceSeries extends RepeatableExact
         );
     }
 
-    finalise() {
+    override finalise() {
         this.repeatableExactSequencer.unsubscribePointInsertedEvent(this._pointInsertedEventSubscriptionId);
         this._pointInsertedEventSubscriptionId = undefined;
         this.repeatableExactSequencer.unsubscribePointUpdatedEvent(this._pointUpdatedEventSubscriptionId);

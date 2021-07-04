@@ -43,7 +43,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentElement = element.newElement(TradesDitemFrame.JsonName.content);
@@ -84,7 +84,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.setGridLayout(layout);
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, selfInitiated);
         if (litIvemId === undefined) {
             return false;

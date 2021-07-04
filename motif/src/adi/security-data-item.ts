@@ -98,7 +98,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    get definition() { return super.getDefinition() as SecurityDataDefinition; }
+    override get definition() { return super.getDefinition() as SecurityDataDefinition; }
 
     get code() { return this._code; }
     get exchange() { return this._exchange; }
@@ -142,7 +142,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
     get shareIssue() { return this._shareIssue; }
     get statusNote() { return this._statusNote; }
 
-    processSubscriptionPreOnline() { // virtual
+    override processSubscriptionPreOnline() { // virtual
         this.beginUpdate();
         try {
             this.notifyUpdateChange();
@@ -338,7 +338,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
         this.FSecurityInfo = clone(TypedSrc.FSecurityInfo);
     }*/
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.Security) {
             super.processMessage(msg);
         } else {
@@ -368,7 +368,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
         this._fieldValuesChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processMarketBecameAvailable() {
+    protected override processMarketBecameAvailable() {
         this.updateTradingStateAllowsReason();
     }
 

@@ -50,7 +50,7 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         this.setInitialiseReady();
     }
 
-    focus() {
+    override focus() {
         // this does not work.  needs further investigation
         // const element = this._renderer.selectRootElement('symbolInput');
         // element.focus();
@@ -132,18 +132,18 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         }
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected processNamedGroupsChanged() {
+    protected override processNamedGroupsChanged() {
         super.processNamedGroupsChanged();
         this._ngSelectWidths = undefined;
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(this._measureCanvasContextsEventSubscriptionId);
         super.finalise();
     }

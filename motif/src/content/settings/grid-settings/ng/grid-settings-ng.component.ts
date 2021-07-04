@@ -90,7 +90,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this.pushValues();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._showHorizontalGridLinesUiAction.finalise();
         this._showVerticalGridLinesUiAction.finalise();
         this._gridLineHorizontalWeightUiAction.finalise();

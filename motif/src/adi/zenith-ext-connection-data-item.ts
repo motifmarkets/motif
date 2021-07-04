@@ -101,7 +101,7 @@ export class ZenithExtConnectionDataItem extends ExtConnectionDataItem {
         (this._publisher as ZenithPublisher).updateAuthAccessToken(value);
     }
 
-    processMessage(msg: DataMessage): void {
+    override processMessage(msg: DataMessage): void {
         switch (msg.typeId) {
             case DataMessageTypeId.ZenithPublisherOnlineChange:
                 this.processPublisherOnlineChange(msg as ZenithPublisherOnlineChangeDataMessage);
@@ -261,18 +261,18 @@ export class ZenithExtConnectionDataItem extends ExtConnectionDataItem {
         this._sessionKickedOffMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected start() {
+    protected override start() {
         this._publisher = this.onRequirePublisher(this.definition);
         this._publisher.connect(this.id, this.nextRequestNr, this.definition);
 
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         this._publisher.disconnect(this.id);
     }
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         return Badness.notBad;
     }
 

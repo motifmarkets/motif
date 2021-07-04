@@ -166,7 +166,7 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
         }
     }
 
-    loadAllEngineSeries() {
+    override loadAllEngineSeries() {
         const resourceIds = this._resourcing.ids;
         const resourceIdCount = resourceIds.length;
 
@@ -246,7 +246,7 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
         }
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (!this.usable) {
             // If something goes wrong, reload from scratch.  Need to do this because ChartHistory may have changed
             this.deactivate();

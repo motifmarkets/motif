@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
@@ -73,11 +82,11 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.finalise();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._accountLinkButtonComponent.initialise(this._toggleAccountGroupLinkingUiAction);
 
@@ -88,7 +97,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._toggleAccountGroupLinkingUiAction.finalise();
 

@@ -183,7 +183,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         return item.routedIvemId.mapKey;
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._searchTermNotExchangedMarketProcessedToggleUiAction.finalise();
 
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(
@@ -192,7 +192,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         super.finalise();
     }
 
-    protected async applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
+    protected override async applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
         if (!this.uiAction.edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: RoutedIvemIdSelectNgComponent.Item | null;
@@ -228,7 +228,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         }
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);

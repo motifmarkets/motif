@@ -24,7 +24,7 @@ export class EnumCaptionNgComponent extends EnumComponentBaseNgDirective impleme
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 }

@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
 import { ComponentContainer } from 'golden-layout';
@@ -111,15 +120,15 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         }
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
         this._accountLinkButtonComponent.initialise(this._accountGroupLinkUiAction);
@@ -140,7 +149,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._accountGroupLinkUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();

@@ -50,12 +50,12 @@ export class DataRecordsFeedSubscriptionDataItem<Record extends DataRecord> exte
         this._afterRecordChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected stop() {
+    protected override stop() {
         this.clearRecords(); // make sure disposed
         super.stop();
     }
 
-    protected processCorrectnessChange() {
+    protected override processCorrectnessChange() {
         super.processCorrectnessChange();
 
         const correctnessId = this.correctnessId;
@@ -64,12 +64,12 @@ export class DataRecordsFeedSubscriptionDataItem<Record extends DataRecord> exte
         }
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         this.clearRecords();
         super.processSubscriptionPreOnline();
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             if (this.count > 0) {

@@ -64,7 +64,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.DepthLevels) {
             super.processMessage(msg);
         } else {
@@ -208,7 +208,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         this._beforeLevelsClearMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         // virtual
         this.beginUpdate();
         try {

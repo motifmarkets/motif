@@ -260,11 +260,11 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         // nothing implemented
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         const defaultExchangeId = this._symbolsManager.defaultDefaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
@@ -329,7 +329,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._toggleSymbolLinkingUiAction.finalise();
         this._columnsUiAction.finalise();
         this._queryOrSubscribeUiAction.finalise();

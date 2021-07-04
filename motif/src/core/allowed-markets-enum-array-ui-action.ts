@@ -20,7 +20,7 @@ export class AllowedMarketsEnumArrayUiAction extends EnumArrayUiAction {
         );
     }
 
-    finalise() {
+    override finalise() {
         this._symbolsManager.unsubscribeAllowedMarketIdsChangedEvent(this._allowedMarketIdsChangedSubscriptionId);
         this._allowedMarketIdsChangedSubscriptionId = undefined;
     }

@@ -28,7 +28,7 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
 
     private _pushDateEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as DateUiAction; }
+    public override get uiAction() { return super.uiAction as DateUiAction; }
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -48,12 +48,12 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyValue(this.uiAction.value);
     }
 
-    protected setUiAction(action: DateUiAction) {
+    protected override setUiAction(action: DateUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: DateUiAction.PushEventHandlersInterface = {
@@ -64,7 +64,7 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushDateEventsSubscriptionId);
         super.finalise();
     }

@@ -71,17 +71,17 @@ export class NullableDateCorrectnessTableGridValue extends GenericNullableCorrec
         return new DateRenderValue(this.data === null ? undefined : this.data);
     }
 
-    get data() { return super.data; }
+    override get data() { return super.data; }
 
-    set data(value: Date | null | undefined) {
+    override set data(value: Date | null | undefined) {
         super.data = value === null ? null : newUndefinableDate(value);
     }
 }
 
 export abstract class BaseNullableDecimalCorrectnessTableGridValue extends GenericNullableCorrectnessTableGridValue<Decimal> {
-    get data() { return super.data; }
+    override get data() { return super.data; }
 
-    set data(value: Decimal | null | undefined) {
+    override set data(value: Decimal | null | undefined) {
         super.data = value === null ? null : newUndefinableDecimal(value);
     }
 }

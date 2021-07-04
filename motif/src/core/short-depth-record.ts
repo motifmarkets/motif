@@ -44,8 +44,8 @@ export class ShortDepthRecord extends DepthRecord {
     }
 
     get level() { return this._level; }
-    get quantityAhead() { return super.quantityAhead; }
-    set quantityAhead(value: Integer | undefined) {
+    override get quantityAhead() { return super.quantityAhead; }
+    override set quantityAhead(value: Integer | undefined) {
         if (value !== super.quantityAhead) {
             super.quantityAhead = value;
             this.renderRecord[ShortDepthSideFieldId.VolumeAhead] = undefined;

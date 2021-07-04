@@ -36,7 +36,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _symbolsManager: SymbolsService;
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as LitIvemIdUiAction; }
+    public override get uiAction() { return super.uiAction as LitIvemIdUiAction; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -66,12 +66,12 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyValue(this.uiAction.value, false);
     }
 
-    protected setUiAction(action: LitIvemIdUiAction) {
+    protected override setUiAction(action: LitIvemIdUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: LitIvemIdUiAction.PushEventHandlersInterface = {
@@ -82,7 +82,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushLitivemidEventsSubscriptionId);
         super.finalise();
     }

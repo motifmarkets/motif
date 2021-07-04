@@ -139,11 +139,11 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise(): void {
+    override finalise(): void {
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const queryContentElement = element.newElement(SymbolsDitemFrame.JsonName.queryContent);
