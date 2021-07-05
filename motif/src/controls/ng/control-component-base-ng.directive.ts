@@ -38,6 +38,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     public waiting = true;
     public caption = '';
     public title = '';
+    public dropDownEditableSearchTerm = false;
     public placeholderText = '';
     public bkgdColor: ColorScheme.ResolvedColor;
     public foreColor: ColorScheme.ResolvedColor;
@@ -246,6 +247,11 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     protected pushSettings() {
+        const dropDownEditableSearchTerm = this._coreSettings.control_DropDownEditableSearchTerm;
+        if (dropDownEditableSearchTerm !== this.dropDownEditableSearchTerm) {
+            this.dropDownEditableSearchTerm = dropDownEditableSearchTerm;
+            this.markForCheck();
+        }
         this.applySettingColors();
     }
 

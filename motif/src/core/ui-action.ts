@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 
 export abstract class UiAction {
     private _pushMultiEvent = new MultiEvent<UiAction.PushEventHandlersInterface>();
@@ -110,10 +110,7 @@ export abstract class UiAction {
         this._inputtedText = text;
 
         if (valid) {
-            if (this._inputInvalid) {
-                this._inputInvalid = false;
-                this.pushState(this._inputInvalidBlockedStateId, this._inputInvalidBlockedStateTitle);
-            }
+            this.checkPushInputValid();
         } else {
             if (this._autoInvalid) {
                 if (!this._inputInvalid) {
@@ -245,9 +242,7 @@ export abstract class UiAction {
     }
 
     protected commit(typeId: UiAction.CommitTypeId) {
-        assert(this.stateId !== UiAction.StateId.Invalid);
-
-        assert(!this._inputInvalid, 'UICI666844932');
+        this.checkPushInputValid();
 
         const inputCommit = typeId === UiAction.CommitTypeId.Input;
 
@@ -391,6 +386,13 @@ export abstract class UiAction {
             const oldState = this._stateId;
             this._stateId = newStateId;
             this.notifyStateChangePush(oldState, newStateId);
+        }
+    }
+
+    private checkPushInputValid() {
+        if (this._inputInvalid) {
+            this._inputInvalid = false;
+            this.pushState(this._inputInvalidBlockedStateId, this._inputInvalidBlockedStateTitle);
         }
     }
 

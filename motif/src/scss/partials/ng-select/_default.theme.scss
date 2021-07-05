@@ -109,11 +109,11 @@ $ng-select-value-font-size: 0.9em !default;
                 .ng-input {
                     top: 5px;
                     left: 0;
-                    padding-left: $ng-select-value-padding-left;
-                    padding-right: 50px;
+                    padding-left: 5px; // $ng-select-value-padding-left;
+                    // padding-right: 50px;
                     @include rtl {
-                        padding-right: $ng-select-value-padding-left;
-                        padding-left: 50px;
+                        padding-right: 5px; // $ng-select-value-padding-left;
+                        // padding-left: 50px;
                     }
                 }
             }

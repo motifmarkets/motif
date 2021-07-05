@@ -848,6 +848,8 @@ export const enum StringId {
     SettingTitle_Symbol_DefaultMarketHidden,
     SettingCaption_Symbol_MarketCodeAsLocalWheneverPossible,
     SettingTitle_Symbol_MarketCodeAsLocalWheneverPossible,
+    SettingCaption_Control_DropDownEditableSearchTerm,
+    SettingTitle_Control_DropDownEditableSearchTerm,
     SettingCaption_Format_NumberGroupingActive,
     SettingTitle_Format_NumberGroupingActive,
     SettingCaption_Format_MinimumPriceFractionDigitsCount,
@@ -5930,6 +5932,16 @@ export namespace I18nStrings {
         SettingTitle_Symbol_MarketCodeAsLocalWheneverPossible: {
             id: StringId.SettingTitle_Symbol_MarketCodeAsLocalWheneverPossible, translations: {
                 en: 'Use abbreviated market code in symbol when market belongs to symbol\'s exchange',
+            }
+        },
+        SettingCaption_Control_DropDownEditableSearchTerm: {
+            id: StringId.SettingCaption_Control_DropDownEditableSearchTerm, translations: {
+                en: 'Editable drop-down selects',
+            }
+        },
+        SettingTitle_Control_DropDownEditableSearchTerm: {
+            id: StringId.SettingTitle_Control_DropDownEditableSearchTerm, translations: {
+                en: 'Edit previous search terms in drop-down combo box selects',
             }
         },
         SettingCaption_Format_NumberGroupingActive: {

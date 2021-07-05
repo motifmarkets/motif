@@ -7,7 +7,6 @@
     },
     "exchange": {
         "environment": "demo",
-        "bannerOverrideEnvironment": "production",
         "defaultDefault": "Fnsx"
     },
     "endpoints": {
