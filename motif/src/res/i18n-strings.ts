@@ -921,6 +921,7 @@ export const enum StringId {
     ZenithPublisherStateDisplay_AuthFetch,
     ZenithPublisherStateDisplay_SocketOpen,
     ZenithPublisherStateDisplay_ZenithTokenFetch,
+    ZenithPublisherStateDisplay_ZenithTokenActive,
     ZenithPublisherStateDisplay_ZenithTokenInterval,
     ZenithPublisherStateDisplay_ZenithTokenRefresh,
     ZenithPublisherStateDisplay_SocketClose,
@@ -6294,6 +6295,11 @@ export namespace I18nStrings {
         ZenithPublisherStateDisplay_ZenithTokenFetch: {
             id: StringId.ZenithPublisherStateDisplay_ZenithTokenFetch, translations: {
                 en: 'Token Fetch',
+            }
+        },
+        ZenithPublisherStateDisplay_ZenithTokenActive: {
+            id: StringId.ZenithPublisherStateDisplay_ZenithTokenActive, translations: {
+                en: 'Token Active',
             }
         },
         ZenithPublisherStateDisplay_ZenithTokenInterval: {

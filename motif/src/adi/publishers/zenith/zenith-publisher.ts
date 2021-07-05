@@ -159,7 +159,7 @@ export class ZenithPublisher extends Publisher {
     updateAuthAccessToken(value: string) {
         this._authAccessToken = value;
         if (value !== '') {
-            this.processZenithTokenRefreshIntervalCompletedOrAuthAccessTokenChanged(this._stateEngine.activeWaitId);
+            this._stateEngine.adviseZenithTokenRefreshRequired();
         } else {
             this.logError('AuthAccessToken: Update Invalid');
             this._stateEngine.adviseAuthFetchFailure();
@@ -560,7 +560,7 @@ export class ZenithPublisher extends Publisher {
                     // this._stateEngine.adviseZenithTokenFetchSuccess(identify.AccessToken, expiryTime);
                     // Do not use returned token if AuthToken
                     const accessToken = authToken ? this._authAccessToken : identify.AccessToken;
-                    this._stateEngine.adviseZenithTokenFetchSuccess(accessToken, expiryTime);
+                    this._stateEngine.adviseZenithTokenFetchSuccess(accessToken, expiryTime, !authToken);
                 }
             }
         }
@@ -624,7 +624,7 @@ export class ZenithPublisher extends Publisher {
         const interval = this.calculateZenithTokenRefreshInterval();
         this.checkClearDelayTimeout();
         this._delayTimeoutHandle = setTimeout(
-            () => this.processZenithTokenRefreshIntervalCompletedOrAuthAccessTokenChanged(waitId), interval
+            () => this.processZenithTokenRefreshIntervalCompleted(waitId), interval
         );
     }
 
@@ -643,9 +643,9 @@ export class ZenithPublisher extends Publisher {
         return refreshInterval;
     }
 
-    private processZenithTokenRefreshIntervalCompletedOrAuthAccessTokenChanged(waitId: Integer) {
+    private processZenithTokenRefreshIntervalCompleted(waitId: Integer) {
         if (waitId === this._stateEngine.activeWaitId) {
-            this._stateEngine.adviseZenithTokenInterval();
+            this._stateEngine.adviseZenithTokenRefreshRequired();
         }
     }
 
