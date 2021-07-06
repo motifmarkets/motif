@@ -2,7 +2,7 @@
     "configFormatVersion": "2",
     "configComment": "",
     "service": {
-        "name": "FNSX Demo (Development impersonating production)",
+        "name": "FNSX Demo",
         "description": "First National Stock Exchange Demo (Development impersonating production)"
     },
     "exchange": {

@@ -5,8 +5,9 @@
  */
 
 import Rollbar from 'rollbar';
+import { environment } from 'src/environments/environment';
+import { EnvironmentSecrets } from 'src/environments/environment-secrets';
 import { Version } from 'src/generated/internal-api';
-import { ProductionSecrets } from 'src/res/production-secrets';
 import { getObjectPropertyValue, Logger, UnreachableCaseError } from 'src/sys/internal-api';
 import { Config } from './config';
 
@@ -18,8 +19,8 @@ export class TelemetryService {
 
     constructor() {
         const rollbarConfig = TelemetryService.rollbarConfig;
-        rollbarConfig.accessToken = ProductionSecrets.rollbarAccessToken;
-        this._enablable = rollbarConfig.accessToken !== ProductionSecrets.invalidRollbarAccessToken;
+        rollbarConfig.accessToken = environment.rollbarAccessToken;
+        this._enablable = rollbarConfig.accessToken !== EnvironmentSecrets.invalidRollbarAccessToken;
 
         this._rollbar = new Rollbar(TelemetryService.rollbarConfig);
 
@@ -39,9 +40,15 @@ export class TelemetryService {
         this._configServiceName = config.service.name;
         this._rollbar.configure({
             enabled: this._enabled,
-            code_version: Version.commit,
             payload: {
                 environment: this._configServiceName,
+                client: {
+                    javascript: {
+                        code_version: Version.commit,
+                        source_map_enabled: true,
+                        guess_uncaught_frames: true,
+                    }
+                }
             }
         });
     }

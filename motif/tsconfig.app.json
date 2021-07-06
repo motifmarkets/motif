@@ -17,6 +17,7 @@
         "src/**/*.spec.ts",
         "src/**/*.spec_disabled.ts",
         "src/environments/environment.prod.ts", // angular replacement
+        "src/environments/environment-secrets.prod.ts", // angular replacement
         "src/extension/extension.ts", // required for extension feature
         "src/pulse/command/command-register.ts", // required for key shortcuts feature
         "src/adi/chart-history-accessor-mock.ts", // possible future use
