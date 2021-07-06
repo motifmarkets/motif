@@ -7,9 +7,13 @@
 @import 'partials/variables';
 
 :host {
-    display: flex;
+    display: block;
     position: absolute;
     overflow: hidden;
+}
+
+#pad {
+    display: flex;
     width: max-content;
     flex-direction: column;
 }

@@ -56,7 +56,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -67,6 +67,9 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
 
         this._frame = new ExtensionsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        elRef.nativeElement.style.position = 'absolute';
+        elRef.nativeElement.style.overflow = 'hidden';
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
 

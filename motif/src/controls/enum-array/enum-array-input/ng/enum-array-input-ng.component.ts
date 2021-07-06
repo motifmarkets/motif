@@ -100,6 +100,7 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
     protected override applyValue(value: Integer[] | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
+            this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = [];
             } else {

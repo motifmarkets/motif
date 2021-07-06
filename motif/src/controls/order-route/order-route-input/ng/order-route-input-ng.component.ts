@@ -148,6 +148,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
 
     private applyValue(value: OrderRoute | undefined) {
         if (!this.uiAction.edited) {
+            this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = undefined;
             } else {

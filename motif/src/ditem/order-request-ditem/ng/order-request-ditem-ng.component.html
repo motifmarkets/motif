@@ -3,32 +3,33 @@
     (c) 2021 Paritech Wealth Technology
     License: motionite.trade/license/motif
 -->
-
-<ng-container [ngSwitch]="stepId">
-    <app-pad-order-request-step #padStep *ngSwitchCase="StepId.Pad"></app-pad-order-request-step>
-    <app-review-order-request-step #reviewStep *ngSwitchCase="StepId.Review"></app-review-order-request-step>
-    <app-result-order-request-step #resultStep *ngSwitchCase="StepId.Result"></app-result-order-request-step>
-</ng-container>
-<div id="stepperDiv" [style.border-top-color]="panelDividerColor" >
-    <div id="linkButtonsDiv">
-        <app-svg-button #primaryButton></app-svg-button>
-        <app-svg-button #symbolLinkButton [displayed]="linkButtonDisplayed"></app-svg-button>
-        <app-svg-button #accountLinkButton [displayed]="linkButtonDisplayed"></app-svg-button>
-        <app-captioned-checkbox #reviewMessageCheckBox [displayed]="reviewMessageCheckboxDisplayed"></app-captioned-checkbox>
-    </div>
-    <div id="stepButtonsDiv">
-        <app-button-input #sendButton></app-button-input>
-        <section #reviewBackSection id="reviewBackSection"
-            [style.display]="reviewBackSectionDisplayed ? '' : 'none'"
-            [style.width]="reviewBackSectionWidth"
-        >
-            <app-button-input #reviewButton id="reviewButton" [displayed]="reviewButtonInitDisplayed"></app-button-input>
-            <app-button-input #backButton id="backButton" [displayed]="false"></app-button-input>
-        </section>
-        <section id="newSection">
-            <app-button-input #newButton></app-button-input>
-            <span id="newAmendRequestPossibleSpan" [style.visibility]="newAmendRequestPossibleFlagVisibility"
-            >{{newAmendRequestPossibleFlagChar}}</span>
-        </section>
+<div #pad id="pad">
+    <ng-container [ngSwitch]="stepId">
+        <app-pad-order-request-step #padStep *ngSwitchCase="StepId.Pad"></app-pad-order-request-step>
+        <app-review-order-request-step #reviewStep *ngSwitchCase="StepId.Review"></app-review-order-request-step>
+        <app-result-order-request-step #resultStep *ngSwitchCase="StepId.Result"></app-result-order-request-step>
+    </ng-container>
+    <div id="stepperDiv" [style.border-top-color]="panelDividerColor" >
+        <div id="linkButtonsDiv">
+            <app-svg-button #primaryButton></app-svg-button>
+            <app-svg-button #symbolLinkButton [displayed]="linkButtonDisplayed"></app-svg-button>
+            <app-svg-button #accountLinkButton [displayed]="linkButtonDisplayed"></app-svg-button>
+            <app-captioned-checkbox #reviewMessageCheckBox [displayed]="reviewMessageCheckboxDisplayed"></app-captioned-checkbox>
+        </div>
+        <div id="stepButtonsDiv">
+            <app-button-input #sendButton></app-button-input>
+            <section #reviewBackSection id="reviewBackSection"
+                [style.display]="reviewBackSectionDisplayed ? '' : 'none'"
+                [style.width]="reviewBackSectionWidth"
+            >
+                <app-button-input #reviewButton id="reviewButton" [displayed]="reviewButtonInitDisplayed"></app-button-input>
+                <app-button-input #backButton id="backButton" [displayed]="false"></app-button-input>
+            </section>
+            <section id="newSection">
+                <app-button-input #newButton></app-button-input>
+                <span id="newAmendRequestPossibleSpan" [style.visibility]="newAmendRequestPossibleFlagVisibility"
+                >{{newAmendRequestPossibleFlagChar}}</span>
+            </section>
+        </div>
     </div>
 </div>

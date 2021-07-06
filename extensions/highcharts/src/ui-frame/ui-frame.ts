@@ -45,6 +45,8 @@ export class UiFrame implements Frame, ChartFrame.UiAccess {
 
         this._rootHtmlElement = document.createElement('div');
         this._rootHtmlElement.classList.add('ui-frame-root');
+        this._rootHtmlElement.style.position = 'absolute';
+        this._rootHtmlElement.style.overflow = 'hidden';
     }
 
     async initialise() {

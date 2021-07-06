@@ -87,6 +87,7 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
     protected override applyValue(value: ProcessorCommandUiAction.Item | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
+            this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             // if (value === undefined) {
             //     this.selected = undefined;

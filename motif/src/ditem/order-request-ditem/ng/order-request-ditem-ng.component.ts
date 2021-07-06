@@ -9,9 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ElementRef,
-    HostBinding,
-    Inject,
+    ElementRef, Inject,
     OnDestroy,
     QueryList,
     ViewChild,
@@ -49,9 +47,7 @@ import { OrderRequestDitemFrame } from '../order-request-ditem-frame';
 export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, OrderRequestDitemFrame.ComponentAccess {
 
-    @HostBinding('style.width') hostWidth: string = HtmlTypes.Width.MaxContent;
-    @HostBinding('style.height') hostHeight: string = HtmlTypes.Height.MaxContent;
-
+    @ViewChild('pad', { static: true }) private _padElementRef: ElementRef<HTMLDivElement>;
     @ViewChild('primaryButton', { static: true }) private _primaryButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
@@ -91,6 +87,8 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     private readonly _sendUiAction: ButtonUiAction;
 
     private readonly _frame: OrderRequestDitemFrame;
+
+    private _padHtmlElement: HTMLDivElement;
 
     protected get stateSchemaVersion() { return OrderRequestDitemNgComponent.stateSchemaVersion; }
 
@@ -146,17 +144,17 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     // component access methods
     public pushStepId(stepId: OrderRequestStepFrame.StepId) {
         if (stepId === OrderRequestStepFrame.StepId.Pad) {
-            this.hostWidth = HtmlTypes.Width.MaxContent;
-            this.hostHeight = HtmlTypes.Height.MaxContent;
+            this._padHtmlElement.style.width = HtmlTypes.Width.MaxContent;
+            this._padHtmlElement.style.height = HtmlTypes.Height.MaxContent;
         } else {
             if (this.stepId === OrderRequestStepFrame.StepId.Pad) {
-                const hostWidth = this.elRef.nativeElement.offsetWidth;
-                if (hostWidth > 0) {
-                    this.hostWidth = numberToPixels(hostWidth);
+                const padWidth = this._padHtmlElement.offsetWidth;
+                if (padWidth > 0) {
+                    this._padHtmlElement.style.width = numberToPixels(padWidth);
                 }
-                const hostHeight = this.elRef.nativeElement.offsetHeight;
-                if (hostHeight > 0) {
-                    this.hostHeight = numberToPixels(hostHeight);
+                const padHeight = this._padHtmlElement.offsetHeight;
+                if (padHeight > 0) {
+                    this._padHtmlElement.style.height = numberToPixels(padHeight);
                 }
             }
         }
@@ -277,6 +275,8 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     protected override initialise() {
+        this._padHtmlElement = this._padElementRef.nativeElement;
+
         this._stepComponentList.changes.subscribe(() => this.handleStepComponentChange());
         const componentStateElement = this.getInitialComponentStateJsonElement();
         this._frame.initialise(componentStateElement);

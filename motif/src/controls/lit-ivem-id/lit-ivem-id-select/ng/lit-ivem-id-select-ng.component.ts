@@ -457,16 +457,10 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             }
 
             if (applyValueTransactionId === this._applyValueTransactionId) {
-                let selectedChanged: boolean;
-                if (selected === this.selected) {
-                    selectedChanged = false;
-                } else {
+                if (selected !== this.selected) {
+                    this._ngSelectComponent.searchTerm = '';
                     this._selectedObservable.setSelected(selected);
                     this.selected = selected;
-                    selectedChanged = true;
-                }
-
-                if (selectedChanged) {
                     this.markForCheck();
                 }
 

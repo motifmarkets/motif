@@ -127,6 +127,7 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
 
     protected applyValueAsNamedGroup(value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined) {
         if (!this.uiAction.edited) {
+            this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             this.markForCheck();
         }

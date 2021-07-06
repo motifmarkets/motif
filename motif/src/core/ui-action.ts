@@ -258,30 +258,33 @@ export abstract class UiAction {
     }
 
     protected pushAutoAcceptance() {
-        if (!this._valueRequired || !this.valueUndefined) {
-            switch (this.autoAcceptanceTypeId) {
-                case UiAction.AutoAcceptanceTypeId.None: {
-                    if (this._stateId === UiAction.StateId.Missing && !this._valueRequired) {
-                        throw new AssertInternalError('UAPAAM2319971355');
+        if (this._autoAcceptanceTypeId !== UiAction.AutoAcceptanceTypeId.None) {
+            if (!this._valueRequired || !this.valueUndefined) {
+                switch (this.autoAcceptanceTypeId) {
+                    case UiAction.AutoAcceptanceTypeId.None: {
+                        throw new AssertInternalError('UAPAAN2319971355');
+                        // if (this._stateId === UiAction.StateId.Missing && !this._valueRequired) {
+                        //     throw new AssertInternalError('UAPAAM2319971355');
+                        // }
+                        break;
                     }
-                    break;
+                    case UiAction.AutoAcceptanceTypeId.Valid:
+                        this.pushValid();
+                        break;
+                    case UiAction.AutoAcceptanceTypeId.Accepted:
+                        this.pushAccepted();
+                        break;
+                    default:
+                        throw new UnreachableCaseError('UAPAAU2319971355', this.autoAcceptanceTypeId);
                 }
-                case UiAction.AutoAcceptanceTypeId.Valid:
-                    this.pushValid();
-                    break;
-                case UiAction.AutoAcceptanceTypeId.Accepted:
-                    this.pushAccepted();
-                    break;
-                default:
-                    throw new UnreachableCaseError('UAPAAU2319971355', this.autoAcceptanceTypeId);
-            }
-        } else {
-            switch (this._stateId) {
-                case UiAction.StateId.Invalid:
-                    throw new AssertInternalError('UAPAAI2319971355');
-                case UiAction.StateId.Valid:
-                case UiAction.StateId.Accepted:
-                    this.pushState(UiAction.StateId.Missing);
+            } else {
+                switch (this._stateId) {
+                    case UiAction.StateId.Invalid:
+                        throw new AssertInternalError('UAPAAI2319971355');
+                    case UiAction.StateId.Valid:
+                    case UiAction.StateId.Accepted:
+                        this.pushState(UiAction.StateId.Missing);
+                }
             }
         }
     }
