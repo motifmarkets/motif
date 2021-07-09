@@ -142,9 +142,11 @@ export class OrderTableValueSource extends DataRecordTableValueSource<Order> {
                 (value as DecimalCorrectnessTableGridValue).data = this._order.currentValue;
                 break;
             case Order.FieldId.CreatedDate:
+                // (value as SourceTzOffsetDateTimeCorrectnessTableGridValue).data = this._order.createdDate;
                 (value as SourceTzOffsetDateTimeDateCorrectnessTableGridValue).data = this._order.createdDate;
                 break;
             case Order.FieldId.UpdatedDate:
+                // (value as SourceTzOffsetDateTimeCorrectnessTableGridValue).data = this._order.updatedDate;
                 (value as SourceTzOffsetDateTimeDateCorrectnessTableGridValue).data = this._order.updatedDate;
                 break;
             case Order.FieldId.StyleId:

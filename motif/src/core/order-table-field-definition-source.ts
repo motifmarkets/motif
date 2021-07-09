@@ -136,8 +136,10 @@ export namespace OrderTableFieldDefinitionSource {
                 case Order.FieldId.CurrentValue:
                     return [DecimalDataItemTableGridField, DecimalCorrectnessTableGridValue];
                 case Order.FieldId.CreatedDate:
+                    // return [SourceTzOffsetDateTimeDataItemTableGridField, SourceTzOffsetDateTimeCorrectnessTableGridValue];
                     return [SourceTzOffsetDateTimeDataItemTableGridField, SourceTzOffsetDateTimeDateCorrectnessTableGridValue];
                 case Order.FieldId.UpdatedDate:
+                    // return [SourceTzOffsetDateTimeDataItemTableGridField, SourceTzOffsetDateTimeCorrectnessTableGridValue];
                     return [SourceTzOffsetDateTimeDataItemTableGridField, SourceTzOffsetDateTimeDateCorrectnessTableGridValue];
                 case Order.FieldId.StyleId:
                     return [EnumDataItemTableGridField, IvemClassIdCorrectnessTableGridValue];

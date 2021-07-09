@@ -29,6 +29,7 @@ import {
     RenderValue,
     SourceTzOffsetDateRenderValue,
     SourceTzOffsetDateTimeDateRenderValue,
+    SourceTzOffsetDateTimeRenderValue,
     StringArrayRenderValue,
     StringRenderValue
 } from './render-value';
@@ -294,6 +295,11 @@ export abstract class BaseSourceTzOffsetDateTimeCorrectnessTableGridValue
     override get data() { return super.data; }
     override set data(value: SourceTzOffsetDateTime | undefined) {
         super.data = SourceTzOffsetDateTime.newUndefinable(value);
+    }
+}
+export class SourceTzOffsetDateTimeCorrectnessTableGridValue extends BaseSourceTzOffsetDateTimeCorrectnessTableGridValue {
+    protected createRenderValue() {
+        return new SourceTzOffsetDateTimeRenderValue(this.data);
     }
 }
 export class SourceTzOffsetDateTimeDateCorrectnessTableGridValue extends BaseSourceTzOffsetDateTimeCorrectnessTableGridValue {
