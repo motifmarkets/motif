@@ -9,9 +9,11 @@ import { Account, AdiService, BrokerageAccountGroup, BrokerageAccountGroupOrderL
 import { TableFrame } from 'src/content/internal-api';
 import {
     CommandRegisterService,
+    CoreSettings,
     GridLayoutDataStore,
     OrderPad,
     OrderTableRecordDefinitionList,
+    SettingsService,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
@@ -27,6 +29,8 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     recordFocusEvent: OrdersDitemFrame.RecordFocusEvent;
     tableOpenEvent: OrdersDitemFrame.TableOpenEvent;
 
+    private readonly _coreSettings: CoreSettings;
+
     private _tableFrame: TableFrame;
     private _orderList: BrokerageAccountGroupOrderList;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
@@ -38,6 +42,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
@@ -46,6 +51,8 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         super(BuiltinDitemFrame.BuiltinTypeId.Orders,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
+
+        this._coreSettings = settingsService.core;
     }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
@@ -105,6 +112,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         } else {
             orderPad.loadBuy();
         }
+        orderPad.applySettingsDefaults(this._coreSettings);
         this.desktopAccessService.editOrderRequest(orderPad);
     }
 
@@ -117,6 +125,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         } else {
             orderPad.loadSell();
         }
+        orderPad.applySettingsDefaults(this._coreSettings);
         this.desktopAccessService.editOrderRequest(orderPad);
     }
 
