@@ -62,19 +62,19 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise(): void {
+    override finalise(): void {
         this._tableFrame.closeTable(false);
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentElement = element.newElement(BalancesDitemFrame.JsonName.content);
         this._tableFrame.saveLayoutConfig(contentElement);
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         if (this._currentFocusedAccountIdSetting) {
             return false;
         } else {

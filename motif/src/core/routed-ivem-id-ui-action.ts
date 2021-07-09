@@ -35,12 +35,12 @@ export class RoutedIvemIdUiAction extends UiAction {
         this.pushAutoAcceptance();
     }
 
-    subscribePushEvents(handlersInterface: RoutedIvemIdUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: RoutedIvemIdUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._routedIvemIdPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._routedIvemIdPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

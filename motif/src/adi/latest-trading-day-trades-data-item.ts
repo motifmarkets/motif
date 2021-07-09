@@ -89,7 +89,7 @@ export class LatestTradingDayTradesDataItem extends DataItem implements TradesDa
         this._recordChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected start() {
+    protected override start() {
         const subscriptionDefinition = new TradesDataDefinition();
         subscriptionDefinition.litIvemId = this._litIvemId;
         this._subscriptionDataItem = this.subscribeDataItem(
@@ -125,7 +125,7 @@ export class LatestTradingDayTradesDataItem extends DataItem implements TradesDa
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         this.checkUnsubscribeQueryDataItem();
         if (this._subscriptionDataItem !== undefined) {
             this._subscriptionDataItem.unsubscribeBadnessChangeEvent(
@@ -148,7 +148,7 @@ export class LatestTradingDayTradesDataItem extends DataItem implements TradesDa
         return this.generateBadness();
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
 

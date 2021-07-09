@@ -39,6 +39,11 @@
     flex-grow: 1;
 }
 
+#orderReqestButtonsDiv {
+    @include centeredToolbarGroupMixin;
+    margin-left: $toolbar-button-group-separation;
+}
+
 #columnButtonsDiv {
     @include centeredToolbarGroupMixin;
     margin-left: $toolbar-button-group-separation;

@@ -16,7 +16,7 @@ export abstract class AllBrokerageAccountsListChangeDataItem extends DataItem {
 
     protected get accounts() { return this._accountsDataItem.records; }
 
-    protected start() {
+    protected override start() {
         const accountDataDefinition = new BrokerageAccountsDataDefinition();
         this._accountsDataItem = this.subscribeDataItem(accountDataDefinition) as BrokerageAccountsDataItem;
         this._accountsBadnessChangeSubscriptionId = this._accountsDataItem.subscribeBadnessChangeEvent(
@@ -39,7 +39,7 @@ export abstract class AllBrokerageAccountsListChangeDataItem extends DataItem {
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         this.processAccountsClear();
 
         if (this._accountsDataItem !== undefined) {

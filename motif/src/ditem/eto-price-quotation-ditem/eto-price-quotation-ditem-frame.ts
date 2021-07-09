@@ -50,7 +50,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    save(config: JsonElement) {
+    override save(config: JsonElement) {
         super.save(config);
 
         const watchElement = config.newElement(EtoPriceQuotationDitemFrame.JsonName.watch);

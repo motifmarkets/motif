@@ -53,7 +53,7 @@ export abstract class TableGridField extends GridField {
 
     get valueTypeId() { return this._valueTypeId; }
 
-    CompareField(left: TableGridValue[], right: TableGridValue[]): number {
+    override CompareField(left: TableGridValue[], right: TableGridValue[]): number {
         const leftValue = left[this.index];
         const rightValue = right[this.index];
         if (leftValue === rightValue) {
@@ -75,7 +75,7 @@ export abstract class TableGridField extends GridField {
         }
     }
 
-    CompareFieldDesc(left: TableGridValue[], right: TableGridValue[]): number {
+    override CompareFieldDesc(left: TableGridValue[], right: TableGridValue[]): number {
         const leftValue = left[this.index];
         const rightValue = right[this.index];
         if (leftValue === rightValue) {
@@ -97,12 +97,12 @@ export abstract class TableGridField extends GridField {
         }
     }
 
-    GetFieldValue(record: TableGridValue[]): RenderValue {
+    override GetFieldValue(record: TableGridValue[]): RenderValue {
         const tableGridValue = record[this.index];
         return tableGridValue.renderValue;
     }
 
-    GetAttributes(record: TableGridValue[]): GridAttribute[] {
+    override GetAttributes(record: TableGridValue[]): GridAttribute[] {
         return []; // Ihis is not used.  Sets Meta data in Grid.  Instead we pass render information through GetFieldValue
     }
 

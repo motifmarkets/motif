@@ -1381,7 +1381,7 @@ export namespace ZenithConvert {
                             throw new UnreachableCaseError('ZCFTACU688300211843', classId);
                     }
 
-                    if (feedId === FeedInfo.nullFeedId) {
+                    if (feedId === FeedId.Null) {
                         throw new AssertInternalError('ZCFTACFNUL9688300211843', JSON.stringify(zenithFeed));
                     } else {
                         const zenithStatus = zenithFeed.Status;

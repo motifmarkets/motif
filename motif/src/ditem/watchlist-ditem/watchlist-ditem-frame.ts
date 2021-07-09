@@ -64,7 +64,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentElement = element.newElement(WatchlistDitemFrame.JsonName.content);
@@ -118,7 +118,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean { // override
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean { // override
         if (this._tableFrame.layoutConfigLoading || this._currentFocusedLitIvemIdSetting || litIvemId === undefined) {
             return false;
         } else {

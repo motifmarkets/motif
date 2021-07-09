@@ -24,11 +24,11 @@ export class CaptionLabelNgComponent extends LabelComponentBaseNgDirective imple
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         super.finalise();
     }
 }

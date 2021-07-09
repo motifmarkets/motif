@@ -32,7 +32,7 @@ export class TransactionsDataItem extends PublisherSubscriptionDataItem {
         return this._transactions;
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         // virtual;
         if (msg.typeId !== DataMessageTypeId.Transactions) {
             super.processMessage(msg);
@@ -79,7 +79,7 @@ export class TransactionsDataItem extends PublisherSubscriptionDataItem {
         this._transactionsRecChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         const badness = super.calculateUsabilityBadness();
         if (Badness.isUnusable(badness)) {
             return badness;
@@ -92,7 +92,7 @@ export class TransactionsDataItem extends PublisherSubscriptionDataItem {
         }
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         // virtual
         const count = this._transactions.length;
         if (count > 0) {

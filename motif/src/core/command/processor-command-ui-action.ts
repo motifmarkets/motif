@@ -62,12 +62,12 @@ export class ProcessorCommandUiAction extends UiAction {
         }
     }
 
-    subscribePushEvents(handlersInterface: ProcessorCommandUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: ProcessorCommandUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._commandPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._commandPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

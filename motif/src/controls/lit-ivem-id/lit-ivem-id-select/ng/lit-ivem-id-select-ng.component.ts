@@ -88,7 +88,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
     private _ngSelectWidths: LitIvemIdSelectNgComponent.NgSelectWidths | undefined;
 
-    get uiAction() {
+    override get uiAction() {
         return super.uiAction as LitIvemIdUiAction;
     }
 
@@ -220,12 +220,12 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         return item.litIvemId.mapKey;
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyValue(this.uiAction.value, false);
     }
 
-    protected setUiAction(action: LitIvemIdUiAction) {
+    protected override setUiAction(action: LitIvemIdUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: LitIvemIdUiAction.PushEventHandlersInterface = {
@@ -239,7 +239,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._searchTermNotExchangedMarketProcessedToggleUiAction.finalise();
 
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(
@@ -251,7 +251,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         super.finalise();
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
@@ -457,16 +457,10 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             }
 
             if (applyValueTransactionId === this._applyValueTransactionId) {
-                let selectedChanged: boolean;
-                if (selected === this.selected) {
-                    selectedChanged = false;
-                } else {
+                if (selected !== this.selected) {
+                    this._ngSelectComponent.searchTerm = '';
                     this._selectedObservable.setSelected(selected);
                     this.selected = selected;
-                    selectedChanged = true;
-                }
-
-                if (selectedChanged) {
                     this.markForCheck();
                 }
 

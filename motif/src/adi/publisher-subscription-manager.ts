@@ -726,7 +726,7 @@ export namespace PublisherSubscriptionManager {
             }
         }
 
-        add(request: PublisherRequest): number {
+        override add(request: PublisherRequest): number {
             if (this.count === 0) {
                 return super.add(request);
             } else {

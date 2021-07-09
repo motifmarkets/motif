@@ -41,6 +41,7 @@ export namespace Badness {
         PublisherSubscriptionState_SynchronisationWaiting,
         PublisherSubscriptionState_Synchronised,
         PublisherSubscriptionState_UnsubscribedSynchronised,
+        PublisherSubscriptionState_Unexpected, // Should never be used
         PreUsable_Clear,
         PreUsable_Add,
         ConnectionOffline,
@@ -304,6 +305,11 @@ export namespace Badness {
                 id: ReasonId.PublisherSubscriptionState_UnsubscribedSynchronised,
                 correctnessId: CorrectnessId.Suspect,
                 displayId: StringId.BadnessReasonId_PublisherSubscription_UnsubscribedSynchronised,
+            },
+            PublisherSubscriptionState_Unexpected: {
+                id: ReasonId.PublisherSubscriptionState_Unexpected,
+                correctnessId: CorrectnessId.Error,
+                displayId: StringId.InternalError,
             },
             PreUsable_Clear: {
                 id: ReasonId.PreUsable_Clear,

@@ -52,7 +52,7 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
         return this._list[idx];
     }
 
-    activate() {
+    override activate() {
         const definition = new TopShareholdersDataDefinition();
 
         definition.litIvemId = this._litIvemId;
@@ -82,7 +82,7 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
         }
     }
 
-    deactivate() {
+    override deactivate() {
         // TableRecordDefinitionList can no longer be used after it is deactivated
         if (this.count > 0) {
             this.notifyListChange(UsableListChangeTypeId.Clear, 0, 0);
@@ -103,7 +103,7 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
         }
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         const baseContext = 'TopShareholderTableRecordDefinitionList.loadFromJson: ';
@@ -125,7 +125,7 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
         }
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
 
         element.setJson(TopShareholderTableRecordDefinitionList.JsonTag.litItemId, this._litIvemId.toJson());
@@ -141,7 +141,7 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
     protected getCapacity() { return this._list.length; }
     protected setCapacity(value: Integer) { /* no code */ }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this.count;

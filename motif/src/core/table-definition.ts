@@ -79,7 +79,7 @@ export abstract class TableDefinition {
             } else {
                 this.activate();
 
-                this._recordDefinitionListOpener = opener;
+                // this._recordDefinitionListOpener = opener; // needs to be fixed when implementing watchlist
                 this._opened = true;
 
                 if (this._recordDefinitionListDirectoryId === undefined) {

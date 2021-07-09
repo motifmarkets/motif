@@ -21,7 +21,7 @@ export class ZenithServerInfoDataItem extends PublisherSubscriptionDataItem {
     get softwareVersion() { return this._softwareVersion; }
     get protocolVersion() { return this._protocolVersion; }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.ZenithServerInfo) {
             super.processMessage(msg);
         } else {
@@ -48,7 +48,7 @@ export class ZenithServerInfoDataItem extends PublisherSubscriptionDataItem {
         this._fieldValuesChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processSubscriptionPreOnline() { // virtual
+    protected override processSubscriptionPreOnline() { // virtual
         if (this._serverName !== undefined ||
             this._serverClass !== undefined ||
             this._softwareVersion !== undefined ||

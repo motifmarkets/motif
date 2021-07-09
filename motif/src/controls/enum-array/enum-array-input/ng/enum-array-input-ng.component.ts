@@ -91,15 +91,16 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectDropDownPanelWidth);
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected applyValue(value: Integer[] | undefined) {
+    protected override applyValue(value: Integer[] | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
+            this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = [];
             } else {
@@ -115,25 +116,25 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         }
     }
 
-    protected applyFilter(filter: Integer[] | undefined) {
+    protected override applyFilter(filter: Integer[] | undefined) {
         super.applyFilter(filter);
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected applyElementCaption(element: Integer, caption: string) {
+    protected override applyElementCaption(element: Integer, caption: string) {
         super.applyElementCaption(element, caption);
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected applyElements() {
+    protected override applyElements() {
         super.applyElements();
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(this._measureCanvasContextsEventSubscriptionId);
         super.finalise();
     }

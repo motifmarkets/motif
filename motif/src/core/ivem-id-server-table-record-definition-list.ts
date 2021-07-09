@@ -29,7 +29,7 @@ export class IvemIdServerTableRecordDefinitionList extends ServerTableRecordDefi
         return this._list[idx];
     }
 
-    activate() {
+    override activate() {
         /*Definition := TDataDefinition_IvemIdServerWatchItemDefinitionList.Create;
         Definition.ListName := ServerListName;
 
@@ -54,7 +54,7 @@ export class IvemIdServerTableRecordDefinitionList extends ServerTableRecordDefi
         this.notifyListChange(UsableListChangeTypeId.Usable, 0, 0);
     }
 
-    deactivate() {
+    override deactivate() {
         super.deactivate();
         /*    if Count > 0 then
             begin
@@ -69,12 +69,12 @@ export class IvemIdServerTableRecordDefinitionList extends ServerTableRecordDefi
             FBeenSynchronised := False;*/
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
         // TODO
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         // TODO
     }

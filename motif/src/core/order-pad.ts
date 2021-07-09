@@ -935,11 +935,16 @@ export class OrderPad {
     }
 
     applySettingsDefaults(coreSettings: CoreSettings) {
-        if (coreSettings.orderPad_DefaultOrderTypeId !== undefined) {
-            this.orderTypeId = coreSettings.orderPad_DefaultOrderTypeId;
-        }
-        if (coreSettings.orderPad_DefaultTimeInForceId !== undefined) {
-            this.timeInForceId = coreSettings.orderPad_DefaultTimeInForceId;
+        this.beginChanges();
+        try {
+            if (coreSettings.orderPad_DefaultOrderTypeId !== undefined) {
+                this.orderTypeId = coreSettings.orderPad_DefaultOrderTypeId;
+            }
+            if (coreSettings.orderPad_DefaultTimeInForceId !== undefined) {
+                this.timeInForceId = coreSettings.orderPad_DefaultTimeInForceId;
+            }
+        } finally {
+            this.endChanges();
         }
     }
 

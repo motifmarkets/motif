@@ -18,7 +18,7 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
     private _placeheld: PlaceholderDitemFrame.Placeheld;
     private _invalidReason: string | undefined;
 
-    get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Placeholder; }
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Placeholder; }
     get initialised() { return true; }
 
     get placeheld() { return this._placeheld; }
@@ -54,7 +54,7 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
         this._placeheld = value;
     }
 
-    constructLoad(element: JsonElement | undefined) {
+    override constructLoad(element: JsonElement | undefined) {
         if (element === undefined) {
             this._placeheld = this.createInvalidPlacehold(Strings[StringId.PlaceholderDitem_ComponentStateNotSpecified]);
         } else {
@@ -75,7 +75,7 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
         // do not call super.constructLoad() as no LitIvemId or BrokerageAccountGroup
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         // eslint-disable-next-line @typescript-eslint/ban-types
         const persistablePlaceheld = PlaceholderDitemFrame.Placeheld.toPersistable(this._placeheld) as object;
         element.deepExtend(persistablePlaceheld as Json);

@@ -15,7 +15,7 @@ import { RepeatableExactHistorySequencerImplementation } from './repeatable-exac
 export abstract class RepeatableExactHistorySequenceSeriesImplementation extends HistorySequenceSeriesImplementation
     implements RepeatableExactHistorySequenceSeriesApi {
 
-    abstract get actual(): RepeatableExactHistorySequenceSeries;
+    abstract override get actual(): RepeatableExactHistorySequenceSeries;
 
     get repeatableExactSequencer() { return RepeatableExactHistorySequencerImplementation.toApi(this.actual.repeatableExactSequencer); }
     get sequencerPoints() { return RepeatableExactHistorySequencerImplementation.PointList.toApi(this.actual.sequencerPoints); }

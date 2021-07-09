@@ -18,7 +18,7 @@ import { TopShareholderTableValueSource } from './top-shareholder-table-value-so
 export class TopShareholderTableDefinition extends SingleDataItemTableDefinition {
     private _topShareholderRecordDefinitionList: TopShareholderTableRecordDefinitionList;
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof TopShareholderTableRecordDefinitionList)) {
             throw new AssertInternalError('TSTDLRDL4558664', list.name);

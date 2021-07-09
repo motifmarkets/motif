@@ -90,6 +90,8 @@ export class ComparableList<T> {
         for (let i = subRangeStartIndex; i < subRangeEndPlus1Index; i++) {
             this._items[idx++] = values[i];
         }
+
+        this._count = newCount;
     }
 
     replace(index: Integer, value: T) {

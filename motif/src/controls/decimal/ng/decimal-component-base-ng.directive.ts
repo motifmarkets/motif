@@ -18,7 +18,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
 
     private _pushDecimalEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as DecimalUiAction; }
+    public override get uiAction() { return super.uiAction as DecimalUiAction; }
 
     constructor(cdr: ChangeDetectorRef,
         settingsService: SettingsService,
@@ -36,7 +36,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
         this.step = options.step;
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         this.applyOptions(this.uiAction.options);
         this.applyValue(this.uiAction.value);
         super.pushSettings();
@@ -46,7 +46,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
         this.uiAction.commitValue(value, typeId);
     }
 
-    protected setUiAction(action: DecimalUiAction) {
+    protected override setUiAction(action: DecimalUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: DecimalUiAction.PushEventHandlersInterface = {
@@ -59,7 +59,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushDecimalEventsSubscriptionId);
         super.finalise();
     }

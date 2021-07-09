@@ -30,12 +30,12 @@ export class BooleanUiAction extends UiAction {
         this.pushAutoAcceptance();
     }
 
-    subscribePushEvents(handlersInterface: BooleanUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: BooleanUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._booleanPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._booleanPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

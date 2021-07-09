@@ -72,7 +72,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new OrdersDitemFrame(this, this.commandRegisterService,
+        this._frame = new OrdersDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
         this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
         this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
@@ -115,15 +115,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         return this._modeId === OrdersDitemNgComponent.ModeId.LayoutEditor;
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._buyButtonComponent.initialise(this._buyUiAction);
         this._sellButtonComponent.initialise(this._sellUiAction);
@@ -144,7 +144,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._buyUiAction.finalise();
         this._sellUiAction.finalise();

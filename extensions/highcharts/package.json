@@ -1,6 +1,6 @@
 {
   "name": "motif-highcharts",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Highcharts Motif extension",
   "license": "SEE LICENSE IN license.txt",
   "homepage": "https://motionite.trade/motif",
@@ -19,7 +19,7 @@
     "eslint": "^7.22.0",
     "sass": "^1.32.8",
     "sass-loader": "^11.0.1",
-    "style-loader": "^2.0.0",
+    "style-loader": "^3.0.0",
     "ts-loader": "^8.0.18",
     "typescript": "^4.2.3",
     "webpack": "^5.28.0",
@@ -28,6 +28,7 @@
   "scripts": {
     "build": "webpack --mode development --config ./webpack.config.js",
     "lint": "eslint ./src --ext .ts",
-    "start:paritech_staging-dev": "cd ../../Paritech.Motif.WebApp && npm run start:paritech_staging-dev"
-  },
+    "start:paritech_staging-dev": "cd ../../motif && npm run start:paritech_staging-dev",
+    "start:fnsx_demo-dev": "cd ../../motif && npm run start:fnsx_demo-dev"
+  }
 }

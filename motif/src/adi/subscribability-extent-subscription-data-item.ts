@@ -23,7 +23,7 @@ export abstract class SubscribabilityExtentSubscriptionDataItem extends Publishe
         }
     }
 
-    protected processPublisherCameOnline() {
+    protected override processPublisherCameOnline() {
         if (this._subscribableOnline) {
             // Cannot be online before publisher
             throw new AssertInternalError('SESDIPPCOFN76888544092');
@@ -34,7 +34,7 @@ export abstract class SubscribabilityExtentSubscriptionDataItem extends Publishe
         }
     }
 
-    protected tryInitiateSubscribabilityIncreaseRetryWaiting(badness: Badness) {
+    protected override tryInitiateSubscribabilityIncreaseRetryWaiting(badness: Badness) {
         const initiated = super.tryInitiateSubscribabilityIncreaseRetryWaiting(badness);
         if (initiated) {
             return true;

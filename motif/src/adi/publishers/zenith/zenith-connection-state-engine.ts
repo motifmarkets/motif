@@ -194,12 +194,16 @@ export class ZenithConnectionStateEngine {
         }
     }
 
-    adviseZenithTokenFetchSuccess(accessToken: string, expiryTime: SysTick.Time) {
+    adviseZenithTokenFetchSuccess(accessToken: string, expiryTime: SysTick.Time, refreshRequired: boolean) {
         if (this.stateId === ZenithPublisherStateId.ZenithTokenFetch) {
             this._accessToken = accessToken;
             this._accessTokenExpiryTime = expiryTime;
             this._zenithTokenFetchSuccessiveFailureCount = 0;
-            this.action(ZenithConnectionStateEngine.ActionId.ZenithTokenInterval);
+            if (refreshRequired) {
+                this.action(ZenithConnectionStateEngine.ActionId.ZenithTokenInterval);
+            } else {
+                this.noAction(ZenithPublisherStateId.ZenithTokenActive);
+            }
             this.cameOnlineEvent();
         }
     }
@@ -215,8 +219,8 @@ export class ZenithConnectionStateEngine {
         }
     }
 
-    adviseZenithTokenInterval() {
-        if (this.stateId === ZenithPublisherStateId.ZenithTokenInterval) {
+    adviseZenithTokenRefreshRequired() {
+        if (this.stateId === ZenithPublisherStateId.ZenithTokenActive || this.stateId === ZenithPublisherStateId.ZenithTokenInterval) {
             this.action(ZenithConnectionStateEngine.ActionId.ZenithTokenRefresh);
         }
     }
@@ -226,7 +230,11 @@ export class ZenithConnectionStateEngine {
             this._accessToken = accessToken;
             this._accessTokenExpiryTime = expiryTime;
             this._zenithTokenRefreshSuccessiveFailureCount = 0;
-            this.action(ZenithConnectionStateEngine.ActionId.ZenithTokenInterval);
+            if (this._authenticationTypeId === ZenithConnectionStateEngine.AuthenticationTypeId.AuthOwner) {
+                this.action(ZenithConnectionStateEngine.ActionId.ZenithTokenInterval);
+            } else {
+                this.noAction(ZenithPublisherStateId.ZenithTokenActive);
+            }
         }
     }
 
@@ -309,6 +317,13 @@ export class ZenithConnectionStateEngine {
         this.stateChangeEvent(stateId, this._activeWaitId);
     }
 
+    private noAction(stateId: ZenithPublisherStateId) {
+        this.checkClearActionTimeout();
+        if (stateId !== this._stateId) {
+            this.setState(stateId);
+        }
+    }
+
     private action(actionId: ZenithConnectionStateEngine.ActionId) {
         const newStateId = ZenithConnectionStateEngine.Action.idToStateId(actionId);
         this.setState(newStateId);
@@ -367,6 +382,7 @@ export class ZenithConnectionStateEngine {
     ) {
             switch (this.stateId) {
                 case ZenithPublisherStateId.ZenithTokenFetch:
+                case ZenithPublisherStateId.ZenithTokenActive:
                 case ZenithPublisherStateId.ZenithTokenInterval:
                 case ZenithPublisherStateId.ZenithTokenRefresh:
                     if (this.stateId !== ZenithPublisherStateId.ZenithTokenFetch) {

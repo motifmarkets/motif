@@ -87,7 +87,7 @@ export abstract class BrokerageAccountDataRecordsSubscriptionDataDefinition exte
 }
 
 export class FeedsDataDefinition extends PublisherSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     get referencable() { return true; }
 
@@ -95,7 +95,7 @@ export class FeedsDataDefinition extends PublisherSubscriptionDataDefinition {
         super(DataChannelId.Feeds);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return ''; // only is one (for now)
     }
 }
@@ -109,13 +109,13 @@ export class ClassFeedsDataDefinition extends DataDefinition {
         super(DataChannelId.ClassFeeds);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return FeedClass.idToName(this.classId);
     }
 }
 
 export class TradingStatesDataDefinition extends MarketSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     marketId: MarketId;
 
@@ -125,13 +125,13 @@ export class TradingStatesDataDefinition extends MarketSubscriptionDataDefinitio
         super(DataChannelId.TradingStates);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ' Query: Market: ' + MarketInfo.idToName(this.marketId);
     }
 }
 
 export class MarketsDataDefinition extends PublisherSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     get referencable() { return true; }
 
@@ -139,7 +139,7 @@ export class MarketsDataDefinition extends PublisherSubscriptionDataDefinition {
         super(DataChannelId.Markets);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return ''; // only is one (for now)
     }
 }
@@ -151,7 +151,7 @@ export class QueryMarketsDataDefinition extends PublisherSubscriptionDataDefinit
         super(DataChannelId.Markets);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ' Query';
     }
 }
@@ -166,7 +166,7 @@ export class SymbolsDataDefinition extends MarketSubscriptionDataDefinition {
         super(DataChannelId.Symbols);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return MarketInfo.idToName(this.marketId) + '|' + IvemClass.idToName(this.classId);
     }
 }
@@ -297,11 +297,11 @@ export class SecurityDataDefinition extends MarketSubscriptionDataDefinition {
         super(DataChannelId.Security);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.litIvemId.name;
     }
 }
@@ -315,7 +315,7 @@ export class QuerySecurityDataDefinition extends MarketSubscriptionDataDefinitio
         super(DataChannelId.Security);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 }
@@ -329,11 +329,11 @@ export class DepthDataDefinition extends MarketSubscriptionDataDefinition {
         super(DataChannelId.Depth);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.litIvemId.mapKey;
     }
 }
@@ -347,7 +347,7 @@ export class QueryDepthDataDefinition extends MarketSubscriptionDataDefinition {
         super(DataChannelId.Depth);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
     }
 }
@@ -361,11 +361,11 @@ export class DepthLevelsDataDefinition extends MarketSubscriptionDataDefinition 
         super(DataChannelId.DepthLevels);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ` Query: LitIvemId:  ${this.litIvemId.name}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.litIvemId.mapKey;
     }
 }
@@ -379,7 +379,7 @@ export class QueryDepthLevelsDataDefinition extends MarketSubscriptionDataDefini
         super(DataChannelId.DepthLevels);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
     }
 }
@@ -397,7 +397,7 @@ export class QueryTradesDataDefinition extends MarketSubscriptionDataDefinition 
         super(DataChannelId.Trades);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         let result = `${super.getDescription()} Query: ${this.litIvemId.name}`;
         if (this.count !== undefined) {
             result += ` Count: ${this.count}`;
@@ -424,11 +424,11 @@ export class TradesDataDefinition extends MarketSubscriptionDataDefinition {
         super(DataChannelId.Trades);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return `${super.getDescription()} LitIvemId: ${this.litIvemId.name}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.litIvemId.mapKey;
     }
 }
@@ -442,11 +442,11 @@ export class LatestTradingDayTradesDataDefinition extends DataDefinition {
         super(DataChannelId.LatestTradingDayTrades);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.litIvemId.mapKey;
     }
 }
@@ -472,12 +472,12 @@ export class DayTradesDataDefinition extends DataDefinition {
         super(DataChannelId.DayTrades);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         const dateDescription = this._date === undefined ? '' : ' ' + dateToUtcYYYYMMDD(this._date);
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name} Date: ${dateDescription}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         const dateStr = this._date === undefined ? '' : dateToUtcYYYYMMDD(this._date);
         return dateStr + '|' + this.litIvemId.mapKey;
     }
@@ -493,11 +493,11 @@ export class LowLevelTopShareholdersDataDefinition extends PublisherSubscription
         super(DataChannelId.LowLevelTopShareholders);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         let key = this.litIvemId.name;
         if (this.tradingDate !== undefined) {
             key += '|' + this.tradingDate.toString();
@@ -517,11 +517,11 @@ export class TopShareholdersDataDefinition extends DataDefinition {
         super(DataChannelId.TopShareholders);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         let key = this.litIvemId.name;
         if (this.tradingDate !== undefined) {
             key += '|' + this.tradingDate.toString();
@@ -534,7 +534,7 @@ export class TopShareholdersDataDefinition extends DataDefinition {
 }
 
 export class BrokerageAccountsDataDefinition extends FeedSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     get referencable() { return true; }
 
@@ -542,11 +542,11 @@ export class BrokerageAccountsDataDefinition extends FeedSubscriptionDataDefinit
         super(DataChannelId.BrokerageAccounts);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }
@@ -558,7 +558,7 @@ export class QueryBrokerageAccountsDataDefinition extends FeedSubscriptionDataDe
         super(DataChannelId.BrokerageAccounts);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ' Query';
     }
 }
@@ -573,11 +573,11 @@ export class BrokerageAccountOrdersDataDefinition extends OrdersBrokerageAccount
         super(DataChannelId.BrokerageAccountOrders);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.accountId;
     }
 }
@@ -591,7 +591,7 @@ export class QueryBrokerageAccountOrdersDataDefinition extends BrokerageAccountD
         super(DataChannelId.BrokerageAccountOrders);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
         if (this.orderId !== undefined) {
             result += ` OrderId: ${this.orderId}`;
@@ -607,7 +607,7 @@ export class AllOrdersDataDefinition extends DataDefinition {
         super(DataChannelId.AllOrders);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }
@@ -622,11 +622,11 @@ export class BrokerageAccountHoldingsDataDefinition extends HoldingsBrokerageAcc
         super(DataChannelId.BrokerageAccountHoldings);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.accountId;
     }
 }
@@ -640,7 +640,7 @@ export class QueryBrokerageAccountHoldingsDataDefinition extends HoldingsBrokera
         super(DataChannelId.BrokerageAccountHoldings);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
         if (this.ivemId !== undefined) {
             result += ` IvemId: ${this.ivemId.name}`;
@@ -656,7 +656,7 @@ export class AllHoldingsDataDefinition extends DataDefinition {
         super(DataChannelId.AllHoldings);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }
@@ -671,11 +671,11 @@ export class BrokerageAccountBalancesDataDefinition extends BalancesBrokerageAcc
         super(DataChannelId.BrokerageAccountBalances);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.accountId;
     }
 }
@@ -687,7 +687,7 @@ export class QueryBrokerageAccountBalancesDataDefinition extends BalancesBrokera
         super(DataChannelId.BrokerageAccountBalances);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         return `${super.getDescription()} Query: AccountId: ${this.accountId}`;
     }
 }
@@ -699,7 +699,7 @@ export class AllBalancesDataDefinition extends DataDefinition {
         super(DataChannelId.AllBalances);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }
@@ -714,17 +714,17 @@ export class BrokerageAccountTransactionsDataDefinition extends TransactionsBrok
         super(DataChannelId.BrokerageAccountTransactions);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.accountId;
     }
 }
 
 export class QueryTransactionsDataDefinition extends TransactionsBrokerageAccountSubscriptionDataDefinition {
-    accountId: BrokerageAccountId;
+    override accountId: BrokerageAccountId;
     fromDate: Date | undefined;
     toDate: Date | undefined;
     count: Integer | undefined;
@@ -739,7 +739,7 @@ export class QueryTransactionsDataDefinition extends TransactionsBrokerageAccoun
         super(DataChannelId.BrokerageAccountTransactions);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
         if (this.fromDate !== undefined) {
             result += ` FromDate: ${this.fromDate}`;
@@ -773,7 +773,7 @@ export class AllTransactionsDataDefinition extends DataDefinition {
         super(DataChannelId.AllTransactions);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }
@@ -797,7 +797,7 @@ export class OrderRequestsDataDefinition extends BrokerageAccountDataRecordsSubs
 }
 
 export class QueryOrderRequestsDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
-    accountId: BrokerageAccountId;
+    override accountId: BrokerageAccountId;
     orderId: OrderId | undefined;
 
     get referencable() { return false; }
@@ -806,7 +806,7 @@ export class QueryOrderRequestsDataDefinition extends BrokerageAccountDataRecord
         super(DataChannelId.OrderRequests);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
         if (this.orderId !== undefined) {
             result += ` Order: ${this.orderId}`;
@@ -834,7 +834,7 @@ export class OrderAuditDataDefinition extends BrokerageAccountDataRecordsSubscri
 }
 
 export class QueryOrderAuditDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
-    accountId: BrokerageAccountId;
+    override accountId: BrokerageAccountId;
     fromDate: Date | undefined;
     toDate: Date | undefined;
     count: Integer | undefined;
@@ -846,7 +846,7 @@ export class QueryOrderAuditDataDefinition extends BrokerageAccountDataRecordsSu
         super(DataChannelId.OrderAudit);
     }
 
-    protected getDescription() {
+    protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
         if (this.fromDate !== undefined) {
             result += ` FromDate: ${this.fromDate}`;
@@ -865,7 +865,7 @@ export class QueryOrderAuditDataDefinition extends BrokerageAccountDataRecordsSu
 }
 
 export class OrderStatusesDataDefinition extends FeedSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     tradingFeedId: FeedId;
 
@@ -875,7 +875,7 @@ export class OrderStatusesDataDefinition extends FeedSubscriptionDataDefinition 
         super(DataChannelId.OrderStatuses);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return `${super.getDescription()} FeedId: ${FeedInfo.idToName(this.tradingFeedId)}`;
     }
 }
@@ -893,12 +893,12 @@ export class QueryChartHistoryDataDefinition extends MarketSubscriptionDataDefin
         super(DataChannelId.ChartHistory);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
     // not needed as not referencable
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         let key = this.litIvemId.name + '|' + this.intervalId.toString(10);
         if (this.fromDate !== undefined) {
             key += '|' + this.fromDate.toString();
@@ -912,13 +912,13 @@ export class QueryChartHistoryDataDefinition extends MarketSubscriptionDataDefin
 
 export abstract class OrderRequestDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
     // Do not allow any retries
-    readonly delayRetryAlgorithmId = PublisherSubscriptionDelayRetryAlgorithmId.Never;
-    readonly subscribabilityIncreaseRetryAllowed = false;
+    override readonly delayRetryAlgorithmId = PublisherSubscriptionDelayRetryAlgorithmId.Never;
+    override readonly subscribabilityIncreaseRetryAllowed = false;
 
     // Ensure sent as quickly as possible
-    readonly publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override readonly publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
-    accountId: BrokerageAccountId;
+    override accountId: BrokerageAccountId;
     flags: readonly OrderRequestFlagId[] | undefined;
 
     get referencable() { return false; }
@@ -994,7 +994,7 @@ export class ZenithExtConnectionDataDefinition extends DataDefinition {
         super(DataChannelId.ZenithExtConnection);
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return this.zenithWebsocketEndpoint;
     }
 }
@@ -1006,11 +1006,11 @@ export class ZenithServerInfoDataDefinition extends PublisherSubscriptionDataDef
         super(DataChannelId.ZenithServerInfo);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription();
     }
 
-    protected calculateChannelReferencableKey() {
+    protected override calculateChannelReferencableKey() {
         return '';
     }
 }

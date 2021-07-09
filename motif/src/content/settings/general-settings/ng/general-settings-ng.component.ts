@@ -53,6 +53,10 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         private _marketCodeAsLocalWheneverPossibleLabelComponent: CaptionLabelNgComponent;
     @ViewChild('marketCodeAsLocalWheneverPossibleControl', { static: true })
         private _marketCodeAsLocalWheneverPossibleControlComponent: CheckboxInputNgComponent;
+    @ViewChild('dropDownEditableSearchTermLabel', { static: true })
+        private _dropDownEditableSearchTermLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('dropDownEditableSearchTermControl', { static: true })
+        private _dropDownEditableSearchTermControlComponent: CheckboxInputNgComponent;
     @ViewChild('numberGroupingActiveLabel', { static: true }) private _numberGroupingActiveLabelComponent: CaptionLabelNgComponent;
     @ViewChild('numberGroupingActiveControl', { static: true }) private _numberGroupingActiveControlComponent: CheckboxInputNgComponent;
     @ViewChild('minimumPriceFractionDigitsCountLabel', { static: true })
@@ -83,6 +87,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     private _exchangeHideModeUiAction: ExplicitElementsEnumUiAction;
     private _defaultMarketHiddenUiAction: BooleanUiAction;
     private _marketCodeAsLocalWheneverPossibleUiAction: BooleanUiAction;
+    private _dropDownEditableSearchTermUiAction: BooleanUiAction;
     private _numberGroupingActiveUiAction: BooleanUiAction;
     private _minimumPriceFractionDigitsCountUiAction: IntegerUiAction;
     private _24HourUiAction: BooleanUiAction;
@@ -106,6 +111,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._exchangeHideModeUiAction = this.createExchangeHideModeUiAction();
         this._defaultMarketHiddenUiAction = this.createDefaultMarketHiddenUiAction();
         this._marketCodeAsLocalWheneverPossibleUiAction = this.createMarketCodeAsLocalWheneverPossibleUiAction();
+        this._dropDownEditableSearchTermUiAction = this.createDropDownEditableSearchTermUiAction();
         this._numberGroupingActiveUiAction = this.createNumberGroupingActiveUiAction();
         this._minimumPriceFractionDigitsCountUiAction = this.createMinimumPriceFractionDigitsCountUiAction();
         this._24HourUiAction = this.create24HourUiAction();
@@ -133,7 +139,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this.pushValues();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolsService.unsubscribeAllowedExchangeIdsChangedEvent(this._allowedExchangeIdsChangedSubscriptionId);
 
         this._fontFamilyUiAction.finalise();
@@ -142,6 +148,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._exchangeHideModeUiAction.finalise();
         this._defaultMarketHiddenUiAction.finalise();
         this._marketCodeAsLocalWheneverPossibleUiAction.finalise();
+        this._dropDownEditableSearchTermUiAction.finalise();
         this._numberGroupingActiveUiAction.finalise();
         this._minimumPriceFractionDigitsCountUiAction.finalise();
         this._24HourUiAction.finalise();
@@ -226,6 +233,16 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_MarketCodeAsLocalWheneverPossible]);
         action.commitEvent = () => {
             this._symbolsService.pscMarketCodeAsLocalWheneverPossible = this._marketCodeAsLocalWheneverPossibleUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createDropDownEditableSearchTermUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Control_DropDownEditableSearchTerm]);
+        action.pushTitle(Strings[StringId.SettingTitle_Control_DropDownEditableSearchTerm]);
+        action.commitEvent = () => {
+            this.coreSettings.control_DropDownEditableSearchTerm = this._dropDownEditableSearchTermUiAction.definedValue;
         };
         return action;
     }
@@ -319,6 +336,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._defaultMarketHiddenControlComponent.initialise(this._defaultMarketHiddenUiAction);
         this._marketCodeAsLocalWheneverPossibleLabelComponent.initialise(this._marketCodeAsLocalWheneverPossibleUiAction);
         this._marketCodeAsLocalWheneverPossibleControlComponent.initialise(this._marketCodeAsLocalWheneverPossibleUiAction);
+        this._dropDownEditableSearchTermLabelComponent.initialise(this._dropDownEditableSearchTermUiAction);
+        this._dropDownEditableSearchTermControlComponent.initialise(this._dropDownEditableSearchTermUiAction);
         this._numberGroupingActiveLabelComponent.initialise(this._numberGroupingActiveUiAction);
         this._numberGroupingActiveControlComponent.initialise(this._numberGroupingActiveUiAction);
         this._minimumPriceFractionDigitsCountLabelComponent.initialise(this._minimumPriceFractionDigitsCountUiAction);
@@ -343,6 +362,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._exchangeHideModeUiAction.pushValue(this._symbolsService.pscExchangeHideModeId);
         this._defaultMarketHiddenUiAction.pushValue(this._symbolsService.pscDefaultMarketHidden);
         this._marketCodeAsLocalWheneverPossibleUiAction.pushValue(this._symbolsService.pscMarketCodeAsLocalWheneverPossible);
+        this._dropDownEditableSearchTermUiAction.pushValue(this.coreSettings.control_DropDownEditableSearchTerm);
         this._numberGroupingActiveUiAction.pushValue(this.coreSettings.format_NumberGroupingActive);
         this._minimumPriceFractionDigitsCountUiAction.pushValue(this.coreSettings.format_MinimumPriceFractionDigitsCount);
         this._24HourUiAction.pushValue(this.coreSettings.format_24Hour);

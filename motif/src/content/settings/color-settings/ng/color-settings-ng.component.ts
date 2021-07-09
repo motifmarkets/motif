@@ -80,7 +80,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         this._colorSettings.loadColorScheme(value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._saveSchemeUiAction.finalise();
         super.finalise();
     }

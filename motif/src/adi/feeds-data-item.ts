@@ -21,7 +21,7 @@ export class FeedsDataItem extends DataRecordsPublisherSubscriptionDataItem<Feed
         return undefined;
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.Feeds) {
             super.processMessage(msg);
         } else {

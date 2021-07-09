@@ -32,12 +32,12 @@ export class TradingFeed extends Feed {
         }
     }
 
-    dispose() {
+    override dispose() {
         this.checkDisposeOrderStatusesFetcher();
         super.dispose();
     }
 
-    protected calculateCorrectnessId() {
+    protected override calculateCorrectnessId() {
         let correctnessId = super.calculateCorrectnessId();
         if (this._orderStatusesFetcher !== undefined) {
             correctnessId = Correctness.merge2Ids(correctnessId, this._orderStatusesFetcher.correctnessId);

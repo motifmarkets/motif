@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
 import { ComponentContainer } from 'golden-layout';
@@ -31,6 +40,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('balancesTable', { static: true }) private _balancesTableComponent: TableNgComponent;
     @ViewChild('holdingsTable', { static: true }) private _holdingsTableComponent: TableNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
+    @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
@@ -40,6 +50,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     public balancesHeight: AngularSplitTypes.AreaSize.Html = 50;
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
+    private _sellUiAction: IconButtonUiAction;
     private _accountGroupLinkUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
     private _explicitBalancesHeight = false;
@@ -60,12 +71,13 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new HoldingsDitemFrame(this, this.commandRegisterService,
+        this._frame = new HoldingsDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
-        this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
+        this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);
         this._frame.groupOpenedEvent = (group) => this.handleGroupOpenedEvent(group);
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
+        this._sellUiAction = this.createSellUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._accountGroupLinkUiAction = this.createToggleAccountGroupLinkingUiAction();
 
@@ -111,16 +123,17 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         }
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
+        this._sellButtonComponent.initialise(this._sellUiAction);
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
         this._accountLinkButtonComponent.initialise(this._accountGroupLinkUiAction);
 
@@ -137,11 +150,14 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             }
         }
 
+        this.pushSellButtonState(this._frame.focusedRecordIndex);
+
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._accountGroupUiAction.finalise();
+        this._sellUiAction.finalise();
         this._accountGroupLinkUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
 
@@ -181,6 +197,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.setBrokerageAccountGroupFromDitem(accountId);
     }
 
+    private handleSellSignalEvent() {
+        this._frame.sellFocused();
+    }
+
     private handleAccountLinkSignalEvent() {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
@@ -189,8 +209,8 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleRecordFocusEvent(recordIndex: Integer | undefined) {
-        //
+    private handleHoldingsRecordFocusEvent(recordIndex: Integer | undefined) {
+        this.pushSellButtonState(this._frame.focusedRecordIndex);
     }
 
     private handleGroupOpenedEvent(group: BrokerageAccountGroup) {
@@ -203,6 +223,18 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         action.pushTitle(Strings[StringId.SelectAccountTitle]);
         action.pushPlaceholder(Strings[StringId.BrokerageAccountIdInputPlaceholderText]);
         action.commitEvent = (typeId) => this.handleAccountGroupCommitEvent(typeId);
+        return action;
+    }
+
+    private createSellUiAction() {
+        const commandName = InternalCommand.Name.SellOrderPad;
+        const displayId = StringId.SellOrderPadCaption;
+        const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.SellOrderPadTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.SellOrderPad);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleSellSignalEvent();
         return action;
     }
 
@@ -226,6 +258,14 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         action.pushIcon(IconButtonUiAction.IconId.AccountGroupLink);
         action.signalEvent = () => this.handleAccountLinkSignalEvent();
         return action;
+    }
+
+    private pushSellButtonState(newRecordIndex: Integer | undefined) {
+        if (newRecordIndex === undefined) {
+            this._sellUiAction.pushDisabled();
+        } else {
+            this._sellUiAction.pushValid();
+        }
     }
 
     private pushAccountLinkButtonState() {

@@ -106,7 +106,7 @@ export class ZenithStatusFrame extends ContentFrame {
         this._componentAccess.notifyServerInfoChanged();
     }
 
-    finalise() {
+    override finalise() {
         this.unsubscribeZenithExtConnection();
         this.unsubscribeZenithServerInfo();
 

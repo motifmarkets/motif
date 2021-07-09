@@ -23,7 +23,7 @@ export abstract class BrokerageAccountGroupDataRecordTableRecordDefinitionList<
     get brokerageAccountGroup() {
         return this._brokerageAccountGroup;
     }
-    get dataRecordList() {
+    override get dataRecordList() {
         return super
             .dataRecordList as BrokerageAccountGroupDataRecordList<Record>;
     }
@@ -37,7 +37,7 @@ export abstract class BrokerageAccountGroupDataRecordTableRecordDefinitionList<
         this._brokerageAccountGroup = group;
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         const groupElement = element.tryGetElement(
@@ -54,7 +54,7 @@ export abstract class BrokerageAccountGroupDataRecordTableRecordDefinitionList<
         }
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         const groupElement = element.newElement(
             BrokerageAccountGroupDataRecordTableRecordDefinitionList.JsonTag
@@ -63,11 +63,11 @@ export abstract class BrokerageAccountGroupDataRecordTableRecordDefinitionList<
         this._brokerageAccountGroup.saveToJson(groupElement);
     }
 
-    protected abstract subscribeList(): BrokerageAccountGroupDataRecordList<Record>;
-    protected abstract unsubscribeList(
+    protected abstract override subscribeList(): BrokerageAccountGroupDataRecordList<Record>;
+    protected abstract override unsubscribeList(
         list: BrokerageAccountGroupDataRecordList<Record>
     ): void;
-    protected abstract createTableRecordDefinition(
+    protected abstract override createTableRecordDefinition(
         record: Record
     ): BrokerageAccountDataRecordTableRecordDefinition<Record>;
 }

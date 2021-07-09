@@ -24,7 +24,7 @@ export abstract class EnumElementComponentBaseNgDirective extends EnumComponentB
         this.applyElements();
     }
 
-    protected applyElementTitle(element: Integer, title: string) {
+    protected override applyElementTitle(element: Integer, title: string) {
         super.applyElementTitle(element, title);
         if (element === this.element && title !== this.elementTitle) {
             this.elementTitle = title;
@@ -32,7 +32,7 @@ export abstract class EnumElementComponentBaseNgDirective extends EnumComponentB
         }
     }
 
-    protected applyElementCaption(element: Integer, caption: string) {
+    protected override applyElementCaption(element: Integer, caption: string) {
         super.applyElementCaption(element, caption);
         if (element === this.element && caption !== this.elementCaption) {
             this.elementCaption = caption;
@@ -41,7 +41,7 @@ export abstract class EnumElementComponentBaseNgDirective extends EnumComponentB
         }
     }
 
-    protected applyElements() {
+    protected override applyElements() {
         super.applyElements();
         const properties = this.uiAction.getElementProperties(this._element);
         if (properties === undefined) {

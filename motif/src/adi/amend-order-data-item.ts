@@ -21,7 +21,7 @@ export class AmendOrderDataItem extends OrderRequestDataItem {
     get estimatedTax() { return this._estimatedTax; }
     get estimatedValue() { return this._estimatedValue; }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.AmendOrderResponse) {
             super.processMessage(msg);
         } else {

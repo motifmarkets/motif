@@ -21,12 +21,12 @@ export abstract class IntervalHistorySequenceSeries extends HistorySequenceSerie
 
     getSequencerPoint(idx: Integer) { return this.sequencerPoints.getItem(idx); }
 
-    protected getPointCount() {
+    protected override getPointCount() {
         const sequencerPointCount = super.getPointCount();
         return this._completedIntervalsVisibleOnly ? sequencerPointCount - 1 : sequencerPointCount;
     }
 
-    protected notifyPointInserted(index: Integer) {
+    protected override notifyPointInserted(index: Integer) {
         if (!this._completedIntervalsVisibleOnly) {
             super.notifyPointInserted(index);
         } else {
@@ -41,7 +41,7 @@ export abstract class IntervalHistorySequenceSeries extends HistorySequenceSerie
         }
     }
 
-    protected notifyPointUpdated(index: Integer) {
+    protected override notifyPointUpdated(index: Integer) {
         if (!this._completedIntervalsVisibleOnly) {
             super.notifyPointUpdated(index);
         } else {

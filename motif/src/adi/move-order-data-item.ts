@@ -16,7 +16,7 @@ export class MoveOrderDataItem extends OrderRequestDataItem {
     get estimatedTax() { return undefined; }
     get estimatedValue() { return undefined; }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.MoveOrderResponse) {
             super.processMessage(msg);
         } else {

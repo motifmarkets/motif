@@ -848,6 +848,8 @@ export const enum StringId {
     SettingTitle_Symbol_DefaultMarketHidden,
     SettingCaption_Symbol_MarketCodeAsLocalWheneverPossible,
     SettingTitle_Symbol_MarketCodeAsLocalWheneverPossible,
+    SettingCaption_Control_DropDownEditableSearchTerm,
+    SettingTitle_Control_DropDownEditableSearchTerm,
     SettingCaption_Format_NumberGroupingActive,
     SettingTitle_Format_NumberGroupingActive,
     SettingCaption_Format_MinimumPriceFractionDigitsCount,
@@ -921,6 +923,7 @@ export const enum StringId {
     ZenithPublisherStateDisplay_AuthFetch,
     ZenithPublisherStateDisplay_SocketOpen,
     ZenithPublisherStateDisplay_ZenithTokenFetch,
+    ZenithPublisherStateDisplay_ZenithTokenActive,
     ZenithPublisherStateDisplay_ZenithTokenInterval,
     ZenithPublisherStateDisplay_ZenithTokenRefresh,
     ZenithPublisherStateDisplay_SocketClose,
@@ -5931,6 +5934,16 @@ export namespace I18nStrings {
                 en: 'Use abbreviated market code in symbol when market belongs to symbol\'s exchange',
             }
         },
+        SettingCaption_Control_DropDownEditableSearchTerm: {
+            id: StringId.SettingCaption_Control_DropDownEditableSearchTerm, translations: {
+                en: 'Editable drop-down selects',
+            }
+        },
+        SettingTitle_Control_DropDownEditableSearchTerm: {
+            id: StringId.SettingTitle_Control_DropDownEditableSearchTerm, translations: {
+                en: 'Edit previous search terms in drop-down combo box selects',
+            }
+        },
         SettingCaption_Format_NumberGroupingActive: {
             id: StringId.SettingCaption_Format_NumberGroupingActive, translations: {
                 en: 'Number grouping',
@@ -6294,6 +6307,11 @@ export namespace I18nStrings {
         ZenithPublisherStateDisplay_ZenithTokenFetch: {
             id: StringId.ZenithPublisherStateDisplay_ZenithTokenFetch, translations: {
                 en: 'Token Fetch',
+            }
+        },
+        ZenithPublisherStateDisplay_ZenithTokenActive: {
+            id: StringId.ZenithPublisherStateDisplay_ZenithTokenActive, translations: {
+                en: 'Token Active',
             }
         },
         ZenithPublisherStateDisplay_ZenithTokenInterval: {

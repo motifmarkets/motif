@@ -5,6 +5,7 @@
  */
 
 @import './partials/main-toolbar-css-mixin';
+@import './partials/centered-toolbar-group-mixin';
 
 :host {
     display: block;
@@ -33,4 +34,14 @@
 
 #holdingsTable {
     flex-grow: 1;
+}
+
+#orderReqestButtonsDiv {
+    @include centeredToolbarGroupMixin;
+    margin-left: $toolbar-button-group-separation;
+}
+
+#linkButtonsDiv {
+    @include centeredToolbarGroupMixin;
+    margin-left: $toolbar-button-group-separation;
 }

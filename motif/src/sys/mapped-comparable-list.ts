@@ -14,26 +14,26 @@ export class MappedComparableList<T extends Mappable> extends ComparableList<T> 
         return this._map.get(key);
     }
 
-    setItem(index: Integer, value: T) {
+    override setItem(index: Integer, value: T) {
         const existingValue = this.items[index];
         this._map.delete(existingValue.mapKey);
         super.setItem(index, value);
         this._map.set(value.mapKey, value);
     }
 
-    add(value: T) {
+    override add(value: T) {
         this._map.set(value.mapKey, value);
         return super.add(value);
     }
 
-    addRange(values: T[]) {
+    override addRange(values: T[]) {
         for (const value of values) {
             this._map.set(value.mapKey, value);
         }
         super.addRange(values);
     }
 
-    addItemsRange(values: T[], rangeStartIndex: Integer, rangeCount: Integer) {
+    override addItemsRange(values: T[], rangeStartIndex: Integer, rangeCount: Integer) {
         const nextSubRangeIdx = rangeStartIndex + rangeCount;
         for (let i = rangeStartIndex; i < nextSubRangeIdx; i++) {
             const value = values[i];
@@ -42,37 +42,37 @@ export class MappedComparableList<T extends Mappable> extends ComparableList<T> 
         super.addItemsRange(values, rangeStartIndex, rangeCount);
     }
 
-    replace(index: Integer, value: T) {
+    override replace(index: Integer, value: T) {
         const existingValue = this.items[index];
         this._map.delete(existingValue.mapKey);
         super.replace(index, value);
         this._map.set(value.mapKey, value);
     }
 
-    insert(index: Integer, value: T) {
+    override insert(index: Integer, value: T) {
         this._map.set(value.mapKey, value);
         return super.insert(index, value);
     }
 
-    insertRange(index: Integer, values: T[]) {
+    override insertRange(index: Integer, values: T[]) {
         for (const value of values) {
             this._map.set(value.mapKey, value);
         }
         super.insertRange(index, values);
     }
 
-    remove(value: T) {
+    override remove(value: T) {
         super.remove(value);
         this._map.delete(value.mapKey);
     }
 
-    removeAtIndex(index: Integer) {
+    override removeAtIndex(index: Integer) {
         const existingValue = this.items[index];
         this._map.delete(existingValue.mapKey);
         super.removeAtIndex(index);
     }
 
-    removeRange(index: Integer, deleteCount: Integer) {
+    override removeRange(index: Integer, deleteCount: Integer) {
         const nextRangeIdx = index + deleteCount;
         for (let i = index; i < nextRangeIdx; i++) {
             const existingValue = this.items[i];
@@ -81,17 +81,17 @@ export class MappedComparableList<T extends Mappable> extends ComparableList<T> 
         super.removeRange(index, deleteCount);
     }
 
-    extract(value: T): T {
+    override extract(value: T): T {
         this._map.delete(value.mapKey);
         return super.extract(value);
     }
 
-    clear() {
+    override clear() {
         this._map.clear();
         super.clear();
     }
 
-    contains(value: T) {
+    override contains(value: T) {
         return this._map.has(value.mapKey);
     }
 }

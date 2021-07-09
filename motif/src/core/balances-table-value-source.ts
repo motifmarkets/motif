@@ -24,7 +24,7 @@ export class BalancesTableValueSource extends DataRecordTableValueSource<Balance
         super(firstFieldIndexOffset);
     }
 
-    activate(): TableGridValue[] {
+    override activate(): TableGridValue[] {
         this._balancesChangedEventSubscriptionId = this._balances.subscribeChangedEvent(
             (changedFieldIds) => this.handleBalancesChangedEvent(changedFieldIds)
         );
@@ -32,7 +32,7 @@ export class BalancesTableValueSource extends DataRecordTableValueSource<Balance
         return super.activate();
     }
 
-    deactivate() {
+    override deactivate() {
         this._balances.unsubscribeChangedEvent(this._balancesChangedEventSubscriptionId);
         this._balancesChangedEventSubscriptionId = undefined;
 

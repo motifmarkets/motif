@@ -47,11 +47,11 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         this.finalise();
     }
 
-    protected initialise() {
+    protected override initialise() {
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._frame.finalise();
         super.finalise();
     }

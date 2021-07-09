@@ -33,6 +33,8 @@ import {
     Logger,
     mSecsPerMin,
     MultiEvent,
+    SuccessOrErrorText,
+    SuccessOrErrorText_Success,
     SysTick
 } from 'src/sys/internal-api';
 import { WorkspaceService } from 'src/workspace/internal-api';
@@ -502,10 +504,10 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 );
             } else {
                 const requestedInfo = activeDownload.info;
-                const infoMatches = this.matchRequestWithInfo(request, requestedInfo);
-                if (!infoMatches) {
+                const matchOrErrorText = this.matchRequestWithInfo(request, requestedInfo);
+                if (matchOrErrorText !== SuccessOrErrorText_Success) {
                     Logger.logExternalError(ExternalError.Code.ExtensionsServiceMismatchedExtensionInfo,
-                        `${this.generateExtensionKeyText(requestExtensionInfo)}`
+                        `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchOrErrorText}`
                     );
                 } else {
                     const registration = this.registerExtension(request, requestedInfo);
@@ -617,13 +619,30 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo) {
+    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo): SuccessOrErrorText {
         const match =
             request.publisherName === extensionInfo.publisherName &&
             request.name === extensionInfo.name &&
             request.version === extensionInfo.version &&
             request.apiVersion === extensionInfo.apiVersion;
-        return match;
+
+        if (match) {
+            return SuccessOrErrorText_Success;
+        } else {
+            const extensionText =
+                `${extensionInfo.publisherName}|` +
+                `${extensionInfo.name}|` +
+                `${extensionInfo.version}|` +
+                `${extensionInfo.apiVersion}`;
+
+            const requestText =
+                `${request.publisherName}|` +
+                `${request.name}|` +
+                `${request.version}|` +
+                `${request.apiVersion}`;
+
+            return `${extensionText}|:|${requestText}`;
+        }
     }
 }
 

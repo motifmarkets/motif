@@ -31,7 +31,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private _dataItem: BrokerageAccountsDataItem;
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
-    protected get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
+    protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
 
     constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
         pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
@@ -58,7 +58,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         this.uiAction.commitValue(value, typeId);
     }
 
-    protected setUiAction(action: BrokerageAccountGroupUiAction) {
+    protected override setUiAction(action: BrokerageAccountGroupUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BrokerageAccountGroupUiAction.PushEventHandlersInterface = {
@@ -83,7 +83,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         }
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._dataItemIncubator.finalise();
         this.uiAction.unsubscribePushEvents(this._pushBrokerageAccountIdEventsSubscriptionId);
         super.finalise();

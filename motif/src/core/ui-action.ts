@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 
 export abstract class UiAction {
     private _pushMultiEvent = new MultiEvent<UiAction.PushEventHandlersInterface>();
@@ -110,10 +110,7 @@ export abstract class UiAction {
         this._inputtedText = text;
 
         if (valid) {
-            if (this._inputInvalid) {
-                this._inputInvalid = false;
-                this.pushState(this._inputInvalidBlockedStateId, this._inputInvalidBlockedStateTitle);
-            }
+            this.checkPushInputValid();
         } else {
             if (this._autoInvalid) {
                 if (!this._inputInvalid) {
@@ -245,9 +242,7 @@ export abstract class UiAction {
     }
 
     protected commit(typeId: UiAction.CommitTypeId) {
-        assert(this.stateId !== UiAction.StateId.Invalid);
-
-        assert(!this._inputInvalid, 'UICI666844932');
+        this.checkPushInputValid();
 
         const inputCommit = typeId === UiAction.CommitTypeId.Input;
 
@@ -263,30 +258,33 @@ export abstract class UiAction {
     }
 
     protected pushAutoAcceptance() {
-        if (!this._valueRequired || !this.valueUndefined) {
-            switch (this.autoAcceptanceTypeId) {
-                case UiAction.AutoAcceptanceTypeId.None: {
-                    if (this._stateId === UiAction.StateId.Missing && !this._valueRequired) {
-                        throw new AssertInternalError('UAPAAM2319971355');
+        if (this._autoAcceptanceTypeId !== UiAction.AutoAcceptanceTypeId.None) {
+            if (!this._valueRequired || !this.valueUndefined) {
+                switch (this.autoAcceptanceTypeId) {
+                    case UiAction.AutoAcceptanceTypeId.None: {
+                        throw new AssertInternalError('UAPAAN2319971355');
+                        // if (this._stateId === UiAction.StateId.Missing && !this._valueRequired) {
+                        //     throw new AssertInternalError('UAPAAM2319971355');
+                        // }
+                        break;
                     }
-                    break;
+                    case UiAction.AutoAcceptanceTypeId.Valid:
+                        this.pushValid();
+                        break;
+                    case UiAction.AutoAcceptanceTypeId.Accepted:
+                        this.pushAccepted();
+                        break;
+                    default:
+                        throw new UnreachableCaseError('UAPAAU2319971355', this.autoAcceptanceTypeId);
                 }
-                case UiAction.AutoAcceptanceTypeId.Valid:
-                    this.pushValid();
-                    break;
-                case UiAction.AutoAcceptanceTypeId.Accepted:
-                    this.pushAccepted();
-                    break;
-                default:
-                    throw new UnreachableCaseError('UAPAAU2319971355', this.autoAcceptanceTypeId);
-            }
-        } else {
-            switch (this._stateId) {
-                case UiAction.StateId.Invalid:
-                    throw new AssertInternalError('UAPAAI2319971355');
-                case UiAction.StateId.Valid:
-                case UiAction.StateId.Accepted:
-                    this.pushState(UiAction.StateId.Missing);
+            } else {
+                switch (this._stateId) {
+                    case UiAction.StateId.Invalid:
+                        throw new AssertInternalError('UAPAAI2319971355');
+                    case UiAction.StateId.Valid:
+                    case UiAction.StateId.Accepted:
+                        this.pushState(UiAction.StateId.Missing);
+                }
             }
         }
     }
@@ -391,6 +389,13 @@ export abstract class UiAction {
             const oldState = this._stateId;
             this._stateId = newStateId;
             this.notifyStateChangePush(oldState, newStateId);
+        }
+    }
+
+    private checkPushInputValid() {
+        if (this._inputInvalid) {
+            this._inputInvalid = false;
+            this.pushState(this._inputInvalidBlockedStateId, this._inputInvalidBlockedStateTitle);
         }
     }
 

@@ -15,7 +15,7 @@ import { IntervalHistorySequencerImplementation } from './interval-history-seque
 export abstract class IntervalHistorySequenceSeriesImplementation extends HistorySequenceSeriesImplementation
    implements IntervalHistorySequenceSeriesApi {
 
-   abstract get actual(): IntervalHistorySequenceSeries;
+   abstract override get actual(): IntervalHistorySequenceSeries;
 
    get intervalSequencer() { return IntervalHistorySequencerImplementation.toApi(this.actual.intervalSequencer); }
    get sequencerPoints() { return IntervalHistorySequencerImplementation.PointList.toApi(this.actual.sequencerPoints); }

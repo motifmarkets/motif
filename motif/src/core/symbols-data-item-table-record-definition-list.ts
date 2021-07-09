@@ -69,7 +69,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         return this._list[idx];
     }
 
-    activate() {
+    override activate() {
         const definition = this.createDataDefinition();
         this._dataItem = this._adi.subscribe(definition) as SymbolsDataItem;
         this._dataItemSubscribed = true;
@@ -95,7 +95,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         }
     }
 
-    deactivate() {
+    override deactivate() {
         // TableRecordDefinitionList can no longer be used after it is deactivated
         if (this.count > 0) {
             this.notifyListChange(UsableListChangeTypeId.Clear, 0, 0);
@@ -116,7 +116,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         }
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         const requestElement = element.tryGetElement(SymbolsDataItemTableRecordDefinitionList.JsonName.request, 'STRDLLFJ21210098');
@@ -128,7 +128,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         }
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         const requestElement = element.newElement(SymbolsDataItemTableRecordDefinitionList.JsonName.request);
         SymbolsDataItemTableRecordDefinitionList.Request.saveToJson(this._request, requestElement);
@@ -138,7 +138,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
     protected getCapacity() { return this._list.length; }
     protected setCapacity(value: Integer) { /* no code */ }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this.count;

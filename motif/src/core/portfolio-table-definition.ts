@@ -30,8 +30,8 @@ export class PortfolioTableDefinition extends TableDefinition {
         return result;
     }
 
-    protected activate() { }
-    protected deactivate() { }
+    protected override activate() { }
+    protected override deactivate() { }
 
     private prepareFieldListAndDefaultLayout() {
         this.fieldList.clear();

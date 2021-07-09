@@ -51,7 +51,7 @@ export class ClassFeedsDataItem extends DataItem {
         this._listChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected start() {
+    protected override start() {
         const feedsDefinition = new FeedsDataDefinition();
         this._allFeedsDataItem = this.subscribeDataItem(feedsDefinition) as FeedsDataItem;
 
@@ -75,7 +75,7 @@ export class ClassFeedsDataItem extends DataItem {
         super.start();
     }
 
-    protected stop() {
+    protected override stop() {
         this._allFeedsDataItem.unsubscribeBadnessChangeEvent(this._allBadnessChangeSubscriptionId);
         this._allFeedsDataItem.unsubscribeListChangeEvent(this._allListChangeSubscriptionId);
         this.unsubscribeDataItem(this._allFeedsDataItem);
@@ -85,7 +85,7 @@ export class ClassFeedsDataItem extends DataItem {
         return this._allFeedsDataItem.badness;
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this._feeds.length;

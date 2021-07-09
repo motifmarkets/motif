@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { ExchangeId, IvemId, LitIvemId, MarketId } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
@@ -190,11 +199,11 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         return element;
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         assert(assigned(this._contentComponent), 'TSICAFI34429');
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
@@ -206,7 +215,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._toggleSymbolLinkingButtonUiAction.finalise();
         this._todayModeUiAction.finalise();
         this._historicalModeUiAction.finalise();

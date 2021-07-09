@@ -17,7 +17,7 @@ export class OrderStatusesDataItem extends FeedSubscriptionDataItem {
         super(definition, true);
     }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.OrderStatuses) {
             super.processMessage(msg);
         } else {
@@ -47,7 +47,7 @@ export class OrderStatusesDataItem extends FeedSubscriptionDataItem {
         return undefined;
     }
 
-    protected processSubscriptionPreOnline() { // virtual
+    protected override processSubscriptionPreOnline() { // virtual
         if (this._orderStatuses !== undefined && this._orderStatuses.length > 0) {
             this.beginUpdate();
             try {

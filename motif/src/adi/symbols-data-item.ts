@@ -35,7 +35,7 @@ export class SymbolsDataItem extends PublisherSubscriptionDataItem {
     get querySymbolsDefinition() { return this.definition as QuerySymbolsDataDefinition; }
     get records() { return this._records; }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.Symbols) {
             super.processMessage(msg);
         } else {
@@ -69,7 +69,7 @@ export class SymbolsDataItem extends PublisherSubscriptionDataItem {
         this._recordChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processSubscriptionPreOnline() { // virtual
+    protected override processSubscriptionPreOnline() { // virtual
         if (this._records.length > 0) {
             this.beginUpdate();
             try {
@@ -81,7 +81,7 @@ export class SymbolsDataItem extends PublisherSubscriptionDataItem {
         }
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this._records.length;

@@ -1002,8 +1002,9 @@ export const enum ZenithPublisherStateId {
     AuthFetch,
     SocketOpen,
     ZenithTokenFetch,
-    ZenithTokenInterval,
-    ZenithTokenRefresh,
+    ZenithTokenActive, // used by AuthToken
+    ZenithTokenInterval, // used by AuthOwner
+    ZenithTokenRefresh, // used by AuthOwner
     SocketClose,
     Finalised,
 }
@@ -2844,8 +2845,6 @@ export namespace OrderTriggerType {
 
 export namespace FeedInfo {
     export type Id = FeedId;
-
-    export const nullFeedId = -1;
 
     interface Info {
         readonly id: Id;
@@ -6389,6 +6388,10 @@ export namespace ZenithPublisherState {
         ZenithTokenFetch: {
             id: ZenithPublisherStateId.ZenithTokenFetch,
             displayId: StringId.ZenithPublisherStateDisplay_ZenithTokenFetch,
+        },
+        ZenithTokenActive: {
+            id: ZenithPublisherStateId.ZenithTokenActive,
+            displayId: StringId.ZenithPublisherStateDisplay_ZenithTokenActive,
         },
         ZenithTokenInterval: {
             id: ZenithPublisherStateId.ZenithTokenInterval,

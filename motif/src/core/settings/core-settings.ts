@@ -50,6 +50,8 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     private _format_24Hour = CoreSettings.Default.format_24Hour;
     private _format_DateTimeTimezoneModeId = CoreSettings.Default.format_DateTimeTimezoneModeId;
 
+    private _control_DropDownEditableSearchTerm = CoreSettings.Default.control_DropDownEditableSearchTerm;
+
     private _orderPad_ReviewEnabled = CoreSettings.Default.orderPad_ReviewEnabled;
     private _orderPad_DefaultOrderTypeId = CoreSettings.Default.orderPad_DefaultOrderTypeId;
     private _orderPad_DefaultTimeInForceId = CoreSettings.Default.orderPad_DefaultTimeInForceId;
@@ -307,6 +309,14 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
                 }
             }
         },
+        Control_DropDownEditableSearchTerm: { id: CoreSettings.Id.Control_DropDownEditableSearchTerm,
+            name: 'control_DropDownEditableSearchTerm',
+            defaulter: () => this.formatBoolean(CoreSettings.Default.control_DropDownEditableSearchTerm),
+            getter: () => this.formatBoolean(this._control_DropDownEditableSearchTerm),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => {
+                this._control_DropDownEditableSearchTerm = this.parseBoolean(value);
+            }
+        },
         OrderPad_ReviewEnabled: { id: CoreSettings.Id.OrderPad_ReviewEnabled,
             name: 'orderPad_ReviewEnabled',
             defaulter: () => this.formatBoolean(CoreSettings.Default.orderPad_ReviewEnabled),
@@ -473,6 +483,10 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     set format_DateTimeTimezoneModeId(value) { this._format_DateTimeTimezoneModeId = value;
         this.notifySettingChanged(CoreSettings.Id.Format_DateTimeTimezoneModeId); }
 
+    get control_DropDownEditableSearchTerm() { return this._control_DropDownEditableSearchTerm; }
+    set control_DropDownEditableSearchTerm(value) { this._control_DropDownEditableSearchTerm = value;
+        this.notifySettingChanged(CoreSettings.Id.Control_DropDownEditableSearchTerm); }
+
     get orderPad_ReviewEnabled() { return this._orderPad_ReviewEnabled; }
     set orderPad_ReviewEnabled(value) { this._orderPad_ReviewEnabled = value;
         this.notifySettingChanged(CoreSettings.Id.OrderPad_ReviewEnabled); }
@@ -543,6 +557,8 @@ export namespace CoreSettings {
         Format_24Hour,
         Format_DateTimeTimezoneModeId,
 
+        Control_DropDownEditableSearchTerm,
+
         OrderPad_ReviewEnabled,
         OrderPad_DefaultOrderTypeId,
         OrderPad_DefaultTimeInForceId,
@@ -598,6 +614,8 @@ export namespace CoreSettings {
         export const format_MinimumPriceFractionDigitsCount = 3;
         export const format_24Hour = true;
         export const format_DateTimeTimezoneModeId = SourceTzOffsetDateTime.TimezoneModeId.Source;
+
+        export const control_DropDownEditableSearchTerm = true;
 
         export const fontFamily = '\'Roboto\', Arial, \'Helvetica Neue\', Helvetica, sans-serif';
         export const fontSize = '12px';

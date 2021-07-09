@@ -33,7 +33,7 @@ export abstract class DataRecordTableRecordDefinitionList<Record extends DataRec
         return this._definitions[idx];
     }
 
-    activate() {
+    override activate() {
         this._dataRecordList = this.subscribeList();
         this._dataRecordListListChangeEventSubscriptionId = this._dataRecordList.subscribeListChangeEvent(
             (listChangeTypeId, idx, count) => this.handleListListChangeEvent(listChangeTypeId, idx, count)
@@ -61,7 +61,7 @@ export abstract class DataRecordTableRecordDefinitionList<Record extends DataRec
         }
     }
 
-    deactivate() {
+    override deactivate() {
         // TableRecordDefinitionList can no longer be used after it is deactivated
         if (this.count > 0) {
             this.notifyListChange(UsableListChangeTypeId.Clear, 0, this.count);
@@ -81,7 +81,7 @@ export abstract class DataRecordTableRecordDefinitionList<Record extends DataRec
     protected getCapacity() { return this._definitions.length; }
     protected setCapacity(value: Integer) { /* no code */ }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this.count;

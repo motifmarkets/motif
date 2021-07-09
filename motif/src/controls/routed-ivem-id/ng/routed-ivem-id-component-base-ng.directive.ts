@@ -20,7 +20,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
     private _pushRoutedIvemIdEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     protected get symbolsService() { return this._symbolsManager; }
-    public get uiAction() { return super.uiAction as RoutedIvemIdUiAction; }
+    public override get uiAction() { return super.uiAction as RoutedIvemIdUiAction; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -34,7 +34,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
 
     get symbolsManager() { return this._symbolsManager; }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyValue(this.uiAction.value, false);
     }
@@ -91,7 +91,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         }
     }
 
-    protected setUiAction(action: RoutedIvemIdUiAction) {
+    protected override setUiAction(action: RoutedIvemIdUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: RoutedIvemIdUiAction.PushEventHandlersInterface = {
@@ -102,7 +102,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         this.applyValue(action.value, false);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushRoutedIvemIdEventsSubscriptionId);
         super.finalise();
     }

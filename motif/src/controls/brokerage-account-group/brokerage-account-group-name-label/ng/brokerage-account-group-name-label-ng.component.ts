@@ -19,13 +19,13 @@ import { BrokerageAccountGroupComponentBaseNgDirective } from '../../ng/brokerag
 export class BrokerageAccountGroupNameLabelNgComponent extends BrokerageAccountGroupComponentBaseNgDirective implements OnDestroy {
     @Input() for: string;
 
-    public caption = '';
+    public override caption = '';
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, pulseService: CoreNgService) {
         super(cdr, settingsNgService.settingsService, pulseService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 

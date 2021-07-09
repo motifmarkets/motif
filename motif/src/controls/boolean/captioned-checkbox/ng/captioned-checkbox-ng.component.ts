@@ -38,7 +38,7 @@ export class CaptionedCheckboxNgComponent
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() {
+    public override get uiAction() {
         return super.uiAction as BooleanUiAction;
     }
 
@@ -59,7 +59,7 @@ export class CaptionedCheckboxNgComponent
         this.setInitialiseReady();
     }
 
-    ngOnDestroy() {
+    override ngOnDestroy() {
         this.finalise();
     }
 
@@ -67,7 +67,7 @@ export class CaptionedCheckboxNgComponent
         this.commitValue(checked);
     }
 
-    protected setUiAction(action: BooleanUiAction) {
+    protected override setUiAction(action: BooleanUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BooleanUiAction.PushEventHandlersInterface = {
@@ -80,7 +80,7 @@ export class CaptionedCheckboxNgComponent
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(
             this._pushCheckboxEventsSubscriptionId
         );

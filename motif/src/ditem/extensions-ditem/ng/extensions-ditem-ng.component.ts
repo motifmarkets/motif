@@ -56,7 +56,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -67,6 +67,9 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
 
         this._frame = new ExtensionsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        elRef.nativeElement.style.position = 'absolute';
+        elRef.nativeElement.style.overflow = 'hidden';
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
 
@@ -103,7 +106,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         }
     }
 
-    protected initialise() {
+    protected override initialise() {
         this.checkSetSidebarPixelWidth();
 
         // this._detailSplitAreaDirective.size = null;
@@ -111,7 +114,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._frame.finalise();
         super.finalise();
     }
@@ -124,13 +127,13 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         // nothing to save yet
     }
 
-    protected applySettings() {
+    protected override applySettings() {
         this.splitterBackgroundColor = this.settingsService.color.getBkgd(ColorScheme.ItemId.Panel_Hoisted);
         super.applySettings();
         this.markForCheck();
     }
 
-    protected processShown() {
+    protected override processShown() {
         if (this._splitterComponent !== undefined) {
             this.checkSetSidebarPixelWidth();
         }

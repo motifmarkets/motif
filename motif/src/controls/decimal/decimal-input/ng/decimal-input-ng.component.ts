@@ -53,7 +53,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
         this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
     }
 
-    onChange(text: string): void {
+    onBlur(text: string): void {
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
@@ -61,7 +61,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
         this.uiAction.cancelEdit();
     }
 
-    protected applyValue(value: Decimal | undefined) {
+    protected override applyValue(value: Decimal | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
 
@@ -84,7 +84,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
         }
     }
 
-    protected applyOptions(options: DecimalUiAction.Options) {
+    protected override applyOptions(options: DecimalUiAction.Options) {
         super.applyOptions(options);
         this._numberFormat = this.calculateNumberFormat();
     }

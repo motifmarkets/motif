@@ -22,7 +22,7 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
 
     protected get numberFormat() { return this._numberFormat; }
 
-    public get uiAction() { return super.uiAction as NumberUiAction; }
+    public override get uiAction() { return super.uiAction as NumberUiAction; }
 
     constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray) {
@@ -37,7 +37,7 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
         this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
     }
 
-    onChange(text: string): void {
+    onBlur(text: string): void {
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
@@ -90,17 +90,17 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
         }
     }
 
-    protected markForCheck() {
+    protected override markForCheck() {
         super.markForCheck();
     }
 
-    protected pushSettings() {
+    protected override pushSettings() {
         super.pushSettings();
         this.applyOptions(this.uiAction.options);
         this.applyValue(this.uiAction.value);
     }
 
-    protected setUiAction(action: NumberUiAction) {
+    protected override setUiAction(action: NumberUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: NumberUiAction.PushEventHandlersInterface = {
@@ -113,7 +113,7 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushNumberEventsSubscriptionId);
         super.finalise();
     }

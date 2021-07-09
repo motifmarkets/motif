@@ -26,7 +26,7 @@ export class CommandUiAction extends BooleanUiAction {
         this.pushCaption(caption);
     }
 
-    pushCaption(caption: string) {
+    override pushCaption(caption: string) {
         super.pushCaption(caption);
         const accesibleCaption = CommandUiAction.AccessibleCaption.create(this.caption, this._accessKey);
         if (this._accessibleCaption === undefined ||

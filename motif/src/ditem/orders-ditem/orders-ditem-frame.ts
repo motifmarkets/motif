@@ -9,9 +9,11 @@ import { Account, AdiService, BrokerageAccountGroup, BrokerageAccountGroupOrderL
 import { TableFrame } from 'src/content/internal-api';
 import {
     CommandRegisterService,
+    CoreSettings,
     GridLayoutDataStore,
     OrderPad,
     OrderTableRecordDefinitionList,
+    SettingsService,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
@@ -27,17 +29,20 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     recordFocusEvent: OrdersDitemFrame.RecordFocusEvent;
     tableOpenEvent: OrdersDitemFrame.TableOpenEvent;
 
+    private readonly _coreSettings: CoreSettings;
+
     private _tableFrame: TableFrame;
     private _orderList: BrokerageAccountGroupOrderList;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
-    get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
     get initialised() { return this._tableFrame !== undefined; }
     get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
@@ -46,6 +51,8 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         super(BuiltinDitemFrame.BuiltinTypeId.Orders,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
+
+        this._coreSettings = settingsService.core;
     }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
@@ -64,12 +71,12 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise() {
+    override finalise() {
         this._tableFrame.closeTable(false);
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentConfig = element.newElement(OrdersDitemFrame.JsonName.content);
@@ -105,6 +112,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         } else {
             orderPad.loadBuy();
         }
+        orderPad.applySettingsDefaults(this._coreSettings);
         this.desktopAccessService.editOrderRequest(orderPad);
     }
 
@@ -117,6 +125,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         } else {
             orderPad.loadSell();
         }
+        orderPad.applySettingsDefaults(this._coreSettings);
         this.desktopAccessService.editOrderRequest(orderPad);
     }
 
@@ -158,7 +167,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         return this._tableFrame.getGridLayoutWithHeadings();
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         if (this._currentFocusedLitIvemIdAccountGroupSetting) {
             return false;
         } else {

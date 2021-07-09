@@ -15,7 +15,7 @@ export class LowLevelTopShareholdersDataItem extends PublisherSubscriptionDataIt
 
     get count(): Integer { return (this._topShareholders) ? this._topShareholders.length : 0; }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.TopShareholders) {
             super.processMessage(msg);
         } else {
@@ -32,7 +32,7 @@ export class LowLevelTopShareholdersDataItem extends PublisherSubscriptionDataIt
         }
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         this.beginUpdate();
         try {
             if (this._topShareholders !== undefined) {

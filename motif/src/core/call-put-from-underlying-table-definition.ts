@@ -25,7 +25,7 @@ export class CallPutFromUnderlyingTableDefinition extends SingleDataItemTableDef
         super(listOrId);
     }
 
-    lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
+    override lockRecordDefinitionList(locker: TableRecordDefinitionList.ILocker) {
         const list = super.lockRecordDefinitionList(locker);
         if (!(list instanceof CallPutFromUnderlyingTableRecordDefinitionList)) {
             throw new AssertInternalError('BATDLRDL87875340', list.name);

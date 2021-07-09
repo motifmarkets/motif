@@ -34,7 +34,7 @@ export abstract class OrderRequestDataItem extends PublisherSubscriptionDataItem
         super(MyDataDefinition);
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         if (this._result !== undefined) {
             // We should never get more than one response to an order request
             throw new AssertInternalError('ORDIPSPO655224399');

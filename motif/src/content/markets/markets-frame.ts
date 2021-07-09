@@ -79,7 +79,7 @@ export class MarketsFrame extends ContentFrame {
         this.updateDisplayRecordsAndCounts();
     }
 
-    finalise() {
+    override finalise() {
         if (this._marketsDataItem !== undefined) {
             this._marketsDataItem.unsubscribeListChangeEvent(this._marketsListChangeSubscriptionId);
             this._marketsListChangeSubscriptionId = undefined;

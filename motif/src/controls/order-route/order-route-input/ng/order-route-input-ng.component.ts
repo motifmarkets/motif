@@ -32,7 +32,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
 
     private _pushOrderRouteEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get uiAction() { return super.uiAction as OrderRouteUiAction; }
+    public override get uiAction() { return super.uiAction as OrderRouteUiAction; }
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -111,13 +111,13 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         }
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected setUiAction(action: OrderRouteUiAction) {
+    protected override setUiAction(action: OrderRouteUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: OrderRouteUiAction.PushEventHandlersInterface = {
@@ -130,7 +130,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         this.applyAllowedValues(action.allowedValues);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushOrderRouteEventsSubscriptionId);
         super.finalise();
     }
@@ -148,6 +148,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
 
     private applyValue(value: OrderRoute | undefined) {
         if (!this.uiAction.edited) {
+            this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = undefined;
             } else {

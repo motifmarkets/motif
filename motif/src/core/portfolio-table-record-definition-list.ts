@@ -35,7 +35,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         return this._list.getItem(idx);
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         this._list.clear();
@@ -65,7 +65,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         }
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
 
         const keyElementArray = new Array<JsonElement>(this._list.count);
@@ -80,7 +80,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         element.setElementArray(PortfolioTableRecordDefinitionList.jsonTag_DefinitionKeys, keyElementArray);
     }
 
-    activate() {
+    override activate() {
         super.activate();
 
         // list can never go bad
@@ -92,13 +92,13 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         this.notifyListChange(UsableListChangeTypeId.Usable, 0, 0);
     }
 
-    clear() {
+    override clear() {
         this.notifyListChange(UsableListChangeTypeId.Clear, 0, this._list.count - 1);
         this._list.clear();
         this.notifyModified();
     }
 
-    canAddArray(value: TableRecordDefinitionArray): boolean {
+    override canAddArray(value: TableRecordDefinitionArray): boolean {
         // can add if any of value are not in list
         for (const definition of value) {
             if (this.find(definition) === undefined) {
@@ -111,7 +111,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         return false;
     }
 
-    addArray(value: TableRecordDefinitionArray): TableRecordDefinitionList.AddArrayResult {
+    override addArray(value: TableRecordDefinitionArray): TableRecordDefinitionList.AddArrayResult {
         const addArray = new Array<LitIvemIdTableRecordDefinition>(value.length);
         let addCount = 0;
         for (const definition of value) {
@@ -142,7 +142,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         }
     }
 
-    setDefinition(idx: Integer, value: TableRecordDefinition) {
+    override setDefinition(idx: Integer, value: TableRecordDefinition) {
         if (!TableRecordDefinition.hasLitIvemIdInterface(value)) {
             throw new InternalError('PWIDLSDII', `${value.typeId}`);
         } else {
@@ -152,7 +152,7 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
         }
     }
 
-    delete(idx: Integer) {
+    override delete(idx: Integer) {
         this.checkUsableNotifyListChange(UsableListChangeTypeId.Remove, idx, 1);
         this._list.removeAtIndex(idx);
         this.notifyModified();
@@ -162,11 +162,11 @@ export class PortfolioTableRecordDefinitionList extends UserTableRecordDefinitio
     protected getCapacity() { return this._list.capacity; }
     protected setCapacity(value: Integer) { this._list.capacity = value; }
 
-    protected getAddDeleteDefinitionsAllowed(): boolean {
+    protected override getAddDeleteDefinitionsAllowed(): boolean {
         return true;
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this.count;

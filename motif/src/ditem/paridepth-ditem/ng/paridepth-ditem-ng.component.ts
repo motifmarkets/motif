@@ -174,11 +174,11 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushAccepted();
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkSelectState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         this._frame.initialise(
@@ -198,7 +198,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolEditUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
@@ -245,7 +245,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.save(frameElement);
     }
 
-    protected processShown() {
+    protected override processShown() {
         this._frame.adviseShown();
     }
 

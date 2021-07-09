@@ -31,7 +31,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         return this._list.getItem(idx);
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         this._list.clear();
@@ -60,7 +60,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         }
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
 
         const keyElementArray = new Array<JsonElement>(this._list.count);
@@ -75,7 +75,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         element.setElementArray(GroupTableRecordDefinitionList.jsonTag_DefinitionKeys, keyElementArray);
     }
 
-    activate() {
+    override activate() {
         super.activate();
 
         // currently list can never go bad
@@ -87,13 +87,13 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         this.notifyListChange(UsableListChangeTypeId.Usable, 0, 0);
     }
 
-    clear() {
+    override clear() {
         this.notifyListChange(UsableListChangeTypeId.Clear, 0, this._list.count - 1);
         this._list.clear();
         this.notifyModified();
     }
 
-    canAddArray(value: TableRecordDefinitionArray): boolean {
+    override canAddArray(value: TableRecordDefinitionArray): boolean {
         // can add if any of value are not in list
         for (const definition of value) {
             if (TableRecordDefinition.hasLitIvemIdInterface(definition) && this.find(definition) === undefined) {
@@ -104,7 +104,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         return false;
     }
 
-    addArray(value: TableRecordDefinitionArray): TableRecordDefinitionList.AddArrayResult {
+    override addArray(value: TableRecordDefinitionArray): TableRecordDefinitionList.AddArrayResult {
         const addArray = new Array<LitIvemIdTableRecordDefinition>(value.length);
         let addCount = 0;
         for (const definition of value) {
@@ -135,7 +135,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         }
     }
 
-    setDefinition(idx: Integer, value: TableRecordDefinition) {
+    override setDefinition(idx: Integer, value: TableRecordDefinition) {
         if (!TableRecordDefinition.hasLitIvemIdInterface(value)) {
             throw new TypeError(`GroupWatchItemDefinitionList.setDefinition: Incompatible Interface: ${value.typeId}`);
         } else {
@@ -145,7 +145,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         }
     }
 
-    delete(idx: Integer) {
+    override delete(idx: Integer) {
         this.checkUsableNotifyListChange(UsableListChangeTypeId.Remove, idx, 1);
         this._list.removeAtIndex(idx);
         this.notifyModified();
@@ -163,7 +163,7 @@ export class GroupTableRecordDefinitionList extends UserTableRecordDefinitionLis
         this._list.capacity = value;
     }
 
-    protected getAddDeleteDefinitionsAllowed(): boolean {
+    protected override getAddDeleteDefinitionsAllowed(): boolean {
         return this.requestIsGroupSaveEnabled();
     }
 }

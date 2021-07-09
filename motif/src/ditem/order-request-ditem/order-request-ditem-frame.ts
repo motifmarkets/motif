@@ -92,14 +92,14 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    finalise() {
+    override finalise() {
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
 
         this.finaliseOrderPad();
         super.finalise();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         // save this config - if any
@@ -259,7 +259,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean) {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean) {
         if (!this._symbolAccountIncomingLinkable || this._litIvemIdbrokerageAccountGroupApplying) {
             return false;
         } else {
@@ -286,7 +286,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean) {
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean) {
         if (!this._symbolAccountIncomingLinkable || this._litIvemIdbrokerageAccountGroupApplying) {
             return false;
         } else {

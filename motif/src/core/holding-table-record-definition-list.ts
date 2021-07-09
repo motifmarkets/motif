@@ -26,7 +26,7 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class HoldingTableRecordDefinitionList extends BrokerageAccountGroupDataRecordTableRecordDefinitionList<Holding> {
     private static _constructCount = 0;
 
-    get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupHoldingList; }
+    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupHoldingList; }
 
     constructor(private _adi: AdiService) {
         super(TableRecordDefinitionList.TypeId.Holding);

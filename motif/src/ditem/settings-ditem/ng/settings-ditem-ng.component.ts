@@ -96,12 +96,12 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.setGroupId(SettingsDitemFrame.SettingsGroupId.OrderPad);
     }
 
-    protected initialise() {
+    protected override initialise() {
         this.setGroupId(SettingsDitemFrame.SettingsGroupId.General);
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._frame.finalise();
         super.finalise();
     }

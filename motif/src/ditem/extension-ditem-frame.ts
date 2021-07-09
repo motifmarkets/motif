@@ -38,12 +38,12 @@ export class ExtensionDitemFrame extends DitemFrame {
         return jsonElement.json;
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean) {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean) {
         super.applyLitIvemId(litIvemId, selfInitiated);
         return this._componentAccess.applyLitIvemId(litIvemId, selfInitiated);
     }
 
-    protected applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
+    protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         super.applyBrokerageAccountGroup(group, selfInitiated);
         return this._componentAccess.applyBrokerageAccountGroup(group, selfInitiated);
     }

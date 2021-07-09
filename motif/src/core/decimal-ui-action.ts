@@ -38,12 +38,12 @@ export class DecimalUiAction extends UiAction {
         this.notifyOptionsPush();
     }
 
-    subscribePushEvents(handlersInterface: DecimalUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: DecimalUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._decimalPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._decimalPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

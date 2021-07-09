@@ -31,7 +31,7 @@ export abstract class FeedStatusSubscriptionDataItem extends SubscribabilityExte
         }
     }
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         const badness = super.calculateUsabilityBadness();
         if (Badness.isUnusable(badness)) {
             return badness;

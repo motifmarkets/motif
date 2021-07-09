@@ -20,7 +20,7 @@ export class AllowedExchangesEnumUiAction extends EnumUiAction {
         );
     }
 
-    finalise() {
+    override finalise() {
         this._symbolsManager.unsubscribeAllowedExchangeIdsChangedEvent(this._allowedExchangeIdsChangedSubscriptionId);
         this._allowedExchangeIdsChangedSubscriptionId = undefined;
     }

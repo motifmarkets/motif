@@ -20,7 +20,7 @@ export class MarketsDataItem extends DataRecordsPublisherSubscriptionDataItem<Ma
         return undefined;
     }
 
-    processMessage(msg: DataMessage) {
+    override processMessage(msg: DataMessage) {
         if (msg.typeId !== DataMessageTypeId.Markets) {
             super.processMessage(msg);
         } else {

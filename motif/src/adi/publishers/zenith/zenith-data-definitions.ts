@@ -10,7 +10,7 @@ import { Zenith } from './physical-message/zenith';
 // This may need to be moved out of here to handle PublisherOnlined
 
 export class ZenithQueryConfigureDataDefinition extends PublisherSubscriptionDataDefinition {
-    publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
+    override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
     controller: Zenith.MessageContainer.Controller;
 
@@ -20,7 +20,7 @@ export class ZenithQueryConfigureDataDefinition extends PublisherSubscriptionDat
         super(DataChannelId.ZenithQueryConfigure);
     }
 
-    protected getDescription(): string {
+    protected override getDescription(): string {
         return super.getDescription() + ' Controller: ' + this.controller;
     }
 }

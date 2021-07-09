@@ -21,7 +21,7 @@ export class ShortDepthSideGridField extends DepthSideGridField {
         super(ShortDepthSideField.idToName(_id));
     }
 
-    GetFieldValue(record: ShortDepthRecord): RenderValue {
+    override GetFieldValue(record: ShortDepthRecord): RenderValue {
         let dataCorrectnessAttribute: RenderValue.Attribute | undefined;
         const correctnessId = this._getDataItemCorrectnessIdEvent();
         switch (correctnessId) {
@@ -42,11 +42,11 @@ export class ShortDepthSideGridField extends DepthSideGridField {
         return record.getRenderValue(this._id, this._sideId, dataCorrectnessAttribute);
     }
 
-    CompareField(left: ShortDepthRecord, right: ShortDepthRecord): number {
+    override CompareField(left: ShortDepthRecord, right: ShortDepthRecord): number {
         return ShortDepthRecord.compareField(this._id, left, right);
     }
 
-    CompareFieldDesc(left: ShortDepthRecord, right: ShortDepthRecord): number {
+    override CompareFieldDesc(left: ShortDepthRecord, right: ShortDepthRecord): number {
         return ShortDepthRecord.compareFieldDesc(this._id, left, right);
     }
 }

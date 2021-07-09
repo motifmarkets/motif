@@ -39,6 +39,7 @@ export namespace Badness {
         PublisherSubscriptionState_SynchronisationWaiting = 'PublisherSubscriptionState_SynchronisationWaiting',
         PublisherSubscriptionState_Synchronised = 'PublisherSubscriptionState_Synchronised',
         PublisherSubscriptionState_UnsubscribedSynchronised = 'PublisherSubscriptionState_UnsubscribedSynchronised',
+        PublisherSubscriptionState_Unexpected = 'PublisherSubscriptionState_Unexpected',
         PreUsable_Clear = 'PreUsable_Clear',
         PreUsable_Add = 'PreUsable_Add',
         ConnectionOffline = 'ConnectionOffline',

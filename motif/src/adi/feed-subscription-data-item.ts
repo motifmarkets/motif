@@ -27,14 +27,14 @@ export abstract class FeedSubscriptionDataItem extends FeedStatusSubscriptionDat
         super(definition);
     }
 
-    setFeedId(value: FeedId) {
+    override setFeedId(value: FeedId) {
         super.setFeedId(value);
         if (this._feedsDataItem !== undefined && this._feedsDataItem.usable) {
             this.checkFeed();
         }
     }
 
-    protected start() {
+    protected override start() {
         const feedsDataDefinition = new FeedsDataDefinition();
         this._feedsDataItem = this.subscribeDataItem(feedsDataDefinition) as FeedsDataItem;
 
@@ -55,7 +55,7 @@ export abstract class FeedSubscriptionDataItem extends FeedStatusSubscriptionDat
         }
     }
 
-    protected stop() {
+    protected override stop() {
         super.stop();
 
         this.clearFeed();
@@ -80,7 +80,7 @@ export abstract class FeedSubscriptionDataItem extends FeedStatusSubscriptionDat
     protected processFeedBecameAvailable() {
     }
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         // Normally would priortise badness from base class.  However subscription cannot come online without Feed or Feed Data
         // So if Feed or Feed Data not available, prioritise this badness
         if (this._feed === undefined) {

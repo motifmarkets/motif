@@ -5,22 +5,25 @@
 -->
 
 <ng-select #ngSelect
-           id="ngSelect"
-           [items]="allowedValues"
-           [labelForId]="inputId"
-           [readonly]="readonly"
-           [title]="title"
-           [loading]="waiting"
-           bindLabel="code"
-           [clearable]="false"
-           [placeholder]="placeholderText"
-           [searchFn]="customSearchFtn"
-           [inputAttrs]="inputAttrs"
-           [(ngModel)]="selected"
-           (change)="handleSelectChangeEvent($event)"
-           (search)="handleSelectSearchEvent($event)">
+    id="ngSelect"
+    [items]="allowedValues"
+    [labelForId]="inputId"
+    [readonly]="readonly"
+    [title]="title"
+    [loading]="waiting"
+    bindLabel="code"
+    [clearable]="false"
+    [placeholder]="placeholderText"
+    [searchFn]="customSearchFtn"
+    [inputAttrs]="inputAttrs"
+    [(ngModel)]="selected"
+    (change)="handleSelectChangeEvent($event)"
+    (search)="handleSelectSearchEvent($event)"
+>
+
     <ng-template ng-option-tmp let-item="item" let-index="index">
         {{index}}: <b>{{item.code}}</b> {{item.display}}
     </ng-template>
+
 </ng-select>
 

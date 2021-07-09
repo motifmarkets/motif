@@ -17,7 +17,7 @@ export abstract class EnumArrayComponentBaseNgDirective extends ControlComponent
 
     private _filter: readonly Integer[] | undefined;
 
-    protected get uiAction() { return super.uiAction as EnumArrayUiAction; }
+    protected override get uiAction() { return super.uiAction as EnumArrayUiAction; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -59,7 +59,7 @@ export abstract class EnumArrayComponentBaseNgDirective extends ControlComponent
         }
     }
 
-    protected setUiAction(action: EnumArrayUiAction) {
+    protected override setUiAction(action: EnumArrayUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: EnumArrayUiAction.PushEventHandlersInterface = {
@@ -74,7 +74,7 @@ export abstract class EnumArrayComponentBaseNgDirective extends ControlComponent
         this.applyFilter(action.filter);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(this._pushEnumEventsSubscriptionId);
         super.finalise();
     }

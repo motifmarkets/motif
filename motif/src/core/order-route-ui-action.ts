@@ -38,12 +38,12 @@ export class OrderRouteUiAction extends UiAction {
         this.pushAutoAcceptance();
     }
 
-    subscribePushEvents(handlersInterface: OrderRouteUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: OrderRouteUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._orderRoutePushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._orderRoutePushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

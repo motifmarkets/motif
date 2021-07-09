@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
+import {
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { TableNgComponent } from 'src/content/ng-api';
@@ -61,7 +70,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         delay1Tick(() => this.initialise());
     }
 
-    public processBrokerageAccountGroupLinkedChanged() {
+    public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
 
@@ -73,7 +82,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
 
     }
 
-    protected initialise() {
+    protected override initialise() {
         assert(assigned(this._contentComponent), 'ID:53255332');
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
@@ -85,7 +94,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._toggleAccountLinkingUiAction.finalise();
 
         this._frame.finalise();

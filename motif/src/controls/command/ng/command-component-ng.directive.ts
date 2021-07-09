@@ -20,7 +20,7 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
 
     private _pushCommandEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get uiAction() {
+    protected override get uiAction() {
         return super.uiAction as ProcessorCommandUiAction;
     }
 
@@ -59,7 +59,7 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
         }
     }
 
-    protected setUiAction(action: ProcessorCommandUiAction) {
+    protected override setUiAction(action: ProcessorCommandUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: ProcessorCommandUiAction.PushEventHandlersInterface = {
@@ -73,7 +73,7 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
         this.applyValue(action.value);
     }
 
-    protected finalise() {
+    protected override finalise() {
         this.uiAction.unsubscribePushEvents(
             this._pushCommandEventsSubscriptionId
         );

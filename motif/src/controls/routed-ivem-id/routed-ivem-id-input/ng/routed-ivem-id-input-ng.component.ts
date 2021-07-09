@@ -52,7 +52,7 @@ export class RoutedIvemIdInputNgComponent extends RoutedIvemIdComponentBaseNgDir
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
-    protected applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
+    protected override applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
         if (!this.uiAction.edited) {
             super.applyValue(value, selectAll);
             if (selectAll) {

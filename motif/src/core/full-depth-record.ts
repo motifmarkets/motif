@@ -27,8 +27,8 @@ import {
 export abstract class FullDepthRecord extends DepthRecord {
     protected renderRecord = new Array<RenderValue | undefined>(FullDepthSideField.idCount);
 
-    get quantityAhead() { return super.quantityAhead; }
-    set quantityAhead(value: Integer | undefined) {
+    override get quantityAhead() { return super.quantityAhead; }
+    override set quantityAhead(value: Integer | undefined) {
         if (value !== super.quantityAhead) {
             super.quantityAhead = value;
             this.renderRecord[FullDepthSideFieldId.VolumeAhead] = undefined;

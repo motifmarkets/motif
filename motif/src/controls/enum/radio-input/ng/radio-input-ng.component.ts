@@ -36,7 +36,7 @@ export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
         }
     }
 
-    protected applyValue(value: Integer | undefined) {
+    protected override applyValue(value: Integer | undefined) {
         super.applyValue(value);
         const newChecked = value === undefined ? false : value === this.element;
 
@@ -46,22 +46,22 @@ export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
         }
     }
 
-    protected applyStateId(newStateId: UiAction.StateId) {
+    protected override applyStateId(newStateId: UiAction.StateId) {
         super.applyStateId(newStateId);
         this.updateRadioDisabled();
     }
 
-    protected applyFilter(filter: Integer[] | undefined) {
+    protected override applyFilter(filter: Integer[] | undefined) {
         super.applyFilter(filter);
         this.updateRadioDisabled();
     }
 
-    protected applyElements() {
+    protected override applyElements() {
         super.applyElements();
         this.updateRadioDisabled();
     }
 
-    protected finalise() {
+    protected override finalise() {
         super.finalise();
     }
 

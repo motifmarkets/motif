@@ -112,11 +112,11 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.pushAccepted();
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkButtonState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         assert(assigned(this._contentComponent), 'ID:4817161157');
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
@@ -128,7 +128,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         super.initialise();
     }
 
-    protected finalise() {
+    protected finaliseoverride() {
         this._symbolEditUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();

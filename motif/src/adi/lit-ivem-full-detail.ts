@@ -59,7 +59,7 @@ export class LitIvemFullDetail extends LitIvemDetail {
         this.categories = change.categories;
     }
 
-    update(change: SymbolsDataMessage.UpdateChange) {
+    override update(change: SymbolsDataMessage.UpdateChange) {
         super.update(change);
 
         const changeableFieldCount = LitIvemFullDetail.ExtendedField.idCount - LitIvemFullDetail.Key.fieldCount;

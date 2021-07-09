@@ -57,7 +57,7 @@ export abstract class MarketSubscriptionDataItem extends FeedStatusSubscriptionD
         }
     }
 
-    protected start() {
+    protected override start() {
         const marketsDataDefinition = new MarketsDataDefinition();
         this._marketsDataItem = this.subscribeDataItem(
             marketsDataDefinition
@@ -81,7 +81,7 @@ export abstract class MarketSubscriptionDataItem extends FeedStatusSubscriptionD
         }
     }
 
-    protected stop() {
+    protected override stop() {
         super.stop();
 
         this.clearMarket();
@@ -100,7 +100,7 @@ export abstract class MarketSubscriptionDataItem extends FeedStatusSubscriptionD
     /** Give descendants an opportunity to initialise data using Market */
     protected processMarketBecameAvailable() {}
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         // Normally would priortise badness from base class.  However subscription cannot come online without Market or Feed Data
         // So if Market or Feed Data not available, prioritise this badness
         if (this._market === undefined) {

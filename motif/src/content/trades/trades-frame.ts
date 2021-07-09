@@ -40,7 +40,7 @@ export class TradesFrame extends ContentFrame {
         this._dataStore.allRecordsChangeEvent = () => this.handleDataStoreAllRecordsChangeEvent();
     }
 
-    finalise() {
+    override finalise() {
         this.checkClose();
 
         super.finalise();

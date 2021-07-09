@@ -34,7 +34,7 @@ export abstract class TypedKeyValueSettingsGroup extends SettingsGroup {
         }
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
         const count = this.idCount;
         for (let i = 0; i < count; i++) {

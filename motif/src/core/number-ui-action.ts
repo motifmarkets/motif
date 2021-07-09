@@ -37,12 +37,12 @@ export class NumberUiAction extends UiAction {
         this.notifyOptionsPush();
     }
 
-    subscribePushEvents(handlersInterface: NumberUiAction.PushEventHandlersInterface) {
+    override subscribePushEvents(handlersInterface: NumberUiAction.PushEventHandlersInterface) {
         const subscriptionId = super.subscribePushEvents(handlersInterface);
         return this._numberPushMultiEvent.subscribeWithId(handlersInterface, subscriptionId);
     }
 
-    unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
+    override unsubscribePushEvents(subscriptionId: MultiEvent.SubscriptionId) {
         this._numberPushMultiEvent.unsubscribe(subscriptionId);
         super.unsubscribePushEvents(subscriptionId);
     }

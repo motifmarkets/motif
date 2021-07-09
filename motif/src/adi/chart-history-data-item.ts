@@ -49,7 +49,7 @@ export class ChartHistoryDataItem extends PublisherSubscriptionDataItem {
         }
     }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.ChartHistory) {
             super.processMessage(msg);
         } else {
@@ -65,7 +65,7 @@ export class ChartHistoryDataItem extends PublisherSubscriptionDataItem {
         }
     }
 
-    protected processSubscriptionPreOnline() {
+    protected override processSubscriptionPreOnline() {
         if (this._records.length > 0) {
             this.beginUpdate();
             try {

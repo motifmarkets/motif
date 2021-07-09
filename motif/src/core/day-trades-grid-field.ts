@@ -44,7 +44,7 @@ export abstract class DayTradesGridField extends GridField {
     get defaultVisible() { return this._defaultVisible; }
     get isBrokerPrivateData() { return DayTradesDataItem.Field.idToIsBrokerPrivateData(this._id); }
 
-    GetFieldValue(record: DayTradesDataItem.Record): RenderValue {
+    override GetFieldValue(record: DayTradesDataItem.Record): RenderValue {
         const { renderValue, cellAttribute } = this.createRenderValue(record);
 
         // add attributes in correct priority order.  1st will be applied last (highest priority)
@@ -98,11 +98,11 @@ export abstract class DayTradesGridField extends GridField {
         return renderValue;
     }
 
-    CompareField(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    override CompareField(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return this.compareFieldValue(left, right, true);
     }
 
-    CompareFieldDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    override CompareFieldDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return this.compareFieldValue(right, left, false);
     }
 

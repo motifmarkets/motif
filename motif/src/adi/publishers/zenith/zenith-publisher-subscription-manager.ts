@@ -52,7 +52,7 @@ export class ZenithPublisherSubscriptionManager extends PublisherSubscriptionMan
         }
     }
 
-    exercise(nowTickTime: SysTick.Time): DataMessages | undefined {
+    override exercise(nowTickTime: SysTick.Time): DataMessages | undefined {
         const exerciseMessages = super.exercise(nowTickTime);
 
         const dataMessages = exerciseMessages !== undefined

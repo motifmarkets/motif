@@ -32,7 +32,7 @@ export class TradingStatesDataItem extends FeedSubscriptionDataItem {
         }
     }
 
-    processMessage(msg: DataMessage) { // virtual;
+    override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.TradingStates) {
             super.processMessage(msg);
         } else {
@@ -62,7 +62,7 @@ export class TradingStatesDataItem extends FeedSubscriptionDataItem {
         return undefined;
     }
 
-    protected processSubscriptionPreOnline() { // virtual
+    protected override processSubscriptionPreOnline() { // virtual
         if (this._states !== undefined && this._states.length > 0) {
             this.beginUpdate();
             try {

@@ -102,7 +102,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
         }
     }
 
-    finalise() {
+    override finalise() {
         this.unbindOrderPad();
         super.finalise();
     }

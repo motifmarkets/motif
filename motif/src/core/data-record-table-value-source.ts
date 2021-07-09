@@ -32,6 +32,6 @@ export abstract class DataRecordTableValueSource<Record extends DataRecord> exte
         this.notifyAllValuesChangeEvent(changedValues);
     }
 
-    abstract getAllValues(): TableGridValue[];
+    abstract override getAllValues(): TableGridValue[];
     protected abstract getRecord(): Record;
 }

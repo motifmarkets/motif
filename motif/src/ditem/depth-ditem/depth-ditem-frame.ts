@@ -48,7 +48,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         this.applyLinked();
     }
 
-    save(element: JsonElement) {
+    override save(element: JsonElement) {
         super.save(element);
 
         const contentElement = element.newElement(DepthDitemFrame.JsonName.content);
@@ -103,7 +103,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         setTimeout(() => this._contentFrame.initialiseWidths(), 200);
     }
 
-    protected applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
+    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, selfInitiated);
         if (litIvemId === undefined) {
             return false;

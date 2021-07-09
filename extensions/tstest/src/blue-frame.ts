@@ -12,6 +12,8 @@ export class BlueFrame implements Frame {
     constructor(private readonly _svc: FrameSvc) {
         this._rootHtmlElement = document.createElement('div');
         this._rootHtmlElement.classList.add('root');
+        this._rootHtmlElement.style.position = 'absolute';
+        this._rootHtmlElement.style.overflow = 'hidden';
     }
 
     async initialise() {

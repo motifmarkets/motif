@@ -113,11 +113,11 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.pushAccepted();
     }
 
-    public processSymbolLinkedChanged() {
+    public override processSymbolLinkedChanged() {
         this.pushSymbolLinkSelectState();
     }
 
-    protected initialise() {
+    protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         this._frame.initialise(this._contentComponent.frame, frameElement);
@@ -132,7 +132,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         super.initialise();
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._symbolEditUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
@@ -157,7 +157,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._frame.save(frameElement);
     }
 
-    protected processShown() {
+    protected override processShown() {
         this._frame.adviseShown();
     }
 

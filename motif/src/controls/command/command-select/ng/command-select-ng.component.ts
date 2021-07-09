@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
+import { Account } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { Command, ProcessorCommandUiAction, UiAction } from 'src/core/internal-api';
 import { extStrings } from 'src/res/internal-api';
@@ -77,15 +78,16 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
         this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectDropDownPanelWidth);
     }
 
-    protected setStateColors(stateId: UiAction.StateId) {
+    protected override setStateColors(stateId: UiAction.StateId) {
         super.setStateColors(stateId);
 
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected applyValue(value: ProcessorCommandUiAction.Item | undefined) {
+    protected override applyValue(value: ProcessorCommandUiAction.Item | undefined) {
         if (!this.uiAction.edited) {
             super.applyValue(value);
+            this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             // if (value === undefined) {
             //     this.selected = undefined;
@@ -97,19 +99,19 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
         }
     }
 
-    protected applyItemCaption(command: Command, caption: string) {
+    protected override applyItemCaption(command: Command, caption: string) {
         super.applyItemCaption(command, caption);
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected applyItems() {
+    protected override applyItems() {
         super.applyItems();
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
     }
 
-    protected finalise() {
+    protected override finalise() {
         this._ngSelectOverlayNgService.unsubscribeMeasureCanvasContextsEvent(this._measureCanvasContextsEventSubscriptionId);
         super.finalise();
     }

@@ -51,7 +51,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
         super(OrderRequestStepFrame.StepId.Result);
     }
 
-    finalise() {
+    override finalise() {
         this.checkUnsubscribeDataItem();
         super.finalise();
     }

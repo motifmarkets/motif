@@ -119,7 +119,7 @@ export abstract class AllBrokerageAccountsDataRecordsDataItem<Record extends Bro
         }
     }
 
-    protected calculateUsabilityBadness() {
+    protected override calculateUsabilityBadness() {
         const badness = super.calculateUsabilityBadness();
         if (Badness.isUnusable(badness)) {
             return badness;
@@ -132,7 +132,7 @@ export abstract class AllBrokerageAccountsDataRecordsDataItem<Record extends Bro
         }
     }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             if (this.count > 0) {

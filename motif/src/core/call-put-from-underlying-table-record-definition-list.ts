@@ -50,7 +50,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
         return this._list[idx];
     }
 
-    activate() {
+    override activate() {
         const definition = new QuerySymbolsDataDefinition();
 
         if (this._underlyingIvemId !== undefined) {
@@ -79,7 +79,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
         }
     }
 
-    deactivate() {
+    override deactivate() {
         // TableRecordDefinitionList can no longer be used after it is deactivated
         if (this.count > 0) {
             this.notifyListChange(UsableListChangeTypeId.Clear, 0, 0);
@@ -100,7 +100,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
         }
     }
 
-    loadFromJson(element: JsonElement) {
+    override loadFromJson(element: JsonElement) {
         super.loadFromJson(element);
 
         this._underlyingIvemId =
@@ -108,7 +108,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
                 'CallPutTableRecordDefinitionList.loadFromJson: UnderlyingIvemId');
     }
 
-    saveToJson(element: JsonElement) {
+    override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         element.setJson(CallPutFromUnderlyingTableRecordDefinitionList.JsonTag.underlyingIvemId, this._underlyingIvemId?.toJson());
     }
@@ -117,7 +117,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
     protected getCapacity() { return this._list.length; }
     protected setCapacity(value: Integer) { /* no code */ }
 
-    protected processUsableChanged() {
+    protected override processUsableChanged() {
         if (this.usable) {
             this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
             const count = this.count;
