@@ -15,7 +15,10 @@ import {
 import { TableFrame } from 'src/content/internal-api';
 import {
     CommandRegisterService,
+    CoreSettings,
     HoldingTableRecordDefinitionList,
+    OrderPad,
+    SettingsService,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
@@ -34,8 +37,10 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         activeAccountGroup: BrokerageAccountGroup.createAll(),
     };
 
-    recordFocusEvent: HoldingsDitemFrame.RecordFocusEvent;
+    holdingsRecordFocusEvent: HoldingsDitemFrame.RecordFocusEvent;
     groupOpenedEvent: HoldingsDitemFrame.TableOpenEvent;
+
+    private readonly _coreSettings: CoreSettings;
 
     private _holdingsTableFrame: TableFrame;
     private _holdingList: BrokerageAccountGroupHoldingList;
@@ -55,6 +60,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private readonly _componentAccess: HoldingsDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsMgr: SymbolsService,
@@ -68,6 +74,8 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             symbolsMgr,
             adi
         );
+
+        this._coreSettings = settingsService.core;
     }
 
     initialise(
@@ -119,6 +127,19 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             HoldingsDitemFrame.JsonName.balances
         );
         this._balancesTableFrame.saveLayoutConfig(balancesElement);
+    }
+
+    sellFocused() {
+        const focusedIndex = this._holdingsTableFrame.getFocusedRecordIndex();
+        const orderPad = new OrderPad(this.symbolsService, this.adi);
+        if (focusedIndex !== undefined) {
+            const holding = this._holdingList.records[focusedIndex];
+            orderPad.loadSellFromHolding(holding);
+        } else {
+            orderPad.loadSell();
+        }
+        orderPad.applySettingsDefaults(this._coreSettings);
+        this.desktopAccessService.editOrderRequest(orderPad);
     }
 
     protected override applyBrokerageAccountGroup(
@@ -179,7 +200,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             const holding = this._holdingList.records[newRecordIndex];
             this.processHoldingFocusChange(holding);
         }
-        this.recordFocusEvent(newRecordIndex);
+        this.holdingsRecordFocusEvent(newRecordIndex);
     }
 
     private handleHoldingsRequireDefaultTableDefinitionEvent() {
