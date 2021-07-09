@@ -161,7 +161,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         action.pushCaption(Strings[StringId.SettingCaption_OrderPad_ReviewEnabled]);
         action.pushTitle(Strings[StringId.SettingTitle_OrderPad_ReviewEnabled]);
         action.commitEvent = () => {
-            this.coreSettings.format_24Hour = this._reviewEnabledUiAction.definedValue;
+            this.coreSettings.orderPad_ReviewEnabled = this._reviewEnabledUiAction.definedValue;
         };
         return action;
     }
