@@ -62,7 +62,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.tryCommitText(value, UiAction.CommitTypeId.Explicit);
     }
 
-    onChange(value: string): void {
+    onBlur(value: string): void {
         this.tryCommitText(value, UiAction.CommitTypeId.Implicit);
     }
 

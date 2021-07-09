@@ -9,8 +9,8 @@
     [id]="inputId"
     [size]="size"
     [title]="title"
-    [disabled]="disabled == true ? true : null"
-    [readonly]="readonly == true ? true : null"
+    [disabled]="disabled === true ? true : null"
+    [readonly]="readonly === true ? true : null"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     [value]="numberAsStr"
     [max]="max === undefined ? null : max"
@@ -19,4 +19,5 @@
     (input)="onInput(numberInput.value)"
     (keydown.enter)="onEnterKeyDown(numberInput.value)"
     (keydown.esc)="onEscKeyDown()"
-    (change)="onChange(numberInput.value)">
+    (blur)="onBlur(numberInput.value)"
+>

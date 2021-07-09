@@ -44,7 +44,7 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
         this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
     }
 
-    onChange(text: string): void {
+    onBlur(text: string): void {
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 

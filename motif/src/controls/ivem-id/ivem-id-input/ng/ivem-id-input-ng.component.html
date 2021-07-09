@@ -9,10 +9,11 @@
     spellCheck="false"
     [id]="inputId"
     [title]="title"
-    [disabled]="disabled == true ? true : null"
-    [readonly]="readonly == true ? true : null"
+    [disabled]="disabled === true ? true : null"
+    [readonly]="readonly === true ? true : null"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     [value]="symbol"
     (input)="onInput(ivemidInput.value)"
     (keydown.enter)="onEnterKeyDown(ivemidInput.value)"
-    (change)="onChange(ivemidInput.value)">
+    (blur)="onBlur(ivemidInput.value)"
+>

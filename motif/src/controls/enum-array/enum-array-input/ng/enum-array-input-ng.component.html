@@ -21,7 +21,8 @@
     [(ngModel)]="selected"
     (change)="handleSelectChangeEvent($event)"
     (search)="handleSelectSearchEvent($event)"
-    (open)="handleSelectOpenEvent()">
+    (open)="handleSelectOpenEvent()"
+>
 
     <ng-template ng-option-tmp let-item="item">
         <span [title]="item.title">{{item.caption}}</span>

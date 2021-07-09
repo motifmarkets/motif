@@ -48,7 +48,7 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
         this.commitValue(value, UiAction.CommitTypeId.Explicit);
     }
 
-    onChange(value: string): void {
+    onBlur(value: string): void {
         this.commitValue(value, UiAction.CommitTypeId.Implicit);
     }
 

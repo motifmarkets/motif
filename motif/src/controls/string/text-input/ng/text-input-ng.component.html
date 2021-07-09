@@ -9,12 +9,13 @@
     type="text"
     [id]="inputId"
     [title]="title"
-    [disabled]="disabled == true ? true : null"
-    [readonly]="readonly == true ? true : null"
+    [disabled]="disabled === true ? true : null"
+    [readonly]="readonly === true ? true : null"
     [size]="size"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     [value]="displayValue"
     (input)="onInput(textInput.value)"
     (keydown.enter)="onEnterKeyDown(textInput.value)"
     (keydown.esc)="onEscKeyDown()"
-    (change)="onChange(textInput.value)">
+    (blur)="onBlur(textInput.value)"
+>
