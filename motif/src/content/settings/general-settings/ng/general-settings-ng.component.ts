@@ -162,10 +162,6 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this.updateAllowedExchangeIds();
     }
 
-    private handleAllowedMarketIdsChangedEvent() {
-
-    }
-
     private createFontFamilyUiAction() {
         const action = new StringUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_FontFamily]);

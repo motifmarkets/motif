@@ -11,6 +11,7 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import { BrokerageAccountGroupUiAction, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
@@ -42,6 +43,11 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _buyUiAction: IconButtonUiAction;
     private _sellUiAction: IconButtonUiAction;
@@ -57,6 +63,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: OrdersDitemFrame;
 
     protected get stateSchemaVersion() { return OrdersDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(

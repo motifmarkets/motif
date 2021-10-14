@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordInvalidatedValue, RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { BidAskSideId, DepthLevelsDataItem } from 'src/adi/internal-api';
 import {
     compareBoolean,
@@ -26,15 +27,15 @@ import { ShortDepthSideField, ShortDepthSideFieldId } from './short-depth-side-f
 
 export class ShortDepthRecord extends DepthRecord {
 
-    protected renderRecord = new Array<RenderValue | undefined>(ShortDepthSideField.idCount);
+    // protected renderRecord = new Array<RenderValue | undefined>(ShortDepthSideField.idCount);
 
     constructor(
         index: Integer,
         private _level: DepthLevelsDataItem.Level,
-        quantityAhead: Integer | undefined,
+        volumeAhead: Integer | undefined,
         auctionQuantity: Integer | undefined,
     ) {
-        super(DepthRecord.TypeId.PriceLevel, index, quantityAhead, auctionQuantity);
+        super(DepthRecord.TypeId.PriceLevel, index, volumeAhead, auctionQuantity);
     }
 
     getVolume() { return this._level.volume === undefined ? 0 : this._level.volume; } // virtual override
@@ -44,46 +45,58 @@ export class ShortDepthRecord extends DepthRecord {
     }
 
     get level() { return this._level; }
-    override get quantityAhead() { return super.quantityAhead; }
-    override set quantityAhead(value: Integer | undefined) {
-        if (value !== super.quantityAhead) {
-            super.quantityAhead = value;
-            this.renderRecord[ShortDepthSideFieldId.VolumeAhead] = undefined;
-        }
-    }
     get price(): PriceOrRemainder { return this._level.price; }
     get orderCount() { return this._level.orderCount; }
     get hasUndisclosed() { return this._level.hasUndisclosed; }
 
-    processChange(changedFieldIds: DepthLevelsDataItem.Level.FieldId[]) {
-        for (const id of changedFieldIds) {
-            switch (id) {
-                case DepthLevelsDataItem.Level.FieldId.Id:
-                    // no Record Field
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.SideId:
-                    // no Record Field
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.Price:
-                    this.renderRecord[ShortDepthSideFieldId.Price] = undefined;
-                    this.renderRecord[ShortDepthSideFieldId.PriceAndHasUndisclosed] = undefined;
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.OrderCount:
-                    this.renderRecord[ShortDepthSideFieldId.OrderCount] = undefined;
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.Volume:
-                    this.renderRecord[ShortDepthSideFieldId.Volume] = undefined;
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.HasUndisclosed:
-                    this.renderRecord[ShortDepthSideFieldId.PriceAndHasUndisclosed] = undefined;
-                    break;
-                case DepthLevelsDataItem.Level.FieldId.MarketId:
-                    this.renderRecord[ShortDepthSideFieldId.MarketId] = undefined;
-                    break;
-                default:
-                    throw new UnreachableCaseError('SDROFDRPOC44487', id);
+    processValueChanges(valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
+        const valueChangeCount = valueChanges.length;
+        const result = new Array<RevRecordInvalidatedValue>(valueChangeCount * 2); // guess capacity
+        let priceAndHasUndisclosedRecentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined;
+        let count = 0;
+        for (let i = 0; i < valueChangeCount; i++) {
+            const valueChange = valueChanges[i];
+            const { fieldId: valueChangeFieldId, recentChangeTypeId} = valueChange;
+            let fieldId = ShortDepthSideField.createIdFromDepthLevelFieldId(valueChangeFieldId);
+            if (fieldId !== undefined) {
+                if (fieldId === ShortDepthSideFieldId.Price) {
+                    priceAndHasUndisclosedRecentChangeTypeId = recentChangeTypeId;
+                } else {
+                    if (fieldId === ShortDepthSideFieldId.PriceAndHasUndisclosed) {
+                        // was just Undisclosed DepthLevelFieldId. Record recentChangeTypeId. Priority goes to Price RecentChangeTypeId
+                        if (priceAndHasUndisclosedRecentChangeTypeId !== undefined) {
+                            priceAndHasUndisclosedRecentChangeTypeId = recentChangeTypeId;
+                        }
+                        fieldId = undefined; // will be added later
+                    }
+                }
+            }
+
+            if (fieldId !== undefined) {
+                const invalidatedRecordField: RevRecordInvalidatedValue = {
+                    fieldIndex: fieldId, // Fields are added in order of their fieldId (ShortDepthSideFieldId) so fieldIndex equals fieldId
+                    typeId: recentChangeTypeId,
+                };
+                if (count === result.length) {
+                    result.length *= 2;
+                }
+                result[count++] = invalidatedRecordField;
             }
         }
+
+        if (priceAndHasUndisclosedRecentChangeTypeId === undefined) {
+            result.length = count;
+        } else {
+            const invalidatedRecordField: RevRecordInvalidatedValue = {
+                fieldIndex: ShortDepthSideFieldId.PriceAndHasUndisclosed,
+                typeId: priceAndHasUndisclosedRecentChangeTypeId,
+            };
+            const idx = count;
+            result.length = ++count;
+            result[idx] = invalidatedRecordField;
+        }
+
+        return result;
     }
 
     getRenderValue(id: ShortDepthSideFieldId, sideId: BidAskSideId, dataCorrectnessAttribute: RenderValue.Attribute | undefined) {
@@ -170,14 +183,14 @@ export namespace ShortDepthRecord {
     }
 
     function compareVolumeAheadField(left: ShortDepthRecord, right: ShortDepthRecord) {
-        if (left.quantityAhead !== undefined) {
-            if (right.quantityAhead !== undefined) {
-                return compareInteger(left.quantityAhead, right.quantityAhead);
+        if (left.volumeAhead !== undefined) {
+            if (right.volumeAhead !== undefined) {
+                return compareInteger(left.volumeAhead, right.volumeAhead);
             } else {
                 return -1;
             }
         } else {
-            if (right.quantityAhead !== undefined) {
+            if (right.volumeAhead !== undefined) {
                 return 1;
             } else {
                 return comparePriceField(left, right, left.level.sideId);

@@ -1,0 +1,11 @@
+{
+    "typescript.tsdk": "c:\\Dev\\paritech.motif\\Source\\Paritech.Motif.WebApp\\node_modules\\typescript\\lib",
+    "files.exclude": {
+        "**/releases": true,
+        "lib/**/*": true
+    },
+    "files.watcherExclude": {
+        "lib/**/*": true
+    },
+    "angular.enable-experimental-ivy-prompt": false
+}

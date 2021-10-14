@@ -5,8 +5,8 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { GridLayout } from '@motifmarkets/revgrid';
 import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import {
     CaptionedCheckboxNgComponent,
     EnumElementCaptionNgComponent,
@@ -19,9 +19,7 @@ import {
     CommandRegisterService,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
-    GridLayoutChange,
-    GridLayoutDataStore,
-    IconButtonUiAction,
+    GridLayoutChange, IconButtonUiAction,
     InternalCommand,
     StringUiAction
 } from 'src/core/internal-api';
@@ -68,8 +66,8 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
     private _filterUiAction: ExplicitElementsEnumUiAction;
     private _fieldVisibleUiAction: BooleanUiAction;
 
-    private _currentRecordIndex: Integer | null = null;
-    // private _layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders;
+    private _currentRecordIndex: Integer | undefined = undefined;
+    // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
         this._commandRegisterService = commandRegisterNgService.service;
@@ -106,12 +104,12 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
         return this._gridComponent.gridLayout;
     }
 
-    setGridLayout(layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders) {
-        this._gridComponent.setLayoutWithHeadings(layoutWithHeadings);
+    setGridLayout(layoutWithHeadings: MotifGrid.LayoutWithHeadersMap) {
+        this._gridComponent.setLayoutWithHeadersMap(layoutWithHeadings);
     }
 
     ngAfterViewInit() {
-        this._gridComponent.recordFocusEvent = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
+        this._gridComponent.recordFocusEventer = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
         this.updateColumnFilterRadioInput();
 
         delay1Tick(() => this.initialiseComponentsAndMarkForCheck());
@@ -206,7 +204,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
         return action;
     }
 
-    private updateCurrentRecordIndex(index: Integer | null): void {
+    private updateCurrentRecordIndex(index: Integer | undefined): void {
         if (index !== this._currentRecordIndex) {
             this._currentRecordIndex = index;
             this.updateFieldProperties();
@@ -216,7 +214,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
     private updateFieldProperties(): void {
         if (assigned(this._currentRecordIndex)) {
             const column = this._gridComponent.getColumn(this._currentRecordIndex);
-            this._fieldVisibleUiAction.pushValue(column.Visible);
+            this._fieldVisibleUiAction.pushValue(column.visible);
             this.fieldName = this._gridComponent.getColumnHeading(this._currentRecordIndex);
             if (this._currentRecordIndex === 0) {
                 this._moveUpUiAction.pushDisabled();
@@ -281,7 +279,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
 
     private handleMoveUpButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const { focusedIndex } = this._gridComponent.applyLayoutChange({
+            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
                 id: GridLayoutChange.ActionId.MoveUp,
                 columnIndex: this._currentRecordIndex,
             });
@@ -293,7 +291,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
 
     private handleMoveTopButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const { focusedIndex } = this._gridComponent.applyLayoutChange({
+            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
                 id: GridLayoutChange.ActionId.MoveTop,
                 columnIndex: this._currentRecordIndex,
             });
@@ -305,7 +303,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
 
     private handleMoveDownButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const { focusedIndex } = this._gridComponent.applyLayoutChange({
+            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
                 id: GridLayoutChange.ActionId.MoveDown,
                 columnIndex: this._currentRecordIndex,
             });
@@ -317,7 +315,7 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
 
     private handleMoveBottomButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const { focusedIndex } = this._gridComponent.applyLayoutChange({
+            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
                 id: GridLayoutChange.ActionId.MoveBottom,
                 columnIndex: this._currentRecordIndex,
             });
@@ -334,15 +332,15 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
     private handleFieldVisibleCommitEvent() {
         if (assigned(this._currentRecordIndex)) {
             const column = this._gridComponent.getColumn(this._currentRecordIndex);
-            column.Visible = this._fieldVisibleUiAction.definedValue;
-            this._gridComponent.invalidateRecord(this._currentRecordIndex);
+            column.visible = this._fieldVisibleUiAction.definedValue;
+            this._gridComponent.invalidateVisibleValue(this._currentRecordIndex);
         } else {
             this.fieldName = undefined;
         }
         this.updateFieldProperties();
     }
 
-    private handleGridRecordFocusEvent(recordIndex: Integer) {
+    private handleGridRecordFocusEvent(recordIndex: Integer | undefined) {
         this.updateCurrentRecordIndex(recordIndex);
     }
 

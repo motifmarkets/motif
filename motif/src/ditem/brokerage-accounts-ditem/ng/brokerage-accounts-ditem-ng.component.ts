@@ -16,6 +16,7 @@ import {
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { TableNgComponent } from 'src/content/ng-api';
 import { SvgButtonNgComponent } from 'src/controls/ng-api';
 import { IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
@@ -36,10 +37,16 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('table', { static: true }) private _contentComponent: TableNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     private _frame: BrokerageAccountsDitemFrame;
     private _toggleAccountLinkingUiAction: IconButtonUiAction;
 
     protected get stateSchemaVersion() { return BrokerageAccountsDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(

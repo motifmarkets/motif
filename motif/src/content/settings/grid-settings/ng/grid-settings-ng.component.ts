@@ -10,8 +10,14 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { SettingsNgService } from 'src/component-services/ng-api';
-import { CaptionLabelNgComponent, CheckboxInputNgComponent, IntegerTextInputNgComponent } from 'src/controls/ng-api';
-import { BooleanUiAction, IntegerUiAction } from 'src/core/internal-api';
+import {
+    CaptionLabelNgComponent,
+    CheckboxInputNgComponent,
+    IntegerTextInputNgComponent,
+    NumberInputNgComponent,
+    TextInputNgComponent
+} from 'src/controls/ng-api';
+import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringUiAction } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { assert } from 'src/sys/internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
@@ -25,54 +31,98 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
 })
 export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
 
+    @ViewChild('fontFamilyLabel', { static: true }) private _fontFamilyLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('fontFamilyControl', { static: true }) private _fontFamilyControlComponent: TextInputNgComponent;
+    @ViewChild('fontSizeLabel', { static: true }) private _fontSizeLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('fontSizeControl', { static: true }) private _fontSizeControlComponent: TextInputNgComponent;
+    @ViewChild('columnHeaderFontSizeLabel', { static: true }) private _columnHeaderFontSizeLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('columnHeaderFontSizeControl', { static: true }) private _columnHeaderFontSizeControlComponent: TextInputNgComponent;
     @ViewChild('showHorizontalGridLinesLabel', { static: true }) private _showHorizontalGridLinesLabel: CaptionLabelNgComponent;
     @ViewChild('showHorizontalGridLinesCheckbox', { static: true }) private _showHorizontalGridLinesCheckbox: CheckboxInputNgComponent;
     @ViewChild('showVerticalGridLinesLabel', { static: true }) private _showVerticalGridLinesLabel: CaptionLabelNgComponent;
     @ViewChild('showVerticalGridLinesCheckbox', { static: true }) private _showVerticalGridLinesCheckbox: CheckboxInputNgComponent;
-    @ViewChild('gridLineHorizontalWeightLabel', { static: true }) private _gridLineHorizontalWeightLabel: CaptionLabelNgComponent;
-    @ViewChild('gridLineHorizontalWeightEdit', { static: true }) private _gridLineHorizontalWeightEdit: IntegerTextInputNgComponent;
-    @ViewChild('gridLineVerticalWeightLabel', { static: true }) private _gridLineVerticalWeightLabel: CaptionLabelNgComponent;
-    @ViewChild('gridLineVerticalWeightEdit', { static: true }) private _gridLineVerticalWeightEdit: IntegerTextInputNgComponent;
+    @ViewChild('gridLineHorizontalWidthLabel', { static: true }) private _gridLineHorizontalWidthLabel: CaptionLabelNgComponent;
+    @ViewChild('gridLineHorizontalWidthEdit', { static: true }) private _gridLineHorizontalWidthEdit: IntegerTextInputNgComponent;
+    @ViewChild('gridLineVerticalWidthLabel', { static: true }) private _gridLineVerticalWidthLabel: CaptionLabelNgComponent;
+    @ViewChild('gridLineVerticalWidthEdit', { static: true }) private _gridLineVerticalWidthEdit: IntegerTextInputNgComponent;
     @ViewChild('cellPaddingLabel', { static: true }) private _cellPaddingLabel: CaptionLabelNgComponent;
     @ViewChild('cellPaddingEdit', { static: true }) private _cellPaddingEdit: IntegerTextInputNgComponent;
-    @ViewChild('highlightAddDurationLabel', { static: true }) private _highlightAddDurationLabel: CaptionLabelNgComponent;
-    @ViewChild('highlightAddDurationEdit', { static: true }) private _highlightAddDurationEdit: IntegerTextInputNgComponent;
-    @ViewChild('highlightUpdateDurationLabel', { static: true }) private _highlightUpdateDurationLabel: CaptionLabelNgComponent;
-    @ViewChild('highlightUpdateDurationEdit', { static: true }) private _highlightUpdateDurationEdit: IntegerTextInputNgComponent;
-    @ViewChild('focusRowColoredChecLabel', { static: true }) private _focusRowColoredChecLabel: CaptionLabelNgComponent;
+    @ViewChild('changedAllHighlightDurationLabel', { static: true }) private _changedAllHighlightDurationLabel: CaptionLabelNgComponent;
+    @ViewChild('changedAllHighlightDurationEdit', { static: true }) private _changedAllHighlightDurationEdit: IntegerTextInputNgComponent;
+    @ViewChild('addedRowHighlightDurationLabel', { static: true }) private _addedRowHighlightDurationLabel: CaptionLabelNgComponent;
+    @ViewChild('addedRowHighlightDurationEdit', { static: true }) private _addedRowHighlightDurationEdit: IntegerTextInputNgComponent;
+    @ViewChild('changedRowRecordHighlightDurationLabel', { static: true })
+        private _changedRowRecordHighlightDurationLabel: CaptionLabelNgComponent;
+    @ViewChild('changedRowRecordHighlightDurationEdit', { static: true })
+        private _changedRowRecordHighlightDurationEdit: IntegerTextInputNgComponent;
+    @ViewChild('changedValueHighlightDurationLabel', { static: true })
+        private _changedValueHighlightDurationLabel: CaptionLabelNgComponent;
+    @ViewChild('changedValueHighlightDurationEdit', { static: true })
+        private _changedValueHighlightDurationEdit: IntegerTextInputNgComponent;
+    @ViewChild('focusRowColoredLabel', { static: true }) private _focusRowColoredLabel: CaptionLabelNgComponent;
     @ViewChild('focusRowColoredCheckbox', { static: true }) private _focusRowColoredCheckbox: CheckboxInputNgComponent;
-    @ViewChild('focusRowBorderedChecLabel', { static: true }) private _focusRowBorderedChecLabel: CaptionLabelNgComponent;
+    @ViewChild('focusRowBorderedLabel', { static: true }) private _focusRowBorderedLabel: CaptionLabelNgComponent;
     @ViewChild('focusRowBorderedCheckbox', { static: true }) private _focusRowBorderedCheckbox: CheckboxInputNgComponent;
     @ViewChild('focusRowBorderWidthLabel', { static: true }) private _focusRowBorderWidthLabel: CaptionLabelNgComponent;
     @ViewChild('focusRowBorderWidthEdit', { static: true }) private _focusRowBorderWidthEdit: IntegerTextInputNgComponent;
+    @ViewChild('smoothHorizontalScrollingLabel', { static: true }) private _smoothHorizontalScrollingLabel: CaptionLabelNgComponent;
+    @ViewChild('smoothHorizontalScrollingCheckbox', { static: true }) private _smoothHorizontalScrollingCheckbox: CheckboxInputNgComponent;
     @ViewChild('horizontalScrollbarWidthLabel', { static: true }) private _horizontalScrollbarWidthLabel: CaptionLabelNgComponent;
     @ViewChild('horizontalScrollbarWidthEdit', { static: true }) private _horizontalScrollbarWidthEdit: IntegerTextInputNgComponent;
-    @ViewChild('verticalScrollbarWidthLabel', { static: true }) private _verticalScrollbarWidthLabel: IntegerTextInputNgComponent;
+    @ViewChild('verticalScrollbarWidthLabel', { static: true }) private _verticalScrollbarWidthLabel: CaptionLabelNgComponent;
     @ViewChild('verticalScrollbarWidthEdit', { static: true }) private _verticalScrollbarWidthEdit: IntegerTextInputNgComponent;
-    @ViewChild('scrollbarMarginLabel', { static: true }) private _scrollbarMarginLabel: IntegerTextInputNgComponent;
+    @ViewChild('scrollbarMarginLabel', { static: true }) private _scrollbarMarginLabel: CaptionLabelNgComponent;
     @ViewChild('scrollbarMarginEdit', { static: true }) private _scrollbarMarginEdit: IntegerTextInputNgComponent;
-    @ViewChild('scrollbarsCanOverlapGridLabel', { static: true }) private _scrollbarsCanOverlapGridLabel: IntegerTextInputNgComponent;
-    @ViewChild('scrollbarsCanOverlapGridCheckbox', { static: true }) private _scrollbarsCanOverlapGridCheckbox: IntegerTextInputNgComponent;
+    @ViewChild('scrollbarThumbInactiveOpacityLabel', { static: true })
+        private _scrollbarThumbInactiveOpacityLabel: CaptionLabelNgComponent;
+    @ViewChild('scrollbarThumbInactiveOpacityControl', { static: true })
+        private _scrollbarThumbInactiveOpacityEdit: NumberInputNgComponent;
 
-    private _showHorizontalGridLinesUiAction: BooleanUiAction;
-    private _showVerticalGridLinesUiAction: BooleanUiAction;
-    private _gridLineHorizontalWeightUiAction: IntegerUiAction;
-    private _gridLineVerticalWeightUiAction: IntegerUiAction;
-    private _cellPaddingUiAction: IntegerUiAction;
-    private _highlightAddDurationUiAction: IntegerUiAction;
-    private _highlightUpdateDurationUiAction: IntegerUiAction;
-    private _focusRowColoredUiAction: BooleanUiAction;
-    private _focusRowBorderedUiAction: BooleanUiAction;
-    private _focusRowBorderWidthUiAction: IntegerUiAction;
-    private _horizontalScrollbarWidthUiAction: IntegerUiAction;
-    private _verticalScrollbarWidthUiAction: IntegerUiAction;
-    private _scrollbarMarginUiAction: IntegerUiAction;
-    private _scrollbarsCanOverlapGridUiAction: BooleanUiAction;
+    private readonly _fontFamilyUiAction: StringUiAction;
+    private readonly _fontSizeUiAction: StringUiAction;
+    private readonly _columnHeaderFontSizeUiAction: StringUiAction;
+    private readonly _showHorizontalGridLinesUiAction: BooleanUiAction;
+    private readonly _showVerticalGridLinesUiAction: BooleanUiAction;
+    private readonly _gridLineHorizontalWidthUiAction: IntegerUiAction;
+    private readonly _gridLineVerticalWidthUiAction: IntegerUiAction;
+    private readonly _cellPaddingUiAction: IntegerUiAction;
+    private readonly _changedAllHighlightDurationUiAction: IntegerUiAction;
+    private readonly _addedRowHighlightDurationUiAction: IntegerUiAction;
+    private readonly _changedRowRecordHighlightDurationUiAction: IntegerUiAction;
+    private readonly _changedValueHighlightDurationUiAction: IntegerUiAction;
+    private readonly _focusRowColoredUiAction: BooleanUiAction;
+    private readonly _focusRowBorderedUiAction: BooleanUiAction;
+    private readonly _focusRowBorderWidthUiAction: IntegerUiAction;
+    private readonly _smoothHorizontalScrollingUiAction: BooleanUiAction;
+    private readonly _horizontalScrollbarWidthUiAction: IntegerUiAction;
+    private readonly _verticalScrollbarWidthUiAction: IntegerUiAction;
+    private readonly _scrollbarMarginUiAction: IntegerUiAction;
+    private readonly _scrollbarThumbInactiveOpacityUiAction: NumberUiAction;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService);
 
-        this.createUiActions();
+        this._fontFamilyUiAction = this.createFontFamilyUiAction();
+        this._fontSizeUiAction = this.createFontSizeUiAction();
+        this._columnHeaderFontSizeUiAction = this.createColumnHeaderFontSizeUiAction();
+        this._showHorizontalGridLinesUiAction = this.createShowHorizontalGridLinesUiAction();
+        this._showVerticalGridLinesUiAction = this.createShowVerticalGridLinesUiAction();
+        this._gridLineHorizontalWidthUiAction = this.createGridLineHorizontalWidthUiAction();
+        this._gridLineVerticalWidthUiAction = this.createGridLineVerticalWidthUiAction();
+        this._cellPaddingUiAction = this.createCellPaddingUiAction();
+        this._changedAllHighlightDurationUiAction = this.createChangedAllHighlightDurationUiAction();
+        this._addedRowHighlightDurationUiAction = this.createAddedRowHighlightDurationUiAction();
+        this._changedRowRecordHighlightDurationUiAction = this.createChangedRowRecordHighlightDurationUiAction();
+        this._changedValueHighlightDurationUiAction = this.createChangedValueHighlightDurationUiAction();
+        this._focusRowColoredUiAction = this.createFocusRowColoredUiAction();
+        this._focusRowBorderedUiAction = this.createFocusRowBorderedUiAction();
+        this._focusRowBorderWidthUiAction = this.createFocusRowBorderWidthUiAction();
+        this._smoothHorizontalScrollingUiAction = this.createSmoothHorizontalScrollingUiAction();
+        this._horizontalScrollbarWidthUiAction = this.createHorizontalScrollbarWidthUiAction();
+        this._verticalScrollbarWidthUiAction = this.createVerticalScrollbarWidthUiAction();
+        this._scrollbarMarginUiAction = this.createScrollbarMarginUiAction();
+        this._scrollbarThumbInactiveOpacityUiAction = this.createScrollbarThumbInactiveOpacityUiAction();
+
         this.pushValues();
     }
 
@@ -91,157 +141,294 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     }
 
     protected override finalise() {
+        this._fontFamilyUiAction.finalise();
+        this._fontSizeUiAction.finalise();
+        this._columnHeaderFontSizeUiAction.finalise();
         this._showHorizontalGridLinesUiAction.finalise();
         this._showVerticalGridLinesUiAction.finalise();
-        this._gridLineHorizontalWeightUiAction.finalise();
-        this._gridLineVerticalWeightUiAction.finalise();
+        this._gridLineHorizontalWidthUiAction.finalise();
+        this._gridLineVerticalWidthUiAction.finalise();
         this._cellPaddingUiAction.finalise();
-        this._highlightAddDurationUiAction.finalise();
-        this._highlightUpdateDurationUiAction.finalise();
+        this._changedAllHighlightDurationUiAction.finalise();
+        this._addedRowHighlightDurationUiAction.finalise();
+        this._changedRowRecordHighlightDurationUiAction.finalise();
+        this._changedValueHighlightDurationUiAction.finalise();
         this._focusRowColoredUiAction.finalise();
         this._focusRowBorderedUiAction.finalise();
         this._focusRowBorderWidthUiAction.finalise();
+        this._smoothHorizontalScrollingUiAction.finalise();
         this._horizontalScrollbarWidthUiAction.finalise();
         this._verticalScrollbarWidthUiAction.finalise();
         this._scrollbarMarginUiAction.finalise();
-        this._scrollbarsCanOverlapGridUiAction.finalise();
+        this._scrollbarThumbInactiveOpacityUiAction.finalise();
 
         super.finalise();
     }
 
-    private createUiActions() {
-        this._showHorizontalGridLinesUiAction = new BooleanUiAction();
-        this._showHorizontalGridLinesUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLinesVisible]);
-        this._showHorizontalGridLinesUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLinesVisible]);
-        this._showHorizontalGridLinesUiAction.commitEvent = () => {
-            this.coreSettings.grid_HorizontalLinesVisible = this._showHorizontalGridLinesUiAction.definedValue;
-        };
-        this._showVerticalGridLinesUiAction = new BooleanUiAction();
-        this._showVerticalGridLinesUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLinesVisible]);
-        this._showVerticalGridLinesUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLinesVisible]);
-        this._showVerticalGridLinesUiAction.commitEvent = () => {
-            this.coreSettings.grid_VerticalLinesVisible = this._showVerticalGridLinesUiAction.definedValue;
-        };
-        this._gridLineHorizontalWeightUiAction = new IntegerUiAction();
-        this._gridLineHorizontalWeightUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLineWeight]);
-        this._gridLineHorizontalWeightUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLineWeight]);
-        this._gridLineHorizontalWeightUiAction.commitEvent = () => {
-            this.coreSettings.grid_HorizontalLineWeight = this._gridLineHorizontalWeightUiAction.definedValue;
-        };
-        this._gridLineVerticalWeightUiAction = new IntegerUiAction();
-        this._gridLineVerticalWeightUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLineWeight]);
-        this._gridLineVerticalWeightUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLineWeight]);
-        this._gridLineVerticalWeightUiAction.commitEvent = () => {
-            this.coreSettings.grid_VerticalLineWeight = this._gridLineVerticalWeightUiAction.definedValue;
-        };
-        this._cellPaddingUiAction = new IntegerUiAction();
-        this._cellPaddingUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_CellPadding]);
-        this._cellPaddingUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_CellPadding]);
-        this._cellPaddingUiAction.commitEvent = () => {
-            this.coreSettings.grid_CellPadding = this._cellPaddingUiAction.definedValue;
-        };
-        this._highlightAddDurationUiAction = new IntegerUiAction();
-        this._highlightAddDurationUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_AddHighlightDuration]);
-        this._highlightAddDurationUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_AddHighlightDuration]);
-        this._highlightAddDurationUiAction.commitEvent = () => {
-            this.coreSettings.grid_AddHighlightDuration = this._highlightAddDurationUiAction.definedValue;
-        };
-        this._highlightUpdateDurationUiAction = new IntegerUiAction();
-        this._highlightUpdateDurationUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_UpdateHighlightDuration]);
-        this._highlightUpdateDurationUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_UpdateHighlightDuration]);
-        this._highlightUpdateDurationUiAction.commitEvent = () => {
-            this.coreSettings.grid_UpdateHighlightDuration = this._highlightUpdateDurationUiAction.definedValue;
-        };
-        this._focusRowColoredUiAction = new BooleanUiAction();
-        this._focusRowColoredUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowColored]);
-        this._focusRowColoredUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowColored]);
-        this._focusRowColoredUiAction.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowColored = this._focusRowColoredUiAction.definedValue;
-        };
-        this._focusRowBorderedUiAction = new BooleanUiAction();
-        this._focusRowBorderedUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBordered]);
-        this._focusRowBorderedUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBordered]);
-        this._focusRowBorderedUiAction.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowBordered = this._focusRowBorderedUiAction.definedValue;
-        };
-        this._focusRowBorderWidthUiAction = new IntegerUiAction();
-        this._focusRowBorderWidthUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBorderWidth]);
-        this._focusRowBorderWidthUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBorderWidth]);
-        this._focusRowBorderWidthUiAction.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowBorderWidth = this._focusRowBorderWidthUiAction.definedValue;
-        };
-        this._horizontalScrollbarWidthUiAction = new IntegerUiAction();
-        this._horizontalScrollbarWidthUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalScrollbarWidth]);
-        this._horizontalScrollbarWidthUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalScrollbarWidth]);
-        this._horizontalScrollbarWidthUiAction.commitEvent = () => {
-            this.coreSettings.grid_HorizontalScrollbarWidth = this._horizontalScrollbarWidthUiAction.definedValue;
-        };
-        this._verticalScrollbarWidthUiAction = new IntegerUiAction();
-        this._verticalScrollbarWidthUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalScrollbarWidth]);
-        this._verticalScrollbarWidthUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalScrollbarWidth]);
-        this._verticalScrollbarWidthUiAction.commitEvent = () => {
-            this.coreSettings.grid_VerticalScrollbarWidth = this._verticalScrollbarWidthUiAction.definedValue;
-        };
-        this._scrollbarMarginUiAction = new IntegerUiAction();
-        this._scrollbarMarginUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarMargin]);
-        this._scrollbarMarginUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarMargin]);
-        this._scrollbarMarginUiAction.commitEvent = () => {
-            this.coreSettings.grid_ScrollbarMargin = this._scrollbarMarginUiAction.definedValue;
-        };
-        this._scrollbarsCanOverlapGridUiAction = new BooleanUiAction();
-        this._scrollbarsCanOverlapGridUiAction.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarsOverlayAllowed]);
-        this._scrollbarsCanOverlapGridUiAction.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarsOverlayAllowed]);
-        this._scrollbarsCanOverlapGridUiAction.commitEvent = () => {
-            this.coreSettings.grid_ScrollbarsOverlayAllowed = this._scrollbarsCanOverlapGridUiAction.definedValue;
-        };
-    }
-
     private initialiseComponents() {
+        this._fontFamilyLabelComponent.initialise(this._fontFamilyUiAction);
+        this._fontFamilyControlComponent.initialise(this._fontFamilyUiAction);
+        this._fontSizeLabelComponent.initialise(this._fontSizeUiAction);
+        this._fontSizeControlComponent.initialise(this._fontSizeUiAction);
+        this._columnHeaderFontSizeLabelComponent.initialise(this._columnHeaderFontSizeUiAction);
+        this._columnHeaderFontSizeControlComponent.initialise(this._columnHeaderFontSizeUiAction);
         this._showHorizontalGridLinesLabel.initialise(this._showHorizontalGridLinesUiAction);
         this._showHorizontalGridLinesCheckbox.initialise(this._showHorizontalGridLinesUiAction);
         this._showVerticalGridLinesLabel.initialise(this._showVerticalGridLinesUiAction);
         this._showVerticalGridLinesCheckbox.initialise(this._showVerticalGridLinesUiAction);
-        this._gridLineHorizontalWeightLabel.initialise(this._gridLineHorizontalWeightUiAction);
-        this._gridLineHorizontalWeightEdit.initialise(this._gridLineHorizontalWeightUiAction);
-        this._gridLineVerticalWeightLabel.initialise(this._gridLineVerticalWeightUiAction);
-        this._gridLineVerticalWeightEdit.initialise(this._gridLineVerticalWeightUiAction);
+        this._gridLineHorizontalWidthLabel.initialise(this._gridLineHorizontalWidthUiAction);
+        this._gridLineHorizontalWidthEdit.initialise(this._gridLineHorizontalWidthUiAction);
+        this._gridLineVerticalWidthLabel.initialise(this._gridLineVerticalWidthUiAction);
+        this._gridLineVerticalWidthEdit.initialise(this._gridLineVerticalWidthUiAction);
         this._cellPaddingLabel.initialise(this._cellPaddingUiAction);
         this._cellPaddingEdit.initialise(this._cellPaddingUiAction);
-        this._highlightAddDurationLabel.initialise(this._highlightAddDurationUiAction);
-        this._highlightAddDurationEdit.initialise(this._highlightAddDurationUiAction);
-        this._highlightUpdateDurationLabel.initialise(this._highlightUpdateDurationUiAction);
-        this._highlightUpdateDurationEdit.initialise(this._highlightUpdateDurationUiAction);
-        this._focusRowColoredChecLabel.initialise(this._focusRowColoredUiAction);
+        this._changedAllHighlightDurationLabel.initialise(this._changedAllHighlightDurationUiAction);
+        this._changedAllHighlightDurationEdit.initialise(this._changedAllHighlightDurationUiAction);
+        this._addedRowHighlightDurationLabel.initialise(this._addedRowHighlightDurationUiAction);
+        this._addedRowHighlightDurationEdit.initialise(this._addedRowHighlightDurationUiAction);
+        this._changedRowRecordHighlightDurationLabel.initialise(this._changedRowRecordHighlightDurationUiAction);
+        this._changedRowRecordHighlightDurationEdit.initialise(this._changedRowRecordHighlightDurationUiAction);
+        this._changedValueHighlightDurationLabel.initialise(this._changedValueHighlightDurationUiAction);
+        this._changedValueHighlightDurationEdit.initialise(this._changedValueHighlightDurationUiAction);
+        this._focusRowColoredLabel.initialise(this._focusRowColoredUiAction);
         this._focusRowColoredCheckbox.initialise(this._focusRowColoredUiAction);
-        this._focusRowBorderedChecLabel.initialise(this._focusRowBorderedUiAction);
+        this._focusRowBorderedLabel.initialise(this._focusRowBorderedUiAction);
         this._focusRowBorderedCheckbox.initialise(this._focusRowBorderedUiAction);
         this._focusRowBorderWidthLabel.initialise(this._focusRowBorderWidthUiAction);
         this._focusRowBorderWidthEdit.initialise(this._focusRowBorderWidthUiAction);
+        this._smoothHorizontalScrollingLabel.initialise(this._smoothHorizontalScrollingUiAction);
+        this._smoothHorizontalScrollingCheckbox.initialise(this._smoothHorizontalScrollingUiAction);
         this._horizontalScrollbarWidthLabel.initialise(this._horizontalScrollbarWidthUiAction);
         this._horizontalScrollbarWidthEdit.initialise(this._horizontalScrollbarWidthUiAction);
         this._verticalScrollbarWidthLabel.initialise(this._verticalScrollbarWidthUiAction);
         this._verticalScrollbarWidthEdit.initialise(this._verticalScrollbarWidthUiAction);
         this._scrollbarMarginLabel.initialise(this._scrollbarMarginUiAction);
         this._scrollbarMarginEdit.initialise(this._scrollbarMarginUiAction);
-        this._scrollbarsCanOverlapGridLabel.initialise(this._scrollbarsCanOverlapGridUiAction);
-        this._scrollbarsCanOverlapGridCheckbox.initialise(this._scrollbarsCanOverlapGridUiAction);
+        this._scrollbarThumbInactiveOpacityLabel.initialise(this._scrollbarThumbInactiveOpacityUiAction);
+        this._scrollbarThumbInactiveOpacityEdit.initialise(this._scrollbarThumbInactiveOpacityUiAction);
+    }
+
+    private createFontFamilyUiAction() {
+        const action = new StringUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_FontFamily]);
+        action.pushTitle(Strings[StringId.SettingTitle_FontFamily]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_FontFamily = this._fontFamilyUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createFontSizeUiAction() {
+        const action = new StringUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_FontSize]);
+        action.pushTitle(Strings[StringId.SettingTitle_FontSize]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_FontSize = this._fontSizeUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createColumnHeaderFontSizeUiAction() {
+        const action = new StringUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_ColumnHeaderFontSize]);
+        action.pushTitle(Strings[StringId.SettingTitle_ColumnHeaderFontSize]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_ColumnHeaderFontSize = this._columnHeaderFontSizeUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createScrollbarThumbInactiveOpacityUiAction() {
+        const action = new NumberUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarThumbInactiveOpacity]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarThumbInactiveOpacity]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_ScrollbarThumbInactiveOpacity = this._scrollbarThumbInactiveOpacityUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createScrollbarMarginUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarMargin]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarMargin]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_ScrollbarMargin = this._scrollbarMarginUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createVerticalScrollbarWidthUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalScrollbarWidth]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalScrollbarWidth]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_VerticalScrollbarWidth = this._verticalScrollbarWidthUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createHorizontalScrollbarWidthUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalScrollbarWidth]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalScrollbarWidth]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_HorizontalScrollbarWidth = this._horizontalScrollbarWidthUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createSmoothHorizontalScrollingUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_SmoothHorizontalScrolling]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_SmoothHorizontalScrolling]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_ScrollHorizontallySmoothly = this._smoothHorizontalScrollingUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createFocusRowBorderWidthUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBorderWidth]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBorderWidth]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_FocusedRowBorderWidth = this._focusRowBorderWidthUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createFocusRowBorderedUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBordered]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBordered]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_FocusedRowBordered = this._focusRowBorderedUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createFocusRowColoredUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowColored]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowColored]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_FocusedRowColored = this._focusRowColoredUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createChangedAllHighlightDurationUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedAllHighlightDuration]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedAllHighlightDuration]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_AllChangedRecentDuration = this._changedAllHighlightDurationUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createAddedRowHighlightDurationUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_AddedRowHighlightDuration]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_AddedRowHighlightDuration]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_RecordInsertedRecentDuration = this._addedRowHighlightDurationUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createChangedRowRecordHighlightDurationUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedRowRecordHighlightDuration]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedRowRecordHighlightDuration]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_RecordUpdatedRecentDuration = this._changedRowRecordHighlightDurationUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createChangedValueHighlightDurationUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedValueHighlightDuration]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedValueHighlightDuration]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_ValueChangedRecentDuration = this._changedValueHighlightDurationUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createCellPaddingUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_CellPadding]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_CellPadding]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_CellPadding = this._cellPaddingUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createGridLineVerticalWidthUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLineWidth]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLineWidth]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_VerticalLineWidth = this._gridLineVerticalWidthUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createGridLineHorizontalWidthUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLineWidth]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLineWidth]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_HorizontalLineWidth = this._gridLineHorizontalWidthUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createShowVerticalGridLinesUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLinesVisible]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLinesVisible]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_VerticalLinesVisible = this._showVerticalGridLinesUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createShowHorizontalGridLinesUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLinesVisible]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLinesVisible]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_HorizontalLinesVisible = this._showHorizontalGridLinesUiAction.definedValue;
+        };
+        return action;
     }
 
     private pushValues() {
+        this._fontFamilyUiAction.pushValue(this.coreSettings.grid_FontFamily);
+        this._fontSizeUiAction.pushValue(this.coreSettings.grid_FontSize);
+        this._columnHeaderFontSizeUiAction.pushValue(this.coreSettings.grid_ColumnHeaderFontSize);
         this._showHorizontalGridLinesUiAction.pushValue(this.coreSettings.grid_HorizontalLinesVisible);
         this._showVerticalGridLinesUiAction.pushValue(this.coreSettings.grid_VerticalLinesVisible);
-        this._gridLineHorizontalWeightUiAction.pushValue(this.coreSettings.grid_HorizontalLineWeight);
-        this._gridLineVerticalWeightUiAction.pushValue(this.coreSettings.grid_VerticalLineWeight);
+        this._gridLineHorizontalWidthUiAction.pushValue(this.coreSettings.grid_HorizontalLineWidth);
+        this._gridLineVerticalWidthUiAction.pushValue(this.coreSettings.grid_VerticalLineWidth);
         this._cellPaddingUiAction.pushValue(this.coreSettings.grid_CellPadding);
-        this._highlightAddDurationUiAction.pushValue(this.coreSettings.grid_AddHighlightDuration);
-        this._highlightUpdateDurationUiAction.pushValue(this.coreSettings.grid_UpdateHighlightDuration);
+        this._changedAllHighlightDurationUiAction.pushValue(this.coreSettings.grid_AllChangedRecentDuration);
+        this._addedRowHighlightDurationUiAction.pushValue(this.coreSettings.grid_RecordInsertedRecentDuration);
+        this._changedRowRecordHighlightDurationUiAction.pushValue(this.coreSettings.grid_RecordUpdatedRecentDuration);
+        this._changedValueHighlightDurationUiAction.pushValue(this.coreSettings.grid_ValueChangedRecentDuration);
         this._focusRowColoredUiAction.pushValue(this.coreSettings.grid_FocusedRowColored);
         this._focusRowBorderedUiAction.pushValue(this.coreSettings.grid_FocusedRowBordered);
         this._focusRowBorderWidthUiAction.pushValue(this.coreSettings.grid_FocusedRowBorderWidth);
+        this._smoothHorizontalScrollingUiAction.pushValue(this.coreSettings.grid_ScrollHorizontallySmoothly);
         this._horizontalScrollbarWidthUiAction.pushValue(this.coreSettings.grid_HorizontalScrollbarWidth);
         this._verticalScrollbarWidthUiAction.pushValue(this.coreSettings.grid_VerticalScrollbarWidth);
         this._scrollbarMarginUiAction.pushValue(this.coreSettings.grid_ScrollbarMargin);
-        this._scrollbarsCanOverlapGridUiAction.pushValue(this.coreSettings.grid_ScrollbarsOverlayAllowed);
+        this._scrollbarThumbInactiveOpacityUiAction.pushValue(this.coreSettings.grid_ScrollbarThumbInactiveOpacity);
     }
 }
 

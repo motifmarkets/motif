@@ -5,10 +5,10 @@
 -->
 
 <div #leftAndRightDiv id="leftAndRightDiv" [style.display]="isPresetCodeVisible ? 'none' : null">
-    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize">
-        <as-split-area [size]="null"> <!-- was size="*"-->
+    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area [size]="gridSize" [minSize]="gridMinSize">
             <div id="leftDiv">
-                <app-color-scheme-grid #grid id="grid"></app-color-scheme-grid>
+                <app-color-scheme-grid #grid></app-color-scheme-grid>
                 <div id="loadSaveDiv">
                     <select #loadSelect id="loadSelect" (change)="handleGuiLoadSelectChange(loadSelect.value)">
                         <option>&lt;Dark&gt;</option>
@@ -18,7 +18,7 @@
                 </div>
             </div>
         </as-split-area>
-        <as-split-area [size]="propertiesSize">
+        <as-split-area [size]="null"> <!-- was size="*"-->
             <app-color-scheme-item-properties #itemProperties id="itemProperties"></app-color-scheme-item-properties>
         </as-split-area>
     </as-split>

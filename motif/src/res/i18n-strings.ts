@@ -8,16 +8,17 @@ export const enum StringId {
     InternalError,
     PersistError,
     AssertInternalError,
-    UndefinedVariableInternalError,
     TypeInternalError,
     UnreachableCaseInternalError,
     UnexpectedCaseInternalError,
     NotImplementedInternalError,
+    UnexpectedUndefinedInternalError,
     UnexpectedTypeInternalError,
     EnumInfoOutOfOrderInternalError,
     ExternalError,
     JsonLoadExternalError,
     ConfigExternalError,
+    GridLayoutExternalError,
     DataExternalError,
     FeedExternalError,
     ZenithDataExternalError,
@@ -840,6 +841,8 @@ export const enum StringId {
     SettingTitle_FontFamily,
     SettingCaption_FontSize,
     SettingTitle_FontSize,
+    SettingCaption_ColumnHeaderFontSize,
+    SettingTitle_ColumnHeaderFontSize,
     SettingCaption_Symbol_DefaultExchange,
     SettingTitle_Symbol_DefaultExchange,
     SettingCaption_Symbol_ExchangeHideMode,
@@ -864,30 +867,36 @@ export const enum StringId {
     SettingTitle_Grid_HorizontalLinesVisible,
     SettingCaption_Grid_VerticalLinesVisible,
     SettingTitle_Grid_VerticalLinesVisible,
-    SettingCaption_Grid_HorizontalLineWeight,
-    SettingTitle_Grid_HorizontalLineWeight,
-    SettingCaption_Grid_VerticalLineWeight,
-    SettingTitle_Grid_VerticalLineWeight,
+    SettingCaption_Grid_HorizontalLineWidth,
+    SettingTitle_Grid_HorizontalLineWidth,
+    SettingCaption_Grid_VerticalLineWidth,
+    SettingTitle_Grid_VerticalLineWidth,
     SettingCaption_Grid_CellPadding,
     SettingTitle_Grid_CellPadding,
-    SettingCaption_Grid_AddHighlightDuration,
-    SettingTitle_Grid_AddHighlightDuration,
-    SettingCaption_Grid_UpdateHighlightDuration,
-    SettingTitle_Grid_UpdateHighlightDuration,
+    SettingCaption_Grid_ChangedAllHighlightDuration,
+    SettingTitle_Grid_ChangedAllHighlightDuration,
+    SettingCaption_Grid_AddedRowHighlightDuration,
+    SettingTitle_Grid_AddedRowHighlightDuration,
+    SettingCaption_Grid_ChangedRowRecordHighlightDuration,
+    SettingTitle_Grid_ChangedRowRecordHighlightDuration,
+    SettingCaption_Grid_ChangedValueHighlightDuration,
+    SettingTitle_Grid_ChangedValueHighlightDuration,
     SettingCaption_Grid_FocusedRowColored,
     SettingTitle_Grid_FocusedRowColored,
     SettingCaption_Grid_FocusedRowBordered,
     SettingTitle_Grid_FocusedRowBordered,
     SettingCaption_Grid_FocusedRowBorderWidth,
     SettingTitle_Grid_FocusedRowBorderWidth,
+    SettingCaption_Grid_SmoothHorizontalScrolling,
+    SettingTitle_Grid_SmoothHorizontalScrolling,
     SettingCaption_Grid_HorizontalScrollbarWidth,
     SettingTitle_Grid_HorizontalScrollbarWidth,
     SettingCaption_Grid_VerticalScrollbarWidth,
     SettingTitle_Grid_VerticalScrollbarWidth,
     SettingCaption_Grid_ScrollbarMargin,
     SettingTitle_Grid_ScrollbarMargin,
-    SettingCaption_Grid_ScrollbarsOverlayAllowed,
-    SettingTitle_Grid_ScrollbarsOverlayAllowed,
+    SettingCaption_Grid_ScrollbarThumbInactiveOpacity,
+    SettingTitle_Grid_ScrollbarThumbInactiveOpacity,
     SettingCaption_OrderPad_ReviewEnabled,
     SettingTitle_OrderPad_ReviewEnabled,
     SettingCaption_OrderPad_DefaultOrderTypeId,
@@ -1258,6 +1267,8 @@ export const enum StringId {
     OrderRequestResultCaption_OrderId,
     OrderRequestResultTitle_Errors,
     OrderRequestResultCaption_Errors,
+    ColorSelector_HideInPickerCaption,
+    ColorSelector_HideInPickerTitle,
     ColorSelector_ItemColorTypeCaption,
     ColorSelector_ItemColorTypeTitle,
     ColorSelector_OpaqueCaption,
@@ -1282,8 +1293,28 @@ export const enum StringId {
     ColorSelector_SpinTitle,
     ColorSelector_CopyCaption,
     ColorSelector_CopyTitle,
-    ColorItemProperties_ReadabilityTitle,
-    ColorItemProperties_ReadabilityCaption,
+    ColorSelector_HexCaption,
+    ColorSelector_HexTitle,
+    ColorSelector_HueCaption,
+    ColorSelector_HueTitle,
+    ColorSelector_SaturationCaption,
+    ColorSelector_SaturationTitle,
+    ColorSelector_ValueCaption,
+    ColorSelector_ValueTitle,
+    ColorSelector_RedCaption,
+    ColorSelector_RedTitle,
+    ColorSelector_GreenCaption,
+    ColorSelector_GreenTitle,
+    ColorSelector_BlueCaption,
+    ColorSelector_BlueTitle,
+    ColorSchemeItemProperties_ReadabilityTitle,
+    ColorSchemeItemProperties_ReadabilityCaption,
+    ColorSchemeItemProperties_PickerTypeTitle,
+    ColorSchemeItemProperties_PickerTypeCaption,
+    ColorSchemeItemProperties_HueSaturationCaption,
+    ColorSchemeItemProperties_HueSaturationTitle,
+    ColorSchemeItemProperties_ValueSaturationCaption,
+    ColorSchemeItemProperties_ValueSaturationTitle,
     ApplicationEnvironmentSelectorDisplay_Default,
     ApplicationEnvironmentSelectorTitle_Default,
     ApplicationEnvironmentSelectorDisplay_ExchangeEnvironment,
@@ -1735,42 +1766,42 @@ export namespace I18nStrings {
         },
         AssertInternalError: {
             id: StringId.AssertInternalError, translations: {
-                en: 'Internal A Error',
-            }
-        },
-        UndefinedVariableInternalError: {
-            id: StringId.UndefinedVariableInternalError, translations: {
-                en: 'Internal UV Error',
+                en: 'Internal Assert Error',
             }
         },
         TypeInternalError: {
             id: StringId.TypeInternalError, translations: {
-                en: 'Internal T Error',
+                en: 'Internal type Error',
             }
         },
         UnreachableCaseInternalError: {
             id: StringId.UnreachableCaseInternalError, translations: {
-                en: 'Internal URC Error',
+                en: 'Internal unreachable case error',
             }
         },
         UnexpectedCaseInternalError: {
             id: StringId.UnexpectedCaseInternalError, translations: {
-                en: 'Internal UEC Error',
+                en: 'Internal unexpected case error',
             }
         },
         NotImplementedInternalError: {
             id: StringId.NotImplementedInternalError, translations: {
-                en: 'Internal NI Error',
+                en: 'Internal not implemented error',
+            }
+        },
+        UnexpectedUndefinedInternalError: {
+            id: StringId.UnexpectedUndefinedInternalError, translations: {
+                en: 'Internal unexpected undefined error',
             }
         },
         UnexpectedTypeInternalError: {
             id: StringId.UnexpectedTypeInternalError, translations: {
-                en: 'Internal UT Error',
+                en: 'Internal unexpected type error',
             }
         },
         EnumInfoOutOfOrderInternalError: {
             id: StringId.EnumInfoOutOfOrderInternalError, translations: {
-                en: 'Internal EO Error',
+                en: 'Internal enum info out of order Error',
             }
         },
         ExternalError: {
@@ -1786,6 +1817,11 @@ export namespace I18nStrings {
         ConfigExternalError: {
             id: StringId.ConfigExternalError, translations: {
                 en: 'Configuration Error',
+            }
+        },
+        GridLayoutExternalError: {
+            id: StringId.GridLayoutExternalError, translations: {
+                en: 'Grid Layout Error',
             }
         },
         DataExternalError: {
@@ -5894,6 +5930,16 @@ export namespace I18nStrings {
                 en: 'Font Size',
             }
         },
+        SettingCaption_ColumnHeaderFontSize: {
+            id: StringId.SettingCaption_ColumnHeaderFontSize, translations: {
+                en: 'Column Header Font Size',
+            }
+        },
+        SettingTitle_ColumnHeaderFontSize: {
+            id: StringId.SettingTitle_ColumnHeaderFontSize, translations: {
+                en: 'Column Header Font Size',
+            }
+        },
         SettingCaption_Symbol_DefaultExchange: {
             id: StringId.SettingCaption_Symbol_DefaultExchange, translations: {
                 en: 'Default exchange',
@@ -6014,24 +6060,24 @@ export namespace I18nStrings {
                 en: 'Show vertical grid lines',
             }
         },
-        SettingCaption_Grid_HorizontalLineWeight: {
-            id: StringId.SettingCaption_Grid_HorizontalLineWeight, translations: {
-                en: 'Set weight of horizontal grid lines',
+        SettingCaption_Grid_HorizontalLineWidth: {
+            id: StringId.SettingCaption_Grid_HorizontalLineWidth, translations: {
+                en: 'Set width of horizontal grid lines',
             }
         },
-        SettingTitle_Grid_HorizontalLineWeight: {
-            id: StringId.SettingTitle_Grid_HorizontalLineWeight, translations: {
-                en: 'Set weight of horizontal grid lines',
+        SettingTitle_Grid_HorizontalLineWidth: {
+            id: StringId.SettingTitle_Grid_HorizontalLineWidth, translations: {
+                en: 'Set width of horizontal grid lines',
             }
         },
-        SettingCaption_Grid_VerticalLineWeight: {
-            id: StringId.SettingCaption_Grid_VerticalLineWeight, translations: {
-                en: 'Set weight of vertical grid lines',
+        SettingCaption_Grid_VerticalLineWidth: {
+            id: StringId.SettingCaption_Grid_VerticalLineWidth, translations: {
+                en: 'Set width of vertical grid lines',
             }
         },
-        SettingTitle_Grid_VerticalLineWeight: {
-            id: StringId.SettingTitle_Grid_VerticalLineWeight, translations: {
-                en: 'Set weight of vertical grid lines',
+        SettingTitle_Grid_VerticalLineWidth: {
+            id: StringId.SettingTitle_Grid_VerticalLineWidth, translations: {
+                en: 'Set width of vertical grid lines',
             }
         },
         SettingCaption_Grid_CellPadding: {
@@ -6044,24 +6090,44 @@ export namespace I18nStrings {
                 en: 'Cell padding size (pixels)',
             }
         },
-        SettingCaption_Grid_AddHighlightDuration: {
-            id: StringId.SettingCaption_Grid_AddHighlightDuration, translations: {
-                en: 'Duration of add highlights (milliseconds)',
+        SettingCaption_Grid_ChangedAllHighlightDuration: {
+            id: StringId.SettingCaption_Grid_ChangedAllHighlightDuration, translations: {
+                en: 'Changed all highlight duration',
             }
         },
-        SettingTitle_Grid_AddHighlightDuration: {
-            id: StringId.SettingTitle_Grid_AddHighlightDuration, translations: {
-                en: 'Duration of add highlights (milliseconds)',
+        SettingTitle_Grid_ChangedAllHighlightDuration: {
+            id: StringId.SettingTitle_Grid_ChangedAllHighlightDuration, translations: {
+                en: 'Duration of all changed highlight (milliseconds)',
             }
         },
-        SettingCaption_Grid_UpdateHighlightDuration: {
-            id: StringId.SettingCaption_Grid_UpdateHighlightDuration, translations: {
-                en: 'Duration of update highlights (milliseconds)',
+        SettingCaption_Grid_AddedRowHighlightDuration: {
+            id: StringId.SettingCaption_Grid_AddedRowHighlightDuration, translations: {
+                en: 'Added row highlight duration',
             }
         },
-        SettingTitle_Grid_UpdateHighlightDuration: {
-            id: StringId.SettingTitle_Grid_UpdateHighlightDuration, translations: {
-                en: 'Duration of update highlights (milliseconds)',
+        SettingTitle_Grid_AddedRowHighlightDuration: {
+            id: StringId.SettingTitle_Grid_AddedRowHighlightDuration, translations: {
+                en: 'Duration of added row highlights (milliseconds)',
+            }
+        },
+        SettingCaption_Grid_ChangedRowRecordHighlightDuration: {
+            id: StringId.SettingCaption_Grid_ChangedRowRecordHighlightDuration, translations: {
+                en: 'Changed row highlight duration',
+            }
+        },
+        SettingTitle_Grid_ChangedRowRecordHighlightDuration: {
+            id: StringId.SettingTitle_Grid_ChangedRowRecordHighlightDuration, translations: {
+                en: 'Duration of changed row highlights (milliseconds)',
+            }
+        },
+        SettingCaption_Grid_ChangedValueHighlightDuration: {
+            id: StringId.SettingCaption_Grid_ChangedValueHighlightDuration, translations: {
+                en: 'Changed value highlight duration',
+            }
+        },
+        SettingTitle_Grid_ChangedValueHighlightDuration: {
+            id: StringId.SettingTitle_Grid_ChangedValueHighlightDuration, translations: {
+                en: 'Duration of changed value/cell highlights (milliseconds)',
             }
         },
         SettingCaption_Grid_FocusedRowColored: {
@@ -6094,6 +6160,17 @@ export namespace I18nStrings {
                 en: 'Focused row border width',
             }
         },
+
+        SettingCaption_Grid_SmoothHorizontalScrolling: {
+            id: StringId.SettingCaption_Grid_SmoothHorizontalScrolling, translations: {
+                en: 'Smooth Horizontal Scrolling'
+            }
+        },
+        SettingTitle_Grid_SmoothHorizontalScrolling: {
+            id: StringId.SettingTitle_Grid_SmoothHorizontalScrolling, translations: {
+                en: 'Smooth Horizontal Scrolling'
+            }
+        },
         SettingCaption_Grid_HorizontalScrollbarWidth: {
             id: StringId.SettingCaption_Grid_HorizontalScrollbarWidth, translations: {
                 en: 'Horizontal scrollbar width',
@@ -6124,14 +6201,14 @@ export namespace I18nStrings {
                 en: 'Scrollbar margin (pixels)',
             }
         },
-        SettingCaption_Grid_ScrollbarsOverlayAllowed: {
-            id: StringId.SettingCaption_Grid_ScrollbarsOverlayAllowed, translations: {
-                en: 'Scrollbars can overlap grid',
+        SettingCaption_Grid_ScrollbarThumbInactiveOpacity: {
+            id: StringId.SettingCaption_Grid_ScrollbarThumbInactiveOpacity, translations: {
+                en: 'Inactive scrollbar thumb opacity',
             }
         },
-        SettingTitle_Grid_ScrollbarsOverlayAllowed: {
-            id: StringId.SettingTitle_Grid_ScrollbarsOverlayAllowed, translations: {
-                en: 'Allow scrollbars to overlap grid for more compact layout',
+        SettingTitle_Grid_ScrollbarThumbInactiveOpacity: {
+            id: StringId.SettingTitle_Grid_ScrollbarThumbInactiveOpacity, translations: {
+                en: 'When a scrollbar is not in use, its thumb will fade to this opacity (transparency)',
             }
         },
         SettingCaption_OrderPad_ReviewEnabled: {
@@ -7985,6 +8062,16 @@ export namespace I18nStrings {
                 en: 'Errors',
             }
         },
+        ColorSelector_HideInPickerCaption: {
+            id: StringId.ColorSelector_HideInPickerCaption, translations: {
+                en: 'Hide',
+            }
+        },
+        ColorSelector_HideInPickerTitle: {
+            id: StringId.ColorSelector_HideInPickerTitle, translations: {
+                en: 'Hide in color picker',
+            }
+        },
         ColorSelector_ItemColorTypeCaption: {
             id: StringId.ColorSelector_ItemColorTypeCaption, translations: {
                 en: 'Item color type',
@@ -7997,7 +8084,7 @@ export namespace I18nStrings {
         },
         ColorSelector_OpaqueCaption: {
             id: StringId.ColorSelector_OpaqueCaption, translations: {
-                en: 'Picker color',
+                en: 'Picker',
             }
         },
         ColorSelector_OpaqueTitle: {
@@ -8012,17 +8099,17 @@ export namespace I18nStrings {
         },
         ColorSelector_TransparentTitle: {
             id: StringId.ColorSelector_TransparentTitle, translations: {
-                en: 'Show underlying element',
+                en: 'Show underlying element color',
             }
         },
         ColorSelector_UseInheritedCaption: {
             id: StringId.ColorSelector_UseInheritedCaption, translations: {
-                en: 'Use inherited color',
+                en: 'Inherited',
             }
         },
         ColorSelector_UseInheritedTitle: {
             id: StringId.ColorSelector_UseInheritedTitle, translations: {
-                en: 'To avoid having to specify each color, they can be set to have the same color as their ancestor',
+                en: 'Base or ancestor color. Select this for groups of items to have the same color.',
             }
         },
         ColorSelector_LightenCaption: {
@@ -8105,14 +8192,114 @@ export namespace I18nStrings {
                 en: 'Copy',
             }
         },
-        ColorItemProperties_ReadabilityTitle: {
-            id: StringId.ColorItemProperties_ReadabilityTitle, translations: {
+        ColorSelector_HexCaption: {
+            id: StringId.ColorSelector_HexCaption, translations: {
+                en: '#',
+            }
+        },
+        ColorSelector_HexTitle: {
+            id: StringId.ColorSelector_HexTitle, translations: {
+                en: 'Hex color (accepts entry in many color formats)',
+            }
+        },
+        ColorSelector_HueCaption: {
+            id: StringId.ColorSelector_HueCaption, translations: {
+                en: 'H',
+            }
+        },
+        ColorSelector_HueTitle: {
+            id: StringId.ColorSelector_HueTitle, translations: {
+                en: 'Hue color component',
+            }
+        },
+        ColorSelector_SaturationCaption: {
+            id: StringId.ColorSelector_SaturationCaption, translations: {
+                en: 'S',
+            }
+        },
+        ColorSelector_SaturationTitle: {
+            id: StringId.ColorSelector_SaturationTitle, translations: {
+                en: 'Saturation color component',
+            }
+        },
+        ColorSelector_ValueCaption: {
+            id: StringId.ColorSelector_ValueCaption, translations: {
+                en: 'V',
+            }
+        },
+        ColorSelector_ValueTitle: {
+            id: StringId.ColorSelector_ValueTitle, translations: {
+                en: 'Value color component',
+            }
+        },
+        ColorSelector_RedCaption: {
+            id: StringId.ColorSelector_RedCaption, translations: {
+                en: 'R',
+            }
+        },
+        ColorSelector_RedTitle: {
+            id: StringId.ColorSelector_RedTitle, translations: {
+                en: 'Red color component',
+            }
+        },
+        ColorSelector_GreenCaption: {
+            id: StringId.ColorSelector_GreenCaption, translations: {
+                en: 'G',
+            }
+        },
+        ColorSelector_GreenTitle: {
+            id: StringId.ColorSelector_GreenTitle, translations: {
+                en: 'Green color component',
+            }
+        },
+        ColorSelector_BlueCaption: {
+            id: StringId.ColorSelector_BlueCaption, translations: {
+                en: 'B',
+            }
+        },
+        ColorSelector_BlueTitle: {
+            id: StringId.ColorSelector_BlueTitle, translations: {
+                en: 'Blue color component',
+            }
+        },
+        ColorSchemeItemProperties_ReadabilityTitle: {
+            id: StringId.ColorSchemeItemProperties_ReadabilityTitle, translations: {
                 en: 'Level of readability (0 = poor, 21 = excellent)',
             }
         },
-        ColorItemProperties_ReadabilityCaption: {
-            id: StringId.ColorItemProperties_ReadabilityCaption, translations: {
+        ColorSchemeItemProperties_ReadabilityCaption: {
+            id: StringId.ColorSchemeItemProperties_ReadabilityCaption, translations: {
                 en: 'Readability',
+            }
+        },
+        ColorSchemeItemProperties_PickerTypeTitle: {
+            id: StringId.ColorSchemeItemProperties_PickerTypeTitle, translations: {
+                en: 'Select either Hue/Saturation (circle) or Value/Saturation (box) color picker',
+            }
+        },
+        ColorSchemeItemProperties_PickerTypeCaption: {
+            id: StringId.ColorSchemeItemProperties_PickerTypeCaption, translations: {
+                en: 'Color Picker Type',
+            }
+        },
+        ColorSchemeItemProperties_HueSaturationCaption: {
+            id: StringId.ColorSchemeItemProperties_HueSaturationCaption, translations: {
+                en: 'Hue/Sat',
+            }
+        },
+        ColorSchemeItemProperties_HueSaturationTitle: {
+            id: StringId.ColorSchemeItemProperties_HueSaturationTitle, translations: {
+                en: 'Hue/Saturation (circle) color picker',
+            }
+        },
+        ColorSchemeItemProperties_ValueSaturationCaption: {
+            id: StringId.ColorSchemeItemProperties_ValueSaturationCaption, translations: {
+                en: 'Val/Sat',
+            }
+        },
+        ColorSchemeItemProperties_ValueSaturationTitle: {
+            id: StringId.ColorSchemeItemProperties_ValueSaturationTitle, translations: {
+                en: 'Value/Saturation (box) color picker',
             }
         },
         ApplicationEnvironmentSelectorDisplay_Default: {

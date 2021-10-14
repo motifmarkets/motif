@@ -4,10 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridDataStore, TRecordIndex } from '@motifmarkets/revgrid';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
 import { BidAskSide, BidAskSideId, DepthDataItem, DepthStyleId } from 'src/adi/internal-api';
 import {
     AssertInternalError,
+    CorrectnessId,
     Integer,
     isDecimalEqual,
     Logger,
@@ -16,10 +17,10 @@ import {
     UnreachableCaseError
 } from 'src/sys/internal-api';
 import { DepthRecord } from './depth-record';
-import { DepthSideGridDataStore } from './depth-side-grid-data-store';
+import { DepthSideGridRecordStore } from './depth-side-grid-record-store';
 import { FullDepthRecord, OrderFullDepthRecord, PriceLevelFullDepthRecord } from './full-depth-record';
 
-export class FullDepthSideGridDataStore extends DepthSideGridDataStore implements GridDataStore {
+export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore implements RevRecordStore {
     private _newPriceLevelAsOrder: boolean;
 
     private _dataItem: DepthDataItem;
@@ -52,7 +53,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         this._dataItemOrders = this._dataItem.getOrders(this.sideId);
 
         this._dataCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
-            () => this.handleDataCorrectnessChangeEvent()
+            () => this.processDataCorrectnessChange()
         );
 
         this._afterOrderAddSubscriptionId = this._dataItem.subscribeAfterOrderInsertEvent(
@@ -63,26 +64,25 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         );
         this._orderChangeSubscriptionId = this._dataItem.subscribeOrderChangeEvent(
             this.sideId,
-            (index, oldQuantity, oldHasUndisclosed, changedFieldIds) =>
-                this.handleOrderChangeEvent(index, oldQuantity, oldHasUndisclosed, changedFieldIds)
+            (index, oldQuantity, oldHasUndisclosed, valueChanges) =>
+                this.handleOrderChangeEvent(index, oldQuantity, oldHasUndisclosed, valueChanges)
         );
         this._orderMoveAndChangeSubscriptionId = this._dataItem.subscribeOrderMoveAndChangeEvent(
             this.sideId,
-            (fromIndex, toIndex, oldQuantity, oldHasUndisclosed, changedFieldIds) =>
-                this.handleOrderMoveAndChangeEvent(fromIndex, toIndex, oldQuantity, oldHasUndisclosed, changedFieldIds)
+            (fromIndex, toIndex, oldQuantity, oldHasUndisclosed, valueChanges) =>
+                this.handleOrderMoveAndChangeEvent(fromIndex, toIndex, oldQuantity, oldHasUndisclosed, valueChanges)
         );
         this._ordersClearSubscriptionId = this._dataItem.subscribeBeforeOrdersClearEvent(() => this.handleOrdersClearEvent());
 
         this._dataItemFinalised = false;
 
-        if (this._dataItem.usable) {
-            this.populateRecords(expand);
-        }
+        this.processDataCorrectnessChange();
     }
 
     close() {
         this.clearOrders();
         this.finaliseDataItem();
+        this.resetOpenPopulated();
     }
 
     toggleRecordOrderPriceLevel(recordIndex: Integer) {
@@ -113,14 +113,13 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
 
         const recordCount = this._records.length;
         if (recordCount > oldLength) {
-            this.insertRecordsEvent(oldLength, recordCount - oldLength);
+            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
         } else {
             if (recordCount < oldLength) {
-                this.deleteRecordsEvent(recordCount, oldLength - recordCount);
+                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
             }
         }
 
-        this.invalidateAllEvent();
         this.checkConsistency();
     }
 
@@ -160,13 +159,12 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         }
 
         if (recordCount > oldLength) {
-            this.insertRecordsEvent(oldLength, recordCount - oldLength);
+            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
         } else {
             if (recordCount < oldLength) {
-                this.deleteRecordsEvent(recordCount, oldLength - recordCount);
+                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
             }
         }
-        this.invalidateAllEvent();
 
         this._newPriceLevelAsOrder = false;
         this.checkConsistency();
@@ -177,35 +175,33 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
     }
 
     // GridDataStore properties/methods
-    get RecordCount(): number { return this.GetRecordCount(); }
+    get recordCount(): number { return this.getRecordCount(); }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    GetRecordValue(index: TRecordIndex): object {
-        return this._records[index];
+    getRecord(recordIndex: RevRecordIndex) {
+        return this._records[recordIndex];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    GetRecords(): object[] {
+    getRecords() {
         return this._records;
     }
-
-    GetRecordCount(): number {
-        return this._records.length;
-    }
-
-    // GetAttributes not used
 
     protected getRecordCount() {
         return this._records.length;
     }
 
-    protected getRecord(recordIndex: Integer) {
-        return this._records[recordIndex];
-    }
-
-    private handleDataCorrectnessChangeEvent() {
-        if (this._dataItem.usable) {
-            this.populateRecords(this._newPriceLevelAsOrder);
+    private processDataCorrectnessChange() {
+        switch (this._dataItem.correctnessId) {
+            case CorrectnessId.Error:
+                this.checkResolveOpenPopulated(false);
+                break;
+            case CorrectnessId.Usable:
+            case CorrectnessId.Good:
+                this.populateRecords(this._newPriceLevelAsOrder);
+                break;
+            case CorrectnessId.Suspect:
+                break;
+            default:
+                throw new UnreachableCaseError('FDSGDS88843', this._dataItem.correctnessId);
         }
     }
 
@@ -228,15 +224,15 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
     private handleOrderChangeEvent(index: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]
+        valueChanges: DepthDataItem.Order.ValueChange[]
     ) {
         if (this._dataItem.usable) {
             if (debug) {
                 Logger.logDebug(`Depth: ${this._sideIdDisplay}` +
-                    ` OrderChange: ${index} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                    ` OrderChange: ${index} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                 );
             }
-            this.changeOrder(index, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            this.changeOrder(index, oldQuantity, oldHasUndisclosed, valueChanges);
             this.checkConsistency();
         }
     }
@@ -244,15 +240,15 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
     private handleOrderMoveAndChangeEvent(fromIndex: Integer, toIndex: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]
+        valueChanges: DepthDataItem.Order.ValueChange[]
     ) {
         if (this._dataItem.usable) {
             if (debug) {
                 Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange: ${fromIndex} ${toIndex} ` +
-                    `${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                    `${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                 );
             }
-            this.moveAndChangeOrder(fromIndex, toIndex, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            this.moveAndChangeOrder(fromIndex, toIndex, oldQuantity, oldHasUndisclosed, valueChanges);
             this.checkConsistency();
         }
     }
@@ -327,15 +323,15 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
      *
      * @param recordIndex
      * @param doAllAuction
-     * Set doAllAuction to true when existing auction and quantityAhead values no longer consistent
+     * Set doAllAuction to true when existing auction and volumeAhead values no longer consistent
      */
     private createFullDepthRecordForNewPriceLevel(index: Integer, order: DepthDataItem.Order,
-        quantityAhead: Integer | undefined, auctionQuantity: Integer | undefined
+        volumeAhead: Integer | undefined, auctionQuantity: Integer | undefined
     ) {
         if (this._newPriceLevelAsOrder) {
-            return new OrderFullDepthRecord(index, order, quantityAhead, auctionQuantity);
+            return new OrderFullDepthRecord(index, order, volumeAhead, auctionQuantity);
         } else {
-            return new PriceLevelFullDepthRecord(index, order, quantityAhead, auctionQuantity);
+            return new PriceLevelFullDepthRecord(index, order, volumeAhead, auctionQuantity);
         }
     }
 
@@ -349,9 +345,9 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 if (isDecimalEqual(succOrderRecord.price, order.price)) {
                     if (debug) { Logger.logDebug(`Depth: ${this._sideIdDisplay} Insert-MergeSuccessive: ${index}`); }
                     succOrderRecord.addOrder(order);
-                    const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(succOrderRecord.index, false);
+                    const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(succOrderRecord.index, false);
                     this._orderIndex.splice(index, 0, succOrderRecord);
-                    this.invalidateRecords(succOrderRecord.index, moreThanOneRecordAffected);
+                    this.invalidateRecordAndFollowingRecordsEvent(succOrderRecord.index, lastAffectedFollowingRecordIndex);
                     return;
                 }
             }
@@ -362,10 +358,9 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 const firstRecord = this.createFullDepthRecordForNewPriceLevel(0, order, 0, this._auctionVolume);
                 this._records.unshift(firstRecord);
                 this.reindexRecords(1);
-                const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(0, false);
+                const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(0, false);
                 this._orderIndex.splice(0, 0, firstRecord);
-                this.insertRecordEvent(0);
-                this.invalidateRecords(0, moreThanOneRecordAffected);
+                this.recordInsertedEvent(0, lastAffectedFollowingRecordIndex);
                 return;
             }
         }
@@ -378,9 +373,9 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     if (debug) { Logger.logDebug(`Depth: ${this._sideIdDisplay} Insert-MergePrevious: ${index}`); }
                     prevOrderRecord.addOrder(order);
                     // eslint-disable-next-line @typescript-eslint/no-shadow
-                    const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(prevOrderRecord.index, false);
+                    const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(prevOrderRecord.index, false);
                     this._orderIndex.splice(index, 0, prevOrderRecord);
-                    this.invalidateRecords(prevOrderRecord.index, moreThanOneRecordAffected);
+                    this.invalidateRecordAndFollowingRecordsEvent(prevOrderRecord.index, lastAffectedFollowingRecordIndex);
                     return;
                 }
             }
@@ -395,10 +390,9 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
             }
             this._records.splice(recordIndex, 0, record); // may be last
             this.reindexRecords(recordIndex + 1);
-            const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(recordIndex, false);
+            const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
             this._orderIndex.splice(index, 0, record); // may be last
-            this.insertRecordEvent(recordIndex);
-            this.invalidateRecords(recordIndex, moreThanOneRecordAffected);
+            this.recordInsertedEvent(recordIndex, lastAffectedFollowingRecordIndex);
             return;
         }
 
@@ -408,24 +402,19 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         this._records.push(onlyRecord);
         this._orderIndex.push(onlyRecord);
         onlyRecord.processAuctionAndVolumeAhead(0, this._auctionVolume);
-        this.insertRecordEvent(0);
-        this.invalidateAllEvent();
+        this.recordInsertedEvent(0, undefined);
     }
 
     private removeRecord(recordIndex: Integer) {
         this._records.splice(recordIndex, 1);
-        let moreThanOneRecordAffected: boolean;
+        let lastAffectedFollowingRecordIndex: Integer | undefined;
         if (recordIndex >= this._records.length) {
-            moreThanOneRecordAffected = false;
+            lastAffectedFollowingRecordIndex = undefined;
         } else {
             this.reindexRecords(recordIndex);
-            moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(recordIndex, false);
+            lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
         }
-        this.deleteRecordEvent(recordIndex);
-
-        if (moreThanOneRecordAffected) {
-            this.invalidateAllEvent();
-        }
+        this.recordDeletedEvent(recordIndex, lastAffectedFollowingRecordIndex);
     }
 
     private removeOrder(index: Integer) {
@@ -447,8 +436,8 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     // remove order from existing price level record
                     const order = this._dataItemOrders[index];
                     priceLevelRecord.removeOrder(order, order.quantity, order.hasUndisclosed);
-                    const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(recordIndex, false);
-                    this.invalidateRecords(recordIndex, moreThanOneRecordAffected);
+                    const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
+                    this.invalidateRecordAndFollowingRecordsEvent(recordIndex, lastAffectedFollowingRecordIndex);
                 }
                 break;
             default:
@@ -459,34 +448,36 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
     private changeOrder(index: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]
+        valueChanges: DepthDataItem.Order.ValueChange[]
     ) {
         const record = this._orderIndex[index];
+        let invalidatedValues: RevRecordInvalidatedValue[];
         switch (record.typeId) {
             case DepthRecord.TypeId.Order:
                 if (debug) {
                     Logger.logDebug(`Depth: ${this._sideIdDisplay}` +
-                        ` OrderChange-Order: ${index} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                        ` OrderChange-Order: ${index} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                     );
                 }
-                (record as OrderFullDepthRecord).processOrderChange(changedFieldIds);
+                invalidatedValues = (record as OrderFullDepthRecord).processOrderValueChanges(valueChanges);
                 break;
             case DepthRecord.TypeId.PriceLevel:
                 if (debug) {
                     Logger.logDebug(`Depth: ${this._sideIdDisplay}` +
-                        ` OrderChange-Price: ${index} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                        ` OrderChange-Price: ${index} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                     );
                 }
                 const newOrder = this._dataItemOrders[index];
-                (record as PriceLevelFullDepthRecord).processOrderChange(
-                    newOrder, oldQuantity, oldHasUndisclosed, changedFieldIds
+                invalidatedValues = (record as PriceLevelFullDepthRecord).processOrderChange(
+                    newOrder, oldQuantity, oldHasUndisclosed, valueChanges
                 );
                 break;
             default:
                 throw new UnreachableCaseError('FDSGDSMACO12122', record.typeId);
         }
-        const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(record.index, false);
-        this.invalidateRecords(record.index, moreThanOneRecordAffected);
+        const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(record.index, false);
+        this.invalidateRecordAndValuesAndFollowingRecordsEventer(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
+        this.invalidateRecordAndFollowingRecordsEvent(record.index, lastAffectedFollowingRecordIndex);
     }
 
     private moveAndChangeOrder(
@@ -494,7 +485,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         toOrderIdx: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]
+        valueChanges: DepthDataItem.Order.ValueChange[]
     ) {
         // order has already been modified and moved to toIndex in DataItem
         // work out whether fromIndex record will be deleted or have order extracted
@@ -502,6 +493,8 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         const fromRecord = this._orderIndex[fromOrderIdx];
         const fromRecordIdx = fromRecord.index;
         const fromToBeDemerged = fromRecord.getCount() > 1;
+
+        let toRecordInvalidatedValues: RevRecordInvalidatedValue[] | undefined;
 
         // work out whether toIndex record will be created or have order merged
         let toRecord = this._orderIndex[toOrderIdx];
@@ -551,7 +544,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         if (fromToBeDemerged && toToBeMerged && toRecord === fromRecord) {
             // does not move out of current price level record
             const toPriceLevelRecord = toRecord as PriceLevelFullDepthRecord;
-            toPriceLevelRecord.processOrderChange(newOrder, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            toRecordInvalidatedValues = toPriceLevelRecord.processOrderChange(newOrder, oldQuantity, oldHasUndisclosed, valueChanges);
         } else {
             // merge, demerge, shuffle, remove and insert as necessary
             if (fromToBeDemerged) {
@@ -561,7 +554,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 if (toToBeMerged) {
                     if (debug) {
                         Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange - fromDemerge, toMerge:` +
-                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                         );
                     }
                     const toPriceLevelRecord = toRecord as PriceLevelFullDepthRecord;
@@ -570,26 +563,26 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     // create and insert 'to' record
                     if (debug) {
                         Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange - fromDemerge, to:` +
-                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                         );
                     }
-                    let toQuantityAhead: Integer | undefined;
+                    let toVolumeAhead: Integer | undefined;
                     if (toRecordIdx === 0) {
-                        toQuantityAhead = 0;
+                        toVolumeAhead = 0;
                     } else {
                         const prevRecord = this._records[toRecordIdx - 1];
-                        toQuantityAhead = prevRecord.cumulativeQuantity;
+                        toVolumeAhead = prevRecord.cumulativeQuantity;
                     }
-                    toRecord = this.createFullDepthRecordForNewPriceLevel(toRecordIdx, newOrder, toQuantityAhead, this._auctionVolume);
+                    toRecord = this.createFullDepthRecordForNewPriceLevel(toRecordIdx, newOrder, toVolumeAhead, this._auctionVolume);
                     this._records.splice(toRecordIdx, 0, toRecord);
                     this.reindexRecords(toRecordIdx + 1);
-                    this.insertRecordEvent(toRecordIdx);
+                    this.recordInsertedEvent(toRecordIdx, undefined);
                 }
             } else {
                 if (toToBeMerged) {
                     if (debug) {
                         Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange - from, toMerge:` +
-                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                         );
                     }
                     const toPriceLevelRecord = toRecord as PriceLevelFullDepthRecord;
@@ -598,11 +591,11 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     // delete 'from' record
                     this._records.splice(fromRecordIdx, 1);
                     this.reindexRecords(fromRecordIdx);
-                    this.deleteRecordEvent(fromRecordIdx);
+                    this.recordDeletedEvent(fromRecordIdx, undefined);
                 } else {
                     if (debug) {
                         Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange - from, to:` +
-                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${changedFieldIds}`
+                            ` ${fromOrderIdx} ${toOrderIdx} ${oldQuantity} ${oldHasUndisclosed} ${valueChanges}`
                         );
                     }
                     // shuffle records to remove and make space for 'from' at toIndex
@@ -623,11 +616,11 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     this._records[toRecordIdx].index = toRecordIdx;
                     switch (fromRecord.typeId) {
                         case DepthRecord.TypeId.Order:
-                            (fromRecord as OrderFullDepthRecord).processMovedWithOrderChange(changedFieldIds);
+                            toRecordInvalidatedValues = (fromRecord as OrderFullDepthRecord).processMovedWithOrderChange(valueChanges);
                             break;
                         case DepthRecord.TypeId.PriceLevel:
-                            (fromRecord as PriceLevelFullDepthRecord).processMovedWithOrderChange(
-                                newOrder, oldQuantity, oldHasUndisclosed, changedFieldIds
+                            toRecordInvalidatedValues = (fromRecord as PriceLevelFullDepthRecord).processMovedWithOrderChange(
+                                newOrder, oldQuantity, oldHasUndisclosed, valueChanges
                             );
                             break;
                         default:
@@ -651,13 +644,18 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
         moveElementInArray<FullDepthRecord>(this._orderIndex, fromOrderIdx, toOrderIdx);
         this._orderIndex[toOrderIdx] = toRecord;
 
-        this.invalidateAllEvent();
+        const recordCount = this._records.length;
+        if (toRecordInvalidatedValues === undefined) {
+            this.invalidateRecordsEvent(lowRecordIdx, recordCount - lowRecordIdx);
+        } else {
+            this.invalidateRecordsAndRecordValuesEventer(lowRecordIdx, recordCount - lowRecordIdx, toRecordIdx, toRecordInvalidatedValues);
+        }
     }
 
     private clearOrders() {
         this._orderIndex.length = 0;
         this._records.length = 0;
-        this.deleteAllRecordsEvent();
+        this.allRecordsDeletedEvent();
     }
 
     private convertOrderToPriceLevel(record: OrderFullDepthRecord) {
@@ -681,7 +679,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 throw new AssertInternalError('FDSGDSFDSGDSCOTPL22245', `${firstOrderRecord}`);
             } else {
                 const levelRecord = new PriceLevelFullDepthRecord(levelRecordIndex,
-                    firstOrderRecord.order, firstOrderRecord.quantityAhead, this._auctionVolume
+                    firstOrderRecord.order, firstOrderRecord.volumeAhead, this._auctionVolume
                 );
 
                 // replace first order record with price level record
@@ -710,12 +708,8 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 const additionalOrderCount = orderIdx - firstAdditionalOrderIdx;
                 if (additionalOrderCount === 0) {
                     // fix Auction quantity and invalidate
-                    const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(levelRecord.index, false);
-                    if (moreThanOneRecordAffected) {
-                        this.invalidateAllEvent();
-                    } else {
-                        this.invalidateRecordEvent(levelRecord.index);
-                    }
+                    const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecord.index, false);
+                    this.invalidateRecordAndFollowingRecordsEvent(levelRecord.index, lastAffectedFollowingRecordIndex);
                 } else {
                     levelRecord.addOrders(this._dataItemOrders, firstAdditionalOrderIdx, additionalOrderCount);
                     // remove additional order records and from orderIndex
@@ -723,8 +717,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                     this.reindexRecords(levelRecordIndex);
                     // fix Auction quantity and invalidate
                     this.processAuctionAndVolumeAhead(levelRecordIndex, false);
-                    this.deleteRecordsEvent(levelRecordIndex + 1, additionalOrderCount);
-                    this.invalidateAllEvent();
+                    this.recordsDeletedEvent(levelRecordIndex + 1, additionalOrderCount, true);
                 }
             }
         }
@@ -740,7 +733,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
 
             // replace existing record with first order record
             const firstRecord = new OrderFullDepthRecord(firstRecordIdx, this._dataItemOrders[firstOrderIdx],
-                record.quantityAhead, this._auctionVolume);
+                record.volumeAhead, this._auctionVolume);
             this._orderIndex[firstOrderIdx] = firstRecord;
             this._records[record.index] = firstRecord;
 
@@ -748,12 +741,8 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
             if (additionalOrderCount === 0) {
                 // no additional orders
                 // fix Auction quantity and invalidate
-                const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                if (moreThanOneRecordAffected) {
-                    this.invalidateAllEvent();
-                } else {
-                    this.invalidateRecordEvent(firstRecord.index);
-                }
+                const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
+                this.invalidateRecordAndFollowingRecordsEvent(firstRecord.index, lastAffectedFollowingRecordIndex);
             } else {
                 // create order records for subsequent orders at this price
                 const firstAdditionalOrderIdx = firstOrderIdx + 1;
@@ -776,9 +765,7 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
                 this.reindexRecords(firstRecordIdx);
 
                 this.processAuctionAndVolumeAhead(firstRecord.index, false);
-
-                this.insertRecordsEvent(firstAdditionalRecordIdx, additionalOrderCount);
-                this.invalidateAllEvent();
+                this.recordsInsertedEvent(firstAdditionalRecordIdx, additionalOrderCount, true);
             }
         }
         this.checkConsistency();
@@ -792,6 +779,8 @@ export class FullDepthSideGridDataStore extends DepthSideGridDataStore implement
             this.setAllRecordsToPriceLevel();
         }
         this.checkConsistency();
+
+        super.checkResolveOpenPopulated(true);
     }
 
     private finaliseDataItem() {

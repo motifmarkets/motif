@@ -35,17 +35,14 @@ import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
     ExternalError,
+    IdleDeadline,
+    IdleRequestOptions,
     Integer,
     JsonElement,
     Logger,
     MotifServicesError,
     mSecsPerSec,
     MultiEvent,
-    RequestIdleCallbackDeadline,
-    RequestIdleCallbackHandle,
-    RequestIdleCallbackOptions,
-    simulatedCancelIdleCallback,
-    simulatedRequestIdleCallback,
     SysTick,
     UserAlertService
 } from 'src/sys/internal-api';
@@ -96,7 +93,7 @@ export class SessionService {
     private _zenithLogSubscriptionId: MultiEvent.SubscriptionId;
     private _zenithKickedOffSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _requestIdleCallbackHandle: RequestIdleCallbackHandle = SessionService.undefinedRequestIdleCallbackHandle;
+    private _requestIdleCallbackHandle: number | undefined;
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
 
@@ -218,9 +215,9 @@ export class SessionService {
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
 
-            if (this._requestIdleCallbackHandle !== SessionService.undefinedRequestIdleCallbackHandle) {
+            if (this._requestIdleCallbackHandle !== undefined) {
                 window.cancelIdleCallback(this._requestIdleCallbackHandle);
-                this._requestIdleCallbackHandle = SessionService.undefinedRequestIdleCallbackHandle;
+                this._requestIdleCallbackHandle = undefined;
             }
 
             this.unsubscribeZenithExtConnection();
@@ -562,23 +559,17 @@ export class SessionService {
     }
 
     private startIdleProcessing() {
-        if (window.requestIdleCallback === undefined) {
-            window.requestIdleCallback = simulatedRequestIdleCallback;
-        }
-        if (window.cancelIdleCallback === undefined) {
-            window.cancelIdleCallback = simulatedCancelIdleCallback;
-        }
         this.initiateRequestIdleCallback();
     }
 
     private initiateRequestIdleCallback() {
-        const options: RequestIdleCallbackOptions = {
+        const options: IdleRequestOptions = {
             timeout: SessionService.idleCallbackTimeout,
         };
         this._requestIdleCallbackHandle = window.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
     }
 
-    private idleCallback(deadline: RequestIdleCallbackDeadline) {
+    private idleCallback(deadline: IdleDeadline) {
         if (!this.final) {
             // Check for dirty elements....
             if (this._settingsService.saveRequired) {
@@ -621,6 +612,5 @@ export namespace SessionService {
     export const motifServicesGetClientConfigurationRetryDelaySpan = 30 * mSecsPerSec;
     export const getSettingsRetryDelaySpan = 30 * mSecsPerSec;
     export const idleCallbackTimeout = 30 * mSecsPerSec;
-    export const undefinedRequestIdleCallbackHandle = 0;
     export const minimumSettingsSaveRepeatSpan = 15 * mSecsPerSec;
 }

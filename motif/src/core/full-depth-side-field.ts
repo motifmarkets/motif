@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { TextAlign } from '@motifmarkets/revgrid';
-import { EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
+import { Halign } from 'revgrid';
+import { DepthDataItem } from 'src/adi/internal-api';
+import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
 
 export const enum FullDepthSideFieldId {
     PriceAndHasUndisclosed,
@@ -33,7 +34,7 @@ export namespace FullDepthSideField {
             public name: string,
             public defaultHeading: string,
             public defaultVisible: boolean,
-            public defaultTextAlign: TextAlign,
+            public defaultTextAlign: Halign,
         ) { }
     }
 
@@ -144,5 +145,32 @@ export namespace FullDepthSideField {
 
     export function idToDefaultTextAlign(id: Id) {
         return infos[id].defaultTextAlign;
+    }
+
+    export function createIdFromDepthOrderFieldId(orderFieldId: DepthDataItem.Order.Field.Id): FullDepthSideFieldId | undefined {
+        switch (orderFieldId) {
+            case DepthDataItem.Order.Field.Id.OrderId:
+                return FullDepthSideFieldId.OrderId;
+            case DepthDataItem.Order.Field.Id.Side:
+                return undefined;
+            case DepthDataItem.Order.Field.Id.Price:
+                return FullDepthSideFieldId.Price; // Also affects FullDepthSideFieldId.PriceAndHasUndisclosed - handled elsewhere
+            case DepthDataItem.Order.Field.Id.Position:
+                return undefined;
+            case DepthDataItem.Order.Field.Id.Broker:
+                return FullDepthSideFieldId.BrokerId;
+            case DepthDataItem.Order.Field.Id.Xref:
+                return FullDepthSideFieldId.Xref // Also affects FullDepthSideFieldId.CountXref - handled elsewhere
+            case DepthDataItem.Order.Field.Id.Quantity:
+                return FullDepthSideFieldId.Volume;
+            case DepthDataItem.Order.Field.Id.HasUndisclosed:
+                return FullDepthSideFieldId.PriceAndHasUndisclosed;
+            case DepthDataItem.Order.Field.Id.Market:
+                return FullDepthSideFieldId.MarketId;
+            case DepthDataItem.Order.Field.Id.Attributes:
+                return FullDepthSideFieldId.Attributes;
+            default:
+                throw new UnreachableCaseError('FDROFDRPOC44487', orderFieldId);
+        }
     }
 }

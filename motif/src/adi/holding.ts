@@ -5,6 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
     CorrectnessId,
@@ -12,6 +13,7 @@ import {
     ExternalError,
     Integer,
     isDecimalEqual,
+    isDecimalGreaterThan,
     JsonElement,
     MapKey,
     MultiEvent,
@@ -119,58 +121,91 @@ export class Holding implements BrokerageAccountDataRecord {
     }
 
     update(changeData: HoldingsDataMessage.MarketChangeData) {
-        const changedFieldIds = new Array<Holding.FieldId>(Holding.Field.idCount);
+        const valueChanges = new Array<Holding.ValueChange>(Holding.Field.idCount);
         let changedIdx = 0;
 
-        if (changeData.exchangeId !== this.exchangeId) {
-            this._exchangeId = changeData.exchangeId;
-            changedFieldIds[changedIdx++] = Holding.FieldId.ExchangeId;
+        const newExchangeId = changeData.exchangeId;
+        if (newExchangeId !== this.exchangeId) {
+            this._exchangeId = newExchangeId;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.ExchangeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
-        if (changeData.code !== this.code) {
-            this._code = changeData.code;
-            changedFieldIds[changedIdx++] = Holding.FieldId.Code;
+        const newCode = changeData.code;
+        if (newCode !== this.code) {
+            this._code = newCode;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.Code, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (changeData.accountId !== this.accountId) {
             throw new ZenithDataError(ExternalError.Code.HU0882468723, JSON.stringify(changeData));
         }
 
-        if (changeData.styleId !== this.styleId) {
-            this._styleId = changeData.styleId;
-            changedFieldIds[changedIdx++] = Holding.FieldId.StyleId;
+        const newStyleId = changeData.styleId;
+        if (newStyleId !== this.styleId) {
+            this._styleId = newStyleId;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.StyleId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
-        if (this.cost === undefined || !isDecimalEqual(changeData.cost, this.cost)) {
-            this._cost = changeData.cost; // from message so take Decimal object
-            changedFieldIds[changedIdx++] = Holding.FieldId.Cost;
+        const newCost = changeData.cost;
+        if (this.cost === undefined) {
+            this._cost = newCost; // from message so take Decimal object
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.Cost, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
+        } else {
+            if (!isDecimalEqual(newCost, this.cost)) {
+                const recentChangeTypeId = isDecimalGreaterThan(newCost, this.cost)
+                    ? RevRecordValueRecentChangeTypeId.Increase
+                    : RevRecordValueRecentChangeTypeId.Decrease;
+                this._cost = newCost; // from message so take Decimal object
+                valueChanges[changedIdx++] = { fieldId: Holding.FieldId.Cost, recentChangeTypeId };
+            }
         }
 
-        if (changeData.currencyId !== this.currencyId) {
-            this._currencyId = changeData.currencyId;
-            changedFieldIds[changedIdx++] = Holding.FieldId.Currency;
+        const newCurrencyId = changeData.currencyId;
+        if ( newCurrencyId !== this.currencyId) {
+            this._currencyId = newCurrencyId;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.Currency, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
-        const changeMarketDetail = changeData.marketDetail;
+        const newMarketDetail = changeData.marketDetail;
 
-        if (changeMarketDetail.totalQuantity !== this.totalQuantity) {
-            this._totalQuantity = changeMarketDetail.totalQuantity;
-            changedFieldIds[changedIdx++] = Holding.FieldId.TotalQuantity;
+        const newTotalQuantity = newMarketDetail.totalQuantity;
+        if (newTotalQuantity !== this.totalQuantity) {
+            const recentChangeTypeId = newTotalQuantity > this.totalQuantity
+                ? RevRecordValueRecentChangeTypeId.Increase
+                : RevRecordValueRecentChangeTypeId.Decrease;
+            this._totalQuantity = newTotalQuantity;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.TotalQuantity, recentChangeTypeId };
         }
 
-        if (changeMarketDetail.totalAvailableQuantity !== this.totalAvailableQuantity) {
-            this._totalAvailableQuantity = changeMarketDetail.totalAvailableQuantity;
-            changedFieldIds[changedIdx++] = Holding.FieldId.TotalAvailableQuantity;
+        const newTotalAvailableQuantity = newMarketDetail.totalAvailableQuantity;
+        if (newTotalAvailableQuantity !== this.totalAvailableQuantity) {
+            const recentChangeTypeId = newTotalAvailableQuantity > this.totalAvailableQuantity
+                ? RevRecordValueRecentChangeTypeId.Increase
+                : RevRecordValueRecentChangeTypeId.Decrease;
+            this._totalAvailableQuantity = newTotalAvailableQuantity;
+            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.TotalAvailableQuantity, recentChangeTypeId };
         }
 
-        if (this.averagePrice === undefined || !isDecimalEqual(changeMarketDetail.averagePrice, this.averagePrice)) {
-            this._averagePrice = changeMarketDetail.averagePrice; // from message so take Decimal object
-            changedFieldIds[changedIdx++] = Holding.FieldId.AveragePrice;
+        const newAveragePrice = newMarketDetail.averagePrice;
+        if (this._averagePrice === undefined) {
+            this._averagePrice = newMarketDetail.averagePrice; // from message so take Decimal object
+            valueChanges[changedIdx++] = {
+                fieldId: Holding.FieldId.AveragePrice,
+                recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update
+            };
+        } else {
+            if (!isDecimalEqual(newAveragePrice, this._averagePrice)) {
+                const recentChangeTypeId = isDecimalGreaterThan(newAveragePrice, this._averagePrice)
+                    ? RevRecordValueRecentChangeTypeId.Increase
+                    : RevRecordValueRecentChangeTypeId.Decrease;
+                this._averagePrice = newMarketDetail.averagePrice; // from message so take Decimal object
+                valueChanges[changedIdx++] = { fieldId: Holding.FieldId.AveragePrice, recentChangeTypeId };
+            }
         }
 
         if (changedIdx >= 0) {
-            changedFieldIds.length = changedIdx;
-            this.notifyChanged(changedFieldIds);
+            valueChanges.length = changedIdx;
+            this.notifyChanged(valueChanges);
         }
     }
 
@@ -190,10 +225,10 @@ export class Holding implements BrokerageAccountDataRecord {
         this._correctnessChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    private notifyChanged(changedFieldIds: Holding.FieldId[]) {
+    private notifyChanged(valueChanges: Holding.ValueChange[]) {
         const handlers = this._changedMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](changedFieldIds);
+            handlers[index](valueChanges);
         }
     }
 
@@ -209,7 +244,7 @@ export namespace Holding {
     export type Id = string;
     export const NullId = '';
 
-    export type ChangedEventHandler = (changedFieldIds: Holding.FieldId[]) => void;
+    export type ChangedEventHandler = (this: void, valueChanges: Holding.ValueChange[]) => void;
     export type CorrectnessChangedEventHandler = (this: void) => void;
 
     export const enum FieldId {
@@ -418,6 +453,11 @@ export namespace Holding {
                 }
             }
         }
+    }
+
+    export interface ValueChange {
+        fieldId: FieldId;
+        recentChangeTypeId: RevRecordValueRecentChangeTypeId;
     }
 
     export function createNotFoundHolding(key: Holding.Key) {

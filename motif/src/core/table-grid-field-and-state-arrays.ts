@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridFieldState } from '@motifmarkets/revgrid';
+import { MotifGrid } from 'src/content/internal-api';
 import { TableGridField } from './table-grid-field';
 
 export class TableGridFieldAndStateArrays {
     fields: TableGridField[];
-    states: GridFieldState[];
+    states: MotifGrid.FieldState[];
 }

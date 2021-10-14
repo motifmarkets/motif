@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridField, GridFieldState, GridLayout, GridTransform } from '@motifmarkets/revgrid';
 import { AdiService, DayTradesDataDefinition, DayTradesDataItem, LitIvemId } from 'src/adi/internal-api';
-import { DayTradesGridDataStore, DayTradesGridField, GridLayoutDataStore, GridLayoutIO, pulseGridTransforms } from 'src/core/internal-api';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
+import { DayTradesGridField, DayTradesGridRecordStore, GridLayoutIO } from 'src/core/internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -20,9 +20,11 @@ import {
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
-    activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
+    // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
 
-    private _dataStore: DayTradesGridDataStore;
+    private _grid: MotifGrid;
+    private _gridPrepared = false;
+    private _dataStore: DayTradesGridRecordStore;
 
     private _dataItem: DayTradesDataItem | undefined;
     private _dataItemBadnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
@@ -31,9 +33,12 @@ export class TradesFrame extends ContentFrame {
 
     get dataStore() { return this._dataStore; }
 
-    constructor(private _componentAccess: TradesFrame.ComponentAccess, protected adi: AdiService) {
+    constructor(
+        private readonly _componentAccess: TradesFrame.ComponentAccess,
+        protected readonly adi: AdiService
+    ) {
         super();
-        this._dataStore = new DayTradesGridDataStore();
+        this._dataStore = new DayTradesGridRecordStore();
         this._dataStore.listChangeEvent =
             (listChangeTypeId, index, count) => this.handleDataStoreListChangeEvent(listChangeTypeId, index, count);
         this._dataStore.recordChangeEvent = (index) => this.handleDataStoreRecordChangeEvent(index);
@@ -41,9 +46,22 @@ export class TradesFrame extends ContentFrame {
     }
 
     override finalise() {
-        this.checkClose();
+        if (!this.finalised) {
+            this.checkClose();
+            super.finalise();
+        }
+    }
 
-        super.finalise();
+    // grid functions used by Component
+
+    setGrid(value: MotifGrid) {
+        this._grid = value;
+        this._grid.rowOrderReversed = true;
+        this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
+        this._grid.recordFocusClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusClickEvent(recIdx, fieldIdx);
+        this._grid.recordFocusDblClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusDblClickEvent(recIdx, fieldIdx);
+
+        this.prepareGrid();
     }
 
     loadLayoutConfig(element: JsonElement | undefined) {
@@ -52,16 +70,16 @@ export class TradesFrame extends ContentFrame {
             const layoutElement = element.tryGetElement(TradesFrame.JsonName.layout, context);
             const serialisedColumns = GridLayoutIO.loadLayout(layoutElement);
             if (serialisedColumns) {
-                const layout = this._componentAccess.gridSaveLayout();
-                layout.Deserialise(serialisedColumns);
-                this._componentAccess.gridLoadLayout(layout);
+                const layout = this._grid.saveLayout();
+                layout.deserialise(serialisedColumns);
+                this._grid.loadLayout(layout);
             }
         }
     }
 
     saveLayoutConfig(element: JsonElement) {
         const layoutElement = element.newElement(TradesFrame.JsonName.layout);
-        const columns = this._componentAccess.gridSaveLayout().Serialise();
+        const columns = this._grid.saveLayout().serialise();
         GridLayoutIO.saveLayout(columns, layoutElement);
     }
 
@@ -89,26 +107,35 @@ export class TradesFrame extends ContentFrame {
     }
 
     prepareGrid() {
-        this._componentAccess.gridBeginChange();
+        if (this._gridPrepared) {
+            this._grid.reset();
+        }
+
+        const fieldCount = DayTradesGridField.idCount;
+        const fields = new Array<DayTradesGridField>(fieldCount);
+
+        this._grid.beginFieldChanges();
         try {
-            this._componentAccess.gridReset();
-            pulseGridTransforms.forEach(transform => this._componentAccess.gridAddTransform(transform));
-
-            const fieldCount = DayTradesGridField.idCount;
-            const fields = new Array<DayTradesGridField>(fieldCount);
-
             for (let id = 0; id < fieldCount; id++) {
                 const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
-                this._componentAccess.gridAddField(gridField);
+                this._grid.addField(gridField);
                 fields[id] = gridField;
             }
+        } finally {
+            this._grid.endFieldChanges();
+        }
+
+        this._grid.beginRecordChanges();
+        try {
+
+            this._grid.sortable = false;
 
             for (let id = 0; id < fieldCount; id++) {
-                this._componentAccess.gridSetFieldState(fields[id], fields[id].fieldStateDefinition);
+                this._grid.setFieldState(fields[id], fields[id].fieldStateDefinition);
             }
 
             for (let id = 0; id < fieldCount; id++) {
-                this._componentAccess.gridSetFieldVisible(fields[id], fields[id].defaultVisible);
+                this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
             }
 
             // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
@@ -120,42 +147,44 @@ export class TradesFrame extends ContentFrame {
             // }
 
             // this._componentAccess.gridLoadLayout(this._table.layout);
-            this._componentAccess.gridInvalidateAll();
+            this._grid.invalidateAll();
         } finally {
-            this._componentAccess.gridEndChange();
+            this._grid.endRecordChanges();
         }
+
+        this._gridPrepared = true;
     }
 
     autoSizeAllColumnWidths() {
-        this._componentAccess.gridAutoSizeAllColumnWidths();
+        this._grid.autoSizeAllColumnWidths();
     }
 
-    adviseTableRecordFocus(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+    handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
     }
 
-    adviseTableRecordFocusClick(recordIndex: Integer, fieldIndex: Integer) {
+    handleRecordFocusClickEvent(recordIndex: Integer, fieldIndex: Integer) {
     }
 
-    adviseTableRecordFocusDblClick(recordIndex: Integer, fieldIndex: Integer) {
+    handleRecordFocusDblClickEvent(recordIndex: Integer, fieldIndex: Integer) {
     }
 
-    adviseColumnWidthChanged(columnIndex: Integer) {
-        if (this.activeWidthChangedEvent !== undefined) {
-            this.activeWidthChangedEvent(); // advise PariDepth frame
-        }
-    }
+    // adviseColumnWidthChanged(columnIndex: Integer) {
+    //     if (this.activeWidthChangedEvent !== undefined) {
+    //         this.activeWidthChangedEvent(); // advise PariDepth frame
+    //     }
+    // }
 
-    getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders {
-        return this._componentAccess.getGridLayoutWithHeadings();
+    getGridLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+        return this._grid.getLayoutWithHeadersMap();
     }
 
     setGridLayout(layout: GridLayout): void {
-        this._componentAccess.gridLoadLayout(layout);
+        this._grid.loadLayout(layout);
     }
 
-    getRenderedActiveWidth() {
-        return this._componentAccess.gridGetRenderedActiveWidth();
-    }
+    // getRenderedActiveWidth() {
+    //     return this._componentAccess.gridGetRenderedActiveWidth();
+    // }
 
     private handleDataStoreListChangeEvent(listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer): void {
         switch (listChangeTypeId) {
@@ -164,11 +193,11 @@ export class TradesFrame extends ContentFrame {
                 break;
 
             case UsableListChangeTypeId.PreUsableClear:
-                this._componentAccess.gridDeleteAllRecords();
+                this._grid.allRecordsDeleted();
                 break;
 
             case UsableListChangeTypeId.PreUsableAdd:
-                this._componentAccess.gridInsertRecords(idx, count);
+                this._grid.recordsInserted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Usable:
@@ -176,15 +205,15 @@ export class TradesFrame extends ContentFrame {
                 break;
 
             case UsableListChangeTypeId.Insert:
-                this._componentAccess.gridInsertRecords(idx, count);
+                this._grid.recordsInserted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Remove:
-                this._componentAccess.gridDeleteRecords(idx, count);
+                this._grid.recordsDeleted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Clear:
-                this._componentAccess.gridDeleteAllRecords();
+                this._grid.allRecordsDeleted();
                 break;
 
             default:
@@ -193,11 +222,11 @@ export class TradesFrame extends ContentFrame {
     }
 
     private handleDataStoreRecordChangeEvent(index: Integer) {
-        this._componentAccess.gridInvalidateRecord(index);
+        this._grid.invalidateRecord(index);
     }
 
     private handleDataStoreAllRecordsChangeEvent() {
-        this._componentAccess.gridInvalidateAll();
+        this._grid.invalidateAll();
     }
 
     private handleDataItemDataCorrectnessChangeEvent() {
@@ -233,7 +262,7 @@ export class TradesFrame extends ContentFrame {
 }
 
 export namespace TradesFrame {
-    export type ActiveWidthChangedEventHandler = (this: void) => void;
+    // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export class TradesSubscriptionIds {
         beginChanges: MultiEvent.SubscriptionId;
@@ -244,29 +273,6 @@ export namespace TradesFrame {
 
     export interface ComponentAccess {
         readonly id: string;
-        readonly gridRowRecIndices: Integer[];
-        gridFocusedRecordIndex: Integer | undefined;
-        gridAddTransform(transform: GridTransform): void;
-        gridInsertRecords(index: Integer, count: Integer): void;
-        gridInsertRecordsInSameRowPosition(index: Integer, count: Integer): void;
-        gridMoveRecordRow(fromRecordIndex: Integer, toRowIndex: Integer): void;
-        gridDeleteRecords(recordIndex: Integer, count: Integer): void;
-        gridDeleteAllRecords(): void;
-        gridInvalidateAll(): void;
-        gridInvalidateValue(fieldIndex: Integer, recordIndex: Integer): void;
-        gridInvalidateRecord(recordIndex: Integer): void;
-        gridLoadLayout(layout: GridLayout): void;
-        gridSaveLayout(): GridLayout;
-        gridReorderRecRows(recordIndices: Integer[]): void;
-        gridAutoSizeAllColumnWidths(): void;
-        gridBeginChange(): void;
-        gridEndChange(): void;
-        gridReset(): void;
-        gridAddField(field: DayTradesGridField): void;
-        gridSetFieldState(field: GridField, state?: GridFieldState | undefined): void;
-        gridSetFieldVisible(field: GridField, visible: boolean): void;
-        getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders;
-        gridGetRenderedActiveWidth(): Promise<Integer>;
 
         setBadness(value: Badness): void;
         hideBadnessWithVisibleDelay(badness: Badness): void;

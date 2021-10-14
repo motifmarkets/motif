@@ -4,13 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-import { ColorSelectorComponentModule } from './color-selector/ng-api';
+import { ColorControlsComponentModule } from './color-controls/ng-api';
 import { ExtensionIdModule } from './extensions/internal-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
 
 export namespace StaticInitialise {
     export function initialise() {
-        ColorSelectorComponentModule.initialiseStatic();
+        ColorControlsComponentModule.initialiseStatic();
         ResultOrderRequestStepFrameModule.initialiseStatic();
         ExtensionIdModule.initialiseStatic();
     }

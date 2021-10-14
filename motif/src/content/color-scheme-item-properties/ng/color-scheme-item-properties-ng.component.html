@@ -4,15 +4,16 @@
     License: motionite.trade/license/motif
 -->
 
-<div #topDiv id="topDiv">
-    <div id="bkgdDiv" [style.visibility]="hasBkgd ? 'visible' : 'hidden'">
-        <app-color-selector #bkgdColorSelector id="bkgdColorSelector"></app-color-selector>
-    </div>
-    <div id="inBetweenDiv">
+<section id="headerSection">
+    <section id="readabilitySection">
         <app-caption-label #readabilityLabel for="readabilityInput"></app-caption-label>
-        <app-number-input #readabilityInput inputId="readabilityInput" size="8"></app-number-input>
-    </div>
-    <div id="foreDiv" [style.visibility]="hasFore ? 'visible' : 'hidden'">
-        <app-color-selector #foreColorSelector id="foreColorSelector"></app-color-selector>
-    </div>
-</div>
+        <app-number-input #readabilityControl id="readabilityControl" inputId="readabilityInput"></app-number-input>
+    </section>
+    <section id="pickerTypeSection">
+        <app-captioned-radio #hueSaturationRadio></app-captioned-radio>
+        <app-captioned-radio #valueSaturationRadio></app-captioned-radio>
+    </section>
+</section>
+<app-color-controls #bkgdControls id="bkgdControls" [style.visibility]="hasBkgd ? 'visible' : 'hidden'"></app-color-controls>
+<app-multi-color-picker-ng #multiPicker id="multiPicker" [style.visibility]="hasBkgd || hasFore ? 'visible' : 'hidden'"></app-multi-color-picker-ng>
+<app-color-controls #foreControls id="foreControls" [style.visibility]="hasFore ? 'visible' : 'hidden'"></app-color-controls>

@@ -16,6 +16,7 @@ export interface Config {
     readonly bundledExtensions: Config.BundledExtensions;
     readonly diagnostics: Config.Diagnostics;
     readonly features: Config.Features;
+    readonly branding: Config.Branding;
 }
 
 export namespace Config {
@@ -86,6 +87,11 @@ export namespace Config {
 
     export namespace Features {
         export const defaultPreview = false;
+    }
+
+    export interface Branding {
+        readonly startupTopSplashImageUrl: string | undefined;
+        readonly desktopBarLeftImageUrl: string | undefined;
     }
 
     export function checkForValidationError(config: Config) {

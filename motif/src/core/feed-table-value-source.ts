@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { Feed } from 'src/adi/internal-api';
 import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 import { FeedTableFieldDefinitionSource } from './feed-table-field-definition-source';
@@ -65,12 +66,16 @@ export class FeedTableValueSource extends TableValueSource {
 
     private handleStatusChangedEvent() {
         const fieldId = Feed.FieldId.StatusId;
-        const fieldIdx = FeedTableFieldDefinitionSource.Field.indexOfId(fieldId);
-        if (fieldIdx >= 0) {
-            const newValue = this.createTableGridValue(fieldIdx);
+        const fieldIndex = FeedTableFieldDefinitionSource.Field.indexOfId(fieldId);
+        if (fieldIndex >= 0) {
+            const newValue = this.createTableGridValue(fieldIndex);
             this.loadValue(fieldId, newValue);
-            const changedValues = [{ fieldIdx, newValue }];
-            this.notifyValuesChangeEvent(changedValues);
+            const changedValues: TableValueSource.ValueChange[] = [{
+                fieldIndex,
+                newValue,
+                recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update
+            }];
+            this.notifyValueChangesEvent(changedValues);
         }
     }
 

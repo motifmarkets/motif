@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
 import {
     AdiService,
     ExchangeId,
@@ -17,11 +16,9 @@ import {
     SymbolsDataDefinition,
     SymbolsDataItem
 } from 'src/adi/internal-api';
-import { TableFrame } from 'src/content/internal-api';
+import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
 import {
-    CommandRegisterService,
-    GridLayoutDataStore,
-    SymbolsDataItemTableRecordDefinitionList,
+    CommandRegisterService, SymbolsDataItemTableRecordDefinitionList,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
@@ -176,11 +173,11 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    getActiveGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders {
+    getActiveGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap {
         if (this._isQueryRequest) {
-            return this._queryTableFrame.getGridLayoutWithHeadings();
+            return this._queryTableFrame.getGridLayoutWithHeadersMap();
         } else {
-            return this._subscriptionTableFrame.getGridLayoutWithHeadings();
+            return this._subscriptionTableFrame.getGridLayoutWithHeadersMap();
         }
     }
 

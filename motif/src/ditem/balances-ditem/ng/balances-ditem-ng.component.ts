@@ -17,6 +17,7 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { TableNgComponent } from 'src/content/ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import { BrokerageAccountGroupUiAction, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
@@ -39,12 +40,18 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
 
     private _frame: BalancesDitemFrame;
 
     protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(

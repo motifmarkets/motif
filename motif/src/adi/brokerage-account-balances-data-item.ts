@@ -262,10 +262,7 @@ export class BrokerageAccountBalancesDataItem
                 throw new AssertInternalError('BABDIPUIG12120909888');
             } else {
                 if (
-                    item.action ===
-                    BalancesDataItem.AddUpdateDeleteItem.Action
-                        .UpdateWithInitialise
-                ) {
+                    item.action === BalancesDataItem.AddUpdateDeleteItem.Action.UpdateWithInitialise) {
                     record.initialise();
                 }
 

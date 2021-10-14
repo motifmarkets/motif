@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordInvalidatedValue } from 'revgrid';
 import {
     AssertInternalError,
     Guid,
@@ -247,9 +248,11 @@ export namespace TableDirectory {
                 this.handleBadnessChangeEvent();
             this.table.listChangeEvent = (typeId, itemIdx, itemCount) =>
                 this.handleListChangeEvent(typeId, itemIdx, itemCount);
-            this.table.valueChangeEvent = (fieldIdx, recordIdx) =>
-                this.handleValueChangeEvent(fieldIdx, recordIdx);
-            this.table.recordChangeEvent = (recordIdx) =>
+            this.table.recordValuesChangedEvent = (recordIdx, invalidatedValues) =>
+                this.handleRecordValuesChangedEvent(recordIdx, invalidatedValues);
+            this.table.recordFieldsChangedEvent = (recordIndex, fieldIndex, fieldCount) =>
+                this.handleRecordFieldsChangedEvent(recordIndex, fieldIndex, fieldCount)
+            this.table.recordChangedEvent = (recordIdx) =>
                 this.handleRecordChangeEvent(recordIdx);
             this.table.layoutChangedEvent = (opener) =>
                 this.handleLayoutChangedEvent(opener);
@@ -371,15 +374,21 @@ export namespace TableDirectory {
             this.saveRequiredEvent();
         }
 
-        private handleValueChangeEvent(fieldIdx: Integer, recordIdx: Integer) {
+        private handleRecordValuesChangedEvent(recordIndex: Integer, invalidatedValues: RevRecordInvalidatedValue[]) {
             this.openers.forEach((opener: Opener) =>
-                opener.notifyTableValueChange(fieldIdx, recordIdx)
+                opener.notifyTableRecordValuesChanged(recordIndex, invalidatedValues)
+            );
+        }
+
+        private handleRecordFieldsChangedEvent(recordIndex: Integer, fieldIndex: number, fieldCount: number) {
+            this.openers.forEach((opener: Opener) =>
+                opener.notifyTableRecordFieldsChanged(recordIndex, fieldIndex, fieldCount)
             );
         }
 
         private handleRecordChangeEvent(recordIdx: Integer) {
             this.openers.forEach((opener: Opener) =>
-                opener.notifyTableRecordChange(recordIdx)
+                opener.notifyTableRecordChanged(recordIdx)
             );
         }
 

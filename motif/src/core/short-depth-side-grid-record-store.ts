@@ -4,13 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridDataStore, TRecordIndex } from '@motifmarkets/revgrid';
+import { RevRecordIndex, RevRecordStore } from 'revgrid';
 import { DepthLevelsDataItem } from 'src/adi/internal-api';
-import { Integer, MultiEvent } from 'src/sys/internal-api';
-import { DepthSideGridDataStore } from './depth-side-grid-data-store';
+import { CorrectnessId, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { DepthSideGridRecordStore } from './depth-side-grid-record-store';
 import { ShortDepthRecord } from './short-depth-record';
 
-export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implements GridDataStore {
+export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore implements RevRecordStore {
     private _records: ShortDepthRecord[] = [];
     private _dataItem: DepthLevelsDataItem;
     private _levels: DepthLevelsDataItem.Level[];
@@ -31,7 +31,7 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
         this._levels = this._dataItem.getLevels(this.sideId);
 
         this._statusDataCorrectnessSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
-            () => this.handleDataCorrectnessChangeEvent()
+            () => this.processDataCorrectnessChange()
         );
 
         this._afterLevelAddSubscriptionId = this._dataItem.subscribeAfterLevelInsertEvent(
@@ -42,22 +42,20 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
         );
         this._levelChangeSubscriptionId = this._dataItem.subscribeLevelChangeEvent(
             this.sideId,
-            (index, changedFieldIds) =>
-                this.handleLevelChangeEvent(index, changedFieldIds)
+            (index, valueChanges) => this.handleLevelChangeEvent(index, valueChanges)
         );
         this._levelsClearSubscriptionId = this._dataItem.subscribeBeforeLevelsClearEvent(() => this.handleLevelsClearEvent());
 
         this._dataItemFinalised = false;
 
-        if (this._dataItem.usable) {
-            this.populateRecords();
-        }
+        this.processDataCorrectnessChange();
     }
 
     // abstract overloads
     close() {
         this.clearRecords();
         this.finaliseDataItem();
+        this.resetOpenPopulated();
     }
 
     toggleRecordOrderPriceLevel(idx: Integer) {
@@ -77,35 +75,33 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
     }
 
     // GridDataStore properties/methods
-    get RecordCount(): number { return this.GetRecordCount(); }
+    get recordCount(): number { return this.getRecordCount(); }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    GetRecordValue(index: TRecordIndex): object {
-        return this._records[index];
+    getRecord(recordIndex: RevRecordIndex) {
+        return this._records[recordIndex];
     }
 
-    // eslint-disable-next-line @typescript-eslint/ban-types
-    GetRecords(): object[] {
+    getRecords() {
         return this._records;
     }
-
-    GetRecordCount(): number {
-        return this._records.length;
-    }
-
-    // GetAttributes not used
 
     protected getRecordCount() {
         return this._records.length;
     }
 
-    protected getRecord(recordIndex: Integer) {
-        return this._records[recordIndex];
-    }
-
-    private handleDataCorrectnessChangeEvent() {
-        if (this._dataItem.usable) {
-            this.populateRecords();
+    private processDataCorrectnessChange() {
+        switch (this._dataItem.correctnessId) {
+            case CorrectnessId.Error:
+                this.checkResolveOpenPopulated(false);
+                break;
+            case CorrectnessId.Usable:
+            case CorrectnessId.Good:
+                this.populateRecords();
+                break;
+            case CorrectnessId.Suspect:
+                break;
+            default:
+                throw new UnreachableCaseError('SDSGDS88843', this._dataItem.correctnessId);
         }
     }
 
@@ -121,11 +117,9 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
         }
     }
 
-    private handleLevelChangeEvent(index: Integer,
-        changedFieldIds: DepthLevelsDataItem.Level.FieldId[]
-    ) {
+    private handleLevelChangeEvent(index: Integer, valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
         if (this._dataItem.usable) {
-            this.changeRecord(index, changedFieldIds);
+            this.changeRecord(index, valueChanges);
         }
     }
 
@@ -142,49 +136,44 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
     }
 
     private insertRecord(index: Integer) {
-        let quantityAhead: Integer | undefined;
+        let volumeAhead: Integer | undefined;
         if (index === 0) {
-            quantityAhead = 0;
+            volumeAhead = 0;
         } else {
             const prevRecord = this._records[index - 1];
-            quantityAhead = prevRecord.cumulativeQuantity;
+            volumeAhead = prevRecord.cumulativeQuantity;
         }
         const level = this._levels[index];
-        const record = new ShortDepthRecord(index, level, quantityAhead, this._auctionVolume);
+        const record = new ShortDepthRecord(index, level, volumeAhead, this._auctionVolume);
         this._records.splice(index, 0, record);
         this.reindexRecords(index + 1);
-        const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(index, false);
-        this.insertRecordEvent(index);
-        this.invalidateRecords(index, moreThanOneRecordAffected);
+        const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(index, false);
+        this.recordInsertedEvent(index, lastAffectedFollowingRecordIndex);
     }
 
     private deleteRecord(index: Integer) {
         this._records.splice(index, 1);
-        let moreThanOneRecordAffected: boolean;
+        let lastAffectedFollowingRecordIndex: Integer | undefined;
         if (index >= this._records.length) {
-            moreThanOneRecordAffected = false;
+            lastAffectedFollowingRecordIndex = undefined;
         } else {
             this.reindexRecords(index);
-            moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(index, false);
+            lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(index, false);
         }
-        this.deleteRecordEvent(index);
-
-        if (moreThanOneRecordAffected) {
-            this.invalidateAllEvent();
-        }
+        this.recordDeletedEvent(index, lastAffectedFollowingRecordIndex);
     }
 
-    private changeRecord(index: Integer, changedFieldIds: DepthLevelsDataItem.Level.FieldId[]) {
+    private changeRecord(index: Integer, valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
         const record = this._records[index];
-        record.processChange(changedFieldIds);
 
-        const moreThanOneRecordAffected = this.processAuctionAndVolumeAhead(record.index, false);
-        this.invalidateRecords(record.index, moreThanOneRecordAffected);
+        const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(record.index, false);
+        const invalidatedValues = record.processValueChanges(valueChanges);
+        this.invalidateRecordAndValuesAndFollowingRecordsEventer(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
     }
 
     private clearRecords() {
         this._records.length = 0;
-        this.deleteAllRecordsEvent();
+        this.allRecordsDeletedEvent();
     }
 
     private populateRecords() {
@@ -202,14 +191,14 @@ export class ShortDepthSideGridDataStore extends DepthSideGridDataStore implemen
 
         const recordCount = this._records.length;
         if (recordCount > oldLength) {
-            this.insertRecordsEvent(oldLength, recordCount - oldLength);
+            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
         } else {
             if (recordCount < oldLength) {
-                this.deleteRecordsEvent(recordCount, oldLength - recordCount);
+                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
             }
         }
 
-        this.invalidateAllEvent();
+        super.checkResolveOpenPopulated(true);
     }
 
     private finaliseDataItem() {

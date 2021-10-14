@@ -5,6 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import {
     assert,
     AssertInternalError,
@@ -15,6 +16,7 @@ import {
     Integer,
     isArrayEqualUniquely,
     isDecimalEqual,
+    isDecimalGreaterThan,
     Logger,
     moveElementInArray,
     MultiEvent,
@@ -208,7 +210,7 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
     }
 
     unsubscribeBeforeOrdersClearEvent(subscriptionId: MultiEvent.SubscriptionId) {
-         this._beforeOrdersClearMultiEvent.unsubscribe(subscriptionId);
+        this._beforeOrdersClearMultiEvent.unsubscribe(subscriptionId);
     }
 
     private notifyBeforeBidOrderRemove(orderIdx: Integer): void {
@@ -227,20 +229,20 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
 
     private notifyBidOrderChange(OrderIdx: Integer, oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]): void {
+        valueChanges: DepthDataItem.Order.ValueChange[]): void {
         const handlers = this._bidOrderChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](OrderIdx, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            handlers[index](OrderIdx, oldQuantity, oldHasUndisclosed, valueChanges);
         }
     }
 
     private notifyBidOrderMoveAndChange(fromIdx: Integer, toIndex: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]): void {
+        valueChanges: DepthDataItem.Order.ValueChange[]): void {
         const handlers = this._bidOrderMoveAndChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](fromIdx, toIndex, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            handlers[index](fromIdx, toIndex, oldQuantity, oldHasUndisclosed, valueChanges);
         }
     }
 
@@ -260,20 +262,20 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
 
     private notifyAskOrderChange(OrderIdx: Integer, oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]): void {
+        valueChanges: DepthDataItem.Order.ValueChange[]): void {
         const handlers = this._askOrderChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](OrderIdx, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            handlers[index](OrderIdx, oldQuantity, oldHasUndisclosed, valueChanges);
         }
     }
 
     private notifyAskOrderMoveAndChange(fromIdx: Integer, toIndex: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]): void {
+        valueChanges: DepthDataItem.Order.ValueChange[]): void {
         const handlers = this._askOrderMoveAndChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](fromIdx, toIndex, oldQuantity, oldHasUndisclosed, changedFieldIds);
+            handlers[index](fromIdx, toIndex, oldQuantity, oldHasUndisclosed, valueChanges);
         }
     }
 
@@ -560,60 +562,103 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    private updateOrder(order: DepthDataItem.Order, changeOrder: DepthDataMessage.DepthOrder): DepthDataItem.Order.FieldId[] {
+    private updateOrder(order: DepthDataItem.Order, changeOrder: DepthDataMessage.DepthOrder): DepthDataItem.Order.ValueChange[] {
         // TODO:MED Find out what fields should be expected in update messages. The Zenith security response
         // has nullable and optional values. Optional values are unchanged. But it is explicitly mentioned
         // in the docs, so it's possible the depth message does not use the same convention.
 
-        const changes = new Array<DepthDataItem.Order.FieldId>(DepthDataItem.Order.Field.idCount); // set to max length
+        const changes = new Array<DepthDataItem.Order.ValueChange>(DepthDataItem.Order.Field.idCount); // set to max length
         let changeCount = 0;
 
-        if (changeOrder.price !== undefined) {
-            if (!isDecimalEqual(changeOrder.price, order.price)) {
-                order.price = changeOrder.price;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Price;
+        const newPrice = changeOrder.price;
+        if (newPrice !== undefined) {
+            if (!isDecimalEqual(newPrice, order.price)) {
+                const newIsGreater = isDecimalGreaterThan(newPrice, order.price);
+                const recentChangeTypeId = newIsGreater ? RevRecordValueRecentChangeTypeId.Increase : RevRecordValueRecentChangeTypeId.Decrease;
+                order.price = newPrice;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Price,
+                    recentChangeTypeId,
+                };
             }
         }
-        if (changeOrder.position !== undefined) {
-            if (changeOrder.position !== order.position) {
-                order.position = changeOrder.position;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Position;
+
+        const newPosition = changeOrder.position;
+        if (newPosition !== undefined) {
+            if (newPosition !== order.position) {
+                order.position = newPosition;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Position,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
-        if (changeOrder.broker !== undefined) {
-            if (changeOrder.broker !== order.broker) {
-                order.broker = changeOrder.broker;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Broker;
+
+        const newBroker = changeOrder.broker;
+        if (newBroker !== undefined) {
+            if (newBroker !== order.broker) {
+                order.broker = newBroker;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Broker,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
-        if (changeOrder.crossRef !== undefined) {
-            if (changeOrder.crossRef !== order.crossRef) {
-                order.crossRef = changeOrder.crossRef;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Xref;
+
+        const newCrossRef = changeOrder.crossRef;
+        if (newCrossRef !== undefined) {
+            if (newCrossRef !== order.crossRef) {
+                order.crossRef = newCrossRef;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Xref,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
-        if (changeOrder.quantity !== undefined) {
-            if (changeOrder.quantity !== order.quantity) {
-                order.quantity = changeOrder.quantity;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Quantity;
+
+        const newQuantity = changeOrder.quantity;
+        if (newQuantity !== undefined) {
+            if (newQuantity !== order.quantity) {
+                const newIsGreater = newQuantity > order.quantity;
+                const recentChangeTypeId = newIsGreater ? RevRecordValueRecentChangeTypeId.Increase : RevRecordValueRecentChangeTypeId.Decrease;
+                order.quantity = newQuantity;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Quantity,
+                    recentChangeTypeId,
+                };
             }
         }
-        if (changeOrder.hasUndisclosed !== undefined) {
-            if (changeOrder.hasUndisclosed !== order.hasUndisclosed) {
-                order.hasUndisclosed = changeOrder.hasUndisclosed;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.HasUndisclosed;
+
+        const newHasUndisclosed = changeOrder.hasUndisclosed;
+        if (newHasUndisclosed !== undefined) {
+            if (newHasUndisclosed !== order.hasUndisclosed) {
+                order.hasUndisclosed = newHasUndisclosed;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.HasUndisclosed,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
-        if (changeOrder.marketId !== undefined) {
-            if (changeOrder.marketId !== order.marketId) {
-                order.marketId = changeOrder.marketId;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Market;
+
+        const newMarketId = changeOrder.marketId;
+        if (newMarketId !== undefined) {
+            if (newMarketId !== order.marketId) {
+                order.marketId = newMarketId;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Market,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
-        if (changeOrder.attributes !== undefined) {
-            if (!isArrayEqualUniquely(changeOrder.attributes, order.attributes)) {
-                order.attributes = changeOrder.attributes;
-                changes[changeCount++] = DepthDataItem.Order.FieldId.Attributes;
+
+        const newAttributes = changeOrder.attributes;
+        if (newAttributes !== undefined) {
+            if (!isArrayEqualUniquely(newAttributes, order.attributes)) {
+                order.attributes = newAttributes;
+                changes[changeCount++] = {
+                    fieldId: DepthDataItem.Order.Field.Id.Attributes,
+                    recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                };
             }
         }
 
@@ -629,13 +674,13 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
     ) {
         const oldQuantity = order.quantity;
         const oldHasUndisclosed = order.hasUndisclosed;
-        const changedFieldIds = this.updateOrder(order, changeOrder);
+        const valueChanges = this.updateOrder(order, changeOrder);
         switch (sideId) {
             case BidAskSideId.Bid:
-                this.notifyBidOrderChange(index, oldQuantity, oldHasUndisclosed, changedFieldIds);
+                this.notifyBidOrderChange(index, oldQuantity, oldHasUndisclosed, valueChanges);
                 break;
             case BidAskSideId.Ask:
-                this.notifyAskOrderChange(index, oldQuantity, oldHasUndisclosed, changedFieldIds);
+                this.notifyAskOrderChange(index, oldQuantity, oldHasUndisclosed, valueChanges);
                 break;
             default:
                 throw new UnreachableCaseError('DDICO33386', sideId);
@@ -653,13 +698,13 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         const oldQuantity = order.quantity;
         const oldHasUndisclosed = order.hasUndisclosed;
         moveElementInArray<DepthDataItem.Order>(list, oldIndex, newIndex);
-        const changedFieldIds = this.updateOrder(order, changeOrder);
+        const valueChanges = this.updateOrder(order, changeOrder);
         switch (sideId) {
             case BidAskSideId.Bid:
-                this.notifyBidOrderMoveAndChange(oldIndex, newIndex, oldQuantity, oldHasUndisclosed, changedFieldIds);
+                this.notifyBidOrderMoveAndChange(oldIndex, newIndex, oldQuantity, oldHasUndisclosed, valueChanges);
                 break;
             case BidAskSideId.Ask:
-                this.notifyAskOrderMoveAndChange(oldIndex, newIndex, oldQuantity, oldHasUndisclosed, changedFieldIds);
+                this.notifyAskOrderMoveAndChange(oldIndex, newIndex, oldQuantity, oldHasUndisclosed, valueChanges);
                 break;
             default:
                 throw new UnreachableCaseError('DDIMACO929294', sideId);
@@ -698,21 +743,26 @@ export namespace DepthDataItem {
     }
 
     export namespace Order {
-        export const enum FieldId {
-            OrderId,
-            Side,
-            Price,
-            Position,
-            Broker,
-            Xref,
-            Quantity,
-            HasUndisclosed,
-            Market,
-            Attributes,
+        export namespace Field {
+            export const enum Id {
+                OrderId,
+                Side,
+                Price,
+                Position,
+                Broker,
+                Xref,
+                Quantity,
+                HasUndisclosed,
+                Market,
+                Attributes,
+            }
+
+            export const idCount = 10; // make sure matches number of FieldId enums
         }
 
-        export namespace Field {
-            export const idCount = 10; // make sure matches number of FieldId enums
+        export interface ValueChange {
+            readonly fieldId: Field.Id;
+            readonly recentChangeTypeId: RevRecordValueRecentChangeTypeId;
         }
     }
 
@@ -725,11 +775,11 @@ export namespace DepthDataItem {
     export type OrderMoveAndChangeEventHandler = (fromIndex: Integer, toIndex: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]) => void;
+        valueChanges: DepthDataItem.Order.ValueChange[]) => void;
     export type OrderChangeEventHandler = (index: Integer,
         oldQuantity: Integer,
         oldHasUndisclosed: boolean,
-        changedFieldIds: DepthDataItem.Order.FieldId[]) => void;
+        valueChanges: DepthDataItem.Order.ValueChange[]) => void;
     export type BeforeOrderRemoveEventHandler = (this: void, index: Integer) => void;
     export type AfterOrderInsertEventHandler = (this: void, index: Integer) => void;
     export type BeforeOrdersClearEventHandler = (this: void) => void;

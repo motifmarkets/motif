@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
+import { GridLayout } from 'src/content/internal-api';
 import { defined, JsonElement } from 'src/sys/internal-api';
 
 export namespace GridLayoutIO {
@@ -44,18 +44,18 @@ export namespace GridLayoutIO {
     function gridLayoutSerialisedColumnToJsonElement(column: GridLayout.SerialisedColumn) {
         const result = new JsonElement();
 
-        result.setString(JsonTag.SerialisedColumn.name, column.Name);
-        if (column.Show !== undefined) {
-            result.setBoolean(JsonTag.SerialisedColumn.show, column.Show);
+        result.setString(JsonTag.SerialisedColumn.name, column.name);
+        if (column.show !== undefined) {
+            result.setBoolean(JsonTag.SerialisedColumn.show, column.show);
         }
-        if (column.Width !== undefined) {
-            result.setInteger(JsonTag.SerialisedColumn.width, column.Width);
+        if (column.width !== undefined) {
+            result.setInteger(JsonTag.SerialisedColumn.width, column.width);
         }
-        if (column.Priority !== undefined) {
-            result.setInteger(JsonTag.SerialisedColumn.priority, column.Priority);
+        if (column.priority !== undefined) {
+            result.setInteger(JsonTag.SerialisedColumn.priority, column.priority);
         }
-        if (column.Ascending !== undefined) {
-            result.setBoolean(JsonTag.SerialisedColumn.ascending, column.Ascending);
+        if (column.ascending !== undefined) {
+            result.setBoolean(JsonTag.SerialisedColumn.ascending, column.ascending);
         }
 
         return result;
@@ -68,11 +68,11 @@ export namespace GridLayoutIO {
             return undefined;
         } else {
             const result: GridLayout.SerialisedColumn = {
-                Name: name,
-                Show: element.tryGetBoolean(JsonTag.SerialisedColumn.show, baseContext + 'show'),
-                Width: element.tryGetInteger(JsonTag.SerialisedColumn.width, baseContext + 'width'),
-                Priority: element.tryGetInteger(JsonTag.SerialisedColumn.priority, baseContext + 'priority'),
-                Ascending: element.tryGetBoolean(JsonTag.SerialisedColumn.ascending, baseContext + 'ascending')
+                name,
+                show: element.tryGetBoolean(JsonTag.SerialisedColumn.show, baseContext + 'show'),
+                width: element.tryGetInteger(JsonTag.SerialisedColumn.width, baseContext + 'width'),
+                priority: element.tryGetInteger(JsonTag.SerialisedColumn.priority, baseContext + 'priority'),
+                ascending: element.tryGetBoolean(JsonTag.SerialisedColumn.ascending, baseContext + 'ascending')
             };
 
             return result;

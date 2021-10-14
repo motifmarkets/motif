@@ -25,24 +25,26 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
 
     private _grid_HorizontalLinesVisible = CoreSettings.Default.grid_HorizontalLinesVisible;
     private _grid_VerticalLinesVisible = CoreSettings.Default.grid_VerticalLinesVisible;
-    private _grid_HorizontalLineWeight = CoreSettings.Default.grid_HorizontalLineWeight;
-    private _grid_VerticalLineWeight = CoreSettings.Default.grid_VerticalLineWeight;
-    private _grid_RowHeightFixed = CoreSettings.Default.grid_RowHeightFixed;
+    private _grid_HorizontalLineWidth = CoreSettings.Default.grid_HorizontalLineWidth;
+    private _grid_VerticalLineWidth = CoreSettings.Default.grid_VerticalLineWidth;
+    private _grid_RowHeight = CoreSettings.Default.grid_RowHeight;
     private _grid_CellPadding = CoreSettings.Default.grid_CellPadding;
-    private _grid_AddHighlightDuration = CoreSettings.Default.grid_AddHighlightDuration;
-    private _grid_UpdateHighlightDuration = CoreSettings.Default.grid_UpdateHighlightDuration;
-    private _grid_Font = CoreSettings.Default.grid_Font;
-    private _grid_FocusedColumnHeaderFont = CoreSettings.Default.grid_FocusedColumnHeaderFont;
-    private _grid_ColumnHeaderFont = CoreSettings.Default.grid_ColumnHeaderFont;
-    private _grid_FocusedFont = CoreSettings.Default.grid_FocusedFont;
+    private _grid_AllChangedRecentDuration = CoreSettings.Default.grid_AllChangedRecentDuration;
+    private _grid_RecordInsertedRecentDuration = CoreSettings.Default.grid_RecordInsertedRecentDuration;
+    private _grid_RecordUpdatedRecentDuration = CoreSettings.Default.grid_RecordUpdatedRecentDuration;
+    private _grid_ValueChangedRecentDuration = CoreSettings.Default.grid_ValueChangedRecentDuration;
+    private _grid_FontFamily = CoreSettings.Default.grid_FontFamily;
+    private _grid_FontSize = CoreSettings.Default.grid_FontSize;
+    private _grid_ColumnHeaderFontSize = CoreSettings.Default.grid_ColumnHeaderFontSize;
     private _grid_FocusedRowColored = CoreSettings.Default.grid_FocusedRowColored;
     private _grid_FocusedRowBordered = CoreSettings.Default.grid_FocusedRowBordered;
     private _grid_FocusedRowBorderWidth = CoreSettings.Default.grid_FocusedRowBorderWidth;
     private _grid_HorizontalScrollbarWidth = CoreSettings.Default.grid_HorizontalScrollbarWidth;
     private _grid_VerticalScrollbarWidth = CoreSettings.Default.grid_VerticalScrollbarWidth;
-    private _grid_VerticalScrollbarLeftPos = CoreSettings.Default.grid_VerticalScrollbarLeftPos;
+    private _grid_ScrollbarThumbInactiveOpacity = CoreSettings.Default.grid_ScrollbarThumbInactiveOpacity;
     private _grid_ScrollbarsOverlayAllowed = CoreSettings.Default.grid_ScrollbarsOverlayAllowed;
     private _grid_ScrollbarMargin = CoreSettings.Default.grid_ScrollbarMargin;
+    private _grid_ScrollHorizontallySmoothly = CoreSettings.Default.grid_ScrollHorizontallySmoothly;
 
     private _data_InitialTradesHistoryCount = CoreSettings.Default.data_InitialTradesHistoryCount;
     private _format_NumberGroupingActive = CoreSettings.Default.format_NumberGroupingActive;
@@ -153,23 +155,23 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             getter: () => this.formatBoolean(this._grid_VerticalLinesVisible),
             pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_VerticalLinesVisible = this.parseBoolean(value); }
         },
-        Grid_HorizontalLineWeight: { id: CoreSettings.Id.Grid_HorizontalLineWeight,
-            name: 'grid_HorizontalLineWeight',
-            defaulter: () => this.formatNumber(CoreSettings.Default.grid_HorizontalLineWeight),
-            getter: () => this.formatNumber(this._grid_HorizontalLineWeight),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_HorizontalLineWeight = this.parseNumber(value); }
+        Grid_HorizontalLineWidth: { id: CoreSettings.Id.Grid_HorizontalLineWidth,
+            name: 'grid_HorizontalLineWidth',
+            defaulter: () => this.formatNumber(CoreSettings.Default.grid_HorizontalLineWidth),
+            getter: () => this.formatNumber(this._grid_HorizontalLineWidth),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_HorizontalLineWidth = this.parseNumber(value); }
         },
-        Grid_VerticalLineWeight: { id: CoreSettings.Id.Grid_VerticalLineWeight,
-            name: 'grid_VerticalLineWeight',
-            defaulter: () => this.formatNumber(CoreSettings.Default.grid_VerticalLineWeight),
-            getter: () => this.formatNumber(this._grid_VerticalLineWeight),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_VerticalLineWeight = this.parseNumber(value); }
+        Grid_VerticalLineWidth: { id: CoreSettings.Id.Grid_VerticalLineWidth,
+            name: 'grid_VerticalLineWidth',
+            defaulter: () => this.formatNumber(CoreSettings.Default.grid_VerticalLineWidth),
+            getter: () => this.formatNumber(this._grid_VerticalLineWidth),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_VerticalLineWidth = this.parseNumber(value); }
         },
-        Grid_RowHeightFixed: { id: CoreSettings.Id.Grid_RowHeightFixed,
-            name: 'grid_RowHeightFixed',
-            defaulter: () => this.formatUndefinableInteger(CoreSettings.Default.grid_RowHeightFixed),
-            getter: () => this.formatUndefinableInteger(this._grid_RowHeightFixed),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_RowHeightFixed = this.parseUndefinableInteger(value); }
+        Grid_RowHeight: { id: CoreSettings.Id.Grid_RowHeight,
+            name: 'grid_RowHeight',
+            defaulter: () => this.formatInteger(CoreSettings.Default.grid_RowHeight),
+            getter: () => this.formatInteger(this._grid_RowHeight),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_RowHeight = this.parseInteger(value); }
         },
         Grid_CellPadding: { id: CoreSettings.Id.Grid_CellPadding,
             name: 'grid_CellPadding',
@@ -177,41 +179,49 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             getter: () => this.formatInteger(this._grid_CellPadding),
             pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_CellPadding = this.parseInteger(value); }
         },
-        Grid_AddHighlightDuration: { id: CoreSettings.Id.Grid_AddHighlightDuration,
-            name: 'grid_AddHighlightDuration',
-            defaulter: () => this.formatInteger(CoreSettings.Default.grid_AddHighlightDuration),
-            getter: () => this.formatInteger(this._grid_AddHighlightDuration),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_AddHighlightDuration = this.parseInteger(value); }
+        Grid_AllChangedRecentDuration: { id: CoreSettings.Id.Grid_AllChangedRecentDuration,
+            name: 'grid_AllChangedRecentDuration',
+            defaulter: () => this.formatInteger(CoreSettings.Default.grid_AllChangedRecentDuration),
+            getter: () => this.formatInteger(this._grid_AllChangedRecentDuration),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_AllChangedRecentDuration = this.parseInteger(value); }
         },
-        Grid_UpdateHighlightDuration: { id: CoreSettings.Id.Grid_UpdateHighlightDuration,
-            name: 'grid_UpdateHighlightDuration',
-            defaulter: () => this.formatInteger(CoreSettings.Default.grid_UpdateHighlightDuration),
-            getter: () => this.formatInteger(this._grid_UpdateHighlightDuration),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_UpdateHighlightDuration = this.parseInteger(value); }
+        Grid_RecordInsertedRecentDuration: { id: CoreSettings.Id.Grid_RecordInsertedRecentDuration,
+            name: 'grid_RecordInsertedRecentDuration',
+            defaulter: () => this.formatInteger(CoreSettings.Default.grid_RecordInsertedRecentDuration),
+            getter: () => this.formatInteger(this._grid_RecordInsertedRecentDuration),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_RecordInsertedRecentDuration = this.parseInteger(value); }
         },
-        Grid_Font: { id: CoreSettings.Id.Grid_Font,
-            name: 'grid_Font',
-            defaulter: () => this.formatString(CoreSettings.Default.grid_Font),
-            getter: () => this.formatString(this._grid_Font),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_Font = this.parseString(value); }
+        Grid_RecordUpdatedRecentDuration: { id: CoreSettings.Id.Grid_RecordUpdatedRecentDuration,
+            name: 'grid_RecordUpdatedRecentDuration',
+            defaulter: () => this.formatInteger(CoreSettings.Default.grid_RecordUpdatedRecentDuration),
+            getter: () => this.formatInteger(this._grid_RecordUpdatedRecentDuration),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => {
+                this._grid_RecordUpdatedRecentDuration = this.parseInteger(value);
+            }
         },
-        Grid_FocusedColumnHeaderFont: { id: CoreSettings.Id.Grid_FocusedColumnHeaderFont,
-            name: 'grid_FocusedColumnHeaderFont',
-            defaulter: () => this.formatString(CoreSettings.Default.grid_FocusedColumnHeaderFont),
-            getter: () => this.formatString(this._grid_FocusedColumnHeaderFont),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_FocusedColumnHeaderFont = this.parseString(value); }
+        Grid_ValueChangedRecentDuration: { id: CoreSettings.Id.Grid_ValueChangedRecentDuration,
+            name: 'grid_ValueChangedRecentDuration',
+            defaulter: () => this.formatInteger(CoreSettings.Default.grid_ValueChangedRecentDuration),
+            getter: () => this.formatInteger(this._grid_ValueChangedRecentDuration),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ValueChangedRecentDuration = this.parseInteger(value); }
         },
-        Grid_ColumnHeaderFont: { id: CoreSettings.Id.Grid_ColumnHeaderFont,
-            name: 'grid_ColumnHeaderFont',
-            defaulter: () => this.formatString(CoreSettings.Default.grid_ColumnHeaderFont),
-            getter: () => this.formatString(this._grid_ColumnHeaderFont),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ColumnHeaderFont = this.parseString(value); }
+        Grid_FontFamily: { id: CoreSettings.Id.Grid_FontFamily,
+            name: 'grid_FontFamily',
+            defaulter: () => this.formatString(CoreSettings.Default.grid_FontFamily),
+            getter: () => this.formatString(this._grid_FontFamily),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_FontFamily = this.parseString(value); }
         },
-        Grid_FocusedFont: { id: CoreSettings.Id.Grid_FocusedFont,
-            name: 'grid_FocusedFont',
-            defaulter: () => this.formatString(CoreSettings.Default.grid_FocusedFont),
-            getter: () => this.formatString(this._grid_FocusedFont),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_FocusedFont = this.parseString(value); }
+        Grid_FontSize: { id: CoreSettings.Id.Grid_FontSize,
+            name: 'grid_FontSize',
+            defaulter: () => this.formatString(CoreSettings.Default.grid_FontSize),
+            getter: () => this.formatString(this._grid_FontSize),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_FontSize = this.parseString(value); }
+        },
+        Grid_ColumnHeaderFontSize: { id: CoreSettings.Id.Grid_ColumnHeaderFontSize,
+            name: 'grid_ColumnHeaderFontSize',
+            defaulter: () => this.formatString(CoreSettings.Default.grid_ColumnHeaderFontSize),
+            getter: () => this.formatString(this._grid_ColumnHeaderFontSize),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ColumnHeaderFontSize = this.parseString(value); }
         },
         Grid_FocusedRowColored: { id: CoreSettings.Id.Grid_FocusedRowColored,
             name: 'grid_FocusedRowColored',
@@ -243,11 +253,11 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             getter: () => this.formatInteger(this._grid_VerticalScrollbarWidth),
             pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_VerticalScrollbarWidth = this.parseInteger(value); }
         },
-        Grid_VerticalScrollbarLeftPos: { id: CoreSettings.Id.Grid_VerticalScrollbarLeftPos,
-            name: 'grid_VerticalScrollbarLeftPos',
-            defaulter: () => this.formatBoolean(CoreSettings.Default.grid_VerticalScrollbarLeftPos),
-            getter: () => this.formatBoolean(this._grid_VerticalScrollbarLeftPos),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_VerticalScrollbarLeftPos = this.parseBoolean(value); }
+        Grid_ScrollbarThumbInactiveOpacity: { id: CoreSettings.Id.Grid_ScrollbarThumbInactiveOpacity,
+            name: 'grid_ScrollbarThumbInactiveOpacity',
+            defaulter: () => this.formatNumber(CoreSettings.Default.grid_ScrollbarThumbInactiveOpacity),
+            getter: () => this.formatNumber(this._grid_ScrollbarThumbInactiveOpacity),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ScrollbarThumbInactiveOpacity = this.parseNumber(value); }
         },
         Grid_ScrollbarsOverlayAllowed: { id: CoreSettings.Id.Grid_ScrollbarsOverlayAllowed,
             name: 'grid_ScrollbarsOverlayAllowed',
@@ -260,6 +270,12 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             defaulter: () => this.formatInteger(CoreSettings.Default.grid_ScrollbarMargin),
             getter: () => this.formatInteger(this._grid_ScrollbarMargin),
             pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ScrollbarMargin = this.parseInteger(value); }
+        },
+        Grid_ScrollHorizontallySmoothly: { id: CoreSettings.Id.Grid_ScrollHorizontallySmoothly,
+            name: 'grid_ScrollHorizontallySmoothly',
+            defaulter: () => this.formatBoolean(CoreSettings.Default.grid_ScrollHorizontallySmoothly),
+            getter: () => this.formatBoolean(this._grid_ScrollHorizontallySmoothly),
+            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => { this._grid_ScrollHorizontallySmoothly = this.parseBoolean(value); }
         },
         Data_InitialTradesHistoryCount: { id: CoreSettings.Id.Data_InitialTradesHistoryCount,
             name: 'data_InitialTradesHistoryCount',
@@ -412,36 +428,39 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     get grid_VerticalLinesVisible() { return this._grid_VerticalLinesVisible; }
     set grid_VerticalLinesVisible(value) { this._grid_VerticalLinesVisible = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_VerticalLinesVisible); }
-    get grid_HorizontalLineWeight() { return this._grid_HorizontalLineWeight; }
-    set grid_HorizontalLineWeight(value) { this._grid_HorizontalLineWeight = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_HorizontalLineWeight); }
-    get grid_VerticalLineWeight() { return this._grid_VerticalLineWeight; }
-    set grid_VerticalLineWeight(value) { this._grid_VerticalLineWeight = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_VerticalLineWeight); }
-    get grid_RowHeightFixed() { return this._grid_RowHeightFixed; }
-    set grid_RowHeightFixed(value) { this._grid_RowHeightFixed = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_RowHeightFixed); }
+    get grid_HorizontalLineWidth() { return this._grid_HorizontalLineWidth; }
+    set grid_HorizontalLineWidth(value) { this._grid_HorizontalLineWidth = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_HorizontalLineWidth); }
+    get grid_VerticalLineWidth() { return this._grid_VerticalLineWidth; }
+    set grid_VerticalLineWidth(value) { this._grid_VerticalLineWidth = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_VerticalLineWidth); }
+    get grid_RowHeight() { return this._grid_RowHeight; }
+    set grid_RowHeight(value) { this._grid_RowHeight = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_RowHeight); }
     get grid_CellPadding() { return this._grid_CellPadding; }
     set grid_CellPadding(value) { this._grid_CellPadding = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_CellPadding); }
-    get grid_AddHighlightDuration() { return this._grid_AddHighlightDuration; }
-    set grid_AddHighlightDuration(value) { this._grid_AddHighlightDuration = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_AddHighlightDuration); }
-    get grid_UpdateHighlightDuration() { return this._grid_UpdateHighlightDuration; }
-    set grid_UpdateHighlightDuration(value) { this._grid_UpdateHighlightDuration = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_UpdateHighlightDuration); }
-    get grid_Font() { return this._grid_Font; }
-    set grid_Font(value) { this._grid_Font = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_Font); }
-    get grid_FocusedColumnHeaderFont() { return this._grid_FocusedColumnHeaderFont; }
-    set grid_FocusedColumnHeaderFont(value) { this._grid_FocusedColumnHeaderFont = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_FocusedColumnHeaderFont); }
-    get grid_ColumnHeaderFont() { return this._grid_ColumnHeaderFont; }
-    set grid_ColumnHeaderFont(value) { this._grid_ColumnHeaderFont = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_ColumnHeaderFont); }
-    get grid_FocusedFont() { return this._grid_FocusedFont; }
-    set grid_FocusedFont(value) { this._grid_FocusedFont = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_FocusedFont); }
+    get grid_AllChangedRecentDuration() { return this._grid_AllChangedRecentDuration; }
+    set grid_AllChangedRecentDuration(value) { this._grid_AllChangedRecentDuration = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_AllChangedRecentDuration); }
+    get grid_RecordInsertedRecentDuration() { return this._grid_RecordInsertedRecentDuration; }
+    set grid_RecordInsertedRecentDuration(value) { this._grid_RecordInsertedRecentDuration = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_RecordInsertedRecentDuration); }
+    get grid_RecordUpdatedRecentDuration() { return this._grid_RecordUpdatedRecentDuration; }
+    set grid_RecordUpdatedRecentDuration(value) { this._grid_RecordUpdatedRecentDuration = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_RecordUpdatedRecentDuration); }
+    get grid_ValueChangedRecentDuration() { return this._grid_ValueChangedRecentDuration; }
+    set grid_ValueChangedRecentDuration(value) { this._grid_ValueChangedRecentDuration = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_ValueChangedRecentDuration); }
+    get grid_FontFamily() { return this._grid_FontFamily; }
+    set grid_FontFamily(value) { this._grid_FontFamily = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_FontFamily); }
+    get grid_FontSize() { return this._grid_FontSize; }
+    set grid_FontSize(value) { this._grid_FontSize = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_FontSize); }
+    get grid_ColumnHeaderFontSize() { return this._grid_ColumnHeaderFontSize; }
+    set grid_ColumnHeaderFontSize(value) { this._grid_ColumnHeaderFontSize = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_ColumnHeaderFontSize); }
     get grid_FocusedRowColored() { return this._grid_FocusedRowColored; }
     set grid_FocusedRowColored(value) { this._grid_FocusedRowColored = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FocusedRowColored); }
@@ -457,15 +476,18 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     get grid_VerticalScrollbarWidth() { return this._grid_VerticalScrollbarWidth; }
     set grid_VerticalScrollbarWidth(value) { this._grid_VerticalScrollbarWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_VerticalScrollbarWidth); }
-    get grid_VerticalScrollbarLeftPos() { return this._grid_VerticalScrollbarLeftPos; }
-    set grid_VerticalScrollbarLeftPos(value) { this._grid_VerticalScrollbarLeftPos = value;
-        this.notifySettingChanged(CoreSettings.Id.Grid_VerticalScrollbarLeftPos); }
+    get grid_ScrollbarThumbInactiveOpacity() { return this._grid_ScrollbarThumbInactiveOpacity; }
+    set grid_ScrollbarThumbInactiveOpacity(value) { this._grid_ScrollbarThumbInactiveOpacity = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarThumbInactiveOpacity); }
     get grid_ScrollbarsOverlayAllowed() { return this._grid_ScrollbarsOverlayAllowed; }
     set grid_ScrollbarsOverlayAllowed(value) { this._grid_ScrollbarsOverlayAllowed = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarsOverlayAllowed); }
     get grid_ScrollbarMargin() { return this._grid_ScrollbarMargin; }
     set grid_ScrollbarMargin(value) { this._grid_ScrollbarMargin = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarMargin); }
+    get grid_ScrollHorizontallySmoothly() { return this._grid_ScrollHorizontallySmoothly; }
+    set grid_ScrollHorizontallySmoothly(value) { this._grid_ScrollHorizontallySmoothly = value;
+        this.notifySettingChanged(CoreSettings.Id.Grid_ScrollHorizontallySmoothly); }
 
     get data_InitialTradesHistoryCount() { return this._data_InitialTradesHistoryCount; }
     set data_InitialTradesHistoryCount(value) { this._data_InitialTradesHistoryCount = value;
@@ -531,24 +553,26 @@ export namespace CoreSettings {
 
         Grid_HorizontalLinesVisible,
         Grid_VerticalLinesVisible,
-        Grid_HorizontalLineWeight,
-        Grid_VerticalLineWeight,
-        Grid_RowHeightFixed,
+        Grid_HorizontalLineWidth,
+        Grid_VerticalLineWidth,
+        Grid_RowHeight,
         Grid_CellPadding,
-        Grid_AddHighlightDuration,
-        Grid_UpdateHighlightDuration,
-        Grid_Font,
-        Grid_FocusedColumnHeaderFont,
-        Grid_ColumnHeaderFont,
-        Grid_FocusedFont,
+        Grid_AllChangedRecentDuration,
+        Grid_RecordInsertedRecentDuration,
+        Grid_RecordUpdatedRecentDuration,
+        Grid_ValueChangedRecentDuration,
+        Grid_FontFamily,
+        Grid_FontSize,
+        Grid_ColumnHeaderFontSize,
         Grid_FocusedRowColored,
         Grid_FocusedRowBordered,
         Grid_FocusedRowBorderWidth,
         Grid_HorizontalScrollbarWidth,
         Grid_VerticalScrollbarWidth,
-        Grid_VerticalScrollbarLeftPos,
+        Grid_ScrollbarThumbInactiveOpacity,
         Grid_ScrollbarsOverlayAllowed,
         Grid_ScrollbarMargin,
+        Grid_ScrollHorizontallySmoothly,
 
         Data_InitialTradesHistoryCount,
 
@@ -586,24 +610,26 @@ export namespace CoreSettings {
 
         export const grid_HorizontalLinesVisible = false;
         export const grid_VerticalLinesVisible = true;
-        export const grid_HorizontalLineWeight = 1;
-        export const grid_VerticalLineWeight = 1;
-        export const grid_RowHeightFixed: Integer | undefined = undefined;
+        export const grid_HorizontalLineWidth = 1;
+        export const grid_VerticalLineWidth = 1;
+        export const grid_RowHeight = 14;
         export const grid_CellPadding = 2;
-        export const grid_AddHighlightDuration: SysTick.Span = 1500;
-        export const grid_UpdateHighlightDuration: SysTick.Span = 2000;
-        export const grid_Font = '';
-        export const grid_FocusedColumnHeaderFont = '';
-        export const grid_ColumnHeaderFont = '';
-        export const grid_FocusedFont = '';
+        export const grid_AllChangedRecentDuration: SysTick.Span = 250;
+        export const grid_RecordInsertedRecentDuration: SysTick.Span = 750;
+        export const grid_RecordUpdatedRecentDuration: SysTick.Span = 1500;
+        export const grid_ValueChangedRecentDuration: SysTick.Span = 1500;
+        export const grid_FontFamily = 'Tahoma, Geneva, sans-serif';
+        export const grid_FontSize = '13px';
+        export const grid_ColumnHeaderFontSize = '12px';
         export const grid_FocusedRowColored = true;
         export const grid_FocusedRowBordered = false;
         export const grid_FocusedRowBorderWidth = 2;
         export const grid_HorizontalScrollbarWidth = 11;
         export const grid_VerticalScrollbarWidth = 11;
-        export const grid_VerticalScrollbarLeftPos = false;
+        export const grid_ScrollbarThumbInactiveOpacity = 0.2;
         export const grid_ScrollbarsOverlayAllowed = false;
         export const grid_ScrollbarMargin = 1;
+        export const grid_ScrollHorizontallySmoothly = true;
 
         export const orderPad_ReviewEnabled = true;
         export const orderPad_DefaultOrderTypeId: OrderTypeId | undefined = undefined;

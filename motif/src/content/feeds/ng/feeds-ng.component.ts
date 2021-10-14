@@ -13,6 +13,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import { MotifGrid } from 'src/content/internal-api';
 import { AssertInternalError, Badness, delay1Tick } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
@@ -28,6 +29,11 @@ import { FeedsFrame } from '../feeds-frame';
 export class FeedsNgComponent implements AfterViewInit, OnDestroy, FeedsFrame.ComponentAccess {
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
 
     private _frame: FeedsFrame;
 

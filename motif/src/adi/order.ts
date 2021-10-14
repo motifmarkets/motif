@@ -5,6 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
     CorrectnessId, EnumInfoOutOfOrderError, ExternalError, Integer, isArrayEqualUniquely,
@@ -234,12 +235,12 @@ export class Order implements BrokerageAccountDataRecord {
     }
 
     update(change: OrdersDataMessage.AddUpdateChange) {
-        const changedFieldIds = new Array<Order.FieldId>(Order.Field.count);
+        const valueChanges = new Array<Order.ValueChange>(Order.Field.count);
         let changedIdx = 0;
 
         if (change.id !== this._id) {
             this._id = change.id;
-            changedFieldIds[changedIdx++] = Order.FieldId.Id;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.Id, recentChangeTypeId: undefined };
         }
 
         if (change.accountId !== this._accountId) {
@@ -248,186 +249,186 @@ export class Order implements BrokerageAccountDataRecord {
 
         if (change.externalId !== this._externalId) {
             this._externalId = change.externalId;
-            changedFieldIds[changedIdx++] = Order.FieldId.ExternalId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.ExternalId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.depthOrderId !== this._depthOrderId) {
             this._depthOrderId = change.depthOrderId;
-            changedFieldIds[changedIdx++] = Order.FieldId.DepthOrderId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.DepthOrderId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.status !== this._status) {
             const allowReasonChangedFieldIds = this.setStatus(change.status);
-            changedFieldIds[changedIdx++] = Order.FieldId.Status;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.Status, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             for (const fieldId of allowReasonChangedFieldIds) {
-                changedFieldIds[changedIdx++] = fieldId;
+                valueChanges[changedIdx++] = { fieldId: fieldId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
         }
 
         if (change.marketId !== this._marketId) {
             this._marketId = change.marketId;
-            changedFieldIds[changedIdx++] = Order.FieldId.MarketId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.MarketId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.marketBoardId !== this._marketBoardId) {
             this._marketBoardId = change.marketBoardId;
-            changedFieldIds[changedIdx++] = Order.FieldId.TradingMarket;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.TradingMarket, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.currencyId !== this._currencyId) {
             this._currencyId = change.currencyId;
-            changedFieldIds[changedIdx++] = Order.FieldId.CurrencyId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.CurrencyId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.estimatedBrokerage, this._estimatedBrokerage)) {
             this._estimatedBrokerage = change.estimatedBrokerage;
-            changedFieldIds[changedIdx++] = Order.FieldId.EstimatedBrokerage;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.EstimatedBrokerage, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.currentBrokerage, this._currentBrokerage)) {
             this._currentBrokerage = change.currentBrokerage;
-            changedFieldIds[changedIdx++] = Order.FieldId.CurrentBrokerage;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.CurrentBrokerage, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.estimatedTax, this._estimatedTax)) {
             this._estimatedTax = change.estimatedTax;
-            changedFieldIds[changedIdx++] = Order.FieldId.EstimatedTax;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.EstimatedTax, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.currentTax, this._currentTax)) {
             this._currentTax = change.currentTax;
-            changedFieldIds[changedIdx++] = Order.FieldId.CurrentTax;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.CurrentTax, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.currentValue, this._currentValue)) {
             this._currentValue = change.currentValue;
-            changedFieldIds[changedIdx++] = Order.FieldId.CurrentValue;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.CurrentValue, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.createdDate !== this._createdDate) {
             this._createdDate = change.createdDate;
-            changedFieldIds[changedIdx++] = Order.FieldId.CreatedDate;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.CreatedDate, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.updatedDate !== this._updatedDate) {
             this._updatedDate = change.updatedDate;
-            changedFieldIds[changedIdx++] = Order.FieldId.UpdatedDate;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.UpdatedDate, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.styleId !== this._styleId) {
             this._styleId = change.styleId;
-            changedFieldIds[changedIdx++] = Order.FieldId.StyleId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.StyleId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isSamePossiblyUndefinedArray<string>(change.children, this._children)) {
             this._children = change.children;
-            changedFieldIds[changedIdx++] = Order.FieldId.Children;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.Children, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.executedQuantity !== this._executedQuantity) {
             this._executedQuantity = change.executedQuantity;
-            changedFieldIds[changedIdx++] = Order.FieldId.ExecutedQuantity;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.ExecutedQuantity, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.averagePrice !== undefined) {
             if (change.averagePrice === null) {
                 if (this._averagePrice !== undefined) {
                     this._averagePrice = undefined;
-                    changedFieldIds[changedIdx++] = Order.FieldId.AveragePrice;
+                    valueChanges[changedIdx++] = { fieldId: Order.FieldId.AveragePrice, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
                 }
             } else {
                 if (this._averagePrice === undefined || !isDecimalEqual(change.averagePrice, this._averagePrice)) {
                     this._averagePrice = change.averagePrice;
-                    changedFieldIds[changedIdx++] = Order.FieldId.AveragePrice;
+                    valueChanges[changedIdx++] = { fieldId: Order.FieldId.AveragePrice, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
                 }
             }
         }
 
         if (change.exchangeId !== this._exchangeId) {
             this._exchangeId = change.exchangeId;
-            changedFieldIds[changedIdx++] = Order.FieldId.ExchangeId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.ExchangeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.environmentId !== this._environmentId) {
             this._environmentId = change.environmentId;
-            changedFieldIds[changedIdx++] = Order.FieldId.EnvironmentId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.EnvironmentId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.code !== this._code) {
             this._code = change.code;
-            changedFieldIds[changedIdx++] = Order.FieldId.Code;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.Code, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.sideId !== this._sideId) {
             this._sideId = change.sideId;
-            changedFieldIds[changedIdx++] = Order.FieldId.SideId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.SideId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.brokerageSchedule !== this._brokerageSchedule) {
             this._brokerageSchedule = change.brokerageSchedule;
-            changedFieldIds[changedIdx++] = Order.FieldId.BrokerageSchedule;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.BrokerageSchedule, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.equityOrderTypeId !== this._equityOrderTypeId) {
             this._equityOrderTypeId = change.equityOrderTypeId;
-            changedFieldIds[changedIdx++] = Order.FieldId.EquityOrderTypeId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.EquityOrderTypeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.limitPrice === undefined) {
             if (change.limitPrice !== undefined) {
                 this._limitPrice = undefined;
-                changedFieldIds[changedIdx++] = Order.FieldId.LimitPrice;
-             }
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.LimitPrice, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
+            }
         } else {
             if (this._limitPrice === undefined || !isDecimalEqual(change.limitPrice, this._limitPrice)) {
                 this._limitPrice = change.limitPrice;
-                changedFieldIds[changedIdx++] = Order.FieldId.LimitPrice;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.LimitPrice, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
         }
 
         if (change.quantity !== this._quantity) {
             this._quantity = change.quantity;
-            changedFieldIds[changedIdx++] = Order.FieldId.Quantity;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.Quantity, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.hiddenQuantity !== this._hiddenQuantity) {
             this._hiddenQuantity = change.hiddenQuantity;
-            changedFieldIds[changedIdx++] = Order.FieldId.HiddenQuantity;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.HiddenQuantity, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.minimumQuantity !== this._minimumQuantity) {
             this._minimumQuantity = change.minimumQuantity;
-            changedFieldIds[changedIdx++] = Order.FieldId.MinimumQuantity;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.MinimumQuantity, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.timeInForceId !== this._timeInForceId) {
             this._timeInForceId = change.timeInForceId;
-            changedFieldIds[changedIdx++] = Order.FieldId.TimeInForceId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.TimeInForceId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!SourceTzOffsetDateTime.isUndefinableEqual(change.expiryDate, this._expiryDate)) {
             this._expiryDate = change.expiryDate;
-            changedFieldIds[changedIdx++] = Order.FieldId.ExpiryDate;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.ExpiryDate, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.unitTypeId !== this._unitTypeId) {
             this._unitTypeId = change.unitTypeId;
-            changedFieldIds[changedIdx++] = Order.FieldId.UnitTypeId;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.UnitTypeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!isUndefinableDecimalEqual(change.unitAmount, this._unitAmount)) {
             this._unitAmount = change.unitAmount;
-            changedFieldIds[changedIdx++] = Order.FieldId.UnitAmount;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.UnitAmount, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.managedFundCurrency !== this._managedFundCurrency) {
             this._managedFundCurrency = change.managedFundCurrency;
-            changedFieldIds[changedIdx++] = Order.FieldId.ManagedFundCurrency;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.ManagedFundCurrency, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (change.physicalDelivery !== this._physicalDelivery) {
             this._physicalDelivery = change.physicalDelivery;
-            changedFieldIds[changedIdx++] = Order.FieldId.PhysicalDelivery;
+            valueChanges[changedIdx++] = { fieldId: Order.FieldId.PhysicalDelivery, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
         }
 
         if (!OrderRoute.isEqual(change.route, this._route)) {
@@ -435,10 +436,10 @@ export class Order implements BrokerageAccountDataRecord {
             const oldRouteMarketId = this.routeMarketId;
             this._route = change.route;
             if (this.routeAlgorithmId !== oldRouteAlgorithmId) {
-                changedFieldIds[changedIdx++] = Order.FieldId.RouteAlgorithmId;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.RouteAlgorithmId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
             if (this.routeMarketId !== oldRouteMarketId) {
-                changedFieldIds[changedIdx++] = Order.FieldId.RouteMarketId;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.RouteMarketId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
         }
 
@@ -448,19 +449,19 @@ export class Order implements BrokerageAccountDataRecord {
             const oldTriggerExtraParamsText = this.triggerExtraParamsText;
             this._trigger = change.trigger;
             if (this.triggerTypeId !== oldTriggerTypeId) {
-                changedFieldIds[changedIdx++] = Order.FieldId.TriggerTypeId;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.TriggerTypeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
             if (this.triggerValue !== oldTriggerValue) {
-                changedFieldIds[changedIdx++] = Order.FieldId.TriggerValue;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.TriggerValue, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
             if (this.triggerExtraParamsText !== oldTriggerExtraParamsText) {
-                changedFieldIds[changedIdx++] = Order.FieldId.TriggerExtraParams;
+                valueChanges[changedIdx++] = { fieldId: Order.FieldId.TriggerExtraParams, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
             }
         }
 
         if (changedIdx >= 0) {
-            changedFieldIds.length = changedIdx;
-            this.notifyChanged(changedFieldIds);
+            valueChanges.length = changedIdx;
+            this.notifyChanged(valueChanges);
         }
     }
 
@@ -496,10 +497,10 @@ export class Order implements BrokerageAccountDataRecord {
         this._correctnessChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    private notifyChanged(changedFieldIds: Order.FieldId[]) {
+    private notifyChanged(valueChanges: Order.ValueChange[]) {
         const handlers = this._changedMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](changedFieldIds);
+            handlers[index](valueChanges);
         }
     }
 
@@ -554,7 +555,7 @@ export namespace Order {
     export type Id = OrderId;
     export const NullId = '';
 
-    export type ChangedEventHandler = (changedFieldIds: Order.FieldId[]) => void;
+    export type ChangedEventHandler = (valueChanges: Order.ValueChange[]) => void;
     export type CorrectnessChangedEventHandler = (this: void) => void;
 
     export const enum FieldId {
@@ -996,6 +997,11 @@ export namespace Order {
                 }
             }
         }
+    }
+
+    export interface ValueChange {
+        fieldId: FieldId;
+        recentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined;
     }
 
     export function createNotFoundOrder(key: Order.Key) {

@@ -115,21 +115,25 @@ export class SecurityDataItemTableValueSource extends TableValueSource {
         this.notifyAllValuesChangeEvent(allValues);
     }
 
-    private handleFieldValuesChangedEvent(changedFieldIds: SecurityDataItem.FieldId[]) {
+    private handleFieldValuesChangedEvent(securityValueChanges: SecurityDataItem.ValueChange[]) {
         // let lastProcessingPossiblyRequired = false;
         // let lastProcessed = false;
 
-        const changedFieldCount = changedFieldIds.length;
-        const maxChangedValuesCount = changedFieldCount + 1; // allow extra for Last Higher/Lower
-        const changedValues = new Array<TableValueSource.ChangedValue>(maxChangedValuesCount);
+        const securityValueChangeCount = securityValueChanges.length;
+        const maxValueChangesCount = securityValueChangeCount + 1; // allow extra for Last Higher/Lower
+        const valueChanges = new Array<TableValueSource.ValueChange>(maxValueChangesCount);
         let foundCount = 0;
-        for (let i = 0; i < changedFieldIds.length; i++) {
-            const fieldId = changedFieldIds[i];
+        for (let i = 0; i < securityValueChanges.length; i++) {
+            const { fieldId, recentChangeTypeId } = securityValueChanges[i];
             const fieldIdx = PrefixableSecurityDataItemTableFieldDefinitionSource.Field.indexOfId(fieldId);
             if (fieldIdx >= 0) {
                 const newValue = this.createTableGridValue(fieldIdx);
                 this.loadValue(fieldId, newValue, true);
-                changedValues[foundCount++] = { fieldIdx, newValue };
+                valueChanges[foundCount++] = {
+                    fieldIndex: fieldIdx,
+                    newValue,
+                    recentChangeTypeId,
+                };
                 // switch (fieldId) {
                 //     case SecurityDataItem.FieldId.Open:
                 //     case SecurityDataItem.FieldId.Close:
@@ -153,10 +157,10 @@ export class SecurityDataItemTableValueSource extends TableValueSource {
         //     }
         // }
 
-        if (foundCount < maxChangedValuesCount) {
-            changedValues.length = foundCount;
+        if (foundCount < maxValueChangesCount) {
+            valueChanges.length = foundCount;
         }
-        this.notifyValuesChangeEvent(changedValues);
+        this.notifyValueChangesEvent(valueChanges);
     }
 
     private createTableGridValue(fieldIdx: Integer) {

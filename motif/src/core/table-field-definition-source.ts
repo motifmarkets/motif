@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridFieldState, TextAlign } from '@motifmarkets/revgrid';
+import { Halign } from 'revgrid';
+import { MotifGrid } from 'src/content/internal-api';
 import { EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { CorrectnessTableGridField, TableGridField } from './table-grid-field';
@@ -52,9 +53,9 @@ export abstract class TableFieldDefinitionSource {
         return result;
     }
 
-    getGridFieldInitialStates(indexOffset: Integer, headingPrefix: string): GridFieldState[] {
+    getGridFieldInitialStates(indexOffset: Integer, headingPrefix: string): MotifGrid.FieldState[] {
         const fieldCount = this.fieldCount;
-        const result = new Array<GridFieldState>(fieldCount);
+        const result = new Array<MotifGrid.FieldState>(fieldCount);
         for (let i = 0; i < fieldCount; i++) {
             let heading = this.fieldInfos[i].heading;
             if (headingPrefix.length > 0) {
@@ -62,8 +63,8 @@ export abstract class TableFieldDefinitionSource {
             }
 
             result[i] = {
-                Header: heading,
-                Alignment: this.fieldInfos[i].textAlign,
+                header: heading,
+                alignment: this.fieldInfos[i].textAlign,
             };
         }
         return result;
@@ -115,7 +116,7 @@ export namespace TableFieldDefinitionSource {
         sourcelessName: string;
         name: string;
         heading: string;
-        textAlign: TextAlign;
+        textAlign: Halign;
         gridFieldConstructor: TableGridField.Constructor;
         gridValueConstructor: TableGridValue.Constructor;
     }

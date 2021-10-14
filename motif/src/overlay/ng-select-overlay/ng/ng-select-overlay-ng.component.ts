@@ -9,7 +9,7 @@ import { SettingsNgService } from 'src/component-services/ng-api';
 import { NgSelectUtils } from 'src/controls/internal-api';
 import { NgSelectOverlayNgService } from 'src/controls/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
-import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, HtmlTypes, MultiEvent } from 'src/sys/internal-api';
 
 @Component({
     selector: 'app-ng-select-overlay',
@@ -57,7 +57,7 @@ export class NgSelectOverlayNgComponent implements OnDestroy {
             this._measureCanvasContext = measureCanvasContext;
 
             const boldFontParts = new Array<string>(3);
-            boldFontParts[0] = 'bold';
+            boldFontParts[0] = HtmlTypes.FontWeight.Bold;
             boldFontParts[1] = fontSize;
             boldFontParts[2] = fontFamily;
             measureBoldCanvasContext.font = boldFontParts.join(' ');

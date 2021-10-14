@@ -38,13 +38,15 @@
     }
 
     > #watchlist {
-        height: 4em;
+        flex-grow: 0;
+        flex-shrink: 0;
     }
 
     > #depthTradesDiv {
         display: flex;
         flex-direction: row;
         height: 100%;
+        min-height: 0;
 
         #depth {
             height: 100%;

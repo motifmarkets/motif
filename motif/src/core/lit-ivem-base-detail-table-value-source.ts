@@ -62,21 +62,21 @@ export class LitIvemBaseDetailTableValueSource extends TableValueSource {
 
     private handleDetailChangedEvent(changedFieldIds: LitIvemDetail.BaseField.Id[]) {
         const changedFieldCount = changedFieldIds.length;
-        const changedValues = new Array<TableValueSource.ChangedValue>(changedFieldCount);
+        const valueChanges = new Array<TableValueSource.ValueChange>(changedFieldCount);
         let foundCount = 0;
         for (let i = 0; i < changedFieldIds.length; i++) {
             const fieldId = changedFieldIds[i];
-            const fieldIdx = LitIvemBaseDetailTableFieldDefinitionSource.Field.indexOfId(fieldId);
-            if (fieldIdx >= 0) {
-                const newValue = this.createTableGridValue(fieldIdx);
+            const fieldIndex = LitIvemBaseDetailTableFieldDefinitionSource.Field.indexOfId(fieldId);
+            if (fieldIndex >= 0) {
+                const newValue = this.createTableGridValue(fieldIndex);
                 this.loadValue(fieldId, newValue);
-                changedValues[foundCount++] = { fieldIdx, newValue };
+                valueChanges[foundCount++] = { fieldIndex, newValue, recentChangeTypeId: undefined };
             }
         }
         if (foundCount < changedFieldCount) {
-            changedValues.length = foundCount;
+            valueChanges.length = foundCount;
         }
-        this.notifyValuesChangeEvent(changedValues);
+        this.notifyValueChangesEvent(valueChanges);
     }
 
     private createTableGridValue(fieldIdx: Integer) {

@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridField } from '@motifmarkets/revgrid';
+import { RevRecordField } from 'revgrid';
 import { DayTradesDataItem, MovementId, TradeFlagId } from 'src/adi/internal-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { StringId } from 'src/res/internal-api';
 import {
     compareArray,
@@ -30,21 +31,23 @@ import {
     TrendIdRenderValue
 } from './render-value';
 
-export abstract class DayTradesGridField extends GridField {
+export abstract class DayTradesGridField implements RevRecordField {
+    readonly name: string;
+
     constructor(
         private _id: DayTradesDataItem.Field.Id,
         private _fieldStateDefinition: DayTradesGridField.FieldStateDefinition,
         private _defaultVisible: boolean,
         private _getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler,
     ) {
-        super(DayTradesDataItem.Field.idToName(_id));
+        this.name = DayTradesDataItem.Field.idToName(_id);
     }
 
     get fieldStateDefinition() { return this._fieldStateDefinition; }
     get defaultVisible() { return this._defaultVisible; }
     get isBrokerPrivateData() { return DayTradesDataItem.Field.idToIsBrokerPrivateData(this._id); }
 
-    override GetFieldValue(record: DayTradesDataItem.Record): RenderValue {
+    getFieldValue(record: DayTradesDataItem.Record): RenderValue {
         const { renderValue, cellAttribute } = this.createRenderValue(record);
 
         // add attributes in correct priority order.  1st will be applied last (highest priority)
@@ -98,11 +101,11 @@ export abstract class DayTradesGridField extends GridField {
         return renderValue;
     }
 
-    override CompareField(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    compareField(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return this.compareFieldValue(left, right, true);
     }
 
-    override CompareFieldDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    compareFieldDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return this.compareFieldValue(right, left, false);
     }
 
@@ -119,9 +122,9 @@ export namespace DayTradesGridField {
     export const idCount = DayTradesDataItem.Field.idCount;
     export type GetDataItemCorrectnessIdEventHandler = (this: void) => CorrectnessId;
 
-    export interface FieldStateDefinition {
-        HeaderId: StringId;
-        Alignment: 'right' | 'left' | 'center';
+    export interface FieldStateDefinition extends MotifGrid.FieldState {
+        headerId: StringId;
+        alignment: 'right' | 'left' | 'center';
     }
 
     export interface CreateRenderValueResult {
@@ -178,8 +181,8 @@ export namespace DayTradesGridField {
 
 export class IdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_Id,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_Id,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -204,8 +207,8 @@ export class IdDayTradesGridField extends DayTradesGridField {
 
 export class PriceDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_Price,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_Price,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -243,8 +246,8 @@ export class PriceDayTradesGridField extends DayTradesGridField {
 
 export class QuantityDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_Quantity,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_Quantity,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -281,8 +284,8 @@ export class QuantityDayTradesGridField extends DayTradesGridField {
 
 export class TimeDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_Time,
-        Alignment: 'left',
+        headerId: StringId.DayTradesGridHeading_Time,
+        alignment: 'left',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -307,8 +310,8 @@ export class TimeDayTradesGridField extends DayTradesGridField {
 
 export class FlagIdsDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_FlagIds,
-        Alignment: 'left',
+        headerId: StringId.DayTradesGridHeading_FlagIds,
+        alignment: 'left',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -333,8 +336,8 @@ export class FlagIdsDayTradesGridField extends DayTradesGridField {
 
 export class TrendIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_TrendId,
-        Alignment: 'left',
+        headerId: StringId.DayTradesGridHeading_TrendId,
+        alignment: 'left',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -359,8 +362,8 @@ export class TrendIdDayTradesGridField extends DayTradesGridField {
 
 export class BidAskSideIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_BidAskSideId,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_BidAskSideId,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -385,8 +388,8 @@ export class BidAskSideIdDayTradesGridField extends DayTradesGridField {
 
 export class AffectsIdsDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_AffectsIds,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_AffectsIds,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -411,8 +414,8 @@ export class AffectsIdsDayTradesGridField extends DayTradesGridField {
 
 export class ConditionCodesDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_ConditionCodes,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_ConditionCodes,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -437,8 +440,8 @@ export class ConditionCodesDayTradesGridField extends DayTradesGridField {
 
 export class BuyDepthOrderIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_BuyDepthOrderId,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_BuyDepthOrderId,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -463,8 +466,8 @@ export class BuyDepthOrderIdDayTradesGridField extends DayTradesGridField {
 
 export class BuyBrokerDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_BuyBroker,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_BuyBroker,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -489,8 +492,8 @@ export class BuyBrokerDayTradesGridField extends DayTradesGridField {
 
 export class BuyCrossRefDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_BuyCrossRef,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_BuyCrossRef,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -515,8 +518,8 @@ export class BuyCrossRefDayTradesGridField extends DayTradesGridField {
 
 export class SellDepthOrderIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_SellDepthOrderId,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_SellDepthOrderId,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -541,8 +544,8 @@ export class SellDepthOrderIdDayTradesGridField extends DayTradesGridField {
 
 export class SellBrokerDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_SellBroker,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_SellBroker,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -567,8 +570,8 @@ export class SellBrokerDayTradesGridField extends DayTradesGridField {
 
 export class SellCrossRefDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_SellCrossRef,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_SellCrossRef,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -593,8 +596,8 @@ export class SellCrossRefDayTradesGridField extends DayTradesGridField {
 
 export class MarketIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_MarketId,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_MarketId,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -619,8 +622,8 @@ export class MarketIdDayTradesGridField extends DayTradesGridField {
 
 export class RelatedIdDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_RelatedId,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_RelatedId,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -645,8 +648,8 @@ export class RelatedIdDayTradesGridField extends DayTradesGridField {
 
 export class AttributesDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_Attributes,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_Attributes,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {
@@ -671,8 +674,8 @@ export class AttributesDayTradesGridField extends DayTradesGridField {
 
 export class RecordTypeDayTradesGridField extends DayTradesGridField {
     static readonly fieldStateDefinition: DayTradesGridField.FieldStateDefinition = {
-        HeaderId: StringId.DayTradesGridHeading_RecordType,
-        Alignment: 'right',
+        headerId: StringId.DayTradesGridHeading_RecordType,
+        alignment: 'right',
     };
 
     constructor(getDataItemCorrectnessIdEvent: DayTradesGridField.GetDataItemCorrectnessIdEventHandler) {

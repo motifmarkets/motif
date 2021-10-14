@@ -16,8 +16,8 @@
                 </div>
             </div>
         </div>
-        <app-table id="watchTable" #watchTable></app-table>
-        <app-table id="etoPriceQuotationTable" #etoPriceQuotationTable></app-table>
+        <app-table id="watchTable" #watchTable [frameGridProperties]="frameGridProperties "></app-table>
+        <app-table id="etoPriceQuotationTable" #etoPriceQuotationTable [frameGridProperties]="frameGridProperties "></app-table>
     </div>
     <div id="layoutEditorDiv" [style.display]="!isLayoutEditorMode() ? 'none' : null">
         <app-grid-layout-editor #layoutEditor></app-grid-layout-editor>

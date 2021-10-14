@@ -8,6 +8,7 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
     ElementRef, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
+import { RevRecordIndex } from 'revgrid';
 import { CommandRegisterNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { AngularSplitTypes } from 'src/controls/internal-api';
 import { SvgButtonNgComponent } from 'src/controls/ng-api';
@@ -34,14 +35,15 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     @ViewChild('presetCodeContainer', { read: ViewContainerRef, static: true }) private _presetCodeContainer: ViewContainerRef;
 
     public isPresetCodeVisible = false;
-    public propertiesSize: AngularSplitTypes.AreaSize.Html = 120;
-    public excessSize = 0;
+    public gridSize: AngularSplitTypes.AreaSize.Html;
+    public gridMinSize: AngularSplitTypes.AreaSize.Html;
     public splitterGutterSize = 3;
 
     private _commandRegisterService: CommandRegisterService;
 
     private _colorSettings: ColorSettings;
-    private _layoutInitialised = false;
+    private _resizeObserver: ResizeObserver;
+    private _splitterDragged = false;
 
     private _saveSchemeUiAction: IconButtonUiAction;
 
@@ -54,22 +56,22 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, settingsNgService.settingsService);
-        this._commandRegisterService = commandRegisterNgService.service;
 
+        this._commandRegisterService = commandRegisterNgService.service;
         this._colorSettings = this.settingsService.color;
 
         this._saveSchemeUiAction = this.createSaveSchemeUiAction();
     }
 
     ngAfterViewInit() {
-        this._gridComponent.recordFocusEvent = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
-        this._gridComponent.renderedEvent = () => this.handleGridRenderedEvent();
+        this._gridComponent.recordFocusEventer = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
+        this._gridComponent.columnsViewWithsChangedEventer = () => this.updateWidths();
         const itemId = this._gridComponent.focusedRecordIndex;
         this._itemPropertiesComponent.itemId = itemId;
         this._itemPropertiesComponent.itemChangedEvent = (changedItemId) => this.handleItemPropertiesChangedEvent(changedItemId);
-        this.propertiesSize = this._itemPropertiesComponent.width;
+        this.gridSize = this._itemPropertiesComponent.approximateWidth;
 
-        delay1Tick(() => this.setUiActions());
+        delay1Tick(() => this.initialise());
     }
 
     ngOnDestroy() {
@@ -80,22 +82,22 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         this._colorSettings.loadColorScheme(value);
     }
 
+    public handleSplitterDragEnd() {
+        this._splitterDragged = true;
+    }
+
     protected override finalise() {
         this._saveSchemeUiAction.finalise();
+        this._resizeObserver.disconnect();
         super.finalise();
     }
 
     protected processSettingsChanged() {
         this._itemPropertiesComponent.processSettingsChanged();
+        this._gridComponent.invalidateExisting();
     }
 
-    private handleGridRenderedEvent() {
-        if (!this._layoutInitialised && this._gridComponent !== undefined && this._itemPropertiesComponent !== undefined) {
-            this.initialiseWidths();
-        }
-    }
-
-    private handleGridRecordFocusEvent(recordIndex: Integer) {
+    private handleGridRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
         this.updateCurrentRecordIndex(recordIndex);
     }
 
@@ -120,15 +122,23 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         return action;
     }
 
-    private updateCurrentRecordIndex(index: Integer | undefined): void {
+    private updateCurrentRecordIndex(index: RevRecordIndex | undefined): void {
         if (index !== this._currentRecordIndex) {
             this._currentRecordIndex = index;
             this._itemPropertiesComponent.itemId = index;
         }
     }
 
-    private setUiActions() {
+    private initialise() {
         this._saveSchemeButton.initialise(this._saveSchemeUiAction);
+
+        this._resizeObserver = new ResizeObserver(() => this.updateWidths());
+        this._resizeObserver.observe(this._leftAndRightDiv.nativeElement);
+        this._gridComponent.waitRendered().then((success) => {
+            if (success) {
+                this.updateWidths();
+            }
+        });
     }
 
     private showPresetCode() {
@@ -154,30 +164,34 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         this.markForCheck();
     }
 
-    private initialiseWidths() {
-        const totalWidth = this._leftAndRightDiv.nativeElement.offsetWidth;
-        const availableTotalWidth = totalWidth - this.splitterGutterSize;
-        const propertiesWidth = this._itemPropertiesComponent.width;
-        const gridActiveWidth = this._gridComponent.getActiveWidth();
-        let calculatedPropertiesWidth: Integer;
-        if (availableTotalWidth >= (propertiesWidth + gridActiveWidth)) {
-            calculatedPropertiesWidth = availableTotalWidth - gridActiveWidth;
-        } else {
-            if (availableTotalWidth <= ColorSettingsNgComponent.minimumInitialGridWidth) {
-                calculatedPropertiesWidth = 0;
-            } else {
-                calculatedPropertiesWidth = availableTotalWidth - ColorSettingsNgComponent.minimumInitialGridWidth;
-            }
-        }
+    private updateWidths() {
+        const gridMinWidth = this._gridComponent.calculateFixedColumnsWidth() + ColorSettingsNgComponent.extraGridFixedColumnsWidth;
+        this.gridMinSize = gridMinWidth;
 
-        this.propertiesSize = calculatedPropertiesWidth;
-        this._layoutInitialised = true;
-        this.markForCheck();
+        if (!this._splitterDragged) {
+            const totalWidth = this._leftAndRightDiv.nativeElement.offsetWidth;
+            const availableTotalWidth = totalWidth - this.splitterGutterSize;
+            const propertiesWidth = this._itemPropertiesComponent.approximateWidth;
+            const gridActiveColumnsWidth = this._gridComponent.calculateActiveColumnsWidth();
+            let calculatedGridWidth: Integer;
+            if (availableTotalWidth >= (propertiesWidth + gridActiveColumnsWidth)) {
+                calculatedGridWidth = gridActiveColumnsWidth;
+            } else {
+                if (availableTotalWidth > (propertiesWidth + gridMinWidth)) {
+                    calculatedGridWidth = availableTotalWidth - propertiesWidth;
+                } else {
+                    calculatedGridWidth = gridMinWidth;
+                }
+            }
+
+            this.gridSize = calculatedGridWidth;
+            this.markForCheck();
+        }
     }
 }
 
 export namespace ColorSettingsNgComponent {
-    export const minimumInitialGridWidth = 40;
+    export const extraGridFixedColumnsWidth = 20;
 
     export function create(
         container: ViewContainerRef,

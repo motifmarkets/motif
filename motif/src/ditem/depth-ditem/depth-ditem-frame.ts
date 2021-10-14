@@ -43,7 +43,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
             this._contentFrame.loadLayoutConfig(contentElement);
         }
 
-        this._contentFrame.initialiseWidths();
+        // this._contentFrame.initialiseWidths();
 
         this.applyLinked();
     }
@@ -99,9 +99,9 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.setGridLayouts(layout);
     }
 
-    adviseShown() {
-        setTimeout(() => this._contentFrame.initialiseWidths(), 200);
-    }
+    // adviseShown() {
+    //     setTimeout(() => this._contentFrame.initialiseWidths(), 200);
+    // }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, selfInitiated);

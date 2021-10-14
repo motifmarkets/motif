@@ -4,14 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
 import { Account, AdiService, BrokerageAccountGroup, BrokerageAccountGroupOrderList, Order } from 'src/adi/internal-api';
-import { TableFrame } from 'src/content/internal-api';
+import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
 import {
     CommandRegisterService,
-    CoreSettings,
-    GridLayoutDataStore,
-    OrderPad,
+    CoreSettings, OrderPad,
     OrderTableRecordDefinitionList,
     SettingsService,
     SymbolsService,
@@ -163,8 +160,8 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         this._tableFrame.setGridLayout(value);
     }
 
-    getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders {
-        return this._tableFrame.getGridLayoutWithHeadings();
+    getGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap {
+        return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {

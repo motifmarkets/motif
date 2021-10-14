@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridFieldState } from '@motifmarkets/revgrid';
 import { BidAskSideId } from 'src/adi/internal-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { CorrectnessId, UnreachableCaseError } from 'src/sys/internal-api';
 import { DepthSideGridField } from './depth-side-grid-field';
 import { RenderValue } from './render-value';
@@ -21,7 +21,7 @@ export class ShortDepthSideGridField extends DepthSideGridField {
         super(ShortDepthSideField.idToName(_id));
     }
 
-    override GetFieldValue(record: ShortDepthRecord): RenderValue {
+    getFieldValue(record: ShortDepthRecord): RenderValue {
         let dataCorrectnessAttribute: RenderValue.Attribute | undefined;
         const correctnessId = this._getDataItemCorrectnessIdEvent();
         switch (correctnessId) {
@@ -42,11 +42,11 @@ export class ShortDepthSideGridField extends DepthSideGridField {
         return record.getRenderValue(this._id, this._sideId, dataCorrectnessAttribute);
     }
 
-    override CompareField(left: ShortDepthRecord, right: ShortDepthRecord): number {
+    compareField(left: ShortDepthRecord, right: ShortDepthRecord): number {
         return ShortDepthRecord.compareField(this._id, left, right);
     }
 
-    override CompareFieldDesc(left: ShortDepthRecord, right: ShortDepthRecord): number {
+    compareFieldDesc(left: ShortDepthRecord, right: ShortDepthRecord): number {
         return ShortDepthRecord.compareFieldDesc(this._id, left, right);
     }
 }
@@ -61,14 +61,14 @@ export namespace ShortDepthSideGridField {
         const idCount = ShortDepthSideField.idCount;
 
         const fields = new Array<DepthSideGridField>(idCount);
-        const defaultStates = new Array<GridFieldState>(idCount);
+        const defaultStates = new Array<MotifGrid.FieldState>(idCount);
         const defaultVisibles = new Array<boolean>(idCount);
 
         for (let id = 0; id < idCount; id++) {
             fields[id] = new ShortDepthSideGridField(id, sideId, getDataItemCorrectnessIdEventHandler);
-            const defaultState: GridFieldState = {
-                Header: ShortDepthSideField.idToDefaultHeading(id),
-                Alignment: ShortDepthSideField.idToDefaultTextAlign(id),
+            const defaultState: MotifGrid.FieldState = {
+                header: ShortDepthSideField.idToDefaultHeading(id),
+                alignment: ShortDepthSideField.idToDefaultTextAlign(id),
             };
             defaultStates[id] = defaultState;
             defaultVisibles[id] = ShortDepthSideField.idToDefaultVisible(id);

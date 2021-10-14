@@ -79,6 +79,12 @@ export class ExtensionError extends ExternalError {
     }
 }
 
+export class GridLayoutError extends ExternalError {
+    constructor(code: ExternalError.Code, message?: string) {
+        super(StringId.GridLayoutExternalError, code, message);
+    }
+}
+
 export namespace ExternalError {
     export const enum Code {
         SymbolsServiceParseModeJsonValueToId = 'SSPMJVTI',
@@ -276,5 +282,7 @@ export namespace ExternalError {
         BABDIPDMAUC133330444 = 'BABDIPDMAUC133330444',
         BABDIPDMIAC13330444 = 'BABDIPDMIAC13330444',
         GLHFPGLCTNP34458 = 'GLHFPGLCTNP34458',
+        GridLayoutColumnNotFoundForField = 'GLCNFFF95224',
+        GridLayoutFieldDoesNotExist = 'GLFDNE95224',
     }
 }

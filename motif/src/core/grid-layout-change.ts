@@ -17,33 +17,37 @@ export namespace GridLayoutChange {
         SetWidth,
     }
 
-    export interface MoveUp {
+    export interface ActionBase {
+        id: ActionId;
+    }
+
+    export interface MoveUp extends ActionBase {
         id: ActionId.MoveUp;
         columnIndex: Integer;
     }
 
-    export interface MoveTop {
+    export interface MoveTop extends ActionBase {
         id: ActionId.MoveTop;
         columnIndex: Integer;
     }
 
-    export interface MoveDown {
+    export interface MoveDown extends ActionBase {
         id: ActionId.MoveDown;
         columnIndex: Integer;
     }
 
-    export interface MoveBottom {
+    export interface MoveBottom extends ActionBase {
         id: ActionId.MoveBottom;
         columnIndex: Integer;
     }
 
-    export interface SetVisible {
+    export interface SetVisible extends ActionBase {
         id: ActionId.SetVisible;
         visible: boolean;
         columnIndex: Integer;
     }
 
-    export interface SetWidth {
+    export interface SetWidth extends ActionBase {
         id: ActionId.SetWidth;
         width: Integer;
         columnIndex: Integer;

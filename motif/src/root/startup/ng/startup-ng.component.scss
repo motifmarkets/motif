@@ -7,15 +7,19 @@
 :host {
     font-family: monospace;
     font-size: 13px;
+    // background-position: top center;
+    // background-size: contain;
+    // display: flex;
+    // flex-direction: column;
 }
 
-#kickedOffDiv {
-    text-align: center;
-    background-color: red;
-    margin-bottom: 2px;
-    color: gray;
-    font-weight: 700;
-}
+// #kickedOffDiv {
+//     text-align: center;
+//     background-color: red;
+//     margin-bottom: 2px;
+//     color: gray;
+//     font-weight: 700;
+// }
 
 #logTextArea {
     height: 30em;

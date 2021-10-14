@@ -94,3 +94,11 @@ export interface Line {
     endX: number;
     endY: number;
 }
+
+export interface RGB {
+    r: number;
+    g: number;
+    b: number;
+}
+
+export type IndexSignatureHack<T> = { [K in keyof T]: IndexSignatureHack<T[K]> };

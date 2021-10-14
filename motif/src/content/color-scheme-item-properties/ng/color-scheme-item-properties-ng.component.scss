@@ -3,15 +3,42 @@
  * (c) 2021 Paritech Wealth Technology
  * License: motionite.trade/license/motif
  */
+@import './partials/caption-followed-by-input';
+@import './partials/horizontal-radio-separator';
 
-#topDiv {
+:host {
     display: inline-flex;
     flex-direction: column;
+    margin-left: 2rem;
     height: 100%;
 }
 
-#inBetweenDiv {
+#headerSection {
+    flex: 0 0 auto;
     display: flex;
-    flex-direction: row;
-    align-items: center;
+    flex-direction: column;
+    #readabilitySection {
+        @include captionFollowedByInputMixin;
+        #readabilityControl {
+            width: 3em;
+        }
+    }
+    #pickerTypeSection {
+        @include horizontalRadioSeparatorMixin;
+    }
+}
+
+#bkgdControls {
+    flex: 1 1 0;
+    min-height: 0;
+}
+
+#multiPicker {
+    flex: 0 1 auto;
+    min-height: 0;
+}
+
+#foreControls {
+    flex: 1 1 0;
+    min-height: 0;
 }

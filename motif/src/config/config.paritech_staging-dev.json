@@ -65,5 +65,9 @@
     ],
     "diagnostics": {
         "telemetryEnabled": false
+    },
+    "branding": {
+      "startupTopSplashImageUrl": "branding/images/splash.svg",
+      "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
     }
 }

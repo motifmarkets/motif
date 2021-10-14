@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { StringId, Strings } from 'src/res/internal-api';
 import { Correctness, CorrectnessId, EnumInfoOutOfOrderError, Integer, JsonElement, MapKey, MultiEvent } from 'src/sys/internal-api';
 import {
@@ -85,21 +86,27 @@ export class Account implements DataRecord {
     }
 
     change(name: string | undefined, currencyId: CurrencyId | undefined) {
-        const changedFieldIds = new Array<Account.FieldId>(Account.Field.idCount - Account.Key.fieldCount); // won't include fields in key
+        const valueChanges = new Array<Account.ValueChange>(Account.Field.idCount - Account.Key.fieldCount); // won't include fields in key
         let changedCount = 0;
         if (name !== undefined && name !== this.name) {
             this._name = name;
             this._upperName = name.toUpperCase();
-            changedFieldIds[changedCount++] = Account.FieldId.Name;
+            valueChanges[changedCount++] = {
+                fieldId: Account.FieldId.Name,
+                recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update
+            };
         }
         if (currencyId !== undefined && currencyId !== this.currencyId) {
             this._currencyId = currencyId;
-            changedFieldIds[changedCount++] = Account.FieldId.CurrencyId;
+            valueChanges[changedCount++] = {
+                fieldId: Account.FieldId.CurrencyId,
+                recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update
+            };
         }
 
         if (changedCount >= 0) {
-            changedFieldIds.length = changedCount;
-            this.notifyChange(changedFieldIds);
+            valueChanges.length = changedCount;
+            this.notifyChange(valueChanges);
         }
     }
 
@@ -119,10 +126,10 @@ export class Account implements DataRecord {
         this._correctnessChangedEvent.unsubscribe(subscriptionId);
     }
 
-    private notifyChange(changedFieldIds: Account.FieldId[]) {
+    private notifyChange(valueChanges: Account.ValueChange[]) {
         const handlers = this._changeEvent.copyHandlers();
         for (const handler of handlers) {
-            handler(changedFieldIds);
+            handler(valueChanges);
         }
     }
 
@@ -172,7 +179,12 @@ export namespace Account {
         CurrencyId,
     }
 
-    export type ChangeEventHandler = (this: void, changedFieldIds: Account.FieldId[]) => void;
+    export interface ValueChange {
+        fieldId: FieldId;
+        recentChangeTypeId: RevRecordValueRecentChangeTypeId;
+    }
+
+    export type ChangeEventHandler = (this: void, valueChanges: Account.ValueChange[]) => void;
     export type CorrectnessChangedEventHandler = (this: void) => void;
 
     export namespace Field {

@@ -157,9 +157,9 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._frame.save(frameElement);
     }
 
-    protected override processShown() {
-        this._frame.adviseShown();
-    }
+    // protected override processShown() {
+    //     this._frame.adviseShown();
+    // }
 
     private handleSymbolCommitEvent(typeId: UiAction.CommitTypeId) {
         this.commitSymbol(typeId);

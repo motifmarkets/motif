@@ -119,6 +119,8 @@ export namespace ColorScheme {
         MenuBar_OverlayItemHighlighted,
         MenuBar_OverlayItemDivider,
         Grid_Blank,
+        Grid_VerticalLine,
+        Grid_HorizontalLine,
         Grid_ColumnHeader,
         Grid_HighestPrioritySortColumnHeader,
         Grid_Base,
@@ -149,7 +151,8 @@ export namespace ColorScheme {
         Grid_SelectedRowFlashedOn,
         Grid_TopBase,
         Grid_Cancelled,
-        Grid_RecordRecentlyAddedBorder,
+        Grid_RowRecentlyAddedBorder,
+        Grid_RowRecordRecentlyChangedBorder,
         Grid_ValueRecentlyModifiedBorder,
         Grid_ValueRecentlyModifiedUpBorder,
         Grid_ValueRecentlyModifiedDownBorder,
@@ -180,7 +183,7 @@ export namespace ColorScheme {
         Grid_Unacknowledged,
         Grid_Fired,
         Grid_GreyedOut,
-        Grid_ScrollbarThumb,
+        Grid_Scrollbar,
         Grid_ScrollbarThumbShadow,
 
 /*        Alert_Disabled,
@@ -574,6 +577,20 @@ export namespace ColorScheme {
                 bkgdResolver: resolveBkgdColor_Grid_Blank,
                 foreResolver: undefined,
             },
+            Grid_VerticalLine: {
+                id: ItemId.Grid_VerticalLine,
+                name: 'Grid_VerticalLine',
+                display: 'Grid: Vertical Line',
+                bkgdResolver: undefined,
+                foreResolver: resolveForeColor_Grid_VerticalLine,
+            },
+            Grid_HorizontalLine: {
+                id: ItemId.Grid_HorizontalLine,
+                name: 'Grid_HorizontalLine',
+                display: 'Grid: Horizontal Line',
+                bkgdResolver: undefined,
+                foreResolver: resolveForeColor_Grid_HorizontalLine,
+            },
             Grid_ColumnHeader: {
                 id: ItemId.Grid_ColumnHeader,
                 name: 'Grid_ColumnHeader',
@@ -784,12 +801,19 @@ export namespace ColorScheme {
                 bkgdResolver: resolveBkgdColor_Grid_Cancelled,
                 foreResolver: resolveForeColor_Grid_Cancelled,
             },
-            Grid_RecordRecentlyAddedBorder: {
-                id: ItemId.Grid_RecordRecentlyAddedBorder,
-                name: 'Grid_RecordRecentlyAddedBorder',
-                display: 'Grid: Record Recently Added',
+            Grid_RowRecentlyAddedBorder: {
+                id: ItemId.Grid_RowRecentlyAddedBorder,
+                name: 'Grid_RowRecentlyAddedBorder',
+                display: 'Grid: Row Recently Added',
                 bkgdResolver: undefined,
-                foreResolver: resolveForeColor_Grid_RecordRecentlyAddedBorder,
+                foreResolver: resolveForeColor_Grid_RowRecentlyAddedBorder,
+            },
+            Grid_RowRecordRecentlyChangedBorder: {
+                id: ItemId.Grid_RowRecordRecentlyChangedBorder,
+                name: 'Grid_RowRecordRecentlyChangedBorder',
+                display: 'Grid: Row Record Recently Changed',
+                bkgdResolver: undefined,
+                foreResolver: resolveForeColor_Grid_RowRecordRecentlyChangedBorder,
             },
             Grid_ValueRecentlyModifiedBorder: {
                 id: ItemId.Grid_ValueRecentlyModifiedBorder,
@@ -1001,12 +1025,12 @@ export namespace ColorScheme {
                 bkgdResolver: undefined,
                 foreResolver: resolveForeColor_Grid_GreyedOut,
             },
-            Grid_ScrollbarThumb: {
-                id: ItemId.Grid_ScrollbarThumb,
+            Grid_Scrollbar: {
+                id: ItemId.Grid_Scrollbar,
                 name: 'Grid_ScrollbarThumb',
                 display: 'Grid: Scrollbar Thumb',
-                bkgdResolver: undefined,
-                foreResolver: resolveForeColor_Grid_ScrollbarThumb,
+                bkgdResolver: resolveBkgdColor_Grid_Scrollbar,
+                foreResolver: resolveForeColor_Grid_Scrollbar,
             },
             Grid_ScrollbarThumbShadow: {
                 id: ItemId.Grid_ScrollbarThumbShadow,
@@ -2364,6 +2388,14 @@ export namespace ColorScheme {
         const itemColor = items[ItemId.Grid_Blank].bkgd;
         return (itemColor === schemeInheritColor) ? resolveBkgdColor_Grid_Base(items) : itemColor;
     }
+    function resolveForeColor_Grid_VerticalLine(items: Item[]) {
+        const itemColor = items[ItemId.Grid_VerticalLine].fore;
+        return (itemColor === schemeInheritColor) ? resolveBkgdColor_Panel(items) : itemColor;
+    }
+    function resolveForeColor_Grid_HorizontalLine(items: Item[]) {
+        const itemColor = items[ItemId.Grid_HorizontalLine].fore;
+        return (itemColor === schemeInheritColor) ? resolveBkgdColor_Panel(items) : itemColor;
+    }
     function resolveBkgdColor_Grid_ColumnHeader(items: Item[]) {
         const itemColor = items[ItemId.Grid_ColumnHeader].bkgd;
         return (itemColor === schemeInheritColor) ? resolveBkgdColor_Grid_Base(items) : itemColor;
@@ -2736,8 +2768,12 @@ export namespace ColorScheme {
         const itemColor = items[ItemId.Grid_Cancelled].fore;
         return (itemColor === schemeInheritColor) ? resolveForeColor_Grid_Base(items) : itemColor;
     }
-    function resolveForeColor_Grid_RecordRecentlyAddedBorder(items: Item[]) {
-        const itemColor = items[ItemId.Grid_RecordRecentlyAddedBorder].fore;
+    function resolveForeColor_Grid_RowRecentlyAddedBorder(items: Item[]) {
+        const itemColor = items[ItemId.Grid_RowRecentlyAddedBorder].fore;
+        return (itemColor === schemeInheritColor) ? resolveForeColor_Grid_HorizontalLine(items) : itemColor;
+    }
+    function resolveForeColor_Grid_RowRecordRecentlyChangedBorder(items: Item[]) {
+        const itemColor = items[ItemId.Grid_RowRecordRecentlyChangedBorder].fore;
         return (itemColor === schemeInheritColor) ? resolveForeColor_Grid_Base(items) : itemColor;
     }
     function resolveForeColor_Grid_ValueRecentlyModifiedBorder(items: Item[]) {
@@ -3070,8 +3106,12 @@ export namespace ColorScheme {
         const itemColor = items[ItemId.Grid_GreyedOut].fore;
         return (itemColor === schemeInheritColor) ? resolveForeColor_Grid_Base(items) : itemColor;
     }
-    function resolveForeColor_Grid_ScrollbarThumb(items: Item[]) {
-        const itemColor = items[ItemId.Grid_ScrollbarThumb].fore;
+    function resolveBkgdColor_Grid_Scrollbar(items: Item[]) {
+        const itemColor = items[ItemId.Grid_Scrollbar].bkgd;
+        return (itemColor === schemeInheritColor) ? resolveBkgdColor_Grid_Base(items) : itemColor;
+    }
+    function resolveForeColor_Grid_Scrollbar(items: Item[]) {
+        const itemColor = items[ItemId.Grid_Scrollbar].fore;
         return (itemColor === schemeInheritColor) ? resolveForeColor_Grid_Base(items) : itemColor;
     }
     function resolveBkgdColor_Grid_ScrollbarThumbShadow(items: Item[]) {

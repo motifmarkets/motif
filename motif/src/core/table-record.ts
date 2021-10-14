@@ -4,23 +4,23 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecord, RevRecordInvalidatedValue } from 'revgrid';
 import { Integer } from 'src/sys/internal-api';
 import { TableGridValue } from './table-grid-value';
 import { TableRecordDefinition } from './table-record-definition';
 import { TableValueList } from './table-value-list';
 
-export class TableRecord {
+export class TableRecord implements RevRecord {
     index: Integer;
 
-    valueChangeEvent: TableRecord.ValueChangeEvent;
-    recordChangeEvent: TableRecord.RecordChangeEvent;
+    valuesChangedEvent: TableRecord.ValuesChangedEvent;
+    fieldsChangedEvent: TableRecord.FieldsChangedEvent;
+    recordChangedEvent: TableRecord.RecordChangedEvent;
     firstUsableEvent: TableRecord.FirstUsableEvent;
 
     private _definition: TableRecordDefinition;
     private _valueList: TableValueList;
-    private _gridRecord: TableRecord.GridRecord;
-    private _beginValuesChangeCount = 0;
-    private _changedFieldIndex: Integer = TableRecord.ChangedFieldIndex_None;
+    private _values: TableGridValue[];
 
     constructor(initialIndex: Integer) {
         this.index = initialIndex;
@@ -28,20 +28,19 @@ export class TableRecord {
 
     get definition() { return this._definition; }
     get firstUsable() { return this._valueList.firstUsable; }
+    get values(): readonly TableGridValue[] { return this._values; }
 
     setRecordDefinition(recordDefinition: TableRecordDefinition, newValueList: TableValueList) {
         this._definition = recordDefinition;
         this._valueList = newValueList;
-        this._valueList.beginValuesChangeEvent = () => this.handleBeginValuesChangeEvent();
-        this._valueList.endValuesChangeEvent = () => this.handleEndValuesChangeEvent();
-        this._valueList.valuesChangeEvent = (changedValues) => this.handleValuesChangeEvent(changedValues);
+        this._valueList.valueChangesEvent = (valueChanges) => this.handleValueChangesEvent(valueChanges);
         this._valueList.sourceAllValuesChangeEvent =
             (firstFieldIdx, newValues) => this.handleSourceAllValuesChangeEvent(firstFieldIdx, newValues);
         this._valueList.firstUsableEvent = () => this.handleFirstUsableEvent();
     }
 
     activate() {
-        this._gridRecord = this._valueList.activate();
+        this._values = this._valueList.activate();
         this._valueList.checkFirstUsable();
     }
 
@@ -49,69 +48,54 @@ export class TableRecord {
         this._valueList.deactivate();
     }
 
-    createGridRecordCopy(): TableRecord.GridRecord {
-        const recordLength = this._gridRecord.length;
-        const result = new Array<TableGridValue>(recordLength);
-        for (let i = 0; i < recordLength; i++) {
-            result[i] = this._gridRecord[i];
-        }
-        return result;
-    }
-
     updateAllValues() {
-        this._gridRecord = this._valueList.getAllValues();
+        this._values = this._valueList.getAllValues();
     }
 
     clearRendering() {
-        for (let i = 0; i < this._gridRecord.length; i++) {
-            const value = this._gridRecord[i];
+        for (let i = 0; i < this._values.length; i++) {
+            const value = this._values[i];
             value.clearRendering();
         }
     }
 
-    private handleBeginValuesChangeEvent() {
-        this.beginValuesChange();
-    }
+    private handleValueChangesEvent(valueChanges: TableValueList.ValueChange[]) {
+        const valueChangesCount = valueChanges.length;
+        if (valueChangesCount > 0) {
+            const invalidatedValues = new Array<RevRecordInvalidatedValue>(valueChangesCount);
+            let invalidatedValueCount = 0;
 
-    private handleEndValuesChangeEvent() {
-        this.endValuesChange();
-    }
+            for (let i = 0; i < valueChangesCount; i++) {
+                const { fieldIndex, newValue, recentChangeTypeId } = valueChanges[i];
+                this._values[fieldIndex] = newValue;
 
-    private handleValuesChangeEvent(changedValues: TableValueList.ChangedValue[]) {
-        const changedValuesCount = changedValues.length;
-        if (changedValuesCount > 0) {
-            this.beginValuesChange();
-            try {
-                if (this._changedFieldIndex === TableRecord.ChangedFieldIndex_None) {
-                    this._changedFieldIndex =
-                        changedValuesCount === 1 ? changedValues[0].fieldIdx : TableRecord.ChangedFieldIndex_MoreThanOne;
+                if (recentChangeTypeId !== undefined) {
+                    invalidatedValues[invalidatedValueCount++] = {
+                        fieldIndex,
+                        typeId: recentChangeTypeId,
+                    }
                 }
-
-                for (let i = 0; i < changedValuesCount; i++) {
-                    const { fieldIdx, newValue } = changedValues[i];
-                    this._gridRecord[fieldIdx] = newValue;
-                }
-            } finally {
-                this.endValuesChange();
             }
+
+            invalidatedValues.length = invalidatedValueCount;
+            this.valuesChangedEvent(this.index, invalidatedValues);
         }
     }
 
-    private handleSourceAllValuesChangeEvent(firstFieldIdx: Integer, newValues: TableGridValue[]) {
+    private handleSourceAllValuesChangeEvent(firstFieldIndex: Integer, newValues: TableGridValue[]) {
         const newValuesCount = newValues.length;
         if (newValuesCount > 0) {
-            this.beginValuesChange();
-            try {
-                if (this._changedFieldIndex === TableRecord.ChangedFieldIndex_None) {
-                    this._changedFieldIndex = newValuesCount === 1 ? firstFieldIdx : TableRecord.ChangedFieldIndex_MoreThanOne;
-                }
+            let fieldIndex = firstFieldIndex;
+            for (let i = 0; i < newValuesCount; i++) {
+                this._values[fieldIndex++] = newValues[i];
+            }
 
-                let fieldIdx = firstFieldIdx;
-                for (let i = 0; i < newValuesCount; i++) {
-                    this._gridRecord[fieldIdx++] = newValues[i];
-                }
-            } finally {
-                this.endValuesChange();
+            const recordChange = firstFieldIndex === 0 && newValuesCount === this._values.length;
+            if (recordChange) {
+                this.recordChangedEvent(this.index);
+            } else {
+
+                this.fieldsChangedEvent(this.index, firstFieldIndex, newValuesCount);
             }
         }
     }
@@ -119,39 +103,11 @@ export class TableRecord {
     private handleFirstUsableEvent() {
         this.firstUsableEvent(this.index);
     }
-
-    private beginValuesChange() {
-        if (this._beginValuesChangeCount === 0) {
-            this._changedFieldIndex = TableRecord.ChangedFieldIndex_None;
-        }
-        this._beginValuesChangeCount++;
-    }
-
-    private endValuesChange() {
-        this._beginValuesChangeCount--;
-        if (this._beginValuesChangeCount === 0) {
-            switch (this._changedFieldIndex) {
-                case TableRecord.ChangedFieldIndex_None:
-                    // nothing changed so no need to notify
-                    break;
-                case TableRecord.ChangedFieldIndex_MoreThanOne:
-                    // if more than one, flag all of record changed - more efficient
-                    this.recordChangeEvent(this.index);
-                    break;
-                default:
-                    // only one field changed - notify
-                    this.valueChangeEvent(this._changedFieldIndex, this.index);
-            }
-        }
-    }
 }
 
 export namespace TableRecord {
-    export type GridRecord = TableGridValue[];
-    export type ValueChangeEvent = (this: void, fieldIdx: Integer, recordIdx: Integer) => void;
-    export type RecordChangeEvent = (this: void, recordIdx: Integer) => void;
+    export type ValuesChangedEvent = (this: void, recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) => void;
+    export type FieldsChangedEvent = (this: void, recordIdx: Integer, fieldIdx: Integer, fieldCount: Integer) => void;
+    export type RecordChangedEvent = (this: void, recordIdx: Integer) => void;
     export type FirstUsableEvent = (this: void, recordIdx: Integer) => void;
-
-    export const ChangedFieldIndex_None = -1;
-    export const ChangedFieldIndex_MoreThanOne = -2;
 }

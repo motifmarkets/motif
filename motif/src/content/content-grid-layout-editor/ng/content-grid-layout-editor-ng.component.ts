@@ -9,10 +9,10 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { GridLayout } from '@motifmarkets/revgrid';
 import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import { SvgButtonNgComponent } from 'src/controls/ng-api';
-import { CommandRegisterService, GridLayoutDataStore, IconButtonUiAction, InternalCommand } from 'src/core/internal-api';
+import { CommandRegisterService, IconButtonUiAction, InternalCommand } from 'src/core/internal-api';
 import { StringId } from 'src/res/internal-api';
 import { assert, delay1Tick } from 'src/sys/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
@@ -57,8 +57,8 @@ export class ContentGridLayoutEditorNgComponent implements AfterViewInit, OnDest
         this._cancelUiAction.finalise();
     }
 
-    open(layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders): ContentGridLayoutEditorNgComponent.ClosePromise {
-        this._editorComponent.setGridLayout(layoutWithHeadings);
+    open(layoutWithHeadersMap: MotifGrid.LayoutWithHeadersMap): ContentGridLayoutEditorNgComponent.ClosePromise {
+        this._editorComponent.setGridLayout(layoutWithHeadersMap);
 
         return new Promise<GridLayout | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
@@ -114,7 +114,7 @@ export namespace ContentGridLayoutEditorNgComponent {
     export function open(
         container: ViewContainerRef,
         resolver: ComponentFactoryResolver,
-        layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders,
+        layoutWithHeadersMap: MotifGrid.LayoutWithHeadersMap,
     ): ClosePromise {
         container.clear();
         const factory = resolver.resolveComponentFactory(ContentGridLayoutEditorNgComponent);
@@ -123,6 +123,6 @@ export namespace ContentGridLayoutEditorNgComponent {
 
         const component = componentRef.instance as ContentGridLayoutEditorNgComponent;
 
-        return component.open(layoutWithHeadings);
+        return component.open(layoutWithHeadersMap);
     }
 }

@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import {
     assert,
     comparePriceOrRemainder,
@@ -12,7 +13,8 @@ import {
     MultiEvent,
     PriceOrRemainder,
     UnexpectedCaseError,
-    UnreachableCaseError
+    UnreachableCaseError,
+    ValueRecentChangeType
 } from 'src/sys/internal-api';
 import {
     BidAskSideId,
@@ -102,10 +104,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         return this._askLevels;
     }
 
-    subscribeBeforeLevelRemoveEvent(
-        sideId: BidAskSideId,
-        handler: DepthLevelsDataItem.BeforeLevelRemoveEventHandler
-    ) {
+    subscribeBeforeLevelRemoveEvent(sideId: BidAskSideId, handler: DepthLevelsDataItem.BeforeLevelRemoveEventHandler) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 return this._beforeBidLevelRemoveMultiEvent.subscribe(handler);
@@ -116,10 +115,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    unsubscribeBeforeLevelRemoveEvent(
-        sideId: BidAskSideId,
-        subscriptionId: MultiEvent.SubscriptionId
-    ) {
+    unsubscribeBeforeLevelRemoveEvent(sideId: BidAskSideId, subscriptionId: MultiEvent.SubscriptionId) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 this._beforeBidLevelRemoveMultiEvent.unsubscribe(
@@ -136,10 +132,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    subscribeAfterLevelInsertEvent(
-        sideId: BidAskSideId,
-        handler: DepthLevelsDataItem.AfterLevelInsertEventHandler
-    ) {
+    subscribeAfterLevelInsertEvent(sideId: BidAskSideId, handler: DepthLevelsDataItem.AfterLevelInsertEventHandler) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 return this._afterBidLevelInsertMultiEvent.subscribe(handler);
@@ -150,10 +143,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    unsubscribeAfterLevelInsertEvent(
-        sideId: BidAskSideId,
-        subscriptionId: MultiEvent.SubscriptionId
-    ) {
+    unsubscribeAfterLevelInsertEvent(sideId: BidAskSideId, subscriptionId: MultiEvent.SubscriptionId) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 this._afterBidLevelInsertMultiEvent.unsubscribe(subscriptionId);
@@ -166,10 +156,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    subscribeLevelChangeEvent(
-        sideId: BidAskSideId,
-        handler: DepthLevelsDataItem.LevelChangeEventHandler
-    ) {
+    subscribeLevelChangeEvent(sideId: BidAskSideId, handler: DepthLevelsDataItem.LevelChangeEventHandler) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 return this._bidLevelChangeMultiEvent.subscribe(handler);
@@ -180,10 +167,7 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    unsubscribeLevelChangeEvent(
-        sideId: BidAskSideId,
-        subscriptionId: MultiEvent.SubscriptionId
-    ) {
+    unsubscribeLevelChangeEvent(sideId: BidAskSideId, subscriptionId: MultiEvent.SubscriptionId) {
         switch (sideId) {
             case BidAskSideId.Bid:
                 this._bidLevelChangeMultiEvent.unsubscribe(subscriptionId);
@@ -196,15 +180,11 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    subscribeBeforeLevelsClearEvent(
-        handler: DepthLevelsDataItem.BeforeLevelsClearEventHandler
-    ) {
+    subscribeBeforeLevelsClearEvent(handler: DepthLevelsDataItem.BeforeLevelsClearEventHandler) {
         return this._beforeLevelsClearMultiEvent.subscribe(handler);
     }
 
-    unsubscribeBeforeLevelsClearEvent(
-        subscriptionId: MultiEvent.SubscriptionId
-    ) {
+    unsubscribeBeforeLevelsClearEvent(subscriptionId: MultiEvent.SubscriptionId) {
         this._beforeLevelsClearMultiEvent.unsubscribe(subscriptionId);
     }
 
@@ -233,13 +213,10 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    private notifyBidLevelChange(
-        levelIdx: Integer,
-        changedFieldIds: DepthLevelsDataItem.Level.FieldId[]
-    ) {
+    private notifyBidLevelChange(levelIdx: Integer, valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
         const handlers = this._bidLevelChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](levelIdx, changedFieldIds);
+            handlers[index](levelIdx, valueChanges);
         }
     }
 
@@ -257,13 +234,10 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
         }
     }
 
-    private notifyAskLevelChange(
-        levelIdx: Integer,
-        changedFieldIds: DepthLevelsDataItem.Level.FieldId[]
-    ) {
+    private notifyAskLevelChange(levelIdx: Integer, valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
         const handlers = this._askLevelChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
-            handlers[index](levelIdx, changedFieldIds);
+            handlers[index](levelIdx, valueChanges);
         }
     }
 
@@ -296,14 +270,14 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
     private notifyLevelChange(
         sideId: BidAskSideId,
         levelIdx: Integer,
-        changedFieldIds: DepthLevelsDataItem.Level.FieldId[]
+        valueChanges: DepthLevelsDataItem.Level.ValueChange[]
     ) {
         switch (sideId) {
             case BidAskSideId.Ask:
-                this.notifyAskLevelChange(levelIdx, changedFieldIds);
+                this.notifyAskLevelChange(levelIdx, valueChanges);
                 break;
             case BidAskSideId.Bid:
-                this.notifyBidLevelChange(levelIdx, changedFieldIds);
+                this.notifyBidLevelChange(levelIdx, valueChanges);
                 break;
             default:
                 throw new UnreachableCaseError('DLDINLC555842', sideId);
@@ -508,22 +482,26 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
                 const level = levels[index];
                 const idCount = DepthLevelsDataItem.Level.Field.idCount;
                 // set changedFieldIds length to maximum (id, sideId & price will not change)
-                const changedFieldIds = new Array<DepthLevelsDataItem.Level.FieldId>(
-                    idCount - 3
-                );
+                const valueChanges = new Array<DepthLevelsDataItem.Level.ValueChange>(idCount - 3);
                 let count = 0;
                 const newOrderCount = msgLevel.orderCount;
                 if (level.orderCount !== newOrderCount) {
+                    const recentChangeTypeId = ValueRecentChangeType.calculateChangeTypeId(level.orderCount, newOrderCount);
                     level.orderCount = newOrderCount;
-                    changedFieldIds[count++] =
-                        DepthLevelsDataItem.Level.FieldId.OrderCount;
+                    valueChanges[count++] = {
+                        fieldId: DepthLevelsDataItem.Level.Field.Id.OrderCount,
+                        recentChangeTypeId,
+                    };
                 }
                 const oldVolume = msgLevel.volume;
                 const newVolume = msgLevel.volume;
-                if (level.volume !== newVolume) {
+                if (oldVolume !== newVolume) {
+                    const recentChangeTypeId = ValueRecentChangeType.calculateChangeTypeId(oldVolume, newVolume);
                     level.volume = newVolume;
-                    changedFieldIds[count++] =
-                        DepthLevelsDataItem.Level.FieldId.Volume;
+                    valueChanges[count++] = {
+                        fieldId: DepthLevelsDataItem.Level.Field.Id.Volume,
+                        recentChangeTypeId,
+                    };
                 }
                 const newHasUndisclosed =
                     msgLevel.hasUndisclosed === undefined
@@ -531,20 +509,24 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
                         : msgLevel.hasUndisclosed;
                 if (level.hasUndisclosed !== newHasUndisclosed) {
                     level.hasUndisclosed = newHasUndisclosed;
-                    changedFieldIds[count++] =
-                        DepthLevelsDataItem.Level.FieldId.HasUndisclosed;
+                    valueChanges[count++] = {
+                        fieldId: DepthLevelsDataItem.Level.Field.Id.HasUndisclosed,
+                        recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                    };
                 }
                 const newMarketId = msgLevel.marketId;
                 if (level.marketId !== newMarketId) {
                     level.marketId = newMarketId;
-                    changedFieldIds[count++] =
-                        DepthLevelsDataItem.Level.FieldId.MarketId;
+                    valueChanges[count++] = {
+                        fieldId: DepthLevelsDataItem.Level.Field.Id.MarketId,
+                        recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
+                    };
                 }
 
-                changedFieldIds.length = count;
+                valueChanges.length = count;
 
                 if (count > 0) {
-                    this.notifyLevelChange(sideId, index, changedFieldIds);
+                    this.notifyLevelChange(sideId, index, valueChanges);
                 }
             }
         }
@@ -611,19 +593,24 @@ export namespace DepthLevelsDataItem {
     }
 
     export namespace Level {
-        export const enum FieldId {
-            Id,
-            SideId,
-            Price,
-            OrderCount,
-            Volume,
-            HasUndisclosed,
-            // eslint-disable-next-line @typescript-eslint/no-shadow
-            MarketId,
+        export namespace Field {
+            export const enum Id {
+                Id,
+                SideId,
+                Price,
+                OrderCount,
+                Volume,
+                HasUndisclosed,
+                // eslint-disable-next-line @typescript-eslint/no-shadow
+                MarketId,
+            }
+
+            export const idCount = 7; // make sure matches number of FieldId enums
         }
 
-        export namespace Field {
-            export const idCount = 7; // make sure matches number of FieldId enums
+        export interface ValueChange {
+            readonly fieldId: Field.Id;
+            readonly recentChangeTypeId: RevRecordValueRecentChangeTypeId;
         }
     }
 
@@ -644,17 +631,8 @@ export namespace DepthLevelsDataItem {
         index: Integer;
     }
 
-    export type LevelChangeEventHandler = (
-        index: Integer,
-        changedFieldIds: DepthLevelsDataItem.Level.FieldId[]
-    ) => void;
-    export type BeforeLevelRemoveEventHandler = (
-        this: void,
-        index: Integer
-    ) => void;
-    export type AfterLevelInsertEventHandler = (
-        this: void,
-        index: Integer
-    ) => void;
+    export type LevelChangeEventHandler = (index: Integer, changedFieldIds: DepthLevelsDataItem.Level.ValueChange[]) => void;
+    export type BeforeLevelRemoveEventHandler = (this: void, index: Integer) => void;
+    export type AfterLevelInsertEventHandler = (this: void, index: Integer) => void;
     export type BeforeLevelsClearEventHandler = (this: void) => void;
 }

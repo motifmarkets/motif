@@ -13,6 +13,7 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { ExchangeId, ExchangeInfo, IvemClass, MarketId, QuerySymbolsDataDefinition } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
 import {
     ButtonInputNgComponent,
@@ -38,8 +39,7 @@ import {
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     IntegerUiAction,
-    InternalCommand,
-    StringUiAction,
+    InternalCommand, StringUiAction,
     SymbolsService
 } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
@@ -120,6 +120,11 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
 
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     public isQuerySearchType = true;
     public isSubscribeSearchType = false;
     public paginationActive = false; // hide this until implemented
@@ -164,6 +169,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     private _modeId = SymbolsDitemNgComponent.ModeId.Main;
 
     protected get stateSchemaVersion() { return SymbolsDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(
