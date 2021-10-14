@@ -9,9 +9,7 @@ import { TableGridValue } from './table-grid-value';
 import { TableValueSource } from './table-value-source';
 
 export class TableValueList {
-    beginValuesChangeEvent: TableValueSource.BeginValuesChangeEvent;
-    endValuesChangeEvent: TableValueSource.EndValuesChangeEvent;
-    valuesChangeEvent: TableValueList.ValuesChangeEvent;
+    valueChangesEvent: TableValueList.ValueChangesEvent;
     sourceAllValuesChangeEvent: TableValueList.AllSourceValuesChangeEvent;
     firstUsableEvent: TableValueList.FirstUsableEvent;
 
@@ -42,9 +40,7 @@ export class TableValueList {
     }
 
     addSource(source: TableValueSource) {
-        source.beginValuesChangeEvent = () => this.handleBeginValuesChangeEvent();
-        source.endValuesChangeEvent = () => this.handleEndValuesChangeEvent();
-        source.valuesChangeEvent = (changedValues) => this.handleSourceValuesChangeEvent(changedValues);
+        source.valueChangesEvent = (valueChanges) => this.handleSourceValueChangesEvent(valueChanges);
         source.allValuesChangeEvent = (idx, newValues) => this.handleSourceAllValuesChangeEvent(idx, newValues);
         source.firstUsableEvent = () => this.handleFirstUsableEvent();
 
@@ -80,22 +76,9 @@ export class TableValueList {
             return values;
         }
     }
-    private handleBeginValuesChangeEvent() {
-        this._beginValuesChangeCount++;
-        if (this._beginValuesChangeCount === 1) {
-            this.beginValuesChangeEvent();
-        }
-    }
 
-    private handleEndValuesChangeEvent() {
-        this._beginValuesChangeCount--;
-        if (this._beginValuesChangeCount === 0) {
-            this.endValuesChangeEvent();
-        }
-    }
-
-    private handleSourceValuesChangeEvent(changedValues: TableValueSource.ChangedValue[]) {
-        this.valuesChangeEvent(changedValues);
+    private handleSourceValueChangesEvent(valueChanges: TableValueSource.ValueChange[]) {
+        this.valueChangesEvent(valueChanges);
     }
 
     private handleSourceAllValuesChangeEvent(idx: Integer, newValues: TableGridValue[]) {
@@ -146,6 +129,7 @@ export class TableValueList {
 export namespace TableValueList {
     export type Sources = ComparableList<TableValueSource>;
     export type ChangedValue = TableValueSource.ChangedValue;
+    export type ValueChange = TableValueSource.ValueChange;
     export interface FindValueResult {
         found: boolean;
         sourceIdx: Integer;
@@ -153,7 +137,7 @@ export namespace TableValueList {
     }
     export type BeginValuesChangeEvent = (this: void) => void;
     export type EndValuesChangeEvent = (this: void) => void;
-    export type ValuesChangeEvent = (changedValues: ChangedValue[]) => void;
+    export type ValueChangesEvent = (valueChanges: TableValueSource.ValueChange[]) => void;
     export type AllSourceValuesChangeEvent = (fieldIdx: Integer, newValues: TableGridValue[]) => void;
     export type FirstUsableEvent = (this: void) => void;
 }

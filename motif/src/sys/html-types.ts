@@ -37,4 +37,8 @@ export namespace HtmlTypes {
         MaxContent = 'max-content',
         MinContent = 'min-content',
     }
+
+    export const enum FontWeight {
+        Bold = 'bold',
+    }
 }

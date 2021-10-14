@@ -14,14 +14,12 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { GridLayout } from '@motifmarkets/revgrid';
 import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import {
     ButtonUiAction,
-    CommandRegisterService,
-    GridLayoutDataStore,
-    IconButtonUiAction,
+    CommandRegisterService, IconButtonUiAction,
     InternalCommand,
     UiAction
 } from 'src/core/internal-api';
@@ -48,7 +46,7 @@ export class ParidepthGridLayoutsEditorNgComponent implements AfterViewInit, OnD
 
     private _commandRegisterService: CommandRegisterService;
 
-    private _layoutsWithHeadings: ParidepthGridLayoutsEditorNgComponent.GridLayoutsWithHeadings;
+    private _layoutsWithHeadings: ParidepthGridLayoutsEditorNgComponent.GridLayoutsWithHeadersMap;
     private _layoutId: ParidepthGridLayoutsEditorNgComponent.LayoutId;
 
     private _bidDepthUiAction: ButtonUiAction;
@@ -85,7 +83,7 @@ export class ParidepthGridLayoutsEditorNgComponent implements AfterViewInit, OnD
         this._cancelUiAction.finalise();
     }
 
-    open(layoutsWithHeadings: ParidepthGridLayoutsEditorNgComponent.GridLayoutsWithHeadings) {
+    open(layoutsWithHeadings: ParidepthGridLayoutsEditorNgComponent.GridLayoutsWithHeadersMap) {
         this._layoutsWithHeadings = layoutsWithHeadings;
 
         return new Promise<ParidepthGridLayoutsEditorNgComponent.GridLayouts | undefined>((resolve, reject) => {
@@ -283,10 +281,10 @@ export namespace ParidepthGridLayoutsEditorNgComponent {
         trades: GridLayout;
     }
 
-    export interface GridLayoutsWithHeadings {
-        watchlist: GridLayoutDataStore.GridLayoutWithHeaders;
-        depth: DepthFrame.GridLayoutsWithHeadings;
-        trades: GridLayoutDataStore.GridLayoutWithHeaders;
+    export interface GridLayoutsWithHeadersMap {
+        watchlist: MotifGrid.LayoutWithHeadersMap;
+        depth: DepthFrame.GridLayoutsWithHeadersMap;
+        trades: MotifGrid.LayoutWithHeadersMap;
     }
 
     export type ClosePromise = Promise<GridLayouts | undefined>;
@@ -294,7 +292,7 @@ export namespace ParidepthGridLayoutsEditorNgComponent {
     export function open(
         container: ViewContainerRef,
         resolver: ComponentFactoryResolver,
-        layoutsWithHeadings: GridLayoutsWithHeadings,
+        layoutsWithHeadings: GridLayoutsWithHeadersMap,
     ): ClosePromise {
         container.clear();
         const factory = resolver.resolveComponentFactory(ParidepthGridLayoutsEditorNgComponent);

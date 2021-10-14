@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
 import { SessionStateId } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
+import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { delay1Tick, Logger, MultiEvent } from 'src/sys/internal-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
@@ -19,9 +20,12 @@ import { SessionService } from '../../session-service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartupNgComponent implements OnInit, OnDestroy {
+    // @HostBinding('class.app-loading') readonly isAppLoading: true;
+    // @HostBinding('style.background-image') topSplashImageUrl: string;
+
+    // public readonly topSplashImageExists: boolean;
+    // public readonly topSplashImageUrl: string;
     public log = 'Startup Log';
-    public kickedOff = false;
-    public kickedOffText = '';
 
     private _session: SessionService;
     private _sessionLogSubscriptionId: MultiEvent.SubscriptionId;
@@ -29,9 +33,20 @@ export class StartupNgComponent implements OnInit, OnDestroy {
 
     constructor(
         private _cdr: ChangeDetectorRef,
+        configNgService: ConfigNgService,
         private _sessionService: SessionNgService,
     ) {
         this._session = this._sessionService.session;
+
+        const config = configNgService.config;
+        const topSplashImageUrl = config.branding.startupTopSplashImageUrl;
+        if (topSplashImageUrl === undefined) {
+            // this.topSplashImageExists = false;
+            // this.topSplashImageUrl = '';
+        } else {
+            // this.topSplashImageExists = true;
+            // this.topSplashImageUrl = `url("${topSplashImageUrl}")`;
+        }
 
         this._sessionKickedOffSubscriptionId =
             this._session.subscribeKickedOffEvent(() => this.handleSessionManagerKickedOffEvent() );
@@ -51,9 +66,8 @@ export class StartupNgComponent implements OnInit, OnDestroy {
     }
 
     private handleSessionManagerKickedOffEvent() {
-        this.kickedOffText = Strings[StringId.SessionEndedAsLoggedInElsewhere];
-        this.addLogEntry(new Date(), Logger.LevelId.Info, this.kickedOffText);
-        this.kickedOff = true;
+        const kickedOffText = Strings[StringId.SessionEndedAsLoggedInElsewhere];
+        this.addLogEntry(new Date(), Logger.LevelId.Info, kickedOffText);
         this._cdr.markForCheck();
     }
 

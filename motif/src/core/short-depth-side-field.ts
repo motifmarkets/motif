@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { TextAlign } from '@motifmarkets/revgrid';
-import { EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
+import { Halign } from 'revgrid';
+import { DepthLevelsDataItem } from 'src/adi/depth-levels-data-item';
+import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
 
 export const enum ShortDepthSideFieldId {
     PriceAndHasUndisclosed,
@@ -28,7 +29,7 @@ export namespace ShortDepthSideField {
             public name: string,
             public defaultHeading: string,
             public defaultVisible: boolean,
-            public defaultTextAlign: TextAlign,
+            public defaultTextAlign: Halign,
         ) { }
     }
 
@@ -104,5 +105,26 @@ export namespace ShortDepthSideField {
 
     export function idToDefaultTextAlign(id: Id) {
         return infos[id].defaultTextAlign;
+    }
+
+    export function createIdFromDepthLevelFieldId(levelFieldId: DepthLevelsDataItem.Level.Field.Id): ShortDepthSideFieldId | undefined {
+        switch (levelFieldId) {
+            case DepthLevelsDataItem.Level.Field.Id.Id:
+                return undefined;
+            case DepthLevelsDataItem.Level.Field.Id.SideId:
+                return undefined;
+            case DepthLevelsDataItem.Level.Field.Id.Price:
+                return ShortDepthSideFieldId.Price; // Also affects ShortDepthSideFieldId.PriceAndHasUndisclosed - handled elsewhere
+            case DepthLevelsDataItem.Level.Field.Id.OrderCount:
+                return ShortDepthSideFieldId.OrderCount;
+            case DepthLevelsDataItem.Level.Field.Id.Volume:
+                return ShortDepthSideFieldId.Volume;
+            case DepthLevelsDataItem.Level.Field.Id.HasUndisclosed:
+                return ShortDepthSideFieldId.PriceAndHasUndisclosed;
+            case DepthLevelsDataItem.Level.Field.Id.MarketId:
+                return ShortDepthSideFieldId.MarketId;
+            default:
+                throw new UnreachableCaseError('SDSDCDLFD77411', levelFieldId);
+        }
     }
 }

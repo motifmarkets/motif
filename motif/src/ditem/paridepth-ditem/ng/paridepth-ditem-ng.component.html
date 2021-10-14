@@ -29,15 +29,15 @@
         <app-command-bar #commandBar id="commandBar"></app-command-bar>
     </div>
 
-    <app-table #watchlist id="watchlist"></app-table>
+    <app-table #watchlist id="watchlist" [frameGridProperties]="watchListFrameGridProperties"></app-table>
 
-    <div id="depthTradesDiv">
+    <div #depthTradesDiv id="depthTradesDiv">
         <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">
             <as-split-area [size]="depthWidth">
-                <app-depth #depth id="depth" [style.width]="depthActiveWidth"></app-depth>
+                <app-depth #depth id="depth"></app-depth>
             </as-split-area>
             <as-split-area [size]="null"> <!-- was size="*" -->
-                <app-trades #trades id="trades" [style.width]="tradesActiveWidth"></app-trades>
+                <app-trades #trades id="trades"></app-trades>
             </as-split-area>
         </as-split>
     </div>

@@ -4,10 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
 import { AdiService, LitIvemId } from 'src/adi/internal-api';
-import { TradesFrame } from 'src/content/internal-api';
-import { CommandRegisterService, GridLayoutDataStore, SymbolsService } from 'src/core/internal-api';
+import { GridLayout, MotifGrid, TradesFrame } from 'src/content/internal-api';
+import { CommandRegisterService, SymbolsService } from 'src/core/internal-api';
 import { JsonElement } from 'src/sys/internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
@@ -73,8 +72,8 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders | undefined {
-        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadings();
+    getGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap | undefined {
+        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadersMap();
     }
 
     setGridLayout(layout: GridLayout): void {

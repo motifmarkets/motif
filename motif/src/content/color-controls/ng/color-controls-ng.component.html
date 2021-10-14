@@ -1,0 +1,59 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="typeSection">
+    <app-captioned-radio #opaqueRadio></app-captioned-radio>
+    <app-captioned-radio #transparentRadio></app-captioned-radio>
+    <app-captioned-radio #inheritedRadio></app-captioned-radio>
+</section>
+
+<section id="hexAndHideSection">
+    <app-text-input #hexControl id="hexControl" inputId="hexInput"></app-text-input>
+    <app-captioned-checkbox #hideInPickerControl id="hideInPickerControl"></app-captioned-checkbox>
+</section>
+
+<section id="rgbControlsSection">
+    <section id="redControlSection" class="captionFollowedByInput">
+        <app-caption-label #redLabel for="redInput"></app-caption-label>
+        <app-integer-text-input #redControl inputId="redInput"></app-integer-text-input>
+    </section>
+    <section id="greenControlSection" class="captionFollowedByInput">
+        <app-caption-label #greenLabel for="greenInput"></app-caption-label>
+        <app-integer-text-input #greenControl inputId="greenInput"></app-integer-text-input>
+    </section>
+    <section id="blueControlSection" class="captionFollowedByInput">
+        <app-caption-label #blueLabel for="blueInput"></app-caption-label>
+        <app-integer-text-input #blueControl inputId="blueInput"></app-integer-text-input>
+    </section>
+</section>
+
+<section id="hsvControlsSection">
+    <section id="hueControlSection" class="captionFollowedByInput">
+        <app-caption-label #hueLabel for="hueInput"></app-caption-label>
+        <app-number-input #hueControl inputId="hueInput"></app-number-input>
+    </section>
+    <section id="saturationControlSection" class="captionFollowedByInput">
+        <app-caption-label #saturationLabel for="saturationInput"></app-caption-label>
+        <app-number-input #saturationControl inputId="saturationInput" inputSize="3em"></app-number-input>
+    </section>
+    <section id="valueControlSection" class="captionFollowedByInput">
+        <app-caption-label #valueLabel for="valueInput"></app-caption-label>
+        <app-number-input #valueControl inputId="valueInput" inputSize="3em"></app-number-input>
+    </section>
+</section>
+
+<section id="buttonsSection">
+    <app-svg-button #lightenButton id="lightenButton"></app-svg-button>
+    <app-svg-button #darkenButton id="darkenButton"></app-svg-button>
+    <app-svg-button #brightenButton id="brightenButton"></app-svg-button>
+    <app-svg-button #complementButton id="complementButton"></app-svg-button>
+    <app-svg-button #saturateButton id="saturateButton"></app-svg-button>
+    <app-svg-button #desaturateButton id="desaturateButton"></app-svg-button>
+    <app-svg-button #spinButton id="spinButton"></app-svg-button>
+    <app-svg-button #copyButton id="copyButton"></app-svg-button>
+</section>
+
+<label id="headingLabel" for="colorInput" [style.font-weight]="activeInPickerIndicatorFontWeight">{{heading}}</label>

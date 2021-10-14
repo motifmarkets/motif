@@ -57,7 +57,7 @@ export class MotifServicesService {
     }
 
     unsubscribeLogEvent(subscriptionId: MultiEvent.DefinedSubscriptionId) {
-         this._logEvent.unsubscribe(subscriptionId);
+        this._logEvent.unsubscribe(subscriptionId);
     }
 
     async getUserSetting(key: string, overrideApplicationEnvironment?: string): Promise<string | undefined> {

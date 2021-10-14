@@ -48,7 +48,7 @@ export namespace ConfigNgService {
                     `${configResponse.status}: "${configResponse.statusText}" Uri: ${configJsonUri}`);
             } else {
                 const configText = await configResponse.text();
-                return loadText(configService, configText);
+                return loadText(configService, configText, configFolderPath);
             }
         }
     }
@@ -66,6 +66,7 @@ export namespace ConfigNgService {
         readonly bundledExtensions?: BundledExtensions.Json;
         readonly diagnostics?: Diagnostics.Json;
         readonly features?: Features.Json;
+        readonly branding?: Branding.Json;
     }
 
     export namespace Service {
@@ -473,11 +474,46 @@ export namespace ConfigNgService {
         }
     }
 
+    export namespace Branding {
+        export interface Json {
+            readonly startupTopSplashImageUrl?: string;
+            readonly desktopBarLeftImageUrl?: string;
+        }
+
+        export function parseJson(json: Json | undefined, configFolderPath: string): Config.Branding {
+            if (json === undefined) {
+                return {
+                    startupTopSplashImageUrl: undefined,
+                    desktopBarLeftImageUrl: undefined,
+                }
+            } else {
+                let startupTopSplashImageUrl = json.startupTopSplashImageUrl;
+                if (startupTopSplashImageUrl !== undefined) {
+                    if (startupTopSplashImageUrl.indexOf('http://') !== 0 && startupTopSplashImageUrl.indexOf('https://') !== 0) {
+                        startupTopSplashImageUrl = '/' + configFolderPath + '/' + startupTopSplashImageUrl;
+                    }
+                }
+
+                let desktopBarLeftImageUrl = json.desktopBarLeftImageUrl;
+                if (desktopBarLeftImageUrl !== undefined) {
+                    if (desktopBarLeftImageUrl.indexOf('http://') !== 0 && desktopBarLeftImageUrl.indexOf('https://') !== 0) {
+                        desktopBarLeftImageUrl = '/' + configFolderPath + '/' + desktopBarLeftImageUrl;
+                    }
+                }
+
+                return {
+                    startupTopSplashImageUrl,
+                    desktopBarLeftImageUrl,
+                }
+            }
+        }
+    }
+
     function logConfigError(code: string, jsonText: string) {
         Logger.logConfigError(code, jsonText, 500);
     }
 
-    function loadText(configService: ConfigNgService, jsonText: string): Promise<boolean> {
+    function loadText(configService: ConfigNgService, jsonText: string, configFolderPath: string): Promise<boolean> {
         let configJson: ConfigJson;
         try {
             configJson = JSON.parse(jsonText);
@@ -501,6 +537,7 @@ export namespace ConfigNgService {
             );
             const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
             const features = ConfigNgService.Features.parseJson(configJson.features);
+            const branding = ConfigNgService.Branding.parseJson(configJson.branding, configFolderPath);
             const config: Config = {
                 service,
                 exchange,
@@ -510,6 +547,7 @@ export namespace ConfigNgService {
                 bundledExtensions,
                 diagnostics,
                 features,
+                branding,
             };
 
             const validationError = Config.checkForValidationError(config);

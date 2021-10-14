@@ -25,7 +25,7 @@
             <span id="watchlistDescriptonSpan" [title]="WatchListFullDescription">{{watchlistAbbreviatedDescription}}</span>
         </div>
     </div>
-    <app-table id="table" #table></app-table>
+    <app-table #table id="table" [frameGridProperties]="frameGridProperties " ></app-table>
 </div>
 <div id="layoutEditorDiv" [style.display]="!isLayoutEditorMode() ? 'none' : null">
     <ng-template #layoutEditorContainer></ng-template>

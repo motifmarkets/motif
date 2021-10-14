@@ -64,5 +64,9 @@
     },
     "features": {
         "preview": false
+    },
+    "branding": {
+      "startupTopSplashImageUrl": "branding/images/startup-top-splash.svg",
+      "desktopBarLeftImageUrl": "branding/images/desktop-bar-left.svg"
     }
 }

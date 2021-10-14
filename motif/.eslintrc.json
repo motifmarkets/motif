@@ -22,6 +22,7 @@
       "rules": {
         "no-underscore-dangle": "off",
         "prefer-arrow/prefer-arrow-functions": "off",
+        "newline-after-description": "never",
         "@angular-eslint/component-selector": [
           "error",
           {

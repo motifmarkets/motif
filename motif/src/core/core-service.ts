@@ -8,7 +8,6 @@ import { AdiService } from 'src/adi/internal-api';
 import { MultiEvent } from 'src/sys/internal-api';
 import { AppStorageService } from './app-storage-service';
 import { CommandRegisterService } from './command/internal-api';
-import { GridCellRendererModule } from './grid-cell-renderer';
 import { MotifServicesService } from './motif-services-service';
 import { SettingsService } from './settings/settings-service';
 import { setSymbolDetailCache, SymbolDetailCache } from './symbol-detail-cache';
@@ -45,7 +44,6 @@ export class CoreService {
         setTableDefinitionFactory(new TableDefinitionFactory(this._adiService));
         setTableRecordDefinitionListDirectory(new TableRecordDefinitionListDirectory());
         setTableDirectory(new TableDirectory());
-        GridCellRendererModule.setSettings(this._settingsService.core, this._settingsService.color);
         TextFormatterModule.setTextFormatter(new TextFormatter(this._symbolsService, this._settingsService));
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => {

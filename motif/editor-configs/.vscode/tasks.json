@@ -1,0 +1,157 @@
+{
+    // See https://go.microsoft.com/fwlink/?LinkId=733558
+    // for the documentation about the tasks.json format
+    "version": "2.0.0",
+    "tasks": [
+      {
+        "label": "sass: compile",
+        "type": "shell",
+        "command": "node-sass src/scss/style.scss src/css/style.css",
+        "group": "build"
+      },
+      {
+        "label": "less: compile",
+        "type": "shell",
+        "command": "lessc src/less/eikon/webui/main.less src/scss/eikon.scss",
+        "group": "build"
+      },
+      {
+        "label": "start: em2_cte (Development)",
+        "type": "npm",
+        "script": "start:em2_cte-dev",
+        "isBackground": true,
+        "problemMatcher": [
+          "$tsc"
+        ]
+      },
+      {
+        "label": "start: paritech_staging (Development)",
+        "type": "npm",
+        "script": "start:paritech_staging-dev",
+        "isBackground": true,
+        "problemMatcher": [
+          "$tsc"
+        ]
+      },
+      {
+        "label": "startSourceMaps",
+        "type": "npm",
+        "script": "startSourceMaps",
+        "isBackground": true,
+        "problemMatcher": [
+          "$tsc"
+        ]
+      },
+      {
+        "type": "npm",
+        "script": "build:dev",
+        "problemMatcher": [
+          {
+            "base": "$tsc",
+            "pattern": {
+              "regexp": "^(Error: )?([^\\s].*)[\\(:](\\d+)[,:](\\d+)(?:\\):\\s+|\\s+-\\s+)(error|warning|info)\\s+TS(\\d+)\\s*:\\s*(.*)$",
+              "file": 2,
+              "line": 3,
+              "column": 4,
+              "severity": 5,
+              "code": 6,
+              "message": 7
+            }
+          }
+        ],
+        "group": {
+          "kind": "build",
+          "isDefault": true
+        },
+        "label": "npm: build:dev",
+        "detail": "npm run file:info && ng build -c=development"
+      },
+      {
+        "type": "npm",
+        "script": "build:dev:vscode-recipe",
+        "isBackground": true,
+        "presentation": {
+          "focus": true,
+          "panel": "dedicated"
+        },
+        "problemMatcher": {
+          "owner": "typescript",
+          "source": "ts",
+          "applyTo": "closedDocuments",
+          "fileLocation": [
+            "relative",
+            "${cwd}"
+          ],
+          "pattern": "$tsc",
+          "background": {
+            "activeOnStart": true,
+            "beginsPattern": {
+              "regexp": "(.*?)"
+            },
+            "endsPattern": {
+              "regexp": "Compiled |Failed to compile."
+            }
+          }
+        }
+      },
+      {
+        "label": "start: em2_prod (Development)",
+        "type": "npm",
+        "script": "start:em2_prod-dev",
+        "problemMatcher": [],
+        "detail": "generate-build-info.bat && npm run copy:config:em2_prod-dev && ng serve"
+      },
+      {
+        "type": "npm",
+        "script": "copy:config:em2_cte-dev",
+        "problemMatcher": [],
+        "label": "npm: copy:config:em2_cte-dev",
+        "detail": "copy src\\config\\config.em2_cte-dev.json dev_static\\_config-do-not-delete\\config.json > $null"
+      },
+      {
+        "type": "npm",
+        "script": "lint",
+        "problemMatcher": "$eslint-stylish",
+        "label": "npm: lint"
+      },
+      {
+        "type": "npm",
+        "script": "start:fnsx_demo-dev",
+        "problemMatcher": [
+          "$tsc-watch"
+        ],
+        "label": "npm: start:fnsx_demo-dev",
+        "detail": "generate-build-info.bat && npm run copy:config:fnsx_demo-dev && ng serve",
+        "isBackground": true
+      },
+      {
+        "type": "typescript",
+        "tsconfig": "tsconfig.app.json",
+        "problemMatcher": [
+          "$tsc"
+        ],
+        "group": "build",
+        "label": "tsc: build - tsconfig.app.json"
+      },
+      {
+        "type": "npm",
+        "script": "api",
+        "problemMatcher": [],
+        "label": "npm: api",
+        "detail": "npm run lib && npm run rollup"
+      },
+      {
+        "type": "npm",
+        "script": "build:prod",
+        "problemMatcher": [
+          "$ts-checker-webpack-watch"
+        ],
+        "group": "build",
+        "label": "npm: build:prod",
+        "detail": "npm run file:info && node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng build",
+        "isBackground": true
+      }
+    ]
+}
+
+

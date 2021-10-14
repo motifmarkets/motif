@@ -29,7 +29,7 @@ export class HoldingTableValueSource extends DataRecordTableValueSource<Holding>
 
     override activate() {
         this._holdingChangedEventSubscriptionId = this._holding.subscribeChangedEvent(
-            (changedFieldIds) => this.handleHoldingChangedEvent(changedFieldIds)
+            (valueChanges) => this.handleHoldingChangedEvent(valueChanges)
         );
 
         return super.activate();
@@ -64,23 +64,23 @@ export class HoldingTableValueSource extends DataRecordTableValueSource<Holding>
         return HoldingTableFieldDefinitionSource.Field.count;
     }
 
-    private handleHoldingChangedEvent(changedFieldIds: Holding.FieldId[]) {
-        const changedFieldCount = changedFieldIds.length;
-        const changedValues = new Array<TableValueSource.ChangedValue>(changedFieldCount);
+    private handleHoldingChangedEvent(holdingValueChanges: Holding.ValueChange[]) {
+        const changedFieldCount = holdingValueChanges.length;
+        const valueChanges = new Array<TableValueSource.ValueChange>(changedFieldCount);
         let foundCount = 0;
-        for (let i = 0; i < changedFieldIds.length; i++) {
-            const fieldId = changedFieldIds[i];
-            const fieldIdx = HoldingTableFieldDefinitionSource.Field.indexOfId(fieldId);
-            if (fieldIdx >= 0) {
-                const newValue = this.createTableGridValue(fieldIdx);
+        for (let i = 0; i < holdingValueChanges.length; i++) {
+            const { fieldId, recentChangeTypeId } = holdingValueChanges[i];
+            const fieldIndex = HoldingTableFieldDefinitionSource.Field.indexOfId(fieldId);
+            if (fieldIndex >= 0) {
+                const newValue = this.createTableGridValue(fieldIndex);
                 this.loadValue(fieldId, newValue);
-                changedValues[foundCount++] = { fieldIdx, newValue };
+                valueChanges[foundCount++] = { fieldIndex, newValue, recentChangeTypeId };
             }
         }
         if (foundCount < changedFieldCount) {
-            changedValues.length = foundCount;
+            valueChanges.length = foundCount;
         }
-        this.notifyValuesChangeEvent(changedValues);
+        this.notifyValueChangesEvent(valueChanges);
     }
 
     private createTableGridValue(fieldIdx: Integer) {

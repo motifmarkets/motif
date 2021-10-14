@@ -26,7 +26,7 @@ export class BalancesTableValueSource extends DataRecordTableValueSource<Balance
 
     override activate(): TableGridValue[] {
         this._balancesChangedEventSubscriptionId = this._balances.subscribeChangedEvent(
-            (changedFieldIds) => this.handleBalancesChangedEvent(changedFieldIds)
+            (valueChanges) => this.handleBalancesChangedEvent(valueChanges)
         );
 
         return super.activate();
@@ -61,23 +61,23 @@ export class BalancesTableValueSource extends DataRecordTableValueSource<Balance
         return BalancesTableFieldDefinitionSource.Field.count;
     }
 
-    private handleBalancesChangedEvent(changedFieldIds: Balances.FieldId[]) {
-        const changedFieldCount = changedFieldIds.length;
-        const changedValues = new Array<TableValueSource.ChangedValue>(changedFieldCount);
+    private handleBalancesChangedEvent(balanceValueChanges: Balances.ValueChange[]) {
+        const valueChangeCount = balanceValueChanges.length;
+        const valueChanges = new Array<TableValueSource.ValueChange>(valueChangeCount);
         let foundCount = 0;
-        for (let i = 0; i < changedFieldIds.length; i++) {
-            const fieldId = changedFieldIds[i];
-            const fieldIdx = BalancesTableFieldDefinitionSource.Field.indexOfId(fieldId);
-            if (fieldIdx >= 0) {
-                const newValue = this.createTableGridValue(fieldIdx);
+        for (let i = 0; i < balanceValueChanges.length; i++) {
+            const { fieldId, recentChangeTypeId } = balanceValueChanges[i];
+            const fieldIndex = BalancesTableFieldDefinitionSource.Field.indexOfId(fieldId);
+            if (fieldIndex >= 0) {
+                const newValue = this.createTableGridValue(fieldIndex);
                 this.loadValue(fieldId, newValue);
-                changedValues[foundCount++] = { fieldIdx, newValue };
+                valueChanges[foundCount++] = { fieldIndex, newValue, recentChangeTypeId };
             }
         }
-        if (foundCount < changedFieldCount) {
-            changedValues.length = foundCount;
+        if (foundCount < valueChangeCount) {
+            valueChanges.length = foundCount;
         }
-        this.notifyValuesChangeEvent(changedValues);
+        this.notifyValueChangesEvent(valueChanges);
     }
 
     private createTableGridValue(fieldIdx: Integer) {

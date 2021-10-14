@@ -42,7 +42,7 @@ export class DepthGridLayoutsEditorNgComponent implements AfterViewInit, OnDestr
     private _closeResolve: (value: DepthFrame.GridLayouts | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
-    private _layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadings;
+    private _layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadersMap;
     private _sideId: BidAskSideId;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
@@ -65,7 +65,7 @@ export class DepthGridLayoutsEditorNgComponent implements AfterViewInit, OnDestr
         this._cancelUiAction.finalise();
     }
 
-    open(layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadings): DepthGridLayoutsEditorNgComponent.ClosePromise {
+    open(layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadersMap): DepthGridLayoutsEditorNgComponent.ClosePromise {
         this._layoutsWithHeadings = layoutsWithHeadings;
 
         return new Promise<DepthFrame.GridLayouts | undefined>((resolve, reject) => {
@@ -198,7 +198,7 @@ export namespace DepthGridLayoutsEditorNgComponent {
     export function open(
         container: ViewContainerRef,
         resolver: ComponentFactoryResolver,
-        layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadings,
+        layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadersMap,
     ): ClosePromise {
         container.clear();
         const factory = resolver.resolveComponentFactory(DepthGridLayoutsEditorNgComponent);

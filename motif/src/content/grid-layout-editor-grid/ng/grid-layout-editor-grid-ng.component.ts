@@ -4,19 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
-import { GridAdapter, GridHost, GridLayout, RevgridComponent, TFieldIndex, TRecordIndex } from '@motifmarkets/revgrid';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import {
-    defaultGridCellRendererName,
-    defaultGridCellRenderPaint,
-    EnumUiAction,
-    GridLayoutChange,
-    GridLayoutDataStore,
-    SettingsService
-} from 'src/core/internal-api';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { RevRecordFieldIndex, RevRecordIndex, RevRecordValueRecentChangeTypeId } from 'revgrid';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
+import { MotifGridNgComponent } from 'src/content/ng-api';
+import { EnumUiAction, GridLayoutChange, GridLayoutRecordStore } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
 
 @Component({
     selector: 'app-grid-layout-editor-grid',
@@ -25,22 +19,23 @@ import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api'
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorGridNgComponent implements OnDestroy, AfterViewInit, GridHost {
-    @ViewChild(RevgridComponent, { static: true }) private _gridComponent: RevgridComponent;
+export class GridLayoutEditorGridNgComponent implements AfterViewInit {
+    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
-    recordFocusEvent: GridLayoutEditorGridNgComponent.RecordFocusEvent;
-    recordFocusClickEvent: GridLayoutEditorGridNgComponent.RecordFocusClickEvent;
+    recordFocusEventer: GridLayoutEditorGridNgComponent.RecordFocusEventer;
+    recordFocusClickEventer: GridLayoutEditorGridNgComponent.RecordFocusClickEventer;
 
-    private _settingsService: SettingsService;
-    private _dataStore: GridLayoutDataStore;
-    private _gridAdapter: GridAdapter;
-    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
-    private _layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders;
+    private _dataStore: GridLayoutRecordStore;
+    private _grid: MotifGrid;
+    private _gridPrepared = false;
+    private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
+
+    private _visibleField: GridLayoutRecordStore.VisibleField;
 
     private _columnFilterId: GridLayoutEditorGridNgComponent.ColumnFilterId = GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll;
 
     get gridLayout() { return this._dataStore.getLayout(); }
-    get focusedRecordIndex() { return this._gridAdapter.FocusedRecordIndex; }
+    get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
     public get columnFilterId(): GridLayoutEditorGridNgComponent.ColumnFilterId { return this._columnFilterId; }
     public set columnFilterId(value: GridLayoutEditorGridNgComponent.ColumnFilterId) {
@@ -48,118 +43,127 @@ export class GridLayoutEditorGridNgComponent implements OnDestroy, AfterViewInit
         this.applyColumnFilter();
     }
 
-    constructor(settingsNgService: SettingsNgService) {
-        this._settingsService = settingsNgService.settingsService;
-        this._dataStore = new GridLayoutDataStore();
-    }
-
-    ngOnDestroy() {
-        if (this._settingsChangedSubscriptionId !== undefined) {
-            this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-        }
+    constructor() {
+        this._dataStore = new GridLayoutRecordStore();
     }
 
     ngAfterViewInit() {
-        // delay1Tick(() => this.initialise());
-        const revGridSettings = this._settingsService.createRevGridSettings();
-        this._gridAdapter = this._gridComponent.CreateAdapter(this, this._dataStore, revGridSettings,
-            defaultGridCellRendererName, defaultGridCellRenderPaint);
+        this._gridComponent.destroyEventer = () => {
+            this._gridComponent.destroyGrid();
+        };
 
-        this._settingsChangedSubscriptionId =
-        this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
+        this._grid = this._gridComponent.createGrid(this._dataStore, GridLayoutEditorGridNgComponent.frameGridProperties);
+        this._grid.recordFocusEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
+        this._grid.recordFocusClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusClickEvent(recIdx, fieldIdx);
 
-        this.applySettings();
         this.prepareGrid();
     }
 
     // private initialise() {
     // }
 
-    setLayoutWithHeadings(layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders) {
+    setLayoutWithHeadersMap(layoutWithHeadings: MotifGrid.LayoutWithHeadersMap) {
         this._layoutWithHeadings = layoutWithHeadings;
         this.prepareGrid();
     }
 
-    onRecordFocus(recordIndex: TRecordIndex) {
-        if (this.recordFocusEvent) {
-            this.recordFocusEvent(recordIndex);
+    handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
+        if (this.recordFocusEventer) {
+            this.recordFocusEventer(recordIndex);
         }
     }
 
-    OnRecordFocusClick(recordIndex: TRecordIndex, fieldIndex: TFieldIndex): void {
-        if (this.recordFocusClickEvent) {
-            this.recordFocusClickEvent(recordIndex, fieldIndex);
+    handleRecordFocusClickEvent(recordIndex: RevRecordIndex, fieldIndex: RevRecordFieldIndex): void {
+        if (this.recordFocusClickEventer) {
+            this.recordFocusClickEventer(recordIndex, fieldIndex);
         }
     }
 
     invalidateAll(): void {
-        this._gridAdapter.InvalidateAll();
+        this._grid.invalidateAll();
     }
 
-    invalidateRecord(rowIndex: Integer): void {
-        this._gridAdapter.InvalidateRecord(rowIndex);
+    invalidateVisibleValue(rowIndex: Integer): void {
+        const fieldIndex = this._grid.getFieldIndex(this._visibleField);
+        this._grid.invalidateValue(fieldIndex, rowIndex, RevRecordValueRecentChangeTypeId.Update);
     }
 
-    applyLayoutChange(action: GridLayoutChange.Action): { focusedIndex?: number | null } {
+    /** @return New focused record index or undefined if no move occurred */
+    applyGridLayoutChangeAction(action: GridLayoutChange.Action): number | undefined {
 
-        const moveColumn = (currentIndex: number, newIndex: number): void => {
-            this._layoutWithHeadings.layout.MoveColumn(currentIndex, newIndex);
-            this._gridAdapter.InvalidateAll();
+        const moveColumn = (currentIndex: number, newIndex: number): boolean => {
+            const result = this._layoutWithHeadings.layout.moveColumn(currentIndex, newIndex);
+            if (result) {
+                this._grid.invalidateAll();
+            }
+            return result;
         };
 
         switch (action.id) {
             case GridLayoutChange.ActionId.MoveUp: {
                 const newIndex = Math.max(0, action.columnIndex - 1);
-                moveColumn(action.columnIndex, newIndex);
-                this._gridAdapter.FocusedRecordIndex = undefined;
-                this._gridAdapter.FocusedRecordIndex = newIndex;
-                return { focusedIndex: newIndex };
+                if (!moveColumn(action.columnIndex, newIndex)) {
+                    return undefined;
+                } else {
+                    this._grid.focusedRecordIndex = undefined;
+                    this._grid.focusedRecordIndex = newIndex;
+                    return newIndex;
+                }
             }
 
             case GridLayoutChange.ActionId.MoveTop: {
                 const newIndex = 0;
-                moveColumn(action.columnIndex, newIndex);
-                this._gridAdapter.FocusedRecordIndex = undefined;
-                this._gridAdapter.FocusedRecordIndex = newIndex;
-                return { focusedIndex: newIndex };
+                if (!moveColumn(action.columnIndex, newIndex)) {
+                    return undefined;
+                } else {
+                    this._grid.focusedRecordIndex = undefined;
+                    this._grid.focusedRecordIndex = newIndex;
+                    return newIndex;
+                }
             }
 
             case GridLayoutChange.ActionId.MoveDown: {
-                const newIndex = Math.min(this._dataStore.RecordCount, action.columnIndex + 2);
-                moveColumn(action.columnIndex, newIndex);
-                this._gridAdapter.FocusedRecordIndex = undefined;
-                this._gridAdapter.FocusedRecordIndex = newIndex - 1;
-                return { focusedIndex: newIndex - 1 };
+                const newIndex = Math.min(this._dataStore.recordCount, action.columnIndex + 2);
+                if (!moveColumn(action.columnIndex, newIndex)) {
+                    return undefined;
+                } else {
+                    this._grid.focusedRecordIndex = undefined;
+                    this._grid.focusedRecordIndex = newIndex - 1;
+                    return newIndex - 1;
+                }
             }
 
             case GridLayoutChange.ActionId.MoveBottom: {
-                const newIndex = this._dataStore.RecordCount;
-                moveColumn(action.columnIndex, newIndex);
-                this._gridAdapter.FocusedRecordIndex = undefined;
-                this._gridAdapter.FocusedRecordIndex = newIndex - 1;
-                return { focusedIndex: newIndex - 1 };
+                const newIndex = this._dataStore.recordCount;
+                if (!moveColumn(action.columnIndex, newIndex)) {
+                    return undefined;
+                } else {
+                    this._grid.focusedRecordIndex = undefined;
+                    this._grid.focusedRecordIndex = newIndex - 1;
+                    return newIndex - 1;
+                }
             }
 
             case GridLayoutChange.ActionId.SetVisible: {
-                throw new Error('Condition not handled [ID:14923165702]');
+                throw new UnexpectedCaseError('GLEGNCALCV91006');
             }
 
 
             case GridLayoutChange.ActionId.SetWidth: {
-                throw new Error('Condition not handled [ID:14923165702]');
+                throw new UnexpectedCaseError('GLEGNCALCW91006');
             }
 
             default:
-                throw new Error('Condition not handled [ID:15723165637]');
+                throw new UnexpectedCaseError('GLEGNCALCD91006');
         }
     }
 
     getColumn(columnIndex: number): GridLayout.Column {
-        return this._layoutWithHeadings.layout.GetColumn(columnIndex);
+        return this._layoutWithHeadings.layout.getColumn(columnIndex);
     }
 
     getColumnHeading(columnIndex: number) {
-        const fieldName = this._layoutWithHeadings.layout.GetColumn(columnIndex).Field.Name;
+        const fieldName = this._layoutWithHeadings.layout.getColumn(columnIndex).field.name;
         const heading = this._layoutWithHeadings.headersMap.get(fieldName);
         if (heading !== undefined) {
             return heading;
@@ -169,13 +173,13 @@ export class GridLayoutEditorGridNgComponent implements OnDestroy, AfterViewInit
     }
 
     focusNextSearchMatch(searchText: string) {
-        const focusedRecIdx = this._gridAdapter.FocusedRecordIndex;
+        const focusedRecIdx = this._grid.focusedRecordIndex;
 
         let prevMatchRowIdx: Integer;
         if (focusedRecIdx === undefined) {
             prevMatchRowIdx = 0;
         } else {
-            const focusedRowIdx = this._gridAdapter.RecordToRowIndex(focusedRecIdx);
+            const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
             if (focusedRowIdx === undefined) {
                 prevMatchRowIdx = 0;
             } else {
@@ -185,20 +189,20 @@ export class GridLayoutEditorGridNgComponent implements OnDestroy, AfterViewInit
     }
 
     private applyColumnFilter(): void {
-        this._gridAdapter.clearFilter();
+        this._grid.clearFilter();
 
         const value = this._columnFilterId;
         switch (value) {
             case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll:
-                this._gridAdapter.ApplyFilter((record) => showAllFilter(record));
+                this._grid.applyFilter((record) => showAllFilter(record));
                 break;
 
             case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible:
-                this._gridAdapter.ApplyFilter((record) => showVisibleFilter(record));
+                this._grid.applyFilter((record) => showVisibleFilter(record));
                 break;
 
             case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden:
-                this._gridAdapter.ApplyFilter((record) => showHiddenFilter(record));
+                this._grid.applyFilter((record) => showHiddenFilter(record));
                 break;
 
             default:
@@ -206,56 +210,62 @@ export class GridLayoutEditorGridNgComponent implements OnDestroy, AfterViewInit
         }
     }
 
-    private handleSettingsChangedEvent() {
-        this.applySettings();
-    }
-
-    private applySettings() {
-        const revGridSettings = this._settingsService.createRevGridSettings();
-        this._gridAdapter.ApplySettings(revGridSettings);
-        if (this._gridAdapter.getRowCount() > 0) {
-            this._gridAdapter.InvalidateAll();
-        }
-    }
-
     private prepareGrid() {
-        if (this._gridAdapter && this._layoutWithHeadings) {
-            this._dataStore.setData(this._layoutWithHeadings);
-            this._gridAdapter.BeginChange();
-            try {
-                this._gridAdapter.Reset();
-                const positionField = this._dataStore.createPositionField();
-                this._gridAdapter.AddField(positionField);
-                // this._gridAdapter.AddField(this._dataStore.createNameField());
-                const headingField = this._dataStore.createHeadingField();
-                this._gridAdapter.AddField(headingField);
-                const visibleField = this._dataStore.createVisibleField();
-                this._gridAdapter.AddField(visibleField);
-                const widthField = this._dataStore.createWidthField();
-                this._gridAdapter.AddField(widthField);
-                // this._gridAdapter.AddField(this._dataStore.createSortPriorityField(), GridLayoutDataStore.IntegerGridFieldState);
-                // this._gridAdapter.AddField(this._dataStore.createSortAscendingField());
-
-                this._gridAdapter.SetFieldState(positionField, GridLayoutDataStore.IntegerGridFieldState);
-                this._gridAdapter.SetFieldState(headingField, GridLayoutDataStore.StringGridFieldState);
-                this._gridAdapter.SetFieldState(visibleField, GridLayoutDataStore.StringGridFieldState);
-                this._gridAdapter.SetFieldState(widthField, GridLayoutDataStore.IntegerGridFieldState);
-
-                this._gridAdapter.InsertRecords(0, this._dataStore.RecordCount);
-
-                this._gridAdapter.InvalidateAll();
-            } finally {
-                this._gridAdapter.EndChange();
+        if (this._grid !== undefined) {
+            if (this._gridPrepared) {
+                this._grid.reset();
             }
 
-            this.applyColumnFilter();
+            if (this._layoutWithHeadings) {
+                this._dataStore.setData(this._layoutWithHeadings);
+
+                const positionField = this._dataStore.createPositionField();
+                const headingField = this._dataStore.createHeadingField();
+                const widthField = this._dataStore.createWidthField();
+                this._visibleField = this._dataStore.createVisibleField();
+
+                this._grid.beginFieldChanges();
+                try {
+                    this._grid.addField(positionField);
+                    // this._gridAdapter.AddField(this._dataStore.createNameField());
+                    this._grid.addField(headingField);
+                    this._grid.addField(this._visibleField);
+                    this._grid.addField(widthField);
+                    // this._gridAdapter.AddField(this._dataStore.createSortPriorityField(), GridLayoutDataStore.IntegerGridFieldState);
+                    // this._gridAdapter.AddField(this._dataStore.createSortAscendingField());
+
+                } finally {
+                    this._grid.endFieldChanges();
+                }
+
+                this._grid.beginRecordChanges();
+                try {
+                    this._grid.setFieldState(positionField, GridLayoutRecordStore.IntegerGridFieldState);
+                    this._grid.setFieldState(headingField, GridLayoutRecordStore.StringGridFieldState);
+                    this._grid.setFieldState(this._visibleField, GridLayoutRecordStore.StringGridFieldState);
+                    this._grid.setFieldState(widthField, GridLayoutRecordStore.IntegerGridFieldState);
+
+                    this._grid.recordsInserted(0, this._dataStore.recordCount);
+                } finally {
+                    this._grid.endRecordChanges();
+                }
+
+                this.applyColumnFilter();
+            }
+
+            this._gridPrepared = true;
         }
     }
 }
 
 export namespace GridLayoutEditorGridNgComponent {
-    export type RecordFocusEvent = (recordIndex: Integer) => void;
-    export type RecordFocusClickEvent = (recordIndex: Integer, fieldIndex: Integer) => void;
+    export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
+    export type RecordFocusClickEventer = (recordIndex: Integer, fieldIndex: Integer) => void;
+
+    export const frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
 
     export const enum ColumnFilterId {
         ShowAll = 1,
@@ -298,10 +308,10 @@ function showAllFilter(record: object): boolean {
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function showVisibleFilter(record: object): boolean {
-    return (record as GridLayout.Column).Visible;
+    return (record as GridLayout.Column).visible;
 }
 
 // eslint-disable-next-line @typescript-eslint/ban-types
 function showHiddenFilter(record: object): boolean {
-    return !(record as GridLayout.Column).Visible;
+    return !(record as GridLayout.Column).visible;
 }

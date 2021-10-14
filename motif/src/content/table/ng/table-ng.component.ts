@@ -4,27 +4,19 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    GridAdapter,
-    GridField,
-    GridFieldState,
-    GridHost,
-    GridLayout,
-    GridTransform,
-    RevgridComponent,
-    TFieldIndex,
-    TRecordIndex
-} from '@motifmarkets/revgrid';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import {
-    defaultGridCellRendererName,
-    defaultGridCellRenderPaint,
-    GridLayoutDataStore,
-    SettingsService,
-    TableGridField
-} from 'src/core/internal-api';
-import { Badness, Integer, MultiEvent } from 'src/sys/internal-api';
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    HostBinding,
+    Input,
+    OnDestroy,
+    ViewChild
+} from '@angular/core';
+import { MotifGrid } from 'src/content/internal-api';
+import { MotifGridNgComponent } from 'src/content/ng-api';
+import { Badness, numberToPixels } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { TableFrame } from '../table-frame';
@@ -36,64 +28,40 @@ import { TableFrame } from '../table-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableNgComponent implements OnInit, OnDestroy, AfterViewInit, GridHost, TableFrame.ComponentAccess {
+export class TableNgComponent implements OnDestroy, AfterViewInit, TableFrame.ComponentAccess {
+
+    @HostBinding('style.flex-basis') styleFlexBasis = '';
+    @Input() frameGridProperties: MotifGrid.FrameGridProperties;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
-    @ViewChild(RevgridComponent, { static: true }) private _grid: RevgridComponent;
+    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
-    public gridVisible = false;
-
-    private _settingsService: SettingsService;
     private _frame: TableFrame;
-    private _gridAdapter: GridAdapter;
-    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
-        private _cdr: ChangeDetectorRef,
-        settingsNgService: SettingsNgService,
+        private readonly _cdr: ChangeDetectorRef,
         contentService: ContentNgService,
     ) {
-        this._settingsService = settingsNgService.settingsService;
         this._frame = contentService.createTableFrame(this);
-        this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
+        // this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
     }
 
     ngOnDestroy() {
         this.frame.finalise();
-
-        if (this._settingsChangedSubscriptionId !== undefined) {
-            this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-        }
-    }
-
-    ngOnInit() {
     }
 
     ngAfterViewInit() {
-        this._gridAdapter = this.createGridAdapter();
+        this._gridComponent.destroyEventer = () => {
+            this.frame.finalise();
+            this._gridComponent.destroyGrid();
+        };
 
-        this._settingsChangedSubscriptionId =
-        this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingChangedEvent());
-
-        this.applySettings();
+        const grid = this._gridComponent.createGrid(this._frame, this.frameGridProperties);
+        this._frame.setGrid(grid);
     }
 
     get frame(): TableFrame { return this._frame; }
-    get gridDefaultRowHeight() { return this._gridAdapter.getDefaultRowHeight(); }
-    get gridHorizontalScrollbarWidthAndMargin() { return this._gridAdapter.horizontalScrollbarWidthAndMargin; }
-
-    // GridHost functions
-    onRecordFocus(newRecordIndex: TRecordIndex | undefined, oldRecordIndex: TRecordIndex | undefined) {
-        this._frame.adviseTableRecordFocus(newRecordIndex, oldRecordIndex);
-    }
-
-    onRecordFocusClick(recordIndex: TRecordIndex, fieldIndex: TFieldIndex) {
-        this._frame.adviseTableRecordFocusClick(recordIndex, fieldIndex);
-    }
-
-    onRecordFocusDblClick(recordIndex: TRecordIndex, fieldIndex: TFieldIndex) {
-        this._frame.adviseTableRecordFocusDblClick(recordIndex, fieldIndex);
-    }
+    get gridRowHeight() { return this._frame.gridRowHeight; }
 
     // Component Access members
 
@@ -102,108 +70,25 @@ export class TableNgComponent implements OnInit, OnDestroy, AfterViewInit, GridH
         // todo - needs to return a unique id for this component
     }
 
-    gridAddTransform(transform: GridTransform) {
-        this._gridAdapter.AddTransform(transform);
+    // set gridFocusedRecordIndex(value: Integer | undefined) {
+    //     this._gridAdapter.FocusedRecordIndex = value;
+    //     this._gridAdapter.InvalidateAll();
+    // }
+
+    get gridHorizontalScrollbarMarginedHeight() {
+        return this._gridComponent.horizontalScrollbarMarginedHeight;
     }
 
-    gridInsertRecords(index: Integer, count: Integer) {
-        this._gridAdapter.InsertRecords(index, count);
+    getHeaderPlusFixedLineHeight() {
+        return this._frame.getHeaderPlusFixedLineHeight();
     }
 
-    gridInsertRecordsInSameRowPosition(index: Integer, count: Integer) {
-        this._gridAdapter.InsertRecords(index, count);
-        // Ensure in same position.  This is based on old revgrid code where new records were appended to end of grid
-        // Records then needed to be moved to required position.
-        // Different logic may now be needed
-        let rowIdx = index;
-        for (let i = index; i < index + count; i++) {
-            // this.gridAdapter.moveRecordRow(itemIdx, rowIdx);
-            rowIdx++;
+    setStyleFlexBasis(value: number) {
+        const newFlexBasis = numberToPixels(value);
+        if (newFlexBasis !== this.styleFlexBasis) {
+            this.styleFlexBasis = newFlexBasis;
+            this._cdr.markForCheck();
         }
-    }
-
-    gridMoveRecordRow(fromRecordIndex: Integer, toRowIndex: Integer) {
-        // todo
-    }
-
-    gridDeleteRecords(recordIndex: Integer, count: Integer) {
-        this._gridAdapter.DeleteRecords(recordIndex, count);
-    }
-
-    gridDeleteAllRecords() {
-        this._gridAdapter.ClearRecords();
-    }
-
-    gridInvalidateValue(fieldIndex: Integer, recordIndex: Integer) {
-        this._gridAdapter.InvalidateValue(fieldIndex, recordIndex);
-    }
-
-    gridInvalidateRecord(recordIndex: Integer) {
-        this._gridAdapter.InvalidateRecord(recordIndex);
-    }
-
-    gridInvalidateAll() {
-        this._gridAdapter.InvalidateAll();
-    }
-
-    gridLoadLayout(layout: GridLayout) {
-        this._gridAdapter.LoadLayout(layout);
-        // todo need to think about scaling
-    }
-
-    gridSaveLayout(): GridLayout {
-        return this._gridAdapter.SaveLayout();
-    }
-
-    gridReorderRecRows(rowRecIndices: Integer[]) {
-        // todo
-    }
-
-    get gridRowRecIndices(): Integer[] {
-        return [];
-        // todo
-    }
-
-    gridAutoSizeAllColumnWidths() {
-        // fixed currently always adjusted
-        this._gridAdapter.AutoSizeAllColumnWidths();
-    }
-
-    gridBeginChange() {
-        this._gridAdapter.BeginChange();
-    }
-
-    gridEndChange() {
-        this._gridAdapter.EndChange();
-    }
-
-    gridReset() {
-        this._gridAdapter.Reset();
-    }
-
-    gridAddFields(fields: TableGridField[]) {
-        this._gridAdapter.AddFields(fields);
-    }
-
-    gridSetFieldState(field: GridField, state?: GridFieldState | undefined) {
-        this._gridAdapter.SetFieldState(field, state);
-    }
-
-    get gridFocusedRecordIndex(): Integer | undefined {
-        // TODO:MED this.gridAdapter.FocusedRecordIndex always returns null. Find out why.
-        return this._gridAdapter.FocusedRecordIndex;
-    }
-
-    set gridFocusedRecordIndex(value: Integer | undefined) {
-        this._gridAdapter.FocusedRecordIndex = value;
-        this._gridAdapter.InvalidateAll();
-    }
-
-    getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders {
-        return {
-            layout: this.gridSaveLayout(),
-            headersMap: this._gridAdapter.GetFieldNameToHeaderMap()
-        };
     }
 
     setBadness(value: Badness) {
@@ -214,33 +99,9 @@ export class TableNgComponent implements OnInit, OnDestroy, AfterViewInit, GridH
         this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 
-    private handleSettingChangedEvent() {
-        this.applySettings();
-    }
-
-    private handleTableOpenChangeEvent(opened: boolean) {
-        this.setGridVisible(opened);
-    }
-
-    private setGridVisible(value: boolean) {
-        this.gridVisible = value;
-        this._cdr.markForCheck();
-    }
-
-    private applySettings() {
-        const revGridSettings = this._settingsService.createRevGridSettings();
-        this._frame.clearTableRendering();
-        this._gridAdapter.ApplySettings(revGridSettings);
-        if (this._gridAdapter.getRowCount() > 0) {
-            this._gridAdapter.InvalidateAll();
-        }
-    }
-
-    private createGridAdapter() {
-        const revGridSettings = this._settingsService.createRevGridSettings();
-        return this._grid.CreateAdapter(this, this._frame, revGridSettings,
-            defaultGridCellRendererName, defaultGridCellRenderPaint);
-    }
+    // private handleTableOpenChangeEvent(opened: boolean) {
+    //     this.setGridVisible(opened);
+    // }
 }
 
 export namespace TableNgComponent {
@@ -248,3 +109,4 @@ export namespace TableNgComponent {
         export const frame = 'frame';
     }
 }
+

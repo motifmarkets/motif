@@ -21,6 +21,7 @@ import { IOutputData } from 'angular-split/lib/interface';
 import { ComponentContainer } from 'golden-layout';
 import { LitIvemId } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'src/content/ng-api';
 import { AngularSplitTypes } from 'src/controls/internal-api';
 import {
@@ -30,9 +31,15 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'src/controls/ng-api';
-import { DateUiAction, IconButtonUiAction, InternalCommand, LitIvemIdUiAction, StringUiAction, UiAction } from 'src/core/internal-api';
+import {
+    DateUiAction,
+    IconButtonUiAction,
+    InternalCommand,
+    LitIvemIdUiAction, StringUiAction,
+    UiAction
+} from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, CommaText, defined, delay1Tick, Integer, JsonElement, Logger } from 'src/sys/internal-api';
+import { AssertInternalError, CommaText, defined, delay1Tick, JsonElement, Logger } from 'src/sys/internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { ParidepthDitemFrame } from '../paridepth-ditem-frame';
@@ -57,6 +64,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('historicalDateInput', { static: true }) private _historicalTradesDateInput: DateInputNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('depthTradesDiv', { static: true }) private _depthTradesDiv: ElementRef;
     @ViewChild('depth', { static: true }) private _depthComponent: DepthNgComponent;
     @ViewChild('trades', { static: true }) private _tradesComponent: TradesNgComponent;
     @ViewChild('watchlist', { static: true }) private _watchlistComponent: TableNgComponent;
@@ -64,11 +72,18 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;
 
+    public readonly watchListFrameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 1,
+        gridRightAligned: false,
+    };
+
     public isLayoutEditorVisible = false;
     public splitterGutterSize = 3;
     public depthWidth: AngularSplitTypes.AreaSize.Html = 200; // pushed
-    public depthActiveWidth = 200;
-    public tradesActiveWidth = 200;
+    // public depthActiveWidth = 200;
+    // public tradesActiveWidth = 200;
+
+    public explicitDepthWidth = false;
 
     private _layoutEditorComponent: ParidepthGridLayoutsEditorNgComponent | undefined;
 
@@ -86,9 +101,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _modeId = ParidepthDitemNgComponent.ModeId.Input;
     private _frame: ParidepthDitemFrame;
 
-    private _explicitDepthWidth = false;
-
     protected get stateSchemaVersion() { return ParidepthDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(
@@ -134,15 +148,23 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     // component interface methods
 
-    public setDepthActiveWidth(width: Integer) {
-        this.depthActiveWidth = width;
+    public adjustDepthWidth(preferredDepthWidth: number) {
+        const totalDepthTradesWidth = this._depthTradesDiv.nativeElement.offsetWidth;
+        if (preferredDepthWidth > totalDepthTradesWidth - 50) {
+            preferredDepthWidth = totalDepthTradesWidth - 50;
+            if (preferredDepthWidth < 50) {
+                preferredDepthWidth = Math.round(totalDepthTradesWidth / 2);
+            }
+        }
+
+        this.depthWidth = preferredDepthWidth;
         this.markForCheck();
     }
 
-    public setTradesActiveWidth(width: Integer) {
-        this.tradesActiveWidth = width;
-        this.markForCheck();
-    }
+    // public setTradesActiveWidth(width: Integer) {
+    //     this.tradesActiveWidth = width;
+    //     this.markForCheck();
+    // }
 
     // template functions
     public isInputMode() {
@@ -154,7 +176,14 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     public splitDragEnd(data: IOutputData) {
-        this._explicitDepthWidth = true;
+        this.explicitDepthWidth = true;
+        const [depthWidth, tradesWidth] = this.getDepthTradesWidths();
+        if (depthWidth === '*') {
+            throw new AssertInternalError('PDNCSDE43369');
+        } else {
+            this.depthWidth = depthWidth;
+            // this.markForCheck();
+        }
     }
 
     // TradesDitemFrame.ComponentAccess methods
@@ -191,7 +220,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushFilterSelectState();
         this.pushFilterEditValue();
 
-        this.initialiseWidths();
+        // this.initialiseWidths();
 
         this.initialiseChildComponents();
 
@@ -219,25 +248,25 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.constructLoad(frameElement);
 
         if (element === undefined) {
-            this._explicitDepthWidth = false;
+            this.explicitDepthWidth = false;
         } else {
             const depthWidthAsString = element.tryGetString(ParidepthDitemNgComponent.JsonName.depthWidth);
             if (depthWidthAsString === undefined) {
-                this._explicitDepthWidth = false;
+                this.explicitDepthWidth = false;
             } else {
                 const depthWidth = AngularSplitTypes.AreaSize.jsonValueToIOutput(depthWidthAsString);
                 if (depthWidth === undefined) {
-                    this._explicitDepthWidth = false;
+                    this.explicitDepthWidth = false;
                 } else {
                     this.depthWidth = AngularSplitTypes.AreaSize.iOutputToHtml(depthWidth);
-                    this._explicitDepthWidth = true;
+                    this.explicitDepthWidth = true;
                 }
             }
         }
     }
 
     protected save(element: JsonElement) {
-        if (this._explicitDepthWidth) {
+        if (this.explicitDepthWidth) {
             const [depthWidth, tradesWidth] = this.getDepthTradesWidths();
             element.setString(ParidepthDitemNgComponent.JsonName.depthWidth, AngularSplitTypes.AreaSize.iOutputToJsonValue(depthWidth));
         }
@@ -245,9 +274,9 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.save(frameElement);
     }
 
-    protected override processShown() {
-        this._frame.adviseShown();
-    }
+    // protected override processShown() {
+    //     this._frame.adviseShown();
+    // }
 
     private handleSymbolCommitEvent(typeId: UiAction.CommitTypeId) {
         this.commitSymbol(typeId);
@@ -532,14 +561,14 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         }
     }
 
-    private async initialiseWidths() {
-        this.depthActiveWidth = await this._frame.getDepthRenderedActiveWidth();
-        this.tradesActiveWidth = await this._frame.getTradesRenderedActiveWidth();
-        if (!this._explicitDepthWidth) {
-            this.depthWidth = this.depthActiveWidth;
-        }
-        this.markForCheck();
-    }
+    // private async initialiseWidths() {
+    //     this.depthActiveWidth = await this._frame.getDepthRenderedActiveWidth();
+    //     this.tradesActiveWidth = await this._frame.getTradesRenderedActiveWidth();
+    //     if (!this._explicitDepthWidth) {
+    //         this.depthWidth = this.depthActiveWidth;
+    //     }
+    //     this.markForCheck();
+    // }
 }
 
 export namespace ParidepthDitemNgComponent {

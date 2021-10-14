@@ -4,13 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
 import { AdiService, LitIvemId } from 'src/adi/internal-api';
-import { TableFrame } from 'src/content/internal-api';
+import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
 import {
-    CommandRegisterService,
-    GridLayoutDataStore,
-    LitIvemIdTableRecordDefinition,
+    CommandRegisterService, LitIvemIdTableRecordDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
     tableDefinitionFactory,
@@ -79,8 +76,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._tableFrame.setGridLayout(value);
     }
 
-    getGridLayoutWithHeadings(): GridLayoutDataStore.GridLayoutWithHeaders {
-        return this._tableFrame.getGridLayoutWithHeadings();
+    getGridLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+        return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 
     canDeleteFocusedRecord() {
@@ -259,7 +256,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     private checkConfirmPrivateWatchListCanBeDiscarded(): boolean {
-        if (!this._tableFrame.isPrivate() || this._tableFrame.RecordCount === 0) {
+        if (!this._tableFrame.isPrivate() || this._tableFrame.recordCount === 0) {
             return true;
         } else {
             return true;

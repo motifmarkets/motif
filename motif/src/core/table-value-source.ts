@@ -4,14 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { AdiService } from 'src/adi/internal-api';
 import { Integer } from 'src/sys/internal-api';
 import { TableGridValue } from './table-grid-value';
 
 export abstract class TableValueSource {
-    beginValuesChangeEvent: TableValueSource.BeginValuesChangeEvent;
-    endValuesChangeEvent: TableValueSource.EndValuesChangeEvent;
-    valuesChangeEvent: TableValueSource.ValuesChangeEvent;
+    valueChangesEvent: TableValueSource.ValueChangesEvent;
     allValuesChangeEvent: TableValueSource.AllValuesChangeEvent;
     firstUsableEvent: TableValueSource.FirstUsableEvent;
 
@@ -23,19 +22,11 @@ export abstract class TableValueSource {
     get fieldCount() { return this.getfieldCount(); }
     get firstFieldIndexOffset() { return this._firstFieldIndexOffset; }
 
-    protected notifyBeginValuesChangeEvent() {
-        this.beginValuesChangeEvent();
-    }
-
-    protected notifyEndValuesChangeEvent() {
-        this.beginValuesChangeEvent();
-    }
-
-    protected notifyValuesChangeEvent(changedValues: TableValueSource.ChangedValue[]) {
-        for (let i = 0; i < changedValues.length; i++) {
-            changedValues[i].fieldIdx += this._firstFieldIndexOffset;
+    protected notifyValueChangesEvent(valueChanges: TableValueSource.ValueChange[]) {
+        for (let i = 0; i < valueChanges.length; i++) {
+            valueChanges[i].fieldIndex += this._firstFieldIndexOffset;
         }
-        this.valuesChangeEvent(changedValues);
+        this.valueChangesEvent(valueChanges);
     }
 
     protected notifyAllValuesChangeEvent(newValues: TableGridValue[]) {
@@ -58,9 +49,14 @@ export namespace TableValueSource {
         fieldIdx: Integer;
         newValue: TableGridValue;
     }
+    export interface ValueChange {
+        fieldIndex: Integer;
+        newValue: TableGridValue;
+        recentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined;
+    }
     export type BeginValuesChangeEvent = (this: void) => void;
     export type EndValuesChangeEvent = (this: void) => void;
-    export type ValuesChangeEvent = (changedValues: ChangedValue[]) => void;
+    export type ValueChangesEvent = (valueChanges: ValueChange[]) => void;
     export type AllValuesChangeEvent = (firstFieldIdxOffset: Integer, newValues: TableGridValue[]) => void;
     export type FirstUsableEvent = (this: void) => void;
     export type Constructor = new(firstFieldIdxOffset: Integer, recordIdx: Integer, adi: AdiService) => TableValueSource;

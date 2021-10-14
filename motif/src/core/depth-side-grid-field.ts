@@ -4,18 +4,19 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridField, GridFieldState } from '@motifmarkets/revgrid';
+import { RevRecordField } from 'revgrid';
+import { MotifGrid } from 'src/content/internal-api';
 import { CorrectnessId } from 'src/sys/internal-api';
 
-export class DepthSideGridField extends GridField {
-
+export class DepthSideGridField implements RevRecordField {
+    constructor(public readonly name: string) { }
 }
 
 export namespace DepthSideGridField {
     export type GetDataItemCorrectnessIdEventHandler = (this: void) => CorrectnessId;
     export interface AllFieldsAndDefaults {
         fields: DepthSideGridField[];
-        defaultStates: GridFieldState[];
+        defaultStates: MotifGrid.FieldState[];
         defaultVisibles: boolean[];
     }
 }

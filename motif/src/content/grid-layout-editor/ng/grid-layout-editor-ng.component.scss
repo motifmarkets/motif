@@ -4,92 +4,80 @@
  * License: motionite.trade/license/motif
  */
 
-#topDiv {
-    position: relative;
+:host {
+    display: flex;
+    flex-direction: row;
+    height: 100%
+}
+
+#leftDiv {
+    flex: 1 1 26em;
     display: flex;
     flex-direction: column;
     height: 100%;
-}
 
-#dialogTitle {
-    display: flex;
-    flex-direction: row;
-    margin-bottom: 0.5rem;
-}
-
-#leftAndRightDiv {
-    display: flex;
-    flex-direction: row;
-    flex: 1 1 auto;
-
-    #leftDiv {
-        flex: 1 1 26em;
+    #searchDiv {
+        flex: 0 0 auto;
         display: flex;
-        flex-direction: column;
-        height: 100%;
+        flex-direction: row;
+        align-items: center;
+        visibility: collapse;
+    }
 
-        #searchDiv {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            visibility: collapse;
-        }
+    #grid {
+        flex: 1 1 0;
+        min-height: 0;
+    }
+}
 
-        #gridDiv {
-            height: 100%;
-            flex: 1 1 auto;
+#rightDiv {
+    flex: 0 0 auto;
+    display: flex;
+    flex-direction: column;
+    margin-left: 1em;
+
+    #moveButtonsDiv {
+        display: grid;
+        grid-template-columns: max-content max-content;
+        column-gap: 1rem;
+        row-gap: 1rem;
+        align-items: center;
+
+        app-svg-button {
+            height: 2.3em;
+            width: 2.8em;
         }
     }
 
-    #rightDiv {
-        flex: 0 0 auto;
-        display: flex;
-        flex-direction: column;
-        margin-left: 1em;
+    #showDiv {
+        margin: 1rem 0;
 
-        #moveButtonsDiv {
-            display: grid;
-            grid-template-columns: max-content max-content;
-            column-gap: 1rem;
-            row-gap: 1rem;
-            align-items: center;
+        #showFieldset {
+            display: inline-block;
 
-            app-svg-button {
-                height: 2.3em;
-                width: 2.8em;
-            }
-        }
+            #showDivRadio {
+                display: grid;
+                grid-template-columns: max-content max-content;
+                column-gap: 0.5em;
+                row-gap: 0.4em;
+                align-items: center;
 
-        #showDiv {
-            margin: 1rem 0;
-
-            #showFieldset {
-                display: inline-block;
-
-                #showDivRadio {
-                    display: grid;
-                    grid-template-columns: max-content max-content;
-                    column-gap: 0.5em;
-                    row-gap: 0.4em;
-                    align-items: center;
-
-                    app-radio-input {
-                        grid-column: 1;
-                    }
-                    app-element-enum-caption {
-                        grid-column: 2;
-                    }
+                app-radio-input {
+                    grid-column: 1;
+                }
+                app-element-enum-caption {
+                    grid-column: 2;
                 }
             }
         }
+    }
 
-        #columnProperties{
-            #fieldName {
-                margin-bottom: 0.25rem;
-            }
+    #columnProperties{
+        #fieldName {
+            margin-bottom: 0.25rem;
         }
     }
-    #leftAndRightExtraSpaceDiv {
-        flex: 1000 1000 auto;
-    }
+}
+#leftAndRightExtraSpaceDiv {
+    flex: 1000 1000 auto;
 }

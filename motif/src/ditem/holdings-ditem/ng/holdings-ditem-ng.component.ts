@@ -19,6 +19,7 @@ import { IOutputData } from 'angular-split/lib/interface';
 import { ComponentContainer } from 'golden-layout';
 import { BrokerageAccountGroup } from 'src/adi/internal-api';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { TableNgComponent } from 'src/content/ng-api';
 import { AngularSplitTypes } from 'src/controls/internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
@@ -45,6 +46,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     public splitterGutterSize = 3;
     public balancesVisible = false;
     public balancesHeight: AngularSplitTypes.AreaSize.Html = 50;
@@ -58,6 +64,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private _frame: HoldingsDitemFrame;
 
     protected get stateSchemaVersion() { return HoldingsDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(
@@ -142,12 +149,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.initialise(this._holdingsTableComponent.frame, this._balancesTableComponent.frame, frameElement);
 
         if (!this._explicitBalancesHeight) {
-            const balancesDefaultRowHeight = this._balancesTableComponent.gridDefaultRowHeight;
-            if (balancesDefaultRowHeight !== undefined) {
-                this.balancesHeight =
-                    balancesDefaultRowHeight * 2 + this._balancesTableComponent.gridHorizontalScrollbarWidthAndMargin + 12;
-                this.markForCheck();
-            }
+            const gridRowHeight = this._balancesTableComponent.gridRowHeight;
+            const gridHeaderHeight = this._balancesTableComponent.getHeaderPlusFixedLineHeight();
+            const gridHorizontalScrollbarMarginedHeight = this._balancesTableComponent.gridHorizontalScrollbarMarginedHeight;
+            this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarMarginedHeight;
+            this.markForCheck();
         }
 
         this.pushSellButtonState(this._frame.focusedRecordIndex);

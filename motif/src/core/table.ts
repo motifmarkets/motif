@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
+import { RevRecordInvalidatedValue } from 'revgrid';
+import { GridLayout } from 'src/content/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
@@ -37,8 +38,9 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
     openChangeEvent: Table.OpenChangeEvent;
     badnessChangeEvent: Table.BadnessChangeEvent;
     listChangeEvent: Table.ListChangeEvent;
-    valueChangeEvent: Table.ValueChangeEvent;
-    recordChangeEvent: Table.RecordChangeEvent;
+    recordValuesChangedEvent: Table.RecordValuesChangedEvent;
+    recordFieldsChangedEvent: Table.RecordFieldsChangedEvent;
+    recordChangedEvent: Table.RecordChangedEvent;
     layoutChangedEvent: Table.LayoutChangedEvent;
     recordDisplayOrderChangedEvent: Table.RecordDisplayOrderChangedEvent;
     firstPreUsableEvent: Table.FirstPreUsableEvent;
@@ -65,6 +67,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
     get fieldList() { return this._definition.fieldList; }
     get opened() { return this._definition.opened; }
     get recordCount() { return this._records.length; }
+    get records(): readonly TableRecord[] { return this._records; }
 
     get layout() { return this._layout; }
     set layout(value: GridLayout) { this._layout = value; }
@@ -177,7 +180,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
                 const layoutElement = element.tryGetElement(Table.JsonTag.layout, 'Table.loadFromJson: layout');
                 const serialisedColumns = GridLayoutIO.loadLayout(layoutElement);
                 if (serialisedColumns) {
-                    this.layout.Deserialise(serialisedColumns);
+                    this.layout.deserialise(serialisedColumns);
                 }
                 return true;
             }
@@ -190,7 +193,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
         const sourceElement = element.newElement(Table.JsonTag.source);
         this._definition.saveToJson(sourceElement);
         const layoutElement = element.newElement(Table.JsonTag.layout);
-        const columns = this.layout.Serialise();
+        const columns = this.layout.serialise();
         GridLayoutIO.saveLayout(columns, layoutElement);
 
         const orderedRecordDefinitionsElement = element.newElement(Table.JsonTag.orderedRecordDefinitions);
@@ -408,25 +411,12 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
 
     adviseLayoutChanged(notifier: Table.Opener, newLayout: GridLayout) {
         this.layout = new GridLayout();
-        this.layout.Deserialise(newLayout.Serialise());
+        this.layout.deserialise(newLayout.serialise());
     }
 
     adviseRecordDisplayOrderChanged(notifier: Table.Opener, newDisplayOrder: TableRecordDefinitionArray) {
         this._orderedRecordDefinitions = newDisplayOrder;
         this.notifyRecordDisplayOrderChanged(notifier);
-    }
-
-    getGridRecordValue(index: Integer): TableRecord.GridRecord {
-        return this._records[index].createGridRecordCopy();
-    }
-
-    getGridRecords(): TableRecord.GridRecord[] {
-        const result = new Array<TableRecord.GridRecord>(this.recordCount);
-        for (let i = 0; i < this.recordCount; i++) {
-            result[i] = this._records[i].createGridRecordCopy();
-        }
-
-        return result;
     }
 
     getGridFieldsAndInitialStates(): TableGridFieldAndStateArrays {
@@ -454,15 +444,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
         this._records[recordIdx].setRecordDefinition(tableRecordDefinition, valueList);
         this._records[recordIdx].activate();
 
-        this.notifyRecordChange(recordIdx);
-    }
-
-    private handleRecordValueChangeEvent(fieldIdx: Integer, recordIdx: Integer) {
-        this.notifyValueChange(fieldIdx, recordIdx);
-    }
-
-    private handleRecordRecordChangeEvent(recordIdx: Integer) {
-        this.notifyRecordChange(recordIdx);
+        this.recordChangedEvent(recordIdx);
     }
 
     private handleRecordFirstUsableEvent() {
@@ -477,14 +459,6 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
 
     private notifyListChange(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) {
         this.listChangeEvent(listChangeTypeId, recordIdx, recordCount);
-    }
-
-    private notifyValueChange(fieldIdx: Integer, recordIdx: Integer) {
-        this.valueChangeEvent(fieldIdx, recordIdx);
-    }
-
-    private notifyRecordChange(recordIdx: Integer) {
-        this.recordChangeEvent(recordIdx);
     }
 
     private notifyLayoutChange(opener: Table.Opener) {
@@ -692,8 +666,10 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
                 const recIdx = idx + i;
 
                 const record = new TableRecord(recIdx);
-                record.valueChangeEvent = (fieldIdx, recordIdx) => this.handleRecordValueChangeEvent(fieldIdx, recordIdx);
-                record.recordChangeEvent = (recordIdx) => this.handleRecordRecordChangeEvent(recordIdx);
+                record.valuesChangedEvent = (recordIdx, invalidatedValues) => this.recordValuesChangedEvent(recordIdx, invalidatedValues);
+                record.fieldsChangedEvent = (recordIdx, fieldIndex, fieldCount) =>
+                    this.recordFieldsChangedEvent(recordIdx, fieldIndex, fieldCount);
+                record.recordChangedEvent = (recordIdx) => this.recordChangedEvent(recordIdx);
                 record.firstUsableEvent = () => this.handleRecordFirstUsableEvent();
                 newRecordsArray[i] = record;
             }
@@ -821,8 +797,9 @@ export namespace Table {
         notifyTableOpenChange(opened: boolean): void;
         notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, changeCount: Integer): void;
         notifyTableBadnessChange(): void;
-        notifyTableValueChange(fieldIdx: Integer, recordIdx: Integer): void;
-        notifyTableRecordChange(recordIdx: Integer): void;
+        notifyTableRecordValuesChanged(recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]): void;
+        notifyTableRecordFieldsChanged(recordIdx: number, fieldIndex: number, fieldCount: number): void;
+        notifyTableRecordChanged(recordIdx: Integer): void;
         notifyTableLayoutUpdated(): void;
         notifyTableRecordDisplayOrderChanged(recordIndices: Integer[]): void;
         notifyTableFirstPreUsable(): void;
@@ -839,8 +816,9 @@ export namespace Table {
     export type OpenChangeEvent = (this: void, opened: boolean) => void;
     export type BadnessChangeEvent = (this: void) => void;
     export type ListChangeEvent = (this: void, listChangeType: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) => void;
-    export type ValueChangeEvent = (this: void, fieldIdx: Integer, recordIdx: Integer) => void;
-    export type RecordChangeEvent = (this: void, recordIdx: Integer) => void;
+    export type RecordValuesChangedEvent = (this: void, recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) => void;
+    export type RecordFieldsChangedEvent = (this: void, recordIdx: Integer, fieldIdx: Integer, fieldCount: Integer) => void;
+    export type RecordChangedEvent = (this: void, recordIdx: Integer) => void;
     export type LayoutChangedEvent = (this: void, subscriber: Opener) => void;
     export type RecordDisplayOrderChangedEvent = (this: void, subscriber: Opener) => void;
     export type FirstPreUsableEvent = (this: void) => void;
@@ -910,41 +888,20 @@ export class OpenedTable extends Table {
         super();
 
         this.opener = opener;
-        this.openEvent = (recordDefinitionList) => this.handleOpenEvent(recordDefinitionList);
-        this.openChangeEvent = (opened) => this.handleOpenChangeEvent(opened);
-        this.badnessChangeEvent = () => this.handleBadnessChangeEvent();
+        this.openEvent = (recordDefinitionList) => this.opener.notifyTableOpen(recordDefinitionList);
+        this.openChangeEvent = (opened) => this.opener.notifyTableOpenChange(opened);
+        this.badnessChangeEvent = () => this.opener.notifyTableBadnessChange();
         this.listChangeEvent =
-            (listChangeType, recordIdx, recordCount) => this.handleListChangeEvent(listChangeType, recordIdx, recordCount);
-        this.valueChangeEvent = (fieldIdx, recordIdx) => this.handleValueChangeEvent(fieldIdx, recordIdx);
-        this.recordChangeEvent = (recordIdx) => this.handleRecordChangeEvent(recordIdx);
+            (listChangeTypeId, recordIdx, recordCount) => this.opener.notifyTableRecordListChange(listChangeTypeId, recordIdx, recordCount);
+        this.recordValuesChangedEvent = (recordIdx, invalidatedValues) =>
+            this.opener.notifyTableRecordValuesChanged(recordIdx, invalidatedValues);
+        this.recordFieldsChangedEvent = (recordIdx, fieldIndex, fieldCount) =>
+            this.opener.notifyTableRecordFieldsChanged(recordIdx, fieldIndex, fieldCount);
+        this.recordChangedEvent = (recordIdx) => this.opener.notifyTableRecordChanged(recordIdx);
         this.layoutChangedEvent = (subscriber) => this.handleLayoutChangedEvent(subscriber);
         this.recordDisplayOrderChangedEvent = (subscriber) => this.handleRecordDisplayOrderChangedEvent(subscriber);
-        this.firstPreUsableEvent = () => this.handleFirstUsableEvent();
-        this.recordDisplayOrderSetEvent = (recordIndices) => this.handleRecordDisplayOrderSetEvent(recordIndices);
-    }
-
-    private handleOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        this.opener.notifyTableOpen(recordDefinitionList);
-    }
-
-    private handleOpenChangeEvent(opened: boolean) {
-        this.opener.notifyTableOpenChange(opened);
-    }
-
-    private handleBadnessChangeEvent() {
-        this.opener.notifyTableBadnessChange();
-    }
-
-    private handleListChangeEvent(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) {
-        this.opener.notifyTableRecordListChange(listChangeTypeId, recordIdx, recordCount);
-    }
-
-    private handleValueChangeEvent(fieldIdx: Integer, recordIdx: Integer) {
-        this.opener.notifyTableValueChange(fieldIdx, recordIdx);
-    }
-
-    private handleRecordChangeEvent(recordIdx: Integer) {
-        this.opener.notifyTableRecordChange(recordIdx);
+        this.firstPreUsableEvent = () => this.opener.notifyTableFirstPreUsable();
+        this.recordDisplayOrderSetEvent = (recordIndices) => this.opener.notifyTableRecordDisplayOrderChanged(recordIndices);
     }
 
     private handleLayoutChangedEvent(subscriber: Table.Opener) {
@@ -953,13 +910,5 @@ export class OpenedTable extends Table {
 
     private handleRecordDisplayOrderChangedEvent(subscriber: Table.Opener) {
         // no code
-    }
-
-    private handleFirstUsableEvent() {
-        this.opener.notifyTableFirstPreUsable();
-    }
-
-    private handleRecordDisplayOrderSetEvent(recordIndices: Integer[]) {
-        this.opener.notifyTableRecordDisplayOrderChanged(recordIndices);
     }
 }

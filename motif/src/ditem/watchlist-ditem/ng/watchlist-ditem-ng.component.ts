@@ -19,6 +19,7 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { LitIvemId } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import { IconButtonUiAction, InternalCommand, LitIvemIdUiAction, UiAction } from 'src/core/internal-api';
@@ -70,7 +71,14 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _forceOnNextCommit = false;
 
     protected get stateSchemaVersion() { return WatchlistDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
+    public get frameGridProperties(): MotifGrid.FrameGridProperties {
+        return {
+            fixedColumnCount: 1,
+            gridRightAligned: false,
+        };
+    }
 
     constructor(cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -358,7 +366,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private showLayoutEditor() {
         this._modeId = WatchlistDitemNgComponent.ModeId.LayoutEditor;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
+        const layoutWithHeadings = this._frame.getGridLayoutWithHeadersMap();
 
         if (layoutWithHeadings !== undefined) {
             const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);

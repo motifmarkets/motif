@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridAttribute, GridField } from '@motifmarkets/revgrid';
+import { RevRecordField } from 'revgrid';
 import { IvemId, LitIvemId } from 'src/adi/internal-api';
 import {
     compareArray,
@@ -42,20 +42,21 @@ import {
     StringTableGridValue,
     TableGridValue
 } from './table-grid-value';
+import { TableRecord } from './table-record';
 import { textFormatter } from './text-formatter';
 
-export abstract class TableGridField extends GridField {
+export abstract class TableGridField implements RevRecordField {
     private _valueTypeId: RenderValue.TypeId;
 
-    constructor(name: string, public index: Integer) {
-        super(name);
+    constructor(public readonly name: string, public index: Integer) {
+
     }
 
     get valueTypeId() { return this._valueTypeId; }
 
-    override CompareField(left: TableGridValue[], right: TableGridValue[]): number {
-        const leftValue = left[this.index];
-        const rightValue = right[this.index];
+    compareField(left: TableRecord, right: TableRecord): number {
+        const leftValue = left.values[this.index];
+        const rightValue = right.values[this.index];
         if (leftValue === rightValue) {
             return 0;
         } else {
@@ -75,9 +76,9 @@ export abstract class TableGridField extends GridField {
         }
     }
 
-    override CompareFieldDesc(left: TableGridValue[], right: TableGridValue[]): number {
-        const leftValue = left[this.index];
-        const rightValue = right[this.index];
+    compareFieldDesc(left: TableRecord, right: TableRecord): number {
+        const leftValue = left.values[this.index];
+        const rightValue = right.values[this.index];
         if (leftValue === rightValue) {
             return 0;
         } else {
@@ -97,13 +98,9 @@ export abstract class TableGridField extends GridField {
         }
     }
 
-    override GetFieldValue(record: TableGridValue[]): RenderValue {
-        const tableGridValue = record[this.index];
+    getFieldValue(record: TableRecord): RenderValue {
+        const tableGridValue = record.values[this.index];
         return tableGridValue.renderValue;
-    }
-
-    override GetAttributes(record: TableGridValue[]): GridAttribute[] {
-        return []; // Ihis is not used.  Sets Meta data in Grid.  Instead we pass render information through GetFieldValue
     }
 
     protected setValueTypeId(value: RenderValue.TypeId) {

@@ -36,7 +36,7 @@ export class ContentService {
     }
 
     createTableFrame(componentAccess: TableFrame.ComponentAccess) {
-        return new TableFrame(componentAccess);
+        return new TableFrame(componentAccess, this._settingsService);
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, zenithEndpoint: string) {

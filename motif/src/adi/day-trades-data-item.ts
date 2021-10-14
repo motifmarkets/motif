@@ -209,8 +209,9 @@ export class DayTradesDataItem extends DataItem {
         return rangedEarliestBinarySearch(this._records, searchRecord, DayTradesDataItem.Record.compareId, 0, this._recordCount);
     }
 
-    private createRecord(tradeRecord: TradesDataItem.Record) {
+    private createRecord(index: number, tradeRecord: TradesDataItem.Record) {
         const result: DayTradesDataItem.Record = {
+            index,
             typeId: DayTradesDataItem.Record.TypeId.Trade,
             tradeRecord,
             relatedRecord: undefined,
@@ -240,7 +241,9 @@ export class DayTradesDataItem extends DataItem {
     private shuffleRecordsUp(index: Integer, count: Integer) {
         let dstIdx = this._recordCount + count - 1;
         for (let srcIdx = this._recordCount - 1; srcIdx >= index; srcIdx--) {
-            this._records[dstIdx--] = this._records[srcIdx];
+            const record = this._records[srcIdx];
+            record.index = dstIdx;
+            this._records[dstIdx--] = record;
         }
     }
 
@@ -297,7 +300,7 @@ export class DayTradesDataItem extends DataItem {
 
         for (let i = 0; i < count; i++) {
             const recIdx = index + i;
-            this._records[recIdx] = this.createRecord(this._dataItemRecordAccess.getRecord(recIdx));
+            this._records[recIdx] = this.createRecord(recIdx, this._dataItemRecordAccess.getRecord(recIdx));
         }
 
         this._recordCount += count;
@@ -399,6 +402,7 @@ export namespace DayTradesDataItem {
     export type RecordChangeEventHandler = (this: void, index: Integer) => void;
 
     export interface Record {
+        index: number;
         typeId: Record.TypeId;
         tradeRecord: TradesDataItem.Record;
         relatedRecord: Record | undefined;
@@ -470,6 +474,7 @@ export namespace DayTradesDataItem {
     }
 
     export const searchRecord: Record = {
+        index: -1,
         typeId: Record.TypeId.Trade,
         tradeRecord: TradesDataItem.searchRecord,
         relatedRecord: undefined,

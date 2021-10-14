@@ -4,10 +4,8 @@
     License: motionite.trade/license/motif
 -->
 
+<!-- <img class="loading-logo" src="/assets/img/logo.png"> -->
+<!-- <img *ngIf="topSplashImageExists" class="loading-logo" [src]="topSplashImageUrl"> -->
 <div class="app-loading">
-    <img class="loading-logo" src="/assets/img/logo.png">
-    <div id="kickedOffDiv" *ngIf="kickedOff">
-        {{ kickedOffText }}
-    </div>
     <textarea id="logTextArea" class="text-block" spellCheck="false" readonly>{{log}}</textarea>
 </div>

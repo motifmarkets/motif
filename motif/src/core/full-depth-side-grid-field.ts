@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridFieldState } from '@motifmarkets/revgrid';
 import { BidAskSideId } from 'src/adi/internal-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { CorrectnessId, UnreachableCaseError } from 'src/sys/internal-api';
 import { DepthSideGridField } from './depth-side-grid-field';
 import { FullDepthRecord } from './full-depth-record';
@@ -21,7 +21,7 @@ export class FullDepthSideGridField extends DepthSideGridField {
         super(FullDepthSideField.idToName(_id));
     }
 
-    override GetFieldValue(record: FullDepthRecord): RenderValue {
+    getFieldValue(record: FullDepthRecord): RenderValue {
         let dataCorrectnessAttribute: RenderValue.Attribute | undefined;
         const correctnessId = this._getDataItemCorrectnessIdEvent();
         switch (correctnessId) {
@@ -42,11 +42,11 @@ export class FullDepthSideGridField extends DepthSideGridField {
         return record.getRenderValue(this._id, this._sideId, dataCorrectnessAttribute);
     }
 
-    override CompareField(left: FullDepthRecord, right: FullDepthRecord): number {
+    compareField(left: FullDepthRecord, right: FullDepthRecord): number {
         return FullDepthRecord.compareField(this._id, left, right);
     }
 
-    override CompareFieldDesc(left: FullDepthRecord, right: FullDepthRecord): number {
+    compareFieldDesc(left: FullDepthRecord, right: FullDepthRecord): number {
         return FullDepthRecord.compareFieldDesc(this._id, left, right);
     }
 }
@@ -61,14 +61,14 @@ export namespace FullDepthSideGridField {
         const idCount = FullDepthSideField.idCount;
 
         const fields = new Array<DepthSideGridField>(idCount);
-        const defaultStates = new Array<GridFieldState>(idCount);
+        const defaultStates = new Array<MotifGrid.FieldState>(idCount);
         const defaultVisibles = new Array<boolean>(idCount);
 
         for (let id = 0; id < idCount; id++) {
             fields[id] = new FullDepthSideGridField(id, sideId, getDataItemCorrectnessIdEventHandler);
-            const defaultState: GridFieldState = {
-                Header: FullDepthSideField.idToDefaultHeading(id),
-                Alignment: FullDepthSideField.idToDefaultTextAlign(id),
+            const defaultState: MotifGrid.FieldState = {
+                header: FullDepthSideField.idToDefaultHeading(id),
+                alignment: FullDepthSideField.idToDefaultTextAlign(id),
             };
             defaultStates[id] = defaultState;
             defaultVisibles[id] = FullDepthSideField.idToDefaultVisible(id);

@@ -5,6 +5,7 @@
  */
 
 import { Decimal, Numeric } from 'decimal.js-light';
+import { RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { v1 as uuid } from 'uuid';
 import { AssertInternalError } from './internal-error';
 import { ComparisonResult, Integer, Json, JsonValue, PriceOrRemainder, Rect, TimeSpan } from './types';
@@ -21,7 +22,7 @@ export const mSecsPerHour = secsPerHour * mSecsPerSec;
 export const mSecsPerDay = secsPerDay * mSecsPerSec;
 
 export const nullDate = new Date(-100000000 * mSecsPerDay);
-export const nullDecimal = new Decimal(-9999999999999999.0);
+export const nullDecimal = new Decimal(-999999999999999.0);
 
 export function newDate(value: Date) {
     return new Date(value.getTime());
@@ -65,6 +66,10 @@ export function isUndefinableDecimalEqual(left: Decimal | undefined, right: Deci
             return isDecimalEqual(left, right);
         }
     }
+}
+
+export function isDecimalGreaterThan(subject: Decimal, other: Decimal) {
+    return subject.greaterThan(other);
 }
 
 export function ifDefined<U, T>(value: U | undefined, fn: (x: U) => T): T | undefined {
@@ -773,6 +778,17 @@ export namespace SysTick {
     export const MaxSpan = Number.MAX_SAFE_INTEGER;
 }
 
+export namespace ValueRecentChangeType {
+    /** Assumes oldValue and newValue are different */
+    export function calculateChangeTypeId<T>(oldValue: T | undefined, newValue: T | undefined) {
+        if (oldValue === undefined || newValue === undefined) {
+            return RevRecordValueRecentChangeTypeId.Update;
+        } else {
+            return newValue > oldValue ? RevRecordValueRecentChangeTypeId.Increase : RevRecordValueRecentChangeTypeId.Decrease;
+        }
+    }
+}
+
 export type OptionalKeys<T> = {
     [P in keyof T]?: T[P] | undefined;
 };
@@ -943,50 +959,52 @@ export function createRandomUrlSearch() {
     return '?random=' + Date.now().toString(36) + uuid();
 }
 
-export type RequestIdleCallbackHandle = unknown;
-export interface RequestIdleCallbackOptions {
+// Latest TypeScript library now support RequestIdleCallback however not yet used by Angular
+// Remove below when Angular uses the version of TypeScript which supports this
+export type RequestIdleCallbackHandle = number;
+export interface IdleRequestOptions {
     timeout?: number;
 }
-export interface RequestIdleCallbackDeadline {
+export interface IdleDeadline {
     readonly didTimeout: boolean;
-    timeRemaining: (() => number);
+    timeRemaining(): DOMHighResTimeStamp;
 }
 
-type RequestIdleCallbackFunction = (deadline: RequestIdleCallbackDeadline) => void;
+type IdleRequestCallback = (deadline: IdleDeadline) => void;
 
 declare global {
     interface Window {
         // Flagged as experimental so not yet in Typescript.  Remove when included in Typescript
         requestIdleCallback: ((
-            callback: RequestIdleCallbackFunction,
-            opts?: RequestIdleCallbackOptions,
+            callback: IdleRequestCallback,
+            opts?: IdleRequestOptions,
         ) => RequestIdleCallbackHandle);
         cancelIdleCallback: ((handle: RequestIdleCallbackHandle) => void);
     }
 }
 
-export function simulatedRequestIdleCallback(
-    callback: RequestIdleCallbackFunction,
-    opts?: RequestIdleCallbackOptions,
-) {
-    const defaultTimeout = 5 * mSecsPerSec;
-    const deadline: RequestIdleCallbackDeadline = {
-        didTimeout: true,
-        timeRemaining: () => 50, // default initial timeRemaining as of August 2019
-    };
-    let timeout: Integer;
-    if (opts === undefined) {
-        timeout = defaultTimeout;
-    } else {
-        if (opts.timeout === undefined) {
-            timeout = defaultTimeout;
-        } else {
-            timeout = opts.timeout;
-        }
-    }
-    setTimeout(() => callback(deadline), timeout);
-}
+// export function simulatedRequestIdleCallback(
+//     callback: RequestIdleCallbackFunction,
+//     opts?: RequestIdleCallbackOptions,
+// ) {
+//     const defaultTimeout = 5 * mSecsPerSec;
+//     const deadline: RequestIdleCallbackDeadline = {
+//         didTimeout: true,
+//         timeRemaining: () => 50, // default initial timeRemaining as of August 2019
+//     };
+//     let timeout: Integer;
+//     if (opts === undefined) {
+//         timeout = defaultTimeout;
+//     } else {
+//         if (opts.timeout === undefined) {
+//             timeout = defaultTimeout;
+//         } else {
+//             timeout = opts.timeout;
+//         }
+//     }
+//     setTimeout(() => callback(deadline), timeout);
+// }
 
-export function simulatedCancelIdleCallback(handle: RequestIdleCallbackHandle) {
-    // cannot cancel setTimeout so do nothing
-}
+// export function simulatedCancelIdleCallback(handle: RequestIdleCallbackHandle) {
+//     // cannot cancel setTimeout so do nothing
+// }

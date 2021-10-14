@@ -304,9 +304,9 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
         }
     }
 
-    private handleSecurityDataItemValuesChangeEvent(modifiedFieldIds: SecurityDataItem.FieldId[]) {
+    private handleSecurityDataItemValuesChangeEvent(valueChanges: SecurityDataItem.ValueChange[]) {
         if (this.allSeriesLoaded) {
-            this.loadSeriesFromModifiedSecurityFields(modifiedFieldIds);
+            this.loadSeriesFromModifiedSecurityFields(valueChanges);
         }
     }
 
@@ -593,7 +593,7 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
             () => this.handleSecurityDataItemBadnessChangeEvent()
         );
         this._securityDataItemFieldValuesChangedSubscriptionId = this._securityDataItem.subscribeFieldValuesChangedEvent(
-            (modifiedFieldIds) => this.handleSecurityDataItemValuesChangeEvent(modifiedFieldIds)
+            (valueChanges) => this.handleSecurityDataItemValuesChangeEvent(valueChanges)
         );
     }
 
@@ -1065,20 +1065,20 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
         this.stageVolumeValueTick(dateTime, tickDateTimeRepeatCount, volume);
     }
 
-    private loadSeriesFromModifiedSecurityFields(modifiedFieldIds: SecurityDataItem.FieldId[]) {
+    private loadSeriesFromModifiedSecurityFields(valueChanges: SecurityDataItem.ValueChange[]) {
         const priceFieldIds = [
+            SecurityDataItem.FieldId.Last,
             SecurityDataItem.FieldId.Open,
             SecurityDataItem.FieldId.High,
             SecurityDataItem.FieldId.Low,
-            SecurityDataItem.FieldId.Last,
         ];
         const securityDataItem = this._securityDataItem;
         if (securityDataItem === undefined) {
             throw new AssertInternalError('LIIPVSHLSFMSFS104847774');
         } else {
-            if (uniqueElementArraysOverlap(modifiedFieldIds, priceFieldIds)
+            if (SecurityDataItem.valueChangeArrayIncludesAnyOfFieldIds(valueChanges, priceFieldIds)
                 ||
-                (this._hasVolume && modifiedFieldIds.includes(SecurityDataItem.FieldId.Volume))) {
+                (this._hasVolume && SecurityDataItem.valueChangeArrayIncludesFieldId(valueChanges, SecurityDataItem.FieldId.Volume))) {
 
                 const sequencer = this._sequencer;
                 if (sequencer === undefined) {

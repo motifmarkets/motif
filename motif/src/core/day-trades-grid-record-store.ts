@@ -4,18 +4,18 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridDataStore } from '@motifmarkets/revgrid';
+import { RevRecordStore } from 'revgrid';
 import { DayTradesDataItem } from 'src/adi/internal-api';
 import { Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
 
-export class DayTradesGridDataStore implements GridDataStore {
+export class DayTradesGridRecordStore implements RevRecordStore {
     listChangeEvent: DayTradesGridDataStore.ListChangeEventHandler;
     recordChangeEvent: DayTradesGridDataStore.RecordChangeEventHandler;
     allRecordsChangeEvent: DayTradesGridDataStore.AllRecordsChangeEventHandler;
 
     private _dataItem: DayTradesDataItem | undefined;
-    private _records: DayTradesDataItem.Record[];
-    private _recordCount: Integer;
+    private _records: DayTradesDataItem.Record[] = [];
+    private _recordCount = 0;
 
     private _dataItemListChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemRecordChangeSubscriptionId: MultiEvent.SubscriptionId;
@@ -57,21 +57,18 @@ export class DayTradesGridDataStore implements GridDataStore {
 
             this._dataItem = undefined;
             this._recordCount = 0;
+            this._records = [];
         }
     }
 
-    get RecordCount() { return this._recordCount; }
+    get recordCount() { return this._recordCount; }
 
-    GetRecordValue(index: Integer) {
-        return this._records[this.adjustRecordIndex(index)];
+    getRecord(index: Integer) {
+        return this._records[index];
     }
 
-    GetRecords() {
-        return this.createRecordsInReverseOrderArray();
-    }
-
-    GetRecordCount(): number {
-        return this._recordCount;
+    getRecords() {
+        return this._records.slice(0, this.recordCount);
     }
 
     private handleDataItemListChangeEvent(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
@@ -79,16 +76,16 @@ export class DayTradesGridDataStore implements GridDataStore {
     }
 
     private handleDataItemRecordChangeEvent(index: Integer) {
-        this.recordChangeEvent(this.adjustRecordIndex(index));
+        this.recordChangeEvent(index);
     }
 
     private handleDataItemDataCorrectnessChangeEvent() {
         this.allRecordsChangeEvent();
     }
 
-    private adjustRecordIndex(idx: Integer) {
-        return this._recordCount - idx - 1;
-    }
+    // private adjustRecordIndex(idx: Integer) {
+    //     return this._recordCount - idx - 1;
+    // }
 
     private processListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
         switch (listChangeTypeId) {
@@ -110,10 +107,10 @@ export class DayTradesGridDataStore implements GridDataStore {
                 break;
             case UsableListChangeTypeId.Insert:
                 this._recordCount += count;
-                this.listChangeEvent(UsableListChangeTypeId.Insert, this.adjustRecordIndex(index), count);
+                this.listChangeEvent(UsableListChangeTypeId.Insert, index, count);
                 break;
             case UsableListChangeTypeId.Remove:
-                this.listChangeEvent(UsableListChangeTypeId.Remove, this.adjustRecordIndex(index), count);
+                this.listChangeEvent(UsableListChangeTypeId.Remove, index, count);
                 this._recordCount -= count;
                 break;
             case UsableListChangeTypeId.Clear:
@@ -125,17 +122,17 @@ export class DayTradesGridDataStore implements GridDataStore {
         }
     }
 
-    private createRecordsInReverseOrderArray() {
-        const count = this._recordCount;
-        const result = new Array<DayTradesDataItem.Record>(count);
-        if (count > 0) {
-            let last = count - 1;
-            for (let i = 0; i < count; i++) {
-                result[i] = this._records[last--];
-            }
-        }
-        return result;
-    }
+    // private createRecordsInReverseOrderArray() {
+    //     const count = this._recordCount;
+    //     const result = new Array<DayTradesDataItem.Record>(count);
+    //     if (count > 0) {
+    //         let last = count - 1;
+    //         for (let i = 0; i < count; i++) {
+    //             result[i] = this._records[last--];
+    //         }
+    //     }
+    //     return result;
+    // }
 }
 
 export namespace DayTradesGridDataStore {

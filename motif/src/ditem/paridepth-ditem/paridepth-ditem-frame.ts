@@ -4,18 +4,17 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
+import { lowestValidModelUpdateId } from 'revgrid';
 import { AdiService, DepthStyleId, LitIvemId } from 'src/adi/internal-api';
-import { DepthFrame, TableFrame, TradesFrame } from 'src/content/internal-api';
+import { DepthFrame, GridLayout, MotifGrid, TableFrame, TradesFrame } from 'src/content/internal-api';
 import {
-    CommandRegisterService,
-    GridLayoutDataStore, LitIvemIdTableRecordDefinition,
+    CommandRegisterService, LitIvemIdTableRecordDefinition,
     PortfolioTableDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
     TableRecordDefinitionList
 } from 'src/core/internal-api';
-import { Integer, JsonElement } from 'src/sys/internal-api';
+import { JsonElement } from 'src/sys/internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -56,11 +55,12 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
 
         this._watchlistFrame.requireDefaultTableDefinitionEvent = () => this.handleWatchlistRequireDefaultTableDefinitionEvent();
         this._watchlistFrame.tableOpenEvent = (recordDefinitionList) => this.handleWatchlistTableOpenEvent(recordDefinitionList);
+        this._watchlistFrame.settingsApplyEvent = () => this.handleWatchlistSettingsApplyEvent();
 
-        this._depthFrame.activeWidthChangedEvent =
-            (bidActiveWidth, askActiveWidth) => this.handleDepthActiveWidthChangedEvent(bidActiveWidth, askActiveWidth);
+        // this._depthFrame.activeWidthChangedEvent =
+        //     (bidActiveWidth, askActiveWidth) => this.handleDepthActiveWidthChangedEvent(bidActiveWidth, askActiveWidth);
 
-        this._tradesFrame.activeWidthChangedEvent = () => this.handleTradesActiveWidthChangedEvent();
+        // this._tradesFrame.activeWidthChangedEvent = () => this.handleTradesActiveWidthChangedEvent();
 
         // initialise() not required for watchlist or trades
         this._depthFrame.initialise();
@@ -79,6 +79,8 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         }
 
         this.applyLinked();
+
+        this.handleWatchlistSettingsApplyEvent();
     }
 
     override save(element: JsonElement) {
@@ -92,7 +94,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.saveLayoutConfig(tradesElement);
     }
 
-    open() {
+    async open() {
         const litIvemId = this.litIvemId;
         if (litIvemId === undefined) {
             this.close();
@@ -105,7 +107,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
                 this._watchlistFrame.addRecordDefinition(definition);
                 this._watchlistFrame.focusItem(0);
             } else {
-                if (this._watchlistFrame.RecordCount === 0) {
+                if (this._watchlistFrame.recordCount === 0) {
                     this._watchlistFrame.addRecordDefinition(definition);
                 } else {
                     this._watchlistFrame.setRecordDefinition(0, definition);
@@ -117,16 +119,24 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this._tradesFrame.open(litIvemId, undefined);
 
             this._componentAccess.notifyOpenedClosed(litIvemId, undefined);
+
+            const [bidOpePopulatedSuccess, askOpenPopulatedSuccess] = await this._depthFrame.waitOpenPopulated();
+            if (bidOpePopulatedSuccess === true && askOpenPopulatedSuccess === true) {
+                const [bidModelUpdateId, askModelUpdateId] = await this._depthFrame.waitRendered();
+                if (bidModelUpdateId >= lowestValidModelUpdateId && askModelUpdateId >= lowestValidModelUpdateId) {
+                    this.checkAutoAdjustOpenWidths();
+                }
+            }
         }
     }
 
-    getDepthRenderedActiveWidth() {
-        return this._depthFrame.getRenderedActiveWidth();
-    }
+    // getDepthRenderedActiveWidth() {
+    //     return this._depthFrame.getRenderedActiveWidth();
+    // }
 
-    getTradesRenderedActiveWidth() {
-        return this._tradesFrame.getRenderedActiveWidth();
-    }
+    // getTradesRenderedActiveWidth() {
+    //     return this._tradesFrame.getRenderedActiveWidth();
+    // }
 
     toggleFilterActive() {
         this._depthFrame.toggleFilterActive();
@@ -156,11 +166,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutsWithHeadings(): ParidepthDitemFrame.GridLayoutsWithHeadings {
+    getGridLayoutsWithHeadings(): ParidepthDitemFrame.GridLayoutsWithHeaderMaps {
         return {
             depth: this._depthFrame.getGridLayoutsWithHeadings(),
-            watchlist: this._watchlistFrame.getGridLayoutWithHeadings(),
-            trades: this._tradesFrame.getGridLayoutWithHeadings(),
+            watchlist: this._watchlistFrame.getGridLayoutWithHeadersMap(),
+            trades: this._tradesFrame.getGridLayoutWithHeadersMap(),
         };
     }
 
@@ -170,9 +180,9 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.setGridLayout(layouts.trades);
     }
 
-    adviseShown() {
-        setTimeout(() => this._depthFrame.initialiseWidths(), 3000);
-    }
+    // adviseShown() {
+    //     setTimeout(() => this._depthFrame.initialiseWidths(), 3000);
+    // }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, SelfInitiated: boolean): boolean {
         super.applyLitIvemId(litIvemId, SelfInitiated);
@@ -193,14 +203,23 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         // ignore as not needed
     }
 
-    private async handleDepthActiveWidthChangedEvent(bidActiveWidth: Integer | undefined, askActiveWidth: Integer | undefined) {
-        const depthActiveWidth = await this._depthFrame.getCompleteRenderedActiveWidth(bidActiveWidth, askActiveWidth);
-        this._componentAccess.setDepthActiveWidth(depthActiveWidth);
-    }
+    // private async handleDepthActiveWidthChangedEvent(bidActiveWidth: Integer | undefined, askActiveWidth: Integer | undefined) {
+    //     const depthActiveWidth = await this._depthFrame.getCompleteRenderedActiveWidth(bidActiveWidth, askActiveWidth);
+    //     this._componentAccess.setDepthActiveWidth(depthActiveWidth);
+    // }
 
-    private async handleTradesActiveWidthChangedEvent() {
-        const tradesActiveWidth = await this._tradesFrame.getRenderedActiveWidth();
-        this._componentAccess.setTradesActiveWidth(tradesActiveWidth);
+    // private async handleTradesActiveWidthChangedEvent() {
+    //     const tradesActiveWidth = await this._tradesFrame.getRenderedActiveWidth();
+    //     this._componentAccess.setTradesActiveWidth(tradesActiveWidth);
+    // }
+
+    private handleWatchlistSettingsApplyEvent() {
+        // process settings change here to ensure grid has been updated
+        const rowHeight = this._watchlistFrame.gridRowHeight;
+        const headerHeight = this._watchlistFrame.getHeaderPlusFixedLineHeight();
+        const gridHorizontalScrollbarMarginedHeight = this._watchlistFrame.gridHorizontalScrollbarMarginedHeight;
+        const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
+        this._watchlistFrame.setFlexBasis(height);
     }
 
     private close() {
@@ -214,6 +233,13 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         if (litIvemId !== undefined) {
             const historicalDate = this._componentAccess.getHistoricalDate();
             this._tradesFrame.open(litIvemId, historicalDate);
+        }
+    }
+
+    private checkAutoAdjustOpenWidths() {
+        if (!this._componentAccess.explicitDepthWidth) {
+            const preferredDepthWidth = this._depthFrame.getSymetricActiveWidth();
+            this._componentAccess.adjustDepthWidth(preferredDepthWidth);
         }
     }
 }
@@ -240,19 +266,21 @@ export namespace ParidepthDitemFrame {
         trades: GridLayout;
     }
 
-    export interface GridLayoutsWithHeadings {
-        watchlist: GridLayoutDataStore.GridLayoutWithHeaders;
-        depth: DepthFrame.GridLayoutsWithHeadings;
-        trades: GridLayoutDataStore.GridLayoutWithHeaders;
+    export interface GridLayoutsWithHeaderMaps {
+        watchlist: MotifGrid.LayoutWithHeadersMap;
+        depth: DepthFrame.GridLayoutsWithHeadersMap;
+        trades: MotifGrid.LayoutWithHeadersMap;
     }
 
     export type OpenedEventHandler = (this: void) => void;
 
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
+        readonly explicitDepthWidth: boolean;
+        adjustDepthWidth(preferredDepthWidth: number): void;
         getHistoricalDate(): Date | undefined;
         pushSymbol(litIvemId: LitIvemId): void;
         notifyOpenedClosed(litIvemId: LitIvemId, historicalDate: Date | undefined): void;
-        setDepthActiveWidth(width: Integer): void;
-        setTradesActiveWidth(width: Integer): void;
+        // setDepthActiveWidth(width: Integer): void;
+        // setTradesActiveWidth(width: Integer): void;
     }
 }

@@ -16,15 +16,14 @@ import {
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { GridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import {
     ButtonUiAction,
-    GridLayoutDataStore,
     IconButtonUiAction,
     InternalCommand,
-    LitIvemIdUiAction,
-    UiAction
+    LitIvemIdUiAction, UiAction
 } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick, JsonElement } from 'src/sys/internal-api';
@@ -49,6 +48,11 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('etoPriceQuotationTable', { static: true }) private _callPutContentComponent: TableNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     private _symbolEditUiAction: LitIvemIdUiAction;
     private _applySymbolUiAction: IconButtonUiAction;
     private _selectColumnsUiAction: IconButtonUiAction;
@@ -58,6 +62,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     private _frame: EtoPriceQuotationDitemFrame;
 
     protected get stateSchemaVersion() { return EtoPriceQuotationDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(
@@ -151,11 +156,11 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private handleColumnsSignalEvent(downKeys: UiAction.DownKeys) {
-        let layoutWithHeadings: GridLayoutDataStore.GridLayoutWithHeaders;
+        let layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
         if (ButtonUiAction.downKeysIncludesId(downKeys, ButtonUiAction.DownKeyId.Shift)) {
-            layoutWithHeadings = this._watchContentComponent.getGridLayoutWithHeadings();
+            layoutWithHeadings = this._watchContentComponent.frame.getGridLayoutWithHeadersMap();
         } else {
-            layoutWithHeadings = this._callPutContentComponent.getGridLayoutWithHeadings();
+            layoutWithHeadings = this._callPutContentComponent.frame.getGridLayoutWithHeadersMap();
         }
         this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.LayoutEditor;
         this._layoutEditorComponent.setGridLayout(layoutWithHeadings);
@@ -169,7 +174,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         if (ok) {
             const layout = this._layoutEditorComponent.getGridLayout();
             // need to work out which is being edited
-            this._watchContentComponent.gridLoadLayout(layout);
+            this._watchContentComponent.frame.gridLoadLayout(layout);
         }
         this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.Input;
     }

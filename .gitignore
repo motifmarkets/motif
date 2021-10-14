@@ -2,7 +2,7 @@
 node_modules/
 /motif/releases/
 /motif/dist/
-/motif/dev_static/_config-do-not-delete/config.json
+/motif/dev_static/
 /motif/debug.log
 /motif/api/
 /motif/lib/
@@ -28,3 +28,5 @@ node_modules/
 /extensions/highcharts/app/highstock-chart-status-bar/highstock-chart-status-bar.component.ts
 /extensions/highcharts/out-tsc/
 /**/.vscode/**/*
+!/**/editor-configs/.vscode/**/*
+motif/src/config/SelfWealth-Standard.svg

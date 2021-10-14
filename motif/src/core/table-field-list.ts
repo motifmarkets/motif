@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridFieldState, GridLayout } from '@motifmarkets/revgrid';
+import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import { AssertInternalError, Integer, JsonElement } from 'src/sys/internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { TableFieldDefinitionSource } from './table-field-definition-source';
@@ -17,7 +17,7 @@ export class TableFieldList {
     private sources: TableFieldSource[] = [];
     private _fieldCount: Integer = 0;
     private _gridFields: TableGridField[] | undefined = undefined;
-    private _gridFieldInitialStates: GridFieldState[] | undefined = undefined;
+    private _gridFieldInitialStates: MotifGrid.FieldState[] | undefined = undefined;
 
     clear() {
         this.sources = [];
@@ -123,7 +123,7 @@ export class TableFieldList {
         return this.getGridFields();
     }
 
-    get gridFieldInitialStates(): GridFieldState[] {
+    get gridFieldInitialStates(): MotifGrid.FieldState[] {
         return this.getGridFieldInitialStates();
     }
 
@@ -146,12 +146,12 @@ export class TableFieldList {
         return result;
     }
 
-    private getGridFieldInitialStates(): GridFieldState[] {
-        let result: GridFieldState[];
+    private getGridFieldInitialStates(): MotifGrid.FieldState[] {
+        let result: MotifGrid.FieldState[];
         if (this._gridFieldInitialStates !== undefined) {
             result = this._gridFieldInitialStates;
         } else {
-            result = new Array<GridFieldState>(0);
+            result = new Array<MotifGrid.FieldState>(0);
             for (let i = 0; i < this.sourceCount; i++) {
                 const source = this.sources[i];
                 result = result.concat(source.getGridFieldInitialStates());
@@ -200,7 +200,7 @@ export class TableFieldList {
         for (let i = 0; i < source.fieldCount; i++) {
             const fieldName = source.getIndexAdjustedFieldName(i);
             if (!layout.hasField(fieldName)) {
-                layout.AddField(fieldName, visible);
+                layout.addField(fieldName, visible);
             }
         }
     }

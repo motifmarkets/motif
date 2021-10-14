@@ -4,9 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridColourScheme as RevGridColourScheme, GridSettings as RevGridSettings } from '@motifmarkets/revgrid';
 import { AssertInternalError, Integer, JsonElement, Logger, MultiEvent } from 'src/sys/internal-api';
-import { ColorScheme } from '../color-scheme';
 import { ColorSettings } from './color-settings';
 import { CoreSettings } from './core-settings';
 import { MasterSettings } from './master-settings';
@@ -138,77 +136,92 @@ export class SettingsService {
         this._changedMultiEvent.unsubscribe(id);
     }
 
-    createRevGridSettings(verticalScrollbarLeftPos?: boolean) {
-        const revGridColorScheme = new RevGridColourScheme();
+    // createGridSettings(frameGridProperties: MotifGrid.FrameGridProperties) {
+    //     const bkgdColumnHeader = this.color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
+    //     const foreColumnHeader = this.color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
 
-        // revGridColorScheme.GridLineHorizontal = this.color.getBkgdColor(ColorScheme.ItemId.Grid_LineHorizontal);
-        // revGridColorScheme.GridLineVertical = this.color.getBkgdColor(ColorScheme.ItemId.Grid_LineVertical);
+    //     const colorMap: GridSettings.ColorMap = {
+    //         foreHorizontalLine: this.color.getFore(ColorScheme.ItemId.Grid_HorizontalLine),
+    //         foreVerticalLine: this.color.getFore(ColorScheme.ItemId.Grid_VerticalLine),
 
-        revGridColorScheme.background = this.color.getBkgd(ColorScheme.ItemId.Grid_Base);
-        revGridColorScheme.backgroundAlt = this.color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt);
-        revGridColorScheme.backgroundColumnHeader = this.color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
-        // revGridColorScheme.backgroundColumnHover = this.color.getBkgdColor(ColorScheme.ItemId.Grid_ColumnHover);
-        // revGridColorScheme.BackgroundColumnHoverAlt = this.color.getBkgdColor(ColorScheme.ItemId.Grid_ColumnHoverAlt);
-        revGridColorScheme.borderFocus = this.color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
-        revGridColorScheme.backgroundFocus = this.color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell);
-        // revGridColorScheme.BackgroundHover = this.color.getBkgdColor(ColorScheme.ItemId.Grid_FocusedCellHover);
-        // revGridColorScheme.BackgroundHoverAlt = this.color.getBkgdColor(ColorScheme.ItemId.Grid_FocusedCellHoverAlt);
-        revGridColorScheme.backgroundRowHeader = this.color.getBkgd(ColorScheme.ItemId.Grid_RowHeader);
-        // revGridColorScheme.BackgroundRowHover = this.color.getBkgdColor(ColorScheme.ItemId.Grid_RowHover);
-        // revGridColorScheme.BackgroundRowHoverAlt = this.color.getBkgdColor(ColorScheme.ItemId.Grid_RowHoverAlt);
-        // revGridColorScheme.BackgroundColumnHeaderFocus = this.color.getBkgdColor(ColorScheme.ItemId.Grid_ColumnHeaderFocus);
-        // revGridColorScheme.BackgroundRowHeaderFocus = this.color.getBkgdColor(ColorScheme.ItemId.Grid_RowHeaderFocus);
+    //         bkgdBase: this.color.getBkgd(ColorScheme.ItemId.Grid_Base),
+    //         bkgdBaseAlt: this.color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt),
+    //         bkgdColumnHeader,
+    //         bkgdSelection: this.color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell),
+    //         bkgdColumnHeaderSelection: bkgdColumnHeader,
+    //         // bkgdRowHeader: this.color.getBkgd(ColorScheme.ItemId.Grid_RowHeader),
 
-        revGridColorScheme.foreground = this.color.getFore(ColorScheme.ItemId.Grid_Base);
-        revGridColorScheme.foregroundColumnHeader = this.color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
-        revGridColorScheme.foregroundFocus = this.color.getFore(ColorScheme.ItemId.Grid_FocusedCell);
-        revGridColorScheme.foregroundRowHeader = this.color.getFore(ColorScheme.ItemId.Grid_RowHeader);
-        // revGridColorScheme.ForegroundColumnHeaderFocus = this.color.getFontColor(ColorScheme.ItemId.Grid_ColumnHeaderFocus);
-        // revGridColorScheme.ForegroundRowHeaderFocus = this.color.getFontColor(ColorScheme.ItemId.Grid_RowHeaderFocus);
+    //         foreBase: this.color.getFore(ColorScheme.ItemId.Grid_Base),
+    //         foreColumnHeader,
+    //         foreSelection: this.color.getFore(ColorScheme.ItemId.Grid_FocusedCell),
+    //         foreColumnHeaderSelection: foreColumnHeader,
+    //         foreFocusedCellBorder: this.color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder),
+    //         // foreRowHeader: this.color.getFore(ColorScheme.ItemId.Grid_RowHeader),
 
-        revGridColorScheme.highlightAdd = this.color.getFore(ColorScheme.ItemId.Grid_RecordRecentlyAddedBorder);
-        revGridColorScheme.highlightUpdate = this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedBorder);
-        revGridColorScheme.highlightUpdateUp = this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedUpBorder);
-        revGridColorScheme.highlightUpdateDown = this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedDownBorder);
+    //         // highlightAdd: this.color.getFore(ColorScheme.ItemId.Grid_RecordRecentlyAddedBorder),
+    //         // highlightUpdate: this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedBorder),
+    //         // highlightUpdateUp: this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedUpBorder),
+    //         // highlightUpdateDown: this.color.getFore(ColorScheme.ItemId.Grid_ValueRecentlyModifiedDownBorder),
 
-        revGridColorScheme.scrollbarThumbColor = this.color.getFore(ColorScheme.ItemId.Grid_ScrollbarThumb);
-        revGridColorScheme.scrollbarThumbShadowColor = this.color.getBkgd(ColorScheme.ItemId.Grid_ScrollbarThumbShadow);
+    //         // scrollbarThumbColor: this.color.getFore(ColorScheme.ItemId.Grid_Scrollbar),
+    //         // scrollbarThumbShadowColor: this.color.getBkgd(ColorScheme.ItemId.Grid_ScrollbarThumbShadow),
+    //     };
 
-        const result = new RevGridSettings();
-        result.colourScheme = revGridColorScheme;
-        result.showVerticalGridLines = this.core.grid_VerticalLinesVisible;
-        result.showHorizontalGridLines = this.core.grid_HorizontalLinesVisible;
-        result.cellPadding = this.core.grid_CellPadding;
-        result.fixedRowHeight = this.core.grid_RowHeightFixed;
-        result.fontFocus = this.core.grid_FocusedFont === '' ? undefined : this.core.grid_FocusedFont;
-        result.fontColumnHeader = this.core.grid_ColumnHeaderFont === '' ? undefined : this.core.grid_ColumnHeaderFont;
-        result.fontColumnHeaderFocus = this.core.grid_FocusedColumnHeaderFont === '' ? undefined : this.core.grid_FocusedColumnHeaderFont;
-        result.gridLineHorizontalWeight = this.core.grid_HorizontalLineWeight;
-        result.gridLineVerticalWeight = this.core.grid_VerticalLineWeight;
-        result.highlightAddDuration = this.core.grid_AddHighlightDuration;
-        result.highlightUpdateDuration = this.core.grid_UpdateHighlightDuration;
-        result.highlightUpdateDuration = this.core.grid_UpdateHighlightDuration;
-        result.scrollbarHorizontalWidth = this.core.grid_HorizontalScrollbarWidth;
-        if (this.core.grid_HorizontalScrollbarWidth < 11) {
-            result.scrollbarHorizontalThumbWidth = this.core.grid_HorizontalScrollbarWidth;
-        } else {
-            result.scrollbarHorizontalThumbWidth = this.core.grid_HorizontalScrollbarWidth - 4;
-        }
-        result.scrollbarVerticalWidth = this.core.grid_VerticalScrollbarWidth;
-        if (this.core.grid_VerticalScrollbarWidth < 11) {
-            result.scrollbarVerticalThumbWidth = this.core.grid_VerticalScrollbarWidth;
-        } else {
-            result.scrollbarVerticalThumbWidth = this.core.grid_VerticalScrollbarWidth - 4;
-        }
-        if (verticalScrollbarLeftPos === undefined) {
-            verticalScrollbarLeftPos = this.core.grid_VerticalScrollbarLeftPos;
-        }
-        result.leftScrollbarPos = verticalScrollbarLeftPos;
-        result.scrollBarsCanOverlapGrid = this.core.grid_ScrollbarsOverlayAllowed;
-        result.scrollbarMargin = this.core.grid_ScrollbarMargin;
+    //     let scrollbarHorizontalThumbHeight: number;
+    //     if (this.core.grid_HorizontalScrollbarWidth < 11) {
+    //         scrollbarHorizontalThumbHeight = this.core.grid_HorizontalScrollbarWidth;
+    //     } else {
+    //         scrollbarHorizontalThumbHeight = this.core.grid_HorizontalScrollbarWidth - 4;
+    //     }
 
-        return result;
-    }
+    //     let scrollbarVerticalThumbWidth: number;
+    //     if (this.core.grid_VerticalScrollbarWidth < 11) {
+    //         scrollbarVerticalThumbWidth = this.core.grid_VerticalScrollbarWidth;
+    //     } else {
+    //         scrollbarVerticalThumbWidth = this.core.grid_VerticalScrollbarWidth - 4;
+    //     }
+
+    //     let scrollbarThumbInactiveOpacity = this.core.grid_ScrollbarThumbInactiveOpacity;
+    //     if (this.core.grid_ScrollbarThumbInactiveOpacity < 0) {
+    //         scrollbarThumbInactiveOpacity = 0;
+    //     } else {
+    //         if (this.core.grid_ScrollbarThumbInactiveOpacity > 1) {
+    //             scrollbarThumbInactiveOpacity = 1;
+    //         }
+    //     }
+
+    //     const result: GridSettings = {
+    //         fontFamily: this.core.grid_FontFamily,
+    //         fontSize: this.core.grid_FontSize,
+    //         columnHeaderFontSize: this.core.grid_ColumnHeaderFontSize,
+    //         defaultRowHeight: this.core.grid_RowHeight,
+    //         cellPadding: this.core.grid_CellPadding,
+    //         fixedColumnCount: frameGridProperties.fixedColumnCount,
+    //         scrollHorizontallySmoothly: this.core.grid_ScrollHorizontallySmoothly,
+    //         visibleColumnWidthAdjust: true,
+    //         gridRightAligned: frameGridProperties.gridRightAligned,
+    //         showHorizontalGridLines: this.core.grid_HorizontalLinesVisible,
+    //         showVerticalGridLines: this.core.grid_VerticalLinesVisible,
+    //         gridLineHorizontalWidth: this.core.grid_HorizontalLineWidth,
+    //         gridLineVerticalWidth: this.core.grid_VerticalLineWidth,
+    //         scrollbarHorizontalHeight: this.core.grid_HorizontalScrollbarWidth,
+    //         scrollbarHorizontalThumbHeight,
+    //         scrollbarVerticalWidth: this.core.grid_VerticalScrollbarWidth,
+    //         scrollbarVerticalThumbWidth,
+    //         scrollbarThumbInactiveOpacity,
+    //         scrollbarMargin: this.core.grid_ScrollbarMargin,
+
+    //         highlightMethod: GridSettings.HighlightMethod.InternalBorder,
+    //         changedAllRecentDuration: this.core.grid_AllChangedRecentDuration,
+    //         addedRowRecentDuration: this.core.grid_RecordInsertedRecentDuration,
+    //         changedRowRecordRecentDuration: this.core.grid_RecordUpdatedRecentDuration,
+    //         changedValueRecentDuration: this.core.grid_ValueChangedRecentDuration,
+
+    //         colorMap,
+    //     };
+
+    //     return result;
+    // }
 
     private handleMasterBeginChangesEvent() {
         this.beginMasterChanges();

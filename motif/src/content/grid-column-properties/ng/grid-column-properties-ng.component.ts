@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { GridLayout } from '@motifmarkets/revgrid';
+import { GridLayout } from 'src/content/internal-api';
 import { Integer } from 'src/sys/internal-api';
 
 @Component({

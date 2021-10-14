@@ -1,0 +1,64 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+ @import './partials/flex-row-items-centered-mixin';
+ @import './partials/caption-followed-by-input';
+@import './partials/horizontal-radio-separator';
+
+@mixin flexRowColorControlsCenteredMixin {
+    @include flexRowItemsCenteredMixin;
+
+    > *:not(:first-child) {
+        margin-left: 0.7em;
+    }
+}
+
+:host {
+    display: flex;
+    overflow: clip;
+    gap: .5em;
+}
+
+#typeSection {
+    @include horizontalRadioSeparatorMixin;
+}
+
+#hexAndHideSection {
+    @include flexRowItemsCenteredMixin;
+
+    #hexControl {
+        width: 10em;
+    }
+    #hideInPickerControl {
+        margin-left: 2em;
+    }
+}
+
+#buttonsSection {
+    display: flex;
+}
+
+#hsvControlsSection {
+    @include flexRowColorControlsCenteredMixin;
+    app-number-input {
+        width: 4em;
+    }
+}
+
+#rgbControlsSection {
+    @include flexRowColorControlsCenteredMixin;
+    app-integer-text-input {
+        width: 4em;
+    }
+}
+
+.captionFollowedByInput {
+    @include captionFollowedByInputMixin;
+}
+
+#headingLabel {
+    font-size: larger;
+}

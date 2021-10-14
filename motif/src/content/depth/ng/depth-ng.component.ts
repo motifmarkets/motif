@@ -6,7 +6,8 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { SplitComponent } from 'angular-split';
-import { assert, assigned, Badness, Integer, numberToPixels } from 'src/sys/internal-api';
+import { MotifGrid } from 'src/content/internal-api';
+import { Badness, Integer, numberToPixels } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { DepthSideNgComponent } from '../../depth-side/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
@@ -25,6 +26,15 @@ export class DepthNgComponent implements OnDestroy, AfterViewInit, DepthFrame.Co
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
     @ViewChild('askSide', { static: true }) private _askComponent: DepthSideNgComponent;
 
+    public readonly bidFrameGridProperties: MotifGrid.FrameGridProperties = {
+        gridRightAligned: true,
+        fixedColumnCount: 0,
+    };
+    public readonly askFrameGridProperties: MotifGrid.FrameGridProperties = {
+        gridRightAligned: false,
+        fixedColumnCount: 0,
+    };
+
     public bidActiveWidth = '120px';
     public bidWidthPercent = 50;
     public askActiveWidth = '120px';
@@ -33,28 +43,21 @@ export class DepthNgComponent implements OnDestroy, AfterViewInit, DepthFrame.Co
 
     private _frame: DepthFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, private _contentService: ContentNgService) {
-        this._frame = this._contentService.createDepthFrame(this);
-    }
-
     public get frame(): DepthFrame { return this._frame; }
+
+    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        this._frame = contentService.createDepthFrame(this);
+    }
 
     ngOnDestroy() {
         this.frame.finalise();
     }
 
     ngAfterViewInit() {
-        assert(assigned(this._bidComponent), 'ID:3717143307');
-        assert(assigned(this._askComponent), 'ID:3817143310');
-
         this.frame.bindChildFrames(this._bidComponent.frame, this._askComponent.frame);
     }
 
     // Component Access Methods
-
-    public getBidAskSeparatorWidth() {
-        return this.splitterGutterSize;
-    }
 
     public setBidActiveWidth(pixels: Integer) {
         this.bidActiveWidth = numberToPixels(pixels);

@@ -17,6 +17,7 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { ExchangeId, IvemId, LitIvemId, MarketId } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { MotifGrid } from 'src/content/internal-api';
 import { TableNgComponent } from 'src/content/ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
 import { DateUiAction, IconButtonUiAction, InternalCommand, IvemIdUiAction, UiAction } from 'src/core/internal-api';
@@ -57,6 +58,11 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
 
+    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+        fixedColumnCount: 0,
+        gridRightAligned: false,
+    };
+
     public caption = '';
     public details: TopShareholdersDitemNgComponent.Details = {
         symbolText: '',
@@ -86,6 +92,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     private _frame: TopShareholdersDitemFrame;
 
     protected get stateSchemaVersion() { return TopShareholdersDitemNgComponent.stateSchemaVersion; }
+
     get ditemFrame() { return this._frame; }
 
     constructor(

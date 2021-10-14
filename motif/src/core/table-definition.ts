@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from '@motifmarkets/revgrid';
+import { GridLayout } from 'src/content/internal-api';
 import { AssertInternalError, Guid, Integer, JsonElement, UsableListChangeTypeId } from 'src/sys/internal-api';
 import { TableFieldList } from './table-field-list';
 import { TableRecordDefinition } from './table-record-definition';
@@ -154,7 +154,7 @@ export abstract class TableDefinition {
     }
 
     protected addFieldToDefaultLayout(fieldName: string, visible: boolean) {
-        this._defaultLayout.AddField(fieldName, visible);
+        this._defaultLayout.addField(fieldName, visible);
     }
 
     protected addMissingFieldsToDefaultLayout(visible: boolean) {

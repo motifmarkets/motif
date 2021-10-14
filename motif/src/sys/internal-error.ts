@@ -7,15 +7,8 @@
 import { I18nStrings, StringId } from 'src/res/internal-api';
 import { Logger } from './logger';
 
-export class PulseError extends Error {
-    constructor(message: string) {
-        super(message);
-        Logger.logError(message, 100);
-    }
-}
-
 abstract class BaseInternalError extends Error {
-    constructor(errorTypeDescription: StringId, private code: string, message?: string) {
+    constructor(errorTypeDescription: StringId, code: string, message?: string) {
         super(message === undefined || message === '' ?
             I18nStrings.getStringPlusEnglish(errorTypeDescription) + `: ${code}`
             :
@@ -39,6 +32,12 @@ export class AssertInternalError extends BaseInternalError {
 export class NotImplementedError extends BaseInternalError {
     constructor(code: string) {
         super(StringId.NotImplementedInternalError, code);
+    }
+}
+
+export class UnexpectedUndefinedError extends BaseInternalError {
+    constructor(code: string, message?: string) {
+        super(StringId.UnexpectedUndefinedInternalError, code, message);
     }
 }
 

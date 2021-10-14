@@ -27,6 +27,7 @@ import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBa
 import { ButtonUiAction, ColorScheme, CommandRegisterService, InternalCommand, SettingsService } from 'src/core/internal-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'src/ditem/ng-api';
 import { StringId } from 'src/res/internal-api';
+import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { AssertInternalError, delay1Tick, MultiEvent } from 'src/sys/internal-api';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';
 import { DesktopFrame } from '../desktop-frame';
@@ -45,6 +46,8 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
 
     public barBkgdColor: string;
     public barForeColor: string;
+    public readonly barLeftImageExists: boolean;
+    public readonly barLeftImageUrl: string;
 
     private readonly _commandRegisterService: CommandRegisterService;
     private readonly _settingsService: SettingsService;
@@ -55,6 +58,7 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
     // private _commandBarUiAction: CommandBarUiAction;
 
     constructor(
+        configNgService: ConfigNgService,
         settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,
         userAlertNgService: UserAlertNgService,
@@ -71,6 +75,16 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 
         const signOutService = signOutNgService.service;
+
+        const config = configNgService.config;
+        const barLeftImageUrl = config.branding.desktopBarLeftImageUrl;
+        if (barLeftImageUrl === undefined) {
+            this.barLeftImageExists = false;
+            this.barLeftImageUrl = '';
+        } else {
+            this.barLeftImageExists = true;
+            this.barLeftImageUrl = barLeftImageUrl;
+        }
 
         this._desktopFrame = new DesktopFrame(this._settingsService,
             appStorageNgService.appStorage,

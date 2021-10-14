@@ -7,11 +7,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { isReadable as tinyColorIsReadable, readability as tinyColorReadability } from '@ctrl/tinycolor';
 import { SettingsNgService } from 'src/component-services/ng-api';
-import { CaptionLabelNgComponent, NumberInputNgComponent } from 'src/controls/ng-api';
-import { ColorScheme, ColorSettings, NumberUiAction } from 'src/core/internal-api';
+import { MultiColorPickerNgComponent } from 'src/content/multi-color-picker/ng/multi-color-picker-ng.component';
+import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'src/controls/ng-api';
+import { ColorScheme, ColorSettings, EnumUiAction, ExplicitElementsEnumUiAction, NumberUiAction } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick, Integer } from 'src/sys/internal-api';
-import { ColorSelectorNgComponent } from '../../color-selector/ng-api';
+import { delay1Tick, EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { ColorControlsNgComponent } from '../../color-controls/ng-api';
 
 @Component({
     selector: 'app-color-scheme-item-properties',
@@ -21,11 +22,13 @@ import { ColorSelectorNgComponent } from '../../color-selector/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDestroy {
-    @ViewChild('topDiv', { static: true }) private _topDiv: ElementRef;
-    @ViewChild('bkgdColorSelector', { static: true }) private _bkgdColorSelector: ColorSelectorNgComponent;
-    @ViewChild('foreColorSelector', { static: true }) private _foreColorSelector: ColorSelectorNgComponent;
+    @ViewChild('bkgdControls', { static: true }) private _bkgdControls: ColorControlsNgComponent;
+    @ViewChild('multiPicker', { static: true }) private _multiPicker: MultiColorPickerNgComponent;
+    @ViewChild('foreControls', { static: true }) private _foreControls: ColorControlsNgComponent;
     @ViewChild('readabilityLabel', { static: true }) private _readabilityLabel: CaptionLabelNgComponent;
-    @ViewChild('readabilityInput', { static: true }) private _readabilityInput: NumberInputNgComponent;
+    @ViewChild('readabilityControl', { static: true }) private _readabilityInput: NumberInputNgComponent;
+    @ViewChild('hueSaturationRadio', { static: true }) private _hueSaturationRadio: CaptionedRadioNgComponent;
+    @ViewChild('valueSaturationRadio', { static: true }) private _valueSaturationRadio: CaptionedRadioNgComponent;
 
     itemChangedEvent: ColorSchemeItemPropertiesComponent.ItemChangedEvent;
 
@@ -34,29 +37,56 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
 
     private _colorSettings: ColorSettings;
     private _readabilityUiAction: NumberUiAction;
+    private _pickerTypeUiAction: ExplicitElementsEnumUiAction;
 
     private _itemId: ColorScheme.ItemId | undefined;
     private _width: Integer;
 
-    constructor(private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+    constructor(private _cdr: ChangeDetectorRef, private readonly _hostElementRef: ElementRef, settingsNgService: SettingsNgService) {
         this._colorSettings = settingsNgService.settingsService.color;
 
         this._readabilityUiAction = this.createReadbilityUiAction();
+        this._pickerTypeUiAction = this.createPickerTypeUiAction();
     }
 
-    get width() { return this._width; }
+    get approximateWidth() { return this._multiPicker.approximateWidth; }
 
     ngAfterViewInit() {
-        this._bkgdColorSelector.bkdgFore = ColorScheme.BkgdForeId.Bkgd;
-        this._bkgdColorSelector.position = ColorSelectorNgComponent.Position.Top;
-        this._bkgdColorSelector.itemChangedEvent = (itemId) => this.handleItemChangedEvent(itemId);
-        this._foreColorSelector.bkdgFore = ColorScheme.BkgdForeId.Fore;
-        this._foreColorSelector.position = ColorSelectorNgComponent.Position.Bottom;
-        this._foreColorSelector.itemChangedEvent = (itemId) => this.handleItemChangedEvent(itemId);
+        this._bkgdControls.bkdgFore = ColorScheme.BkgdForeId.Bkgd;
+        this._bkgdControls.position = ColorControlsNgComponent.Position.Top;
+        this._bkgdControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
+        this._bkgdControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Bkgd, rgb);
+        this._bkgdControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Bkgd);
+        this._bkgdControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Bkgd, hide);
 
-        this._width = this._topDiv.nativeElement.offsetWidth;
+        this._foreControls.bkdgFore = ColorScheme.BkgdForeId.Fore;
+        this._foreControls.position = ColorControlsNgComponent.Position.Bottom;
+        this._foreControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
+        this._foreControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Fore, rgb);
+        this._foreControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Fore);
+        this._foreControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Fore, hide);
 
-        delay1Tick(() => this.setUiActions());
+        this._multiPicker.inputChangeEventer = (backForeId, rgb) => {
+            switch (backForeId) {
+                case ColorScheme.BkgdForeId.Bkgd:
+                    this._bkgdControls.setColor(rgb);
+                    break;
+                case ColorScheme.BkgdForeId.Fore:
+                    this._foreControls.setColor(rgb);
+                    break;
+                default:
+                    throw new UnreachableCaseError('CSIPNCNAVI67723', backForeId);
+            }
+        };
+
+        this._multiPicker.activeChangedEventer = (backForeId) => {
+            this._bkgdControls.setActiveInPicker(backForeId === ColorScheme.BkgdForeId.Bkgd);
+            this._foreControls.setActiveInPicker(backForeId === ColorScheme.BkgdForeId.Fore);
+        };
+
+        this._pickerTypeUiAction.pushValue(this._multiPicker.pickerType);
+
+        delay1Tick(() => this.initialiseControls());
     }
 
     ngOnDestroy() {
@@ -91,15 +121,15 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
             this.markForCheck();
         }
 
-        this._bkgdColorSelector.itemId = value;
-        this._foreColorSelector.itemId = value;
+        this._bkgdControls.itemId = value;
+        this._foreControls.itemId = value;
 
         this.updateReadability();
     }
 
     processSettingsChanged() {
-        this._bkgdColorSelector.processSettingsChanged();
-        this._foreColorSelector.processSettingsChanged();
+        this._bkgdControls.processSettingsChanged();
+        this._foreControls.processSettingsChanged();
         this.updateReadability();
     }
 
@@ -114,15 +144,38 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
 
     private createReadbilityUiAction() {
         const action = new NumberUiAction();
-        action.pushTitle(Strings[StringId.ColorItemProperties_ReadabilityTitle]);
-        action.pushCaption(Strings[StringId.ColorItemProperties_ReadabilityCaption]);
+        action.pushTitle(Strings[StringId.ColorSchemeItemProperties_ReadabilityTitle]);
+        action.pushCaption(Strings[StringId.ColorSchemeItemProperties_ReadabilityCaption]);
         action.pushReadonly();
         return action;
     }
 
-    private setUiActions() {
+    private createPickerTypeUiAction() {
+        const action = new ExplicitElementsEnumUiAction();
+        action.pushCaption(Strings[StringId.ColorSchemeItemProperties_PickerTypeCaption]);
+        action.pushTitle(Strings[StringId.ColorSchemeItemProperties_PickerTypeTitle]);
+
+        const entryCount = ColorSchemeItemPropertiesComponent.PickerType.idCount;
+        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        for (let id = 0; id < entryCount; id++) {
+            elementPropertiesArray[id] = {
+                element: id,
+                caption: ColorSchemeItemPropertiesComponent.PickerType.idToCaption(id),
+                title: ColorSchemeItemPropertiesComponent.PickerType.idToTitle(id),
+            };
+        }
+
+        action.pushElements(elementPropertiesArray);
+        action.commitEvent = () => { this._multiPicker.pickerType = this._pickerTypeUiAction.definedValue; };
+        return action;
+    }
+
+    private initialiseControls() {
         this._readabilityLabel.initialise(this._readabilityUiAction);
         this._readabilityInput.initialise(this._readabilityUiAction);
+        this._readabilityInput.readonlyAlways = true;
+        this._hueSaturationRadio.initialiseEnum(this._pickerTypeUiAction, MultiColorPickerNgComponent.PickerTypeId.HueSaturation);
+        this._valueSaturationRadio.initialiseEnum(this._pickerTypeUiAction, MultiColorPickerNgComponent.PickerTypeId.ValueSaturation);
     }
 
     private updateReadability() {
@@ -151,9 +204,62 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
 
     private finalise() {
         this._readabilityUiAction.finalise();
+        this._pickerTypeUiAction.finalise();
     }
 }
 
 export namespace ColorSchemeItemPropertiesComponent {
     export type ItemChangedEvent = (itemId: ColorScheme.ItemId) => void;
+
+    export namespace PickerType {
+        type Id = MultiColorPickerNgComponent.PickerTypeId;
+
+        interface Info {
+            readonly id: Id;
+            readonly captionId: StringId;
+            readonly titleId: StringId;
+        }
+
+        type InfosObject = { [id in keyof typeof MultiColorPickerNgComponent.PickerTypeId]: Info };
+
+        const infosObject: InfosObject = {
+            HueSaturation: {
+                id: MultiColorPickerNgComponent.PickerTypeId.HueSaturation,
+                captionId: StringId.ColorSchemeItemProperties_HueSaturationCaption,
+                titleId: StringId.ColorSchemeItemProperties_HueSaturationTitle,
+            },
+            ValueSaturation: {
+                id: MultiColorPickerNgComponent.PickerTypeId.ValueSaturation,
+                captionId: StringId.ColorSchemeItemProperties_ValueSaturationCaption,
+                titleId: StringId.ColorSchemeItemProperties_ValueSaturationTitle,
+            },
+        } as const;
+
+        const infos = Object.values(infosObject);
+        export const idCount = infos.length;
+
+        export function initialise() {
+            for (let i = 0; i < idCount; i++) {
+                if (infos[i].id !== i) {
+                    throw new EnumInfoOutOfOrderError('ColorSchemeItemPropertiesComponent.PickerType', i, idToCaption(i));
+                }
+            }
+        }
+
+        function idToCaptionId(id: Id) {
+            return infos[id].captionId;
+        }
+
+        export function idToCaption(id: Id) {
+            return Strings[idToCaptionId(id)];
+        }
+
+        function idToTitleId(id: Id) {
+            return infos[id].titleId;
+        }
+
+        export function idToTitle(id: Id) {
+            return Strings[idToTitleId(id)];
+        }
+    }
 }

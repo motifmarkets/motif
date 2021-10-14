@@ -65,7 +65,7 @@
                 <app-integer-label #queryTopPageCountLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
                 <app-button-input #queryTopNextButton [style.display]="paginationActive ? null : 'none'"></app-button-input>
             </section>
-            <app-table #queryTable id="queryTable"></app-table>
+            <app-table #queryTable id="queryTable" [frameGridProperties]="frameGridProperties "></app-table>
             <section id="queryBottomPageSection">
                 <app-caption-label #queryBottomPageLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
                 <app-integer-label #queryBottomPageNumberLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
@@ -91,7 +91,7 @@
         </section>
         <section id="subscriptionResultSection">
             <app-caption-label #subscriptionDescriptionLabel id="subscriptionDescriptionLabel"></app-caption-label>
-            <app-table #subscriptionTable id="subscriptionTable"></app-table>
+            <app-table #subscriptionTable id="subscriptionTable" [frameGridProperties]="frameGridProperties "></app-table>
         </section>
     </section>
 </section>

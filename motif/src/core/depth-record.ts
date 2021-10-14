@@ -4,10 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
+import { RevRecord } from 'revgrid';
 import { Integer } from 'src/sys/internal-api';
 import { IntegerRenderValue, RenderValue } from './render-value';
 
-export abstract class DepthRecord {
+export abstract class DepthRecord implements RevRecord {
     inAuction: boolean;
     partialAuctionQuantity: Integer | undefined;
 
@@ -25,13 +26,13 @@ export abstract class DepthRecord {
     }
 
     get typeId() { return this._typeId; }
-    get quantityAhead() { return this._volumeAhead; }
-    set quantityAhead(value: Integer | undefined) { this._volumeAhead = value; }
-    get cumulativeQuantity() { return this.quantityAhead === undefined ? undefined : this.quantityAhead + this.getVolume(); }
+    get volumeAhead() { return this._volumeAhead; }
+    // set volumeAhead(value: Integer | undefined) { this._volumeAhead = value; }
+    get cumulativeQuantity() { return this.volumeAhead === undefined ? undefined : this.volumeAhead + this.getVolume(); }
 
     processAuctionAndVolumeAhead(
         volumeAhead: Integer | undefined, auctionVolume: Integer | undefined
-    ): DepthRecord.ProcessQuantityAheadResult {
+    ): DepthRecord.ProcessVolumeAheadResult {
         let inAuction: boolean;
         let cumulativeVolume: Integer | undefined;
         let partialAuctionVolumeChanged = false;
@@ -62,17 +63,17 @@ export abstract class DepthRecord {
             }
         }
 
-        let inAuctionOrVolumeAheadOrPartialChanged: boolean;
-        if (inAuction === this.inAuction && volumeAhead === this.quantityAhead && !partialAuctionVolumeChanged) {
-            inAuctionOrVolumeAheadOrPartialChanged = false;
-        } else {
+        const inAuctionChanged = inAuction !== this.inAuction;
+        if (inAuctionChanged) {
             this.inAuction = inAuction;
+        }
+        const volumeAheadChanged = volumeAhead !== this.volumeAhead;
+        if (volumeAheadChanged) {
             this._volumeAhead = volumeAhead;
-            inAuctionOrVolumeAheadOrPartialChanged = true;
         }
         return {
             cumulativeVolume,
-            inAuctionOrVolumeAheadOrPartialChanged
+            inAuctionOrVolumeAheadOrPartialChanged: inAuctionChanged || volumeAheadChanged || partialAuctionVolumeChanged,
         };
     }
 
@@ -97,7 +98,7 @@ export abstract class DepthRecord {
     }
 
     protected createVolumeAheadRenderValue(): DepthRecord.CreateRenderValueResult {
-        const renderValue = new IntegerRenderValue(this.quantityAhead);
+        const renderValue = new IntegerRenderValue(this.volumeAhead);
         return { renderValue };
     }
 
@@ -112,7 +113,7 @@ export namespace DepthRecord {
         PriceLevel,
     }
 
-    export interface ProcessQuantityAheadResult {
+    export interface ProcessVolumeAheadResult {
         cumulativeVolume: Integer | undefined;
         inAuctionOrVolumeAheadOrPartialChanged: boolean;
     }

@@ -7,6 +7,10 @@
 <app-environment-display #environmentDisplay></app-environment-display>
 <section id="bar" [style.color]="barForeColor" [style.background-color]="barBkgdColor">
     <section id="leftControls">
+        <!-- <svg #svg id="svg" role="img" aria-hidden="true" ariaLabelledBy="null" ariaTitle="null" focusable="false">
+            <use href="/_config-do-not-delete/splash.svg"/>
+        </svg> -->
+        <img *ngIf="barLeftImageExists" [src]="barLeftImageUrl" style="height: 1.7em; width: auto">
         <app-menu-bar-root-menu #menuBarRootMenu id="menuBarRootMenu"></app-menu-bar-root-menu>
         <app-command-bar #commandBar id="commandBar"></app-command-bar>
     </section>

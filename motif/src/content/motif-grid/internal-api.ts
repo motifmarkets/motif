@@ -4,5 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/color-selector-ng.component';
+export * from './grid-layout';
+export * from './motif-grid';
 
