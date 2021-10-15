@@ -534,14 +534,14 @@ export class MotifGrid extends Revgrid {
         this.moveActiveColumn(fromColumnIndex, toColumnIndex);
     }
 
-    override reset(options?: Revgrid.Options, loadProperties = true): void {
+    override reset(adapterSet?: GridProperties.AdapterSet): void {
         if (this._fieldAdapter !== undefined) { // will be undefined while grid is being constructed
             this._fieldAdapter.reset();
         }
         if (this._mainRecordAdapter !== undefined) { // will be undefined while grid is being constructed
             this._mainRecordAdapter.reset();
         }
-        super.reset(options, loadProperties);
+        super.reset(adapterSet, undefined, false);
     }
 
     recordToRowIndex(recIdx: RevRecordIndex): number {
@@ -1039,24 +1039,31 @@ export namespace MotifGrid {
         }
 
         const gridLinesH = core.grid_HorizontalLinesVisible;
+        let gridLinesHWidth = core.grid_HorizontalLineWidth;
         if (gridLinesH !== existingGridProperties?.gridLinesH) {
             properties.gridLinesH = gridLinesH;
+            if (!gridLinesH) {
+                gridLinesHWidth = 0;
+            }
         }
-        const gridLinesHWidth = core.grid_HorizontalLineWidth;
-        if (gridLinesHWidth !== undefined) {
+        if (gridLinesHWidth !== existingGridProperties?.gridLinesHWidth && gridLinesHWidth >= 0) {
             properties.gridLinesHWidth = gridLinesHWidth;
         }
-        const showVerticalGridLines = core.grid_VerticalLinesVisible;
-        if (showVerticalGridLines !== undefined) {
-            properties.gridLinesV = showVerticalGridLines;
+
+        const gridLinesV = core.grid_VerticalLinesVisible;
+        let gridLinesVWidth = core.grid_VerticalLineWidth;
+        if (gridLinesV !== existingGridProperties?.gridLinesV) {
+            properties.gridLinesV = gridLinesV;
+            if (!gridLinesV) {
+                gridLinesVWidth = 0;
+            }
         }
-        const gridLinesVWidth = core.grid_VerticalLineWidth;
-        if (gridLinesVWidth !== undefined) {
+        if (gridLinesVWidth !== existingGridProperties?.gridLinesVWidth && gridLinesVWidth >= 0) {
             properties.gridLinesVWidth = gridLinesVWidth;
         }
 
         const scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
-        if (scrollHorizontallySmoothly !== undefined) {
+        if (scrollHorizontallySmoothly !== existingGridProperties?.scrollHorizontallySmoothly) {
             properties.scrollHorizontallySmoothly = scrollHorizontallySmoothly;
         }
 

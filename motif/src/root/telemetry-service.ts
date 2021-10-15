@@ -16,6 +16,8 @@ export class TelemetryService {
     private _enabled = false;
     private _enablable: boolean;
     private _configServiceName = 'Not configured yet';
+    private _maxErrorCount = 1;
+    private _errorCount = 0;
 
     constructor() {
         const rollbarConfig = TelemetryService.rollbarConfig;
@@ -36,7 +38,8 @@ export class TelemetryService {
     }
 
     applyConfig(config: Config) {
-        this._enabled = this._enablable && config.diagnostics.telemetryEnabled;
+        this._enabled = this._enablable && config.diagnostics.telemetry.enabled;
+        this._maxErrorCount = config.diagnostics.telemetry.maxErrorCount;
         this._configServiceName = config.service.name;
         this._rollbar.configure({
             enabled: this._enabled,
@@ -66,7 +69,8 @@ export class TelemetryService {
     }
 
     error(err: unknown) {
-        if (this._enabled) {
+        if (this._enabled && this._errorCount < this._maxErrorCount) {
+            this._errorCount++;
             if (typeof err === 'object' && err !== null) {
                 const originalErr = getObjectPropertyValue(err, 'originalError');
                 if (originalErr !== undefined) {

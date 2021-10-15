@@ -107,7 +107,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     getRecords() {
         if (this._table === undefined) {
-            throw new UnexpectedUndefinedError('TFGR771134');
+            return [];
         } else {
             return this._table.records;
         }

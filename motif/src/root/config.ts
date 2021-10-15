@@ -55,7 +55,7 @@ export namespace Config {
 
     export interface Diagnostics {
         readonly appNotifyErrors: boolean;
-        readonly telemetryEnabled: boolean;
+        readonly telemetry: Diagnostics.Telemetry;
         readonly zenithLogLevelId: ZenithPublisherSubscriptionManager.LogLevelId;
         readonly dataSubscriptionCachingDisabled: boolean;
         readonly motifServicesBypass: Diagnostics.MotifServicesBypass;
@@ -63,8 +63,17 @@ export namespace Config {
 
     export namespace Diagnostics {
         export const defaultAppNotifyErrors = true;
-        export const defaultTelemetryEnabled = true;
         export const defaultDataSubscriptionCachingDisabled = false;
+
+        export interface Telemetry {
+            enabled: boolean;
+            maxErrorCount: number;
+        }
+
+        export namespace Telemetry {
+            export const defaultEnabled = true;
+            export const defaultMaxErrorCount = 1;
+        }
 
         export namespace ZenithLog {
             export const defaultLevelId = ZenithPublisherSubscriptionManager.LogLevelId.Off;

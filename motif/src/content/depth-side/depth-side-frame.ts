@@ -9,11 +9,13 @@ import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle,
 import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import {
     DepthRecord,
-    DepthSideGridRecordStore,
     DepthSideGridField,
+    DepthSideGridRecordStore,
+    FullDepthSideGridField,
     FullDepthSideGridRecordStore,
-    FullDepthSideGridField, GridLayoutIO, ShortDepthSideGridRecordStore,
-    ShortDepthSideGridField
+    GridLayoutIO,
+    ShortDepthSideGridField,
+    ShortDepthSideGridRecordStore
 } from 'src/core/internal-api';
 import { assigned, Integer, JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
 import { ContentFrame } from '../content-frame';

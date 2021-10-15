@@ -863,6 +863,8 @@ export const enum StringId {
     SettingTitle_Format_DateTimeTimezoneModeId,
     SettingCaption_Master_SettingsProfile,
     SettingTitle_Master_SettingsProfile,
+    SettingCaption_Grid_RowHeight,
+    SettingTitle_Grid_RowHeight,
     SettingCaption_Grid_HorizontalLinesVisible,
     SettingTitle_Grid_HorizontalLinesVisible,
     SettingCaption_Grid_VerticalLinesVisible,
@@ -6038,6 +6040,16 @@ export namespace I18nStrings {
         SettingTitle_Master_SettingsProfile: {
             id: StringId.SettingTitle_Master_SettingsProfile, translations: {
                 en: 'Choose which set of settings to use',
+            }
+        },
+        SettingCaption_Grid_RowHeight: {
+            id: StringId.SettingCaption_Grid_RowHeight, translations: {
+                en: 'Row Height',
+            }
+        },
+        SettingTitle_Grid_RowHeight: {
+            id: StringId.SettingTitle_Grid_RowHeight, translations: {
+                en: 'Row Height (in pixels)',
             }
         },
         SettingCaption_Grid_HorizontalLinesVisible: {

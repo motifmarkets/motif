@@ -1,62 +1,64 @@
 {
-    "configFormatVersion": "2",
-    "configComment": "",
-    "service": {
-        "name": "FNSX Demo",
-        "description": "First National Stock Exchange Demo (Development impersonating production)"
-    },
-    "exchange": {
-        "environment": "demo",
-        "defaultDefault": "Fnsx"
-    },
-    "endpoints": {
-        "motifServices": [
-            "https://motif-services.paritech.com"
-        ],
-        "zenith": [
-            "wss://wsapistaging.paritech.com:443/Zenith?version=2.0"
-        ]
-    },
-    "openId": {
-        "authority": "https://passport.paritech.com",
-        "clientId": "MotifDev$Web",
-        "redirectUri": "http://localhost:4200/auth-callback",
-        "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
-        "scope": "openid profile roles ZenithStaging/Trading ZenithStaging/Market ZenithStaging/News ZenithStaging/OrderPad MotifSvc/RestAPI"
-    },
-    "bundledExtensions": [
-        {
-            "info": {
-                "publisherType": "Organisation",
-                "publisherName": "Paritech",
-                "name": "Highcharts",
-                "version": "0.0.2",
-                "apiVersion": "1",
-                "shortDescription": "Highcharts Charting",
-                "longDescription": "Highcharts Charting",
-                "urlPath": "/extensions/highcharts/dist/highcharts.js"
-            },
-            "install": true
-        },
-        {
-            "info": {
-                "publisherType": "Organisation",
-                "publisherName": "Paritech",
-                "name": "TsDemo",
-                "version": "0.0.1",
-                "apiVersion": "1",
-                "shortDescription": "TypeScript Demo",
-                "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
-                "urlPath": "/extensions/tstest/dist/tsdemo.js"
-            },
-            "install": false
-        }
+  "configFormatVersion": "2",
+  "configComment": "",
+  "service": {
+    "name": "FNSX Demo",
+    "description": "First National Stock Exchange Demo (Development impersonating production)"
+  },
+  "exchange": {
+    "environment": "demo",
+    "defaultDefault": "Fnsx"
+  },
+  "endpoints": {
+    "motifServices": [
+      "https://motif-services.paritech.com"
     ],
-    "diagnostics": {
-        "telemetryEnabled": false
+    "zenith": [
+      "wss://wsapistaging.paritech.com:443/Zenith?version=2.0"
+    ]
+  },
+  "openId": {
+    "authority": "https://passport.paritech.com",
+    "clientId": "MotifDev$Web",
+    "redirectUri": "http://localhost:4200/auth-callback",
+    "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+    "scope": "openid profile roles ZenithStaging/Trading ZenithStaging/Market ZenithStaging/News ZenithStaging/OrderPad MotifSvc/RestAPI"
+  },
+  "bundledExtensions": [
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
+        "name": "Highcharts",
+        "version": "0.0.2",
+        "apiVersion": "1",
+        "shortDescription": "Highcharts Charting",
+        "longDescription": "Highcharts Charting",
+        "urlPath": "/extensions/highcharts/dist/highcharts.js"
+      },
+      "install": true
     },
-    "branding": {
-      "startupTopSplashImageUrl": "branding/images/splash.svg",
-      "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
+        "name": "TsDemo",
+        "version": "0.0.1",
+        "apiVersion": "1",
+        "shortDescription": "TypeScript Demo",
+        "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
+        "urlPath": "/extensions/tstest/dist/tsdemo.js"
+      },
+      "install": false
     }
+  ],
+  "diagnostics": {
+    "telemetry": {
+      "enabled": false
+    }
+  },
+  "branding": {
+    "startupTopSplashImageUrl": "branding/images/splash.svg",
+    "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
+  }
 }

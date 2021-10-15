@@ -366,7 +366,7 @@ export namespace ConfigNgService {
     export namespace Diagnostics {
         export interface Json {
             readonly appNotifyErrors?: boolean;
-            readonly telemetryEnabled?: boolean;
+            readonly telemetry?: Telemetry.Json;
             readonly zenithLogLevel?: ZenithLog.Level;
             readonly dataSubscriptionCachingDisabled?: boolean;
             readonly motifServicesBypass?: MotifServicesBypass.Json;
@@ -376,7 +376,7 @@ export namespace ConfigNgService {
             if (json === undefined) {
                 const diagnostics: Config.Diagnostics = {
                     appNotifyErrors: Config.Diagnostics.defaultAppNotifyErrors,
-                    telemetryEnabled: Config.Diagnostics.defaultTelemetryEnabled,
+                    telemetry: Telemetry.parseJson(undefined),
                     zenithLogLevelId: Config.Diagnostics.ZenithLog.defaultLevelId,
                     dataSubscriptionCachingDisabled: Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
                     motifServicesBypass: MotifServicesBypass.parseJson(undefined),
@@ -386,7 +386,7 @@ export namespace ConfigNgService {
             } else {
                 const diagnostics: Config.Diagnostics = {
                     appNotifyErrors: json.appNotifyErrors ?? Config.Diagnostics.defaultAppNotifyErrors,
-                    telemetryEnabled: json.telemetryEnabled ?? Config.Diagnostics.defaultTelemetryEnabled,
+                    telemetry: Telemetry.parseJson(json.telemetry),
                     zenithLogLevelId: ZenithLog.parseJson(json.zenithLogLevel, serviceName),
                     dataSubscriptionCachingDisabled: json.dataSubscriptionCachingDisabled ??
                         Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
@@ -394,6 +394,32 @@ export namespace ConfigNgService {
                 };
 
                 return diagnostics;
+            }
+        }
+
+        export namespace Telemetry {
+            export interface Json {
+                enabled?: boolean;
+                maxErrorCount?: number;
+            }
+
+            export function parseJson(json: Json | undefined) {
+                let enabled: boolean;
+                let maxErrorCount: number;
+
+                if (json === undefined) {
+                    enabled = Config.Diagnostics.Telemetry.defaultEnabled;
+                    maxErrorCount = Config.Diagnostics.Telemetry.defaultMaxErrorCount;
+                } else {
+                    enabled = json.enabled ?? Config.Diagnostics.Telemetry.defaultEnabled;
+                    maxErrorCount = json.maxErrorCount ??Config.Diagnostics.Telemetry.defaultMaxErrorCount;
+                }
+                const telemetry: Config.Diagnostics.Telemetry = {
+                    enabled,
+                    maxErrorCount,
+                };
+
+                return telemetry;
             }
         }
 

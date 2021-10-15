@@ -37,6 +37,8 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     @ViewChild('fontSizeControl', { static: true }) private _fontSizeControlComponent: TextInputNgComponent;
     @ViewChild('columnHeaderFontSizeLabel', { static: true }) private _columnHeaderFontSizeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('columnHeaderFontSizeControl', { static: true }) private _columnHeaderFontSizeControlComponent: TextInputNgComponent;
+    @ViewChild('rowHeightLabel', { static: true }) private _rowHeightLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('rowHeightControl', { static: true }) private _rowHeightControlComponent: IntegerTextInputNgComponent;
     @ViewChild('showHorizontalGridLinesLabel', { static: true }) private _showHorizontalGridLinesLabel: CaptionLabelNgComponent;
     @ViewChild('showHorizontalGridLinesCheckbox', { static: true }) private _showHorizontalGridLinesCheckbox: CheckboxInputNgComponent;
     @ViewChild('showVerticalGridLinesLabel', { static: true }) private _showVerticalGridLinesLabel: CaptionLabelNgComponent;
@@ -81,6 +83,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     private readonly _fontFamilyUiAction: StringUiAction;
     private readonly _fontSizeUiAction: StringUiAction;
     private readonly _columnHeaderFontSizeUiAction: StringUiAction;
+    private readonly _rowHeightUiAction: IntegerUiAction;
     private readonly _showHorizontalGridLinesUiAction: BooleanUiAction;
     private readonly _showVerticalGridLinesUiAction: BooleanUiAction;
     private readonly _gridLineHorizontalWidthUiAction: IntegerUiAction;
@@ -105,6 +108,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._fontFamilyUiAction = this.createFontFamilyUiAction();
         this._fontSizeUiAction = this.createFontSizeUiAction();
         this._columnHeaderFontSizeUiAction = this.createColumnHeaderFontSizeUiAction();
+        this._rowHeightUiAction = this.createRowHeightUiAction();
         this._showHorizontalGridLinesUiAction = this.createShowHorizontalGridLinesUiAction();
         this._showVerticalGridLinesUiAction = this.createShowVerticalGridLinesUiAction();
         this._gridLineHorizontalWidthUiAction = this.createGridLineHorizontalWidthUiAction();
@@ -144,6 +148,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._fontFamilyUiAction.finalise();
         this._fontSizeUiAction.finalise();
         this._columnHeaderFontSizeUiAction.finalise();
+        this._rowHeightUiAction.finalise();
         this._showHorizontalGridLinesUiAction.finalise();
         this._showVerticalGridLinesUiAction.finalise();
         this._gridLineHorizontalWidthUiAction.finalise();
@@ -172,6 +177,8 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._fontSizeControlComponent.initialise(this._fontSizeUiAction);
         this._columnHeaderFontSizeLabelComponent.initialise(this._columnHeaderFontSizeUiAction);
         this._columnHeaderFontSizeControlComponent.initialise(this._columnHeaderFontSizeUiAction);
+        this._rowHeightLabelComponent.initialise(this._rowHeightUiAction);
+        this._rowHeightControlComponent.initialise(this._rowHeightUiAction);
         this._showHorizontalGridLinesLabel.initialise(this._showHorizontalGridLinesUiAction);
         this._showHorizontalGridLinesCheckbox.initialise(this._showHorizontalGridLinesUiAction);
         this._showVerticalGridLinesLabel.initialise(this._showVerticalGridLinesUiAction);
@@ -234,6 +241,16 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushTitle(Strings[StringId.SettingTitle_ColumnHeaderFontSize]);
         action.commitEvent = () => {
             this.coreSettings.grid_ColumnHeaderFontSize = this._columnHeaderFontSizeUiAction.definedValue;
+        };
+        return action;
+    }
+
+    private createRowHeightUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_RowHeight]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_RowHeight]);
+        action.commitEvent = () => {
+            this.coreSettings.grid_RowHeight = this._rowHeightUiAction.definedValue;
         };
         return action;
     }
@@ -412,6 +429,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._fontFamilyUiAction.pushValue(this.coreSettings.grid_FontFamily);
         this._fontSizeUiAction.pushValue(this.coreSettings.grid_FontSize);
         this._columnHeaderFontSizeUiAction.pushValue(this.coreSettings.grid_ColumnHeaderFontSize);
+        this._rowHeightUiAction.pushValue(this.coreSettings.grid_RowHeight);
         this._showHorizontalGridLinesUiAction.pushValue(this.coreSettings.grid_HorizontalLinesVisible);
         this._showVerticalGridLinesUiAction.pushValue(this.coreSettings.grid_VerticalLinesVisible);
         this._gridLineHorizontalWidthUiAction.pushValue(this.coreSettings.grid_HorizontalLineWidth);
