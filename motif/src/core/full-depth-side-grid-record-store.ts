@@ -111,14 +111,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         }
         this._newPriceLevelAsOrder = true;
 
-        const recordCount = this._records.length;
-        if (recordCount > oldLength) {
-            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
-        } else {
-            if (recordCount < oldLength) {
-                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
-            }
-        }
+        this.invalidateAllEvent();
 
         this.checkConsistency();
     }
@@ -158,13 +151,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        if (recordCount > oldLength) {
-            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
-        } else {
-            if (recordCount < oldLength) {
-                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
-            }
-        }
+        this.invalidateAllEvent();
 
         this._newPriceLevelAsOrder = false;
         this.checkConsistency();
@@ -709,15 +696,15 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 if (additionalOrderCount === 0) {
                     // fix Auction quantity and invalidate
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecord.index, false);
-                    this.invalidateRecordAndFollowingRecordsEvent(levelRecord.index, lastAffectedFollowingRecordIndex);
+                    this.recordsSplicedAndInvalidateUpToEvent(levelRecordIndex, 1, 1, lastAffectedFollowingRecordIndex);
                 } else {
                     levelRecord.addOrders(this._dataItemOrders, firstAdditionalOrderIdx, additionalOrderCount);
                     // remove additional order records and from orderIndex
                     this._records.splice(levelRecordIndex + 1, additionalOrderCount);
                     this.reindexRecords(levelRecordIndex);
                     // fix Auction quantity and invalidate
-                    this.processAuctionAndVolumeAhead(levelRecordIndex, false);
-                    this.recordsDeletedEvent(levelRecordIndex + 1, additionalOrderCount, true);
+                    const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecordIndex, false);
+                    this.recordsSplicedAndInvalidateUpToEvent(levelRecordIndex, 1 + additionalOrderCount, 1, lastAffectedFollowingRecordIndex);
                 }
             }
         }
@@ -742,7 +729,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 // no additional orders
                 // fix Auction quantity and invalidate
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                this.invalidateRecordAndFollowingRecordsEvent(firstRecord.index, lastAffectedFollowingRecordIndex);
+                this.recordsSplicedAndInvalidateUpToEvent(firstRecord.index, 1, 1, lastAffectedFollowingRecordIndex);
             } else {
                 // create order records for subsequent orders at this price
                 const firstAdditionalOrderIdx = firstOrderIdx + 1;
@@ -764,8 +751,8 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 this._records.splice(firstAdditionalRecordIdx, 0, ...additionalOrderRecords);
                 this.reindexRecords(firstRecordIdx);
 
-                this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                this.recordsInsertedEvent(firstAdditionalRecordIdx, additionalOrderCount, true);
+                const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
+                this.recordsSplicedAndInvalidateUpToEvent(firstRecord.index, 1, 1 + additionalOrderCount, lastAffectedFollowingRecordIndex);
             }
         }
         this.checkConsistency();

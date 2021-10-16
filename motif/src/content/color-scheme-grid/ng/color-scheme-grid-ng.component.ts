@@ -24,7 +24,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
     recordFocusEventer: ColorSchemeGridComponent.RecordFocusEventer;
-    recordFocusClickEventer: ColorSchemeGridComponent.RecordFocusClickEventer;
+    gridClickEventer: ColorSchemeGridComponent.GridClickEventer;
     columnsViewWithsChangedEventer: ColorSchemeGridComponent.ColumnsViewWithsChangedEventer;
 
     private _recordStore: ColorSchemeGridRecordStore;
@@ -55,7 +55,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
 
         this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridComponent.frameGridProperties);
         this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._grid.recordFocusClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusClickEvent(recordIndex, fieldIndex);
+        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         this._grid.columnsViewWidthsChangedEventer =
             (fixedChanged, nonFixedChanged, allChanged) => this.handleColumnsViewWidthsChangedEvent(
                 fixedChanged, nonFixedChanged, allChanged
@@ -86,9 +86,9 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
         }
     }
 
-    handleRecordFocusClickEvent(recordIndex: RevRecordIndex, fieldIndex: RevRecordFieldIndex): void {
-        if (this.recordFocusClickEventer !== undefined) {
-            this.recordFocusClickEventer(recordIndex, fieldIndex);
+    handleGridClickEvent(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex): void {
+        if (this.gridClickEventer !== undefined) {
+            this.gridClickEventer(fieldIndex, recordIndex);
         }
     }
 
@@ -202,7 +202,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
 export namespace ColorSchemeGridComponent {
     export type RenderedEvent = (this: void) => void;
     export type RecordFocusEventer = (recordIndex: RevRecordIndex | undefined) => void;
-    export type RecordFocusClickEventer = (recordIndex: RevRecordIndex, fieldIndex: RevRecordFieldIndex) => void;
+    export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ColumnsViewWithsChangedEventer = (this: void) => void;
 
     export const frameGridProperties: MotifGrid.FrameGridProperties = {

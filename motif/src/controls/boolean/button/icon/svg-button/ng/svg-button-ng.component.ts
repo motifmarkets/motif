@@ -248,9 +248,9 @@ export namespace SvgButtonNgComponent {
             AutoSizeColumnWidths: { id: IconButtonUiAction.IconId.AutoSizeColumnWidths,
                 spriteId: 'noun_grid-width_834238' }, // falArrowsH
             RollUp: { id: IconButtonUiAction.IconId.RollUp,
-                spriteId: 'noun_down-chevron_3529447' }, // falChevronDoubleUp
+                spriteId: 'noun_up-chevron_3529491' }, // falChevronDoubleUp
             RollDown: { id: IconButtonUiAction.IconId.RollDown,
-                spriteId: 'noun_up-chevron_3529491' }, // falChevronDoubleDown
+                spriteId: 'noun_down-chevron_3529447' }, // falChevronDoubleDown
             Filter: { id: IconButtonUiAction.IconId.Filter,
                 spriteId: 'noun_filter_1252200' }, // falFilter
             Save: { id: IconButtonUiAction.IconId.Save,

@@ -189,14 +189,7 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        const recordCount = this._records.length;
-        if (recordCount > oldLength) {
-            this.recordsInsertedEvent(oldLength, recordCount - oldLength, true);
-        } else {
-            if (recordCount < oldLength) {
-                this.recordsDeletedEvent(recordCount, oldLength - recordCount, true);
-            }
-        }
+        this.invalidateAllEvent();
 
         super.checkResolveOpenPopulated(true);
     }

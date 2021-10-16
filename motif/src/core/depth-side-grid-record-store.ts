@@ -11,9 +11,8 @@ import { DepthRecord } from './depth-record';
 
 export abstract class DepthSideGridRecordStore {
     recordInsertedEvent: DepthSideGridRecordStore.RecordInsertedEventHandler;
-    recordsInsertedEvent: DepthSideGridRecordStore.RecordsInsertedEventHandler;
     recordDeletedEvent: DepthSideGridRecordStore.RecordDeletedEventHandler;
-    recordsDeletedEvent: DepthSideGridRecordStore.RecordsDeletedEventHandler;
+    recordsSplicedAndInvalidateUpToEvent: DepthSideGridRecordStore.RecordsSplicedAndInvalidateUpToEvent;
     allRecordsDeletedEvent: DepthSideGridRecordStore.AllRecordsDeletedEventHandler;
     invalidateAllEvent: DepthSideGridRecordStore.InvalidateAllEventHandler;
     invalidateRecordsEvent: DepthSideGridRecordStore.InvalidateRecordsEventHandler;
@@ -127,9 +126,12 @@ export abstract class DepthSideGridRecordStore {
 
 export namespace DepthSideGridRecordStore {
     export type RecordInsertedEventHandler = (this: void, index: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) => void;
-    export type RecordsInsertedEventHandler = (index: Integer, count: Integer, allInvalidated: boolean) => void;
+    export type RecordsInsertedEventHandler = (this: void, index: Integer, count: Integer, allInvalidated: boolean) => void;
     export type RecordDeletedEventHandler = (this: void, index: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) => void;
-    export type RecordsDeletedEventHandler = (index: Integer, count: Integer, allInvalidated: boolean) => void;
+    export type RecordsDeletedEventHandler = (this: void, index: Integer, count: Integer, allInvalidated: boolean) => void;
+    export type RecordsSplicedAndInvalidateUpToEvent = (this: void,
+        index: Integer, deleteCount: Integer, insertCount: Integer, lastAffectedFollowingRecordIndex: Integer | undefined
+    ) => void;
     export type AllRecordsDeletedEventHandler = (this: void) => void;
     export type InvalidateAllEventHandler = (this: void) => void;
     export type InvalidateRecordsEventHandler = (this: void, index: Integer, count: Integer) => void;

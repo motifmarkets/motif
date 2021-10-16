@@ -186,10 +186,10 @@ export class DepthSideFrame extends ContentFrame {
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
     }
 
-    handleRecordFocusClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
     }
 
-    handleRecordFocusDblClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
         if (this._activeStore !== undefined) {
             this._activeStore.toggleRecordOrderPriceLevel(recordIndex);
         }
@@ -233,20 +233,6 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    private handleRecordsInsertedEvent(recordIndex: Integer, count: number, invalidateAll: boolean) {
-        if (invalidateAll) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordsInserted(recordIndex, count);
-                this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.recordsInserted(recordIndex, count);
-        }
-    }
-
     private handleRecordDeletedEvent(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
         if (lastAffectedFollowingRecordIndex !== undefined) {
             this._grid.beginRecordChanges();
@@ -261,17 +247,25 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    private handleRecordsDeletedEvent(recordIndex: Integer, count: number, invalidateAll: boolean) {
-        if (invalidateAll) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordsDeleted(recordIndex, count);
-                this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
-            } finally {
-                this._grid.endRecordChanges();
+    private handleRecordsSplicedAndInvalidateUpToEvent(
+        index: Integer,
+        deleteCount: Integer,
+        insertCount: Integer,
+        lastAffectedFollowingRecordIndex: Integer | undefined
+    ) {
+        this._grid.beginRecordChanges();
+        try {
+            if (deleteCount > 0) {
+                this._grid.recordsDeleted(index, deleteCount);
             }
-        } else {
-            this._grid.recordsDeleted(recordIndex, count);
+            if (insertCount) {
+                this._grid.recordsInserted(index, insertCount);
+            }
+            if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
+                this._grid.invalidateExisting(); // this could be improved to only invalidate record range affected
+            }
+        } finally {
+            this._grid.endRecordChanges();
         }
     }
 
@@ -365,10 +359,12 @@ export class DepthSideFrame extends ContentFrame {
 
         store.recordInsertedEvent =
             (index, lastAffectedFollowingRecordIndex) => this.handleRecordInsertedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordsInsertedEvent = (index, count, allInvalidated) => this.handleRecordsInsertedEvent(index, count, allInvalidated);
         store.recordDeletedEvent =
             (index, lastAffectedFollowingRecordIndex) => this.handleRecordDeletedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordsDeletedEvent = (index, count, allInvalidated) => this.handleRecordsDeletedEvent(index, count, allInvalidated);
+        store.recordsSplicedAndInvalidateUpToEvent =
+            (index, deleteCount, insertCount, lastAffectedFollowingRecordIndex) => this.handleRecordsSplicedAndInvalidateUpToEvent(
+                index, deleteCount, insertCount, lastAffectedFollowingRecordIndex
+            );
         store.allRecordsDeletedEvent = () => this._grid.allRecordsDeleted();
         store.invalidateRecordsEvent = (index, count) => this._grid.invalidateRecords(index, count);
         store.invalidateRecordAndFollowingRecordsEvent =
@@ -431,8 +427,8 @@ export class DepthSideFrame extends ContentFrame {
     private setGrid(dataStore: RevRecordStore) {
         this._grid = this._componentAccess.createGrid(dataStore);
         this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
-        this._grid.recordFocusClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusClickEvent(recordIndex, fieldIndex);
-        this._grid.recordFocusDblClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusDblClickEvent(recordIndex, fieldIndex);
+        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
     }
 
     private prepareGrid(element: DepthSideFrame.StyleCacheElement) {

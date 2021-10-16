@@ -80,15 +80,15 @@ export abstract class DayTradesGridField implements RevRecordField {
                 if (tradeRecord.buyCrossRef !== undefined || tradeRecord.sellCrossRef !== undefined) {
                     renderValue.addAttribute(RenderValue.ownOrderAttribute);
                 } else {
-                    const buyOrderId = tradeRecord.buyDepthOrderId;
-                    const sellOrderId = tradeRecord.sellDepthOrderId;
-                    const sideId = tradeRecord.bidAskSideId;
+                    // const buyOrderId = tradeRecord.buyDepthOrderId;
+                    // const sellOrderId = tradeRecord.sellDepthOrderId;
+                    // const sideId = tradeRecord.bidAskSideId;
 
-                    if (sideId !== undefined) {
-                        if (buyOrderId !== undefined || sellOrderId !== undefined) {
-                            renderValue.addAttribute(RenderValue.ownOrderAttribute);
-                        }
-                    }
+                    // if (sideId !== undefined) {
+                    //     if (buyOrderId !== undefined || sellOrderId !== undefined) {
+                    //         renderValue.addAttribute(RenderValue.ownOrderAttribute);
+                    //     }
+                    // }
                 }
 
                 break;

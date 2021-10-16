@@ -58,8 +58,8 @@ export class TradesFrame extends ContentFrame {
         this._grid = value;
         this._grid.rowOrderReversed = true;
         this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        this._grid.recordFocusClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusClickEvent(recIdx, fieldIdx);
-        this._grid.recordFocusDblClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusDblClickEvent(recIdx, fieldIdx);
+        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
+        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
 
         this.prepareGrid();
     }
@@ -162,10 +162,10 @@ export class TradesFrame extends ContentFrame {
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
     }
 
-    handleRecordFocusClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
     }
 
-    handleRecordFocusDblClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
     }
 
     // adviseColumnWidthChanged(columnIndex: Integer) {
