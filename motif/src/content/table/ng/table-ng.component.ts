@@ -70,11 +70,6 @@ export class TableNgComponent implements OnDestroy, AfterViewInit, TableFrame.Co
         // todo - needs to return a unique id for this component
     }
 
-    // set gridFocusedRecordIndex(value: Integer | undefined) {
-    //     this._gridAdapter.FocusedRecordIndex = value;
-    //     this._gridAdapter.InvalidateAll();
-    // }
-
     get gridHorizontalScrollbarMarginedHeight() {
         return this._gridComponent.horizontalScrollbarMarginedHeight;
     }

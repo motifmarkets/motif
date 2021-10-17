@@ -9,11 +9,13 @@ import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle,
 import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import {
     DepthRecord,
-    DepthSideGridRecordStore,
     DepthSideGridField,
+    DepthSideGridRecordStore,
+    FullDepthSideGridField,
     FullDepthSideGridRecordStore,
-    FullDepthSideGridField, GridLayoutIO, ShortDepthSideGridRecordStore,
-    ShortDepthSideGridField
+    GridLayoutIO,
+    ShortDepthSideGridField,
+    ShortDepthSideGridRecordStore
 } from 'src/core/internal-api';
 import { assigned, Integer, JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
 import { ContentFrame } from '../content-frame';
@@ -184,10 +186,10 @@ export class DepthSideFrame extends ContentFrame {
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
     }
 
-    handleRecordFocusClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
     }
 
-    handleRecordFocusDblClickEvent(recordIndex: Integer, fieldIndex: Integer) {
+    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
         if (this._activeStore !== undefined) {
             this._activeStore.toggleRecordOrderPriceLevel(recordIndex);
         }
@@ -231,20 +233,6 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    private handleRecordsInsertedEvent(recordIndex: Integer, count: number, invalidateAll: boolean) {
-        if (invalidateAll) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordsInserted(recordIndex, count);
-                this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.recordsInserted(recordIndex, count);
-        }
-    }
-
     private handleRecordDeletedEvent(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
         if (lastAffectedFollowingRecordIndex !== undefined) {
             this._grid.beginRecordChanges();
@@ -259,17 +247,22 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    private handleRecordsDeletedEvent(recordIndex: Integer, count: number, invalidateAll: boolean) {
-        if (invalidateAll) {
+    private handleRecordsSplicedAndInvalidateUpToEvent(
+        index: Integer,
+        deleteCount: Integer,
+        insertCount: Integer,
+        lastAffectedFollowingRecordIndex: Integer | undefined
+    ) {
+        if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
             this._grid.beginRecordChanges();
             try {
-                this._grid.recordsDeleted(recordIndex, count);
+                this._grid.recordsSpliced(index, deleteCount, insertCount);
                 this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
             } finally {
                 this._grid.endRecordChanges();
             }
         } else {
-            this._grid.recordsDeleted(recordIndex, count);
+            this._grid.recordsSpliced(index, deleteCount, insertCount);
         }
     }
 
@@ -363,10 +356,12 @@ export class DepthSideFrame extends ContentFrame {
 
         store.recordInsertedEvent =
             (index, lastAffectedFollowingRecordIndex) => this.handleRecordInsertedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordsInsertedEvent = (index, count, allInvalidated) => this.handleRecordsInsertedEvent(index, count, allInvalidated);
         store.recordDeletedEvent =
             (index, lastAffectedFollowingRecordIndex) => this.handleRecordDeletedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordsDeletedEvent = (index, count, allInvalidated) => this.handleRecordsDeletedEvent(index, count, allInvalidated);
+        store.recordsSplicedAndInvalidateUpToEvent =
+            (index, deleteCount, insertCount, lastAffectedFollowingRecordIndex) => this.handleRecordsSplicedAndInvalidateUpToEvent(
+                index, deleteCount, insertCount, lastAffectedFollowingRecordIndex
+            );
         store.allRecordsDeletedEvent = () => this._grid.allRecordsDeleted();
         store.invalidateRecordsEvent = (index, count) => this._grid.invalidateRecords(index, count);
         store.invalidateRecordAndFollowingRecordsEvent =
@@ -381,7 +376,7 @@ export class DepthSideFrame extends ContentFrame {
             (recordIndex, count, valuesRecordIndex, valueChanges) => this.handleInvalidateRecordsAndRecordValuesEvent(
                 recordIndex, count, valuesRecordIndex, valueChanges
             );
-        store.invalidateAllEvent = () => this._grid.invalidateAll();
+        store.recordsLoadedEvent = () => this._grid.recordsLoaded();
 
         const element: DepthSideFrame.StyleCacheElement = {
             gridFields: fields,
@@ -429,8 +424,8 @@ export class DepthSideFrame extends ContentFrame {
     private setGrid(dataStore: RevRecordStore) {
         this._grid = this._componentAccess.createGrid(dataStore);
         this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
-        this._grid.recordFocusClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusClickEvent(recordIndex, fieldIndex);
-        this._grid.recordFocusDblClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusDblClickEvent(recordIndex, fieldIndex);
+        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
     }
 
     private prepareGrid(element: DepthSideFrame.StyleCacheElement) {
@@ -480,38 +475,6 @@ export namespace DepthSideFrame {
     export interface ComponentAccess {
         readonly id: string;
         createGrid(dataStore: RevRecordStore): MotifGrid;
-
-        // readonly gridRowRecIndices: Integer[];
-        // gridFocusedRecordIndex: Integer | undefined;
-        // gridClickToSort: boolean;
-        // gridContinuousFiltering: boolean;
-        // gridCreateAdaptor(dataStore: GridDataStore, sideId: BidAskSideId): void;
-        // gridInsertRecord(index: Integer): void;
-        // gridInsertRecords(index: Integer, count: Integer): void;
-        // gridInsertRecordsInSameRowPosition(index: Integer, count: Integer): void;
-        // gridMoveRecordRow(fromRecordIndex: Integer, toRowIndex: Integer): void;
-        // gridMoveFieldColumn(field: Integer | GridField, columnIndex: Integer): void;
-        // gridDeleteRecord(recordIndex: Integer): void;
-        // gridDeleteRecords(recordIndex: Integer, count: Integer): void;
-        // gridDeleteAllRecords(): void;
-        // gridInvalidateAll(): void;
-        // gridInvalidateValue(fieldIndex: Integer, recordIndex: Integer): void;
-        // gridInvalidateRecord(recordIndex: Integer): void;
-        // gridLoadLayout(layout: GridLayout): void;
-        // gridSaveLayout(): GridLayout;
-        // gridReorderRecRows(recordIndices: Integer[]): void;
-        // gridAutoSizeAllColumnWidths(): void;
-        // gridBeginChange(): void;
-        // gridEndChange(): void;
-        // gridReset(): void;
-        // gridAddFields(fields: DepthSideGridField[]): void;
-        // gridSetFieldState(field: GridField, state?: GridFieldState | undefined): void;
-        // gridSetFieldVisible(field: GridField, visible: boolean): void;
-        // getGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap;
-        // gridApplyFilter(filterFtn: TRecordFilter): void;
-        // gridClearFilter(): void;
-        // gridGetRenderedActiveWidth(): Promise<Integer>;
-        // gridGetScrollbaredActiveWidth(): Integer;
     }
 
     export namespace JsonName {

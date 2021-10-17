@@ -1027,8 +1027,8 @@ export namespace ColorScheme {
             },
             Grid_Scrollbar: {
                 id: ItemId.Grid_Scrollbar,
-                name: 'Grid_ScrollbarThumb',
-                display: 'Grid: Scrollbar Thumb',
+                name: 'Grid_Scrollbar',
+                display: 'Grid: Scrollbar',
                 bkgdResolver: resolveBkgdColor_Grid_Scrollbar,
                 foreResolver: resolveForeColor_Grid_Scrollbar,
             },

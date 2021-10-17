@@ -94,7 +94,7 @@ export namespace FullDepthSideField {
             id: FullDepthSideFieldId.Price,
             name: 'Price',
             defaultHeading: 'Price',
-            defaultVisible: true,
+            defaultVisible: false,
             defaultTextAlign: rightTextAlign,
         },
         Xref: {

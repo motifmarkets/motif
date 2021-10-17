@@ -26,6 +26,7 @@ import { GridLayout } from './grid-layout';
  * @public
  */
 export class MotifGrid extends Revgrid {
+    settingsChangedEventer: MotifGrid.SettingsChangedEventer | undefined;
     fieldSortedEventer: MotifGrid.FieldSortedEventer | undefined;
     columnWidthChangedEventer: MotifGrid.ColumnWidthChangedEventer | undefined;
 
@@ -40,8 +41,8 @@ export class MotifGrid extends Revgrid {
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     private _recordFocusEventer: MotifGrid.RecordFocusEventer | undefined;
-    private _recordFocusClickEventer: MotifGrid.RecordFocusClickEventer | undefined;
-    private _recordFocusDblClickEventer: MotifGrid.RecordFocusDblClickEventer | undefined;
+    private _mainClickEventer: MotifGrid.MainClickEventer | undefined;
+    private _mainDblClickEventer: MotifGrid.MainDblClickEventer | undefined;
     private _resizedEventer: MotifGrid.ResizedEventer | undefined;
     private _columnsViewWidthsChangedEventer: MotifGrid.ColumnsViewWidthsChangedEventer | undefined;
     private _renderedEventer: MotifGrid.RenderedEventer | undefined;
@@ -103,7 +104,7 @@ export class MotifGrid extends Revgrid {
 
             if (value) {
                 // Continuous filtering was just turned on, apply if necessary
-                this.invalidateAll();
+                this.recordsLoaded();
             }
         }
     }
@@ -171,26 +172,26 @@ export class MotifGrid extends Revgrid {
         }
     }
 
-    get recordFocusClickEventer() { return this._recordFocusClickEventer; }
-    set recordFocusClickEventer(value: MotifGrid.RecordFocusClickEventer | undefined) {
-        if (this._recordFocusClickEventer !== undefined) {
+    get mainClickEventer() { return this._mainClickEventer; }
+    set mainClickEventer(value: MotifGrid.MainClickEventer | undefined) {
+        if (this._mainClickEventer !== undefined) {
             this.removeEventListener('rev-click', this._clickListener);
         }
-        this._recordFocusClickEventer = value;
+        this._mainClickEventer = value;
 
-        if (this._recordFocusClickEventer !== undefined) {
+        if (this._mainClickEventer !== undefined) {
             this.addEventListener('rev-click', this._clickListener);
         }
     }
 
-    get recordFocusDblClickEventer() { return this._recordFocusDblClickEventer; }
-    set recordFocusDblClickEventer(value: MotifGrid.RecordFocusDblClickEventer | undefined) {
-        if (this._recordFocusDblClickEventer !== undefined) {
+    get mainDblClickEventer() { return this._mainDblClickEventer; }
+    set mainDblClickEventer(value: MotifGrid.MainDblClickEventer | undefined) {
+        if (this._mainDblClickEventer !== undefined) {
             this.removeEventListener('rev-double-click', this._dblClickListener);
         }
-        this._recordFocusDblClickEventer = value;
+        this._mainDblClickEventer = value;
 
-        if (this._recordFocusDblClickEventer !== undefined) {
+        if (this._mainDblClickEventer !== undefined) {
             this.addEventListener('rev-double-click', this._dblClickListener);
         }
     }
@@ -430,12 +431,16 @@ export class MotifGrid extends Revgrid {
         this._mainRecordAdapter.recordsInserted(recordIndex, count, recent);
     }
 
-    invalidateAll(recent?: boolean): void {
-        this._mainRecordAdapter.invalidateAll(recent);
+    recordsSpliced(recordIndex: RevRecordIndex, deleteCount: number, insertCount: number) {
+        this._mainRecordAdapter.recordsSpliced(recordIndex, deleteCount, insertCount);
     }
 
-    invalidateExisting(): void {
-        this._mainRecordAdapter.invalidateExisting();
+    recordsLoaded(recent?: boolean): void {
+        this._mainRecordAdapter.recordsLoaded(recent);
+    }
+
+    invalidateAll(): void {
+        this._mainRecordAdapter.invalidateAll();
     }
 
     invalidateRecord(recordIndex: RevRecordIndex, recent?: boolean): void {
@@ -516,7 +521,7 @@ export class MotifGrid extends Revgrid {
         }
 
         // this._hypegrid.renderer.resetAllCellPropertiesCaches();
-        this.invalidateAll();
+        this.recordsLoaded();
     }
 
     moveActiveColumn(fromColumnIndex: number, toColumnIndex: number): void {
@@ -534,14 +539,14 @@ export class MotifGrid extends Revgrid {
         this.moveActiveColumn(fromColumnIndex, toColumnIndex);
     }
 
-    override reset(options?: Revgrid.Options, loadProperties = true): void {
+    override reset(adapterSet?: GridProperties.AdapterSet): void {
         if (this._fieldAdapter !== undefined) { // will be undefined while grid is being constructed
             this._fieldAdapter.reset();
         }
         if (this._mainRecordAdapter !== undefined) { // will be undefined while grid is being constructed
             this._mainRecordAdapter.reset();
         }
-        super.reset(options, loadProperties);
+        super.reset(adapterSet, undefined, false);
     }
 
     recordToRowIndex(recIdx: RevRecordIndex): number {
@@ -732,14 +737,14 @@ export class MotifGrid extends Revgrid {
     private handleHypegridClickEvent(event: CustomEvent<CellEvent>): void {
         const gridY = event.detail.gridCell.y;
         if (gridY !== 0) { // Skip clicks to the column headers
-            if (this._recordFocusClickEventer !== undefined) {
+            if (this._mainClickEventer !== undefined) {
                 const rowIndex = event.detail.dataCell.y;
                 const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
                 if (recordIndex === undefined) {
                     throw new UnexpectedUndefinedError('MGHC89877');
                 } else {
                     const fieldIndex = event.detail.dataCell.x;
-                    this._recordFocusClickEventer(fieldIndex, recordIndex);
+                    this._mainClickEventer(fieldIndex, recordIndex);
                 }
             }
         }
@@ -759,12 +764,13 @@ export class MotifGrid extends Revgrid {
     /** @internal */
     private handleHypegridDblClickEvent(event: CustomEvent<CellEvent>): void {
         if (event.detail.gridCell.y !== 0) { // Skip clicks to the column headers
-            if (this._recordFocusClickEventer !== undefined) {
-                const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(event.detail.dataCell.y);
+            if (this._mainDblClickEventer !== undefined) {
+                const rowIndex = event.detail.dataCell.y;
+                const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
                 if (recordIndex === undefined) {
                     throw new UnexpectedUndefinedError('MGHDC87877');
                 } else {
-                    this._recordFocusClickEventer(event.detail.dataCell.x, recordIndex);
+                    this._mainDblClickEventer(event.detail.dataCell.x, recordIndex);
                 }
             }
         }
@@ -834,11 +840,21 @@ export class MotifGrid extends Revgrid {
     private handleSettingsChangedEvent(): void {
         this.applySettingsToMainRecordAdapter();
 
+        if (this.settingsChangedEventer !== undefined) {
+            this.settingsChangedEventer();
+        }
+
         const updatedProperties = MotifGrid.createGridPropertiesFromSettings(this._settingsService, undefined, this.properties);
 
         const updatedPropertiesCount = Object.keys(updatedProperties).length;
+        let gridPropertiesUpdated: boolean;
         if (updatedPropertiesCount > 0) {
-            this.addProperties(updatedProperties);
+            gridPropertiesUpdated = this.addProperties(updatedProperties);
+        } else {
+            gridPropertiesUpdated = false;
+        }
+
+        if (!gridPropertiesUpdated) {
             this.invalidateAll();
         }
     }
@@ -949,10 +965,11 @@ export namespace MotifGrid {
 
     export type ResizedEventDetail = EventDetail.Resize;
 
+    export type SettingsChangedEventer = (this: void) => void;
     export type CtrlKeyMouseMoveEventer = (this: void) => void;
     export type RecordFocusEventer = (this: void, newRecordIndex: RevRecordIndex | undefined, oldRecordIndex: RevRecordIndex | undefined) => void;
-    export type RecordFocusClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
-    export type RecordFocusDblClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
+    export type MainClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
+    export type MainDblClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ResizedEventer = (this: void, detail: ResizedEventDetail) => void;
     export type ColumnsViewWidthsChangedEventer =
         (this: void, fixedChanged: boolean, nonFixedChanged: boolean, allChanged: boolean) => void;
@@ -1042,21 +1059,34 @@ export namespace MotifGrid {
         if (gridLinesH !== existingGridProperties?.gridLinesH) {
             properties.gridLinesH = gridLinesH;
         }
-        const gridLinesHWidth = core.grid_HorizontalLineWidth;
-        if (gridLinesHWidth !== undefined) {
+
+        let gridLinesHWidth: number;
+        if (gridLinesH) {
+            gridLinesHWidth = core.grid_HorizontalLineWidth;
+        } else {
+            gridLinesHWidth = 0;
+        }
+        if (gridLinesHWidth !== existingGridProperties?.gridLinesHWidth && gridLinesHWidth >= 0) {
             properties.gridLinesHWidth = gridLinesHWidth;
         }
-        const showVerticalGridLines = core.grid_VerticalLinesVisible;
-        if (showVerticalGridLines !== undefined) {
-            properties.gridLinesV = showVerticalGridLines;
+
+        const gridLinesV = core.grid_VerticalLinesVisible;
+        if (gridLinesV !== existingGridProperties?.gridLinesV) {
+            properties.gridLinesV = gridLinesV;
         }
-        const gridLinesVWidth = core.grid_VerticalLineWidth;
-        if (gridLinesVWidth !== undefined) {
+
+        let gridLinesVWidth: number;
+        if (gridLinesV) {
+            gridLinesVWidth = core.grid_VerticalLineWidth;
+        } else {
+            gridLinesVWidth = 0;
+        }
+        if (gridLinesVWidth !== existingGridProperties?.gridLinesVWidth && gridLinesVWidth >= 0) {
             properties.gridLinesVWidth = gridLinesVWidth;
         }
 
         const scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
-        if (scrollHorizontallySmoothly !== undefined) {
+        if (scrollHorizontallySmoothly !== existingGridProperties?.scrollHorizontallySmoothly) {
             properties.scrollHorizontallySmoothly = scrollHorizontallySmoothly;
         }
 

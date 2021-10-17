@@ -130,6 +130,7 @@ export class ColorSchemePresetCodeNgComponent implements AfterViewInit, OnDestro
     private generateCodeText(colorSettings: ColorSettings) {
         const builder = new StringBuilder(ColorScheme.Item.idCount + 3);
         builder.appendLine(`${ColorSchemePresetCodeNgComponent._tabs2}const itemsObject: ItemsObject = {`);
+        builder.appendLine(`${ColorSchemePresetCodeNgComponent._tabs3}/* eslint-disable max-len */`);
         for (let id = 0; id < ColorScheme.Item.idCount; id++) {
             let bkgdColor = colorSettings.getItemBkgd(id);
             if (bkgdColor === '') {
@@ -148,6 +149,7 @@ export class ColorSchemePresetCodeNgComponent implements AfterViewInit, OnDestro
                 `bkgd: ${bkgdColor}, fore: ${foreColor} },`;
             builder.appendLine(line);
         }
+        builder.appendLine(`${ColorSchemePresetCodeNgComponent._tabs3}/* eslint-enable max-len */`);
         builder.appendLine(`${ColorSchemePresetCodeNgComponent._tabs2}};`);
         builder.appendLine();
         this.presetCode = builder.toString();

@@ -23,7 +23,7 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
     recordFocusEventer: GridLayoutEditorGridNgComponent.RecordFocusEventer;
-    recordFocusClickEventer: GridLayoutEditorGridNgComponent.RecordFocusClickEventer;
+    gridClickEventer: GridLayoutEditorGridNgComponent.GridClickEventer;
 
     private _dataStore: GridLayoutRecordStore;
     private _grid: MotifGrid;
@@ -54,7 +54,7 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
 
         this._grid = this._gridComponent.createGrid(this._dataStore, GridLayoutEditorGridNgComponent.frameGridProperties);
         this._grid.recordFocusEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
-        this._grid.recordFocusClickEventer = (recIdx, fieldIdx) => this.handleRecordFocusClickEvent(recIdx, fieldIdx);
+        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
 
         this.prepareGrid();
     }
@@ -73,14 +73,10 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
         }
     }
 
-    handleRecordFocusClickEvent(recordIndex: RevRecordIndex, fieldIndex: RevRecordFieldIndex): void {
-        if (this.recordFocusClickEventer) {
-            this.recordFocusClickEventer(recordIndex, fieldIndex);
+    handleGridClickEvent(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex): void {
+        if (this.gridClickEventer) {
+            this.gridClickEventer(fieldIndex, recordIndex);
         }
-    }
-
-    invalidateAll(): void {
-        this._grid.invalidateAll();
     }
 
     invalidateVisibleValue(rowIndex: Integer): void {
@@ -94,7 +90,7 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
         const moveColumn = (currentIndex: number, newIndex: number): boolean => {
             const result = this._layoutWithHeadings.layout.moveColumn(currentIndex, newIndex);
             if (result) {
-                this._grid.invalidateAll();
+                this._grid.recordsLoaded();
             }
             return result;
         };
@@ -260,7 +256,7 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
 
 export namespace GridLayoutEditorGridNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
-    export type RecordFocusClickEventer = (recordIndex: Integer, fieldIndex: Integer) => void;
+    export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 
     export const frameGridProperties: MotifGrid.FrameGridProperties = {
         fixedColumnCount: 0,

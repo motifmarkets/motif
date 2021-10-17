@@ -44,52 +44,6 @@ export class TradesNgComponent implements OnDestroy, AfterViewInit, TradesFrame.
 
         const grid = this._gridComponent.createGrid(this._frame.dataStore, TradesNgComponent.frameGridProperties);
         this._frame.setGrid(grid);
-
-        // this._gridAccess.gridLoadLayout = (layout: GridLayout): void => {
-        //     gridAdapter.LoadLayout(layout);
-        // };
-        // this._gridAccess.gridSaveLayout = (): MotifGrid.LayoutWithHeadersMap => {
-        //     const layout = gridAdapter.SaveLayout();
-        //     return {
-        //         layout: layout,
-        //         headersMap: calcGridHeadersMap(layout),
-        //     };
-        // };
-
-        // pulseGridTransforms.forEach(transform => gridAdapter.AddTransform(transform));
-
-        // for (let id = 0; id < TradeColumn.columnCount; id++) {
-        //     gridAdapter.AddField(TradeColumn.createGridField(this._settings, id));
-        // }
-
-        // for (let id = 0; id < TradeColumn.columnCount; id++) {
-        //     gridAdapter.SetFieldState(id, { Alignment: TradeColumn.idToFieldAlignment(id) });
-        //     gridAdapter.SetFieldVisible(id, TradeColumn.idToIsVisibleDefault(id));
-        // }
-
-        // this.dataStore.AddEventListeners({
-        //     onDataStatusChange: () => {},
-        //     onBeginChange: () => { gridAdapter.BeginChange(); },
-        //     onEndChange: () => { gridAdapter.EndChange(); },
-        //     onClear: () => { gridAdapter.ClearRecords(); },
-        //     onInsertRecords: (recordIndex: number, count: number) => { gridAdapter.InsertRecords(recordIndex, count); },
-        //     onDeleteRecords: (recordIndex: number, count: number) => { gridAdapter.DeleteRecords(recordIndex, count); },
-        //     onInvalidateRecord: (recordIndex: number) => { gridAdapter.InvalidateRecord(recordIndex); },
-        //     onInvalidateAll: () => { gridAdapter.InvalidateAll(); },
-        // });
-
-        // this._onAutoAdjustColumnWidths = () => {
-        //     for (let id = 0; id < TradeGridField.idCount; id++) {
-        //         this._gridAdapter.SetFieldWidth(id, undefined);
-        //     }
-        // };
-
-        // gridAdapter.BeginChange();
-        // gridAdapter.EndChange();
-
-        // this._revGridSettingsChangedSubscriptionId = this._gridSettingsService.subscribeSettingsChangedEvent(() => {
-        //     gridAdapter.ApplySettings(this._gridSettingsService.revGridSettings);
-        // });
     }
 
     get frame(): TradesFrame { return this._frame; }

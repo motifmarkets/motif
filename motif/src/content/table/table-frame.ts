@@ -40,8 +40,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     settingsApplyEvent: TableFrame.SettingsApplyEvent;
     recordFocusEvent: TableFrame.RecordFocusEvent;
-    recordFocusClickEvent: TableFrame.RecordFocusClickEvent;
-    recordFocusDblClickEvent: TableFrame.RecordFocusDblClickEvent;
+    gridClickEvent: TableFrame.GridClickEvent;
+    gridDblClickEvent: TableFrame.GridDblClickEvent;
     requireDefaultTableDefinitionEvent: TableFrame.RequireDefaultTableDefinitionEvent;
     tableOpenEvent: TableFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
@@ -85,9 +85,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     setGrid(value: MotifGrid) {
         this._grid = value;
-        this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocus(newRecordIndex, oldRecordIndex);
-        this._grid.recordFocusClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusClick(recordIndex, fieldIndex);
-        this._grid.recordFocusDblClickEventer = (recordIndex, fieldIndex) => this.handleRecordFocusDblClick(recordIndex, fieldIndex);
+        this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
+        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
 
         this._settingsChangedSubscriptionId =
             this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingChangedEvent());
@@ -107,7 +107,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     getRecords() {
         if (this._table === undefined) {
-            throw new UnexpectedUndefinedError('TFGR771134');
+            return [];
         } else {
             return this._table.records;
         }
@@ -193,21 +193,21 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         }
     }
 
-    handleRecordFocus(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+    handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
         if (this.recordFocusEvent !== undefined) {
             this.recordFocusEvent(newRecordIndex, oldRecordIndex);
         }
     }
 
-    handleRecordFocusClick(recordIndex: Integer, fieldIndex: Integer) {
-        if (this.recordFocusClickEvent !== undefined) {
-            this.recordFocusClickEvent(recordIndex, fieldIndex);
+    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        if (this.gridClickEvent !== undefined) {
+            this.gridClickEvent(fieldIndex, recordIndex);
         }
     }
 
-    handleRecordFocusDblClick(recordIndex: Integer, fieldIndex: Integer) {
-        if (this.recordFocusDblClickEvent !== undefined) {
-            this.recordFocusDblClickEvent(recordIndex, fieldIndex);
+    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        if (this.gridDblClickEvent !== undefined) {
+            this.gridDblClickEvent(fieldIndex, recordIndex);
         }
     }
 
@@ -834,7 +834,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 }
                 this._grid.loadLayout(this._table.layout);
                 this.updateGridSettingsFromTable();
-                this._grid.invalidateAll();
+                this._grid.recordsLoaded();
             } finally {
                 this._grid.endRecordChanges();
             }
@@ -988,8 +988,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 export namespace TableFrame {
     export type SettingsApplyEvent = (this: void) => void;
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
-    export type RecordFocusClickEvent = (this: void, recordIndex: Integer, fieldIndex: Integer) => void;
-    export type RecordFocusDblClickEvent = (this: void, recordIndex: Integer, fieldIndex: Integer) => void;
+    export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
+    export type GridDblClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
     export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
     export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
     // export type TableOpenChangeEvent = (this: void, opened: boolean) => void;

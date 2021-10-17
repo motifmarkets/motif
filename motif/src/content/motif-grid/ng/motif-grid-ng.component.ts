@@ -11,7 +11,7 @@ import {
 } from 'revgrid';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { SettingsService } from 'src/core/internal-api';
-import { MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { numberToPixels } from 'src/sys/internal-api';
 import { MotifGrid } from '../motif-grid';
 import { MotifGridCellPainter } from '../motif-grid-cell-painter';
 
@@ -42,8 +42,6 @@ export class MotifGridNgComponent implements OnDestroy {
     private _scrollbarThumbInactiveOpaqueSetTimeoutId: ReturnType<typeof setInterval> | undefined;
     private _scrollbarThumbInactiveOpaqueExtended = false;
 
-    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
-
     get grid() { return this._grid; }
     get horizontalScrollbarHeight() { return this._horizontalScrollbarWidth; }
     get horizontalScrollbarThumbHeight() { return this._horizontalScrollbarThumbWidth; }
@@ -64,16 +62,10 @@ export class MotifGridNgComponent implements OnDestroy {
         }
         this._cellPainter = motifGridCellPainter;
 
-        this._settingsChangedSubscriptionId =
-            this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
-
         this.applySettings();
     }
 
     ngOnDestroy() {
-        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-        this._settingsChangedSubscriptionId = undefined;
-
         if (this.destroyEventer !== undefined) {
             this.destroyEventer();
         }
@@ -145,6 +137,8 @@ export class MotifGridNgComponent implements OnDestroy {
             }
         }
 
+        this._grid.settingsChangedEventer = () => this.applySettings();
+
         return this._grid;
     }
 
@@ -155,6 +149,7 @@ export class MotifGridNgComponent implements OnDestroy {
         }
 
         if (this._grid !== undefined) {
+            this._grid.settingsChangedEventer = undefined;
             this._grid.destroy();
         }
     }
