@@ -189,7 +189,7 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        this.invalidateAllEvent();
+        this.recordsLoadedEvent();
 
         super.checkResolveOpenPopulated(true);
     }

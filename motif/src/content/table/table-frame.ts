@@ -834,7 +834,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 }
                 this._grid.loadLayout(this._table.layout);
                 this.updateGridSettingsFromTable();
-                this._grid.invalidateAll();
+                this._grid.recordsLoaded();
             } finally {
                 this._grid.endRecordChanges();
             }

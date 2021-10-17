@@ -147,7 +147,7 @@ export class TradesFrame extends ContentFrame {
             // }
 
             // this._componentAccess.gridLoadLayout(this._table.layout);
-            this._grid.invalidateAll();
+            this._grid.recordsLoaded();
         } finally {
             this._grid.endRecordChanges();
         }
@@ -226,7 +226,7 @@ export class TradesFrame extends ContentFrame {
     }
 
     private handleDataStoreAllRecordsChangeEvent() {
-        this._grid.invalidateAll();
+        this._grid.recordsLoaded();
     }
 
     private handleDataItemDataCorrectnessChangeEvent() {

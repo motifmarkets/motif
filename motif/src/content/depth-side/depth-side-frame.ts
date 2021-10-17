@@ -253,19 +253,16 @@ export class DepthSideFrame extends ContentFrame {
         insertCount: Integer,
         lastAffectedFollowingRecordIndex: Integer | undefined
     ) {
-        this._grid.beginRecordChanges();
-        try {
-            if (deleteCount > 0) {
-                this._grid.recordsDeleted(index, deleteCount);
+        if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
+            this._grid.beginRecordChanges();
+            try {
+                this._grid.recordsSpliced(index, deleteCount, insertCount);
+                this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
+            } finally {
+                this._grid.endRecordChanges();
             }
-            if (insertCount) {
-                this._grid.recordsInserted(index, insertCount);
-            }
-            if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
-                this._grid.invalidateExisting(); // this could be improved to only invalidate record range affected
-            }
-        } finally {
-            this._grid.endRecordChanges();
+        } else {
+            this._grid.recordsSpliced(index, deleteCount, insertCount);
         }
     }
 
@@ -379,7 +376,7 @@ export class DepthSideFrame extends ContentFrame {
             (recordIndex, count, valuesRecordIndex, valueChanges) => this.handleInvalidateRecordsAndRecordValuesEvent(
                 recordIndex, count, valuesRecordIndex, valueChanges
             );
-        store.invalidateAllEvent = () => this._grid.invalidateAll();
+        store.recordsLoadedEvent = () => this._grid.recordsLoaded();
 
         const element: DepthSideFrame.StyleCacheElement = {
             gridFields: fields,
@@ -478,38 +475,6 @@ export namespace DepthSideFrame {
     export interface ComponentAccess {
         readonly id: string;
         createGrid(dataStore: RevRecordStore): MotifGrid;
-
-        // readonly gridRowRecIndices: Integer[];
-        // gridFocusedRecordIndex: Integer | undefined;
-        // gridClickToSort: boolean;
-        // gridContinuousFiltering: boolean;
-        // gridCreateAdaptor(dataStore: GridDataStore, sideId: BidAskSideId): void;
-        // gridInsertRecord(index: Integer): void;
-        // gridInsertRecords(index: Integer, count: Integer): void;
-        // gridInsertRecordsInSameRowPosition(index: Integer, count: Integer): void;
-        // gridMoveRecordRow(fromRecordIndex: Integer, toRowIndex: Integer): void;
-        // gridMoveFieldColumn(field: Integer | GridField, columnIndex: Integer): void;
-        // gridDeleteRecord(recordIndex: Integer): void;
-        // gridDeleteRecords(recordIndex: Integer, count: Integer): void;
-        // gridDeleteAllRecords(): void;
-        // gridInvalidateAll(): void;
-        // gridInvalidateValue(fieldIndex: Integer, recordIndex: Integer): void;
-        // gridInvalidateRecord(recordIndex: Integer): void;
-        // gridLoadLayout(layout: GridLayout): void;
-        // gridSaveLayout(): GridLayout;
-        // gridReorderRecRows(recordIndices: Integer[]): void;
-        // gridAutoSizeAllColumnWidths(): void;
-        // gridBeginChange(): void;
-        // gridEndChange(): void;
-        // gridReset(): void;
-        // gridAddFields(fields: DepthSideGridField[]): void;
-        // gridSetFieldState(field: GridField, state?: GridFieldState | undefined): void;
-        // gridSetFieldVisible(field: GridField, visible: boolean): void;
-        // getGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap;
-        // gridApplyFilter(filterFtn: TRecordFilter): void;
-        // gridClearFilter(): void;
-        // gridGetRenderedActiveWidth(): Promise<Integer>;
-        // gridGetScrollbaredActiveWidth(): Integer;
     }
 
     export namespace JsonName {

@@ -79,10 +79,6 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
         }
     }
 
-    invalidateAll(): void {
-        this._grid.invalidateAll();
-    }
-
     invalidateVisibleValue(rowIndex: Integer): void {
         const fieldIndex = this._grid.getFieldIndex(this._visibleField);
         this._grid.invalidateValue(fieldIndex, rowIndex, RevRecordValueRecentChangeTypeId.Update);
@@ -94,7 +90,7 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
         const moveColumn = (currentIndex: number, newIndex: number): boolean => {
             const result = this._layoutWithHeadings.layout.moveColumn(currentIndex, newIndex);
             if (result) {
-                this._grid.invalidateAll();
+                this._grid.recordsLoaded();
             }
             return result;
         };

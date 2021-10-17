@@ -104,7 +104,7 @@ export class MotifGrid extends Revgrid {
 
             if (value) {
                 // Continuous filtering was just turned on, apply if necessary
-                this.invalidateAll();
+                this.recordsLoaded();
             }
         }
     }
@@ -431,12 +431,16 @@ export class MotifGrid extends Revgrid {
         this._mainRecordAdapter.recordsInserted(recordIndex, count, recent);
     }
 
-    invalidateAll(recent?: boolean): void {
-        this._mainRecordAdapter.invalidateAll(recent);
+    recordsSpliced(recordIndex: RevRecordIndex, deleteCount: number, insertCount: number) {
+        this._mainRecordAdapter.recordsSpliced(recordIndex, deleteCount, insertCount);
     }
 
-    invalidateExisting(): void {
-        this._mainRecordAdapter.invalidateExisting();
+    recordsLoaded(recent?: boolean): void {
+        this._mainRecordAdapter.recordsLoaded(recent);
+    }
+
+    invalidateAll(): void {
+        this._mainRecordAdapter.invalidateAll();
     }
 
     invalidateRecord(recordIndex: RevRecordIndex, recent?: boolean): void {
@@ -517,7 +521,7 @@ export class MotifGrid extends Revgrid {
         }
 
         // this._hypegrid.renderer.resetAllCellPropertiesCaches();
-        this.invalidateAll();
+        this.recordsLoaded();
     }
 
     moveActiveColumn(fromColumnIndex: number, toColumnIndex: number): void {
@@ -851,7 +855,7 @@ export class MotifGrid extends Revgrid {
         }
 
         if (!gridPropertiesUpdated) {
-            this.invalidateExisting();
+            this.invalidateAll();
         }
     }
 

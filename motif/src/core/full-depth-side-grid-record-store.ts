@@ -111,7 +111,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         }
         this._newPriceLevelAsOrder = true;
 
-        this.invalidateAllEvent();
+        this.recordsLoadedEvent();
 
         this.checkConsistency();
     }
@@ -151,7 +151,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        this.invalidateAllEvent();
+        this.recordsLoadedEvent();
 
         this._newPriceLevelAsOrder = false;
         this.checkConsistency();

@@ -99,7 +99,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
     }
 
     invalidateExisting(): void {
-        this._grid.invalidateExisting();
+        this._grid.invalidateAll();
     }
 
     invalidateRecord(recordIndex: Integer): void {
@@ -107,7 +107,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
     }
 
     private handleRecordStoreChangedEvent() {
-        this._grid.invalidateExisting();
+        this._grid.invalidateAll();
     }
 
     private filterItems(record: RevRecord) {

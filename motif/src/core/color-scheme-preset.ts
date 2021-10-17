@@ -404,7 +404,7 @@ export namespace ColorSchemePreset {
             Grid_Cancelled: { id: ColorScheme.ItemId.Grid_Cancelled, bkgd: 'silver', fore: inherit },
             Grid_RowRecentlyAddedBorder: { id: ColorScheme.ItemId.Grid_RowRecentlyAddedBorder, bkgd: inherit, fore: inherit },
             Grid_RowRecordRecentlyChangedBorder: { id: ColorScheme.ItemId.Grid_RowRecordRecentlyChangedBorder, bkgd: '#8C5F46', fore: inherit },
-            Grid_ValueRecentlyModifiedBorder: { id: ColorScheme.ItemId.Grid_ValueRecentlyModifiedBorder, bkgd: '#8C5F46', fore: '#8C5F46' },
+            Grid_ValueRecentlyModifiedBorder: { id: ColorScheme.ItemId.Grid_ValueRecentlyModifiedBorder, bkgd: '#8C5F46', fore: 'yellow' },
             Grid_ValueRecentlyModifiedUpBorder: { id: ColorScheme.ItemId.Grid_ValueRecentlyModifiedUpBorder, bkgd: '#64FA64', fore: 'lime' },
             Grid_ValueRecentlyModifiedDownBorder: { id: ColorScheme.ItemId.Grid_ValueRecentlyModifiedDownBorder, bkgd: '#4646FF', fore: '#ff0004' },
             Grid_UpValue: { id: ColorScheme.ItemId.Grid_UpValue, bkgd: inherit, fore: '#64FA64' },
@@ -416,14 +416,14 @@ export namespace ColorSchemePreset {
             Grid_NewsIncomingAlt: { id: ColorScheme.ItemId.Grid_NewsIncomingAlt, bkgd: inherit, fore: inherit },
             Grid_NewsHeadlineOnly: { id: ColorScheme.ItemId.Grid_NewsHeadlineOnly, bkgd: inherit, fore: '#3BB7F0' },
             Grid_NewsHeadlineOnlyAlt: { id: ColorScheme.ItemId.Grid_NewsHeadlineOnlyAlt, bkgd: inherit, fore: inherit },
-            Grid_OrderBuy: { id: ColorScheme.ItemId.Grid_OrderBuy, bkgd: '#212121', fore: inherit },
-            Grid_OrderBuyAlt: { id: ColorScheme.ItemId.Grid_OrderBuyAlt, bkgd: '#2b2b2b', fore: inherit },
-            Grid_PriceBuy: { id: ColorScheme.ItemId.Grid_PriceBuy, bkgd: '#212121', fore: inherit },
-            Grid_PriceBuyAlt: { id: ColorScheme.ItemId.Grid_PriceBuyAlt, bkgd: '#2b2b2b', fore: inherit },
-            Grid_OrderSell: { id: ColorScheme.ItemId.Grid_OrderSell, bkgd: '#212121', fore: inherit },
-            Grid_OrderSellAlt: { id: ColorScheme.ItemId.Grid_OrderSellAlt, bkgd: '#2b2b2b', fore: inherit },
-            Grid_PriceSell: { id: ColorScheme.ItemId.Grid_PriceSell, bkgd: '#212121', fore: inherit },
-            Grid_PriceSellAlt: { id: ColorScheme.ItemId.Grid_PriceSellAlt, bkgd: '#2b2b2b', fore: inherit },
+            Grid_OrderBuy: { id: ColorScheme.ItemId.Grid_OrderBuy, bkgd: '#214121', fore: inherit },
+            Grid_OrderBuyAlt: { id: ColorScheme.ItemId.Grid_OrderBuyAlt, bkgd: '#2b462b', fore: inherit },
+            Grid_PriceBuy: { id: ColorScheme.ItemId.Grid_PriceBuy, bkgd: '#212821', fore: inherit },
+            Grid_PriceBuyAlt: { id: ColorScheme.ItemId.Grid_PriceBuyAlt, bkgd: '#2b302b', fore: inherit },
+            Grid_OrderSell: { id: ColorScheme.ItemId.Grid_OrderSell, bkgd: '#412121', fore: inherit },
+            Grid_OrderSellAlt: { id: ColorScheme.ItemId.Grid_OrderSellAlt, bkgd: '#462b2b', fore: inherit },
+            Grid_PriceSell: { id: ColorScheme.ItemId.Grid_PriceSell, bkgd: '#282121', fore: inherit },
+            Grid_PriceSellAlt: { id: ColorScheme.ItemId.Grid_PriceSellAlt, bkgd: '#302b2b', fore: inherit },
             Grid_PriceSellOverlap: { id: ColorScheme.ItemId.Grid_PriceSellOverlap, bkgd: '#784EF5', fore: inherit },
             Grid_PriceSellOverlapAlt: { id: ColorScheme.ItemId.Grid_PriceSellOverlapAlt, bkgd: '#784EF5', fore: inherit },
             Grid_MyOrder: { id: ColorScheme.ItemId.Grid_MyOrder, bkgd: '#162675', fore: '#C8B900' },
@@ -486,7 +486,6 @@ export namespace ColorSchemePreset {
             Unexpected: { id: ColorScheme.ItemId.Unexpected, bkgd: '#D4D3D1', fore: 'black' },
             /* eslint-enable max-len */
         };
-
 
         export const items = Object.values(itemsObject);
 

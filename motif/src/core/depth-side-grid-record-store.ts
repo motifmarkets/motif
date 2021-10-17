@@ -14,7 +14,7 @@ export abstract class DepthSideGridRecordStore {
     recordDeletedEvent: DepthSideGridRecordStore.RecordDeletedEventHandler;
     recordsSplicedAndInvalidateUpToEvent: DepthSideGridRecordStore.RecordsSplicedAndInvalidateUpToEvent;
     allRecordsDeletedEvent: DepthSideGridRecordStore.AllRecordsDeletedEventHandler;
-    invalidateAllEvent: DepthSideGridRecordStore.InvalidateAllEventHandler;
+    recordsLoadedEvent: DepthSideGridRecordStore.RecordsLoadedEventHandler;
     invalidateRecordsEvent: DepthSideGridRecordStore.InvalidateRecordsEventHandler;
     invalidateRecordAndFollowingRecordsEvent: DepthSideGridRecordStore.InvalidateRecordAndFollowingRecordsEventHandler;
     invalidateRecordAndValuesAndFollowingRecordsEventer: DepthSideGridRecordStore.InvalidateRecordAndValuesAndFollowingRecordsEventHandler;
@@ -133,7 +133,7 @@ export namespace DepthSideGridRecordStore {
         index: Integer, deleteCount: Integer, insertCount: Integer, lastAffectedFollowingRecordIndex: Integer | undefined
     ) => void;
     export type AllRecordsDeletedEventHandler = (this: void) => void;
-    export type InvalidateAllEventHandler = (this: void) => void;
+    export type RecordsLoadedEventHandler = (this: void) => void;
     export type InvalidateRecordsEventHandler = (this: void, index: Integer, count: Integer) => void;
     export type InvalidateRecordAndFollowingRecordsEventHandler = (this: void, index: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) => void;
     export type InvalidateRecordAndValuesAndFollowingRecordsEventHandler = (this: void,
