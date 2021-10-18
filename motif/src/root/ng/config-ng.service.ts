@@ -503,6 +503,7 @@ export namespace ConfigNgService {
     export namespace Branding {
         export interface Json {
             readonly startupTopSplashImageUrl?: string;
+            readonly startupSplashWebPageUrl?: string;
             readonly desktopBarLeftImageUrl?: string;
         }
 
@@ -510,6 +511,7 @@ export namespace ConfigNgService {
             if (json === undefined) {
                 return {
                     startupTopSplashImageUrl: undefined,
+                    startupSplashWebPageUrl: undefined,
                     desktopBarLeftImageUrl: undefined,
                 }
             } else {
@@ -517,6 +519,13 @@ export namespace ConfigNgService {
                 if (startupTopSplashImageUrl !== undefined) {
                     if (startupTopSplashImageUrl.indexOf('http://') !== 0 && startupTopSplashImageUrl.indexOf('https://') !== 0) {
                         startupTopSplashImageUrl = '/' + configFolderPath + '/' + startupTopSplashImageUrl;
+                    }
+                }
+
+                let startupSplashWebPageUrl = json.startupSplashWebPageUrl;
+                if (startupSplashWebPageUrl !== undefined) {
+                    if (startupSplashWebPageUrl.indexOf('http://') !== 0 && startupSplashWebPageUrl.indexOf('https://') !== 0) {
+                        startupSplashWebPageUrl = '/' + configFolderPath + '/' + startupSplashWebPageUrl;
                     }
                 }
 
@@ -529,6 +538,7 @@ export namespace ConfigNgService {
 
                 return {
                     startupTopSplashImageUrl,
+                    startupSplashWebPageUrl,
                     desktopBarLeftImageUrl,
                 }
             }

@@ -13,6 +13,7 @@ import {
     LayoutConfig,
     LayoutManager,
     ResolvedLayoutConfig,
+    RowOrColumn,
     VirtualLayout
 } from 'golden-layout';
 import { SessionInfoService } from 'src/component-services/internal-api';
@@ -123,6 +124,29 @@ export class GoldenLayoutHostFrame {
             extensionPersistState,
             container.title,
             reason);
+    }
+
+    createSplashComponent() {
+        const config = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage, undefined);
+        config.width = 50;
+        const rootItem = this._goldenLayout.rootItem;
+        let contentItem: ContentItem;
+        if (rootItem === undefined) {
+            contentItem = this._goldenLayout.newItem(config);
+        } else {
+            if (rootItem.type === 'row') {
+                const rootRow = rootItem as RowOrColumn;
+                contentItem = rootRow.newItem(config);
+            } else {
+                contentItem = this._goldenLayout.newItem(config);
+            }
+        }
+
+        if (!ContentItem.isComponentItem(contentItem)) {
+            throw new AssertInternalError('GLHFCSC33911');
+        } else {
+            return contentItem.component as BuiltinDitemNgComponentBaseDirective;
+        }
     }
 
     componentTypeToString(componentType: JsonValue) {

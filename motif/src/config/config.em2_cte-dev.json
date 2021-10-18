@@ -82,6 +82,7 @@
   },
   "branding": {
     "startupTopSplashImageUrl": "branding/images/splash.svg",
+    "startupSplashWebPageUrl": "https://www.em2.asia/",
     "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
   }
 }

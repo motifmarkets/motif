@@ -77,7 +77,8 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
         const signOutService = signOutNgService.service;
 
         const config = configNgService.config;
-        const barLeftImageUrl = config.branding.desktopBarLeftImageUrl;
+        const configBranding = config.branding;
+        const barLeftImageUrl = configBranding.desktopBarLeftImageUrl;
         if (barLeftImageUrl === undefined) {
             this.barLeftImageExists = false;
             this.barLeftImageUrl = '';
@@ -95,6 +96,7 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
             signOutService,
             menuBarNgService.service,
             this._commandRegisterService,
+            configBranding.startupSplashWebPageUrl,
             (component) => this.getBuiltinDitemFrameFromGoldenLayoutComponent(component),
         );
 

@@ -25,6 +25,7 @@ import { SymbolsDitemNgComponent } from './symbols-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from './top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from './trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from './watchlist-ditem/ng-api';
+import { BrandingSplashWebPageDitemNgComponent } from './web-page-ditem/ng-api';
 
 export namespace DitemComponentIdAndType {
     interface IdAndType {
@@ -106,6 +107,14 @@ export namespace DitemComponentIdAndType {
         EtoPriceQuotation: {
             id: BuiltinDitemFrame.BuiltinTypeId.EtoPriceQuotation,
             type: EtoPriceQuotationDitemNgComponent,
+        },
+        GeneralWebPage: {
+            id: BuiltinDitemFrame.BuiltinTypeId.GeneralWebPage,
+            type: BrandingSplashWebPageDitemNgComponent,
+        },
+        BrandingSplashWebPage: {
+            id: BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage,
+            type: BrandingSplashWebPageDitemNgComponent,
         },
     } as const;
 
