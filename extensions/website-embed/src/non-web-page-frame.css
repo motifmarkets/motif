@@ -1,0 +1,8 @@
+.root {
+    display: block;
+    height: 100%;
+}
+
+.heading {
+    font-size: larger;
+}
