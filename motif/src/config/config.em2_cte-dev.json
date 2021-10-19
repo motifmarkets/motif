@@ -63,6 +63,19 @@
       "info": {
         "publisherType": "Organisation",
         "publisherName": "Paritech",
+        "name": "Website Embed",
+        "version": "0.0.1",
+        "apiVersion": "1",
+        "shortDescription": "Website embed sample extension",
+        "longDescription": "Example extension demonstrating how website content can be integrated into Motif",
+        "urlPath": "/extensions/website-embed/dist/website-embed.js"
+      },
+      "install": false
+    },
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
         "name": "TsDemo",
         "version": "0.0.1",
         "apiVersion": "1",
@@ -81,8 +94,6 @@
     "dataSubscriptionCachingDisabled": true
   },
   "branding": {
-    "startupTopSplashImageUrl": "branding/images/splash.svg",
-    "startupSplashWebPageUrl": "https://www.em2.asia/",
     "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
   }
 }

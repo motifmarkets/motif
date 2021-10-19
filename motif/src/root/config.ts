@@ -99,7 +99,6 @@ export namespace Config {
     }
 
     export interface Branding {
-        readonly startupTopSplashImageUrl: string | undefined;
         readonly startupSplashWebPageUrl: string | undefined;
         readonly desktopBarLeftImageUrl: string | undefined;
     }

@@ -502,7 +502,6 @@ export namespace ConfigNgService {
 
     export namespace Branding {
         export interface Json {
-            readonly startupTopSplashImageUrl?: string;
             readonly startupSplashWebPageUrl?: string;
             readonly desktopBarLeftImageUrl?: string;
         }
@@ -510,18 +509,10 @@ export namespace ConfigNgService {
         export function parseJson(json: Json | undefined, configFolderPath: string): Config.Branding {
             if (json === undefined) {
                 return {
-                    startupTopSplashImageUrl: undefined,
                     startupSplashWebPageUrl: undefined,
                     desktopBarLeftImageUrl: undefined,
                 }
             } else {
-                let startupTopSplashImageUrl = json.startupTopSplashImageUrl;
-                if (startupTopSplashImageUrl !== undefined) {
-                    if (startupTopSplashImageUrl.indexOf('http://') !== 0 && startupTopSplashImageUrl.indexOf('https://') !== 0) {
-                        startupTopSplashImageUrl = '/' + configFolderPath + '/' + startupTopSplashImageUrl;
-                    }
-                }
-
                 let startupSplashWebPageUrl = json.startupSplashWebPageUrl;
                 if (startupSplashWebPageUrl !== undefined) {
                     if (startupSplashWebPageUrl.indexOf('http://') !== 0 && startupSplashWebPageUrl.indexOf('https://') !== 0) {
@@ -537,7 +528,6 @@ export namespace ConfigNgService {
                 }
 
                 return {
-                    startupTopSplashImageUrl,
                     startupSplashWebPageUrl,
                     desktopBarLeftImageUrl,
                 }
