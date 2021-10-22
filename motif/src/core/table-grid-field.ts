@@ -54,7 +54,7 @@ export abstract class TableGridField implements RevRecordField {
 
     get valueTypeId() { return this._valueTypeId; }
 
-    compareField(left: TableRecord, right: TableRecord): number {
+    compare(left: TableRecord, right: TableRecord): number {
         const leftValue = left.values[this.index];
         const rightValue = right.values[this.index];
         if (leftValue === rightValue) {
@@ -76,7 +76,7 @@ export abstract class TableGridField implements RevRecordField {
         }
     }
 
-    compareFieldDesc(left: TableRecord, right: TableRecord): number {
+    compareDesc(left: TableRecord, right: TableRecord): number {
         const leftValue = left.values[this.index];
         const rightValue = right.values[this.index];
         if (leftValue === rightValue) {
@@ -98,7 +98,7 @@ export abstract class TableGridField implements RevRecordField {
         }
     }
 
-    getFieldValue(record: TableRecord): RenderValue {
+    getValue(record: TableRecord): RenderValue {
         const tableGridValue = record.values[this.index];
         return tableGridValue.renderValue;
     }

@@ -21,7 +21,7 @@ export class FullDepthSideGridField extends DepthSideGridField {
         super(FullDepthSideField.idToName(_id));
     }
 
-    getFieldValue(record: FullDepthRecord): RenderValue {
+    getValue(record: FullDepthRecord): RenderValue {
         let dataCorrectnessAttribute: RenderValue.Attribute | undefined;
         const correctnessId = this._getDataItemCorrectnessIdEvent();
         switch (correctnessId) {
@@ -42,11 +42,11 @@ export class FullDepthSideGridField extends DepthSideGridField {
         return record.getRenderValue(this._id, this._sideId, dataCorrectnessAttribute);
     }
 
-    compareField(left: FullDepthRecord, right: FullDepthRecord): number {
+    compare(left: FullDepthRecord, right: FullDepthRecord): number {
         return FullDepthRecord.compareField(this._id, left, right);
     }
 
-    compareFieldDesc(left: FullDepthRecord, right: FullDepthRecord): number {
+    compareDesc(left: FullDepthRecord, right: FullDepthRecord): number {
         return FullDepthRecord.compareFieldDesc(this._id, left, right);
     }
 }

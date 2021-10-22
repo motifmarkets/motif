@@ -47,7 +47,7 @@ export abstract class DayTradesGridField implements RevRecordField {
     get defaultVisible() { return this._defaultVisible; }
     get isBrokerPrivateData() { return DayTradesDataItem.Field.idToIsBrokerPrivateData(this._id); }
 
-    getFieldValue(record: DayTradesDataItem.Record): RenderValue {
+    getValue(record: DayTradesDataItem.Record): RenderValue {
         const { renderValue, cellAttribute } = this.createRenderValue(record);
 
         // add attributes in correct priority order.  1st will be applied last (highest priority)
@@ -101,12 +101,12 @@ export abstract class DayTradesGridField implements RevRecordField {
         return renderValue;
     }
 
-    compareField(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
-        return this.compareFieldValue(left, right, true);
+    compare(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+        return this.compareValue(left, right, true);
     }
 
-    compareFieldDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
-        return this.compareFieldValue(right, left, false);
+    compareDesc(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+        return this.compareValue(right, left, false);
     }
 
     protected addRenderAttributes(renderValue: RenderValue, record: DayTradesDataItem.Record, cellAttribute: RenderValue.Attribute) {
@@ -114,7 +114,7 @@ export abstract class DayTradesGridField implements RevRecordField {
     }
 
     protected abstract createRenderValue(record: DayTradesDataItem.Record): DayTradesGridField.CreateRenderValueResult;
-    protected abstract compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean): number;
+    protected abstract compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean): number;
 }
 
 export namespace DayTradesGridField {
@@ -200,7 +200,7 @@ export class IdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record): ComparisonResult {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record): ComparisonResult {
         return compareNumber(left.tradeRecord.id, right.tradeRecord.id);
     }
 }
@@ -239,7 +239,7 @@ export class PriceDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableDecimal(left.tradeRecord.price, right.tradeRecord.price, !ascending);
     }
 }
@@ -277,7 +277,7 @@ export class QuantityDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableInteger(left.tradeRecord.quantity, right.tradeRecord.quantity, !ascending);
     }
 }
@@ -303,7 +303,7 @@ export class TimeDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return SourceTzOffsetDateTime.compareUndefinable(left.tradeRecord.time, right.tradeRecord.time, !ascending);
     }
 }
@@ -329,7 +329,7 @@ export class FlagIdsDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareArray(left.tradeRecord.flagIds, right.tradeRecord.flagIds);
     }
 }
@@ -355,7 +355,7 @@ export class TrendIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableInteger(left.tradeRecord.trendId, right.tradeRecord.trendId, !ascending);
     }
 }
@@ -381,7 +381,7 @@ export class BidAskSideIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableInteger(left.tradeRecord.bidAskSideId, right.tradeRecord.bidAskSideId, !ascending);
     }
 }
@@ -407,7 +407,7 @@ export class AffectsIdsDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareArray(left.tradeRecord.affectsIds, right.tradeRecord.affectsIds);
     }
 }
@@ -433,7 +433,7 @@ export class ConditionCodesDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.conditionCodes, right.tradeRecord.conditionCodes, !ascending);
     }
 }
@@ -459,7 +459,7 @@ export class BuyDepthOrderIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.buyDepthOrderId, right.tradeRecord.buyDepthOrderId, !ascending);
     }
 }
@@ -485,7 +485,7 @@ export class BuyBrokerDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.buyBroker, right.tradeRecord.buyBroker, !ascending);
     }
 }
@@ -511,7 +511,7 @@ export class BuyCrossRefDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.buyCrossRef, right.tradeRecord.buyCrossRef, !ascending);
     }
 }
@@ -537,7 +537,7 @@ export class SellDepthOrderIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.sellDepthOrderId, right.tradeRecord.sellDepthOrderId, !ascending);
     }
 }
@@ -563,7 +563,7 @@ export class SellBrokerDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.sellBroker, right.tradeRecord.sellBroker, !ascending);
     }
 }
@@ -589,7 +589,7 @@ export class SellCrossRefDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableString(left.tradeRecord.sellCrossRef, right.tradeRecord.sellCrossRef, !ascending);
     }
 }
@@ -615,7 +615,7 @@ export class MarketIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableEnum(left.tradeRecord.marketId, right.tradeRecord.marketId, !ascending);
     }
 }
@@ -641,7 +641,7 @@ export class RelatedIdDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record, ascending: boolean) {
         return compareUndefinableInteger(left.tradeRecord.relatedId, right.tradeRecord.relatedId, !ascending);
     }
 }
@@ -667,7 +667,7 @@ export class AttributesDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return compareArray(left.tradeRecord.attributes, right.tradeRecord.attributes);
     }
 }
@@ -693,7 +693,7 @@ export class RecordTypeDayTradesGridField extends DayTradesGridField {
         return result;
     }
 
-    protected compareFieldValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
+    protected compareValue(left: DayTradesDataItem.Record, right: DayTradesDataItem.Record) {
         return DayTradesDataItem.Record.Type.sortCompareId(left.typeId, right.typeId);
     }
 }
