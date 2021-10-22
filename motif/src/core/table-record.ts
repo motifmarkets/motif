@@ -16,18 +16,19 @@ export class TableRecord implements RevRecord {
     valuesChangedEvent: TableRecord.ValuesChangedEvent;
     fieldsChangedEvent: TableRecord.FieldsChangedEvent;
     recordChangedEvent: TableRecord.RecordChangedEvent;
-    firstUsableEvent: TableRecord.FirstUsableEvent;
+    firstUsableEvent: TableRecord.FirstUsableEvent; // Not implemented
 
     private _definition: TableRecordDefinition;
     private _valueList: TableValueList;
     private _values: TableGridValue[];
+    private _beenUsable = false;
 
     constructor(initialIndex: Integer) {
         this.index = initialIndex;
     }
 
     get definition() { return this._definition; }
-    get firstUsable() { return this._valueList.firstUsable; }
+    get firstUsable() { return this._valueList.beenUsable; }
     get values(): readonly TableGridValue[] { return this._values; }
 
     setRecordDefinition(recordDefinition: TableRecordDefinition, newValueList: TableValueList) {
@@ -36,12 +37,12 @@ export class TableRecord implements RevRecord {
         this._valueList.valueChangesEvent = (valueChanges) => this.handleValueChangesEvent(valueChanges);
         this._valueList.sourceAllValuesChangeEvent =
             (firstFieldIdx, newValues) => this.handleSourceAllValuesChangeEvent(firstFieldIdx, newValues);
-        this._valueList.firstUsableEvent = () => this.handleFirstUsableEvent();
+        this._valueList.beenUsableBecameTrueEvent = () => { this._beenUsable = true; }
     }
 
     activate() {
         this._values = this._valueList.activate();
-        this._valueList.checkFirstUsable();
+        this._beenUsable = this._valueList.beenUsable;
     }
 
     deactivate() {
@@ -69,7 +70,7 @@ export class TableRecord implements RevRecord {
                 const { fieldIndex, newValue, recentChangeTypeId } = valueChanges[i];
                 this._values[fieldIndex] = newValue;
 
-                if (recentChangeTypeId !== undefined) {
+                if (recentChangeTypeId !== undefined && this._beenUsable) {
                     invalidatedValues[invalidatedValueCount++] = {
                         fieldIndex,
                         typeId: recentChangeTypeId,
@@ -98,10 +99,6 @@ export class TableRecord implements RevRecord {
                 this.fieldsChangedEvent(this.index, firstFieldIndex, newValuesCount);
             }
         }
-    }
-
-    private handleFirstUsableEvent() {
-        this.firstUsableEvent(this.index);
     }
 }
 

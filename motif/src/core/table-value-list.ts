@@ -11,11 +11,11 @@ import { TableValueSource } from './table-value-source';
 export class TableValueList {
     valueChangesEvent: TableValueList.ValueChangesEvent;
     sourceAllValuesChangeEvent: TableValueList.AllSourceValuesChangeEvent;
-    firstUsableEvent: TableValueList.FirstUsableEvent;
+    beenUsableBecameTrueEvent: TableValueList.BeenUsableBecameTrueEvent;
 
     private _sources = new ComparableList<TableValueSource>();
     private _fieldCount = 0;
-    private _firstUsable = false;
+    private _beenUsable = false;
     private _beginValuesChangeCount = 0;
 
 
@@ -28,6 +28,8 @@ export class TableValueList {
             const sourceValues = source.activate();
             record = record.concat(sourceValues);
         }
+
+        this._beenUsable = this.calculateBeenUsable();
 
         return record;
     }
@@ -42,24 +44,13 @@ export class TableValueList {
     addSource(source: TableValueSource) {
         source.valueChangesEvent = (valueChanges) => this.handleSourceValueChangesEvent(valueChanges);
         source.allValuesChangeEvent = (idx, newValues) => this.handleSourceAllValuesChangeEvent(idx, newValues);
-        source.firstUsableEvent = () => this.handleFirstUsableEvent();
+        source.beenUsableBecameTrueEvent = () => this.handleBeenUsableBecameTrueEvent();
 
         this._sources.add(source);
         this._fieldCount += source.fieldCount;
     }
 
-    checkFirstUsable() {
-        for (let i = 0; i < this._sources.count; i++) {
-            const source = this._sources.getItem(i);
-            if (!source.firstUsable) {
-                return;
-            }
-        }
-
-        this._firstUsable = true;
-    }
-
-    get firstUsable(): boolean { return this._firstUsable; }
+    get beenUsable(): boolean { return this._beenUsable; }
 
     getAllValues(): TableGridValue[] {
         if (this._sources.count === 1) {
@@ -85,22 +76,27 @@ export class TableValueList {
         this.sourceAllValuesChangeEvent(idx, newValues);
     }
 
-    private handleFirstUsableEvent() {
-        if (!this._firstUsable) {
-            let allUsable = true;
-            for (let i = 0; i < this._sources.count; i++) {
-                const source = this._sources.getItem(i);
-                if (!source.firstUsable) {
-                    allUsable = false;
-                    break;
-                }
-            }
+    private handleBeenUsableBecameTrueEvent() {
+        if (!this._beenUsable) {
 
-            if (allUsable) {
-                this._firstUsable = allUsable;
-                this.firstUsableEvent();
+            const beenUsable = this.calculateBeenUsable();
+
+            if (beenUsable) {
+                this._beenUsable = true;
+                this.beenUsableBecameTrueEvent();
             }
         }
+    }
+
+    private calculateBeenUsable() {
+        for (let i = 0; i < this._sources.count; i++) {
+            const source = this._sources.getItem(i);
+            if (!source.beenUsable) {
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /*private findValue(idx: Integer): TableValueList.FindValueResult {
@@ -139,5 +135,5 @@ export namespace TableValueList {
     export type EndValuesChangeEvent = (this: void) => void;
     export type ValueChangesEvent = (valueChanges: TableValueSource.ValueChange[]) => void;
     export type AllSourceValuesChangeEvent = (fieldIdx: Integer, newValues: TableGridValue[]) => void;
-    export type FirstUsableEvent = (this: void) => void;
+    export type BeenUsableBecameTrueEvent = (this: void) => void;
 }

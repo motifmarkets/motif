@@ -33,6 +33,8 @@ export class FeedTableValueSource extends TableValueSource {
             () => this.handleCorrectnessChangedEvent()
         );
 
+        this.initialiseBeenUsable(this._feed.usable);
+
         return this.getAllValues();
     }
 
@@ -80,8 +82,8 @@ export class FeedTableValueSource extends TableValueSource {
     }
 
     private handleCorrectnessChangedEvent() {
-        const changedValues = this.getAllValues();
-        this.notifyAllValuesChangeEvent(changedValues);
+        const allValues = this.getAllValues();
+        this.processDataCorrectnessChange(allValues, this._feed.usable);
     }
 
     private createTableGridValue(fieldIdx: Integer) {
