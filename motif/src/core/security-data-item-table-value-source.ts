@@ -67,6 +67,8 @@ export class SecurityDataItemTableValueSource extends TableValueSource {
                 (changedFieldIds) => this.handleFieldValuesChangedEvent(changedFieldIds)
             );
 
+            this.initialiseBeenUsable(this.dataItem.usable);
+
             return this.getAllValues();
         }
     }
@@ -112,7 +114,8 @@ export class SecurityDataItemTableValueSource extends TableValueSource {
             this.loadValue(fieldId, value, false);
             allValues[fieldIdx] = value;
         }
-        this.notifyAllValuesChangeEvent(allValues);
+
+        this.processDataCorrectnessChange(allValues, this.dataItem.usable);
     }
 
     private handleFieldValuesChangedEvent(securityValueChanges: SecurityDataItem.ValueChange[]) {

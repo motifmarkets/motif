@@ -79,7 +79,7 @@
     "preview": false
   },
   "branding": {
-    "startupTopSplashImageUrl": "branding/images/startup-top-splash.svg",
+    "startupSplashWebPageUrl": "https://www.motifmarkets.com",
     "desktopBarLeftImageUrl": "branding/images/desktop-bar-left.svg"
   }
 }

@@ -1645,6 +1645,8 @@ export const enum StringId {
     DitemMenuDisplay_Balances,
     DitemMenuDisplay_Settings,
     DitemMenuDisplay_EtoPriceQuotation,
+    DitemMenuDisplay_GeneralWebPage,
+    DitemMenuDisplay_BrandingSplashWebPage,
     DitemMenuDisplay_OrderRequest_Buy,
     DitemMenuDisplay_OrderRequest_Sell,
     Desktop_SaveLayoutCaption,
@@ -9953,6 +9955,16 @@ export namespace I18nStrings {
         DitemMenuDisplay_EtoPriceQuotation: {
             id: StringId.DitemMenuDisplay_EtoPriceQuotation, translations: {
                 en: 'ETO Price',
+            }
+        },
+        DitemMenuDisplay_GeneralWebPage: {
+            id: StringId.DitemMenuDisplay_GeneralWebPage, translations: {
+                en: 'Web Page',
+            }
+        },
+        DitemMenuDisplay_BrandingSplashWebPage: {
+            id: StringId.DitemMenuDisplay_BrandingSplashWebPage, translations: {
+                en: 'Splash',
             }
         },
         DitemMenuDisplay_OrderRequest_Buy: {

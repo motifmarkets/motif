@@ -55,6 +55,8 @@ export namespace BuiltinDitemFrame {
         Balances,
         Settings,
         EtoPriceQuotation,
+        GeneralWebPage,
+        BrandingSplashWebPage,
     }
 
     export namespace BuiltinType {
@@ -231,6 +233,20 @@ export namespace BuiltinDitemFrame {
                 name: 'EtoPriceQuotation',
                 newInternalCommandName: InternalCommand.Name.NewEtoPriceQuotationDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_EtoPriceQuotation,
+                menuBarItemPosition: undefined,
+            },
+            GeneralWebPage: {
+                id: BuiltinTypeId.GeneralWebPage,
+                name: 'GeneralWebPage',
+                newInternalCommandName: InternalCommand.Name.NewGeneralWebPageDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_GeneralWebPage,
+                menuBarItemPosition: undefined,
+            },
+            BrandingSplashWebPage: {
+                id: BuiltinTypeId.BrandingSplashWebPage,
+                name: 'BrandingSplashWebPage',
+                newInternalCommandName: InternalCommand.Name.NewBrandingSplashWebPageDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_BrandingSplashWebPage,
                 menuBarItemPosition: undefined,
             },
         };

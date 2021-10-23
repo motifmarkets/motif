@@ -2,6 +2,7 @@
   "name": "tsdemo",
   "version": "0.0.1",
   "description": "Typescript Motif Plugin test",
+  "private": true,
   "main": "index.ts",
   "devDependencies": {
     "css-loader": "^5.2.0",

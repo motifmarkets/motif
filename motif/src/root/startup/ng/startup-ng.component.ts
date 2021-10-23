@@ -20,11 +20,6 @@ import { SessionService } from '../../session-service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartupNgComponent implements OnInit, OnDestroy {
-    // @HostBinding('class.app-loading') readonly isAppLoading: true;
-    // @HostBinding('style.background-image') topSplashImageUrl: string;
-
-    // public readonly topSplashImageExists: boolean;
-    // public readonly topSplashImageUrl: string;
     public logTextAreaDisplayed = false;
     public log = 'Startup Log';
 
@@ -42,14 +37,6 @@ export class StartupNgComponent implements OnInit, OnDestroy {
         this._session = this._sessionService.session;
 
         const config = configNgService.config;
-        const topSplashImageUrl = config.branding.startupTopSplashImageUrl;
-        if (topSplashImageUrl === undefined) {
-            // this.topSplashImageExists = false;
-            // this.topSplashImageUrl = '';
-        } else {
-            // this.topSplashImageExists = true;
-            // this.topSplashImageUrl = `url("${topSplashImageUrl}")`;
-        }
 
         this._sessionKickedOffSubscriptionId =
             this._session.subscribeKickedOffEvent(() => this.handleSessionManagerKickedOffEvent() );

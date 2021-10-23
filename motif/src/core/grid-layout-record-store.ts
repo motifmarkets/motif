@@ -79,7 +79,7 @@ export namespace GridLayoutRecordStore {
         constructor(private _layout: GridLayout) {
         }
 
-        getFieldValue(record: GridLayout.RecordColumn): IntegerRenderValue {
+        getValue(record: GridLayout.RecordColumn): IntegerRenderValue {
             const index = this._layout.indexOfColumn(record);
             return new IntegerRenderValue(index);
         }
@@ -88,7 +88,7 @@ export namespace GridLayoutRecordStore {
     export class NameField implements RevRecordField {
         readonly name = FieldName.name;
 
-        getFieldValue(record: GridLayout.RecordColumn): StringRenderValue {
+        getValue(record: GridLayout.RecordColumn): StringRenderValue {
             return new StringRenderValue(record.field.name);
         }
     }
@@ -99,7 +99,7 @@ export namespace GridLayoutRecordStore {
         constructor(private _headersMap: MotifGrid.FieldNameToHeaderMap) {
         }
 
-        getFieldValue(record: GridLayout.RecordColumn): StringRenderValue {
+        getValue(record: GridLayout.RecordColumn): StringRenderValue {
             const heading = this._headersMap.get(record.field.name);
             return new StringRenderValue(heading === undefined ? record.field.name : heading);
         }
@@ -108,7 +108,7 @@ export namespace GridLayoutRecordStore {
     export class VisibleField implements RevRecordField {
         readonly name = FieldName.visible;
 
-        getFieldValue(record: GridLayout.RecordColumn): StringRenderValue {
+        getValue(record: GridLayout.RecordColumn): StringRenderValue {
             return new StringRenderValue(record.visible ? 'Y' : '');
         }
     }
@@ -116,7 +116,7 @@ export namespace GridLayoutRecordStore {
     export class WidthField implements RevRecordField {
         readonly name = FieldName.width;
 
-        getFieldValue(record: GridLayout.RecordColumn): IntegerRenderValue {
+        getValue(record: GridLayout.RecordColumn): IntegerRenderValue {
             return new IntegerRenderValue(record.width);
         }
     }
@@ -124,7 +124,7 @@ export namespace GridLayoutRecordStore {
     export class SortPriorityField implements RevRecordField {
         readonly name = FieldName.sortPriority;
 
-        getFieldValue(record: GridLayout.RecordColumn): IntegerRenderValue {
+        getValue(record: GridLayout.RecordColumn): IntegerRenderValue {
             return new IntegerRenderValue(record.sortPriority);
         }
     }
@@ -132,7 +132,7 @@ export namespace GridLayoutRecordStore {
     export class SortAscendingField implements RevRecordField {
         readonly name = FieldName.sortAscending;
 
-        getFieldValue(record: GridLayout.RecordColumn): StringRenderValue {
+        getValue(record: GridLayout.RecordColumn): StringRenderValue {
             const sortAscending = record.sortAscending;
             let value: string | undefined;
             if (sortAscending === undefined) {

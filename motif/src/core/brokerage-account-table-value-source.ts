@@ -31,6 +31,8 @@ export class BrokerageAccountTableValueSource extends TableValueSource {
             () => this.handleAccountCorrectnessChangedEvent()
         );
 
+        this.initialiseBeenUsable(this._account.usable);
+
         return this.getAllValues();
     }
 
@@ -82,8 +84,8 @@ export class BrokerageAccountTableValueSource extends TableValueSource {
     }
 
     private handleAccountCorrectnessChangedEvent() {
-        const changedValues = this.getAllValues();
-        this.notifyAllValuesChangeEvent(changedValues);
+        const allValues = this.getAllValues();
+        this.processDataCorrectnessChange(allValues, this._account.usable);
     }
 
     private createTableGridValue(fieldIdx: Integer) {

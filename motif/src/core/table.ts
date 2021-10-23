@@ -670,7 +670,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
                 record.fieldsChangedEvent = (recordIdx, fieldIndex, fieldCount) =>
                     this.recordFieldsChangedEvent(recordIdx, fieldIndex, fieldCount);
                 record.recordChangedEvent = (recordIdx) => this.recordChangedEvent(recordIdx);
-                record.firstUsableEvent = () => this.handleRecordFirstUsableEvent();
+                record.firstUsableEvent = () => this.handleRecordFirstUsableEvent(); // Event not implemented
                 newRecordsArray[i] = record;
             }
 

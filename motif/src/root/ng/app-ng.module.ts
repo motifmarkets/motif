@@ -9,7 +9,6 @@
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { ColorPickerService } from 'ngx-color-picker';
 import { ControlsNgModule } from 'src/controls/ng-api';
 import { DesktopNgModule } from 'src/desktop/ng-api';
 import { ExtensionsNgModule } from 'src/extensions/ng-api';
@@ -61,7 +60,6 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
         AuthGuardNgService,
         CurrentVersionGuardNgService,
         { provide: ErrorHandler, useClass: ErrorHandlerNgService },
-        ColorPickerService,
     ],
     bootstrap: [RootNgComponent]
 })

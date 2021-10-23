@@ -5,7 +5,7 @@
  */
 
 import { DataRecord } from 'src/adi/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { Correctness, MultiEvent } from 'src/sys/internal-api';
 import { TableGridValue } from './table-grid-value';
 import { TableValueSource } from './table-value-source';
 
@@ -15,8 +15,12 @@ export abstract class DataRecordTableValueSource<Record extends DataRecord> exte
     activate() {
         const record = this.getRecord();
         this._recordCorrectnessChangedEventSubscriptionId = record.subscribeCorrectnessChangedEvent(
-            () => this.handleHoldingCorrectnessChangedEvent()
+            () => this.handleRecordCorrectnessChangedEvent()
         );
+
+        const correctnessId = record.correctnessId;
+        const usable = Correctness.idIsUsable(correctnessId);
+        this.initialiseBeenUsable(usable);
 
         return this.getAllValues();
     }
@@ -27,9 +31,11 @@ export abstract class DataRecordTableValueSource<Record extends DataRecord> exte
         this._recordCorrectnessChangedEventSubscriptionId = undefined;
     }
 
-    private handleHoldingCorrectnessChangedEvent() {
-        const changedValues = this.getAllValues();
-        this.notifyAllValuesChangeEvent(changedValues);
+    private handleRecordCorrectnessChangedEvent() {
+        const allValues = this.getAllValues();
+        const correctnessId = this.getRecord().correctnessId;
+        const usable = Correctness.idIsUsable(correctnessId);
+        this.processDataCorrectnessChange(allValues, usable);
     }
 
     abstract override getAllValues(): TableGridValue[];

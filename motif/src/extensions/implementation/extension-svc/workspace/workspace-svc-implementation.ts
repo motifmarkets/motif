@@ -6,6 +6,7 @@
 
 import { RegisteredExtension } from 'src/content/internal-api';
 import { CommandRegisterService } from 'src/core/internal-api';
+import { MultiEvent } from 'src/sys/multi-event';
 import { WorkspaceService } from 'src/workspace/internal-api';
 import { LocalDesktop as LocalDesktopApi, WorkspaceSvc } from '../../../api/extension-api';
 import { LocalDesktopImplementation } from '../../exposed/internal-api';
@@ -14,6 +15,7 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
     localDesktopLoadedEventer: WorkspaceSvc.LocalDesktopLoadedEventHandler;
 
     private _localDesktop: LocalDesktopImplementation;
+    private _workspaceServiceLocalDesktopFrameLoadedSubscriptionId: MultiEvent.SubscriptionId;
     private _getLoadedLocalDesktopResolveFtns: WorkspaceSvcImplementation.GetLoadedLocalDesktopResolveFtn[]  = [];
 
     get localDesktop() { return this._localDesktop; }
@@ -25,13 +27,17 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
     ) {
         const localDesktop  = this._workspaceService.localDesktopFrame;
         if (localDesktop === undefined) {
-            this._workspaceService.localDesktopFrameLoadedEvent = () => this.loadLocalDesktop();
+            this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId = this._workspaceService.subcribeLocalDesktopFrameLoadedEvent(
+                () => this.loadLocalDesktop()
+            );
         } else {
             this.loadLocalDesktop();
         }
     }
 
     destroy() {
+        this.checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent();
+
         if (this._localDesktop !== undefined) {
             this._localDesktop.destroy();
         }
@@ -62,6 +68,8 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
         }
 
         this.resolveGetLoadedLocalDesktop(this._localDesktop);
+
+        this.checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent();
     }
 
     private resolveGetLoadedLocalDesktop(value: LocalDesktopApi | undefined) {
@@ -69,6 +77,13 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
             ftn(value);
         }
         this._getLoadedLocalDesktopResolveFtns.length = 0;
+    }
+
+    private checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent() {
+        if (this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId !== undefined) {
+            this._workspaceService.unsubcribeLocalDesktopFrameLoadedEvent(this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId);
+            this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId = undefined;
+        }
     }
 }
 

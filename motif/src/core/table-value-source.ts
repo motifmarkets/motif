@@ -12,13 +12,13 @@ import { TableGridValue } from './table-grid-value';
 export abstract class TableValueSource {
     valueChangesEvent: TableValueSource.ValueChangesEvent;
     allValuesChangeEvent: TableValueSource.AllValuesChangeEvent;
-    firstUsableEvent: TableValueSource.FirstUsableEvent;
+    beenUsableBecameTrueEvent: TableValueSource.BeenUsableBecameTrueEvent;
 
-    protected _firstUsable = false; // this has not been implemented.  Only used for tables to resize columns when all data good
+    protected _beenUsable = false;
 
     constructor(private readonly _firstFieldIndexOffset: Integer ) { }
 
-    get firstUsable(): boolean { return this._firstUsable; }
+    get beenUsable(): boolean { return this._beenUsable; }
     get fieldCount() { return this.getfieldCount(); }
     get firstFieldIndexOffset() { return this._firstFieldIndexOffset; }
 
@@ -33,8 +33,23 @@ export abstract class TableValueSource {
         this.allValuesChangeEvent(this._firstFieldIndexOffset, newValues);
     }
 
-    protected notifyFirstUsable() {
-        this.firstUsableEvent();
+    protected initialiseBeenUsable(value: boolean) {
+        this._beenUsable = value;
+    }
+
+    protected processDataCorrectnessChange(allValues: TableGridValue[], isUsable: boolean) {
+        this.allValuesChangeEvent(this._firstFieldIndexOffset, allValues);
+
+        if (isUsable) {
+            this.checkNotifyBeenUsableBecameTrue();
+        }
+    }
+
+    private checkNotifyBeenUsableBecameTrue() {
+        if (!this._beenUsable) {
+            this._beenUsable = true;
+            this.beenUsableBecameTrueEvent();
+        }
     }
 
     abstract activate(): TableGridValue[];
@@ -58,6 +73,6 @@ export namespace TableValueSource {
     export type EndValuesChangeEvent = (this: void) => void;
     export type ValueChangesEvent = (valueChanges: ValueChange[]) => void;
     export type AllValuesChangeEvent = (firstFieldIdxOffset: Integer, newValues: TableGridValue[]) => void;
-    export type FirstUsableEvent = (this: void) => void;
+    export type BeenUsableBecameTrueEvent = (this: void) => void;
     export type Constructor = new(firstFieldIdxOffset: Integer, recordIdx: Integer, adi: AdiService) => TableValueSource;
 }

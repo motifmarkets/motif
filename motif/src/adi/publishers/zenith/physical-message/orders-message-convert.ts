@@ -108,7 +108,9 @@ export namespace OrdersMessageConvert {
                 };
                 result[index] = changeRecord;
             } catch (e) {
-                e.message += ` Index: ${index}`;
+                if (e instanceof Error) {
+                    e.message += ` Index: ${index}`;
+                }
                 throw e;
             }
         }

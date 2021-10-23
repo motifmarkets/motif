@@ -28,6 +28,7 @@ import { SymbolsDitemNgComponent } from '../symbols-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from '../top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from '../trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
+import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
 
 @NgModule({
     declarations: [
@@ -48,7 +49,8 @@ import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
         TopShareholdersDitemNgComponent,
         TradesDitemNgComponent,
         WatchlistDitemNgComponent,
-        ExtensionsDitemNgComponent
+        ExtensionsDitemNgComponent,
+        BrandingSplashWebPageDitemNgComponent
     ],
     imports: [
         CommonModule,

@@ -29,6 +29,7 @@ import {
 } from 'src/core/internal-api';
 import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'src/ditem/internal-api';
 import { BuiltinDitemNgComponentBaseDirective } from 'src/ditem/ng-api';
+import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
@@ -191,6 +192,7 @@ export class DesktopFrame implements DesktopAccessService {
         private readonly _signOutService: SignOutService,
         private readonly _menuBarService: MenuBarService,
         private readonly _commandRegisterService: CommandRegisterService,
+        private readonly _startupSplashWebPageUrl: string | undefined,
         private readonly _getBuiltinDitemFrameFromComponent: DesktopFrame.GetBuiltinDitemFrameFromComponent
     ) {
         this.createUiActions();
@@ -208,11 +210,13 @@ export class DesktopFrame implements DesktopAccessService {
                     // layout does not exist
                     this._goldenLayoutHostFrame.loadDefaultLayout();
                 }
+                this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
             },
             (reason) => {
                 Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${reason}". Resetting Layout`);
                 this._goldenLayoutHostFrame.resetLayout();
+                this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
             }
         );
@@ -438,7 +442,9 @@ export class DesktopFrame implements DesktopAccessService {
     }
 
     createOrderRequestBuiltinComponent(preferredLocationId?: GoldenLayoutHostFrame.PreferredLocationId) {
-        const component = this.createBuiltinComponent(BuiltinDitemFrame.BuiltinTypeId.OrderRequest, undefined, preferredLocationId);
+        const component = this._goldenLayoutHostFrame.createBuiltinComponent(
+            BuiltinDitemFrame.BuiltinTypeId.OrderRequest, undefined, preferredLocationId
+        );
         const ditemFrame = this._getBuiltinDitemFrameFromComponent(component);
         if (!(ditemFrame instanceof OrderRequestDitemFrame)) {
             throw new AssertInternalError('DFNORDI2252388645');
@@ -459,7 +465,7 @@ export class DesktopFrame implements DesktopAccessService {
                     try {
                         successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr);
                     } catch (e) {
-                        successOrErrorText = e.toString();
+                        successOrErrorText = `${e}`;
                     }
                     if (successOrErrorText !== SuccessOrErrorText_Success) {
                         return Promise.reject(`Load layout "${name}" failure: ${successOrErrorText}`);
@@ -543,7 +549,7 @@ export class DesktopFrame implements DesktopAccessService {
     }
 
     private handleNewDitemUiActionSignal(ditemTypeId: BuiltinDitemFrame.BuiltinTypeId) {
-        this.createBuiltinComponent(ditemTypeId);
+        this._goldenLayoutHostFrame.createBuiltinComponent(ditemTypeId, undefined, undefined);
     }
 
     private handleNewBuyOrderRequestDitemUiActionSignal() {
@@ -766,12 +772,6 @@ export class DesktopFrame implements DesktopAccessService {
         return this._frames.length;
     }
 
-    private createBuiltinComponent(typeId: BuiltinDitemFrame.BuiltinTypeId, state?: Json,
-        preferredLocationId?: GoldenLayoutHostFrame.PreferredLocationId
-    ) {
-        return this._goldenLayoutHostFrame.createBuiltinComponent(typeId, state, preferredLocationId);
-    }
-
     private setLitIvemIdAppLinked(value: boolean) {
         this._litIvemIdAppLinked = value;
         if (this._litIvemIdAppLinked) {
@@ -863,7 +863,7 @@ export class DesktopFrame implements DesktopAccessService {
             } else {
                 if (schemaVersion !== DesktopFrame.layoutStateSchemaVersion) {
                     Logger.logWarning(`${Strings[StringId.Layout_SchemaIncompatibleLoadingDefault]}: "${name}", ` +
-                                      `${schemaVersion}, ${DesktopFrame.layoutStateSchemaVersion}`);
+                        `${schemaVersion}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
                     const golden = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
@@ -892,6 +892,34 @@ export class DesktopFrame implements DesktopAccessService {
         for (const frame of this._frames) {
             if (frame.primary) {
                 this._primaryFrames.push(frame);
+            }
+        }
+    }
+
+    private checkLoadBrandingSplashWebPage() {
+        if (this._startupSplashWebPageUrl !== undefined) {
+            this.loadBrandingSplashWebPage(this._startupSplashWebPageUrl);
+        }
+    }
+
+    private loadBrandingSplashWebPage(url: string) {
+        const primaryFrame = this.getPrimaryBuiltinFrame(BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage);
+        if (primaryFrame !== undefined) {
+            if (!(primaryFrame instanceof BrandingSplashWebPageDitemFrame)) {
+                throw new AssertInternalError('DFLBSWPP44468');
+            } else {
+                primaryFrame.loadPage(url);
+                primaryFrame.focus();
+            }
+        } else {
+            const component = this._goldenLayoutHostFrame.createSplashComponent();
+            const ditemFrame = this._getBuiltinDitemFrameFromComponent(component);
+            if (!(ditemFrame instanceof BrandingSplashWebPageDitemFrame)) {
+                throw new AssertInternalError('DFLBSWPC44468');
+            } else {
+                ditemFrame.primary = true;
+                ditemFrame.loadPage(url);
+                ditemFrame.focus();
             }
         }
     }

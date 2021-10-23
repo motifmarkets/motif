@@ -3,6 +3,7 @@
   "version": "0.0.2",
   "description": "Highcharts Motif extension",
   "license": "SEE LICENSE IN license.txt",
+  "private": true,
   "homepage": "https://motionite.trade/motif",
   "author": "Motif Markets / Paritech Wealth Technology",
   "bugs": {
