@@ -7,13 +7,12 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
-import { ColorPickerModule } from 'ngx-color-picker';
 import { ControlsNgModule } from 'src/controls/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
+import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../color-scheme-preset-code/ng-api';
-import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ContentGridLayoutEditorNgComponent } from '../content-grid-layout-editor/ng-api';
 import { DelayedBadnessNgComponent } from '../delayed-badness/ng-api';
 import { DepthGridLayoutsEditorNgComponent } from '../depth-grid-layouts-editor/ng-api';
@@ -36,6 +35,7 @@ import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MotifGridNgComponent } from '../motif-grid/ng/motif-grid-ng.component';
+import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import {
     PadOrderRequestStepNgComponent,
     ResultOrderRequestStepNgComponent,
@@ -58,7 +58,6 @@ import { StatusSummaryNgComponent } from '../status-summary/ng-api';
 import { TableNgComponent } from '../table/ng-api';
 import { TradesNgComponent } from '../trades/ng-api';
 import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
-import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 
 @NgModule({
     declarations: [
@@ -108,7 +107,6 @@ import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-colo
     ],
     imports: [
         CommonModule,
-        ColorPickerModule,
         AngularSplitModule,
         ControlsNgModule,
     ],
