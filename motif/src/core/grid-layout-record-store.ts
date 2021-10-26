@@ -9,10 +9,21 @@ import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import { IntegerRenderValue, StringRenderValue } from './render-value';
 
 export class GridLayoutRecordStore implements RevRecordStore {
+    fieldsEventers: RevRecordStore.FieldsEventers;
+    recordsEventers: RevRecordStore.RecordsEventers;
+
     private _layout: GridLayout;
     private _headersMap: MotifGrid.FieldNameToHeaderMap;
 
     constructor() { }
+
+    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
+        this.fieldsEventers = fieldsEventers;
+    }
+
+    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
+        this.recordsEventers = recordsEventers;
+    }
 
     getLayout() {
         return this._layout;

@@ -4,24 +4,17 @@
  * License: motionite.trade/license/motif
  */
 
-import { RevRecordIndex, RevRecordInvalidatedValue } from 'revgrid';
+import { RevRecordField, RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
 import { BidAskSideId, DepthStyleId } from 'src/adi/internal-api';
 import { Integer } from 'src/sys/internal-api';
 import { DepthRecord } from './depth-record';
 
 export abstract class DepthSideGridRecordStore {
-    recordInsertedEvent: DepthSideGridRecordStore.RecordInsertedEventHandler;
-    recordDeletedEvent: DepthSideGridRecordStore.RecordDeletedEventHandler;
-    recordsSplicedAndInvalidateUpToEvent: DepthSideGridRecordStore.RecordsSplicedAndInvalidateUpToEvent;
-    allRecordsDeletedEvent: DepthSideGridRecordStore.AllRecordsDeletedEventHandler;
-    recordsLoadedEvent: DepthSideGridRecordStore.RecordsLoadedEventHandler;
-    invalidateRecordsEvent: DepthSideGridRecordStore.InvalidateRecordsEventHandler;
-    invalidateRecordAndFollowingRecordsEvent: DepthSideGridRecordStore.InvalidateRecordAndFollowingRecordsEventHandler;
-    invalidateRecordAndValuesAndFollowingRecordsEventer: DepthSideGridRecordStore.InvalidateRecordAndValuesAndFollowingRecordsEventHandler;
-    invalidateRecordsAndRecordValuesEventer: DepthSideGridRecordStore.InvalidateRecordsAndRecordValuesEventHandler;
-
     protected _auctionVolume: Integer | undefined;
     protected _volumeAheadNormalMaxRecordCount = 15; // make setting in future
+
+    private _fieldsEventers: RevRecordStore.FieldsEventers;
+    private _recordsEventers: RevRecordStore.RecordsEventers;
 
     private _openPopulated = false;
     private _openPopulatedSuccess = false;
@@ -31,6 +24,18 @@ export abstract class DepthSideGridRecordStore {
 
     get styleId() { return this._styleId; }
     get sideId() { return this._sideId; }
+
+    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
+        this._fieldsEventers = fieldsEventers;
+    }
+
+    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
+        this._recordsEventers = recordsEventers;
+    }
+
+    eventifyAddFields(fields: RevRecordField[]) {
+        this._fieldsEventers.addFields(fields);
+    }
 
     resetOpenPopulated() {
         this.resolveOpenPopulated(false);
@@ -51,7 +56,7 @@ export abstract class DepthSideGridRecordStore {
             this._auctionVolume = value;
             if (this.getRecordCount() > 0) {
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(0, true);
-                this.invalidateRecordAndFollowingRecordsEvent(0, lastAffectedFollowingRecordIndex);
+                this.eventifyInvalidateRecordAndFollowingRecords(0, lastAffectedFollowingRecordIndex);
             }
         }
     }
@@ -103,6 +108,117 @@ export abstract class DepthSideGridRecordStore {
 
         return lastAffectedFollowingRecordIndex;
     }
+
+    protected eventifyRecordInserted(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
+        if (lastAffectedFollowingRecordIndex !== undefined) {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.recordInserted(recordIndex);
+                this._recordsEventers.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        } else {
+            this._recordsEventers.recordInserted(recordIndex);
+        }
+    }
+
+    protected eventifyRecordDeleted(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
+        if (lastAffectedFollowingRecordIndex !== undefined) {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.recordDeleted(recordIndex);
+                this._recordsEventers.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        } else {
+            this._recordsEventers.recordDeleted(recordIndex);
+        }
+    }
+
+    protected eventifyRecordsSplicedAndInvalidateUpTo(
+        index: Integer,
+        deleteCount: Integer,
+        insertCount: Integer,
+        lastAffectedFollowingRecordIndex: Integer | undefined
+    ) {
+        if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.recordsSpliced(index, deleteCount, insertCount);
+                this._recordsEventers.invalidateAll(); // this could be improved to only invalidate record range affected
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        } else {
+            this._recordsEventers.recordsSpliced(index, deleteCount, insertCount);
+        }
+    }
+
+    protected eventifyAllRecordsDeleted() {
+        this._recordsEventers.allRecordsDeleted();
+    }
+
+    protected eventifyInvalidateRecords(index: Integer, count: Integer) {
+        this._recordsEventers.invalidateRecords(index, count);
+    }
+
+    protected eventifyRecordsLoaded() {
+        this._recordsEventers.recordsLoaded();
+    }
+
+    protected eventifyInvalidateRecordAndFollowingRecords(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
+        if (lastAffectedFollowingRecordIndex !== undefined) {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.invalidateRecord(recordIndex);
+                this._recordsEventers.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        } else {
+            this._recordsEventers.invalidateRecord(recordIndex);
+        }
+    }
+
+    protected eventifyInvalidateRecordAndValuesAndFollowingRecords(
+        recordIndex: Integer,
+        invalidatedRecordValues: RevRecordInvalidatedValue[],
+        lastAffectedFollowingRecordIndex: Integer | undefined
+    ) {
+        if (lastAffectedFollowingRecordIndex !== undefined) {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.invalidateRecordAndValues(recordIndex, invalidatedRecordValues);
+                this._recordsEventers.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        } else {
+            this._recordsEventers.invalidateRecordAndValues(recordIndex, invalidatedRecordValues);
+        }
+    }
+
+    protected eventifyInvalidateRecordsAndRecordValues(
+        recordIndex: Integer,
+        count: Integer,
+        valuesRecordIndex: Integer,
+        invalidatedRecordValues: RevRecordInvalidatedValue[],
+    ) {
+        if (invalidatedRecordValues.length === 0) {
+            this._recordsEventers.invalidateRecords(recordIndex, count);
+        } else {
+            this._recordsEventers.beginChange();
+            try {
+                this._recordsEventers.invalidateRecords(recordIndex, count);
+                this._recordsEventers.invalidateRecordAndValues(valuesRecordIndex, invalidatedRecordValues);
+            } finally {
+                this._recordsEventers.endChange();
+            }
+        }
+    }
+
 
     private resolveOpenPopulated(success: boolean) {
         if (this._openPopulatedResolves.length > 0) {

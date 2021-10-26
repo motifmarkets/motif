@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
+import { RevRecordStore } from 'revgrid';
 import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle, DepthStyleId } from 'src/adi/internal-api';
 import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import {
@@ -219,104 +219,6 @@ export class DepthSideFrame extends ContentFrame {
         return this._dataItem.correctnessId;
     }
 
-    private handleRecordInsertedEvent(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
-        if (lastAffectedFollowingRecordIndex !== undefined) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordInserted(recordIndex);
-                this._grid.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.recordInserted(recordIndex);
-        }
-    }
-
-    private handleRecordDeletedEvent(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
-        if (lastAffectedFollowingRecordIndex !== undefined) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordDeleted(recordIndex);
-                this._grid.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.recordDeleted(recordIndex);
-        }
-    }
-
-    private handleRecordsSplicedAndInvalidateUpToEvent(
-        index: Integer,
-        deleteCount: Integer,
-        insertCount: Integer,
-        lastAffectedFollowingRecordIndex: Integer | undefined
-    ) {
-        if (lastAffectedFollowingRecordIndex !== undefined && lastAffectedFollowingRecordIndex >= (index + insertCount)) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.recordsSpliced(index, deleteCount, insertCount);
-                this._grid.invalidateAll(); // this could be improved to only invalidate record range affected
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.recordsSpliced(index, deleteCount, insertCount);
-        }
-    }
-
-    private handleInvalidateRecordAndFollowingRecordsEvent(recordIndex: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) {
-        if (lastAffectedFollowingRecordIndex !== undefined) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.invalidateRecord(recordIndex);
-                this._grid.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.invalidateRecord(recordIndex);
-        }
-    }
-
-    private handleInvalidateRecordAndValuesAndFollowingRecordsEvent(
-        recordIndex: Integer,
-        invalidatedRecordValues: RevRecordInvalidatedValue[],
-        lastAffectedFollowingRecordIndex: Integer | undefined
-    ) {
-        if (lastAffectedFollowingRecordIndex !== undefined) {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.invalidateRecordAndValues(recordIndex, invalidatedRecordValues);
-                this._grid.invalidateRecords(recordIndex + 1, lastAffectedFollowingRecordIndex - recordIndex);
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        } else {
-            this._grid.invalidateRecordAndValues(recordIndex, invalidatedRecordValues);
-        }
-    }
-
-    private handleInvalidateRecordsAndRecordValuesEvent(
-        recordIndex: Integer,
-        count: Integer,
-        valuesRecordIndex: Integer,
-        invalidatedRecordValues: RevRecordInvalidatedValue[],
-    ) {
-        if (invalidatedRecordValues.length === 0) {
-            this._grid.invalidateRecords(recordIndex, count);
-        } else {
-            this._grid.beginRecordChanges();
-            try {
-                this._grid.invalidateRecords(recordIndex, count);
-                this._grid.invalidateRecordAndValues(valuesRecordIndex, invalidatedRecordValues);
-            } finally {
-                this._grid.endRecordChanges();
-            }
-        }
-    }
-
     private initialiseStyle(styleId: DepthStyleId) {
         let allFieldsStatesVisibles: DepthSideGridField.AllFieldsAndDefaults;
         let store: DepthSideGridRecordStore;
@@ -353,30 +255,6 @@ export class DepthSideFrame extends ContentFrame {
                 defaultLayout.moveColumn(lastColumnIdx, idx);
             }
         }
-
-        store.recordInsertedEvent =
-            (index, lastAffectedFollowingRecordIndex) => this.handleRecordInsertedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordDeletedEvent =
-            (index, lastAffectedFollowingRecordIndex) => this.handleRecordDeletedEvent(index, lastAffectedFollowingRecordIndex);
-        store.recordsSplicedAndInvalidateUpToEvent =
-            (index, deleteCount, insertCount, lastAffectedFollowingRecordIndex) => this.handleRecordsSplicedAndInvalidateUpToEvent(
-                index, deleteCount, insertCount, lastAffectedFollowingRecordIndex
-            );
-        store.allRecordsDeletedEvent = () => this._grid.allRecordsDeleted();
-        store.invalidateRecordsEvent = (index, count) => this._grid.invalidateRecords(index, count);
-        store.invalidateRecordAndFollowingRecordsEvent =
-            (index, lastAffectedFollowingRecordIndex) => this.handleInvalidateRecordAndFollowingRecordsEvent(
-                index, lastAffectedFollowingRecordIndex
-            );
-        store.invalidateRecordAndValuesAndFollowingRecordsEventer =
-            (recordIndex, valueChanges, lastAffectedFollowingRecordIndex) => this.handleInvalidateRecordAndValuesAndFollowingRecordsEvent(
-                recordIndex, valueChanges, lastAffectedFollowingRecordIndex
-            );
-        store.invalidateRecordsAndRecordValuesEventer =
-            (recordIndex, count, valuesRecordIndex, valueChanges) => this.handleInvalidateRecordsAndRecordValuesEvent(
-                recordIndex, count, valuesRecordIndex, valueChanges
-            );
-        store.recordsLoadedEvent = () => this._grid.recordsLoaded();
 
         const element: DepthSideFrame.StyleCacheElement = {
             gridFields: fields,
@@ -433,21 +311,16 @@ export class DepthSideFrame extends ContentFrame {
             this._grid.reset();
         }
 
-        this._grid.addFields(element.gridFields);
+        this._activeStore.eventifyAddFields(element.gridFields);
 
-        this._grid.beginRecordChanges();
-        try {
-            for (let id = 0; id < element.defaultGridFieldStates.length; id++) {
-                this._grid.setFieldState(element.gridFields[id], element.defaultGridFieldStates[id]);
-            }
-
-            this._grid.loadLayout(element.lastLayout);
-
-            this. _grid.sortable = false;
-            this. _grid.continuousFiltering = true;
-        } finally {
-            this._grid.endRecordChanges();
+        for (let id = 0; id < element.defaultGridFieldStates.length; id++) {
+            this._grid.setFieldState(element.gridFields[id], element.defaultGridFieldStates[id]);
         }
+
+        this._grid.loadLayout(element.lastLayout);
+
+        this. _grid.sortable = false;
+        this. _grid.continuousFiltering = true;
 
         this._gridPrepared = true;
     }

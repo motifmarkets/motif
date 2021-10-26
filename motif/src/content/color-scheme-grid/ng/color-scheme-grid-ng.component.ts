@@ -42,7 +42,6 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
 
     constructor(settingsNgService: SettingsNgService) {
         this._recordStore = new ColorSchemeGridRecordStore(settingsNgService.settingsService);
-        this._recordStore.changedEvent = () => this.handleRecordStoreChangedEvent();
     }
 
     ngOnInit() {
@@ -98,16 +97,12 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
         }
     }
 
-    invalidateExisting(): void {
-        this._grid.invalidateAll();
+    invalidateAll(): void {
+        this._recordStore.recordsEventers.invalidateAll();
     }
 
     invalidateRecord(recordIndex: Integer): void {
-        this._grid.invalidateRecord(recordIndex);
-    }
-
-    private handleRecordStoreChangedEvent() {
-        this._grid.invalidateAll();
+        this._recordStore.recordsEventers.invalidateRecord(recordIndex);
     }
 
     private filterItems(record: RevRecord) {
@@ -147,51 +142,32 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
             const readabilityField = this._recordStore.createReadabilityField();
             const isReadableField = this._recordStore.createIsReadableField();
 
-            this._grid.beginFieldChanges();
-            try {
-                this._grid.addField(displayField);
-                // const bkgdItemStateField = this._dataStore.createBkgdItemStateField();
-                // this._gridAdapter.AddField(bkgdItemStateField);
-                // const itemBkgdColorTextField = this._dataStore.createItemBkgdColorTextField();
-                // this._gridAdapter.AddField(itemBkgdColorTextField);
-                // const itemBkgdColorField = this._dataStore.createItemBkgdColorField();
-                // this._gridAdapter.AddField(itemBkgdColorField);
-                this._grid.addField(resolvedBkgdColorTextField);
-                this._grid.addField(resolvedBkgdColorField);
-                // const foreItemStateField = this._dataStore.createForeItemStateField();
-                // this._gridAdapter.AddField(foreItemStateField);
-                // const itemForeColorTextField = this._dataStore.createItemForeColorTextField();
-                // this._gridAdapter.AddField(itemForeColorTextField);
-                // const itemForeColorField = this._dataStore.createItemForeColorField();
-                // this._gridAdapter.AddField(itemForeColorField);
-                this._grid.addField(resolvedForeColorTextField);
-                this._grid.addField(resolvedForeColorField);
-                this._grid.addField(readabilityField);
-                this._grid.addField(isReadableField);
-            } finally {
-                this._grid.endFieldChanges();
-            }
+            this._recordStore.fieldsEventers.addFields([
+                displayField,
+                resolvedBkgdColorTextField,
+                resolvedBkgdColorField,
+                resolvedForeColorTextField,
+                resolvedForeColorField,
+                readabilityField,
+                isReadableField,
+            ])
 
-            this._grid.beginRecordChanges();
-            try {
-                this.setFieldState(displayField, ColorSchemeGridRecordStore.DisplayField.fieldStateDefinition);
-                // this.setFieldState(bkgdItemStateField, ColorSchemeGridDataStore.BkgdItemStateField.fieldStateDefinition);
-                // this.setFieldState(itemBkgdColorTextField, ColorSchemeGridDataStore.ItemBkgdColorTextField.fieldStateDefinition);
-                // this.setFieldState(itemBkgdColorField, ColorSchemeGridDataStore.ItemBkgdColorField.fieldStateDefinition);
-                // this.setFieldState(foreItemStateField, ColorSchemeGridDataStore.ForeItemStateField.fieldStateDefinition);
-                // this.setFieldState(itemForeColorTextField, ColorSchemeGridDataStore.ItemForeColorTextField.fieldStateDefinition);
-                // this.setFieldState(itemForeColorField, ColorSchemeGridDataStore.ItemForeColorField.fieldStateDefinition);
-                this.setFieldState(resolvedBkgdColorTextField, ColorSchemeGridRecordStore.ResolvedBkgdColorTextField.fieldStateDefinition);
-                this.setFieldState(resolvedBkgdColorField, ColorSchemeGridRecordStore.ResolvedBkgdColorField.fieldStateDefinition);
-                this.setFieldState(resolvedForeColorTextField, ColorSchemeGridRecordStore.ResolvedForeColorTextField.fieldStateDefinition);
-                this.setFieldState(resolvedForeColorField, ColorSchemeGridRecordStore.ResolvedForeColorField.fieldStateDefinition);
-                this.setFieldState(readabilityField, ColorSchemeGridRecordStore.ReadabilityField.fieldStateDefinition);
-                this.setFieldState(isReadableField, ColorSchemeGridRecordStore.IsReadableField.fieldStateDefinition);
+            this.setFieldState(displayField, ColorSchemeGridRecordStore.DisplayField.fieldStateDefinition);
+            // this.setFieldState(bkgdItemStateField, ColorSchemeGridDataStore.BkgdItemStateField.fieldStateDefinition);
+            // this.setFieldState(itemBkgdColorTextField, ColorSchemeGridDataStore.ItemBkgdColorTextField.fieldStateDefinition);
+            // this.setFieldState(itemBkgdColorField, ColorSchemeGridDataStore.ItemBkgdColorField.fieldStateDefinition);
+            // this.setFieldState(foreItemStateField, ColorSchemeGridDataStore.ForeItemStateField.fieldStateDefinition);
+            // this.setFieldState(itemForeColorTextField, ColorSchemeGridDataStore.ItemForeColorTextField.fieldStateDefinition);
+            // this.setFieldState(itemForeColorField, ColorSchemeGridDataStore.ItemForeColorField.fieldStateDefinition);
+            this.setFieldState(resolvedBkgdColorTextField, ColorSchemeGridRecordStore.ResolvedBkgdColorTextField.fieldStateDefinition);
+            this.setFieldState(resolvedBkgdColorField, ColorSchemeGridRecordStore.ResolvedBkgdColorField.fieldStateDefinition);
+            this.setFieldState(resolvedForeColorTextField, ColorSchemeGridRecordStore.ResolvedForeColorTextField.fieldStateDefinition);
+            this.setFieldState(resolvedForeColorField, ColorSchemeGridRecordStore.ResolvedForeColorField.fieldStateDefinition);
+            this.setFieldState(readabilityField, ColorSchemeGridRecordStore.ReadabilityField.fieldStateDefinition);
+            this.setFieldState(isReadableField, ColorSchemeGridRecordStore.IsReadableField.fieldStateDefinition);
 
-                this._grid.recordsInserted(0, this._recordStore.recordCount);
-            } finally {
-                this._grid.endRecordChanges();
-            }
+            this._recordStore.recordsEventers.recordsInserted(0, this._recordStore.recordCount);
+
             this._gridPrepared = true;
 
             this.applyFilter();

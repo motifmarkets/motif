@@ -42,7 +42,7 @@ export class TradesNgComponent implements OnDestroy, AfterViewInit, TradesFrame.
             this._gridComponent.destroyGrid();
         };
 
-        const grid = this._gridComponent.createGrid(this._frame.dataStore, TradesNgComponent.frameGridProperties);
+        const grid = this._gridComponent.createGrid(this._frame.recordStore, TradesNgComponent.frameGridProperties);
         this._frame.setGrid(grid);
     }
 

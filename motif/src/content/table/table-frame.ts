@@ -36,6 +36,9 @@ import {
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
+    fieldsEventers: RevRecordStore.FieldsEventers;
+    _recordsEventers: RevRecordStore.RecordsEventers;
+
     dragDropAllowed: boolean;
 
     settingsApplyEvent: TableFrame.SettingsApplyEvent;
@@ -71,6 +74,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             this.closeTable(false);
             super.finalise();
         }
+    }
+
+    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
+        this.fieldsEventers = fieldsEventers;
+    }
+
+    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
+        this._recordsEventers = recordsEventers;
     }
 
     setFlexBasis(value: number) {
@@ -135,7 +146,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     loadLayoutConfig(element: JsonElement | undefined) {
-        this._grid.beginRecordChanges();
+        this._recordsEventers.beginChange();
         try {
             this.closeTable(false);
 
@@ -175,7 +186,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             }
 
         } finally {
-            this._grid.endRecordChanges();
+            this._recordsEventers.endChange();
         }
     }
 
@@ -242,14 +253,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 // handled through badness change
                 break;
             case UsableListChangeTypeId.PreUsableClear:
-                this._grid.allRecordsDeleted();
+                this._recordsEventers.allRecordsDeleted();
                 break;
             case UsableListChangeTypeId.PreUsableAdd:
                 if (this._table === undefined) {
                     throw new AssertInternalError('TFNTRLCA388590');
                 } else {
                     // if (this._table.changeRecordDefinitionOrderAllowed) {
-                        this._grid.recordsInserted(itemIdx, changeCount);
+                        this._recordsEventers.recordsInserted(itemIdx, changeCount);
                     // } else {
                     //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
                     // }
@@ -263,17 +274,17 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                     throw new AssertInternalError('TFNTRLCI388590');
                 } else {
                     // if (this._table.changeRecordDefinitionOrderAllowed) {
-                        this._grid.recordsInserted(itemIdx, changeCount);
+                        this._recordsEventers.recordsInserted(itemIdx, changeCount);
                     // } else {
                     //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
                     // }
                 }
                 break;
             case UsableListChangeTypeId.Remove:
-                this._grid.recordsDeleted(itemIdx, changeCount);
+                this._recordsEventers.recordsDeleted(itemIdx, changeCount);
                 break;
             case UsableListChangeTypeId.Clear:
-                this._grid.allRecordsDeleted();
+                this._recordsEventers.allRecordsDeleted();
                 break;
             default:
                 throw new UnreachableCaseError('TFNTRLC2323597', listChangeTypeId);
@@ -285,7 +296,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (recordIdx < this.recordCount) {
-            this._grid.invalidateRecordValues(recordIdx, invalidatedValues);
+            this._recordsEventers.invalidateRecordValues(recordIdx, invalidatedValues);
         } else {
             throw new AssertInternalError('TFTFNTVC22944',
                 `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
@@ -297,7 +308,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const tableFieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (fieldIndex + fieldCount <= tableFieldCount && recordIdx < this.recordCount) {
-            this._grid.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
+            this._recordsEventers.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
         } else {
             throw new AssertInternalError('TFTFNTVC22944',
                 `Field: ${fieldIndex}, Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
@@ -309,7 +320,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (recordIdx < this.recordCount) {
-            this._grid.invalidateRecord(recordIdx);
+            this._recordsEventers.invalidateRecord(recordIdx);
         } else {
             throw new AssertInternalError('TFTFNTRC4422944',
                 `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
@@ -406,11 +417,11 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     deleteFocusedRecord() {
         const itemIdx = this._grid.focusedRecordIndex;
         if (itemIdx !== undefined && itemIdx >= 0 && this._table !== undefined) {
-            this._grid.beginRecordChanges();
+            this._recordsEventers.beginChange();
             try {
                 this._table.deleteRecord(itemIdx);
             } finally {
-                this._grid.endRecordChanges();
+                this._recordsEventers.endChange();
             }
         }
     }
@@ -423,7 +434,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     newPrivateTable(tableDefinition: TableDefinition, keepCurrentLayout: boolean) {
 
-        this._grid.beginRecordChanges();
+        this._recordsEventers.beginChange();
         try {
             if (this.table !== undefined) {
                 this.closeTable(keepCurrentLayout);
@@ -451,7 +462,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 }
             }
         } finally {
-            this._grid.endRecordChanges();
+            this._recordsEventers.endChange();
         }
     }
 
@@ -467,13 +478,13 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     openTable(idx: Integer) {
-        this._grid.beginRecordChanges();
+        this._recordsEventers.beginChange();
         try {
             this.closeTable(false);
             this._table = tableDirectory.lock(idx, this);
             this.activate(idx);
         } finally {
-            this._grid.endRecordChanges();
+            this._recordsEventers.endChange();
         }
     }
 
@@ -496,7 +507,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             this._privateNameSuffixId = undefined;
             this._table = undefined;
 
-            this._grid.allRecordsDeleted(); // should already all be gone
+            this._recordsEventers.allRecordsDeleted(); // should already all be gone
         }
     }
 
@@ -516,7 +527,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         if (this._table === undefined) {
             throw new UnexpectedUndefinedError('TFORDLWL031195');
         } else {
-            this._grid.beginRecordChanges();
+            this._recordsEventers.beginChange();
             try {
                 this.closeTable(false);
 
@@ -540,7 +551,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 }
 
             } finally {
-                this._grid.endRecordChanges();
+                this._recordsEventers.endChange();
             }
         }
     }
@@ -823,21 +834,16 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             }
 
             const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            this._grid.addFields(fieldsAndInitialStates.fields);
+            this.fieldsEventers.addFields(fieldsAndInitialStates.fields);
 
-            this._grid.beginRecordChanges();
-            try {
-                const states = fieldsAndInitialStates.states;
-                const fieldCount = states.length; // one state for each field
-                for (let i = 0; i < fieldCount; i++) {
-                    this._grid.setFieldState(fieldsAndInitialStates.fields[i], states[i]);
-                }
-                this._grid.loadLayout(this._table.layout);
-                this.updateGridSettingsFromTable();
-                this._grid.recordsLoaded();
-            } finally {
-                this._grid.endRecordChanges();
+            const states = fieldsAndInitialStates.states;
+            const fieldCount = states.length; // one state for each field
+            for (let i = 0; i < fieldCount; i++) {
+                this._grid.setFieldState(fieldsAndInitialStates.fields[i], states[i]);
             }
+            this._grid.loadLayout(this._table.layout);
+            this.updateGridSettingsFromTable();
+            this._recordsEventers.recordsLoaded();
 
             this._gridPrepared = true;
         }
@@ -847,7 +853,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         if (this._table === undefined) {
             throw new UnexpectedUndefinedError('TFA5592245');
         } else {
-            this._grid.beginRecordChanges();
+            this._recordsEventers.beginChange();
             try {
                 this.prepareGrid();
                 if (this.isPrivate()) {
@@ -860,7 +866,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 // this.prepareDeleteListAction();
 
             } finally {
-                this._grid.endRecordChanges();
+                this._recordsEventers.endChange();
             }
         }
     }

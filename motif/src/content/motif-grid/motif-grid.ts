@@ -5,15 +5,17 @@ import {
     GridProperties,
     Halign,
     Revgrid,
+    RevRecordCellAdapter,
+    RevRecordCellPainter,
     RevRecordField,
     RevRecordFieldAdapter,
     RevRecordFieldIndex,
     RevRecordHeaderAdapter,
     RevRecordIndex,
-    RevRecordInvalidatedValue,
     RevRecordMainAdapter,
-    RevRecordValueRecentChangeTypeId,
-    SelectionDetail
+    RevRecordStore,
+    SelectionDetail,
+    Subgrid
 } from 'revgrid';
 import { ColorScheme, SettingsService } from 'src/core/internal-api';
 import { MultiEvent } from 'src/sys/internal-api';
@@ -32,11 +34,12 @@ export class MotifGrid extends Revgrid {
 
     ctrlKeyMouseMoveEventer: MotifGrid.CtrlKeyMouseMoveEventer | undefined;
 
+    private readonly _settingsService: SettingsService;
+    private readonly _fieldAdapter: RevRecordFieldAdapter;
+    private readonly _headerRecordAdapter: RevRecordHeaderAdapter;
+    private readonly _mainRecordAdapter: RevRecordMainAdapter;
+
     private _lastNotifiedFocusedRecordIndex: number | undefined;
-
-    private _maxSortingFieldCount = 3;
-
-    private _beginThrottlingCount = 0;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -48,14 +51,54 @@ export class MotifGrid extends Revgrid {
     private _renderedEventer: MotifGrid.RenderedEventer | undefined;
 
     constructor(
+        settingsService: SettingsService,
         gridElement: HTMLElement,
-        options: Revgrid.Options,
-        private readonly _settingsService: SettingsService,
-        private readonly _fieldAdapter: RevRecordFieldAdapter,
-        private readonly _headerRecordAdapter: RevRecordHeaderAdapter,
-        private readonly _mainRecordAdapter: RevRecordMainAdapter,
+        recordStore: RevRecordStore,
+        mainCellPainter: RevRecordCellPainter,
+        gridProperties: Partial<GridProperties>,
     ) {
+        const fieldAdapter = new RevRecordFieldAdapter(recordStore);
+        const headerRecordAdapter = new RevRecordHeaderAdapter();
+        const mainRecordAdapter = new RevRecordMainAdapter(
+            fieldAdapter,
+            recordStore,
+        );
+        const recordCellAdapter = new RevRecordCellAdapter(mainRecordAdapter, mainCellPainter);
+
+        const options: Revgrid.Options = {
+            adapterSet: {
+                schemaModel: fieldAdapter,
+                subgrids: [
+                    {
+                        role: Subgrid.RoleEnum.header,
+                        dataModel: headerRecordAdapter,
+                    },
+                    {
+                        role: Subgrid.RoleEnum.main,
+                        dataModel: mainRecordAdapter,
+                        cellModel: recordCellAdapter,
+                    }
+                ],
+            },
+            gridProperties,
+            loadBuiltinFinbarStylesheet: false,
+        };
+
         super(gridElement, options);
+
+        this._settingsService = settingsService;
+        this._fieldAdapter = fieldAdapter;
+        this._headerRecordAdapter = headerRecordAdapter;
+        this._mainRecordAdapter = mainRecordAdapter;
+
+        this._selectionChangedListener = (event) => this.handleHypegridSelectionChanged(event);
+        this._clickListener = (event) => this.handleHypegridClickEvent(event);
+        this._dblClickListener = (event) => this.handleHypegridDblClickEvent(event);
+        this._resizedListener = (event) => this.handleHypegridResizedEvent(event);
+        this._columnsViewWidthsChangedListener = (event) => this.handleHypegridColumnsViewWidthsChangedEvent(event);
+        this._renderedListener = () => this.handleHypegridRenderedEvent();
+        this._ctrlKeyMousemoveListener = (event) => this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
+        this._columnSortListener = (event) => this.handleHypegridColumnSortEvent(event.detail.column);
 
         this.applySettingsToMainRecordAdapter();
 
@@ -66,21 +109,6 @@ export class MotifGrid extends Revgrid {
 
         this._settingsChangedSubscriptionId =
             this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
-
-        // this.hypegrid.addEventListener('fin-column-changed-event', (event: DataModelEvent) => this.HandleColumnChanged());
-
-        // if (host.onRecordFocusClick !== undefined) {
-        //     this.hypergrid.addEventListener('fin-mousedown', () =>
-        //         this.handleMouseDown(/*event.detail.dataCell.y, event.detail.dataCell.x, event.detail.gridCell.y*/));
-        // }
-
-        // if (host.onRecordFocusClick !== undefined) {
-        //     this.hypergrid.addEventListener('fin-key-up', (event) =>
-        //         this.HandleClick(event.detail.dataCell.y, event.detail.dataCell.x, event.detail.gridCell.y));
-        // }
-
-
-        //        this.boundCheckNotifiedFocusedRecordIndex = this.checkNotifiedFocusedRecordIndex.bind(this);
     }
 
     override destroy(): void {
@@ -104,7 +132,7 @@ export class MotifGrid extends Revgrid {
 
             if (value) {
                 // Continuous filtering was just turned on, apply if necessary
-                this.recordsLoaded();
+                this._mainRecordAdapter.recordsLoaded();
             }
         }
     }
@@ -237,16 +265,6 @@ export class MotifGrid extends Revgrid {
         // todo
     }
 
-    addField(field: RevRecordField, state?: MotifGrid.FieldState): RevRecordFieldIndex {
-        const header = state?.header ?? field.name;
-        const schemaColumn = this._fieldAdapter.addField(field, header);
-        return schemaColumn.index;
-    }
-
-    addFields(fields: RevRecordField[]): RevRecordFieldIndex {
-        return this._fieldAdapter.addFields(fields);
-    }
-
     applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {
         this._mainRecordAdapter.filterCallback = filter;
     }
@@ -280,62 +298,12 @@ export class MotifGrid extends Revgrid {
     //     this.endDataChange();
     // }
 
-    beginThrottling() {
-        if (this._beginThrottlingCount++ === 0) {
-        }
-    }
-
-    beginRecordChanges(): void {
-        this._mainRecordAdapter.beginChange();
-    }
-
-    beginFieldChanges(): void {
-        this._fieldAdapter.beginChange();
-    }
-
     clearFilter(): void {
         this.applyFilter(undefined);
     }
 
-    allRecordsDeleted(): void {
-        this._mainRecordAdapter.allRecordsDeleted();
-        // if (this._beginDataChangeCount > 0 && ++this._recordListChangeCount > 1) {
-        //     this._selectionDeletedChange = true;
-        //     return;
-        // }
-
-        // this._mainDataModel.allRecordsDeleted();
-
-        // this._highlights = [];
-        // if (this._highlightTimer !== undefined) {
-        //     clearTimeout(this._highlightTimer);
-        //     this._highlightTimer = undefined;
-        // }
-
-        // this._mainDataModel.notifyRowCountChanged();
-
-        // this._hypegrid.clearSelections();
-        // this.checkNotifiedFocusedRecordIndex();
-    }
-
     clearSort() {
         this._mainRecordAdapter.clearSort();
-    }
-
-    recordDeleted(recordIndex: RevRecordIndex): void {
-        this._mainRecordAdapter.recordDeleted(recordIndex);
-    }
-
-    recordsDeleted(recordIndex: RevRecordIndex, count: number): void {
-        this._mainRecordAdapter.recordsDeleted(recordIndex, count);
-    }
-
-    endRecordChanges(): void {
-        this._mainRecordAdapter.endChange();
-    }
-
-    endFieldChanges(): void {
-        this._fieldAdapter.endChange();
     }
 
     getFieldByName(fieldName: string): RevRecordField {
@@ -380,7 +348,7 @@ export class MotifGrid extends Revgrid {
 
         return {
             width: !columnProperties.columnAutosized ? columnProperties.width : undefined,
-            header: (column.schemaColumn as RevRecordFieldAdapter.SchemaColumn).header,
+            header: (column.schemaColumn as RevRecordField.SchemaColumn).header,
             alignment: columnProperties.halign
         };
     }
@@ -395,7 +363,7 @@ export class MotifGrid extends Revgrid {
     getFieldVisible(field: RevRecordFieldIndex | RevRecordField): boolean {
         const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const activeColumns = this.getActiveColumns();
-        return activeColumns.findIndex(column => (column.schemaColumn as RevRecordFieldAdapter.SchemaColumn).index === fieldIndex) !== -1;
+        return activeColumns.findIndex(column => (column.schemaColumn as RevRecordField.SchemaColumn).index === fieldIndex) !== -1;
     }
 
     getHeaderPlusFixedLineHeight(): number {
@@ -420,55 +388,7 @@ export class MotifGrid extends Revgrid {
     }
 
     getVisibleFields(): RevRecordFieldIndex[] {
-        return this.getActiveColumns().map(column => (column.schemaColumn as RevRecordFieldAdapter.SchemaColumn).index);
-    }
-
-    recordInserted(recordIndex: RevRecordIndex, recent?: boolean): void {
-        this._mainRecordAdapter.recordInserted(recordIndex, recent);
-    }
-
-    recordsInserted(recordIndex: RevRecordIndex, count: number, recent?: boolean): void {
-        this._mainRecordAdapter.recordsInserted(recordIndex, count, recent);
-    }
-
-    recordsSpliced(recordIndex: RevRecordIndex, deleteCount: number, insertCount: number) {
-        this._mainRecordAdapter.recordsSpliced(recordIndex, deleteCount, insertCount);
-    }
-
-    recordsLoaded(recent?: boolean): void {
-        this._mainRecordAdapter.recordsLoaded(recent);
-    }
-
-    invalidateAll(): void {
-        this._mainRecordAdapter.invalidateAll();
-    }
-
-    invalidateRecord(recordIndex: RevRecordIndex, recent?: boolean): void {
-        this._mainRecordAdapter.invalidateRecord(recordIndex, recent);
-    }
-
-    invalidateRecords(recordIndex: RevRecordIndex, count: number, recent?: boolean): void {
-        this._mainRecordAdapter.invalidateRecords(recordIndex, count, recent);
-    }
-
-    invalidateValue(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex, changeType?: RevRecordValueRecentChangeTypeId): void {
-        this._mainRecordAdapter.invalidateValue(fieldIndex, recordIndex, changeType);
-    }
-
-    invalidateRecordValues(recordIndex: RevRecordIndex, invalidatedValues: RevRecordInvalidatedValue[]): void {
-        this._mainRecordAdapter.invalidateRecordValues(recordIndex, invalidatedValues);
-    }
-
-    invalidateRecordFields(recordIndex: RevRecordIndex, fieldIndex: number, fieldCount: number): void {
-        this._mainRecordAdapter.invalidateRecordFields(recordIndex, fieldIndex, fieldCount);
-    }
-
-    invalidateRecordAndValues(
-        recordIndex: RevRecordIndex,
-        invalidatedRecordValues: RevRecordInvalidatedValue[],
-        recordUpdateRecent?: boolean
-    ): void {
-        this._mainRecordAdapter.invalidateRecordAndValues(recordIndex, invalidatedRecordValues, recordUpdateRecent);
+        return this.getActiveColumns().map(column => (column.schemaColumn as RevRecordField.SchemaColumn).index);
     }
 
     isHeaderRow(rowIndex: number): boolean {
@@ -521,7 +441,7 @@ export class MotifGrid extends Revgrid {
         }
 
         // this._hypegrid.renderer.resetAllCellPropertiesCaches();
-        this.recordsLoaded();
+        this._mainRecordAdapter.recordsLoaded();
     }
 
     moveActiveColumn(fromColumnIndex: number, toColumnIndex: number): void {
@@ -707,18 +627,15 @@ export class MotifGrid extends Revgrid {
         return this._mainRecordAdapter.sortByMany(specifiers);
     }
 
-
-    private readonly _selectionChangedListener = (event: CustomEvent<SelectionDetail>) => this.handleHypegridSelectionChanged(event);
-    private readonly _clickListener = (event: CustomEvent<CellEvent>) => this.handleHypegridClickEvent(event);
-    private readonly _dblClickListener = (event: CustomEvent<CellEvent>) => this.handleHypegridDblClickEvent(event);
-    private readonly _resizedListener = (event: CustomEvent<EventDetail.Resize>) => this.handleHypegridResizedEvent(event);
-    private readonly _columnsViewWidthsChangedListener =
-        (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => this.handleHypegridColumnsViewWidthsChangedEvent(event);
-    private readonly _renderedListener = () => this.handleHypegridRenderedEvent();
+    private readonly _selectionChangedListener: (event: CustomEvent<SelectionDetail>) => void;
+    private readonly _clickListener: (event: CustomEvent<CellEvent>) => void;
+    private readonly _dblClickListener: (event: CustomEvent<CellEvent>) => void;
+    private readonly _resizedListener: (event: CustomEvent<EventDetail.Resize>) => void;
+    private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
+    private readonly _renderedListener: () => void;
     // private readonly _nextRenderedListener = () => this.handleHypegridNextRenderedEvent();
-    private readonly _ctrlKeyMousemoveListener = (event: MouseEvent) => this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
-    private readonly _columnSortListener =
-        (event: CustomEvent<EventDetail.ColumnSort>) => this.handleHypegridColumnSortEvent(event.detail.column);
+    private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
+    private readonly _columnSortListener: (event: CustomEvent<EventDetail.ColumnSort>) => void;
 
     private handleHypegridCtrlKeyMousemoveEvent(ctrlKey: boolean) {
         if (ctrlKey && this.ctrlKeyMouseMoveEventer !== undefined) {
@@ -855,7 +772,7 @@ export class MotifGrid extends Revgrid {
         }
 
         if (!gridPropertiesUpdated) {
-            this.invalidateAll();
+            this._mainRecordAdapter.invalidateAll();
         }
     }
 
