@@ -111,7 +111,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         }
         this._newPriceLevelAsOrder = true;
 
-        this.recordsLoadedEvent();
+        this.eventifyRecordsLoaded();
 
         this.checkConsistency();
     }
@@ -151,7 +151,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        this.recordsLoadedEvent();
+        this.eventifyRecordsLoaded();
 
         this._newPriceLevelAsOrder = false;
         this.checkConsistency();
@@ -334,7 +334,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     succOrderRecord.addOrder(order);
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(succOrderRecord.index, false);
                     this._orderIndex.splice(index, 0, succOrderRecord);
-                    this.invalidateRecordAndFollowingRecordsEvent(succOrderRecord.index, lastAffectedFollowingRecordIndex);
+                    this.eventifyInvalidateRecordAndFollowingRecords(succOrderRecord.index, lastAffectedFollowingRecordIndex);
                     return;
                 }
             }
@@ -347,7 +347,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 this.reindexRecords(1);
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(0, false);
                 this._orderIndex.splice(0, 0, firstRecord);
-                this.recordInsertedEvent(0, lastAffectedFollowingRecordIndex);
+                this.eventifyRecordInserted(0, lastAffectedFollowingRecordIndex);
                 return;
             }
         }
@@ -362,7 +362,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     // eslint-disable-next-line @typescript-eslint/no-shadow
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(prevOrderRecord.index, false);
                     this._orderIndex.splice(index, 0, prevOrderRecord);
-                    this.invalidateRecordAndFollowingRecordsEvent(prevOrderRecord.index, lastAffectedFollowingRecordIndex);
+                    this.eventifyInvalidateRecordAndFollowingRecords(prevOrderRecord.index, lastAffectedFollowingRecordIndex);
                     return;
                 }
             }
@@ -379,7 +379,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
             this.reindexRecords(recordIndex + 1);
             const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
             this._orderIndex.splice(index, 0, record); // may be last
-            this.recordInsertedEvent(recordIndex, lastAffectedFollowingRecordIndex);
+            this.eventifyRecordInserted(recordIndex, lastAffectedFollowingRecordIndex);
             return;
         }
 
@@ -389,7 +389,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         this._records.push(onlyRecord);
         this._orderIndex.push(onlyRecord);
         onlyRecord.processAuctionAndVolumeAhead(0, this._auctionVolume);
-        this.recordInsertedEvent(0, undefined);
+        this.eventifyRecordInserted(0, undefined);
     }
 
     private removeRecord(recordIndex: Integer) {
@@ -401,7 +401,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
             this.reindexRecords(recordIndex);
             lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
         }
-        this.recordDeletedEvent(recordIndex, lastAffectedFollowingRecordIndex);
+        this.eventifyRecordDeleted(recordIndex, lastAffectedFollowingRecordIndex);
     }
 
     private removeOrder(index: Integer) {
@@ -424,7 +424,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     const order = this._dataItemOrders[index];
                     priceLevelRecord.removeOrder(order, order.quantity, order.hasUndisclosed);
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(recordIndex, false);
-                    this.invalidateRecordAndFollowingRecordsEvent(recordIndex, lastAffectedFollowingRecordIndex);
+                    this.eventifyInvalidateRecordAndFollowingRecords(recordIndex, lastAffectedFollowingRecordIndex);
                 }
                 break;
             default:
@@ -463,8 +463,8 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 throw new UnreachableCaseError('FDSGDSMACO12122', record.typeId);
         }
         const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(record.index, false);
-        this.invalidateRecordAndValuesAndFollowingRecordsEventer(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
-        this.invalidateRecordAndFollowingRecordsEvent(record.index, lastAffectedFollowingRecordIndex);
+        this.eventifyInvalidateRecordAndValuesAndFollowingRecords(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
+        this.eventifyInvalidateRecordAndFollowingRecords(record.index, lastAffectedFollowingRecordIndex);
     }
 
     private moveAndChangeOrder(
@@ -563,7 +563,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     toRecord = this.createFullDepthRecordForNewPriceLevel(toRecordIdx, newOrder, toVolumeAhead, this._auctionVolume);
                     this._records.splice(toRecordIdx, 0, toRecord);
                     this.reindexRecords(toRecordIdx + 1);
-                    this.recordInsertedEvent(toRecordIdx, undefined);
+                    this.eventifyRecordInserted(toRecordIdx, undefined);
                 }
             } else {
                 if (toToBeMerged) {
@@ -578,7 +578,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     // delete 'from' record
                     this._records.splice(fromRecordIdx, 1);
                     this.reindexRecords(fromRecordIdx);
-                    this.recordDeletedEvent(fromRecordIdx, undefined);
+                    this.eventifyRecordDeleted(fromRecordIdx, undefined);
                 } else {
                     if (debug) {
                         Logger.logDebug(`Depth: ${this._sideIdDisplay} OrderMoveAndChange - from, to:` +
@@ -633,16 +633,16 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
 
         const recordCount = this._records.length;
         if (toRecordInvalidatedValues === undefined) {
-            this.invalidateRecordsEvent(lowRecordIdx, recordCount - lowRecordIdx);
+            this.eventifyInvalidateRecords(lowRecordIdx, recordCount - lowRecordIdx);
         } else {
-            this.invalidateRecordsAndRecordValuesEventer(lowRecordIdx, recordCount - lowRecordIdx, toRecordIdx, toRecordInvalidatedValues);
+            this.eventifyInvalidateRecordsAndRecordValues(lowRecordIdx, recordCount - lowRecordIdx, toRecordIdx, toRecordInvalidatedValues);
         }
     }
 
     private clearOrders() {
         this._orderIndex.length = 0;
         this._records.length = 0;
-        this.allRecordsDeletedEvent();
+        this.eventifyAllRecordsDeleted();
     }
 
     private convertOrderToPriceLevel(record: OrderFullDepthRecord) {
@@ -696,7 +696,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 if (additionalOrderCount === 0) {
                     // fix Auction quantity and invalidate
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecord.index, false);
-                    this.recordsSplicedAndInvalidateUpToEvent(levelRecordIndex, 1, 1, lastAffectedFollowingRecordIndex);
+                    this.eventifyRecordsSplicedAndInvalidateUpTo(levelRecordIndex, 1, 1, lastAffectedFollowingRecordIndex);
                 } else {
                     levelRecord.addOrders(this._dataItemOrders, firstAdditionalOrderIdx, additionalOrderCount);
                     // remove additional order records and from orderIndex
@@ -704,7 +704,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     this.reindexRecords(levelRecordIndex);
                     // fix Auction quantity and invalidate
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecordIndex, false);
-                    this.recordsSplicedAndInvalidateUpToEvent(levelRecordIndex, 1 + additionalOrderCount, 1, lastAffectedFollowingRecordIndex);
+                    this.eventifyRecordsSplicedAndInvalidateUpTo(levelRecordIndex, 1 + additionalOrderCount, 1, lastAffectedFollowingRecordIndex);
                 }
             }
         }
@@ -729,7 +729,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 // no additional orders
                 // fix Auction quantity and invalidate
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                this.recordsSplicedAndInvalidateUpToEvent(firstRecord.index, 1, 1, lastAffectedFollowingRecordIndex);
+                this.eventifyRecordsSplicedAndInvalidateUpTo(firstRecord.index, 1, 1, lastAffectedFollowingRecordIndex);
             } else {
                 // create order records for subsequent orders at this price
                 const firstAdditionalOrderIdx = firstOrderIdx + 1;
@@ -752,7 +752,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 this.reindexRecords(firstRecordIdx);
 
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                this.recordsSplicedAndInvalidateUpToEvent(firstRecord.index, 1, 1 + additionalOrderCount, lastAffectedFollowingRecordIndex);
+                this.eventifyRecordsSplicedAndInvalidateUpTo(firstRecord.index, 1, 1 + additionalOrderCount, lastAffectedFollowingRecordIndex);
             }
         }
         this.checkConsistency();

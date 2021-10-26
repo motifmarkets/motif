@@ -1,14 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
-import {
-    GridProperties,
-    Revgrid,
-    RevRecordCellAdapter,
-    RevRecordFieldAdapter,
-    RevRecordHeaderAdapter,
-    RevRecordMainAdapter,
-    RevRecordStore,
-    Subgrid
-} from 'revgrid';
+import { GridProperties, RevRecordStore } from 'revgrid';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { SettingsService } from 'src/core/internal-api';
 import { numberToPixels } from 'src/sys/internal-api';
@@ -71,16 +62,8 @@ export class MotifGridNgComponent implements OnDestroy {
         }
     }
 
-    createGrid(dataStore: RevRecordStore, frameGridProperties: MotifGrid.FrameGridProperties) {
+    createGrid(recordStore: RevRecordStore, frameGridProperties: MotifGrid.FrameGridProperties) {
         this.destroyGrid(); // Can only have one grid so destroy previous one if it exists
-
-        const fieldAdapter = new RevRecordFieldAdapter();
-        const headerRecordAdapter = new RevRecordHeaderAdapter();
-        const mainRecordAdapter = new RevRecordMainAdapter(
-            fieldAdapter,
-            dataStore,
-        );
-        const recordCellAdapter = new RevRecordCellAdapter(mainRecordAdapter, this._cellPainter);
 
         const gridProperties: Partial<GridProperties> = {
             renderFalsy: true,
@@ -95,32 +78,12 @@ export class MotifGridNgComponent implements OnDestroy {
             ...MotifGrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
         };
 
-        const options: Revgrid.Options = {
-            adapterSet: {
-                schemaModel: fieldAdapter,
-                subgrids: [
-                    {
-                        role: Subgrid.RoleEnum.header,
-                        dataModel: headerRecordAdapter,
-                    },
-                    {
-                        role: Subgrid.RoleEnum.main,
-                        dataModel: mainRecordAdapter,
-                        cellModel: recordCellAdapter,
-                    }
-                ],
-            },
-            gridProperties,
-            loadBuiltinFinbarStylesheet: false,
-        };
-
         this._grid = new MotifGrid(
-            this._hostElement,
-            options,
             this._settingsService,
-            fieldAdapter,
-            headerRecordAdapter,
-            mainRecordAdapter,
+            this._hostElement,
+            recordStore,
+            this._cellPainter,
+            gridProperties,
         );
 
         this._grid.ctrlKeyMouseMoveEventer = () => this.handleCtrlKeyMouseMoveEvent();

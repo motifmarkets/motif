@@ -94,7 +94,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 
     protected processSettingsChanged() {
         this._itemPropertiesComponent.processSettingsChanged();
-        this._gridComponent.invalidateExisting();
+        this._gridComponent.invalidateAll();
     }
 
     private handleGridRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {

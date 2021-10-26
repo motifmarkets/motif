@@ -24,25 +24,25 @@ export class TradesFrame extends ContentFrame {
 
     private _grid: MotifGrid;
     private _gridPrepared = false;
-    private _dataStore: DayTradesGridRecordStore;
+    private _recordStore: DayTradesGridRecordStore;
 
     private _dataItem: DayTradesDataItem | undefined;
     private _dataItemBadnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
-    get dataStore() { return this._dataStore; }
+    get recordStore() { return this._recordStore; }
 
     constructor(
         private readonly _componentAccess: TradesFrame.ComponentAccess,
         protected readonly adi: AdiService
     ) {
         super();
-        this._dataStore = new DayTradesGridRecordStore();
-        this._dataStore.listChangeEvent =
+        this._recordStore = new DayTradesGridRecordStore();
+        this._recordStore.listChangeEvent =
             (listChangeTypeId, index, count) => this.handleDataStoreListChangeEvent(listChangeTypeId, index, count);
-        this._dataStore.recordChangeEvent = (index) => this.handleDataStoreRecordChangeEvent(index);
-        this._dataStore.allRecordsChangeEvent = () => this.handleDataStoreAllRecordsChangeEvent();
+        this._recordStore.recordChangeEvent = (index) => this.handleDataStoreRecordChangeEvent(index);
+        this._recordStore.allRecordsChangeEvent = () => this.handleDataStoreAllRecordsChangeEvent();
     }
 
     override finalise() {
@@ -93,7 +93,7 @@ export class TradesFrame extends ContentFrame {
         definition.litIvemId = litIvemId;
         definition.date = historicalDate;
         this._dataItem = this.adi.subscribe(definition) as DayTradesDataItem;
-        this._dataStore.setDataItem(this._dataItem);
+        this._recordStore.setDataItem(this._dataItem);
 
         this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
             () => this.handleDataItemDataCorrectnessChangeEvent()
@@ -114,43 +114,32 @@ export class TradesFrame extends ContentFrame {
         const fieldCount = DayTradesGridField.idCount;
         const fields = new Array<DayTradesGridField>(fieldCount);
 
-        this._grid.beginFieldChanges();
-        try {
-            for (let id = 0; id < fieldCount; id++) {
-                const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
-                this._grid.addField(gridField);
-                fields[id] = gridField;
-            }
-        } finally {
-            this._grid.endFieldChanges();
+        for (let id = 0; id < fieldCount; id++) {
+            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
+            fields[id] = gridField;
+        }
+        this._recordStore.fieldsEventers.addFields(fields);
+
+        this._grid.sortable = false;
+
+        for (let id = 0; id < fieldCount; id++) {
+            this._grid.setFieldState(fields[id], fields[id].fieldStateDefinition);
         }
 
-        this._grid.beginRecordChanges();
-        try {
-
-            this._grid.sortable = false;
-
-            for (let id = 0; id < fieldCount; id++) {
-                this._grid.setFieldState(fields[id], fields[id].fieldStateDefinition);
-            }
-
-            for (let id = 0; id < fieldCount; id++) {
-                this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
-            }
-
-            // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            // this._componentAccess.gridAddFields(fieldsAndInitialStates.fields);
-            // const states = fieldsAndInitialStates.states;
-            // const fieldCount = states.length; // one state for each field
-            // for (let i = 0; i < fieldCount; i++) {
-            //     this._componentAccess.gridSetFieldState(i, states[i]);
-            // }
-
-            // this._componentAccess.gridLoadLayout(this._table.layout);
-            this._grid.recordsLoaded();
-        } finally {
-            this._grid.endRecordChanges();
+        for (let id = 0; id < fieldCount; id++) {
+            this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
         }
+
+        // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
+        // this._componentAccess.gridAddFields(fieldsAndInitialStates.fields);
+        // const states = fieldsAndInitialStates.states;
+        // const fieldCount = states.length; // one state for each field
+        // for (let i = 0; i < fieldCount; i++) {
+        //     this._componentAccess.gridSetFieldState(i, states[i]);
+        // }
+
+        // this._componentAccess.gridLoadLayout(this._table.layout);
+        this._recordStore.recordsEventers.recordsLoaded();
 
         this._gridPrepared = true;
     }
@@ -193,11 +182,11 @@ export class TradesFrame extends ContentFrame {
                 break;
 
             case UsableListChangeTypeId.PreUsableClear:
-                this._grid.allRecordsDeleted();
+                this._recordStore.recordsEventers.allRecordsDeleted();
                 break;
 
             case UsableListChangeTypeId.PreUsableAdd:
-                this._grid.recordsInserted(idx, count);
+                this._recordStore.recordsEventers.recordsInserted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Usable:
@@ -205,15 +194,15 @@ export class TradesFrame extends ContentFrame {
                 break;
 
             case UsableListChangeTypeId.Insert:
-                this._grid.recordsInserted(idx, count);
+                this._recordStore.recordsEventers.recordsInserted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Remove:
-                this._grid.recordsDeleted(idx, count);
+                this._recordStore.recordsEventers.recordsDeleted(idx, count);
                 break;
 
             case UsableListChangeTypeId.Clear:
-                this._grid.allRecordsDeleted();
+                this._recordStore.recordsEventers.allRecordsDeleted();
                 break;
 
             default:
@@ -222,11 +211,11 @@ export class TradesFrame extends ContentFrame {
     }
 
     private handleDataStoreRecordChangeEvent(index: Integer) {
-        this._grid.invalidateRecord(index);
+        this._recordStore.recordsEventers.invalidateRecord(index);
     }
 
     private handleDataStoreAllRecordsChangeEvent() {
-        this._grid.recordsLoaded();
+        this._recordStore.recordsEventers.recordsLoaded();
     }
 
     private handleDataItemDataCorrectnessChangeEvent() {
@@ -253,7 +242,7 @@ export class TradesFrame extends ContentFrame {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
-            this._dataStore.clearDataItem();
+            this._recordStore.clearDataItem();
             this.adi.unsubscribe(this._dataItem);
             this._dataItem = undefined;
             this._dataItemDataCorrectnessId = CorrectnessId.Suspect;

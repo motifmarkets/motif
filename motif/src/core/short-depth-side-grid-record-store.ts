@@ -148,7 +148,7 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
         this._records.splice(index, 0, record);
         this.reindexRecords(index + 1);
         const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(index, false);
-        this.recordInsertedEvent(index, lastAffectedFollowingRecordIndex);
+        this.eventifyRecordInserted(index, lastAffectedFollowingRecordIndex);
     }
 
     private deleteRecord(index: Integer) {
@@ -160,7 +160,7 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
             this.reindexRecords(index);
             lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(index, false);
         }
-        this.recordDeletedEvent(index, lastAffectedFollowingRecordIndex);
+        this.eventifyRecordDeleted(index, lastAffectedFollowingRecordIndex);
     }
 
     private changeRecord(index: Integer, valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
@@ -168,12 +168,12 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
 
         const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(record.index, false);
         const invalidatedValues = record.processValueChanges(valueChanges);
-        this.invalidateRecordAndValuesAndFollowingRecordsEventer(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
+        this.eventifyInvalidateRecordAndValuesAndFollowingRecords(record.index, invalidatedValues, lastAffectedFollowingRecordIndex);
     }
 
     private clearRecords() {
         this._records.length = 0;
-        this.allRecordsDeletedEvent();
+        this.eventifyAllRecordsDeleted();
     }
 
     private populateRecords() {
@@ -189,7 +189,7 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
             this.processAuctionAndVolumeAhead(0, true);
         }
 
-        this.recordsLoadedEvent();
+        this.eventifyRecordsLoaded();
 
         super.checkResolveOpenPopulated(true);
     }

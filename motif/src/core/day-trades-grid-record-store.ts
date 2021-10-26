@@ -9,6 +9,9 @@ import { DayTradesDataItem } from 'src/adi/internal-api';
 import { Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
 
 export class DayTradesGridRecordStore implements RevRecordStore {
+    fieldsEventers: RevRecordStore.FieldsEventers;
+    recordsEventers: RevRecordStore.RecordsEventers;
+
     listChangeEvent: DayTradesGridDataStore.ListChangeEventHandler;
     recordChangeEvent: DayTradesGridDataStore.RecordChangeEventHandler;
     allRecordsChangeEvent: DayTradesGridDataStore.AllRecordsChangeEventHandler;
@@ -20,6 +23,14 @@ export class DayTradesGridRecordStore implements RevRecordStore {
     private _dataItemListChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemRecordChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
+
+    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
+        this.fieldsEventers = fieldsEventers;
+    }
+
+    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
+        this.recordsEventers = recordsEventers;
+    }
 
     setDataItem(value: DayTradesDataItem) {
         this.clearDataItem();

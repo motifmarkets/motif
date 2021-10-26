@@ -17,7 +17,8 @@ import { ColorSettings } from './settings/color-settings';
 import { SettingsService } from './settings/settings-service';
 
 export class ColorSchemeGridRecordStore implements RevRecordStore {
-    changedEvent: ColorSchemeGridRecordStore.ChangedEvent;
+    fieldsEventers: RevRecordStore.FieldsEventers;
+    recordsEventers: RevRecordStore.RecordsEventers;
 
     private readonly _records = new Array<ColorSchemeGridRecordStore.Record>(ColorScheme.Item.idCount);
     private _colorSettings: ColorSettings;
@@ -42,6 +43,14 @@ export class ColorSchemeGridRecordStore implements RevRecordStore {
 
     finalise() {
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedEventSubscriptionId);
+    }
+
+    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
+        this.fieldsEventers = fieldsEventers;
+    }
+
+    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
+        this.recordsEventers = recordsEventers;
     }
 
     createItemIdField() { return new ColorSchemeGridRecordStore.ItemIdField(this.colorSettings); }
@@ -73,7 +82,7 @@ export class ColorSchemeGridRecordStore implements RevRecordStore {
     }
 
     private handleSettingsChangedEvent() {
-        this.changedEvent();
+        this.recordsEventers.invalidateAll();
     }
 }
 
