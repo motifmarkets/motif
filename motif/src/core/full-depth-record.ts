@@ -382,7 +382,7 @@ export class PriceLevelFullDepthRecord extends FullDepthRecord {
 
     addOrder(order: DepthDataItem.Order): RevRecordInvalidatedValue[] {
         const changes = new Array<RevRecordInvalidatedValue>(8); // Set to maximum possible number of elements
-        let changeCount = 0
+        let changeCount = 0;
 
         this._count++;
         changes[changeCount++] = { fieldIndex: FullDepthSideFieldId.Count, typeId: RevRecordValueRecentChangeTypeId.Increase };
@@ -439,7 +439,7 @@ export class PriceLevelFullDepthRecord extends FullDepthRecord {
             return [];
         } else {
             const changes = new Array<RevRecordInvalidatedValue>(8); // Set to maximum possible number of elements
-            let changeCount = 0
+            let changeCount = 0;
 
             this._count += count;
             changes[changeCount++] = { fieldIndex: FullDepthSideFieldId.Count, typeId: RevRecordValueRecentChangeTypeId.Increase };
@@ -506,7 +506,7 @@ export class PriceLevelFullDepthRecord extends FullDepthRecord {
             return [];
         } else {
             const changes = new Array<RevRecordInvalidatedValue>(8); // Set to maximum possible number of elements
-            let changeCount = 0
+            let changeCount = 0;
 
             const oldMarketCount = this._marketIds.length;
             const oldXrefCount = this._xrefs.length;
@@ -565,7 +565,7 @@ export class PriceLevelFullDepthRecord extends FullDepthRecord {
         valueChanges: DepthDataItem.Order.ValueChange[]
     ): RevRecordInvalidatedValue[] {
         const changes = new Array<RevRecordInvalidatedValue>(6); // Set to maximum possible number of elements
-        let changeCount = 0
+        let changeCount = 0;
 
         const quantityChange = newOrder.quantity - oldOrderQuantity;
         if (quantityChange !== 0) {

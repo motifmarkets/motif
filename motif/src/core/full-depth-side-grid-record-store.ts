@@ -704,7 +704,12 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                     this.reindexRecords(levelRecordIndex);
                     // fix Auction quantity and invalidate
                     const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(levelRecordIndex, false);
-                    this.eventifyRecordsSplicedAndInvalidateUpTo(levelRecordIndex, 1 + additionalOrderCount, 1, lastAffectedFollowingRecordIndex);
+                    this.eventifyRecordsSplicedAndInvalidateUpTo(
+                        levelRecordIndex,
+                        1 + additionalOrderCount,
+                        1,
+                        lastAffectedFollowingRecordIndex
+                    );
                 }
             }
         }
@@ -752,7 +757,12 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
                 this.reindexRecords(firstRecordIdx);
 
                 const lastAffectedFollowingRecordIndex = this.processAuctionAndVolumeAhead(firstRecord.index, false);
-                this.eventifyRecordsSplicedAndInvalidateUpTo(firstRecord.index, 1, 1 + additionalOrderCount, lastAffectedFollowingRecordIndex);
+                this.eventifyRecordsSplicedAndInvalidateUpTo(
+                    firstRecord.index,
+                    1,
+                    1 + additionalOrderCount,
+                    lastAffectedFollowingRecordIndex
+                );
             }
         }
         this.checkConsistency();

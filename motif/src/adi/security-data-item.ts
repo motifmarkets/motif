@@ -328,7 +328,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
                     valueChanges[i] = {
                         fieldId: modifiedFieldIds[i],
                         recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
-                    }
+                    };
                 }
                 this.notifyUpdateChange();
                 this.notifyFieldValuesChanged(valueChanges);
@@ -481,7 +481,7 @@ export class SecurityDataItem extends MarketSubscriptionDataItem {
             const allowReasonModifiedFieldIds = this.updateTradingStateAllowsReason();
             for (const fieldId of allowReasonModifiedFieldIds) {
                 valueChanges[valueChangeCount++] = {
-                    fieldId: fieldId,
+                    fieldId,
                     recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update,
                 };
             }

@@ -251,7 +251,7 @@ export namespace TableDirectory {
             this.table.recordValuesChangedEvent = (recordIdx, invalidatedValues) =>
                 this.handleRecordValuesChangedEvent(recordIdx, invalidatedValues);
             this.table.recordFieldsChangedEvent = (recordIndex, fieldIndex, fieldCount) =>
-                this.handleRecordFieldsChangedEvent(recordIndex, fieldIndex, fieldCount)
+                this.handleRecordFieldsChangedEvent(recordIndex, fieldIndex, fieldCount);
             this.table.recordChangedEvent = (recordIdx) =>
                 this.handleRecordChangeEvent(recordIdx);
             this.table.layoutChangedEvent = (opener) =>

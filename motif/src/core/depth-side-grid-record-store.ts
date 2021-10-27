@@ -251,7 +251,9 @@ export namespace DepthSideGridRecordStore {
     export type AllRecordsDeletedEventHandler = (this: void) => void;
     export type RecordsLoadedEventHandler = (this: void) => void;
     export type InvalidateRecordsEventHandler = (this: void, index: Integer, count: Integer) => void;
-    export type InvalidateRecordAndFollowingRecordsEventHandler = (this: void, index: Integer, lastAffectedFollowingRecordIndex: Integer | undefined) => void;
+    export type InvalidateRecordAndFollowingRecordsEventHandler = (this: void,
+        index: Integer, lastAffectedFollowingRecordIndex: Integer | undefined
+    ) => void;
     export type InvalidateRecordAndValuesAndFollowingRecordsEventHandler = (this: void,
         recordIndex: Integer,
         invalidatedRecordValues: RevRecordInvalidatedValue[],

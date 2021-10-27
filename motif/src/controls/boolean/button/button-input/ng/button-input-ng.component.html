@@ -7,7 +7,7 @@
 <button #button
     [id]="inputId"
     [title]="title"
-    [disabled]="disabled == true ? true : null"
+    [disabled]="disabled === true ? true : null"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     (click)="onClick($event)"
     (keydown.enter)="onEnterKeyDown($event)"

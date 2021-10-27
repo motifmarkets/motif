@@ -71,7 +71,8 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.Historical: return BuiltinIconButtonUiActionApi.IconIdEnum.Historical;
                 case IconButtonUiAction.IconId.HistoricalCompare: return BuiltinIconButtonUiActionApi.IconIdEnum.HistoricalCompare;
                 case IconButtonUiAction.IconId.Details: return BuiltinIconButtonUiActionApi.IconIdEnum.Details;
-                case IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed: return BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed;
+                case IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed:
+                    return BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed;
                 default: throw new UnreachableCaseError('BIBUAITAU09992223', value);
             }
         }
