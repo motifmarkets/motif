@@ -50,6 +50,16 @@ export class MotifGrid extends Revgrid {
     private _columnsViewWidthsChangedEventer: MotifGrid.ColumnsViewWidthsChangedEventer | undefined;
     private _renderedEventer: MotifGrid.RenderedEventer | undefined;
 
+    private readonly _selectionChangedListener: (event: CustomEvent<SelectionDetail>) => void;
+    private readonly _clickListener: (event: CustomEvent<CellEvent>) => void;
+    private readonly _dblClickListener: (event: CustomEvent<CellEvent>) => void;
+    private readonly _resizedListener: (event: CustomEvent<EventDetail.Resize>) => void;
+    private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
+    private readonly _renderedListener: () => void;
+    // private readonly _nextRenderedListener = () => this.handleHypegridNextRenderedEvent();
+    private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
+    private readonly _columnSortListener: (event: CustomEvent<EventDetail.ColumnSort>) => void;
+
     constructor(
         settingsService: SettingsService,
         gridElement: HTMLElement,
@@ -153,7 +163,7 @@ export class MotifGrid extends Revgrid {
         if (selections === null || selections.length === 0) {
             return undefined;
         } else {
-            let rowIndex = selections[0].firstSelectedCell.y;
+            const rowIndex = selections[0].firstSelectedCell.y;
 
             // Following test probably not required as RevGrid now adjusts the current selection index if rows are deleted
             if (rowIndex >= this._mainRecordAdapter.rowCount) {
@@ -168,7 +178,7 @@ export class MotifGrid extends Revgrid {
         if (recordIndex === undefined) {
             this.clearSelections();
         } else {
-            let rowIndex = this._mainRecordAdapter.getRowIndexFromRecordIndex(recordIndex);
+            const rowIndex = this._mainRecordAdapter.getRowIndexFromRecordIndex(recordIndex);
 
             if (rowIndex === undefined) {
                 this.clearSelections();
@@ -627,16 +637,6 @@ export class MotifGrid extends Revgrid {
         return this._mainRecordAdapter.sortByMany(specifiers);
     }
 
-    private readonly _selectionChangedListener: (event: CustomEvent<SelectionDetail>) => void;
-    private readonly _clickListener: (event: CustomEvent<CellEvent>) => void;
-    private readonly _dblClickListener: (event: CustomEvent<CellEvent>) => void;
-    private readonly _resizedListener: (event: CustomEvent<EventDetail.Resize>) => void;
-    private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
-    private readonly _renderedListener: () => void;
-    // private readonly _nextRenderedListener = () => this.handleHypegridNextRenderedEvent();
-    private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
-    private readonly _columnSortListener: (event: CustomEvent<EventDetail.ColumnSort>) => void;
-
     private handleHypegridCtrlKeyMousemoveEvent(ctrlKey: boolean) {
         if (ctrlKey && this.ctrlKeyMouseMoveEventer !== undefined) {
             this.ctrlKeyMouseMoveEventer();
@@ -884,7 +884,9 @@ export namespace MotifGrid {
 
     export type SettingsChangedEventer = (this: void) => void;
     export type CtrlKeyMouseMoveEventer = (this: void) => void;
-    export type RecordFocusEventer = (this: void, newRecordIndex: RevRecordIndex | undefined, oldRecordIndex: RevRecordIndex | undefined) => void;
+    export type RecordFocusEventer = (this: void,
+        newRecordIndex: RevRecordIndex | undefined, oldRecordIndex: RevRecordIndex | undefined
+    ) => void;
     export type MainClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type MainDblClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ResizedEventer = (this: void, detail: ResizedEventDetail) => void;

@@ -160,7 +160,7 @@ export namespace FullDepthSideField {
             case DepthDataItem.Order.Field.Id.Broker:
                 return FullDepthSideFieldId.BrokerId;
             case DepthDataItem.Order.Field.Id.Xref:
-                return FullDepthSideFieldId.Xref // Also affects FullDepthSideFieldId.CountXref - handled elsewhere
+                return FullDepthSideFieldId.Xref; // Also affects FullDepthSideFieldId.CountXref - handled elsewhere
             case DepthDataItem.Order.Field.Id.Quantity:
                 return FullDepthSideFieldId.Volume;
             case DepthDataItem.Order.Field.Id.HasUndisclosed:

@@ -16,7 +16,7 @@
     "noImplicitReturns": true,
     // "useUnknownInCatchVariables": true,
     "strictFunctionTypes": true,
-    "noFallthroughCasesInSwitch": true,
+    "noFallthroughCasesInSwitch": false, // rely on linter for this
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,

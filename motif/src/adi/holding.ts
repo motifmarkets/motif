@@ -127,7 +127,10 @@ export class Holding implements BrokerageAccountDataRecord {
         const newExchangeId = changeData.exchangeId;
         if (newExchangeId !== this.exchangeId) {
             this._exchangeId = newExchangeId;
-            valueChanges[changedIdx++] = { fieldId: Holding.FieldId.ExchangeId, recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update };
+            valueChanges[changedIdx++] = {
+                fieldId: Holding.FieldId.ExchangeId,
+                recentChangeTypeId: RevRecordValueRecentChangeTypeId.Update
+            };
         }
 
         const newCode = changeData.code;

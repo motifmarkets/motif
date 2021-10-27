@@ -37,7 +37,7 @@ export class TableRecord implements RevRecord {
         this._valueList.valueChangesEvent = (valueChanges) => this.handleValueChangesEvent(valueChanges);
         this._valueList.sourceAllValuesChangeEvent =
             (firstFieldIdx, newValues) => this.handleSourceAllValuesChangeEvent(firstFieldIdx, newValues);
-        this._valueList.beenUsableBecameTrueEvent = () => { this._beenUsable = true; }
+        this._valueList.beenUsableBecameTrueEvent = () => { this._beenUsable = true; };
     }
 
     activate() {
@@ -74,7 +74,7 @@ export class TableRecord implements RevRecord {
                     invalidatedValues[invalidatedValueCount++] = {
                         fieldIndex,
                         typeId: recentChangeTypeId,
-                    }
+                    };
                 }
             }
 

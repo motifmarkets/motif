@@ -14,7 +14,9 @@ import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-dit
     styleUrls: ['./branding-splash-web-page-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective implements OnInit, BrandingSplashWebPageDitemFrame.ComponentAccess  {
+export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
+    implements OnInit, BrandingSplashWebPageDitemFrame.ComponentAccess {
+
     public url: SafeResourceUrl;
 
     private _frame: BrandingSplashWebPageDitemFrame;
