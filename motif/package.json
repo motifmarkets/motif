@@ -55,12 +55,12 @@
     "decimal.js-light": "^2.5.1",
     "file-saver": "^2.0.5",
     "golden-layout": "^2.2.0",
+    "nanoid": "^3.1.30",
     "oidc-client": "^1.11.5",
     "revgrid": "^0.1.5",
     "rollbar": "^2.21.1",
     "rxjs": "^6.6.7",
     "tslib": "^2.2.0",
-    "uuid": "^8.3.2",
     "zone.js": "~0.11.4"
   },
   "devDependencies": {
@@ -96,7 +96,6 @@
     "karma-coverage-istanbul-reporter": "~3.0.2",
     "karma-jasmine": "~4.0.0",
     "karma-jasmine-html-reporter": "^1.6.0",
-    "less": "^4.1.1",
     "ng-packagr": "^12.0.0",
     "protractor": "~7.0.0",
     "sass": "^1.33.0",

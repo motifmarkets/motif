@@ -5,8 +5,8 @@
  */
 
 import { Decimal, Numeric } from 'decimal.js-light';
+import { nanoid } from 'nanoid';
 import { RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { v1 as uuid } from 'uuid';
 import { AssertInternalError } from './internal-error';
 import { ComparisonResult, Integer, Json, JsonValue, PriceOrRemainder, Rect, TimeSpan } from './types';
 
@@ -956,7 +956,7 @@ export function getElementDocumentPositionRect(element: HTMLElement): Rect {
 }
 
 export function createRandomUrlSearch() {
-    return '?random=' + Date.now().toString(36) + uuid();
+    return '?random=' + Date.now().toString(36) + nanoid();
 }
 
 // Latest TypeScript library now support RequestIdleCallback however not yet used by Angular
