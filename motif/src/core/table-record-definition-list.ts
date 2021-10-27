@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { nanoid } from 'nanoid';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
@@ -20,7 +21,6 @@ import {
     MultiEvent,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
-import { v1 as uuid } from 'uuid';
 import { BaseDirectory } from './base-directory';
 import { TableRecordDefinition, TableRecordDefinitionArray } from './table-record-definition';
 
@@ -90,7 +90,7 @@ export abstract class TableRecordDefinitionList {
             this._id = jsonId;
         } else {
             Logger.logError(`Error TRDLLFJI33858: ${TableRecordDefinitionList.Type.idToName(this._typeId)}: Generating new`);
-            this._id = uuid();
+            this._id = nanoid();
         }
 
         const jsonName = element.tryGetString(TableRecordDefinitionList.jsonTag_Name);
@@ -643,7 +643,7 @@ export class TableRecordDefinitionListList extends ComparableList<TableRecordDef
 export abstract class RandomIdTableRecordDefinitionList extends TableRecordDefinitionList {
     constructor(typeId: TableRecordDefinitionList.TypeId) {
         super(typeId);
-        const randomId = uuid();
+        const randomId = nanoid();
         this.setId(randomId);
     }
 }

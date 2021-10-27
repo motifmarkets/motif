@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { nanoid } from 'nanoid';
 import { Version } from 'src/generated/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
-import { v1 as uuid } from 'uuid';
 import { ConfigNgService } from '../../ng/config-ng.service';
 
 @Component({
@@ -31,7 +31,7 @@ export class NotCurrentVersionNgComponent {
     }
 
     public reloadAppClick() {
-        const random = Date.now().toString(10) + uuid();
+        const random = Date.now().toString(10) + nanoid();
         const url = window.location.origin + `?random=${random}`;
         window.location.replace(url);
     }

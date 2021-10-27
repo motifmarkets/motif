@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { nanoid } from 'nanoid';
 import { AssertInternalError, Authorisations, EnumInfoOutOfOrderError, Guid, Integer, Logger, SysTick } from 'src/sys/internal-api';
-import { v1 as uuid } from 'uuid';
 import { GroupTableRecordDefinitionList } from './group-table-record-definition-list';
 import { IvemIdServerTableRecordDefinitionList } from './ivem-id-server-table-record-definition-list';
 import { PortfolioTableRecordDefinitionList } from './portfolio-table-record-definition-list';
@@ -52,7 +52,7 @@ export class TableRecordDefinitionListDirectory {
     }
 
     addNoIdUserList(name: string, listTypeId: TableRecordDefinitionList.TypeId): Integer {
-        const id = uuid();
+        const id = nanoid();
         return this.addUserList(id, name, listTypeId);
     }
 
