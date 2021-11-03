@@ -858,11 +858,11 @@ export class DesktopFrame implements DesktopAccessService {
             const name = this._activeLayoutName ?? 'Unnamed';
             const schemaVersion = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
             if (schemaVersion === undefined) {
-                Logger.logWarning(`${Strings[StringId.Layout_SchemaNotDefinedLoadingDefault]}: ${name}`);
+                Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
             } else {
                 if (schemaVersion !== DesktopFrame.layoutStateSchemaVersion) {
-                    Logger.logWarning(`${Strings[StringId.Layout_SchemaIncompatibleLoadingDefault]}: "${name}", ` +
+                    Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
                         `${schemaVersion}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
