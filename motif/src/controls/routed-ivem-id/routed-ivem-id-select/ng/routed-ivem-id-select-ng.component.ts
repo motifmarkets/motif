@@ -9,13 +9,15 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { merge, Observable, Observer, of, Subject, Unsubscribable } from 'rxjs';
 import { distinctUntilChanged, map, switchAll, tap } from 'rxjs/operators';
 import {
-    AdiService, ExchangeId,
+    AdiService,
+    ExchangeId,
     ExchangeInfo,
     IvemId,
     MarketId,
     MarketOrderRoute,
-    OrderRoute, QuerySymbolsDataDefinition,
+    OrderRoute,
     RoutedIvemId,
+    SearchSymbolsDataDefinition,
     SymbolsDataItem
 } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
@@ -628,11 +630,11 @@ export namespace RoutedIvemIdSelectNgComponent {
                 }
             }
 
-            const definition = new QuerySymbolsDataDefinition();
+            const definition = new SearchSymbolsDataDefinition();
             definition.searchText = this._term.codeOrName;
             definition.exchangeId = this._term.exchangeId;
             definition.marketIds = marketIds;
-            definition.fieldIds = [QuerySymbolsDataDefinition.FieldId.Code, QuerySymbolsDataDefinition.FieldId.Name];
+            definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
             definition.isPartial = true;
             definition.showFull = false;
             definition.isCaseSensitive = false;

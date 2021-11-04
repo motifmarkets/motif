@@ -10,10 +10,10 @@ import { CallPutTableFieldDefinitionSource } from './call-put-table-field-defini
 import {
     BooleanTableGridValue,
     DateTableGridValue,
+    DecimalTableGridValue,
     EnumTableGridValue,
     IvemIdTableGridValue,
     LitIvemIdTableGridValue,
-    NumberTableGridValue,
     PriceTableGridValue,
     TableGridValue
 } from './table-grid-value';
@@ -73,7 +73,7 @@ export class CallPutTableValueSource extends TableValueSource {
                 (value as LitIvemIdTableGridValue).data = this._callPut.putLitIvemId;
                 break;
             case CallPut.FieldId.ContractMultiplier:
-                (value as NumberTableGridValue).data = this._callPut.contractMultiplier;
+                (value as DecimalTableGridValue).data = this._callPut.contractMultiplier;
                 break;
             case CallPut.FieldId.ExerciseTypeId:
                 (value as EnumTableGridValue).data = this._callPut.exerciseTypeId;

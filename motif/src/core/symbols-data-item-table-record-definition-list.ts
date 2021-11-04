@@ -13,9 +13,7 @@ import {
     LitIvemDetail,
     MarketId,
     MarketInfo,
-    QuerySymbolsDataDefinition,
-    SymbolsDataDefinition,
-    SymbolsDataItem
+    SearchSymbolsDataDefinition, SymbolsDataItem, SymbolsDataDefinition
 } from 'src/adi/internal-api';
 import {
     AssertInternalError,
@@ -240,14 +238,14 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
                 if (marketIds !== undefined && marketIds.length === 0) {
                     marketIds = undefined;
                 }
-                const queryDefinition = new QuerySymbolsDataDefinition();
+                const queryDefinition = new SearchSymbolsDataDefinition();
                 queryDefinition.searchText = queryRequest.searchText;
                 queryDefinition.showFull = queryRequest.showFull;
                 queryDefinition.exchangeId = queryRequest.exchangeId;
                 queryDefinition.marketIds = marketIds;
                 queryDefinition.cfi = queryRequest.cfi;
                 if (queryRequest.fieldIds === undefined) {
-                    queryDefinition.fieldIds = QuerySymbolsDataDefinition.defaultFieldIds;
+                    queryDefinition.fieldIds = SearchSymbolsDataDefinition.defaultFieldIds;
                 } else {
                     queryDefinition.fieldIds = queryRequest.fieldIds;
                 }
@@ -371,7 +369,7 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
         exchangeId: ExchangeId | undefined;
         marketIds: readonly MarketId[] | undefined;
         cfi: string | undefined;
-        fieldIds: readonly QuerySymbolsDataDefinition.FieldId[] | undefined;
+        fieldIds: readonly SearchSymbolsDataDefinition.FieldId[] | undefined;
         isPartial: boolean | undefined;
         isCaseSensitive: boolean | undefined;
         preferExact: boolean | undefined;
@@ -424,7 +422,7 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
         searchText: '1000',
         showFull: false,
         exchangeId: ExchangeId.Myx,
-        fieldIds: QuerySymbolsDataDefinition.defaultFieldIds,
+        fieldIds: SearchSymbolsDataDefinition.defaultFieldIds,
         count: 10,
         marketIds: undefined,
         cfi: undefined,

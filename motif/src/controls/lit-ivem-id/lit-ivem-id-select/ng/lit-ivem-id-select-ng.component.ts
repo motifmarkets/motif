@@ -25,7 +25,7 @@ import {
     LitIvemId,
     MarketId,
     MarketInfo,
-    QuerySymbolsDataDefinition,
+    SearchSymbolsDataDefinition,
     SymbolsDataItem,
     SymbolsDataMessage
 } from 'src/adi/internal-api';
@@ -692,11 +692,11 @@ export namespace LitIvemIdSelectNgComponent {
             this._debounceDelayStartFinishEventHandler(false);
             this._queryStartFinishEventHandler(true);
 
-            const definition = new QuerySymbolsDataDefinition();
+            const definition = new SearchSymbolsDataDefinition();
             definition.searchText = this._term.codeOrName;
             definition.exchangeId = this._term.exchangeId;
             definition.marketIds = this._term.marketId === undefined ? undefined : [this._term.marketId];
-            definition.fieldIds = [QuerySymbolsDataDefinition.FieldId.Code, QuerySymbolsDataDefinition.FieldId.Name];
+            definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
             definition.isPartial = true;
             definition.showFull = false;
             definition.isCaseSensitive = false;

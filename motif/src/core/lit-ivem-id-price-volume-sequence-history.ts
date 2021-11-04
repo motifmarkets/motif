@@ -5,14 +5,24 @@
  */
 
 import {
-    AdiService, ChartHistoryDataItem, ChartInterval,
+    AdiService,
+    ChartHistoryDataItem,
+    ChartInterval,
     ChartIntervalId,
-    DayTradesDataDefinition, DayTradesDataItem, ExchangeId,
+    DayTradesDataDefinition,
+    DayTradesDataItem,
+    ExchangeId,
     IvemClassId,
     LitIvemId,
-    MarketId, MarketSubscriptionDataItem, QueryChartHistoryDataDefinition,
-    QuerySymbolsDataDefinition,
-    SecurityDataDefinition, SecurityDataItem, SymbolsDataItem, TradeAffectsId, TradesDataItem
+    MarketId,
+    MarketSubscriptionDataItem,
+    QueryChartHistoryDataDefinition,
+    SearchSymbolsDataDefinition,
+    SecurityDataDefinition,
+    SecurityDataItem,
+    SymbolsDataItem,
+    TradeAffectsId,
+    TradesDataItem
 } from 'src/adi/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
@@ -29,7 +39,6 @@ import {
     newNullDate,
     newUndefinableDate,
     SourceTzOffsetDateTime,
-    uniqueElementArraysOverlap,
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
@@ -339,11 +348,11 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
     }
 
     private activateSymbols() {
-        const definition = new QuerySymbolsDataDefinition();
+        const definition = new SearchSymbolsDataDefinition();
         definition.searchText = this.litIvemId.code;
         definition.showFull = true;
         definition.marketIds = [this.litIvemId.litId];
-        definition.fieldIds = [QuerySymbolsDataDefinition.FieldId.Code];
+        definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code];
         definition.isPartial = false;
         definition.isCaseSensitive = false;
         definition.preferExact = true;

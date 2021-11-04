@@ -15,7 +15,7 @@ export class CallPut {
     litId: MarketId;
     callLitIvemId: LitIvemId;
     putLitIvemId: LitIvemId;
-    contractMultiplier: number;
+    contractMultiplier: Decimal;
     exerciseTypeId: ExerciseTypeId;
     underlyingIvemId: IvemId;
     underlyingIsIndex: boolean;

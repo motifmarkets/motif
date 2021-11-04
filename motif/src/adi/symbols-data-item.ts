@@ -11,7 +11,7 @@ import {
     DataMessage,
     DataMessageTypeId,
     LitIvemId,
-    QuerySymbolsDataDefinition,
+    SearchSymbolsDataDefinition,
     SymbolsDataMessage
 } from './common/internal-api';
 import { LitIvemFullDetail as LitIvemFullDetail } from './lit-ivem-full-detail';
@@ -28,11 +28,11 @@ export class SymbolsDataItem extends PublisherSubscriptionDataItem {
     constructor(definition: DataDefinition) {
         super(definition);
 
-        this._query = definition instanceof QuerySymbolsDataDefinition;
+        this._query = definition instanceof SearchSymbolsDataDefinition;
     }
 
     get query() { return this._query; }
-    get querySymbolsDefinition() { return this.definition as QuerySymbolsDataDefinition; }
+    get querySymbolsDefinition() { return this.definition as SearchSymbolsDataDefinition; }
     get records() { return this._records; }
 
     override processMessage(msg: DataMessage) { // virtual;

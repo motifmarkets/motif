@@ -1871,10 +1871,10 @@ export namespace ZenithConvert {
     }
 
     export namespace DepthDirection {
-        export function toId(value: Zenith.MarketController.Symbols.DepthDirection): DepthDirectionId {
+        export function toId(value: Zenith.MarketController.SearchSymbols.DepthDirection): DepthDirectionId {
             switch (value) {
-                case Zenith.MarketController.Symbols.DepthDirection.BidBelowAsk: return DepthDirectionId.BidBelowAsk;
-                case Zenith.MarketController.Symbols.DepthDirection.AskBelowBid: return DepthDirectionId.AskBelowBid;
+                case Zenith.MarketController.SearchSymbols.DepthDirection.BidBelowAsk: return DepthDirectionId.BidBelowAsk;
+                case Zenith.MarketController.SearchSymbols.DepthDirection.AskBelowBid: return DepthDirectionId.AskBelowBid;
                 default:
                     throw new UnreachableCaseError('ZCDDTI77743', value);
             }
@@ -1882,11 +1882,11 @@ export namespace ZenithConvert {
     }
 
     export namespace ExerciseType {
-        export function toId(value: Zenith.MarketController.Symbols.ExerciseType): ExerciseTypeId | undefined {
+        export function toId(value: Zenith.MarketController.SearchSymbols.ExerciseType): ExerciseTypeId | undefined {
             switch (value) {
-                case Zenith.MarketController.Symbols.ExerciseType.American: return ExerciseTypeId.American;
-                case Zenith.MarketController.Symbols.ExerciseType.European: return ExerciseTypeId.European;
-                case Zenith.MarketController.Symbols.ExerciseType.Unknown: return undefined;
+                case Zenith.MarketController.SearchSymbols.ExerciseType.American: return ExerciseTypeId.American;
+                case Zenith.MarketController.SearchSymbols.ExerciseType.European: return ExerciseTypeId.European;
+                case Zenith.MarketController.SearchSymbols.ExerciseType.Unknown: return undefined;
                 default:
                     throw new UnreachableCaseError('ZCETTI38852', value);
             }

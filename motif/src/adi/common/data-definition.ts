@@ -171,14 +171,14 @@ export class SymbolsDataDefinition extends MarketSubscriptionDataDefinition {
     }
 }
 
-export class QuerySymbolsDataDefinition extends MarketSubscriptionDataDefinition {
+export class SearchSymbolsDataDefinition extends MarketSubscriptionDataDefinition {
     // Required:
     searchText: string;
 
     // Optional:
     exchangeId: ExchangeId | undefined;
     marketIds: readonly MarketId[] | undefined;
-    fieldIds: readonly QuerySymbolsDataDefinition.FieldId[];
+    fieldIds: readonly SearchSymbolsDataDefinition.FieldId[];
     isPartial: boolean | undefined;
     isCaseSensitive: boolean | undefined;
     preferExact: boolean | undefined;
@@ -198,7 +198,7 @@ export class QuerySymbolsDataDefinition extends MarketSubscriptionDataDefinition
     }
 }
 
-export namespace QuerySymbolsDataDefinition {
+export namespace SearchSymbolsDataDefinition {
     export const enum FieldId {
         Code,
         Name,
@@ -1017,6 +1017,6 @@ export class ZenithServerInfoDataDefinition extends PublisherSubscriptionDataDef
 
 export namespace DataDefinitionModule {
     export function initialiseStatic() {
-        QuerySymbolsDataDefinition.Field.initialise();
+        SearchSymbolsDataDefinition.Field.initialise();
     }
 }

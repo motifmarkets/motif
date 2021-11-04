@@ -13,7 +13,8 @@ import {
     IntegerCorrectnessTableGridValue,
     MarketClassificationIdMyxLitIvemAttributeCorrectnessTableGridValue,
     PercentageCorrectnessTableGridValue,
-    ShortSellTypeIdArrayMyxLitIvemAttributeCorrectnessTableGridValue, TableGridValue
+    ShortSellTypeIdArrayMyxLitIvemAttributeCorrectnessTableGridValue,
+    TableGridValue
 } from './table-grid-value';
 import { TableValueSource } from './table-value-source';
 

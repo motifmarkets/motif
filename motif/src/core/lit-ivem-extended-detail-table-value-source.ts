@@ -11,14 +11,15 @@ import {
     BooleanCorrectnessTableGridValue,
     CallOrPutIdCorrectnessTableGridValue,
     CorrectnessTableGridValue,
+    DecimalCorrectnessTableGridValue,
     DepthDirectionIdCorrectnessTableGridValue,
     ExerciseTypeIdCorrectnessTableGridValue,
     IntegerCorrectnessTableGridValue,
     PriceCorrectnessTableGridValue,
-
-    SourceTzOffsetDateCorrectnessTableGridValue, StringArrayCorrectnessTableGridValue,
-
-    StringCorrectnessTableGridValue, TableGridValue
+    SourceTzOffsetDateCorrectnessTableGridValue,
+    StringArrayCorrectnessTableGridValue,
+    StringCorrectnessTableGridValue,
+    TableGridValue
 } from './table-grid-value';
 import { TableValueSource } from './table-value-source';
 
@@ -112,7 +113,10 @@ export class LitIvemExtendedDetailTableValueSource extends TableValueSource {
                 (value as CallOrPutIdCorrectnessTableGridValue).data = this._litIvemFullDetail.callOrPutId;
                 break;
             case LitIvemFullDetail.ExtendedField.Id.ContractSize:
-                (value as IntegerCorrectnessTableGridValue).data = this._litIvemFullDetail.contractSize;
+                (value as DecimalCorrectnessTableGridValue).data = this._litIvemFullDetail.contractSize;
+                break;
+            case LitIvemFullDetail.ExtendedField.Id.LotSize:
+                (value as IntegerCorrectnessTableGridValue).data = this._litIvemFullDetail.lotSize;
                 break;
             case LitIvemFullDetail.ExtendedField.Id.Categories:
                 (value as StringArrayCorrectnessTableGridValue).data = this._litIvemFullDetail.categories;

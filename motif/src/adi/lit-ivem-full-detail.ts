@@ -34,8 +34,8 @@ export class LitIvemFullDetail extends LitIvemDetail {
     strikePrice: Decimal | undefined;
     exerciseTypeId: ExerciseTypeId | undefined;
     callOrPutId: CallOrPutId | undefined;
-    contractSize: Integer | undefined;
-    alternateCodes: LitIvemAlternateCodes | undefined;
+    contractSize: Decimal | undefined;
+    lotSize: Integer | undefined;
     attributes: LitIvemAttributes | undefined;
     tmcLegs: TmcLegs | undefined;
     categories: string[] | undefined;
@@ -53,6 +53,7 @@ export class LitIvemFullDetail extends LitIvemDetail {
         this.exerciseTypeId = change.exerciseTypeId;
         this.callOrPutId = change.callOrPutId;
         this.contractSize = change.contractSize;
+        this.lotSize = change.lotSize;
         this.alternateCodes = change.alternateCodes;
         this.attributes = change.attributes;
         this.tmcLegs = change.tmcLegs;
@@ -117,9 +118,16 @@ export class LitIvemFullDetail extends LitIvemDetail {
         }
         if (change.contractSize !== undefined) {
             const newContractSize = change.contractSize ?? undefined;
-            if (newContractSize !== this.contractSize) {
+            if (!isUndefinableDecimalEqual(newContractSize, this.contractSize)) {
                 this.contractSize = newContractSize;
                 changedFieldIds[changedCount++] = LitIvemFullDetail.ExtendedField.Id.ContractSize;
+            }
+        }
+        if (change.lotSize !== undefined) {
+            const newLotSize = change.lotSize ?? undefined;
+            if (newLotSize !== this.lotSize) {
+                this.lotSize = newLotSize;
+                changedFieldIds[changedCount++] = LitIvemFullDetail.ExtendedField.Id.LotSize;
             }
         }
         if (change.alternateCodes !== undefined) {
@@ -189,6 +197,7 @@ export namespace LitIvemFullDetail {
             // eslint-disable-next-line @typescript-eslint/no-shadow
             CallOrPutId,
             ContractSize,
+            LotSize,
             AlternateCodes,
             Attributes,
             // eslint-disable-next-line @typescript-eslint/no-shadow
@@ -259,9 +268,16 @@ export namespace LitIvemFullDetail {
             ContractSize: {
                 id: Id.ContractSize,
                 name: 'ContractSize',
-                dataTypeId: FieldDataTypeId.Integer,
+                dataTypeId: FieldDataTypeId.Decimal,
                 displayId: StringId.ExtendedLitIvemDetailDisplay_ContractSize,
                 headingId: StringId.ExtendedLitIvemDetailHeading_ContractSize,
+            },
+            LotSize: {
+                id: Id.LotSize,
+                name: 'LotSize',
+                dataTypeId: FieldDataTypeId.Integer,
+                displayId: StringId.ExtendedLitIvemDetailDisplay_LotSize,
+                headingId: StringId.ExtendedLitIvemDetailHeading_LotSize,
             },
             AlternateCodes: {
                 id: Id.AlternateCodes,
