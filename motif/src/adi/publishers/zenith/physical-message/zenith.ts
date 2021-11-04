@@ -486,6 +486,7 @@ export namespace Zenith {
             }
         }
 
+/*      // Use SearchSymbols instead.  This has been kept in case subscriptions are wanted in future
         export namespace Symbols {
             export const enum SearchField {
                 Code = 'Code',
@@ -568,6 +569,106 @@ export namespace Zenith {
                 ExerciseType?: ExerciseType;
                 CallOrPut?: CallOrPut;
                 ContractSize?: Integer;
+                Alternates?: Detail.Alternates;
+                Attributes?: Detail.Attributes;
+                Legs?: Detail.Leg[] | null;
+                Categories?: string[];
+            }
+
+            export namespace Detail {
+                export interface Alternates {
+                    Ticker?: string;
+                    GICS?: string;
+                    ISIN?: string;
+                    RIC?: string;
+                    Base?: string;
+                }
+
+                export interface Attributes {
+                    [index: string]: string | undefined;
+                }
+
+                export interface Leg {
+                    Code: string;
+                    Side: Side;
+                    Ratio: Decimal;
+                }
+            }
+        }*/
+
+        export namespace SearchSymbols {
+            export const enum SearchField {
+                Code = 'Code',
+                Name = 'Name',
+            }
+
+            export const enum ExerciseType {
+                American = 'American',
+                European = 'European',
+                Unknown = 'Unknown',
+            }
+
+            export const enum AlternateKey {
+                Ticker = 'Ticker',
+                Gics = 'GICS',
+                Isin = 'ISIN',
+                Ric = 'RIC',
+                Base = 'Base',
+            }
+
+            export const fieldSeparator = '+';
+
+            export interface Request {
+                Exchange?: string;
+                Market?: string;
+                Markets?: string[];
+                SearchText: string;
+                Field?: string;
+                IsPartial?: boolean;
+                IsCaseSensitive?: boolean;
+                PreferExact?: boolean;
+                StartIndex?: Integer;
+                Count?: Integer;
+                TargetDate?: DateTimeIso8601;
+                ShowFull?: boolean;
+                Account?: string;
+                CFI?: string;
+            }
+
+            export interface PublishMessageContainer extends RequestMessageContainer {
+                Data: Request;
+            }
+
+            export type ResponsePayload = Detail[];
+            export interface PublishPayloadMessageContainer extends ResponseUpdateMessageContainer {
+                Data: ResponsePayload;
+            }
+
+            export const enum DepthDirection {
+                BidBelowAsk = 'BidBelowAsk',
+                AskBelowBid = 'AskBelowBid',
+            }
+
+            export interface Detail {
+                Market: string;
+                Code: string;
+                Name?: string;
+                Class: SecurityClass;
+                Exchange?: string;
+                SubscriptionData: CommaString;
+                TradingMarkets: string[];
+            }
+
+            export interface FullDetail extends Detail {
+                CFI: string;
+                DepthDirection?: DepthDirection;
+                IsIndex?: boolean;
+                ExpiryDate?: DateYYYYMMDD;
+                StrikePrice?: Decimal;
+                ExerciseType?: ExerciseType;
+                CallOrPut?: CallOrPut;
+                ContractSize?: Integer;
+                LotSize?: Integer;
                 Alternates?: Detail.Alternates;
                 Attributes?: Detail.Attributes;
                 Legs?: Detail.Leg[] | null;

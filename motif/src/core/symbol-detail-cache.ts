@@ -5,7 +5,9 @@
  */
 
 import {
-    DataDefinition, DataMgr, ExchangeId,
+    DataDefinition,
+    DataMgr,
+    ExchangeId,
     ExchangeInfo,
     IvemClassId,
     IvemId,
@@ -13,11 +15,13 @@ import {
     LitIvemAttributes,
     LitIvemDetail,
     LitIvemId,
-
     MarketId,
     MarketInfo,
     OrderRoute,
-    QuerySymbolsDataDefinition, RoutedIvemId, SymbolsDataItem, ZenithSubscriptionDataId
+    RoutedIvemId,
+    SearchSymbolsDataDefinition,
+    SymbolsDataItem,
+    ZenithSubscriptionDataId
 } from 'src/adi/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
@@ -377,7 +381,7 @@ class LitIvemIdRequest extends Request {
 
 namespace LitIvemIdRequest {
     export function createDataDefinition(litIvemId: LitIvemId) {
-        const definition = new QuerySymbolsDataDefinition();
+        const definition = new SearchSymbolsDataDefinition();
         definition.marketIds = [litIvemId.litId];
         definition.searchText = litIvemId.code;
         // definition.isCaseSensitive = false;
@@ -463,7 +467,7 @@ namespace IvemIdRequest {
     export type GetLitIvemIdDetailEventHandler = (litIvemId: LitIvemId) => SymbolDetailCache.LitIvemIdDetail;
 
     export function createDataDefinition(ivemId: IvemId) {
-        const definition = new QuerySymbolsDataDefinition();
+        const definition = new SearchSymbolsDataDefinition();
         definition.exchangeId = ivemId.exchangeId;
         definition.searchText = ivemId.code;
         // definition.isCaseSensitive = false;

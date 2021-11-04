@@ -27,129 +27,72 @@
 
         @include flexRowItemsCenteredMixin;
 
-        #queryOrSubscribeSection {
-            display: none;
-            // @include horizontalRadioSeparatorMixin;
-        }
-
         #firstIconSet {
             @include flexRowItemsCenteredMixin;
             margin-left: 2em;
         }
     }
 
-    #querySection {
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        flex: 1 1 auto;
+    #parametersSection {
+        flex: 0 0 auto;
+        display: grid;
+        grid-template-columns: max-content max-content;
+        column-gap: 0.8rem;
+        row-gap: 0.5rem;
+        align-items: center;
 
-        #queryParametersSection {
-            flex: 0 0 auto;
-            display: grid;
-            grid-template-columns: max-content max-content;
-            column-gap: 0.8rem;
-            row-gap: 0.5rem;
-            align-items: center;
-
-            #exchangeSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-            }
-
-            #marketsSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-            }
-
-            #cfiControl {
-                width: 6em;
-            }
-
-            #fieldsSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-            }
-
-            #optionsSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-            }
-
-            #searchSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-
-                #searchTextSection {
-                    @include controlFollowedByIconMixin;
-                }
-
-                #pageSizeSection {
-                    @include captionFollowedByInputMixin;
-                }
-            }
+        #exchangeSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
         }
 
-        #queryResultSection {
-            flex: 1 1 auto;
+        #marketsSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
+        }
 
-            display: flex;
-            flex-direction: column;
-            height: 100%;
+        #cfiControl {
+            width: 6em;
+        }
 
-            #queryDescriptionLabel {
-                flex: 0 0 auto;
+        #fieldsSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
+        }
+
+        #optionsSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
+        }
+
+        #searchSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
+
+            #searchTextSection {
+                @include controlFollowedByIconMixin;
             }
 
-            #queryTable {
-                flex: 1 1 0;
-                min-height: 0;
+            #pageSizeSection {
+                @include captionFollowedByInputMixin;
             }
         }
     }
 
-    #subscribeSection {
+    #resultSection {
+        flex: 1 1 auto;
+
         display: flex;
         flex-direction: column;
         height: 100%;
-        flex: 1 1 auto;
 
-        #subscribeParametersSection {
-            @include controlFollowedByIconMixin;
-
-            #subscribeMarketAndClassSection {
-                @include flexRowItemsCenteredMixin;
-                @include horizontalChildrenSeparatorMixin;
-
-                #subscribeMarketSection {
-                    @include captionFollowedByInputMixin;
-
-                    #subscribeMarketControl {
-                        width: 6em;
-                    }
-                }
-
-                #classSection {
-                    @include captionFollowedByInputMixin;
-
-                    #classControl {
-                        width: 9em;
-                    }
-                }
-            }
+        #descriptionLabel {
+            flex: 0 0 auto;
         }
 
-        #subscriptionResultSection {
-            height: 100%;
-
-            #subscriptionDescriptionLabel {
-                flex: 0 0 auto;
-            }
-
-            #subscriptionTable {
-                flex: 1 1 auto;
-                height: 100%;
-            }
+        #table {
+            flex: 1 1 0;
+            min-height: 0;
         }
     }
 }

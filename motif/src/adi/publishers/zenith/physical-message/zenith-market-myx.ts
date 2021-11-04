@@ -40,7 +40,7 @@ export namespace ZenithMarketMyx {
             }
 
             export namespace Detail {
-                export interface Attributes extends Zenith.MarketController.Symbols.Detail.Attributes {
+                export interface Attributes extends Zenith.MarketController.SearchSymbols.Detail.Attributes {
                     Category: string;
                     Class: MarketClassification;
                     Delivery?: DeliveryBasis;
@@ -66,7 +66,7 @@ export namespace ZenithMarketMyx {
                     }
                 }
 
-                export interface Alternates extends Zenith.MarketController.Symbols.Detail.Alternates {
+                export interface Alternates extends Zenith.MarketController.SearchSymbols.Detail.Alternates {
                     Ticker: string;
                     ISIN?: string;
                     Base?: string;

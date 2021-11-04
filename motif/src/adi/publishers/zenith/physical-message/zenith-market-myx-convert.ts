@@ -13,7 +13,7 @@ import { ZenithMarketMyx } from './zenith-market-myx';
 export namespace ZenithMarketMyxConvert {
     export namespace Symbols {
         export namespace Attributes {
-            export function toLitIvem(value: Zenith.MarketController.Symbols.Detail.Attributes) {
+            export function toLitIvem(value: Zenith.MarketController.SearchSymbols.Detail.Attributes) {
                 const detailAttributes = value as ZenithMarketMyx.MarketController.Symbols.Detail.Attributes;
                 const keys = Object.keys(detailAttributes);
                 const result = new MyxLitIvemAttributes();

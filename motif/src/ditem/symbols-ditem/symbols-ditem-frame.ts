@@ -8,12 +8,9 @@ import {
     AdiService,
     ExchangeId,
     ExchangeInfo,
-    IvemClass,
-    IvemClassId,
     MarketId,
     MarketInfo,
-    QuerySymbolsDataDefinition,
-    SymbolsDataDefinition,
+    SearchSymbolsDataDefinition,
     SymbolsDataItem
 } from 'src/adi/internal-api';
 import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
@@ -30,23 +27,14 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class SymbolsDitemFrame extends BuiltinDitemFrame {
-    private _isQueryRequest = true;
-
     private _uiQueryRequest: SymbolsDataItemTableRecordDefinitionList.QueryRequest;
     private _querySymbolsDataItem: SymbolsDataItem;
     private _queryTableFrame: TableFrame;
-
-    private _uiSubscriptionRequest: SymbolsDataItemTableRecordDefinitionList.SubscriptionRequest;
-    private _subscriptionSymbolsDataItem: SymbolsDataItem;
-    private _subscriptionTableFrame: TableFrame;
 
     private _currentFocusedSymbolSetting: boolean;
     private _symbolApplying: boolean;
 
     private _queryShowFull: boolean;
-
-    get isQueryRequest() { return this._isQueryRequest; }
-    set isQueryRequest(value: boolean) { this._isQueryRequest = value; }
 
     get querySearchText() { return this._uiQueryRequest.searchText; }
     set querySearchText(value: string) { this._uiQueryRequest.searchText = value; }
@@ -59,7 +47,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     get queryCfi() { return this._uiQueryRequest.cfi; }
     set queryCfi(value: string | undefined) { this._uiQueryRequest.cfi = value; }
     get queryFieldIds() { return this._uiQueryRequest.fieldIds; }
-    set queryFieldIds(value: readonly QuerySymbolsDataDefinition.FieldId[] | undefined) { this._uiQueryRequest.fieldIds = value?.slice(); }
+    set queryFieldIds(value: readonly SearchSymbolsDataDefinition.FieldId[] | undefined) { this._uiQueryRequest.fieldIds = value?.slice(); }
     get queryIsPartial() { return this._uiQueryRequest.isPartial; }
     set queryIsPartial(value: boolean | undefined) { this._uiQueryRequest.isPartial = value; }
     get queryIsCaseSensitive() { return this._uiQueryRequest.isCaseSensitive; }
@@ -70,11 +58,6 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     set queryStartIndex(value: Integer | undefined) { this._uiQueryRequest.startIndex = value; }
     get queryCount() { return this._uiQueryRequest.count; }
     set queryCount(value: Integer | undefined) { this._uiQueryRequest.count = value; }
-
-    get subscriptionMarketId() { return this._uiSubscriptionRequest.marketId; }
-    set subscriptionMarketId(value: MarketId) { this._uiSubscriptionRequest.marketId = value; }
-    get subscriptionClassId() { return this._uiSubscriptionRequest.classId; }
-    set subscriptionClassId(value: IvemClassId) { this._uiSubscriptionRequest.classId = value; }
 
     get initialised() { return this._queryTableFrame !== undefined; }
 
@@ -92,12 +75,6 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
-        this._uiSubscriptionRequest = {
-            typeId: SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Subscription,
-            marketId: defaultMarketId,
-            classId: IvemClassId.Market,
-        };
-
         this._uiQueryRequest = {
             typeId: SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Query,
             searchText: '',
@@ -114,23 +91,16 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         };
     }
 
-    initialise(queryTableFrame: TableFrame, subscriptionTableFrame: TableFrame, frameElement: JsonElement | undefined): void {
+    initialise(queryTableFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._queryTableFrame = queryTableFrame;
         this._queryTableFrame.recordFocusEvent = (newRecordIndex) => this.handleQueryRecordFocusEvent(newRecordIndex);
         this._queryTableFrame.tableOpenEvent = (recordDefinitionList) => this.handleQueryTableOpenEvent(recordDefinitionList);
 
-        this._subscriptionTableFrame = subscriptionTableFrame;
-        this._subscriptionTableFrame.recordFocusEvent = (newRecordIndex) => this.handleSubscriptionRecordFocusEvent(newRecordIndex);
-        this._subscriptionTableFrame.tableOpenEvent = (recordDefinitionList) => this.handleSubscriptionTableOpenEvent(recordDefinitionList);
-
         if (frameElement === undefined) {
             this._queryTableFrame.loadLayoutConfig(undefined);
-            this._subscriptionTableFrame.loadLayoutConfig(undefined);
         } else {
             const queryContentElement = frameElement.tryGetElement(SymbolsDitemFrame.JsonName.queryContent);
             this._queryTableFrame.loadLayoutConfig(queryContentElement);
-            const subscriptionContentElement = frameElement.tryGetElement(SymbolsDitemFrame.JsonName.subscriptionContent);
-            this._subscriptionTableFrame.loadLayoutConfig(subscriptionContentElement);
         }
 
         this.applyLinked();
@@ -145,40 +115,18 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
 
         const queryContentElement = element.newElement(SymbolsDitemFrame.JsonName.queryContent);
         this._queryTableFrame.saveLayoutConfig(queryContentElement);
-        const subscriptionContentElement = element.newElement(SymbolsDitemFrame.JsonName.subscriptionContent);
-        this._subscriptionTableFrame.saveLayoutConfig(subscriptionContentElement);
     }
 
     executeQueryRequest() {
-        if (!this._isQueryRequest) {
-            throw new AssertInternalError('SDFEQR1942487792');
-        } else {
-            this.newQueryTable();
-        }
-    }
-
-    executeSubscribeRequest() {
-        if (this._isQueryRequest) {
-            throw new AssertInternalError('SDFESR1942487792');
-        } else {
-            this.newSubscriptionTable();
-        }
+        this.newQueryTable();
     }
 
     setActiveGridLayout(value: GridLayout) {
-        if (this._isQueryRequest) {
-            this._queryTableFrame.setGridLayout(value);
-        } else {
-            this._subscriptionTableFrame.setGridLayout(value);
-        }
+        this._queryTableFrame.setGridLayout(value);
     }
 
     getActiveGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap {
-        if (this._isQueryRequest) {
-            return this._queryTableFrame.getGridLayoutWithHeadersMap();
-        } else {
-            return this._subscriptionTableFrame.getGridLayoutWithHeadersMap();
-        }
+        return this._queryTableFrame.getGridLayoutWithHeadersMap();
     }
 
     private handleQueryRecordFocusEvent(newRecordIndex: Integer | undefined) {
@@ -193,31 +141,11 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         const symbolsRecordDefinitionList = recordDefinitionList as SymbolsDataItemTableRecordDefinitionList;
         this._querySymbolsDataItem = symbolsRecordDefinitionList.dataItem;
         const definition = this._querySymbolsDataItem.definition;
-        if (!(definition instanceof QuerySymbolsDataDefinition)) {
+        if (!(definition instanceof SearchSymbolsDataDefinition)) {
             throw new AssertInternalError('SDFHQTOEQ639228436');
         } else {
             const description = this.generateQueryDescription(definition);
             this._componentAccess.processQueryTableOpen(description);
-        }
-    }
-
-    private handleSubscriptionRecordFocusEvent(newRecordIndex: Integer | undefined) {
-        if (newRecordIndex !== undefined) {
-            const record = this._subscriptionSymbolsDataItem.records[newRecordIndex];
-            this.processRecordFocusChange(record);
-            this._componentAccess.processSubscriptionRecordFocusChange(newRecordIndex);
-        }
-    }
-
-    private handleSubscriptionTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const symbolsRecordDefinitionList = recordDefinitionList as SymbolsDataItemTableRecordDefinitionList;
-        this._subscriptionSymbolsDataItem = symbolsRecordDefinitionList.dataItem;
-        const definition = this._subscriptionSymbolsDataItem.definition;
-        if (!(definition instanceof SymbolsDataDefinition)) {
-            throw new AssertInternalError('SDFHQTOES639228436');
-        } else {
-            const description = this.generateSubscriptionDescription(definition);
-            this._componentAccess.processSubscriptionTableOpen(description);
         }
     }
 
@@ -233,13 +161,13 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private generateQueryDescription(definition: QuerySymbolsDataDefinition) {
+    private generateQueryDescription(definition: SearchSymbolsDataDefinition) {
         const fieldIds = definition.fieldIds;
         const fieldCount = fieldIds.length;
         const fieldDisplays = new Array<string>(fieldCount);
         for (let i = 0; i < fieldCount; i++) {
             const fieldId = fieldIds[i];
-            fieldDisplays[i] = QuerySymbolsDataDefinition.Field.idToDisplay(fieldId);
+            fieldDisplays[i] = SearchSymbolsDataDefinition.Field.idToDisplay(fieldId);
         }
         const fieldsDisplay = fieldDisplays.join();
         let result = `${Strings[StringId.Query]}: "${definition.searchText}", ${Strings[StringId.Fields]}: "${fieldsDisplay}"`;
@@ -277,12 +205,6 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         return result;
     }
 
-    private generateSubscriptionDescription(definition: SymbolsDataDefinition) {
-        const marketDisplay = MarketInfo.idToDisplay(definition.marketId);
-        const classDisplay = IvemClass.idToDisplay(definition.classId);
-        return `${Strings[StringId.Subscription]}: ${StringId.Market}: ${marketDisplay}, ${StringId.Class}: ${classDisplay}`;
-    }
-
     private newQueryTable() {
         const request = SymbolsDataItemTableRecordDefinitionList.QueryRequest.createCopy(this._uiQueryRequest);
         const keepCurrentLayout = request.showFull === this._queryShowFull;
@@ -290,23 +212,16 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         const tableDefinition = tableDefinitionFactory.createSymbolsDataItem(request);
         this._queryTableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
     }
-
-    private newSubscriptionTable() {
-        const request = SymbolsDataItemTableRecordDefinitionList.SubscriptionRequest.createCopy(this._uiSubscriptionRequest);
-        const tableDefinition = tableDefinitionFactory.createSymbolsDataItem(request);
-        this._subscriptionTableFrame.newPrivateTable(tableDefinition, true);
-    }
 }
 
 export namespace SymbolsDitemFrame {
     export namespace JsonName {
         export const queryContent = 'queryContent';
-        export const subscriptionContent = 'subscriptionContent';
     }
 
-    export type TargetFieldId = QuerySymbolsDataDefinition.FieldId;
-    export const CodeTargetFieldId = QuerySymbolsDataDefinition.FieldId.Code;
-    export const NameTargetFieldId = QuerySymbolsDataDefinition.FieldId.Name;
+    export type TargetFieldId = SearchSymbolsDataDefinition.FieldId;
+    export const CodeTargetFieldId = SearchSymbolsDataDefinition.FieldId.Code;
+    export const NameTargetFieldId = SearchSymbolsDataDefinition.FieldId.Name;
 
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined) => void;
     export type TableOpenEvent = (this: void, description: string) => void;
@@ -320,7 +235,5 @@ export namespace SymbolsDitemFrame {
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
         processQueryTableOpen(description: string): void;
         processQueryRecordFocusChange(recordIdx: Integer): void;
-        processSubscriptionTableOpen(description: string): void;
-        processSubscriptionRecordFocusChange(recordIdx: Integer): void;
     }
 }

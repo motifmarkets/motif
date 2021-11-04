@@ -522,7 +522,8 @@ export namespace SymbolsDataMessage {
         strikePrice: Decimal | undefined | null;
         exerciseTypeId: ExerciseTypeId | undefined | null;
         callOrPutId: CallOrPutId | undefined | null;
-        contractSize: Integer | undefined | null;
+        contractSize: Decimal | undefined | null;
+        lotSize: Integer | undefined | null;
         alternateCodes: LitIvemAlternateCodes | undefined | null;
         attributes: LitIvemAttributes | undefined | null;
         tmcLegs: TmcLeg[] | undefined | null;
@@ -537,7 +538,8 @@ export namespace SymbolsDataMessage {
         strikePrice: Decimal | undefined;
         exerciseTypeId: ExerciseTypeId | undefined;
         callOrPutId: CallOrPutId | undefined;
-        contractSize: Integer | undefined;
+        contractSize: Decimal | undefined;
+        lotSize: Integer | undefined;
         alternateCodes: LitIvemAlternateCodes | undefined;
         attributes: LitIvemAttributes | undefined;
         tmcLegs: TmcLeg[] | undefined;

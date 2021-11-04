@@ -14,11 +14,14 @@ import {
     DecimalDataItemTableGridField,
     EnumDataItemTableGridField,
     IntegerDataItemTableGridField,
-    SourceTzOffsetDateDataItemTableGridField, StringArrayDataItemTableGridField, StringDataItemTableGridField
+    SourceTzOffsetDateDataItemTableGridField,
+    StringArrayDataItemTableGridField,
+    StringDataItemTableGridField
 } from './table-grid-field';
 import {
     CallOrPutIdCorrectnessTableGridValue,
     CorrectnessTableGridValue,
+    DecimalCorrectnessTableGridValue,
     DepthDirectionIdCorrectnessTableGridValue,
     ExerciseTypeIdCorrectnessTableGridValue,
     IntegerCorrectnessTableGridValue,
@@ -109,6 +112,8 @@ export namespace LitIvemExtendedDetailTableFieldDefinitionSource {
                 case LitIvemFullDetail.ExtendedField.Id.CallOrPutId:
                     return [EnumDataItemTableGridField, CallOrPutIdCorrectnessTableGridValue];
                 case LitIvemFullDetail.ExtendedField.Id.ContractSize:
+                    return [DecimalDataItemTableGridField, DecimalCorrectnessTableGridValue];
+                case LitIvemFullDetail.ExtendedField.Id.LotSize:
                     return [IntegerDataItemTableGridField, IntegerCorrectnessTableGridValue];
                 case LitIvemFullDetail.ExtendedField.Id.Categories:
                     return [StringArrayDataItemTableGridField, StringArrayCorrectnessTableGridValue];

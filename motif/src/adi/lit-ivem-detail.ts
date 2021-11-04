@@ -10,6 +10,7 @@ import {
     ExchangeId,
     FieldDataTypeId,
     IvemClassId,
+    LitIvemAlternateCodes,
     LitIvemId,
     MarketId,
     SymbolsDataMessage,
@@ -23,6 +24,7 @@ export class LitIvemDetail {
     tradingMarketIds: MarketId[];
     name: string;
     exchangeId: ExchangeId;
+    alternateCodes: LitIvemAlternateCodes | undefined; // Currently this actually is part of FullDetail.  Will be here in future
 
     private _baseChangeEvent = new MultiEvent<LitIvemDetail.BaseChangeEventHandler>();
 
@@ -96,7 +98,7 @@ export class LitIvemDetail {
     }
 
     unsubscribeBaseChangeEvent(subscriptionId: MultiEvent.SubscriptionId) {
-         this._baseChangeEvent.unsubscribe(subscriptionId);
+        this._baseChangeEvent.unsubscribe(subscriptionId);
     }
 
     private notifyBaseChange(changedFieldIds: LitIvemDetail.BaseField.Id[]) {

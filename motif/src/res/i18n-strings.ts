@@ -1389,6 +1389,8 @@ export const enum StringId {
     ExtendedLitIvemDetailHeading_CallOrPutId,
     ExtendedLitIvemDetailDisplay_ContractSize,
     ExtendedLitIvemDetailHeading_ContractSize,
+    ExtendedLitIvemDetailDisplay_LotSize,
+    ExtendedLitIvemDetailHeading_LotSize,
     ExtendedLitIvemDetailDisplay_AlternateCodes,
     ExtendedLitIvemDetailHeading_AlternateCodes,
     ExtendedLitIvemDetailDisplay_Attributes,
@@ -8674,6 +8676,16 @@ export namespace I18nStrings {
         ExtendedLitIvemDetailHeading_ContractSize: {
             id: StringId.ExtendedLitIvemDetailHeading_ContractSize, translations: {
                 en: 'Contract Size',
+            }
+        },
+        ExtendedLitIvemDetailDisplay_LotSize: {
+            id: StringId.ExtendedLitIvemDetailDisplay_LotSize, translations: {
+                en: 'Lot Size',
+            }
+        },
+        ExtendedLitIvemDetailHeading_LotSize: {
+            id: StringId.ExtendedLitIvemDetailHeading_LotSize, translations: {
+                en: 'Lot Size',
             }
         },
         ExtendedLitIvemDetailDisplay_AlternateCodes: {

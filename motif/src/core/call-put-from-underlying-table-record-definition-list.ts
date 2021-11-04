@@ -4,11 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, CallOrPutId, IvemId, QuerySymbolsDataDefinition, SymbolsDataItem } from 'src/adi/internal-api';
+import { Decimal } from 'decimal.js-light';
+import { AdiService, CallOrPutId, IvemId, SearchSymbolsDataDefinition, SymbolsDataItem } from 'src/adi/internal-api';
 import {
     AssertInternalError,
     Badness,
     Integer,
+    isDecimalEqual,
     JsonElement,
     Logger,
     MultiEvent,
@@ -51,7 +53,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
     }
 
     override activate() {
-        const definition = new QuerySymbolsDataDefinition();
+        const definition = new SearchSymbolsDataDefinition();
 
         if (this._underlyingIvemId !== undefined) {
             definition.underlyingIvemId = this._underlyingIvemId;
@@ -253,7 +255,7 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
                     Logger.logDataError('CPFUTSCCPFKASC44477', symbolInfo.litIvemId.name);
                     return undefined;
                 } else {
-                    result.contractMultiplier = contractMultipler;
+                    result.contractMultiplier = new Decimal(contractMultipler);
                     // currently do not need underlyingIvemId or underlyingIsIndex
                     return result;
                 }
@@ -305,10 +307,10 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
                 Logger.logDataError('CPUATSUPCPFSM48865', litIvemId.name);
             } else {
                 if (callPut.contractMultiplier === undefined) {
-                    callPut.contractMultiplier = contractMultiplier;
+                    callPut.contractMultiplier = new Decimal(contractMultiplier);
                     Logger.logDataError('CPUATSUPCPFSU33285', litIvemId.name);
                 } else {
-                    if (callPut.contractMultiplier !== contractMultiplier) {
+                    if (!isDecimalEqual(callPut.contractMultiplier, contractMultiplier)) {
                         Logger.logDataError('CPUATSUPCPFSL32238', `${litIvemId.name} ${callPut.contractMultiplier} ${contractMultiplier}`);
                     }
                 }
