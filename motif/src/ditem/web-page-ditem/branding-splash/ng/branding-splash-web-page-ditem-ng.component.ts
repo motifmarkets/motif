@@ -9,7 +9,7 @@ import { WebPageDitemNgComponentBaseNgDirective } from '../../ng/web-page-ditem-
 import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-ditem-frame';
 
 @Component({
-    selector: 'app-branding-splash-web-page-ditem-ng',
+    selector: 'app-branding-splash-web-page-ditem',
     templateUrl: './branding-splash-web-page-ditem-ng.component.html',
     styleUrls: ['./branding-splash-web-page-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

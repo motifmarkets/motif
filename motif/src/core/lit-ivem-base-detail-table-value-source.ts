@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemDetail, SymbolsDataItem } from 'src/adi/internal-api';
+import { LitIvemAlternateCodes, LitIvemDetail, SymbolsDataItem } from 'src/adi/internal-api';
 import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 import { LitIvemBaseDetailTableFieldDefinitionSource } from './lit-ivem-base-detail-table-field-definition-source';
 import {
@@ -111,6 +111,11 @@ export class LitIvemBaseDetailTableValueSource extends TableValueSource {
                 break;
             case LitIvemDetail.BaseField.Id.ExchangeId:
                 (value as ExchangeIdCorrectnessTableGridValue).data = this._litIvemDetail.exchangeId;
+                break;
+            case LitIvemDetail.BaseField.Id.AlternateCodes:
+                const alternateCodes = this._litIvemDetail.alternateCodes;
+                const data = (alternateCodes === undefined) ? '' : LitIvemAlternateCodes.toDisplay(alternateCodes);
+                (value as StringCorrectnessTableGridValue).data = data;
                 break;
             default:
                 throw new UnreachableCaseError('LIBDTVSLV577555493', id);

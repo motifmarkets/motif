@@ -7,6 +7,7 @@
 import { AssertInternalError, Integer, JsonElement, Logger, MultiEvent } from 'src/sys/internal-api';
 import { ColorSettings } from './color-settings';
 import { CoreSettings } from './core-settings';
+import { ExchangesSettings } from './exchanges-settings';
 import { MasterSettings } from './master-settings';
 import { SettingsGroup } from './settings-group';
 
@@ -23,6 +24,7 @@ export class SettingsService {
     private _master: MasterSettings; // not registered
     private _core: CoreSettings;
     private _color: ColorSettings;
+    private _exchanges: ExchangesSettings;
 
     private _masterChangedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
     private _changedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
@@ -31,6 +33,7 @@ export class SettingsService {
     get restartRequired() { return this._restartRequired; }
     get master() { return this._master; }
     get core() { return this._core; }
+    get exchanges() { return this._exchanges; }
     get color() { return this._color; }
 
     constructor() {
@@ -45,6 +48,7 @@ export class SettingsService {
         this.register(this._core);
         this._color = new ColorSettings();
         this.register(this._color);
+        this._exchanges = new ExchangesSettings();
     }
 
     register(group: SettingsGroup) {

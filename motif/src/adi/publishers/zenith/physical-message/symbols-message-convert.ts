@@ -97,7 +97,7 @@ export namespace SymbolsMessageConvert {
 
         const result: Zenith.MarketController.SearchSymbols.PublishMessageContainer = {
             Controller: Zenith.MessageContainer.Controller.Market,
-            Topic: Zenith.MarketController.TopicName.QuerySymbols,
+            Topic: Zenith.MarketController.TopicName.SearchSymbols,
             Action: Zenith.MessageContainer.Action.Publish,
             TransactionID: PublisherRequest.getNextTransactionId(),
             Data: {
@@ -146,7 +146,7 @@ export namespace SymbolsMessageConvert {
             if (actionId !== ZenithConvert.MessageContainer.Action.Id.Publish) {
                 throw new ZenithDataError(ExternalError.Code.SMCPMD558382000, actionId.toString(10));
             } else {
-                if (message.Topic !== Zenith.MarketController.TopicName.QuerySymbols) {
+                if (message.Topic !== Zenith.MarketController.TopicName.SearchSymbols) {
                     throw new ZenithDataError(ExternalError.Code.SMCPMP5885239991, message.Topic);
                 } else {
                     const publishMsg = message as Zenith.MarketController.SearchSymbols.PublishPayloadMessageContainer;
@@ -283,7 +283,7 @@ export namespace SymbolsMessageConvert {
                     callOrPutId: ifDefined(detail.CallOrPut, x => ZenithConvert.CallOrPut.toId(x)),
                     contractSize: newUndefinableDecimal(detail.ContractSize),
                     lotSize: detail.LotSize,
-                    alternateCodes: parseAlternates(exchangeId, detail.Alternates),
+                    alternateCodes: parseAlternates(exchangeId, detail.Alternate),
                     attributes: parseAttributes(exchangeId, detail.Attributes),
                     tmcLegs: detail.Legs === null ? undefined : parseLegs(detail.Legs),
                     categories: detail.Categories,

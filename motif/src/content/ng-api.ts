@@ -5,15 +5,16 @@
  */
 
 export * from './cash-holdings/ng-api';
+export * from './color-controls/ng-api';
 export * from './color-scheme-grid/ng-api';
 export * from './color-scheme-item-properties/ng-api';
 export * from './color-scheme-preset-code/ng-api';
-export * from './color-controls/ng-api';
 export * from './content-grid-layout-editor/ng-api';
 export * from './delayed-badness/ng-api';
 export * from './depth-grid-layouts-editor/ng-api';
 export * from './depth-side/ng-api';
 export * from './depth/ng-api';
+export * from './exchange-settings/ng-api';
 export * from './extensions/ng-api';
 export * from './feeds/ng-api';
 export * from './grid-column-properties/ng-api';

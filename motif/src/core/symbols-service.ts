@@ -9,6 +9,7 @@ import {
     ExchangeId,
     ExchangeInfo,
     IvemId,
+    LitIvemDetail,
     LitIvemId,
     MarketId,
     MarketInfo,
@@ -16,7 +17,8 @@ import {
     MarketsDataDefinition,
     MarketsDataItem,
     OrderRoute,
-    RoutedIvemId
+    RoutedIvemId,
+    SearchSymbolsDataDefinition
 } from 'src/adi/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
@@ -33,6 +35,7 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
+import { ExchangeSettings } from './internal-api';
 import { CoreSettings } from './settings/core-settings';
 import { SettingsService } from './settings/settings-service';
 
@@ -40,6 +43,7 @@ export class SymbolsService {
     private _finalised = false;
 
     private _coreSettings: CoreSettings;
+    private _exchangeSettingsArray: ExchangeSettings[];
     private _marketsDataItem: MarketsDataItem;
 
     private _defaultDefaultExchangeId = ExchangeId.Asx;
@@ -136,12 +140,13 @@ export class SymbolsService {
 
     constructor(private _settingsService: SettingsService, private _adi: AdiService) {
         this._coreSettings = this._settingsService.core;
+        this._exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedEventSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.handleSettingsChangedEvent()
         );
 
-       this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
-       this._pscMarketMap = new SymbolsService.PscMarketMap();
+        this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
+        this._pscMarketMap = new SymbolsService.PscMarketMap();
     }
 
     start() {
@@ -346,6 +351,58 @@ export class SymbolsService {
         const route = routedIvemId.route;
         const litId = route.getBestLitMarketId();
         return LitIvemId.createFromCodeMarket(routedIvemId.ivemId.code, litId);
+    }
+
+    calculateSymbolName(detail: LitIvemDetail) {
+        const exchangeId = detail.exchangeId;
+        const fieldId = this._exchangeSettingsArray[exchangeId].symbolNameFieldId;
+        if (fieldId === SearchSymbolsDataDefinition.FieldId.Name) {
+            return detail.name;
+        } else {
+            const alternateCodes = detail.alternateCodes;
+            if (alternateCodes === undefined) {
+                return detail.name;
+            } else {
+                if (fieldId === SearchSymbolsDataDefinition.FieldId.Ticker) {
+                    const ticker = alternateCodes.ticker;
+                    if (ticker === undefined) {
+                        return detail.name;
+                    } else {
+                        return ticker;
+                    }
+                } else {
+                    let result: string | undefined;
+                    switch (fieldId) {
+                        case SearchSymbolsDataDefinition.FieldId.Code: {
+                            result = detail.litIvemId.code;
+                            break;
+                        }
+                        case SearchSymbolsDataDefinition.FieldId.Isin: {
+                            result = alternateCodes.isin;
+                            break;
+                        }
+                        case SearchSymbolsDataDefinition.FieldId.Ric: {
+                            result = alternateCodes.ric;
+                            break;
+                        }
+                        case SearchSymbolsDataDefinition.FieldId.Base: {
+                            result = alternateCodes.base;
+                            break;
+                        }
+                        case SearchSymbolsDataDefinition.FieldId.Gics: {
+                            result = alternateCodes.gics;
+                            break;
+                        }
+                        default:
+                            result = detail.name;
+                    }
+                    if (result === undefined) {
+                        result = detail.name;
+                    }
+                    return result;
+                }
+            }
+        }
     }
 
     tryGetBestRoutedIvemIdFromLitIvemId(litIvemId: LitIvemId) {

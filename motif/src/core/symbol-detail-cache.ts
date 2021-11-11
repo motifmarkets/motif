@@ -40,7 +40,7 @@ export class SymbolDetailCache {
     private _litIvemIdMap: LitIvemIdMap = new Map<MapKey, SymbolDetailCache.LitIvemIdDetail>();
     private _ivemIdMap: IvemIdMap = new Map<MapKey, SymbolDetailCache.IvemIdDetail>();
 
-    constructor(private _dataMgr: DataMgr) { }
+    constructor(private readonly _dataMgr: DataMgr, private readonly _symbolsService: SymbolsService) { }
 
     finalise() {
         this.clear();
@@ -109,6 +109,7 @@ export class SymbolDetailCache {
             tradingMarketIds: litIvemDetail.tradingMarketIds,
             name: litIvemDetail.name,
             exchangeId: litIvemDetail.exchangeId,
+            alternateCodes: litIvemDetail.alternateCodes,
         };
         this._litIvemIdMap.set(litIvemId.mapKey, litIvemIdDetail);
     }
@@ -142,7 +143,9 @@ export class SymbolDetailCache {
         if (detail === undefined) {
             detail = this.createEmptyIvemIdDetail(ivemId);
             this._ivemIdMap.set(key, detail);
-            request = new IvemIdRequest(this._dataMgr, detail, (litIvemId) => this.handleGetLitIvemIdDetailEvent(litIvemId) );
+            request = new IvemIdRequest(this._dataMgr, this._symbolsService, detail,
+                (litIvemId) => this.handleGetLitIvemIdDetailEvent(litIvemId)
+            );
             detail.request = request;
         } else {
             const possiblyUndefinedRequest = detail.request;
@@ -162,6 +165,53 @@ export class SymbolDetailCache {
     clear() {
         this.clearIvemIds();
         this.clearLitIvemIds();
+    }
+
+    createRoutedIvemIdDetail(routedIvemId: RoutedIvemId) {
+        const route = routedIvemId.route;
+        const ivemId = routedIvemId.ivemId;
+        let marketId: MarketId;
+        if (OrderRoute.isMarketRoute(route)) {
+            marketId = route.marketId;
+        } else {
+            marketId = route.getBestLitMarketId();
+        }
+
+        const litIvemName = this._symbolsService.routedIvemIdToDisplay(routedIvemId);
+
+        const litIvemIdDetail: SymbolDetailCache.LitIvemIdDetail = {
+            valid: true,
+            validUntil: SysTick.now(),
+            errorText: undefined,
+            request: undefined,
+            exists: true,
+            litIvemId: LitIvemId.createFromCodeMarket(ivemId.code, marketId),
+            ivemClassId: IvemClassId.Unknown,
+            subscriptionDataIds: [],
+            tradingMarketIds: [marketId],
+            name: litIvemName, // symbolsService.routedIvemIdToDisplay(routedIvemId),
+            exchangeId: MarketInfo.idToExchangeId(marketId),
+            alternateCodes : {
+                ticker: litIvemName,
+                base: undefined,
+                gics: undefined,
+                isin: undefined,
+                ric: undefined,
+            }
+        };
+
+        const ivemIdDetail: SymbolDetailCache.IvemIdDetail = {
+            valid: true,
+            validUntil: SysTick.now(),
+            errorText: undefined,
+            request: undefined,
+            exists: true,
+            ivemId,
+            litIvemIdDetails: [litIvemIdDetail],
+            name: this._symbolsService.ivemIdToDisplay(routedIvemId.ivemId),
+        };
+
+        return ivemIdDetail;
     }
 
     private clearLitIvemIds() {
@@ -206,6 +256,7 @@ export class SymbolDetailCache {
             tradingMarketIds: [],
             name: '',
             exchangeId: ExchangeId.Calastone,
+            alternateCodes: undefined,
 
             // depthDirectionId: undefined,
             // isIndex: undefined,
@@ -229,9 +280,7 @@ export class SymbolDetailCache {
             valid: false,
             exists: false,
             errorText: undefined,
-
             ivemId,
-
             name: undefined,
             litIvemIdDetails: [],
         };
@@ -387,7 +436,7 @@ namespace LitIvemIdRequest {
         // definition.isCaseSensitive = false;
         definition.isPartial = false;
         definition.preferExact = true;
-        definition.showFull = false;
+        definition.showFull = true; // AlternateCodesFix: should be false
         return definition;
     }
 }
@@ -397,7 +446,10 @@ class IvemIdRequest extends Request {
 
     get detail() { return this._detail; }
 
-    constructor(dataMgr: DataMgr, private _detail: SymbolDetailCache.IvemIdDetail,
+    constructor(
+        dataMgr: DataMgr,
+        private readonly _symbolsService: SymbolsService,
+        private readonly _detail: SymbolDetailCache.IvemIdDetail,
         private _getLitIvemIdDetailEvent: IvemIdRequest.GetLitIvemIdDetailEventHandler
     ) {
         super(dataMgr, IvemIdRequest.createDataDefinition(_detail.ivemId));
@@ -436,7 +488,7 @@ class IvemIdRequest extends Request {
                 const record = records[i];
                 const litIvemId = record.litIvemId;
                 if (litIvemId.litId === defaultMarketId) {
-                    detail.name = record.name;
+                    detail.name = this._symbolsService.calculateSymbolName(record);
                 }
                 const litIvemIdDetail = this._getLitIvemIdDetailEvent(litIvemId);
                 // detail may or may not already be populated.  Populate again to be sure
@@ -447,7 +499,7 @@ class IvemIdRequest extends Request {
             }
 
             if (detail.name === undefined) {
-                detail.name = records[0].name;
+                detail.name = this._symbolsService.calculateSymbolName(records[0]);
             }
 
             detail.exists = true;
@@ -502,6 +554,7 @@ export namespace SymbolDetailCache {
         tradingMarketIds: MarketId[];
         name: string;
         exchangeId: ExchangeId;
+        alternateCodes: AlternateCodes | undefined;
 
         // depthDirectionId: DepthDirectionId | undefined;
         // isIndex: boolean | undefined;
@@ -510,7 +563,6 @@ export namespace SymbolDetailCache {
         // exerciseTypeId: ExerciseTypeId | undefined;
         // callOrPutId: CallOrPutId | undefined;
         // contractSize: Integer | undefined;
-        // alternateCodes: AlternateCodes | undefined;
         // attributes: Attributes | undefined;
         // tmcLegs: TmcLegs | undefined;
     }
@@ -526,6 +578,7 @@ export namespace SymbolDetailCache {
             detail.tradingMarketIds = record.tradingMarketIds;
             detail.name = record.name;
             detail.exchangeId = record.exchangeId;
+            detail.alternateCodes = record.alternateCodes;
             // detail.depthDirectionId = record.depthDirectionId;
             // detail.isIndex = record.isIndex;
             // detail.expiryDate = record.expiryDate;
@@ -566,43 +619,6 @@ export namespace SymbolDetailCache {
                 return tradingMarketIds;
             }
         }
-    }
-
-    export function createRoutedIvemIdDetail(routedIvemId: RoutedIvemId, symbolsService: SymbolsService) {
-        const route = routedIvemId.route;
-        let marketId: MarketId;
-        if (OrderRoute.isMarketRoute(route)) {
-            marketId = route.marketId;
-        } else {
-            marketId = route.getBestLitMarketId();
-        }
-        const litIvemIdDetail: LitIvemIdDetail = {
-            valid: true,
-            validUntil: SysTick.now(),
-            errorText: undefined,
-            request: undefined,
-            exists: true,
-            litIvemId: symbolsService.getBestLitIvemIdFromRoutedIvemId(routedIvemId),
-            ivemClassId: IvemClassId.Unknown,
-            subscriptionDataIds: [],
-            tradingMarketIds: [marketId],
-            name: symbolsService.routedIvemIdToDisplay(routedIvemId),
-            exchangeId: MarketInfo.idToExchangeId(marketId),
-        };
-
-        const ivemId = routedIvemId.ivemId;
-        const ivemIdDetail: IvemIdDetail = {
-            valid: true,
-            validUntil: SysTick.now(),
-            errorText: undefined,
-            request: undefined,
-            exists: true,
-            ivemId,
-            litIvemIdDetails: [litIvemIdDetail],
-            name: symbolsService.ivemIdToDisplay(ivemId),
-        };
-
-        return ivemIdDetail;
     }
 }
 

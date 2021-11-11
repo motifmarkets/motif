@@ -143,14 +143,35 @@ export namespace ZenithMarketMyxConvert {
         }
 
         export namespace Alternates {
-            export function toAdi(value: ZenithMarketMyx.MarketController.Symbols.Detail.Alternates) {
-                const result: LitIvemAlternateCodes = {
-                    ticker: value.Ticker,
-                    gics: value.GICS,
-                    isin: value.ISIN,
-                    ric: value.RIC,
-                    base: value.Base,
-                };
+            export function toAdi(alternates: ZenithMarketMyx.MarketController.Symbols.Detail.Alternates) {
+                const result: LitIvemAlternateCodes = {};
+
+                for (let [key, value] of Object.entries(alternates)) {
+                    switch (key) {
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Ticker: {
+                            result.ticker = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Gics: {
+                            result.gics = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Isin: {
+                            result.isin = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Ric: {
+                            result.ric = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Base: {
+                            result.base = value;
+                            break;
+                        }
+                        default:
+                            result[key] = value;
+                    }
+                }
                 return result;
             }
         }

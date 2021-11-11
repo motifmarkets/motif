@@ -394,7 +394,8 @@ export namespace Zenith {
             QueryTradingStates = 'QueryTradingStates',
             Markets = 'Markets',
             QueryMarkets = 'QueryMarkets',
-            QuerySymbols = 'QuerySymbols',
+            // QuerySymbols = 'QuerySymbols',
+            SearchSymbols = 'SearchSymbols',
             Symbols = 'Symbols',
             Security = 'Security',
             QuerySecurity = 'QuerySecurity',
@@ -669,7 +670,7 @@ export namespace Zenith {
                 CallOrPut?: CallOrPut;
                 ContractSize?: Integer;
                 LotSize?: Integer;
-                Alternates?: Detail.Alternates;
+                Alternate?: Detail.Alternates;
                 Attributes?: Detail.Attributes;
                 Legs?: Detail.Leg[] | null;
                 Categories?: string[];

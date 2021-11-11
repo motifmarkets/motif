@@ -636,7 +636,7 @@ export namespace RoutedIvemIdSelectNgComponent {
             definition.marketIds = marketIds;
             definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
             definition.isPartial = true;
-            definition.showFull = false;
+            definition.showFull = true; // AlternateCodesFix: should be false
             definition.isCaseSensitive = false;
             definition.count = 100;
             this._dataItem = this._adiService.subscribe(definition) as SymbolsDataItem;

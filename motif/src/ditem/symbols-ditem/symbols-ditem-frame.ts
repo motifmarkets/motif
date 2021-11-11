@@ -96,12 +96,12 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         this._queryTableFrame.recordFocusEvent = (newRecordIndex) => this.handleQueryRecordFocusEvent(newRecordIndex);
         this._queryTableFrame.tableOpenEvent = (recordDefinitionList) => this.handleQueryTableOpenEvent(recordDefinitionList);
 
-        if (frameElement === undefined) {
+        // if (frameElement === undefined) {
             this._queryTableFrame.loadLayoutConfig(undefined);
-        } else {
-            const queryContentElement = frameElement.tryGetElement(SymbolsDitemFrame.JsonName.queryContent);
-            this._queryTableFrame.loadLayoutConfig(queryContentElement);
-        }
+        // } else {
+        //     const queryContentElement = frameElement.tryGetElement(SymbolsDitemFrame.JsonName.queryContent);
+        //     this._queryTableFrame.loadLayoutConfig(queryContentElement);
+        // }
 
         this.applyLinked();
     }

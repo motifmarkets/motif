@@ -103,6 +103,8 @@ export namespace LitIvemBaseDetailTableFieldDefinitionSource {
                     return [StringDataItemTableGridField, StringCorrectnessTableGridValue];
                 case LitIvemDetail.BaseField.Id.ExchangeId:
                     return [EnumDataItemTableGridField, ExchangeIdCorrectnessTableGridValue];
+                case LitIvemDetail.BaseField.Id.AlternateCodes:
+                    return [StringDataItemTableGridField, StringCorrectnessTableGridValue];
                 default:
                     throw new UnreachableCaseError('LIBDTFDSFITTGC2039994', id);
             }

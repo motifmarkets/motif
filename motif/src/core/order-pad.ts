@@ -2324,7 +2324,7 @@ export class OrderPad {
                     this.setRoutedIvemIdSymbolDetail(value, ivemIdSymbolDetail);
                 } else {
                     // Create a temporary IvemIdSymbolDetail so that errors are suppressed while real IvemIdSymbolDetail is retrieved
-                    this._ivemIdSymbolDetail = SymbolDetailCache.createRoutedIvemIdDetail(value, this._symbolsService);
+                    this._ivemIdSymbolDetail = symbolDetailCache.createRoutedIvemIdDetail(value);
                     const promise = symbolDetailCache.getIvemId(value.ivemId, true);
                     promise.then(
                         (detail) => {

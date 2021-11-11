@@ -33,6 +33,7 @@ export namespace SettingsDitemFrame {
         General,
         Grid,
         OrderPad,
+        Exchanges,
         Color,
     }
 }

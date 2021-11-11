@@ -5,7 +5,7 @@
  */
 
 import { StringId, Strings } from 'src/res/internal-api';
-import { dateToUtcYYYYMMDD, EnumInfoOutOfOrderError, Integer, MapKey } from 'src/sys/internal-api';
+import { CommaText, dateToUtcYYYYMMDD, EnumInfoOutOfOrderError, Integer, MapKey } from 'src/sys/internal-api';
 import {
     BrokerageAccountId,
     ChartIntervalId,
@@ -216,6 +216,7 @@ export namespace SearchSymbolsDataDefinition {
 
         interface Info {
             id: Id;
+            jsonValue: string;
             displayId: StringId;
             descriptionId: StringId;
         }
@@ -225,36 +226,43 @@ export namespace SearchSymbolsDataDefinition {
         const infoObject: InfoObject = {
             Code: {
                 id: FieldId.Code,
+                jsonValue: 'Code',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Code,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Code,
             },
             Name: {
                 id: FieldId.Name,
+                jsonValue: 'Name',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Name,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Name,
             },
             Ticker: {
                 id: FieldId.Ticker,
+                jsonValue: 'Ticker',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ticker,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ticker,
             },
             Gics: {
                 id: FieldId.Gics,
+                jsonValue: 'Gics',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Gics,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Gics,
             },
             Isin: {
                 id: FieldId.Isin,
+                jsonValue: 'Isin',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Isin,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Isin,
             },
             Base: {
                 id: FieldId.Base,
+                jsonValue: 'Base',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Base,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Base,
             },
             Ric: {
                 id: FieldId.Ric,
+                jsonValue: 'Ric',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ric,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ric,
             },
@@ -267,6 +275,19 @@ export namespace SearchSymbolsDataDefinition {
             return infos[id].displayId;
         }
 
+        export function idToJsonValue(id: Id) {
+            return infos[id].jsonValue;
+        }
+
+        export function tryJsonValueToId(jsonValue: string) {
+            for (let id = 0; id < idCount; id++) {
+                if (infos[id].jsonValue === jsonValue) {
+                    return id;
+                }
+            }
+            return undefined;
+        }
+
         export function idToDisplay(id: Id) {
             return Strings[idToDisplayId(id)];
         }
@@ -277,6 +298,38 @@ export namespace SearchSymbolsDataDefinition {
 
         export function idToDescription(id: Id) {
             return Strings[idToDescriptionId(id)];
+        }
+
+        export function idArrayToJsonValue(idArray: Id[]) {
+            const count = idArray.length;
+            const stringArray = new Array<string>(count);
+            for (let i = 0; i < count; i++) {
+                const id = idArray[i];
+                stringArray[i] = idToJsonValue(id);
+            }
+            return CommaText.fromStringArray(stringArray);
+        }
+
+        export function tryJsonValueToIdArray(value: string) {
+            const toStringArrayResult = CommaText.toStringArrayWithResult(value);
+            if (!toStringArrayResult.success) {
+                return undefined;
+            } else {
+                const stringArray = toStringArrayResult.array;
+                const count = stringArray.length;
+                const result = new Array<Id>(count);
+                for (let i = 0; i < count; i++) {
+                    const jsonValue = stringArray[i];
+                    const id = tryJsonValueToId(jsonValue);
+                    if (id === undefined) {
+                        return undefined;
+                    } else {
+                        result[i] = id;
+                    }
+                }
+
+                return result;
+            }
         }
 
         export function initialise() {

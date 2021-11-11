@@ -165,7 +165,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                     `${Strings[StringId.Trading]}: ${tradingMarketsText}`;
 
                 if (nameIncluded) {
-                    const name = detail.name;
+                    const name = this._symbolsService.calculateSymbolName(detail);
                     result = `${name === undefined ? '' : name}\n` + result;
                 }
 
@@ -176,7 +176,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
     getItemDetailName(item: LitIvemIdSelectNgComponent.Item) {
         const detail = item.detail;
-        return detail === undefined ? '' : detail.name === undefined ? '' : detail.name;
+        return detail === undefined ? '' : detail.name === undefined ? '' : this._symbolsService.calculateSymbolName(detail);
     }
 
     public handleSelectChangeEvent(event: unknown) {
@@ -282,7 +282,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                 maxBoldIdWidth = boldIdMetrics.width;
             }
             if (item.detail !== undefined) {
-                const name = item.detail.name;
+                const name = this._symbolsService.calculateSymbolName(item.detail);
                 const nameMetrics = this._measureCanvasContext.measureText(name);
                 if (nameMetrics.width > maxNameWidth) {
                     maxNameWidth = nameMetrics.width;
@@ -556,7 +556,8 @@ export namespace LitIvemIdSelectNgComponent {
         } else {
             name = `<${Strings[StringId.SymbolNotFound]}>`;
         }
-        const addUpdateChange: SymbolsDataMessage.AddUpdateChange = {
+        // should be AddUpdateChange - review when AddUpdateChange includes AlternateCodes
+        const addUpdateChange: SymbolsDataMessage.AddChange = {
             typeId: AurcChangeTypeId.Add,
             litIvemId,
             ivemClassId: cacheDetail.ivemClassId,
@@ -564,6 +565,19 @@ export namespace LitIvemIdSelectNgComponent {
             tradingMarketIds: cacheDetail.tradingMarketIds,
             name,
             exchangeId: cacheDetail.exchangeId,
+            alternateCodes: cacheDetail.alternateCodes,
+            cfi: undefined,
+            depthDirectionId: undefined,
+            isIndex: undefined,
+            expiryDate: undefined,
+            strikePrice: undefined,
+            exerciseTypeId: undefined,
+            callOrPutId: undefined,
+            contractSize: undefined,
+            lotSize: undefined,
+            attributes: undefined,
+            tmcLegs: undefined,
+            categories: undefined,
         };
 
         return new LitIvemDetail(addUpdateChange);
@@ -698,7 +712,7 @@ export namespace LitIvemIdSelectNgComponent {
             definition.marketIds = this._term.marketId === undefined ? undefined : [this._term.marketId];
             definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
             definition.isPartial = true;
-            definition.showFull = false;
+            definition.showFull = true; // AlternateCodesFix: should be false
             definition.isCaseSensitive = false;
             definition.count = 100;
             this._dataItem = this._adiService.subscribe(definition) as SymbolsDataItem;
@@ -732,9 +746,7 @@ export namespace LitIvemIdSelectNgComponent {
         }
 
         private processDataItemIncubated(dataItem: SymbolsDataItem) {
-            if (dataItem.error) {
-                this._observer.error(dataItem.errorText);
-            } else {
+            if (dataItem.usable) {
                 const records = dataItem.records;
                 const count = records.length;
                 const items = new Array<Item>(count);

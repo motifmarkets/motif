@@ -1375,6 +1375,8 @@ export const enum StringId {
     BaseLitIvemDetailHeading_Name,
     BaseLitIvemDetailDisplay_ExchangeId,
     BaseLitIvemDetailHeading_ExchangeId,
+    BaseLitIvemDetailDisplay_AlternateCodes,
+    BaseLitIvemDetailHeading_AlternateCodes,
     ExtendedLitIvemDetailDisplay_DepthDirectionId,
     ExtendedLitIvemDetailHeading_DepthDirectionId,
     ExtendedLitIvemDetailDisplay_IsIndex,
@@ -1391,8 +1393,6 @@ export const enum StringId {
     ExtendedLitIvemDetailHeading_ContractSize,
     ExtendedLitIvemDetailDisplay_LotSize,
     ExtendedLitIvemDetailHeading_LotSize,
-    ExtendedLitIvemDetailDisplay_AlternateCodes,
-    ExtendedLitIvemDetailHeading_AlternateCodes,
     ExtendedLitIvemDetailDisplay_Attributes,
     ExtendedLitIvemDetailHeading_Attributes,
     ExtendedLitIvemDetailDisplay_TmcLegs,
@@ -8608,6 +8608,16 @@ export namespace I18nStrings {
                 en: 'Exchange',
             }
         },
+        BaseLitIvemDetailDisplay_AlternateCodes: {
+            id: StringId.BaseLitIvemDetailDisplay_AlternateCodes, translations: {
+                en: 'Alternate Codes',
+            }
+        },
+        BaseLitIvemDetailHeading_AlternateCodes: {
+            id: StringId.BaseLitIvemDetailHeading_AlternateCodes, translations: {
+                en: 'Alternate Codes',
+            }
+        },
         ExtendedLitIvemDetailDisplay_DepthDirectionId: {
             id: StringId.ExtendedLitIvemDetailDisplay_DepthDirectionId, translations: {
                 en: 'Depth Direction',
@@ -8686,16 +8696,6 @@ export namespace I18nStrings {
         ExtendedLitIvemDetailHeading_LotSize: {
             id: StringId.ExtendedLitIvemDetailHeading_LotSize, translations: {
                 en: 'Lot Size',
-            }
-        },
-        ExtendedLitIvemDetailDisplay_AlternateCodes: {
-            id: StringId.ExtendedLitIvemDetailDisplay_AlternateCodes, translations: {
-                en: 'Alternate Codes',
-            }
-        },
-        ExtendedLitIvemDetailHeading_AlternateCodes: {
-            id: StringId.ExtendedLitIvemDetailHeading_AlternateCodes, translations: {
-                en: 'Alternate Codes',
             }
         },
         ExtendedLitIvemDetailDisplay_Attributes: {

@@ -10,6 +10,7 @@ import {
     Badness,
     ComparableList,
     EnumInfoOutOfOrderError,
+    getErrorMessage,
     Integer,
     Logger,
     MapKey,
@@ -134,7 +135,7 @@ export abstract class PublisherSubscriptionManager {
             this.processResponseWaitList(nowTickTime);
             this.processSendQueues(nowTickTime);
         } catch (e) {
-            this.purgeSubscriptionsWithInternalError(e.message);
+            this.purgeSubscriptionsWithInternalError(getErrorMessage(e));
             throw (e);
         }
 
@@ -454,7 +455,7 @@ export abstract class PublisherSubscriptionManager {
         try {
             this.processSendQueues(nowTickTime);
         } catch (e) {
-            this.purgeSubscriptionsWithInternalError(e.message);
+            this.purgeSubscriptionsWithInternalError(getErrorMessage(e));
             throw (e);
         }
     }

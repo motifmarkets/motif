@@ -121,7 +121,6 @@ export class LitIvemExtendedDetailTableValueSource extends TableValueSource {
             case LitIvemFullDetail.ExtendedField.Id.Categories:
                 (value as StringArrayCorrectnessTableGridValue).data = this._litIvemFullDetail.categories;
                 break;
-            case LitIvemFullDetail.ExtendedField.Id.AlternateCodes:
             case LitIvemFullDetail.ExtendedField.Id.Attributes:
             case LitIvemFullDetail.ExtendedField.Id.TmcLegs:
                 throw new AssertInternalError('LIEDTVSLVA44824483', LitIvemFullDetail.ExtendedField.idToName(id));

@@ -7,7 +7,7 @@ import { compareInteger, Integer, RGB } from 'src/sys/internal-api';
 import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-error';
 
 @Component({
-    selector: 'app-multi-color-picker-ng',
+    selector: 'app-multi-color-picker',
     templateUrl: './multi-color-picker-ng.component.html',
     styleUrls: ['./multi-color-picker-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
