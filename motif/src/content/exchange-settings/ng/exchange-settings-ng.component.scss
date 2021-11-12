@@ -1,3 +1,19 @@
-:host {
+#heading {
     display: block;
+    padding-top: 0.9rem;
+    padding-bottom: 0.5rem;
+    font-size: larger;
 }
+
+#controls {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: 2rem;
+    row-gap: 0.5rem;
+    align-items: center;
+    padding-left: 2rem;
+
+    #symbolNameFieldControl {
+        width: 8em;
+    }
+    }

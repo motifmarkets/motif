@@ -15,6 +15,8 @@ export class LitIvemAlternateCodes {
     isin?: string;
     ric?: string;
     base?: string;
+    short?: string;
+    long?: string;
 }
 
 export namespace LitIvemAlternateCodes {

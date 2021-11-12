@@ -5,5 +5,5 @@
 -->
 
 <div *ngFor="let exchange of exchanges">
-    <app-exchange-settings [exchangeId]="exchange.exchangeId"></app-exchange-settings>
+    <app-exchange-settings *ngIf="isExchangeAllowed(exchange.exchangeId)" [exchangeId]="exchange.exchangeId"></app-exchange-settings>
 </div>

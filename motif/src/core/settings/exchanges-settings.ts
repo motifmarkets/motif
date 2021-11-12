@@ -39,6 +39,7 @@ export class ExchangesSettings extends TypedKeyValueArraySettingsGroup {
                 name: ExchangeInfo.idToJsonValue(exchange.exchangeId),
                 infoArray: exchange.infos,
             };
+            result[i] = namedInfoArray;
         }
 
         return result;

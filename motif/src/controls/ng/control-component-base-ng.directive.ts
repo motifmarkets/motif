@@ -6,7 +6,7 @@
 
 import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
 import { ComponentBaseNgDirective } from 'src/component-services/ng-api';
-import { ColorScheme, ColorSettings, CoreSettings, SettingsService, UiAction } from 'src/core/internal-api';
+import { ColorScheme, ColorSettings, CoreSettings, ExchangeSettings, SettingsService, UiAction } from 'src/core/internal-api';
 import { delay1Tick, HtmlTypes, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 
 @Directive()
@@ -43,6 +43,8 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     public bkgdColor: ColorScheme.ResolvedColor;
     public foreColor: ColorScheme.ResolvedColor;
 
+    protected readonly exchangeSettings: ExchangeSettings[];
+
     private _uiAction: UiAction;
     private _pushEventsSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -72,6 +74,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         super();
         this._coreSettings = this._settingsService.core;
         this._colorSettings = this._settingsService.color;
+        this.exchangeSettings = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 

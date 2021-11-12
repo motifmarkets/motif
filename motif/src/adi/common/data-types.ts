@@ -175,6 +175,7 @@ export const enum BuyOrSellId {
 
 export const enum ExerciseTypeId {
     American,
+    Asian,
     European,
 }
 
@@ -2322,6 +2323,11 @@ export namespace ExerciseType {
             id: ExerciseTypeId.American,
             json: 'American',
             displayId: StringId.ExerciseTypeDisplay_American,
+        },
+        Asian: {
+            id: ExerciseTypeId.Asian,
+            json: 'Asian',
+            displayId: StringId.ExerciseTypeDisplay_Asian,
         },
         European: {
             id: ExerciseTypeId.European,

@@ -706,8 +706,21 @@ export namespace LitIvemIdSelectNgComponent {
             this._debounceDelayStartFinishEventHandler(false);
             this._queryStartFinishEventHandler(true);
 
+            const exchangeId = this._term.exchangeId;
+            let fieldIds: SearchSymbolsDataDefinition.FieldId[];
+            if (exchangeId === undefined) {
+
+            } else {
+                fieldIds = this.exchangeSettings
+            }
+
+            const condition: SearchSymbolsDataDefinition.Condition = {
+                text: this._term.codeOrName,
+                fieldIds
+            }
+
             const definition = new SearchSymbolsDataDefinition();
-            definition.searchText = this._term.codeOrName;
+            definition.searchText = ;
             definition.exchangeId = this._term.exchangeId;
             definition.marketIds = this._term.marketId === undefined ? undefined : [this._term.marketId];
             definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];

@@ -49,6 +49,7 @@ export class SettingsService {
         this._color = new ColorSettings();
         this.register(this._color);
         this._exchanges = new ExchangesSettings();
+        this.register(this._exchanges);
     }
 
     register(group: SettingsGroup) {

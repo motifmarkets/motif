@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild
 import { ExchangeId, ExchangeInfo, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
-import { EnumArrayUiAction, EnumUiAction, ExchangeSettings, ExplicitElementsEnumArrayUiAction, ExplicitElementsEnumUiAction, SettingsService, StringUiAction } from 'src/core/internal-api';
+import { EnumArrayUiAction, EnumUiAction, ExchangeSettings, ExplicitElementsEnumArrayUiAction, ExplicitElementsEnumUiAction, SettingsService } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick } from 'src/sys/internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
@@ -16,15 +16,18 @@ import { MultiEvent } from 'src/sys/multi-event';
 export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
     @Input() exchangeId: ExchangeId;
 
-    @ViewChild('exchangeLabel', { static: true }) private _exchangeLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('symbolNameFieldLabel', { static: true }) private _symbolNameFieldLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolNameFieldControl', { static: true }) private _symbolNameFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('symbolSearchFieldsLabel', { static: true }) private _symbolSearchFieldsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolSearchFieldsControl', { static: true }) private _symbolSearchFieldsControlComponent: EnumArrayInputNgComponent;
+
+    public abbreviatedExchangeDisplay: string;
+    public fullExchangeDisplay: string;
 
     private _settingsService: SettingsService;
     private _settingsChangedSubsciptionId: MultiEvent.SubscriptionId;
     private _exchange: ExchangeSettings;
 
-    private _exchangeUiAction: StringUiAction;
     private _symbolNameFieldUiAction: ExplicitElementsEnumUiAction;
     private _symbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
 
@@ -41,7 +44,11 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
     ngOnInit(): void {
         this._exchange = this._settingsService.exchanges.exchanges[this.exchangeId];
         this.pushValues();
-        delay1Tick(() => this.initailise());
+
+        this.abbreviatedExchangeDisplay = ExchangeInfo.idToAbbreviatedDisplay(this.exchangeId);
+        this.fullExchangeDisplay = ExchangeInfo.idToFullDisplay(this.exchangeId);
+
+        delay1Tick(() => this.initialise());
     }
 
     ngOnDestroy() {
@@ -55,8 +62,8 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
 
     private createSymbolNameFieldUiAction() {
         const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.SettingCaption_Format_DateTimeTimezoneModeId]);
-        action.pushTitle(Strings[StringId.SettingTitle_Format_DateTimeTimezoneModeId]);
+        action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolNameField]);
+        action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolNameField]);
         const fieldIds = ExchangeSettings.AllowableSymbolNameFieldIds;
         const elementPropertiesArray = fieldIds.map<EnumUiAction.ElementProperties>(
             (fieldId) => (
@@ -76,8 +83,8 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
 
     private createSymbolSearchFieldsUiAction() {
         const action = new ExplicitElementsEnumArrayUiAction();
-        action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Fields]);
-        action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Fields]);
+        action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolSearchFields]);
+        action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolSearchFields]);
 
         const allowableSymbolSearchFieldIds = ExchangeSettings.AllowableSymbolSearchFieldIds
         const entryCount = allowableSymbolSearchFieldIds.length;
@@ -98,16 +105,14 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
         return action;
     }
 
-    private initailise() {
-        this._exchangeUiAction.pushValue(ExchangeInfo.idToFullDisplay(this._exchange.exchangeId));
-
-        this._exchangeLabelComponent.initialise(this._exchangeUiAction);
+    private initialise() {
+        this._symbolNameFieldLabelComponent.initialise(this._symbolNameFieldUiAction);
         this._symbolNameFieldControlComponent.initialise(this._symbolNameFieldUiAction);
+        this._symbolSearchFieldsLabelComponent.initialise(this._symbolSearchFieldsUiAction);
         this._symbolSearchFieldsControlComponent.initialise(this._symbolSearchFieldsUiAction);
     }
 
     private finalise() {
-        this._exchangeUiAction.finalise();
         this._symbolNameFieldUiAction.finalise();
         this._symbolSearchFieldsUiAction.finalise();
     }

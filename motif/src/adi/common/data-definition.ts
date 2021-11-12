@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import Decimal from 'decimal.js-light';
 import { StringId, Strings } from 'src/res/internal-api';
 import { CommaText, dateToUtcYYYYMMDD, EnumInfoOutOfOrderError, Integer, MapKey } from 'src/sys/internal-api';
 import {
@@ -172,24 +173,21 @@ export class SymbolsDataDefinition extends MarketSubscriptionDataDefinition {
 }
 
 export class SearchSymbolsDataDefinition extends MarketSubscriptionDataDefinition {
-    // Required:
-    searchText: string;
-
-    // Optional:
-    exchangeId: ExchangeId | undefined;
-    marketIds: readonly MarketId[] | undefined;
-    fieldIds: readonly SearchSymbolsDataDefinition.FieldId[];
-    isPartial: boolean | undefined;
-    isCaseSensitive: boolean | undefined;
-    preferExact: boolean | undefined;
-    startIndex: Integer | undefined;
-    count: Integer | undefined;
-    targetDate: Date | undefined;
-    showFull: boolean | undefined;
-    accountId: string | undefined;
-    cfi: string | undefined;
-    // TODO add support for underlyingIvemId
-    underlyingIvemId: IvemId | undefined;
+    cfi?: string;
+    combinationLeg?: string;
+    conditions?: SearchSymbolsDataDefinition.Condition[];
+    count?: Integer;
+    exchangeId?: ExchangeId;
+    expiryDateMin?: Date;
+    expiryDateMax?: Date;
+    index?: boolean;
+    ivemClassId?: IvemClassId;
+    fullSymbol: boolean;
+    marketIds?: readonly MarketId[];
+    preferExact?: boolean;
+    startIndex?: Integer;
+    strikePriceMin?: Decimal;
+    strikePriceMax?: Decimal;
 
     get referencable() { return false; }
 
@@ -202,6 +200,8 @@ export namespace SearchSymbolsDataDefinition {
     export const enum FieldId {
         Code,
         Name,
+        Short,
+        Long,
         Ticker,
         Gics,
         Isin,
@@ -235,6 +235,18 @@ export namespace SearchSymbolsDataDefinition {
                 jsonValue: 'Name',
                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Name,
                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Name,
+            },
+            Short: {
+                id: FieldId.Short,
+                jsonValue: 'Short',
+                displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Short,
+                descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Short,
+            },
+            Long: {
+                id: FieldId.Long,
+                jsonValue: 'Long',
+                displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Long,
+                descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Long,
             },
             Ticker: {
                 id: FieldId.Ticker,
@@ -339,7 +351,212 @@ export namespace SearchSymbolsDataDefinition {
             }
         }
     }
+
+    export const enum AttributeId {
+
+    }
+
+    export interface Condition {
+        fieldIds?: readonly SearchSymbolsDataDefinition.FieldId[];
+        attributeIds?: readonly SearchSymbolsDataDefinition.AttributeId[];
+        group?: string;
+        isCaseSensitive?: boolean;
+        matchIds?: Condition.MatchId[];
+        text: string;
+    }
+
+    export namespace Condition {
+        export const enum MatchId {
+            fromStart,
+            fromEnd,
+            exact,
+        }
+    }
 }
+
+// export class QuerySymbolsDataDefinition extends MarketSubscriptionDataDefinition {
+//     // Required:
+//     searchText: string;
+
+//     // Optional:
+//     exchangeId: ExchangeId | undefined;
+//     marketIds: readonly MarketId[] | undefined;
+//     fieldIds: readonly SearchSymbolsDataDefinition.FieldId[];
+//     isPartial: boolean | undefined;
+//     isCaseSensitive: boolean | undefined;
+//     preferExact: boolean | undefined;
+//     startIndex: Integer | undefined;
+//     count: Integer | undefined;
+//     targetDate: Date | undefined;
+//     showFull: boolean | undefined;
+//     accountId: string | undefined;
+//     cfi: string | undefined;
+//     // TODO add support for underlyingIvemId
+//     underlyingIvemId: IvemId | undefined;
+
+//     get referencable() { return false; }
+
+//     constructor() {
+//         super(DataChannelId.Symbols);
+//     }
+// }
+
+// export namespace QuerySymbolsDataDefinition {
+//     export const enum FieldId {
+//         Code,
+//         Name,
+//         Short,
+//         Long,
+//         Ticker,
+//         Gics,
+//         Isin,
+//         Base,
+//         Ric,
+//     }
+
+//     export const defaultFieldIds = [FieldId.Code];
+
+//     export namespace Field {
+//         export type Id = FieldId;
+
+//         interface Info {
+//             id: Id;
+//             jsonValue: string;
+//             displayId: StringId;
+//             descriptionId: StringId;
+//         }
+
+//         type InfoObject = { [id in keyof typeof FieldId]: Info };
+
+//         const infoObject: InfoObject = {
+//             Code: {
+//                 id: FieldId.Code,
+//                 jsonValue: 'Code',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Code,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Code,
+//             },
+//             Name: {
+//                 id: FieldId.Name,
+//                 jsonValue: 'Name',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Name,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Name,
+//             },
+//             Short: {
+//                 id: FieldId.Short,
+//                 jsonValue: 'Short',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Short,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Short,
+//             },
+//             Long: {
+//                 id: FieldId.Long,
+//                 jsonValue: 'Long',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Long,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Long,
+//             },
+//             Ticker: {
+//                 id: FieldId.Ticker,
+//                 jsonValue: 'Ticker',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ticker,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ticker,
+//             },
+//             Gics: {
+//                 id: FieldId.Gics,
+//                 jsonValue: 'Gics',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Gics,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Gics,
+//             },
+//             Isin: {
+//                 id: FieldId.Isin,
+//                 jsonValue: 'Isin',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Isin,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Isin,
+//             },
+//             Base: {
+//                 id: FieldId.Base,
+//                 jsonValue: 'Base',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Base,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Base,
+//             },
+//             Ric: {
+//                 id: FieldId.Ric,
+//                 jsonValue: 'Ric',
+//                 displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ric,
+//                 descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ric,
+//             },
+//         } as const;
+
+//         export const idCount = Object.keys(infoObject).length;
+//         const infos = Object.values(infoObject);
+
+//         export function idToDisplayId(id: Id) {
+//             return infos[id].displayId;
+//         }
+
+//         export function idToJsonValue(id: Id) {
+//             return infos[id].jsonValue;
+//         }
+
+//         export function tryJsonValueToId(jsonValue: string) {
+//             for (let id = 0; id < idCount; id++) {
+//                 if (infos[id].jsonValue === jsonValue) {
+//                     return id;
+//                 }
+//             }
+//             return undefined;
+//         }
+
+//         export function idToDisplay(id: Id) {
+//             return Strings[idToDisplayId(id)];
+//         }
+
+//         export function idToDescriptionId(id: Id) {
+//             return infos[id].descriptionId;
+//         }
+
+//         export function idToDescription(id: Id) {
+//             return Strings[idToDescriptionId(id)];
+//         }
+
+//         export function idArrayToJsonValue(idArray: Id[]) {
+//             const count = idArray.length;
+//             const stringArray = new Array<string>(count);
+//             for (let i = 0; i < count; i++) {
+//                 const id = idArray[i];
+//                 stringArray[i] = idToJsonValue(id);
+//             }
+//             return CommaText.fromStringArray(stringArray);
+//         }
+
+//         export function tryJsonValueToIdArray(value: string) {
+//             const toStringArrayResult = CommaText.toStringArrayWithResult(value);
+//             if (!toStringArrayResult.success) {
+//                 return undefined;
+//             } else {
+//                 const stringArray = toStringArrayResult.array;
+//                 const count = stringArray.length;
+//                 const result = new Array<Id>(count);
+//                 for (let i = 0; i < count; i++) {
+//                     const jsonValue = stringArray[i];
+//                     const id = tryJsonValueToId(jsonValue);
+//                     if (id === undefined) {
+//                         return undefined;
+//                     } else {
+//                         result[i] = id;
+//                     }
+//                 }
+
+//                 return result;
+//             }
+//         }
+
+//         export function initialise() {
+//             const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+//             if (outOfOrderIdx >= 0) {
+//                 throw new EnumInfoOutOfOrderError('QuerySymbolsDataDefinition.FieldId', outOfOrderIdx, idToDisplay(outOfOrderIdx));
+//             }
+//         }
+//     }
+// }
 
 export class SecurityDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;

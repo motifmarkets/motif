@@ -826,6 +826,7 @@ export const enum StringId {
     CallPutFieldDisplay_UnderlyingIsIndex,
     CallPutFieldHeading_UnderlyingIsIndex,
     ExerciseTypeDisplay_American,
+    ExerciseTypeDisplay_Asian,
     ExerciseTypeDisplay_European,
     EtoPriceQuotationSymbolInputTitle,
     EtoPriceQuotationApplySymbolCaption,
@@ -903,6 +904,10 @@ export const enum StringId {
     SettingTitle_OrderPad_ReviewEnabled,
     SettingCaption_OrderPad_DefaultOrderTypeId,
     SettingTitle_OrderPad_DefaultOrderTypeId,
+    SettingCaption_Exchange_SymbolSearchFields,
+    SettingTitle_Exchange_SymbolSearchFields,
+    SettingCaption_Exchange_SymbolNameField,
+    SettingTitle_Exchange_SymbolNameField,
     DefaultOrderTypeIdNotSpecified,
     SettingCaption_OrderPad_DefaultTimeInForceId,
     SettingTitle_OrderPad_DefaultTimeInForceId,
@@ -1447,6 +1452,10 @@ export const enum StringId {
     QuerySymbolsDataDefinitionFieldDescription_Code,
     QuerySymbolsDataDefinitionFieldDisplay_Name,
     QuerySymbolsDataDefinitionFieldDescription_Name,
+    QuerySymbolsDataDefinitionFieldDisplay_Short,
+    QuerySymbolsDataDefinitionFieldDescription_Short,
+    QuerySymbolsDataDefinitionFieldDisplay_Long,
+    QuerySymbolsDataDefinitionFieldDescription_Long,
     QuerySymbolsDataDefinitionFieldDisplay_Ticker,
     QuerySymbolsDataDefinitionFieldDescription_Ticker,
     QuerySymbolsDataDefinitionFieldDisplay_Gics,
@@ -5768,137 +5777,142 @@ export namespace I18nStrings {
         },
         CallPutFieldDisplay_ExercisePrice: {
             id: StringId.CallPutFieldDisplay_ExercisePrice, translations: {
-               en: 'Exercise Price',
+                en: 'Exercise Price',
             }
         },
         CallPutFieldHeading_ExercisePrice: {
             id: StringId.CallPutFieldHeading_ExercisePrice, translations: {
-               en: 'Exercise',
+                en: 'Exercise',
             }
         },
         CallPutFieldDisplay_ExpiryDate: {
             id: StringId.CallPutFieldDisplay_ExpiryDate, translations: {
-               en: 'Expiry Date',
+                en: 'Expiry Date',
             }
         },
         CallPutFieldHeading_ExpiryDate: {
             id: StringId.CallPutFieldHeading_ExpiryDate, translations: {
-               en: 'Expiry',
+                en: 'Expiry',
             }
         },
         CallPutFieldDisplay_LitId: {
             id: StringId.CallPutFieldDisplay_LitId, translations: {
-               en: 'Market',
+                en: 'Market',
             }
         },
         CallPutFieldHeading_LitId: {
             id: StringId.CallPutFieldHeading_LitId, translations: {
-               en: 'Market',
+                en: 'Market',
             }
         },
         CallPutFieldDisplay_CallLitIvemId: {
             id: StringId.CallPutFieldDisplay_CallLitIvemId, translations: {
-               en: 'Call Symbol',
+                en: 'Call Symbol',
             }
         },
         CallPutFieldHeading_CallLitIvemId: {
             id: StringId.CallPutFieldHeading_CallLitIvemId, translations: {
-               en: 'C.Symbol',
+                en: 'C.Symbol',
             }
         },
         CallPutFieldDisplay_PutLitIvemId: {
             id: StringId.CallPutFieldDisplay_PutLitIvemId, translations: {
-               en: 'Put Symbol',
+                en: 'Put Symbol',
             }
         },
         CallPutFieldHeading_PutLitIvemId: {
             id: StringId.CallPutFieldHeading_PutLitIvemId, translations: {
-               en: 'P.Symbol',
+                en: 'P.Symbol',
             }
         },
         CallPutFieldDisplay_ContractMultiplier: {
             id: StringId.CallPutFieldDisplay_ContractMultiplier, translations: {
-               en: 'Contract Multiplier',
+                en: 'Contract Multiplier',
             }
         },
         CallPutFieldHeading_ContractMultiplier: {
             id: StringId.CallPutFieldHeading_ContractMultiplier, translations: {
-               en: 'Multiplier',
+                en: 'Multiplier',
             }
         },
         CallPutFieldDisplay_ExerciseTypeId: {
             id: StringId.CallPutFieldDisplay_ExerciseTypeId, translations: {
-               en: 'Exercise Type',
+                en: 'Exercise Type',
             }
         },
         CallPutFieldHeading_ExerciseTypeId: {
             id: StringId.CallPutFieldHeading_ExerciseTypeId, translations: {
-               en: 'Type',
+                en: 'Type',
             }
         },
         CallPutFieldDisplay_UnderlyingIvemId: {
             id: StringId.CallPutFieldDisplay_UnderlyingIvemId, translations: {
-               en: 'Underlying Symbol',
+                en: 'Underlying Symbol',
             }
         },
         CallPutFieldHeading_UnderlyingIvemId: {
             id: StringId.CallPutFieldHeading_UnderlyingIvemId, translations: {
-               en: 'Underlying',
+                en: 'Underlying',
             }
         },
         CallPutFieldDisplay_UnderlyingIsIndex: {
             id: StringId.CallPutFieldDisplay_UnderlyingIsIndex, translations: {
-               en: 'Underlying is Index',
+                en: 'Underlying is Index',
             }
         },
         CallPutFieldHeading_UnderlyingIsIndex: {
             id: StringId.CallPutFieldHeading_UnderlyingIsIndex, translations: {
-               en: 'Index?',
+                en: 'Index?',
             }
         },
         ExerciseTypeDisplay_American: {
             id: StringId.ExerciseTypeDisplay_American, translations: {
-               en: 'American',
+                en: 'American',
+            }
+        },
+        ExerciseTypeDisplay_Asian: {
+            id: StringId.ExerciseTypeDisplay_Asian, translations: {
+                en: 'Asian',
             }
         },
         ExerciseTypeDisplay_European: {
             id: StringId.ExerciseTypeDisplay_European, translations: {
-               en: 'European',
+                en: 'European',
             }
         },
         EtoPriceQuotationSymbolInputTitle: {
             id: StringId.EtoPriceQuotationSymbolInputTitle, translations: {
-               en: 'Enter underlying symbol',
+                en: 'Enter underlying symbol',
             }
         },
         EtoPriceQuotationApplySymbolCaption: {
             id: StringId.EtoPriceQuotationApplySymbolCaption, translations: {
-               en: 'Get options',
+                en: 'Get options',
             }
         },
         EtoPriceQuotationApplySymbolTitle: {
             id: StringId.EtoPriceQuotationApplySymbolTitle, translations: {
-               en: 'Get options for symbol',
+                en: 'Get options for symbol',
             }
         },
         TradeAffects_None: {
             id: StringId.TradeAffects_None, translations: {
-               en: 'None',
+                en: 'None',
             }
         },
         TradeAffects_Price: {
             id: StringId.TradeAffects_Price, translations: {
-               en: 'Price',
+                en: 'Price',
             }
         },
         TradeAffects_Volume: {
             id: StringId.TradeAffects_Volume, translations: {
-               en: 'Volume',
+                en: 'Volume',
             }
         },
         TradeAffects_Vwap: {
             id: StringId.TradeAffects_Vwap, translations: {
-               en: 'VWAP',
+                en: 'VWAP',
             }
         },
         TradeAttribute_OffMarketTrade: {
@@ -6245,6 +6259,26 @@ export namespace I18nStrings {
         SettingTitle_OrderPad_DefaultOrderTypeId: {
             id: StringId.SettingTitle_OrderPad_DefaultOrderTypeId, translations: {
                 en: 'Initialise order type for new orders',
+            }
+        },
+        SettingCaption_Exchange_SymbolSearchFields: {
+            id: StringId.SettingCaption_Exchange_SymbolSearchFields, translations: {
+                en: 'Symbol search fields',
+            }
+        },
+        SettingTitle_Exchange_SymbolSearchFields: {
+            id: StringId.SettingTitle_Exchange_SymbolSearchFields, translations: {
+                en: 'Fields to be searched in symbol select control when exchange is specified',
+            }
+        },
+        SettingCaption_Exchange_SymbolNameField: {
+            id: StringId.SettingCaption_Exchange_SymbolNameField, translations: {
+                en: 'Symbol name field',
+            }
+        },
+        SettingTitle_Exchange_SymbolNameField: {
+            id: StringId.SettingTitle_Exchange_SymbolNameField, translations: {
+                en: 'Field used to generate the name of a symbol',
             }
         },
         DefaultOrderTypeIdNotSpecified: {
@@ -8966,6 +9000,26 @@ export namespace I18nStrings {
         QuerySymbolsDataDefinitionFieldDescription_Name: {
             id: StringId.QuerySymbolsDataDefinitionFieldDescription_Name, translations: {
                 en: 'Match symbol Name',
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDisplay_Short: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Short, translations: {
+                en: 'Short'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDescription_Short: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDescription_Short, translations: {
+                en: 'Match short symbol name'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDisplay_Long: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Long, translations: {
+                en: 'Long'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDescription_Long: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDescription_Long, translations: {
+                en: 'Match long symbol name'
             }
         },
         QuerySymbolsDataDefinitionFieldDisplay_Ticker: {
