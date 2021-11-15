@@ -23,6 +23,7 @@ import {
     PublisherRequest,
     PublisherSubscription,
     SearchSymbolsDataDefinition,
+    SymbolFieldId,
     SymbolsDataMessage,
     TmcLeg
 } from '../../../common/internal-api';
@@ -196,8 +197,8 @@ export namespace SymbolsMessageConvert {
             const maxCount = fieldIds.length;
             result = new Array<Zenith.MarketController.SearchSymbols.Condition>(maxCount);
             let count = 0;
-            const containsCode = fieldIds.includes(SearchSymbolsDataDefinition.FieldId.Code);
-            const containsName = fieldIds.includes(SearchSymbolsDataDefinition.FieldId.Name);
+            const containsCode = fieldIds.includes(SymbolFieldId.Code);
+            const containsName = fieldIds.includes(SymbolFieldId.Name);
             if (containsCode && containsName) {
                 result[count++] = createFieldSearchCondition(undefined, undefined, condition); // undefined field = code + name
             } else {

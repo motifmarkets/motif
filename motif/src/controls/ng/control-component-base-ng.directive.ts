@@ -43,7 +43,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     public bkgdColor: ColorScheme.ResolvedColor;
     public foreColor: ColorScheme.ResolvedColor;
 
-    protected readonly exchangeSettings: ExchangeSettings[];
+    protected readonly exchangeSettingsArray: readonly ExchangeSettings[];
 
     private _uiAction: UiAction;
     private _pushEventsSubscriptionId: MultiEvent.SubscriptionId;
@@ -74,7 +74,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         super();
         this._coreSettings = this._settingsService.core;
         this._colorSettings = this._settingsService.color;
-        this.exchangeSettings = this._settingsService.exchanges.exchanges;
+        this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 

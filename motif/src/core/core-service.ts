@@ -40,7 +40,11 @@ export class CoreService {
         this._commandRegisterService = new CommandRegisterService();
 
         setSymbolDetailCache(new SymbolDetailCache(this._adiService.dataMgr, this._symbolsService));
-        setTableRecordDefinitionListFactory(new TableRecordDefinitionListFactory(this._adiService));
+        setTableRecordDefinitionListFactory(new TableRecordDefinitionListFactory(
+            this._adiService,
+            this._settingsService,
+            this._symbolsService,
+        ));
         setTableDefinitionFactory(new TableDefinitionFactory(this._adiService));
         setTableRecordDefinitionListDirectory(new TableRecordDefinitionListDirectory());
         setTableDirectory(new TableDirectory());

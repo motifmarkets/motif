@@ -4,9 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
+@import './partials/flex-row-items-centered-mixin';
+@import './partials/horizontal-children-separator';
 @import './partials/horizontal-radio-separator';
 
 :host {
+    display: block;
+}
+
+.fieldsetGrid {
     display: grid;
     grid-template-columns: max-content max-content;
     column-gap: 2rem;
@@ -19,32 +25,53 @@
     app-text-input {
         grid-column: 2;
     }
+
+    border-left: none;
+    border-right: none;
+    border-bottom: none;
+    border-top-width: 1px;
+    border-top-style: solid;
+    border-top-color: dimgray; // should be set by color scheme
 }
 
-#fontFamilyControl {
-    width: 30em;
+.fieldSetLegend {
+    font-size: larger;
 }
 
-#fontSizeControl {
-    width: 12em;
+#general {
+    #fontFamilyControl {
+        width: 30em;
+    }
+
+    #fontSizeControl {
+        width: 12em;
+    }
+
+    #defaultExchangeControl {
+        width: 14em;
+    }
+
+    #minimumPriceFractionDigitsCountControl {
+        width: 12em;
+    }
+
+    #settingsProfileDiv {
+        width: 14em;
+    }
+
+    #dateTimeTimezoneMode {
+        @include horizontalRadioSeparatorMixin;
+    }
 }
 
-#defaultExchangeControl {
-    width: 14em;
+#symbols {
+    #exchangeHideModeControl {
+        width: 14em;
+    }
+
+    #explicitSearchFields {
+        @include flexRowItemsCenteredMixin;
+        @include horizontalChildrenSeparatorMixin;
+    }
 }
 
-#exchangeHideModeControl {
-    width: 14em;
-}
-
-#minimumPriceFractionDigitsCountControl {
-    width: 12em;
-}
-
-#settingsProfileDiv {
-    width: 14em;
-}
-
-#dateTimeTimezoneMode {
-    @include horizontalRadioSeparatorMixin;
-}

@@ -17,8 +17,7 @@ import {
     MarketsDataDefinition,
     MarketsDataItem,
     OrderRoute,
-    RoutedIvemId,
-    SearchSymbolsDataDefinition
+    RoutedIvemId, SymbolFieldId
 } from 'src/adi/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
@@ -356,14 +355,14 @@ export class SymbolsService {
     calculateSymbolName(detail: LitIvemDetail) {
         const exchangeId = detail.exchangeId;
         const fieldId = this._exchangeSettingsArray[exchangeId].symbolNameFieldId;
-        if (fieldId === SearchSymbolsDataDefinition.FieldId.Name) {
+        if (fieldId === SymbolFieldId.Name) {
             return detail.name;
         } else {
             const alternateCodes = detail.alternateCodes;
             if (alternateCodes === undefined) {
                 return detail.name;
             } else {
-                if (fieldId === SearchSymbolsDataDefinition.FieldId.Ticker) {
+                if (fieldId === SymbolFieldId.Ticker) {
                     const ticker = alternateCodes.ticker;
                     if (ticker === undefined) {
                         return detail.name;
@@ -373,23 +372,23 @@ export class SymbolsService {
                 } else {
                     let result: string | undefined;
                     switch (fieldId) {
-                        case SearchSymbolsDataDefinition.FieldId.Code: {
+                        case SymbolFieldId.Code: {
                             result = detail.litIvemId.code;
                             break;
                         }
-                        case SearchSymbolsDataDefinition.FieldId.Isin: {
+                        case SymbolFieldId.Isin: {
                             result = alternateCodes.isin;
                             break;
                         }
-                        case SearchSymbolsDataDefinition.FieldId.Ric: {
+                        case SymbolFieldId.Ric: {
                             result = alternateCodes.ric;
                             break;
                         }
-                        case SearchSymbolsDataDefinition.FieldId.Base: {
+                        case SymbolFieldId.Base: {
                             result = alternateCodes.base;
                             break;
                         }
-                        case SearchSymbolsDataDefinition.FieldId.Gics: {
+                        case SymbolFieldId.Gics: {
                             result = alternateCodes.gics;
                             break;
                         }
@@ -402,6 +401,18 @@ export class SymbolsService {
                     return result;
                 }
             }
+        }
+    }
+
+    calculateSymbolSearchFieldIds(exchangeId: ExchangeId | undefined) {
+        if (exchangeId === undefined) {
+            if (this._coreSettings.symbol_ExplicitSearchFieldsEnabled) {
+                return this._coreSettings.symbol_ExplicitSearchFieldIds;
+            } else {
+                return this._exchangeSettingsArray[this._defaultExchangeId].symbolSearchFieldIds;
+            }
+        } else {
+            return this._exchangeSettingsArray[exchangeId].symbolSearchFieldIds;
         }
     }
 

@@ -862,6 +862,10 @@ export const enum StringId {
     SettingTitle_Format_24Hour,
     SettingCaption_Format_DateTimeTimezoneModeId,
     SettingTitle_Format_DateTimeTimezoneModeId,
+    SettingCaption_Symbol_ExplicitSearchFieldsEnabled,
+    SettingTitle_Symbol_ExplicitSearchFieldsEnabled,
+    SettingCaption_Symbol_ExplicitSearchFields,
+    SettingTitle_Symbol_ExplicitSearchFields,
     SettingCaption_Master_SettingsProfile,
     SettingTitle_Master_SettingsProfile,
     SettingCaption_Grid_RowHeight,
@@ -6048,6 +6052,26 @@ export namespace I18nStrings {
         SettingTitle_Format_DateTimeTimezoneModeId: {
             id: StringId.SettingTitle_Format_DateTimeTimezoneModeId, translations: {
                 en: 'Specify which timezone times should be converted to',
+            }
+        },
+        SettingCaption_Symbol_ExplicitSearchFieldsEnabled: {
+            id: StringId.SettingCaption_Symbol_ExplicitSearchFieldsEnabled, translations: {
+                en: 'Explicit (no exchange) search Fields Enabled',
+            }
+        },
+        SettingTitle_Symbol_ExplicitSearchFieldsEnabled: {
+            id: StringId.SettingTitle_Symbol_ExplicitSearchFieldsEnabled, translations: {
+                en: 'Use explicit search fields when no exchange is specified (otherwise use default exchange\'s search fields)',
+            }
+        },
+        SettingCaption_Symbol_ExplicitSearchFields: {
+            id: StringId.SettingCaption_Symbol_ExplicitSearchFields, translations: {
+                en: 'Explicit (no exchange) search fields',
+            }
+        },
+        SettingTitle_Symbol_ExplicitSearchFields: {
+            id: StringId.SettingTitle_Symbol_ExplicitSearchFields, translations: {
+                en: 'Symbol fields searched when an exchange is not specified',
             }
         },
         SettingCaption_Master_SettingsProfile: {

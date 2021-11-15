@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ExchangeId, ExchangeInfo, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
+import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
 import { EnumArrayUiAction, EnumUiAction, ExchangeSettings, ExplicitElementsEnumArrayUiAction, ExplicitElementsEnumUiAction, SettingsService } from 'src/core/internal-api';
@@ -36,13 +36,14 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
     ) {
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubsciptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
-
-        this._symbolNameFieldUiAction = this.createSymbolNameFieldUiAction();
-        this._symbolSearchFieldsUiAction = this.createSymbolSearchFieldsUiAction();
     }
 
     ngOnInit(): void {
         this._exchange = this._settingsService.exchanges.exchanges[this.exchangeId];
+
+        this._symbolNameFieldUiAction = this.createSymbolNameFieldUiAction();
+        this._symbolSearchFieldsUiAction = this.createSymbolSearchFieldsUiAction();
+
         this.pushValues();
 
         this.abbreviatedExchangeDisplay = ExchangeInfo.idToAbbreviatedDisplay(this.exchangeId);
@@ -64,13 +65,13 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolNameField]);
         action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolNameField]);
-        const fieldIds = ExchangeSettings.AllowableSymbolNameFieldIds;
+        const fieldIds = ExchangeInfo.idToAllowableSymbolNameFieldIds(this.exchangeId);
         const elementPropertiesArray = fieldIds.map<EnumUiAction.ElementProperties>(
             (fieldId) => (
                 {
                     element: fieldId,
-                    caption: SearchSymbolsDataDefinition.Field.idToDisplay(fieldId),
-                    title: SearchSymbolsDataDefinition.Field.idToDescription(fieldId),
+                    caption: SymbolField.idToDisplay(fieldId),
+                    title: SymbolField.idToDescription(fieldId),
                 }
             )
         );
@@ -86,21 +87,21 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
         action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolSearchFields]);
         action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolSearchFields]);
 
-        const allowableSymbolSearchFieldIds = ExchangeSettings.AllowableSymbolSearchFieldIds
+        const allowableSymbolSearchFieldIds = ExchangeInfo.idToAllowableSymbolSearchFieldIds(this.exchangeId)
         const entryCount = allowableSymbolSearchFieldIds.length;
         const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
         for (let i = 0; i < entryCount; i++) {
             const id = allowableSymbolSearchFieldIds[i];
             elementPropertiesArray[i] = {
                 element: id,
-                caption: SearchSymbolsDataDefinition.Field.idToDisplay(id),
-                title: SearchSymbolsDataDefinition.Field.idToDescription(id),
+                caption: SymbolField.idToDisplay(id),
+                title: SymbolField.idToDescription(id),
             };
         }
 
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._exchange.symbolSearchFieldIds = this._symbolSearchFieldsUiAction.definedValue as SearchSymbolsDataDefinition.FieldId[];
+            this._exchange.symbolSearchFieldIds = this._symbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
         };
         return action;
     }

@@ -38,6 +38,8 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
         this._allowedExchangeIdsChangedSubscriptionId = this._symbolsService.subscribeAllowedExchangeIdsChangedEvent(
             () => this.handleAllowedExchangeIdsChangedEvent()
         );
+
+        this.processSettingsChanged();
     }
 
     ngOnDestroy() {

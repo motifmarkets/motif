@@ -4,37 +4,48 @@
     License: motionite.trade/license/motif
 -->
 
-<app-caption-label #fontFamilyLabel for="fontFamilyInput"></app-caption-label>
-<app-text-input #fontFamilyControl id="fontFamilyControl" inputId="fontFamilyInput" spellCheck="false"></app-text-input>
-<app-caption-label #fontSizeLabel for="fontSizeInput"></app-caption-label>
-<app-text-input #fontSizeControl id="fontSizeControl" inputId="fontSizeInput" spellCheck="false"></app-text-input>
-<app-caption-label #defaultExchangeLabel for="defaultExchangeInput"></app-caption-label>
-<app-enum-input #defaultExchangeControl id="defaultExchangeControl" inputId="defaultExchangeInput"></app-enum-input>
-<app-caption-label #exchangeHideModeLabel for="exchangeHideModeSelect"></app-caption-label>
-<app-enum-input #exchangeHideModeControl id="exchangeHideModeControl" inputId="exchangeHideModeSelect"></app-enum-input>
-<app-caption-label #defaultMarketHiddenLabel for="defaultMarketHiddenCheckbox"></app-caption-label>
-<app-checkbox-input #defaultMarketHiddenControl id="defaultMarketHiddenControl" inputId="defaultMarketHiddenCheckbox"></app-checkbox-input>
-<app-caption-label #marketCodeAsLocalWheneverPossibleLabel for="marketCodeAsLocalWheneverPossibleCheckbox"></app-caption-label>
-<app-checkbox-input #marketCodeAsLocalWheneverPossibleControl id="marketCodeAsLocalWheneverPossibleControl" inputId="marketCodeAsLocalWheneverPossibleCheckbox"></app-checkbox-input>
-<app-caption-label #dropDownEditableSearchTermLabel for="dropDownEditableSearchTermCheckbox"></app-caption-label>
-<app-checkbox-input #dropDownEditableSearchTermControl id="dropDownEditableSearchTermControl" inputId="dropDownEditableSearchTermCheckbox"></app-checkbox-input>
-<app-caption-label #numberGroupingActiveLabel for="numberGroupingActiveCheckbox"></app-caption-label>
-<app-checkbox-input #numberGroupingActiveControl id="numberGroupingActiveControl" inputId="numberGroupingActiveCheckbox"></app-checkbox-input>
-<app-caption-label #minimumPriceFractionDigitsCountLabel for="minimumPriceFractionDigitsCountInput"></app-caption-label>
-<app-integer-text-input #minimumPriceFractionDigitsCountControl id="minimumPriceFractionDigitsCountControl"
-    inputId="minimumPriceFractionDigitsCountInput" spellCheck="false"></app-integer-text-input>
-<app-caption-label #24HourLabel for="24HourControlCheckbox"></app-caption-label>
-<app-checkbox-input #24HourControl id="24HourControl" inputId="24HourControlCheckbox"></app-checkbox-input>
-<app-caption-label #dateTimeTimezoneModeLabel for="sourceDateTimeTimezoneModeRadio"></app-caption-label>
-<div id="dateTimeTimezoneMode">
-    <app-captioned-radio #sourceDateTimeTimezoneModeControl id="sourceDateTimeTimezoneModeControl" inputId="sourceDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
-    <app-captioned-radio #localDateTimeTimezoneModeControl id="localDateTimeTimezoneModeControl" inputId="localDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
-    <app-captioned-radio #utcDateTimeTimezoneModeControl id="utcDateTimeTimezoneModeControl" inputId="utcDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
-</div>
-<app-caption-label #settingsProfileLabel for="settingsProfileSelect"></app-caption-label>
-<div id="settingsProfileDiv">
-    <app-enum-input #settingsProfileControl id="settingsProfileControl" inputId="settingsProfileSelect"></app-enum-input>
-    <div >
-        {{restartRequiredText}}
+<fieldset id="general" class="fieldsetGrid">
+    <legend class="fieldSetLegend">General</legend>
+    <app-caption-label #fontFamilyLabel for="fontFamilyInput"></app-caption-label>
+    <app-text-input #fontFamilyControl id="fontFamilyControl" inputId="fontFamilyInput" spellCheck="false"></app-text-input>
+    <app-caption-label #fontSizeLabel for="fontSizeInput"></app-caption-label>
+    <app-text-input #fontSizeControl id="fontSizeControl" inputId="fontSizeInput" spellCheck="false"></app-text-input>
+    <app-caption-label #defaultExchangeLabel for="defaultExchangeInput"></app-caption-label>
+    <app-enum-input #defaultExchangeControl id="defaultExchangeControl" inputId="defaultExchangeInput"></app-enum-input>
+    <app-caption-label #dropDownEditableSearchTermLabel for="dropDownEditableSearchTermCheckbox"></app-caption-label>
+    <app-checkbox-input #dropDownEditableSearchTermControl id="dropDownEditableSearchTermControl" inputId="dropDownEditableSearchTermCheckbox"></app-checkbox-input>
+    <app-caption-label #numberGroupingActiveLabel for="numberGroupingActiveCheckbox"></app-caption-label>
+    <app-checkbox-input #numberGroupingActiveControl id="numberGroupingActiveControl" inputId="numberGroupingActiveCheckbox"></app-checkbox-input>
+    <app-caption-label #minimumPriceFractionDigitsCountLabel for="minimumPriceFractionDigitsCountInput"></app-caption-label>
+    <app-integer-text-input #minimumPriceFractionDigitsCountControl id="minimumPriceFractionDigitsCountControl"
+        inputId="minimumPriceFractionDigitsCountInput" spellCheck="false"></app-integer-text-input>
+    <app-caption-label #24HourLabel for="24HourControlCheckbox"></app-caption-label>
+    <app-checkbox-input #24HourControl id="24HourControl" inputId="24HourControlCheckbox"></app-checkbox-input>
+    <app-caption-label #dateTimeTimezoneModeLabel for="sourceDateTimeTimezoneModeRadio"></app-caption-label>
+    <div id="dateTimeTimezoneMode">
+        <app-captioned-radio #sourceDateTimeTimezoneModeControl id="sourceDateTimeTimezoneModeControl" inputId="sourceDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
+        <app-captioned-radio #localDateTimeTimezoneModeControl id="localDateTimeTimezoneModeControl" inputId="localDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
+        <app-captioned-radio #utcDateTimeTimezoneModeControl id="utcDateTimeTimezoneModeControl" inputId="utcDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
     </div>
-</div>
+    <app-caption-label #settingsProfileLabel for="settingsProfileSelect"></app-caption-label>
+    <div id="settingsProfileDiv">
+        <app-enum-input #settingsProfileControl id="settingsProfileControl" inputId="settingsProfileSelect"></app-enum-input>
+        <div >
+            {{restartRequiredText}}
+        </div>
+    </div>
+</fieldset>
+<fieldset id="symbols" class="fieldsetGrid">
+    <legend class="fieldSetLegend">Symbols</legend>
+    <app-caption-label #exchangeHideModeLabel for="exchangeHideModeSelect"></app-caption-label>
+    <app-enum-input #exchangeHideModeControl id="exchangeHideModeControl" inputId="exchangeHideModeSelect"></app-enum-input>
+    <app-caption-label #defaultMarketHiddenLabel for="defaultMarketHiddenCheckbox"></app-caption-label>
+    <app-checkbox-input #defaultMarketHiddenControl id="defaultMarketHiddenControl" inputId="defaultMarketHiddenCheckbox"></app-checkbox-input>
+    <app-caption-label #marketCodeAsLocalWheneverPossibleLabel for="marketCodeAsLocalWheneverPossibleCheckbox"></app-caption-label>
+    <app-checkbox-input #marketCodeAsLocalWheneverPossibleControl id="marketCodeAsLocalWheneverPossibleControl" inputId="marketCodeAsLocalWheneverPossibleCheckbox"></app-checkbox-input>
+    <app-caption-label #symbol_ExplicitSearchFieldsLabel for="symbol_ExplicitSearchFieldsInput"></app-caption-label>
+    <section id="explicitSearchFields">
+        <app-checkbox-input #symbol_ExplicitSearchFieldsEnabledControl id="symbol_ExplicitSearchFieldsEnabledControl" inputId="symbol_ExplicitSearchFieldsEnabledCheckbox"></app-checkbox-input>
+        <app-enum-array-input #symbol_ExplicitSearchFieldsControl id="symbol_ExplicitSearchFieldsControl" inputId="symbol_ExplicitSearchFieldsInput" inputSize="6em"></app-enum-array-input>
+    </section>
+</fieldset>

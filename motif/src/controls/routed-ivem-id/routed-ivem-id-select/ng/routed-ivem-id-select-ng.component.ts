@@ -17,13 +17,14 @@ import {
     MarketOrderRoute,
     OrderRoute,
     RoutedIvemId,
-    SearchSymbolsDataDefinition,
-    SymbolsDataItem
+    SearchSymbolsDataDefinition, SymbolsDataItem
 } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import {
     BooleanUiAction,
     CommandRegisterService,
+    CoreSettings,
+    ExchangeSettings,
     IconButtonUiAction,
     InternalCommand,
     SymbolDetailCache,
@@ -292,6 +293,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 (prev, curr) => RoutedIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
             map((parsedTerm) => new RoutedIvemIdSelectNgComponent.ItemArrayObservable(
+                    this.coreSettings,
+                    this.exchangeSettingsArray,
                     this._adiService,
                     this.symbolsService,
                     parsedTerm, 800,
@@ -518,12 +521,15 @@ export namespace RoutedIvemIdSelectNgComponent {
         private _termItem: Item;
         private _searchItems: Item[];
 
-        constructor(private _adiService: AdiService,
-            private _symbolsService: SymbolsService,
-            private _term: ParsedSearchTerm,
-            private _searchDelay: Integer,
-            private _queryStartFinishEventHandler: (this: void, start: boolean) => void,
-            private _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
+        constructor(
+            private readonly _coreSettings: CoreSettings,
+            private readonly _exchangeSettingsArray: readonly ExchangeSettings[],
+            private readonly _adiService: AdiService,
+            private readonly _symbolsService: SymbolsService,
+            private readonly _term: ParsedSearchTerm,
+            private readonly _searchDelay: Integer,
+            private readonly _queryStartFinishEventHandler: (this: void, start: boolean) => void,
+            private readonly _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
         ) {
             super((observer) => this.subscribeFtn(observer));
         }
@@ -630,14 +636,20 @@ export namespace RoutedIvemIdSelectNgComponent {
                 }
             }
 
+            const exchangeId = this._term.exchangeId;
+            const fieldIds = this._symbolsService.calculateSymbolSearchFieldIds(exchangeId);
+
+            const condition: SearchSymbolsDataDefinition.Condition = {
+                text: this._term.codeOrName,
+                fieldIds,
+                isCaseSensitive: false,
+            };
+
             const definition = new SearchSymbolsDataDefinition();
-            definition.searchText = this._term.codeOrName;
-            definition.exchangeId = this._term.exchangeId;
+            definition.conditions = [condition];
+            definition.exchangeId = exchangeId;
             definition.marketIds = marketIds;
-            definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
-            definition.isPartial = true;
-            definition.showFull = true; // AlternateCodesFix: should be false
-            definition.isCaseSensitive = false;
+            definition.fullSymbol = true; // AlternateCodesFix: should be false
             definition.count = 100;
             this._dataItem = this._adiService.subscribe(definition) as SymbolsDataItem;
             if (this._dataItem.incubated) {

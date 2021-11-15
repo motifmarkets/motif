@@ -5,22 +5,25 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { CoreSettings, SettingsService } from 'src/core/internal-api';
+import { ColorSettings, CoreSettings, SettingsService } from 'src/core/internal-api';
 import { MultiEvent } from 'src/sys/internal-api';
 
 @Directive()
 export abstract class SettingsComponentBaseNgDirective {
     private _coreSettings: CoreSettings;
+    private _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     protected get settingsService() { return this._settingsService; }
     protected get coreSettings() { return this._coreSettings; }
+    protected get colorSettings() { return this._colorSettings; }
 
     constructor(
         private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
     ) {
         this._coreSettings = this._settingsService.core;
+        this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 

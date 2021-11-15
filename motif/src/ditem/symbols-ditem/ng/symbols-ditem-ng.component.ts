@@ -11,7 +11,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
-import { ExchangeId, ExchangeInfo, MarketId, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
+import { ExchangeId, ExchangeInfo, MarketId, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import { MotifGrid } from 'src/content/internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
@@ -250,10 +250,10 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._cfiControlComponent.initialise(this._cfiUiAction);
         this._fieldsLabelComponent.initialise(this._fieldsUiAction);
         this._optionsLabelComponent.initialise(this._optionsUiAction);
-        this._codeControlComponent.initialiseEnum(this._fieldsUiAction, SearchSymbolsDataDefinition.FieldId.Code);
-        // this._codeLabelComponent.initialiseEnum(this._fieldsUiAction, QuerySymbolsDataDefinition.FieldId.Code);
-        this._nameControlComponent.initialiseEnum(this._fieldsUiAction, SearchSymbolsDataDefinition.FieldId.Name);
-        // this._nameLabelComponent.initialiseEnum(this._fieldsUiAction, QuerySymbolsDataDefinition.FieldId.Name);
+        this._codeControlComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Code);
+        // this._codeLabelComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Code);
+        this._nameControlComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Name);
+        // this._nameLabelComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Name);
         this._fieldsControlComponent.initialise(this._fieldsUiAction);
         this._partialControlComponent.initialise(this._partialUiAction);
         // this._partialLabelComponent.initialise(this._partialUiAction);
@@ -346,7 +346,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     private handleFieldsCommitEvent() {
-        const ids = this._fieldsUiAction.definedValue as readonly SearchSymbolsDataDefinition.FieldId[];
+        const ids = this._fieldsUiAction.definedValue as readonly SymbolFieldId[];
         this._frame.queryFieldIds = ids;
     }
 
@@ -465,13 +465,13 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Fields]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Fields]);
 
-        const entryCount = SearchSymbolsDataDefinition.Field.idCount;
+        const entryCount = SymbolField.idCount;
         const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,
-                caption: SearchSymbolsDataDefinition.Field.idToDisplay(id),
-                title: SearchSymbolsDataDefinition.Field.idToDescription(id),
+                caption: SymbolField.idToDisplay(id),
+                title: SymbolField.idToDescription(id),
             };
         }
 

@@ -5,7 +5,7 @@
  */
 
 /* eslint-disable brace-style */
-import { OrderTypeId, TimeInForceId } from 'src/adi/internal-api';
+import { OrderTypeId, SymbolField, SymbolFieldId, TimeInForceId } from 'src/adi/internal-api';
 import { Integer, SourceTzOffsetDateTime, SysTick } from 'src/sys/internal-api';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
 import { TypedKeyValueSettingsGroup } from './typed-key-value-settings-group';
@@ -23,6 +23,8 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     private _symbol_PscDefaultMarketHidden = CoreSettings.Default.symbol_PscDefaultMarketHidden;
     private _symbol_PscMarketCodeAsLocalWheneverPossible = CoreSettings.Default.symbol_PscMarketCodeAsLocalWheneverPossible;
     private _symbol_AutoSelectDefaultMarketDest = CoreSettings.Default.symbol_AutoSelectDefaultMarketDest;
+    private _symbol_ExplicitSearchFieldsEnabled = CoreSettings.Default.symbol_ExplicitSearchFieldsEnabled;
+    private _symbol_ExplicitSearchFieldIds = CoreSettings.Default.symbol_ExplicitSearchFieldIds;
 
     private _grid_HorizontalLinesVisible = CoreSettings.Default.grid_HorizontalLinesVisible;
     private _grid_VerticalLinesVisible = CoreSettings.Default.grid_VerticalLinesVisible;
@@ -142,6 +144,35 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             getter: () => TypedKeyValueSettings.formatBoolean(this._symbol_AutoSelectDefaultMarketDest),
             pusher: (value: TypedKeyValueSettings.PushValue) => {
                 this._symbol_AutoSelectDefaultMarketDest = TypedKeyValueSettings.parseBoolean(value);
+            }
+        },
+        Symbol_ExplicitSearchFieldsEnabled: { id: CoreSettings.Id.Symbol_ExplicitSearchFieldsEnabled,
+            name: 'symbol_ExplicitSearchFieldsEnabled',
+            defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.symbol_ExplicitSearchFieldsEnabled),
+            getter: () => TypedKeyValueSettings.formatBoolean(this._symbol_ExplicitSearchFieldsEnabled),
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_ExplicitSearchFieldsEnabled = TypedKeyValueSettings.parseBoolean(value);
+            }
+        },
+        Symbol_ExplicitSearchFieldIds: { id: CoreSettings.Id.Symbol_ExplicitSearchFieldIds,
+            name: 'symbol_ExplicitSearchFieldIds',
+            defaulter: () => TypedKeyValueSettings.formatEnumArrayString(
+                SymbolField.idArrayToJsonValue(CoreSettings.Default.symbol_ExplicitSearchFieldIds)
+            ),
+            getter: () => TypedKeyValueSettings.formatEnumArrayString(
+                SymbolField.idArrayToJsonValue(this._symbol_ExplicitSearchFieldIds)
+            ),
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                if (value.value === undefined) {
+                    this._symbol_ExplicitSearchFieldIds = CoreSettings.Default.symbol_ExplicitSearchFieldIds;
+                } else {
+                    const idArray = SymbolField.tryJsonValueToIdArray(value.value);
+                    if (idArray === undefined) {
+                        this._symbol_ExplicitSearchFieldIds = CoreSettings.Default.symbol_ExplicitSearchFieldIds;
+                    } else {
+                        this._symbol_ExplicitSearchFieldIds = idArray;
+                    }
+                }
             }
         },
         Grid_HorizontalLinesVisible: { id: CoreSettings.Id.Grid_HorizontalLinesVisible,
@@ -422,6 +453,12 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     get symbol_AutoSelectDefaultMarketDest() { return this._symbol_AutoSelectDefaultMarketDest; }
     set symbol_AutoSelectDefaultMarketDest(value: boolean) { this._symbol_AutoSelectDefaultMarketDest = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_AutoSelectDefaultMarketDest); }
+    get symbol_ExplicitSearchFieldsEnabled() { return this._symbol_ExplicitSearchFieldsEnabled; }
+    set symbol_ExplicitSearchFieldsEnabled(value: boolean) { this._symbol_ExplicitSearchFieldsEnabled = value;
+        this.notifySettingChanged(CoreSettings.Id.Symbol_ExplicitSearchFieldsEnabled); }
+    get symbol_ExplicitSearchFieldIds() { return this._symbol_ExplicitSearchFieldIds; }
+    set symbol_ExplicitSearchFieldIds(value: SymbolFieldId[]) { this._symbol_ExplicitSearchFieldIds = value;
+        this.notifySettingChanged(CoreSettings.Id.Symbol_ExplicitSearchFieldIds); }
 
     get grid_HorizontalLinesVisible() { return this._grid_HorizontalLinesVisible; }
     set grid_HorizontalLinesVisible(value) { this._grid_HorizontalLinesVisible = value;
@@ -551,6 +588,8 @@ export namespace CoreSettings {
         Symbol_PscDefaultMarketHidden,
         Symbol_PscMarketCodeAsLocalWheneverPossible,
         Symbol_AutoSelectDefaultMarketDest,
+        Symbol_ExplicitSearchFieldsEnabled,
+        Symbol_ExplicitSearchFieldIds,
 
         Grid_HorizontalLinesVisible,
         Grid_VerticalLinesVisible,
@@ -608,6 +647,8 @@ export namespace CoreSettings {
         export const symbol_PscDefaultMarketHidden = true;
         export const symbol_PscMarketCodeAsLocalWheneverPossible = true;
         export const symbol_AutoSelectDefaultMarketDest = true;
+        export const symbol_ExplicitSearchFieldsEnabled = false;
+        export const symbol_ExplicitSearchFieldIds = [SymbolFieldId.Code, SymbolFieldId.Name];
 
         export const grid_HorizontalLinesVisible = false;
         export const grid_VerticalLinesVisible = true;

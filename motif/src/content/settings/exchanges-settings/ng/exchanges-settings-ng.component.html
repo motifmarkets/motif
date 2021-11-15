@@ -4,6 +4,6 @@
     License: motionite.trade/license/motif
 -->
 
-<div *ngFor="let exchange of exchanges">
+<ng-container *ngFor="let exchange of exchanges">
     <app-exchange-settings *ngIf="isExchangeAllowed(exchange.exchangeId)" [exchangeId]="exchange.exchangeId"></app-exchange-settings>
-</div>
+</ng-container>

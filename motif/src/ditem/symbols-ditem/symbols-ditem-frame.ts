@@ -11,6 +11,8 @@ import {
     MarketId,
     MarketInfo,
     SearchSymbolsDataDefinition,
+    SymbolField,
+    SymbolFieldId,
     SymbolsDataItem
 } from 'src/adi/internal-api';
 import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
@@ -47,7 +49,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     get queryCfi() { return this._uiQueryRequest.cfi; }
     set queryCfi(value: string | undefined) { this._uiQueryRequest.cfi = value; }
     get queryFieldIds() { return this._uiQueryRequest.fieldIds; }
-    set queryFieldIds(value: readonly SearchSymbolsDataDefinition.FieldId[] | undefined) { this._uiQueryRequest.fieldIds = value?.slice(); }
+    set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiQueryRequest.fieldIds = value?.slice(); }
     get queryIsPartial() { return this._uiQueryRequest.isPartial; }
     set queryIsPartial(value: boolean | undefined) { this._uiQueryRequest.isPartial = value; }
     get queryIsCaseSensitive() { return this._uiQueryRequest.isCaseSensitive; }
@@ -162,15 +164,27 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     private generateQueryDescription(definition: SearchSymbolsDataDefinition) {
-        const fieldIds = definition.fieldIds;
-        const fieldCount = fieldIds.length;
-        const fieldDisplays = new Array<string>(fieldCount);
-        for (let i = 0; i < fieldCount; i++) {
-            const fieldId = fieldIds[i];
-            fieldDisplays[i] = SearchSymbolsDataDefinition.Field.idToDisplay(fieldId);
+        let result = `${Strings[StringId.Query]}: `;
+        const conditions = definition.conditions;
+        const condition = (conditions !== undefined && conditions.length > 0) ? conditions[0] : undefined;
+        if (condition === undefined) {
+            result += `"", ${Strings[StringId.Fields]}: ""`;
+        } else {
+            let fieldsDisplay: string;
+            const fieldIds = condition.fieldIds;
+            if (fieldIds === undefined) {
+                fieldsDisplay = '';
+            } else {
+                const fieldCount = fieldIds.length;
+                const fieldDisplays = new Array<string>(fieldCount);
+                for (let i = 0; i < fieldCount; i++) {
+                    const fieldId = fieldIds[i];
+                    fieldDisplays[i] = SymbolField.idToDisplay(fieldId);
+                }
+                fieldsDisplay = fieldDisplays.join();
+            }
+            result += `"${condition.text}", ${Strings[StringId.Fields]}: "${fieldsDisplay}"`;
         }
-        const fieldsDisplay = fieldDisplays.join();
-        let result = `${Strings[StringId.Query]}: "${definition.searchText}", ${Strings[StringId.Fields]}: "${fieldsDisplay}"`;
         const exchangeId = definition.exchangeId;
         if (exchangeId !== undefined) {
             result += `, ${Strings[StringId.Exchange]}: ${ExchangeInfo.idToAbbreviatedDisplay(exchangeId)}`;
@@ -183,7 +197,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
                 const marketId = marketIds[i];
                 marketDisplays[i] = MarketInfo.idToDisplay(marketId);
             }
-            const marketsDisplay = fieldDisplays.join();
+            const marketsDisplay = marketDisplays.join();
             result += `, ${Strings[StringId.Markets]}: "${marketsDisplay}"`;
         }
         const cfi = definition.cfi;
@@ -191,13 +205,16 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
             result += `, ${Strings[StringId.Cfi]}: "${cfi}"`;
         }
         const options: string[] = [];
-        if (definition.isPartial) {
-            options.push(Strings[StringId.Partial]);
+        if (condition !== undefined) {
+            const matchIds = condition.matchIds;
+            if (matchIds === undefined || !matchIds.includes(SearchSymbolsDataDefinition.Condition.MatchId.exact)) {
+                options.push(Strings[StringId.Partial]);
+            }
         }
         if (definition.preferExact) {
             options.push(Strings[StringId.Exact]);
         }
-        if (definition.showFull) {
+        if (definition.fullSymbol) {
             options.push(Strings[StringId.Full]);
         }
         const optionsDisplay = options.join();
@@ -219,9 +236,9 @@ export namespace SymbolsDitemFrame {
         export const queryContent = 'queryContent';
     }
 
-    export type TargetFieldId = SearchSymbolsDataDefinition.FieldId;
-    export const CodeTargetFieldId = SearchSymbolsDataDefinition.FieldId.Code;
-    export const NameTargetFieldId = SearchSymbolsDataDefinition.FieldId.Name;
+    export type TargetFieldId = SymbolFieldId;
+    export const CodeTargetFieldId = SymbolFieldId.Code;
+    export const NameTargetFieldId = SymbolFieldId.Name;
 
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined) => void;
     export type TableOpenEvent = (this: void, description: string) => void;

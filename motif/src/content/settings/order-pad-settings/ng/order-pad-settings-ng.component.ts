@@ -47,6 +47,8 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         this._reviewEnabledUiAction = this.createReviewEnabledUiAction();
         this._defaultOrderTypeIdUiAction = this.createDefaultOrderTypeIdUiAction();
         this._defaultTimeInForceIdUiAction = this.createDefaultTimeInForceIdUiAction();
+
+        this.processSettingsChanged();
     }
 
     ngOnInit() {

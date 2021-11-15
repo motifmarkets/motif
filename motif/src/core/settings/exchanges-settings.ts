@@ -1,4 +1,4 @@
-import { ExchangeId, ExchangeInfo, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
+import { ExchangeId, ExchangeInfo, SymbolFieldId } from 'src/adi/internal-api';
 import { ExchangeSettings } from './exchange-settings';
 import { TypedKeyValueArraySettingsGroup } from './typed-key-value-array-settings-group';
 
@@ -18,7 +18,7 @@ export class ExchangesSettings extends TypedKeyValueArraySettingsGroup {
         return this.exchanges[exchangeId].symbolNameFieldId;
     }
 
-    setSymbolNameField(exchangeId: ExchangeId, value: SearchSymbolsDataDefinition.FieldId) {
+    setSymbolNameField(exchangeId: ExchangeId, value: SymbolFieldId) {
         this.exchanges[exchangeId].symbolNameFieldId = value;
     }
 
@@ -26,7 +26,7 @@ export class ExchangesSettings extends TypedKeyValueArraySettingsGroup {
         return this.exchanges[exchangeId].symbolSearchFieldIds;
     }
 
-    setSymbolSearchFieldIds(exchangeId: ExchangeId, value: SearchSymbolsDataDefinition.FieldId[]) {
+    setSymbolSearchFieldIds(exchangeId: ExchangeId, value: SymbolFieldId[]) {
         this.exchanges[exchangeId].symbolSearchFieldIds = value;
     }
 

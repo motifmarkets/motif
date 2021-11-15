@@ -1,44 +1,47 @@
-import { ExchangeId, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
+import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
 import { AssertInternalError } from 'src/sys/internal-api';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
 
 export class ExchangeSettings {
+    private _symbolSearchFieldIds: SymbolFieldId[];
+    private _symbolNameFieldId: SymbolFieldId;
+
     constructor(
         readonly exchangeId: ExchangeId,
         private readonly _settingChangedEventer: ExchangeSettings.SettingChangedEventer,
     ) {
         if (ExchangeSettings.idCount !== this.infos.length) {
             throw new AssertInternalError('EXCIC23331', `${ExchangeSettings.idCount} !== ${this.infos.length}`);
+        } else {
+            this._symbolSearchFieldIds = ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId).slice();
+            this._symbolNameFieldId = ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId);
         }
     }
 
     get symbolNameFieldId() { return this._symbolNameFieldId; }
-    set symbolNameFieldId(value: SearchSymbolsDataDefinition.FieldId) { this._symbolNameFieldId = value;
+    set symbolNameFieldId(value: SymbolFieldId) { this._symbolNameFieldId = value;
         this._settingChangedEventer(ExchangeSettings.Id.SymbolNameFieldId);
     }
 
     get symbolSearchFieldIds() { return this._symbolSearchFieldIds; }
-    set symbolSearchFieldIds(value: SearchSymbolsDataDefinition.FieldId[]) { this._symbolSearchFieldIds = value;
+    set symbolSearchFieldIds(value: SymbolFieldId[]) { this._symbolSearchFieldIds = value;
         this._settingChangedEventer(ExchangeSettings.Id.SymbolSearchFieldIds);
     }
-
-    private _symbolNameFieldId = ExchangeSettings.Default.symbolNameFieldId;
-    private _symbolSearchFieldIds = ExchangeSettings.Default.symbolSearchFieldIds;
 
     private _infosObject: ExchangeSettings.InfosObject = {
         SymbolNameFieldId: { id: ExchangeSettings.Id.SymbolNameFieldId,
             name: 'symbolNameFieldId',
             defaulter: () => TypedKeyValueSettings.formatEnumString(
-                SearchSymbolsDataDefinition.Field.idToJsonValue(ExchangeSettings.Default.symbolNameFieldId)
+                SymbolField.idToJsonValue(ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId))
             ),
-            getter: () => TypedKeyValueSettings.formatEnumString(SearchSymbolsDataDefinition.Field.idToJsonValue(this._symbolNameFieldId)),
+            getter: () => TypedKeyValueSettings.formatEnumString(SymbolField.idToJsonValue(this._symbolNameFieldId)),
             pusher: (value: TypedKeyValueSettings.PushValue) => {
                 if (value.value === undefined) {
-                    this._symbolNameFieldId = ExchangeSettings.Default.symbolNameFieldId;
+                    this._symbolNameFieldId = ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId);
                 } else {
-                    const id = SearchSymbolsDataDefinition.Field.tryJsonValueToId(value.value);
+                    const id = SymbolField.tryJsonValueToId(value.value);
                     if (id === undefined) {
-                        this._symbolNameFieldId = ExchangeSettings.Default.symbolNameFieldId;
+                        this._symbolNameFieldId = ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId);
                     } else {
                         this._symbolNameFieldId = id;
                     }
@@ -48,16 +51,16 @@ export class ExchangeSettings {
         SymbolSearchFieldIds: { id: ExchangeSettings.Id.SymbolSearchFieldIds,
             name: 'symbolSearchFieldIds',
             defaulter: () => TypedKeyValueSettings.formatEnumArrayString(
-                SearchSymbolsDataDefinition.Field.idArrayToJsonValue(ExchangeSettings.Default.symbolSearchFieldIds)
+                SymbolField.idArrayToJsonValue(ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId))
             ),
-            getter: () => TypedKeyValueSettings.formatEnumArrayString(SearchSymbolsDataDefinition.Field.idArrayToJsonValue(this._symbolSearchFieldIds)),
+            getter: () => TypedKeyValueSettings.formatEnumArrayString(SymbolField.idArrayToJsonValue(this._symbolSearchFieldIds)),
             pusher: (value: TypedKeyValueSettings.PushValue) => {
                 if (value.value === undefined) {
-                    this._symbolSearchFieldIds = ExchangeSettings.Default.symbolSearchFieldIds;
+                    this._symbolSearchFieldIds = ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId).slice();
                 } else {
-                    const idArray = SearchSymbolsDataDefinition.Field.tryJsonValueToIdArray(value.value);
+                    const idArray = SymbolField.tryJsonValueToIdArray(value.value);
                     if (idArray === undefined) {
-                        this._symbolSearchFieldIds = ExchangeSettings.Default.symbolSearchFieldIds;
+                        this._symbolSearchFieldIds = ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId).slice();
                     } else {
                         this._symbolSearchFieldIds = idArray;
                     }
@@ -77,23 +80,7 @@ export namespace ExchangeSettings {
 
     export const idCount = 2;
 
-    export const AllowableSymbolSearchFieldIds = [
-        SearchSymbolsDataDefinition.FieldId.Code,
-        SearchSymbolsDataDefinition.FieldId.Name,
-        SearchSymbolsDataDefinition.FieldId.Ticker,
-    ];
-
-    export const AllowableSymbolNameFieldIds = [
-        SearchSymbolsDataDefinition.FieldId.Name,
-        SearchSymbolsDataDefinition.FieldId.Ticker,
-    ];
-
     export type SettingChangedEventer = (this: void, id: Id) => void;
 
     export type InfosObject = { [id in keyof typeof Id]: TypedKeyValueSettings.Info };
-
-    export namespace Default {
-        export const symbolNameFieldId = SearchSymbolsDataDefinition.FieldId.Name;
-        export const symbolSearchFieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
-    }
 }

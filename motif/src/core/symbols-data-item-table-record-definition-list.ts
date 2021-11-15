@@ -13,7 +13,7 @@ import {
     LitIvemDetail,
     MarketId,
     MarketInfo,
-    SearchSymbolsDataDefinition, SymbolsDataItem, SymbolsDataDefinition
+    SearchSymbolsDataDefinition, SymbolFieldId, SymbolsDataDefinition, SymbolsDataItem
 } from 'src/adi/internal-api';
 import {
     AssertInternalError,
@@ -24,7 +24,9 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
+import { SettingsService } from './settings/internal-api';
 import { SingleDataItemTableRecordDefinitionList } from './single-data-item-table-record-definition-list';
+import { SymbolsService } from './symbols-service';
 import { LitIvemDetailTableRecordDefinition, TableRecordDefinition } from './table-record-definition';
 import { TableRecordDefinitionList } from './table-record-definition-list';
 
@@ -44,7 +46,11 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
     private _badnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
 
     // setting accountId to undefined will return orders for all accounts
-    constructor(private _adi: AdiService) {
+    constructor(
+        private readonly _adi: AdiService,
+        private readonly _settingsService: SettingsService,
+        private readonly _symbolsService: SymbolsService
+    ) {
         super(TableRecordDefinitionList.TypeId.SymbolsDataItem);
         this.setName(SymbolsDataItemTableRecordDefinitionList.baseName +
             (++SymbolsDataItemTableRecordDefinitionList._constructCount).toString(10));
@@ -238,19 +244,35 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
                 if (marketIds !== undefined && marketIds.length === 0) {
                     marketIds = undefined;
                 }
+
+                const exchangeId = queryRequest.exchangeId;
+
+                let fieldIds: readonly SymbolFieldId[];
+                if (queryRequest.fieldIds !== undefined) {
+                    fieldIds = queryRequest.fieldIds;
+                } else {
+                    fieldIds = this._symbolsService.calculateSymbolSearchFieldIds(exchangeId);
+                    if (exchangeId === undefined) {
+                        fieldIds = this._settingsService.core.symbol_ExplicitSearchFieldIds;
+                    } else {
+                        fieldIds = this._settingsService.exchanges.exchanges[exchangeId].symbolSearchFieldIds;
+                    }
+                }
+                const matchIds = queryRequest.isPartial ? [SearchSymbolsDataDefinition.Condition.MatchId.exact] : [];
+
+                const condition: SearchSymbolsDataDefinition.Condition = {
+                    text: queryRequest.searchText,
+                    fieldIds,
+                    isCaseSensitive: queryRequest.isCaseSensitive,
+                    matchIds,
+                };
+
                 const queryDefinition = new SearchSymbolsDataDefinition();
-                queryDefinition.searchText = queryRequest.searchText;
-                queryDefinition.showFull = queryRequest.showFull;
+                queryDefinition.conditions = [condition];
+                queryDefinition.fullSymbol = queryRequest.showFull;
                 queryDefinition.exchangeId = queryRequest.exchangeId;
                 queryDefinition.marketIds = marketIds;
                 queryDefinition.cfi = queryRequest.cfi;
-                if (queryRequest.fieldIds === undefined) {
-                    queryDefinition.fieldIds = SearchSymbolsDataDefinition.defaultFieldIds;
-                } else {
-                    queryDefinition.fieldIds = queryRequest.fieldIds;
-                }
-                queryDefinition.isPartial = queryRequest.isPartial;
-                queryDefinition.isCaseSensitive = queryRequest.isCaseSensitive;
                 queryDefinition.preferExact = queryRequest.preferExact;
                 queryDefinition.startIndex = queryRequest.startIndex;
                 queryDefinition.count = queryRequest.count;
@@ -369,7 +391,7 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
         exchangeId: ExchangeId | undefined;
         marketIds: readonly MarketId[] | undefined;
         cfi: string | undefined;
-        fieldIds: readonly SearchSymbolsDataDefinition.FieldId[] | undefined;
+        fieldIds: readonly SymbolFieldId[] | undefined;
         isPartial: boolean | undefined;
         isCaseSensitive: boolean | undefined;
         preferExact: boolean | undefined;
@@ -422,7 +444,7 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
         searchText: '1000',
         showFull: false,
         exchangeId: ExchangeId.Myx,
-        fieldIds: SearchSymbolsDataDefinition.defaultFieldIds,
+        fieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         count: 10,
         marketIds: undefined,
         cfi: undefined,

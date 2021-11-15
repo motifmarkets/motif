@@ -20,6 +20,7 @@ import {
     OrderRoute,
     RoutedIvemId,
     SearchSymbolsDataDefinition,
+    SymbolFieldId,
     SymbolsDataItem,
     ZenithSubscriptionDataId
 } from 'src/adi/internal-api';
@@ -429,14 +430,20 @@ class LitIvemIdRequest extends Request {
 }
 
 namespace LitIvemIdRequest {
+
     export function createDataDefinition(litIvemId: LitIvemId) {
+        const condition: SearchSymbolsDataDefinition.Condition = {
+            text: litIvemId.code,
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: true,
+            matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+        };
+
         const definition = new SearchSymbolsDataDefinition();
+        definition.conditions = [condition];
         definition.marketIds = [litIvemId.litId];
-        definition.searchText = litIvemId.code;
-        // definition.isCaseSensitive = false;
-        definition.isPartial = false;
         definition.preferExact = true;
-        definition.showFull = true; // AlternateCodesFix: should be false
+        definition.fullSymbol = true; // AlternateCodesFix: should be false
         return definition;
     }
 }
@@ -519,11 +526,16 @@ namespace IvemIdRequest {
     export type GetLitIvemIdDetailEventHandler = (litIvemId: LitIvemId) => SymbolDetailCache.LitIvemIdDetail;
 
     export function createDataDefinition(ivemId: IvemId) {
+        const condition: SearchSymbolsDataDefinition.Condition = {
+            text: ivemId.code,
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: true,
+            matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+        };
+
         const definition = new SearchSymbolsDataDefinition();
+        definition.conditions = [condition];
         definition.exchangeId = ivemId.exchangeId;
-        definition.searchText = ivemId.code;
-        // definition.isCaseSensitive = false;
-        definition.isPartial = false;
         definition.preferExact = true;
         return definition;
     }

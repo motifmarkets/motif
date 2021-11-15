@@ -87,6 +87,7 @@ import {
     PriceOrderTrigger,
     PublisherRequest,
     SearchSymbolsDataDefinition,
+    SymbolFieldId,
     TimeInForceId,
     TradeAffects as AdiTradeAffects,
     TradeAffectsId,
@@ -1909,17 +1910,17 @@ export namespace ZenithConvert {
     }
 
     export namespace SymbolAlternateKey {
-        export function fromId(value: SearchSymbolsDataDefinition.FieldId): Zenith.MarketController.SearchSymbols.AlternateKey | undefined {
+        export function fromId(value: SymbolFieldId): Zenith.MarketController.SearchSymbols.AlternateKey | undefined {
             switch (value) {
-                case SearchSymbolsDataDefinition.FieldId.Code: return undefined;
-                case SearchSymbolsDataDefinition.FieldId.Name: return undefined;
-                case SearchSymbolsDataDefinition.FieldId.Short: return Zenith.MarketController.SearchSymbols.AlternateKey.Short;
-                case SearchSymbolsDataDefinition.FieldId.Long: return Zenith.MarketController.SearchSymbols.AlternateKey.Long;
-                case SearchSymbolsDataDefinition.FieldId.Ticker: return Zenith.MarketController.SearchSymbols.AlternateKey.Ticker;
-                case SearchSymbolsDataDefinition.FieldId.Gics: return Zenith.MarketController.SearchSymbols.AlternateKey.Gics;
-                case SearchSymbolsDataDefinition.FieldId.Isin: return Zenith.MarketController.SearchSymbols.AlternateKey.Isin;
-                case SearchSymbolsDataDefinition.FieldId.Base: return Zenith.MarketController.SearchSymbols.AlternateKey.Base;
-                case SearchSymbolsDataDefinition.FieldId.Ric: return Zenith.MarketController.SearchSymbols.AlternateKey.Ric;
+                case SymbolFieldId.Code: return undefined;
+                case SymbolFieldId.Name: return undefined;
+                case SymbolFieldId.Short: return Zenith.MarketController.SearchSymbols.AlternateKey.Short;
+                case SymbolFieldId.Long: return Zenith.MarketController.SearchSymbols.AlternateKey.Long;
+                case SymbolFieldId.Ticker: return Zenith.MarketController.SearchSymbols.AlternateKey.Ticker;
+                case SymbolFieldId.Gics: return Zenith.MarketController.SearchSymbols.AlternateKey.Gics;
+                case SymbolFieldId.Isin: return Zenith.MarketController.SearchSymbols.AlternateKey.Isin;
+                case SymbolFieldId.Base: return Zenith.MarketController.SearchSymbols.AlternateKey.Base;
+                case SymbolFieldId.Ric: return Zenith.MarketController.SearchSymbols.AlternateKey.Ric;
                 default:
                     throw new UnreachableCaseError('ZCSAK08577', value);
             }

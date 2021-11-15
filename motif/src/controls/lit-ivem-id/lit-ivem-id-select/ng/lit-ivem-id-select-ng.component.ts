@@ -25,14 +25,15 @@ import {
     LitIvemId,
     MarketId,
     MarketInfo,
-    SearchSymbolsDataDefinition,
-    SymbolsDataItem,
+    SearchSymbolsDataDefinition, SymbolsDataItem,
     SymbolsDataMessage
 } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import {
     BooleanUiAction,
     CommandRegisterService,
+    CoreSettings,
+    ExchangeSettings,
     IconButtonUiAction,
     InternalCommand,
     LitIvemIdUiAction,
@@ -322,8 +323,13 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                 (prev, curr) => LitIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
             // debounceTime(800),
-            map((parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(this._adiService, this._symbolsService,
-                    parsedTerm, 800,
+            map((parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(
+                    this.coreSettings,
+                    this.exchangeSettingsArray,
+                    this._adiService,
+                    this._symbolsService,
+                    parsedTerm,
+                    800,
                     (start) => this.handleQueryStartFinishEvent(start),
                     (start) => this.handleDebounceDelayStartFinishEvent(start)
                 )
@@ -607,12 +613,15 @@ export namespace LitIvemIdSelectNgComponent {
         private _termItem: Item;
         private _searchItems: Item[];
 
-        constructor(private _adiService: AdiService,
-            private _symbolsService: SymbolsService,
-            private _term: ParsedSearchTerm,
-            private _searchDelay: Integer,
-            private _queryStartFinishEventHandler: (this: void, start: boolean) => void,
-            private _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
+        constructor(
+            private readonly _coreSettings: CoreSettings,
+            private readonly _exchangeSettingsArray: readonly ExchangeSettings[],
+            private readonly _adiService: AdiService,
+            private readonly _symbolsService: SymbolsService,
+            private readonly _term: ParsedSearchTerm,
+            private readonly _searchDelay: Integer,
+            private readonly _queryStartFinishEventHandler: (this: void, start: boolean) => void,
+            private readonly _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
         ) {
             super((observer) => this.subscribeFtn(observer));
         }
@@ -707,26 +716,19 @@ export namespace LitIvemIdSelectNgComponent {
             this._queryStartFinishEventHandler(true);
 
             const exchangeId = this._term.exchangeId;
-            let fieldIds: SearchSymbolsDataDefinition.FieldId[];
-            if (exchangeId === undefined) {
-
-            } else {
-                fieldIds = this.exchangeSettings
-            }
+            const fieldIds = this._symbolsService.calculateSymbolSearchFieldIds(exchangeId);
 
             const condition: SearchSymbolsDataDefinition.Condition = {
                 text: this._term.codeOrName,
-                fieldIds
-            }
+                fieldIds,
+                isCaseSensitive: false,
+            };
 
             const definition = new SearchSymbolsDataDefinition();
-            definition.searchText = ;
-            definition.exchangeId = this._term.exchangeId;
+            definition.conditions = [condition];
+            definition.exchangeId = exchangeId;
             definition.marketIds = this._term.marketId === undefined ? undefined : [this._term.marketId];
-            definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
-            definition.isPartial = true;
-            definition.showFull = true; // AlternateCodesFix: should be false
-            definition.isCaseSensitive = false;
+            definition.fullSymbol = true; // AlternateCodesFix: should be false
             definition.count = 100;
             this._dataItem = this._adiService.subscribe(definition) as SymbolsDataItem;
             if (this._dataItem.incubated) {
