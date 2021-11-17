@@ -9,7 +9,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { UiAction } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { MultiEvent } from 'src/sys/internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';
@@ -118,11 +118,13 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
     }
 
     public handleSelectOpenEvent() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
         if (this._ngSelectWidths === undefined) {
             this._ngSelectWidths = this.calculateNgSelectWidths();
         }
-        this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectWidths.dropDownPanel);
-        this._ngSelectOverlayNgService.setFirstColumnWidth(this._ngSelectWidths.firstColumn);
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(this._ngSelectWidths.dropDownPanel, false);
+        this._ngSelectOverlayNgService.setFirstColumnWidth(this._ngSelectWidths.firstColumn, false);
     }
 
     protected applyValueAsNamedGroup(value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined) {
@@ -187,8 +189,8 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
             dropDownPanelWidth = componentWidth;
         }
         const ngSelectWidths: NgSelectWidths = {
-            firstColumn: numberToPixels(firstColumnWidth),
-            dropDownPanel: numberToPixels(dropDownPanelWidth),
+            firstColumn: firstColumnWidth,
+            dropDownPanel: dropDownPanelWidth,
         };
 
         return ngSelectWidths;
@@ -198,8 +200,8 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
 const ngOptionLeftRightPadding = 3; // should come from src/scss/partials/ng-select/_default_var.theme.scss
 
 interface NgSelectWidths {
-    dropDownPanel: string;
-    firstColumn: string;
+    dropDownPanel: number;
+    firstColumn: number;
 }
 
 interface SearchEvent {

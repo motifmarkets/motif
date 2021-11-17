@@ -23,8 +23,6 @@ import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgSer
 import {
     BooleanUiAction,
     CommandRegisterService,
-    CoreSettings,
-    ExchangeSettings,
     IconButtonUiAction,
     InternalCommand,
     SymbolDetailCache,
@@ -39,9 +37,7 @@ import {
     compareString,
     ComparisonResult,
     Integer,
-    MultiEvent,
-    numberToPixels,
-    UnreachableCaseError
+    MultiEvent, UnreachableCaseError
 } from 'src/sys/internal-api';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
@@ -83,7 +79,6 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     private _measureCanvasContextsEventSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
-    private _ngSelectWidths: RoutedIvemIdSelectNgComponent.NgSelectWidths | undefined;
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -171,6 +166,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     }
 
     public handleSelectOpenEvent() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
         const list = this._ngSelectComponent.itemsList;
         const ngOptions = list.items;
         const count = ngOptions.length;
@@ -206,7 +203,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 if (cachedIvemIdDetail === undefined) {
                     selected = null;
                 } else {
-                    selected = RoutedIvemIdSelectNgComponent.createItem(value, cachedIvemIdDetail, this.symbolsManager);
+                    selected = RoutedIvemIdSelectNgComponent.createItemFromCacheDetail(value, cachedIvemIdDetail, this.symbolsManager);
                 }
             }
 
@@ -234,24 +231,16 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     private handleMeasureCanvasContextsEvent() {
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureBoldCanvasContext = this._ngSelectOverlayNgService.measureBoldCanvasContext;
-        this._ngSelectWidths = undefined; // force recalculation
     }
 
     private calculateNgSelectWidths(items: RoutedIvemIdSelectNgComponent.Item[]) {
-        let maxIdWidth = 0;
         let maxBoldIdWidth = 0;
         let maxNameWidth = 0;
         const count = items.length;
         for (let i = 0; i < count; i++) {
             const item = items[i];
             const id = item.idDisplay;
-            const idMetrics = this._measureCanvasContext.measureText(id);
-            if (idMetrics.width > maxIdWidth) {
-                maxIdWidth = idMetrics.width;
-            }
-            const boldIdMetrics = this._measureBoldCanvasContext.measureText(
-                id
-            );
+            const boldIdMetrics = this._measureBoldCanvasContext.measureText(id);
             if (boldIdMetrics.width > maxBoldIdWidth) {
                 maxBoldIdWidth = boldIdMetrics.width;
             }
@@ -264,11 +253,11 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
             }
         }
         const spaceMetrics = this._measureCanvasContext.measureText(' ');
-        const firstColumnRightPaddingWidth = 2 * spaceMetrics.width;
-        const firstColumnWidth = firstColumnRightPaddingWidth + maxBoldIdWidth;
+        const firstColumnRightPaddingWidth = Math.ceil(2 * spaceMetrics.width);
+        const firstColumnWidth = firstColumnRightPaddingWidth + Math.ceil(maxBoldIdWidth);
 
         // width = 1st column + 2nd column + 2 * option padding + 2 * dropdown border + some extra (8)
-        let dropDownPanelWidth = firstColumnWidth + maxNameWidth + 2 * NgSelectUtils.ngOptionLeftRightPadding + 10;
+        let dropDownPanelWidth = firstColumnWidth + Math.ceil(maxNameWidth) + 2 * NgSelectUtils.ngOptionLeftRightPadding;
         const componentWidth = this._ngSelectComponent.element.offsetWidth;
         if (dropDownPanelWidth < componentWidth) {
             dropDownPanelWidth = componentWidth;
@@ -293,8 +282,6 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 (prev, curr) => RoutedIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
             map((parsedTerm) => new RoutedIvemIdSelectNgComponent.ItemArrayObservable(
-                    this.coreSettings,
-                    this.exchangeSettingsArray,
                     this._adiService,
                     this.symbolsService,
                     parsedTerm, 800,
@@ -388,31 +375,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     private updateNgSelectWidthsFromItems(items: RoutedIvemIdSelectNgComponent.Item[], widenOnly: boolean) {
         const widths = this.calculateNgSelectWidths(items);
 
-        let dropDownPanelWidth: number | undefined;
-        let firstColumnWidth: number | undefined;
-        if (this._ngSelectWidths === undefined || !widenOnly) {
-            this._ngSelectWidths = widths;
-            dropDownPanelWidth = widths.dropDownPanel;
-            firstColumnWidth = widths.firstColumn;
-        } else {
-            if (widths.dropDownPanel > this._ngSelectWidths.dropDownPanel) {
-                dropDownPanelWidth = widths.dropDownPanel;
-                this._ngSelectWidths.dropDownPanel = dropDownPanelWidth;
-            }
-            if (widths.firstColumn > this._ngSelectWidths.firstColumn) {
-                firstColumnWidth = widths.firstColumn;
-                this._ngSelectWidths.firstColumn = firstColumnWidth;
-            }
-        }
-
-        if (dropDownPanelWidth !== undefined) {
-            const dropDownPanelWidthPixels = numberToPixels(dropDownPanelWidth + 4); // make allowance for borders
-            this._ngSelectOverlayNgService.setDropDownPanelWidth(dropDownPanelWidthPixels);
-        }
-        if (firstColumnWidth !== undefined) {
-            const firstColumnWidthPixels = numberToPixels(firstColumnWidth);
-            this._ngSelectOverlayNgService.setFirstColumnWidth(firstColumnWidthPixels);
-        }
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(widths.dropDownPanel, widenOnly);
+        this._ngSelectOverlayNgService.setFirstColumnWidth(widths.firstColumn, widenOnly);
     }
 
     private handleDebounceDelayStartFinishEvent(start: boolean) {
@@ -456,7 +420,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
     export interface Item {
         exists: boolean | undefined;
-        name: string | undefined;
+        name: string;
         routedIvemId: RoutedIvemId;
         idDisplay: string;
     }
@@ -489,23 +453,33 @@ export namespace RoutedIvemIdSelectNgComponent {
         return `${ivemName} (${route.display})`;
     }
 
-    export function createItemNameFromCacheDetail(routedIvemId: RoutedIvemId, cacheDetail: SymbolDetailCache.IvemIdDetail) {
+    export function createItemNameFromCacheDetail(
+        routedIvemId: RoutedIvemId,
+        cacheDetail: SymbolDetailCache.IvemIdDetail,
+        symbolsService: SymbolsService
+    ) {
         if (cacheDetail.exists) {
-            const detailName = cacheDetail.name;
-            return detailName === undefined ? undefined : createItemNameFromIvemNameAndOrderRoute(detailName, routedIvemId.route);
+            const symbolName = symbolsService.calculateSymbolName(
+                cacheDetail.ivemId.exchangeId,
+                cacheDetail.name,
+                cacheDetail.ivemId.code,
+                cacheDetail.alternateCodes
+            );
+            return createItemNameFromIvemNameAndOrderRoute(symbolName, routedIvemId.route);
         } else {
             return `<${Strings[StringId.SymbolNotFound]}>`;
         }
     }
 
-    export function createItem(routedIvemId: RoutedIvemId,
+    export function createItemFromCacheDetail(
+        routedIvemId: RoutedIvemId,
         cacheDetail: SymbolDetailCache.IvemIdDetail,
         symbolsService: SymbolsService
     ) {
         const item: Item = {
             exists: cacheDetail.exists,
             routedIvemId,
-            name: createItemNameFromCacheDetail(routedIvemId, cacheDetail),
+            name: createItemNameFromCacheDetail(routedIvemId, cacheDetail, symbolsService),
             idDisplay: symbolsService.routedIvemIdToDisplay(routedIvemId),
         };
 
@@ -522,8 +496,6 @@ export namespace RoutedIvemIdSelectNgComponent {
         private _searchItems: Item[];
 
         constructor(
-            private readonly _coreSettings: CoreSettings,
-            private readonly _exchangeSettingsArray: readonly ExchangeSettings[],
             private readonly _adiService: AdiService,
             private readonly _symbolsService: SymbolsService,
             private readonly _term: ParsedSearchTerm,
@@ -559,13 +531,13 @@ export namespace RoutedIvemIdSelectNgComponent {
             } else {
                 const cacheDetail = symbolDetailCache.getIvemIdFromCache(termRoutedIvemId.ivemId);
                 let exists: boolean | undefined;
-                let name: string | undefined;
+                let name: string;
                 if (cacheDetail === undefined) {
                     exists = undefined;
-                    name = undefined;
+                    name = '';
                 } else {
                     exists = cacheDetail.exists;
-                    name = createItemNameFromCacheDetail(termRoutedIvemId, cacheDetail);
+                    name = createItemNameFromCacheDetail(termRoutedIvemId, cacheDetail, this._symbolsService);
                 }
 
                 this._termItem = {
@@ -609,7 +581,7 @@ export namespace RoutedIvemIdSelectNgComponent {
                 this._termIvemIdFetching = false;
                 if (cacheDetail !== undefined) {
                     this._termItem.exists = cacheDetail.exists;
-                    this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail);
+                    this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail, this._symbolsService);
                     this.emitItems();
                 }
 
@@ -696,7 +668,7 @@ export namespace RoutedIvemIdSelectNgComponent {
                     const firstRecord = records[0];
                     let activeIvemId = firstRecord.litIvemId.ivemId;
                     let activeDefaultMarketId = ExchangeInfo.idToDefaultMarketId(activeIvemId.exchangeId);
-                    let activeIvemName = firstRecord.name;
+                    let activeIvemName = this._symbolsService.calculateSymbolNameFromLitIvemDetail(firstRecord);
                     let tradingMarketIds = firstRecord.tradingMarketIds;
                     let tradingMarketIdCount = tradingMarketIds.length;
                     for (let i = 1; i < count; i++) {
@@ -705,7 +677,7 @@ export namespace RoutedIvemIdSelectNgComponent {
                         const recordIvemId = litIvemId.ivemId;
                         if (IvemId.isUndefinableEqual(recordIvemId, activeIvemId)) {
                             if (litIvemId.litId === activeDefaultMarketId) {
-                                activeIvemName = record.name;
+                                activeIvemName = this._symbolsService.calculateSymbolNameFromLitIvemDetail(record);
                             }
                             tradingMarketIdCount = addToGrow15ArrayUniquely(tradingMarketIds, tradingMarketIdCount,
                                 record.tradingMarketIds);
@@ -715,7 +687,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
                             activeIvemId = recordIvemId;
                             activeDefaultMarketId = ExchangeInfo.idToDefaultMarketId(activeIvemId.exchangeId);
-                            activeIvemName = record.name;
+                            activeIvemName = this._symbolsService.calculateSymbolNameFromLitIvemDetail(record);
                             tradingMarketIds = record.tradingMarketIds;
                             tradingMarketIdCount = tradingMarketIds.length;
                         }

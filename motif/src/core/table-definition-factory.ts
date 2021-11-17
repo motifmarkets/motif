@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, BrokerageAccountGroup, IvemId, LitIvemId } from 'src/adi/internal-api';
+import { AdiService, BrokerageAccountGroup, IvemId, LitIvemId, SearchSymbolsDataDefinition } from 'src/adi/internal-api';
 import { AssertInternalError, Guid, Integer, JsonElement, Logger, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
 import { BalancesTableDefinition } from './balances-table-definition';
 import { BalancesTableRecordDefinitionList } from './balances-table-record-definition-list';
@@ -142,9 +142,9 @@ export class TableDefinitionFactory {
         return definition;
     }
 
-    createSymbolsDataItem(request: SymbolsDataItemTableRecordDefinitionList.Request) {
+    createSymbolsDataItem(dataDefinition: SearchSymbolsDataDefinition) {
         const list = tableRecordDefinitionListFactory.createUnloadedSymbolsDataItem();
-        list.load(request);
+        list.load(dataDefinition);
         return this.createSymbolsDataItemFromRecordDefinitionList(list);
     }
 

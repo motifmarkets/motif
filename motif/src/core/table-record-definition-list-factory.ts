@@ -14,7 +14,6 @@ import { GroupTableRecordDefinitionList } from './group-table-record-definition-
 import { HoldingTableRecordDefinitionList } from './holding-table-record-definition-list';
 import { OrderTableRecordDefinitionList } from './order-table-record-definition-list';
 import { PortfolioTableRecordDefinitionList } from './portfolio-table-record-definition-list';
-import { SettingsService } from './settings/settings-service';
 import { SymbolsDataItemTableRecordDefinitionList } from './symbols-data-item-table-record-definition-list';
 import { SymbolsService } from './symbols-service';
 import { TableRecordDefinitionList } from './table-record-definition-list';
@@ -23,7 +22,6 @@ import { TopShareholderTableRecordDefinitionList } from './top-shareholder-table
 export class TableRecordDefinitionListFactory {
     constructor(
         private readonly _adi: AdiService,
-        private readonly _settingsService: SettingsService,
         private readonly _symbolsService: SymbolsService
     ) { }
 
@@ -70,7 +68,7 @@ export class TableRecordDefinitionListFactory {
     }
 
     createUnloadedSymbolsDataItem() {
-        return new SymbolsDataItemTableRecordDefinitionList(this._adi, this._settingsService, this._symbolsService);
+        return new SymbolsDataItemTableRecordDefinitionList(this._adi, this._symbolsService);
     }
 
     createUnloadedPortfolio() {

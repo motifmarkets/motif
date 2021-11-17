@@ -54,7 +54,6 @@ export class LitIvemFullDetail extends LitIvemDetail {
         this.callOrPutId = change.callOrPutId;
         this.contractSize = change.contractSize;
         this.lotSize = change.lotSize;
-        this.alternateCodes = change.alternateCodes;
         this.attributes = change.attributes;
         this.tmcLegs = change.tmcLegs;
         this.categories = change.categories;

@@ -29,7 +29,8 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class SymbolsDitemFrame extends BuiltinDitemFrame {
-    private _uiQueryRequest: SymbolsDataItemTableRecordDefinitionList.QueryRequest;
+    private _uiConditions: SearchSymbolsDataDefinition.Condition[];
+    private _uiDataDefinition: SearchSymbolsDataDefinition;
     private _querySymbolsDataItem: SymbolsDataItem;
     private _queryTableFrame: TableFrame;
 
@@ -38,28 +39,40 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
 
     private _queryShowFull: boolean;
 
-    get querySearchText() { return this._uiQueryRequest.searchText; }
-    set querySearchText(value: string) { this._uiQueryRequest.searchText = value; }
-    get queryShowFull() { return this._uiQueryRequest.showFull; }
-    set queryShowFull(value: boolean) { this._uiQueryRequest.showFull = value; }
-    get queryExchangeId() { return this._uiQueryRequest.exchangeId; }
-    set queryExchangeId(value: ExchangeId | undefined) { this._uiQueryRequest.exchangeId = value; }
-    get queryMarketIds() { return this._uiQueryRequest.marketIds; }
-    set queryMarketIds(value: readonly MarketId[] | undefined) { this._uiQueryRequest.marketIds = value?.slice(); }
-    get queryCfi() { return this._uiQueryRequest.cfi; }
-    set queryCfi(value: string | undefined) { this._uiQueryRequest.cfi = value; }
-    get queryFieldIds() { return this._uiQueryRequest.fieldIds; }
-    set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiQueryRequest.fieldIds = value?.slice(); }
-    get queryIsPartial() { return this._uiQueryRequest.isPartial; }
-    set queryIsPartial(value: boolean | undefined) { this._uiQueryRequest.isPartial = value; }
-    get queryIsCaseSensitive() { return this._uiQueryRequest.isCaseSensitive; }
-    set queryIsCaseSensitive(value: boolean | undefined) { this._uiQueryRequest.isCaseSensitive = value; }
-    get queryPreferExact() { return this._uiQueryRequest.preferExact; }
-    set queryPreferExact(value: boolean | undefined) { this._uiQueryRequest.preferExact = value; }
-    get queryStartIndex() { return this._uiQueryRequest.startIndex; }
-    set queryStartIndex(value: Integer | undefined) { this._uiQueryRequest.startIndex = value; }
-    get queryCount() { return this._uiQueryRequest.count; }
-    set queryCount(value: Integer | undefined) { this._uiQueryRequest.count = value; }
+    get querySearchText() { return this._uiConditions[0].text; }
+    set querySearchText(value: string) { this._uiConditions[0].text = value; }
+    get queryShowFull() { return this._uiDataDefinition.fullSymbol; }
+    set queryShowFull(value: boolean) { this._uiDataDefinition.fullSymbol = value; }
+    get queryExchangeId() { return this._uiDataDefinition.exchangeId; }
+    set queryExchangeId(value: ExchangeId | undefined) { this._uiDataDefinition.exchangeId = value; }
+    get queryMarketIds() { return this._uiDataDefinition.marketIds; }
+    set queryMarketIds(value: readonly MarketId[] | undefined) { this._uiDataDefinition.marketIds = value?.slice(); }
+    get queryCfi() { return this._uiDataDefinition.cfi; }
+    set queryCfi(value: string | undefined) { this._uiDataDefinition.cfi = value; }
+    get queryFieldIds() { return this._uiConditions[0].fieldIds; }
+    set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiConditions[0].fieldIds = value?.slice(); }
+    get queryIsPartial() {
+        if (this._uiConditions[0].matchIds === undefined) {
+            return true;
+        } else {
+            return this._uiConditions[0].matchIds.includes(SearchSymbolsDataDefinition.Condition.MatchId.exact);
+        }
+    }
+    set queryIsPartial(value: boolean | undefined) {
+        if (value === true) {
+            this._uiConditions[0].matchIds = [SearchSymbolsDataDefinition.Condition.MatchId.exact];
+        } else {
+            this._uiConditions[0].matchIds = undefined;
+        }
+    }
+    get queryIsCaseSensitive() { return this._uiConditions[0].isCaseSensitive; }
+    set queryIsCaseSensitive(value: boolean | undefined) { this._uiConditions[0].isCaseSensitive = value; }
+    get queryPreferExact() { return this._uiDataDefinition.preferExact; }
+    set queryPreferExact(value: boolean | undefined) { this._uiDataDefinition.preferExact = value; }
+    get queryStartIndex() { return this._uiDataDefinition.startIndex; }
+    set queryStartIndex(value: Integer | undefined) { this._uiDataDefinition.startIndex = value; }
+    get queryCount() { return this._uiDataDefinition.count; }
+    set queryCount(value: Integer | undefined) { this._uiDataDefinition.count = value; }
 
     get initialised() { return this._queryTableFrame !== undefined; }
 
@@ -77,20 +90,8 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
-        this._uiQueryRequest = {
-            typeId: SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Query,
-            searchText: '',
-            showFull: false,
-            exchangeId: defaultExchangeId,
-            marketIds: [defaultMarketId],
-            cfi: '',
-            fieldIds: [SymbolsDitemFrame.CodeTargetFieldId],
-            isPartial: true,
-            isCaseSensitive: false,
-            preferExact: false,
-            startIndex: 0,
-            count: 200,
-        };
+        this._uiDataDefinition = SymbolsDataItemTableRecordDefinitionList.createDefaultDataDefinition(defaultExchangeId, defaultMarketId);
+        this.setUiConditions();
     }
 
     initialise(queryTableFrame: TableFrame, frameElement: JsonElement | undefined): void {
@@ -223,11 +224,22 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     private newQueryTable() {
-        const request = SymbolsDataItemTableRecordDefinitionList.QueryRequest.createCopy(this._uiQueryRequest);
-        const keepCurrentLayout = request.showFull === this._queryShowFull;
-        this._queryShowFull = request.showFull;
-        const tableDefinition = tableDefinitionFactory.createSymbolsDataItem(request);
+        const dataDefinition = this._uiDataDefinition.createCopy();
+        const keepCurrentLayout = dataDefinition.fullSymbol === this._queryShowFull;
+        this._queryShowFull = dataDefinition.fullSymbol;
+        const tableDefinition = tableDefinitionFactory.createSymbolsDataItem(dataDefinition);
         this._queryTableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
+    }
+
+    private setUiConditions() {
+        const conditions = this._uiDataDefinition.conditions;
+        if (conditions !== undefined && conditions.length > 0) {
+            this._uiConditions = conditions;
+        } else {
+            const condition = SymbolsDataItemTableRecordDefinitionList.createDefaultCondition();
+            this._uiConditions = [condition];
+            this._uiDataDefinition.conditions = this._uiConditions;
+        }
     }
 }
 

@@ -25,7 +25,7 @@ export class LitIvemDetail {
     name: string;
     exchangeId: ExchangeId;
     // AlternateCodesFix: Currently this actually is part of FullDetail.  Will be here in future
-    alternateCodes: LitIvemAlternateCodes | undefined;
+    alternateCodes: LitIvemAlternateCodes;
 
     private _baseChangeEvent = new MultiEvent<LitIvemDetail.BaseChangeEventHandler>();
 
@@ -52,7 +52,8 @@ export class LitIvemDetail {
         this.tradingMarketIds = change.tradingMarketIds;
         this.name = name;
         this.exchangeId = change.exchangeId;
-        this.alternateCodes = change.alternateCodes;
+        const alternateCodes = change.alternateCodes;
+        this.alternateCodes = alternateCodes === undefined ? {} : alternateCodes;
     }
 
     // AlternateCodesFix: should be AddUpdateChange - review when AlternateCodes is moved from FullDetail to Detail
@@ -94,11 +95,11 @@ export class LitIvemDetail {
         if (newAlternateCodes !== undefined) {
             if (newAlternateCodes === null) {
                 if (this.alternateCodes !== undefined) {
-                    this.alternateCodes = undefined;
+                    this.alternateCodes = {};
                     changedFieldIds[changedCount++] = LitIvemDetail.BaseField.Id.AlternateCodes;
                 }
             } else {
-                if (this.alternateCodes === undefined || !LitIvemAlternateCodes.isEqual(newAlternateCodes, this.alternateCodes)) {
+                if (!LitIvemAlternateCodes.isEqual(newAlternateCodes, this.alternateCodes)) {
                     this.alternateCodes = newAlternateCodes;
                     changedFieldIds[changedCount++] = LitIvemDetail.BaseField.Id.AlternateCodes;
                 }

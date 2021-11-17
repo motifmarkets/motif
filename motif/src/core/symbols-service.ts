@@ -9,6 +9,7 @@ import {
     ExchangeId,
     ExchangeInfo,
     IvemId,
+    LitIvemAlternateCodes,
     LitIvemDetail,
     LitIvemId,
     MarketId,
@@ -352,20 +353,23 @@ export class SymbolsService {
         return LitIvemId.createFromCodeMarket(routedIvemId.ivemId.code, litId);
     }
 
-    calculateSymbolName(detail: LitIvemDetail) {
-        const exchangeId = detail.exchangeId;
+    calculateSymbolNameFromLitIvemDetail(detail: LitIvemDetail) {
+        return this.calculateSymbolName(detail.exchangeId, detail.name, detail.litIvemId.code, detail.alternateCodes);
+    }
+
+    calculateSymbolName(exchangeId: ExchangeId, detailName: string, detailCode: string, detailAlternateCodes: LitIvemAlternateCodes) {
         const fieldId = this._exchangeSettingsArray[exchangeId].symbolNameFieldId;
         if (fieldId === SymbolFieldId.Name) {
-            return detail.name;
+            return detailName;
         } else {
-            const alternateCodes = detail.alternateCodes;
+            const alternateCodes = detailAlternateCodes;
             if (alternateCodes === undefined) {
-                return detail.name;
+                return detailName;
             } else {
                 if (fieldId === SymbolFieldId.Ticker) {
                     const ticker = alternateCodes.ticker;
                     if (ticker === undefined) {
-                        return detail.name;
+                        return detailName;
                     } else {
                         return ticker;
                     }
@@ -373,7 +377,7 @@ export class SymbolsService {
                     let result: string | undefined;
                     switch (fieldId) {
                         case SymbolFieldId.Code: {
-                            result = detail.litIvemId.code;
+                            result = detailCode;
                             break;
                         }
                         case SymbolFieldId.Isin: {
@@ -392,11 +396,19 @@ export class SymbolsService {
                             result = alternateCodes.gics;
                             break;
                         }
+                        case SymbolFieldId.Long: {
+                            result = alternateCodes.long;
+                            break;
+                        }
+                        case SymbolFieldId.Short: {
+                            result = alternateCodes.short;
+                            break;
+                        }
                         default:
-                            result = detail.name;
+                            result = detailName;
                     }
                     if (result === undefined) {
-                        result = detail.name;
+                        result = detailName;
                     }
                     return result;
                 }

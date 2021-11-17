@@ -38,8 +38,8 @@ import {
 import { SymbolsService } from './symbols-service';
 
 export class SymbolDetailCache {
-    private _litIvemIdMap: LitIvemIdMap = new Map<MapKey, SymbolDetailCache.LitIvemIdDetail>();
-    private _ivemIdMap: IvemIdMap = new Map<MapKey, SymbolDetailCache.IvemIdDetail>();
+    private readonly _litIvemIdMap: LitIvemIdMap = new Map<MapKey, SymbolDetailCache.LitIvemIdDetail>();
+    private readonly _ivemIdMap: IvemIdMap = new Map<MapKey, SymbolDetailCache.IvemIdDetail>();
 
     constructor(private readonly _dataMgr: DataMgr, private readonly _symbolsService: SymbolsService) { }
 
@@ -144,7 +144,7 @@ export class SymbolDetailCache {
         if (detail === undefined) {
             detail = this.createEmptyIvemIdDetail(ivemId);
             this._ivemIdMap.set(key, detail);
-            request = new IvemIdRequest(this._dataMgr, this._symbolsService, detail,
+            request = new IvemIdRequest(this._dataMgr, detail,
                 (litIvemId) => this.handleGetLitIvemIdDetailEvent(litIvemId)
             );
             detail.request = request;
@@ -194,10 +194,12 @@ export class SymbolDetailCache {
             exchangeId: MarketInfo.idToExchangeId(marketId),
             alternateCodes : {
                 ticker: litIvemName,
-                base: undefined,
-                gics: undefined,
-                isin: undefined,
-                ric: undefined,
+                base: litIvemName,
+                gics: litIvemName,
+                isin: litIvemName,
+                ric: litIvemName,
+                long: litIvemName,
+                short: litIvemName,
             }
         };
 
@@ -210,6 +212,7 @@ export class SymbolDetailCache {
             ivemId,
             litIvemIdDetails: [litIvemIdDetail],
             name: this._symbolsService.ivemIdToDisplay(routedIvemId.ivemId),
+            alternateCodes: litIvemIdDetail.alternateCodes,
         };
 
         return ivemIdDetail;
@@ -257,7 +260,7 @@ export class SymbolDetailCache {
             tradingMarketIds: [],
             name: '',
             exchangeId: ExchangeId.Calastone,
-            alternateCodes: undefined,
+            alternateCodes: {},
 
             // depthDirectionId: undefined,
             // isIndex: undefined,
@@ -282,8 +285,9 @@ export class SymbolDetailCache {
             exists: false,
             errorText: undefined,
             ivemId,
-            name: undefined,
+            name: '',
             litIvemIdDetails: [],
+            alternateCodes: {},
         };
 
         return detail;
@@ -329,7 +333,7 @@ abstract class Request {
     dataItem: SymbolsDataItem | undefined;
     dataCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _dataMgr: DataMgr, definition: DataDefinition) {
+    constructor(private readonly _dataMgr: DataMgr, definition: DataDefinition) {
         this.dataItem = this._dataMgr.subscribe(definition) as SymbolsDataItem;
         this.dataCorrectnessChangeSubscriptionId = this.dataItem.subscribeCorrectnessChangeEvent(
             () => this.handleDataCorrectnessChangeEvent()
@@ -455,7 +459,6 @@ class IvemIdRequest extends Request {
 
     constructor(
         dataMgr: DataMgr,
-        private readonly _symbolsService: SymbolsService,
         private readonly _detail: SymbolDetailCache.IvemIdDetail,
         private _getLitIvemIdDetailEvent: IvemIdRequest.GetLitIvemIdDetailEventHandler
     ) {
@@ -495,7 +498,8 @@ class IvemIdRequest extends Request {
                 const record = records[i];
                 const litIvemId = record.litIvemId;
                 if (litIvemId.litId === defaultMarketId) {
-                    detail.name = this._symbolsService.calculateSymbolName(record);
+                    detail.name = record.name;
+                    detail.alternateCodes = record.alternateCodes;
                 }
                 const litIvemIdDetail = this._getLitIvemIdDetailEvent(litIvemId);
                 // detail may or may not already be populated.  Populate again to be sure
@@ -506,7 +510,8 @@ class IvemIdRequest extends Request {
             }
 
             if (detail.name === undefined) {
-                detail.name = this._symbolsService.calculateSymbolName(records[0]);
+                detail.name = records[0].name;
+                detail.alternateCodes = records[0].alternateCodes;
             }
 
             detail.exists = true;
@@ -566,7 +571,7 @@ export namespace SymbolDetailCache {
         tradingMarketIds: MarketId[];
         name: string;
         exchangeId: ExchangeId;
-        alternateCodes: AlternateCodes | undefined;
+        alternateCodes: AlternateCodes;
 
         // depthDirectionId: DepthDirectionId | undefined;
         // isIndex: boolean | undefined;
@@ -606,8 +611,9 @@ export namespace SymbolDetailCache {
 
     export interface IvemIdDetail extends Detail {
         ivemId: IvemId;
-        name: string | undefined;
+        name: string;
         litIvemIdDetails: readonly LitIvemIdDetail[];
+        alternateCodes: AlternateCodes;
     }
 
     export namespace IvemIdDetail {

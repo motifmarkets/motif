@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { dateToUtcYYYYMMDD, Integer, MapKey } from 'src/sys/internal-api';
+import { dateToUtcYYYYMMDD, Integer, MapKey, newUndefinableDate, newUndefinableDecimal } from 'src/sys/internal-api';
 import {
     BrokerageAccountId,
     ChartIntervalId,
@@ -70,6 +70,12 @@ export abstract class PublisherSubscriptionDataDefinition extends DataDefinition
     delayRetryAlgorithmId = PublisherSubscriptionDelayRetryAlgorithmId.Default;
     subscribabilityIncreaseRetryAllowed = true;
     publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.Normal;
+
+    protected assign(other: PublisherSubscriptionDataDefinition) {
+        this.delayRetryAlgorithmId = other.delayRetryAlgorithmId;
+        this.subscribabilityIncreaseRetryAllowed = this.subscribabilityIncreaseRetryAllowed;
+        this.publisherRequestSendPriorityId = this.publisherRequestSendPriorityId;
+    }
 }
 
 export abstract class MarketSubscriptionDataDefinition extends PublisherSubscriptionDataDefinition {
@@ -193,6 +199,32 @@ export class SearchSymbolsDataDefinition extends MarketSubscriptionDataDefinitio
     constructor() {
         super(DataChannelId.Symbols);
     }
+
+    createCopy() {
+        const result = new SearchSymbolsDataDefinition();
+        result.assign(this);
+        return result;
+    }
+
+    protected override assign(other: SearchSymbolsDataDefinition) {
+        super.assign(other);
+
+        this.cfi = other.cfi;
+        this.combinationLeg = other.combinationLeg;
+        this.conditions = SearchSymbolsDataDefinition.copyConditions(other.conditions);
+        this.count = other.count;
+        this.exchangeId = other.exchangeId;
+        this.expiryDateMin = newUndefinableDate(other.expiryDateMin);
+        this.expiryDateMax = newUndefinableDate(other.expiryDateMax);
+        this.index = other.index;
+        this.ivemClassId = other.ivemClassId;
+        this.fullSymbol = other.fullSymbol;
+        this.marketIds = other.marketIds === undefined ? undefined : other.marketIds.slice();
+        this.preferExact = other.preferExact;
+        this.startIndex = other.startIndex;
+        this.strikePriceMin = newUndefinableDecimal(other.strikePriceMin);
+        this.strikePriceMax = newUndefinableDecimal(other.strikePriceMax);
+    }
 }
 
 export namespace SearchSymbolsDataDefinition {
@@ -214,6 +246,32 @@ export namespace SearchSymbolsDataDefinition {
             fromStart,
             fromEnd,
             exact,
+        }
+
+        export function createCopy(condition: Condition) {
+            const copiedCondition: Condition = {
+                fieldIds: condition.fieldIds === undefined ? undefined : condition.fieldIds.slice(),
+                attributeIds: condition.attributeIds === undefined ? undefined : condition.attributeIds.slice(),
+                group: condition.group,
+                isCaseSensitive: condition.isCaseSensitive,
+                matchIds: condition.matchIds === undefined ? undefined : condition.matchIds.slice(),
+                text: condition.text,
+            };
+            return copiedCondition;
+        }
+    }
+
+    export function copyConditions(conditions: Condition[] | undefined) {
+        if (conditions === undefined) {
+            return undefined;
+        } else {
+            const count = conditions.length;
+            const result = new Array<Condition>(count);
+            for (let i = 0; i < count; i++) {
+                const condition = conditions[i];
+                result[i] = Condition.createCopy(condition);
+            }
+            return result;
         }
     }
 }

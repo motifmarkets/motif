@@ -9,11 +9,13 @@ import {
     AllBrokerageAccountGroup,
     BrokerageAccountGroup,
     ExchangeId,
-    IvemClassId,
+    ExchangeInfo,
     LitIvemDetail,
     MarketId,
     MarketInfo,
-    SearchSymbolsDataDefinition, SymbolFieldId, SymbolsDataDefinition, SymbolsDataItem
+    SearchSymbolsDataDefinition,
+    SymbolFieldId,
+    SymbolsDataItem
 } from 'src/adi/internal-api';
 import {
     AssertInternalError,
@@ -24,7 +26,6 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
-import { SettingsService } from './settings/internal-api';
 import { SingleDataItemTableRecordDefinitionList } from './single-data-item-table-record-definition-list';
 import { SymbolsService } from './symbols-service';
 import { LitIvemDetailTableRecordDefinition, TableRecordDefinition } from './table-record-definition';
@@ -33,7 +34,7 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTableRecordDefinitionList {
     private static _constructCount = 0;
 
-    private _request: SymbolsDataItemTableRecordDefinitionList.Request;
+    private _dataDefinition: SearchSymbolsDataDefinition;
     private _exchangeId: ExchangeId | undefined;
     private _isFullDetail: boolean;
 
@@ -48,7 +49,6 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
     // setting accountId to undefined will return orders for all accounts
     constructor(
         private readonly _adi: AdiService,
-        private readonly _settingsService: SettingsService,
         private readonly _symbolsService: SymbolsService
     ) {
         super(TableRecordDefinitionList.TypeId.SymbolsDataItem);
@@ -57,12 +57,10 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         this._changeDefinitionOrderAllowed = true;
     }
 
-    get definitionInfo() { return this._request; }
-
-    load(request: SymbolsDataItemTableRecordDefinitionList.Request) {
-        this._request = request;
-        this._exchangeId = this.calculateExchangeId(request);
-        this._isFullDetail = this.calculateIsFullDetail(request);
+    load(dataDefinition: SearchSymbolsDataDefinition) {
+        this._dataDefinition = dataDefinition;
+        this._exchangeId = this.calculateExchangeId(dataDefinition);
+        this._isFullDetail = dataDefinition.fullSymbol;
     }
 
     get dataItem() { return this._dataItem; }
@@ -74,7 +72,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
     }
 
     override activate() {
-        const definition = this.createDataDefinition();
+        const definition = this._dataDefinition.createCopy();
         this._dataItem = this._adi.subscribe(definition) as SymbolsDataItem;
         this._dataItemSubscribed = true;
         super.setSingleDataItem(this._dataItem);
@@ -124,9 +122,11 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         super.loadFromJson(element);
 
         const requestElement = element.tryGetElement(SymbolsDataItemTableRecordDefinitionList.JsonName.request, 'STRDLLFJ21210098');
-        const request = SymbolsDataItemTableRecordDefinitionList.Request.tryCreateFromJson(requestElement);
+        const request = SymbolsDataItemTableRecordDefinitionList.tryCreateDataDefinitionFromJson(requestElement);
         if (request === undefined) {
-            this.load(SymbolsDataItemTableRecordDefinitionList.defaultRequest);
+            const defaultExchangeId = this._symbolsService.defaultExchangeId;
+            const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
+            this.load(SymbolsDataItemTableRecordDefinitionList.createDefaultDataDefinition(defaultExchangeId, defaultMarketId));
         } else {
             this.load(request);
         }
@@ -135,7 +135,7 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
     override saveToJson(element: JsonElement) {
         super.saveToJson(element);
         const requestElement = element.newElement(SymbolsDataItemTableRecordDefinitionList.JsonName.request);
-        SymbolsDataItemTableRecordDefinitionList.Request.saveToJson(this._request, requestElement);
+        SymbolsDataItemTableRecordDefinitionList.saveDataDefinitionToJson(this._dataDefinition, requestElement);
     }
 
     protected getCount() { return this._list.length; }
@@ -163,131 +163,54 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         this.checkSetUnusable(this._dataItem.badness);
     }
 
-    private calculateIsFullDetail(request: SymbolsDataItemTableRecordDefinitionList.Request) {
-        switch (request.typeId) {
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Query:
-                const queryRequest = this._request as SymbolsDataItemTableRecordDefinitionList.QueryRequest;
-                return queryRequest.showFull;
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Subscription:
-                return true;
-            default:
-                throw new UnreachableCaseError('SDITRDLCIFD68382772', request.typeId);
-        }
-    }
-
-    private calculateExchangeId(request: SymbolsDataItemTableRecordDefinitionList.Request) {
-        switch (request.typeId) {
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Query:
-                const queryRequest = this._request as SymbolsDataItemTableRecordDefinitionList.QueryRequest;
-                let marketIdsExchangeId: ExchangeId | undefined;
-                const marketIds = queryRequest.marketIds;
-                let marketIdsDefined: boolean;
-                if (marketIds === undefined) {
-                    marketIdsDefined = false;
-                    marketIdsExchangeId = undefined;
-                } else {
-                    const marketIdCount = marketIds.length;
-                    if (marketIdCount === 0) {
-                        marketIdsDefined = false;
+    private calculateExchangeId(dataDefinition: SearchSymbolsDataDefinition) {
+        let marketIdsExchangeId: ExchangeId | undefined;
+        const marketIds = dataDefinition.marketIds;
+        let marketIdsDefined: boolean;
+        if (marketIds === undefined) {
+            marketIdsDefined = false;
+            marketIdsExchangeId = undefined;
+        } else {
+            const marketIdCount = marketIds.length;
+            if (marketIdCount === 0) {
+                marketIdsDefined = false;
+                marketIdsExchangeId = undefined;
+            } else {
+                marketIdsDefined = true;
+                marketIdsExchangeId = MarketInfo.idToExchangeId(marketIds[0]);
+                // make sure they are all the same
+                for (let i = 1; i < marketIdCount; i++) {
+                    const elementExchangeId = MarketInfo.idToExchangeId(marketIds[i]);
+                    if (elementExchangeId !== marketIdsExchangeId) {
                         marketIdsExchangeId = undefined;
-                    } else {
-                        marketIdsDefined = true;
-                        marketIdsExchangeId = MarketInfo.idToExchangeId(marketIds[0]);
-                        // make sure they are all the same
-                        for (let i = 1; i < marketIdCount; i++) {
-                            const elementExchangeId = MarketInfo.idToExchangeId(marketIds[i]);
-                            if (elementExchangeId !== marketIdsExchangeId) {
-                                marketIdsExchangeId = undefined;
-                                break;
-                            }
-                        }
+                        break;
                     }
                 }
-
-                const queryExchangeId = queryRequest.exchangeId;
-                const queryExchangeIdDefined = queryExchangeId !== undefined;
-
-                let queryResult: ExchangeId | undefined;
-                if (marketIdsDefined) {
-                    if (!queryExchangeIdDefined) {
-                        queryResult = marketIdsExchangeId;
-                    } else {
-                        if (marketIdsExchangeId === queryExchangeId) {
-                            queryResult = marketIdsExchangeId;
-                        } else {
-                            queryResult = undefined;
-                        }
-                    }
-                } else {
-                    if (queryExchangeIdDefined) {
-                        queryResult = queryExchangeId;
-                    } else {
-                        queryResult = undefined;
-                    }
-                }
-                return queryResult;
-
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Subscription:
-                const subscriptionRequest = this._request as SymbolsDataItemTableRecordDefinitionList.SubscriptionRequest;
-                return MarketInfo.idToExchangeId(subscriptionRequest.marketId);
-
-            default:
-                throw new UnreachableCaseError('SDITRDLCEFD968382772', request.typeId);
+            }
         }
-    }
 
-    private createDataDefinition() {
-        switch (this._request.typeId) {
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Query:
-                const queryRequest = this._request as SymbolsDataItemTableRecordDefinitionList.QueryRequest;
-                let marketIds = queryRequest.marketIds;
-                if (marketIds !== undefined && marketIds.length === 0) {
-                    marketIds = undefined;
-                }
+        const dataDefinitionExchangeId = dataDefinition.exchangeId;
+        const dataDefinitionExchangeIdDefined = dataDefinitionExchangeId !== undefined;
 
-                const exchangeId = queryRequest.exchangeId;
-
-                let fieldIds: readonly SymbolFieldId[];
-                if (queryRequest.fieldIds !== undefined) {
-                    fieldIds = queryRequest.fieldIds;
+        let exchangeId: ExchangeId | undefined;
+        if (marketIdsDefined) {
+            if (!dataDefinitionExchangeIdDefined) {
+                exchangeId = marketIdsExchangeId;
+            } else {
+                if (marketIdsExchangeId === dataDefinitionExchangeId) {
+                    exchangeId = marketIdsExchangeId;
                 } else {
-                    fieldIds = this._symbolsService.calculateSymbolSearchFieldIds(exchangeId);
-                    if (exchangeId === undefined) {
-                        fieldIds = this._settingsService.core.symbol_ExplicitSearchFieldIds;
-                    } else {
-                        fieldIds = this._settingsService.exchanges.exchanges[exchangeId].symbolSearchFieldIds;
-                    }
+                    exchangeId = undefined;
                 }
-                const matchIds = queryRequest.isPartial ? [SearchSymbolsDataDefinition.Condition.MatchId.exact] : [];
-
-                const condition: SearchSymbolsDataDefinition.Condition = {
-                    text: queryRequest.searchText,
-                    fieldIds,
-                    isCaseSensitive: queryRequest.isCaseSensitive,
-                    matchIds,
-                };
-
-                const queryDefinition = new SearchSymbolsDataDefinition();
-                queryDefinition.conditions = [condition];
-                queryDefinition.fullSymbol = queryRequest.showFull;
-                queryDefinition.exchangeId = queryRequest.exchangeId;
-                queryDefinition.marketIds = marketIds;
-                queryDefinition.cfi = queryRequest.cfi;
-                queryDefinition.preferExact = queryRequest.preferExact;
-                queryDefinition.startIndex = queryRequest.startIndex;
-                queryDefinition.count = queryRequest.count;
-                return queryDefinition;
-
-            case SymbolsDataItemTableRecordDefinitionList.Request.TypeId.Subscription:
-                const subscriptionRequest = this._request as SymbolsDataItemTableRecordDefinitionList.SubscriptionRequest;
-                const subscriptionDefinition = new SymbolsDataDefinition();
-                subscriptionDefinition.marketId = subscriptionRequest.marketId;
-                subscriptionDefinition.classId = subscriptionRequest.classId;
-                return subscriptionDefinition;
-
-            default:
-                throw new UnreachableCaseError('STRDLCDD875554492', this._request.typeId);
+            }
+        } else {
+            if (dataDefinitionExchangeIdDefined) {
+                exchangeId = dataDefinitionExchangeId;
+            } else {
+                exchangeId = undefined;
+            }
         }
+        return exchangeId;
     }
 
     private insertRecordDefinition(idx: Integer, count: Integer) {
@@ -353,104 +276,117 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
 
     export const defaultAccountGroup: AllBrokerageAccountGroup = BrokerageAccountGroup.createAll();
 
-    export interface Request {
-        typeId: Request.TypeId;
+    export function saveDataDefinitionToJson(dataDefinition: SearchSymbolsDataDefinition, element: JsonElement) {
+        // throw new NotImplementedError('STRDLRSTJ3233992888');
     }
 
-    export namespace Request {
-        export const enum TypeId {
-            Query,
-            Subscription,
-        }
-
-        export function createCopy(request: Request) {
-            switch (request.typeId) {
-                case TypeId.Query: return QueryRequest.createCopy(request as QueryRequest);
-                case TypeId.Subscription: return SubscriptionRequest.createCopy(request as SubscriptionRequest);
-                default:
-                    throw new UnreachableCaseError('SDITRDLRCC59938812', request.typeId);
-            }
-        }
-
-        export function tryCreateFromJson(element: JsonElement | undefined) {
-            return undefined;
-            // throw new NotImplementedError('STRDLRTCFJ3233992888');
-        }
-
-        export function saveToJson(request: Request, element: JsonElement) {
-            // throw new NotImplementedError('STRDLRSTJ3233992888');
-        }
+    export function tryCreateDataDefinitionFromJson(element: JsonElement | undefined) {
+        return undefined;
+        // throw new NotImplementedError('STRDLRTCFJ3233992888');
     }
 
-    export interface QueryRequest extends Request {
-        typeId: Request.TypeId.Query;
+    // export interface Request {
+    //     typeId: Request.TypeId;
+    // }
 
-        searchText: string;
-        showFull: boolean;
+    // export namespace Request {
+    //     export const enum TypeId {
+    //         Query,
+    //         Subscription,
+    //     }
 
-        exchangeId: ExchangeId | undefined;
-        marketIds: readonly MarketId[] | undefined;
-        cfi: string | undefined;
-        fieldIds: readonly SymbolFieldId[] | undefined;
-        isPartial: boolean | undefined;
-        isCaseSensitive: boolean | undefined;
-        preferExact: boolean | undefined;
-        startIndex: Integer | undefined;
-        count: Integer | undefined;
+    //     export function createCopy(request: Request) {
+    //         switch (request.typeId) {
+    //             case TypeId.Query: return QueryRequest.createCopy(request as QueryRequest);
+    //             case TypeId.Subscription: return SubscriptionRequest.createCopy(request as SubscriptionRequest);
+    //             default:
+    //                 throw new UnreachableCaseError('SDITRDLRCC59938812', request.typeId);
+    //         }
+    //     }
+
+    //     export function saveToJson(request: Request, element: JsonElement) {
+    //         // throw new NotImplementedError('STRDLRSTJ3233992888');
+    //     }
+    // }
+
+    // export interface QueryRequest extends Request {
+    //     typeId: Request.TypeId.Query;
+
+    //     searchText: string;
+    //     showFull: boolean;
+
+    //     exchangeId: ExchangeId | undefined;
+    //     marketIds: readonly MarketId[] | undefined;
+    //     cfi: string | undefined;
+    //     fieldIds: readonly SymbolFieldId[] | undefined;
+    //     isPartial: boolean | undefined;
+    //     isCaseSensitive: boolean | undefined;
+    //     preferExact: boolean | undefined;
+    //     startIndex: Integer | undefined;
+    //     count: Integer | undefined;
+    // }
+
+    // export namespace QueryRequest {
+    //     export function createCopy(request: QueryRequest) {
+    //         const result: QueryRequest = {
+    //             typeId: Request.TypeId.Query,
+    //             searchText: request.searchText,
+    //             showFull: request.showFull,
+    //             exchangeId: request.exchangeId,
+    //             marketIds: request.marketIds,
+    //             cfi: request.cfi,
+    //             fieldIds: request.fieldIds,
+    //             isPartial: request.isPartial,
+    //             isCaseSensitive: request.isCaseSensitive,
+    //             preferExact: request.preferExact,
+    //             startIndex: request.startIndex,
+    //             count: request.count,
+    //         };
+
+    //         return result;
+    //     }
+    // }
+
+    // export interface SubscriptionRequest extends Request {
+    //     typeId: Request.TypeId.Subscription;
+
+    //     marketId: MarketId;
+    //     classId: IvemClassId;
+    // }
+
+    // export namespace SubscriptionRequest {
+    //     export function createCopy(request: SubscriptionRequest) {
+    //         const result: SubscriptionRequest = {
+    //             typeId: Request.TypeId.Subscription,
+    //             marketId: request.marketId,
+    //             classId: request.classId,
+    //         };
+
+    //         return result;
+    //     }
+    // }
+
+    export function createDefaultCondition() {
+        const defaultCondition: SearchSymbolsDataDefinition.Condition = {
+            text: '',
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: false,
+        };
+
+        return defaultCondition;
     }
 
-    export namespace QueryRequest {
-        export function createCopy(request: QueryRequest) {
-            const result: QueryRequest = {
-                typeId: Request.TypeId.Query,
-                searchText: request.searchText,
-                showFull: request.showFull,
-                exchangeId: request.exchangeId,
-                marketIds: request.marketIds,
-                cfi: request.cfi,
-                fieldIds: request.fieldIds,
-                isPartial: request.isPartial,
-                isCaseSensitive: request.isCaseSensitive,
-                preferExact: request.preferExact,
-                startIndex: request.startIndex,
-                count: request.count,
-            };
+    export function createDefaultDataDefinition(defaultExchangeId: ExchangeId, defaultMarketId: MarketId) {
+        const condition = createDefaultCondition();
+        const result = new SearchSymbolsDataDefinition();
+        result.conditions = [condition];
+        result.exchangeId = defaultExchangeId;
+        result.marketIds = [defaultMarketId];
+        result.cfi = '';
+        result.preferExact = false;
+        result.fullSymbol = false;
+        result.count = 200;
 
-            return result;
-        }
+        return result;
     }
-
-    export interface SubscriptionRequest extends Request {
-        typeId: Request.TypeId.Subscription;
-
-        marketId: MarketId;
-        classId: IvemClassId;
-    }
-
-    export namespace SubscriptionRequest {
-        export function createCopy(request: SubscriptionRequest) {
-            const result: SubscriptionRequest = {
-                typeId: Request.TypeId.Subscription,
-                marketId: request.marketId,
-                classId: request.classId,
-            };
-
-            return result;
-        }
-    }
-
-    export const defaultRequest: QueryRequest = {
-        typeId: Request.TypeId.Query,
-        searchText: '1000',
-        showFull: false,
-        exchangeId: ExchangeId.Myx,
-        fieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
-        count: 10,
-        marketIds: undefined,
-        cfi: undefined,
-        isPartial: undefined,
-        isCaseSensitive: undefined,
-        preferExact: undefined,
-        startIndex: undefined,
-    };
 }

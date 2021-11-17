@@ -278,19 +278,30 @@ export namespace SymbolsMessageConvert {
                     throw new ZenithDataError(ExternalError.Code.SMCPMP5885239991, message.Topic);
                 } else {
                     const publishMsg = message as Zenith.MarketController.SearchSymbols.PublishPayloadMessageContainer;
-                    dataMessage.changes = parsePublishPayload(publishMsg.Data);
+                    const data = publishMsg.Data;
+                    if (data !== undefined) {
+                        dataMessage.changes = parsePublishPayload(data);
+                    }
                     return dataMessage;
                 }
             }
         }
     }
 
-    function parsePublishPayload(symbols: Zenith.MarketController.SearchSymbols.Detail[]) {
-        const result = new Array<SymbolsDataMessage.Change>(symbols.length);
+    function parsePublishPayload(symbols: Zenith.MarketController.SearchSymbols.Detail[] | null) {
+        let result: SymbolsDataMessage.Change[];
+        if (symbols === null) {
+            const change: SymbolsDataMessage.ClearChange = {
+                typeId: AurcChangeTypeId.Clear,
+            };
+            result = [change];
+        } else {
+            result = new Array<SymbolsDataMessage.Change>(symbols.length);
 
-        for (let index = 0; index < symbols.length; index++) {
-            const symbol = symbols[index] as Zenith.MarketController.SearchSymbols.FullDetail;
-            result[index] = createAddChange(AurcChangeTypeId.Add, symbol);
+            for (let index = 0; index < symbols.length; index++) {
+                const symbol = symbols[index] as Zenith.MarketController.SearchSymbols.FullDetail;
+                result[index] = createAddChange(AurcChangeTypeId.Add, symbol);
+            }
         }
 
         return result;

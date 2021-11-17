@@ -42,7 +42,6 @@ export class CoreService {
         setSymbolDetailCache(new SymbolDetailCache(this._adiService.dataMgr, this._symbolsService));
         setTableRecordDefinitionListFactory(new TableRecordDefinitionListFactory(
             this._adiService,
-            this._settingsService,
             this._symbolsService,
         ));
         setTableDefinitionFactory(new TableDefinitionFactory(this._adiService));
