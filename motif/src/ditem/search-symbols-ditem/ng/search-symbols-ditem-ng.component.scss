@@ -60,6 +60,11 @@
             @include horizontalChildrenSeparatorMixin;
         }
 
+        #indicesSection {
+            @include flexRowItemsCenteredMixin;
+            @include horizontalChildrenSeparatorMixin;
+        }
+
         #optionsSection {
             @include flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;

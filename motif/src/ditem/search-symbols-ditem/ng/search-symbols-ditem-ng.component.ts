@@ -33,7 +33,9 @@ import {
     AllowedMarketsEnumArrayUiAction,
     BooleanUiAction,
     EnumArrayUiAction,
+    EnumUiAction,
     ExplicitElementsEnumArrayUiAction,
+    ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     IntegerUiAction,
     InternalCommand,
@@ -44,17 +46,17 @@ import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick, Integer, JsonElement, Logger } from 'src/sys/internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
-import { SymbolsDitemFrame } from '../symbols-ditem-frame';
+import { SearchSymbolsDitemFrame } from '../search-symbols-ditem-frame';
 
 @Component({
-    selector: 'app-symbols-ditem',
-    templateUrl: './symbols-ditem-ng.component.html',
-    styleUrls: ['./symbols-ditem-ng.component.scss'],
+    selector: 'app-search-symbols-ditem',
+    templateUrl: './search-symbols-ditem-ng.component.html',
+    styleUrls: ['./search-symbols-ditem-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
-    implements OnInit, OnDestroy, SymbolsDitemFrame.ComponentAccess {
+export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
+    implements OnInit, OnDestroy, SearchSymbolsDitemFrame.ComponentAccess {
 
     @ViewChild('toolbarExecuteButton', { static: true }) private _toolbarExecuteButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -73,6 +75,10 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     @ViewChild('codeControl', { static: true }) private _codeControlComponent: CaptionedEnumArrayCheckboxNgComponent;
     @ViewChild('nameControl', { static: true }) private _nameControlComponent: CaptionedEnumArrayCheckboxNgComponent;
     @ViewChild('fieldsControl', { static: true }) private _fieldsControlComponent: EnumArrayInputNgComponent;
+    @ViewChild('indicesLabel', { static: true }) private _indicesLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('excludeIndicesControl', { static: true }) private _excludeIndicesControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('includeIndicesControl', { static: true }) private _includeIndicesControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('onlyIndicesControl', { static: true }) private _onlyIndicesControlComponent: CaptionedRadioNgComponent;
     @ViewChild('optionsLabel', { static: true }) private _optionsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('partialControl', { static: true }) private _partialControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('preferExactControl', { static: true }) private _preferExactControlComponent: CaptionedCheckboxNgComponent;
@@ -122,6 +128,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     private _cfiUiAction: StringUiAction;
     private _fieldsUiAction: ExplicitElementsEnumArrayUiAction;
     private _optionsUiAction: StringUiAction;
+    private _indicesInclusionUiAction: EnumUiAction;
     private _partialUiAction: BooleanUiAction;
     private _preferExactUiAction: BooleanUiAction;
     private _showFullUiAction: BooleanUiAction;
@@ -139,12 +146,12 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     private _pageCountUiAction: IntegerUiAction;
     private _nextPageUiAction: BooleanUiAction;
 
-    private _symbolsManager: SymbolsService;
-    private _frame: SymbolsDitemFrame;
+    private _symbolsService: SymbolsService;
+    private _frame: SearchSymbolsDitemFrame;
 
-    private _modeId = SymbolsDitemNgComponent.ModeId.Main;
+    private _modeId = SearchSymbolsDitemNgComponent.ModeId.Main;
 
-    protected get stateSchemaVersion() { return SymbolsDitemNgComponent.stateSchemaVersion; }
+    protected get stateSchemaVersion() { return SearchSymbolsDitemNgComponent.stateSchemaVersion; }
 
     get ditemFrame() { return this._frame; }
 
@@ -161,9 +168,9 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._symbolsManager = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.symbolsManager;
 
-        this._frame = new SymbolsDitemFrame(this, this.commandRegisterService,
+        this._frame = new SearchSymbolsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -174,6 +181,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._cfiUiAction = this.createCfiUiAction();
         this._fieldsUiAction = this.createFieldsUiAction();
         this._optionsUiAction = this.createOptionsUiAction();
+        this._indicesInclusionUiAction = this.createIndicesInclusionUiAction();
         this._partialUiAction = this.createPartialUiAction();
         this._preferExactUiAction = this.createPreferExactUiAction();
         this._showFullUiAction = this.createShowFullUiAction();
@@ -194,6 +202,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._marketsUiAction.pushValue(this._frame.queryMarketIds);
         this._cfiUiAction.pushValue(this._frame.queryCfi);
         this._fieldsUiAction.pushValue(this._frame.queryFieldIds);
+        this._indicesInclusionUiAction.pushValue(this._frame.indicesInclusion);
         this._partialUiAction.pushValue(this._frame.queryIsPartial);
         this._preferExactUiAction.pushValue(this._frame.queryPreferExact);
         this._showFullUiAction.pushValue(this._frame.queryShowFull);
@@ -210,11 +219,11 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     public isMainMode() {
-        return this._modeId === SymbolsDitemNgComponent.ModeId.Main;
+        return this._modeId === SearchSymbolsDitemNgComponent.ModeId.Main;
     }
 
     public isLayoutEditorMode() {
-        return this._modeId === SymbolsDitemNgComponent.ModeId.LayoutEditor;
+        return this._modeId === SearchSymbolsDitemNgComponent.ModeId.LayoutEditor;
     }
 
     // Component Access Methods
@@ -235,7 +244,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     protected override initialise() {
-        const defaultExchangeId = this._symbolsManager.defaultDefaultExchangeId;
+        const defaultExchangeId = this._symbolsService.defaultDefaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
@@ -249,18 +258,20 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._cfiLabelComponent.initialise(this._cfiUiAction);
         this._cfiControlComponent.initialise(this._cfiUiAction);
         this._fieldsLabelComponent.initialise(this._fieldsUiAction);
-        this._optionsLabelComponent.initialise(this._optionsUiAction);
         this._codeControlComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Code);
-        // this._codeLabelComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Code);
         this._nameControlComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Name);
-        // this._nameLabelComponent.initialiseEnum(this._fieldsUiAction, SymbolFieldId.Name);
         this._fieldsControlComponent.initialise(this._fieldsUiAction);
+        this._indicesLabelComponent.initialise(this._indicesInclusionUiAction);
+        this._excludeIndicesControlComponent.initialiseEnum(this._indicesInclusionUiAction,
+            SearchSymbolsDitemFrame.IndicesInclusionId.Exclude);
+        this._includeIndicesControlComponent.initialiseEnum(this._indicesInclusionUiAction,
+            SearchSymbolsDitemFrame.IndicesInclusionId.Include);
+        this._onlyIndicesControlComponent.initialiseEnum(this._indicesInclusionUiAction,
+            SearchSymbolsDitemFrame.IndicesInclusionId.Only);
+        this._optionsLabelComponent.initialise(this._optionsUiAction);
         this._partialControlComponent.initialise(this._partialUiAction);
-        // this._partialLabelComponent.initialise(this._partialUiAction);
         this._preferExactControlComponent.initialise(this._preferExactUiAction);
-        // this._preferExactLabelComponent.initialise(this._preferExactUiAction);
         this._showFullControlComponent.initialise(this._showFullUiAction);
-        // this._showFullLabelComponent.initialise(this._showFullUiAction);
         this._pageSizeLabelComponent.initialise(this._pageSizeUiAction);
         this._pageSizeControlComponent.initialise(this._pageSizeUiAction);
         this._searchTextLabelComponent.initialise(this._searchUiAction);
@@ -295,6 +306,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._cfiUiAction.finalise();
         this._fieldsUiAction.finalise();
         this._optionsUiAction.finalise();
+        this._indicesInclusionUiAction.finalise();
         this._partialUiAction.finalise();
         this._preferExactUiAction.finalise();
         this._showFullUiAction.finalise();
@@ -350,6 +362,10 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         this._frame.queryFieldIds = ids;
     }
 
+    private handleIndicesInclusionCommitEvent() {
+        this._frame.indicesInclusion = this._indicesInclusionUiAction.definedValue;
+    }
+
     private handlePartialCommitEvent() {
         this._frame.queryIsPartial = this._partialUiAction.definedValue;
     }
@@ -379,7 +395,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     private showLayoutEditor() {
-        this._modeId = SymbolsDitemNgComponent.ModeId.LayoutEditor;
+        this._modeId = SearchSymbolsDitemNgComponent.ModeId.LayoutEditor;
         const layoutWithHeadings = this._frame.getActiveGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
@@ -403,7 +419,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
 
     private closeLayoutEditor() {
         this._layoutEditorContainer.clear();
-        this._modeId = SymbolsDitemNgComponent.ModeId.Main;
+        this._modeId = SearchSymbolsDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }
 
@@ -437,7 +453,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     private createExchangeUiAction() {
-        const action = new AllowedExchangesEnumUiAction(this._symbolsManager);
+        const action = new AllowedExchangesEnumUiAction(this._symbolsService);
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Exchange]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Exchange]);
         action.commitEvent = () => this.handleExchangeCommitEvent();
@@ -445,7 +461,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     private createMarketsUiAction() {
-        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsManager);
+        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Markets]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Markets]);
         action.commitEvent = () => this.handleMarketsCommitEvent();
@@ -484,6 +500,26 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
         const action = new StringUiAction();
         action.valueRequired = false;
         action.pushCaption(Strings[StringId.Options]);
+        return action;
+    }
+
+    private createIndicesInclusionUiAction() {
+        const action = new ExplicitElementsEnumUiAction();
+        action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Indices]);
+        action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Indices]);
+
+        const entryCount = SearchSymbolsDitemFrame.IndicesInclusion.idCount;
+        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        for (let id = 0; id < entryCount; id++) {
+            elementPropertiesArray[id] = {
+                element: id,
+                caption: SearchSymbolsDitemFrame.IndicesInclusion.idToCaption(id),
+                title: SearchSymbolsDitemFrame.IndicesInclusion.idToTitle(id),
+            };
+        }
+
+        action.pushElements(elementPropertiesArray, undefined);
+        action.commitEvent = () => this.handleIndicesInclusionCommitEvent();
         return action;
     }
 
@@ -586,7 +622,7 @@ export class SymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirect
     }
 }
 
-export namespace SymbolsDitemNgComponent {
+export namespace SearchSymbolsDitemNgComponent {
     export const stateSchemaVersion = '2';
 
     export const enum ModeId {

@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './symbols-ditem-frame';
+export * from './search-symbols-ditem-frame';
 

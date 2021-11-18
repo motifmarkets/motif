@@ -383,6 +383,7 @@ export namespace SymbolsDataItemTableRecordDefinitionList {
         result.exchangeId = defaultExchangeId;
         result.marketIds = [defaultMarketId];
         result.cfi = '';
+        result.index = false;
         result.preferExact = false;
         result.fullSymbol = false;
         result.count = 200;

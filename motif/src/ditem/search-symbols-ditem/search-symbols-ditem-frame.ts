@@ -23,12 +23,12 @@ import {
     TableRecordDefinitionList
 } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, Integer, JsonElement } from 'src/sys/internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError, Integer, JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
-export class SymbolsDitemFrame extends BuiltinDitemFrame {
+export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
     private _querySymbolsDataItem: SymbolsDataItem;
@@ -51,6 +51,33 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     set queryCfi(value: string | undefined) { this._uiDataDefinition.cfi = value; }
     get queryFieldIds() { return this._uiConditions[0].fieldIds; }
     set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiConditions[0].fieldIds = value?.slice(); }
+    get indicesInclusion() {
+        const index = this._uiDataDefinition.index;
+        if (index === undefined) {
+            return SearchSymbolsDitemFrame.IndicesInclusionId.Include;
+        } else {
+            if (index === true) {
+                return SearchSymbolsDitemFrame.IndicesInclusionId.Only;
+            } else {
+                return SearchSymbolsDitemFrame.IndicesInclusionId.Exclude;
+            }
+        }
+    }
+    set indicesInclusion(value: SearchSymbolsDitemFrame.IndicesInclusionId) {
+        switch (value) {
+            case SearchSymbolsDitemFrame.IndicesInclusionId.Exclude:
+                this._uiDataDefinition.index = false;
+                break;
+            case SearchSymbolsDitemFrame.IndicesInclusionId.Include:
+                this._uiDataDefinition.index = undefined;
+                break;
+            case SearchSymbolsDitemFrame.IndicesInclusionId.Only:
+                this._uiDataDefinition.index = true;
+                break;
+            default:
+                throw new UnreachableCaseError('SSDFII10091', value);
+        }
+    }
     get queryIsPartial() {
         if (this._uiConditions[0].matchIds === undefined) {
             return true;
@@ -77,7 +104,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     get initialised() { return this._queryTableFrame !== undefined; }
 
     constructor(
-        private readonly _componentAccess: SymbolsDitemFrame.ComponentAccess,
+        private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsMgr: SymbolsService,
@@ -116,7 +143,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     override save(element: JsonElement) {
         super.save(element);
 
-        const queryContentElement = element.newElement(SymbolsDitemFrame.JsonName.queryContent);
+        const queryContentElement = element.newElement(SearchSymbolsDitemFrame.JsonName.queryContent);
         this._queryTableFrame.saveLayoutConfig(queryContentElement);
     }
 
@@ -243,7 +270,7 @@ export class SymbolsDitemFrame extends BuiltinDitemFrame {
     }
 }
 
-export namespace SymbolsDitemFrame {
+export namespace SearchSymbolsDitemFrame {
     export namespace JsonName {
         export const queryContent = 'queryContent';
     }
@@ -259,6 +286,69 @@ export namespace SymbolsDitemFrame {
         QueryBase,
         QueryFull,
         Subscription,
+    }
+
+    export const enum IndicesInclusionId {
+        Exclude,
+        Include,
+        Only,
+    }
+
+    export namespace IndicesInclusion {
+        type Id = IndicesInclusionId;
+
+        interface Info {
+            readonly id: Id;
+            readonly captionId: StringId;
+            readonly titleId: StringId;
+        }
+
+        type InfosObject = { [id in keyof typeof IndicesInclusionId]: Info };
+
+        const infosObject: InfosObject = {
+            Exclude: {
+                id: IndicesInclusionId.Exclude,
+                captionId: StringId.SearchSymbolsIndicesInclusion_ExcludeCaption,
+                titleId: StringId.SearchSymbolsIndicesInclusion_ExcludeTitle,
+            },
+            Include: {
+                id: IndicesInclusionId.Include,
+                captionId: StringId.SearchSymbolsIndicesInclusion_IncludeCaption,
+                titleId: StringId.SearchSymbolsIndicesInclusion_IncludeTitle,
+            },
+            Only: {
+                id: IndicesInclusionId.Only,
+                captionId: StringId.SearchSymbolsIndicesInclusion_OnlyCaption,
+                titleId: StringId.SearchSymbolsIndicesInclusion_OnlyTitle,
+            },
+        } as const;
+
+        const infos = Object.values(infosObject);
+        export const idCount = infos.length;
+
+        export function initialise() {
+            for (let i = 0; i < idCount; i++) {
+                if (infos[i].id !== i) {
+                    throw new EnumInfoOutOfOrderError('SearchSymbolsDitemFrame.IndicesInclusion', i, idToCaption(i));
+                }
+            }
+        }
+
+        function idToCaptionId(id: Id) {
+            return infos[id].captionId;
+        }
+
+        export function idToCaption(id: Id) {
+            return Strings[idToCaptionId(id)];
+        }
+
+        function idToTitleId(id: Id) {
+            return infos[id].titleId;
+        }
+
+        export function idToTitle(id: Id) {
+            return Strings[idToTitleId(id)];
+        }
     }
 
     export interface ComponentAccess extends DitemFrame.ComponentAccess {

@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/symbols-ditem-ng.component';
+export * from './ng/search-symbols-condition-ng.component';
 

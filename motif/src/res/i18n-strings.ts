@@ -1386,6 +1386,8 @@ export const enum StringId {
     BaseLitIvemDetailHeading_ExchangeId,
     BaseLitIvemDetailDisplay_AlternateCodes,
     BaseLitIvemDetailHeading_AlternateCodes,
+    ExtendedLitIvemDetailDisplay_Cfi,
+    ExtendedLitIvemDetailHeading_Cfi,
     ExtendedLitIvemDetailDisplay_DepthDirectionId,
     ExtendedLitIvemDetailHeading_DepthDirectionId,
     ExtendedLitIvemDetailDisplay_IsIndex,
@@ -1452,6 +1454,12 @@ export const enum StringId {
     MyxDeliveryBasisDisplay_DesignatedBasisT1,
     MyxDeliveryBasisDisplay_ReadyBasisT2,
     MyxDeliveryBasisDisplay_ImmediateBasisT1,
+    SearchSymbolsIndicesInclusion_ExcludeCaption,
+    SearchSymbolsIndicesInclusion_ExcludeTitle,
+    SearchSymbolsIndicesInclusion_IncludeCaption,
+    SearchSymbolsIndicesInclusion_IncludeTitle,
+    SearchSymbolsIndicesInclusion_OnlyCaption,
+    SearchSymbolsIndicesInclusion_OnlyTitle,
     QuerySymbolsDataDefinitionFieldDisplay_Code,
     QuerySymbolsDataDefinitionFieldDescription_Code,
     QuerySymbolsDataDefinitionFieldDisplay_Name,
@@ -1480,6 +1488,8 @@ export const enum StringId {
     SymbolsDitemControlCaption_Cfi,
     SymbolsDitemControlTitle_Fields,
     SymbolsDitemControlCaption_Fields,
+    SymbolsDitemControlTitle_Indices,
+    SymbolsDitemControlCaption_Indices,
     SymbolsDitemControlTitle_Partial,
     SymbolsDitemControlCaption_Partial,
     SymbolsDitemControlTitle_PreferExact,
@@ -8676,6 +8686,16 @@ export namespace I18nStrings {
                 en: 'Alternate Codes',
             }
         },
+        ExtendedLitIvemDetailDisplay_Cfi: {
+            id: StringId.ExtendedLitIvemDetailDisplay_Cfi, translations: {
+                en: 'CFI',
+            }
+        },
+        ExtendedLitIvemDetailHeading_Cfi: {
+            id: StringId.ExtendedLitIvemDetailHeading_Cfi, translations: {
+                en: 'CFI',
+            }
+        },
         ExtendedLitIvemDetailDisplay_DepthDirectionId: {
             id: StringId.ExtendedLitIvemDetailDisplay_DepthDirectionId, translations: {
                 en: 'Depth Direction',
@@ -9006,6 +9026,36 @@ export namespace I18nStrings {
                 en: 'Immediate basis T1',
             }
         },
+        SearchSymbolsIndicesInclusion_ExcludeCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_ExcludeCaption, translations: {
+                en: 'Exclude',
+            }
+        },
+        SearchSymbolsIndicesInclusion_ExcludeTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_ExcludeTitle, translations: {
+                en: 'Exclude indices from search',
+            }
+        },
+        SearchSymbolsIndicesInclusion_IncludeCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_IncludeCaption, translations: {
+                en: 'Include',
+            }
+        },
+        SearchSymbolsIndicesInclusion_IncludeTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_IncludeTitle, translations: {
+                en: 'Include indices in search',
+            }
+        },
+        SearchSymbolsIndicesInclusion_OnlyCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_OnlyCaption, translations: {
+                en: 'Only',
+            }
+        },
+        SearchSymbolsIndicesInclusion_OnlyTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_OnlyTitle, translations: {
+                en: 'Only include indices in search',
+            }
+        },
         QuerySymbolsDataDefinitionFieldDisplay_Code: {
             id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Code, translations: {
                 en: 'Code',
@@ -9145,6 +9195,16 @@ export namespace I18nStrings {
         SymbolsDitemControlCaption_Fields: {
             id: StringId.SymbolsDitemControlCaption_Fields, translations: {
                 en: 'Fields',
+            }
+        },
+        SymbolsDitemControlTitle_Indices: {
+            id: StringId.SymbolsDitemControlTitle_Indices, translations: {
+                en: 'Search indices only',
+            }
+        },
+        SymbolsDitemControlCaption_Indices: {
+            id: StringId.SymbolsDitemControlCaption_Indices, translations: {
+                en: 'Indices',
             }
         },
         SymbolsDitemControlTitle_Partial: {

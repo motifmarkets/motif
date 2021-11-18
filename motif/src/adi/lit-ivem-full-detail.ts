@@ -212,8 +212,8 @@ export namespace LitIvemFullDetail {
                 id: Id.Cfi,
                 name: 'Cfi',
                 dataTypeId: FieldDataTypeId.String,
-                displayId: StringId.ExtendedLitIvemDetailDisplay_DepthDirectionId,
-                headingId: StringId.ExtendedLitIvemDetailHeading_DepthDirectionId,
+                displayId: StringId.ExtendedLitIvemDetailDisplay_Cfi,
+                headingId: StringId.ExtendedLitIvemDetailHeading_Cfi,
             },
             DepthDirectionId: {
                 id: Id.DepthDirectionId,
