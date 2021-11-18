@@ -31,12 +31,14 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     encapsulation: ViewEncapsulation.None,
 })
 export class InstalledExtensionListNgComponent implements OnDestroy {
+    @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
+    @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
+    @HostBinding('style.border-color') borderColor: string;
+    @HostBinding('style.--item-hover-background-color') itemHoverBackgroundColor: string;
+
     @Output() focusEmitter = new EventEmitter();
     @Output() infoListTransitionStartEmitter = new EventEmitter();
     @Output() infoListTransitionFinishEmitter = new EventEmitter();
-
-    @HostBinding('style.border-color') borderColor: string;
-    @HostBinding('style.--item-hover-background-color') itemHoverBackgroundColor: string;
 
     public headingCaption = Strings[StringId.Extensions_InstalledExtensionsHeadingCaption];
     public get installedExtensions() {
@@ -110,6 +112,9 @@ export class InstalledExtensionListNgComponent implements OnDestroy {
     }
 
     private applySettings() {
+        this.gridBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_Base);
+        this.gridAltBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt);
+
         this.borderColor = this._settingsService.color.getFore(
             ColorScheme.ItemId.Panel_Divider
         );

@@ -335,13 +335,17 @@ export class ZenithPublisherSubscriptionManager extends PublisherSubscriptionMan
         actionErrorTypeId: PublisherSubscription.ErrorTypeId
     ) {
         if (data === undefined || data === null) {
-            const error: ZenithPublisherSubscriptionManager.ResponseUpdateMessageError = {
-                texts: [],
-                errorTypeId: PublisherSubscription.ErrorTypeId.UserNotAuthorised,
-                delayRetryAllowedSpecified: false,
-                limitedSpecified: false,
-            };
-            return error;
+            if (actionErrorTypeId === PublisherSubscription.ErrorTypeId.PublishRequestError) {
+                return undefined; // for publish responses, data can be undefined or null
+            } else {
+                const error: ZenithPublisherSubscriptionManager.ResponseUpdateMessageError = {
+                    texts: [],
+                    errorTypeId: PublisherSubscription.ErrorTypeId.UserNotAuthorised,
+                    delayRetryAllowedSpecified: false,
+                    limitedSpecified: false,
+                };
+                return error;
+            }
 
         } else {
             const texts = this.checkGetResponseUpdateMessageErrorTexts(data);

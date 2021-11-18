@@ -1,0 +1,9 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-container *ngFor="let exchange of exchanges">
+    <app-exchange-settings *ngIf="isExchangeAllowed(exchange.exchangeId)" [exchangeId]="exchange.exchangeId"></app-exchange-settings>
+</ng-container>

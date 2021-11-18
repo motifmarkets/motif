@@ -10,6 +10,7 @@ import {
     assert,
     AssertInternalError,
     Badness,
+    CommaText,
     ComparableList,
     compareInteger,
     compareNumber,
@@ -175,6 +176,7 @@ export const enum BuyOrSellId {
 
 export const enum ExerciseTypeId {
     American,
+    Asian,
     European,
 }
 
@@ -252,6 +254,18 @@ export const enum SideId {
     Redeem,
     Lend,
     Borrow,
+}
+
+export const enum SymbolFieldId {
+    Code,
+    Name,
+    Short,
+    Long,
+    Ticker,
+    Gics,
+    Isin,
+    Base,
+    Ric,
 }
 
 export const enum BidAskSideId {
@@ -2323,6 +2337,11 @@ export namespace ExerciseType {
             json: 'American',
             displayId: StringId.ExerciseTypeDisplay_American,
         },
+        Asian: {
+            id: ExerciseTypeId.Asian,
+            json: 'Asian',
+            displayId: StringId.ExerciseTypeDisplay_Asian,
+        },
         European: {
             id: ExerciseTypeId.European,
             json: 'American',
@@ -3945,6 +3964,10 @@ export namespace ExchangeInfo {
         fullDisplayId: StringId;
         defaultMarket: MarketId;
         defaultPscCode: string;
+        defaultSymbolNameFieldId: SymbolFieldId;
+        allowableSymbolNameFieldIds: readonly SymbolFieldId[];
+        defaultSymbolSearchFieldIds: readonly SymbolFieldId[],
+        allowableSymbolSearchFieldIds: readonly SymbolFieldId[];
     }
 
     type InfosObject = { [id in keyof typeof ExchangeId]: Info };
@@ -3957,6 +3980,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Asx,
             defaultMarket: MarketId.AsxTradeMatch,
             defaultPscCode: 'AX',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Short, SymbolFieldId.Long],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Short, SymbolFieldId.Long, SymbolFieldId.Base, SymbolFieldId.Isin],
         },
         Cxa: {
             id: ExchangeId.Cxa,
@@ -3965,6 +3992,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Cxa,
             defaultMarket: MarketId.ChixAustLimit,
             defaultPscCode: 'CA',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         Nsx: {
             id: ExchangeId.Nsx,
@@ -3973,6 +4004,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Nsx,
             defaultMarket: MarketId.Nsx,
             defaultPscCode: 'NSX',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         Nzx: {
             id: ExchangeId.Nzx,
@@ -3981,6 +4016,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Nzx,
             defaultMarket: MarketId.Nzx,
             defaultPscCode: 'NZ',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         Myx: {
             id: ExchangeId.Myx,
@@ -3989,6 +4028,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Myx,
             defaultMarket: MarketId.MyxNormal,
             defaultPscCode: 'MY',
+            defaultSymbolNameFieldId: SymbolFieldId.Ticker,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Ticker],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Ticker],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Ticker, SymbolFieldId.Name, SymbolFieldId.Base, SymbolFieldId.Isin, SymbolFieldId.Gics],
         },
         Calastone: {
             id: ExchangeId.Calastone,
@@ -3997,6 +4040,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Calastone,
             defaultMarket: MarketId.Calastone,
             defaultPscCode: 'CAL',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         Ptx: {
             id: ExchangeId.Ptx,
@@ -4005,6 +4052,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Ptx,
             defaultMarket: MarketId.Ptx,
             defaultPscCode: 'PX',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         Fnsx: {
             id: ExchangeId.Fnsx,
@@ -4013,6 +4064,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_Fnsx,
             defaultMarket: MarketId.Fnsx,
             defaultPscCode: 'FN',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
         AsxCxa: {
             id: ExchangeId.AsxCxa,
@@ -4021,6 +4076,10 @@ export namespace ExchangeInfo {
             fullDisplayId: StringId.ExchangeFullDisplay_AsxCxa,
             defaultMarket: MarketId.AsxCxa,
             defaultPscCode: 'AX',
+            defaultSymbolNameFieldId: SymbolFieldId.Name,
+            allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
         },
     } as const;
 
@@ -4113,6 +4172,22 @@ export namespace ExchangeInfo {
 
     export function idToDefaultPscCode(id: Id) {
         return infos[id].defaultPscCode;
+    }
+
+    export function idToDefaultSymbolNameFieldId(id: Id) {
+        return infos[id].defaultSymbolNameFieldId;
+    }
+
+    export function idToAllowableSymbolNameFieldIds(id: Id) {
+        return infos[id].allowableSymbolNameFieldIds;
+    }
+
+    export function idToDefaultSymbolSearchFieldIds(id: Id) {
+        return infos[id].defaultSymbolSearchFieldIds;
+    }
+
+    export function idToAllowableSymbolSearchFieldIds(id: Id) {
+        return infos[id].allowableSymbolSearchFieldIds;
     }
 }
 
@@ -6113,6 +6188,149 @@ export namespace BidAskSide {
     }
 }
 
+export namespace SymbolField {
+    export type Id = SymbolFieldId;
+
+    interface Info {
+        id: Id;
+        jsonValue: string;
+        displayId: StringId;
+        descriptionId: StringId;
+    }
+
+    type InfoObject = { [id in keyof typeof SymbolFieldId]: Info };
+
+    const infoObject: InfoObject = {
+        Code: {
+            id: SymbolFieldId.Code,
+            jsonValue: 'Code',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Code,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Code,
+        },
+        Name: {
+            id: SymbolFieldId.Name,
+            jsonValue: 'Name',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Name,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Name,
+        },
+        Short: {
+            id: SymbolFieldId.Short,
+            jsonValue: 'Short',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Short,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Short,
+        },
+        Long: {
+            id: SymbolFieldId.Long,
+            jsonValue: 'Long',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Long,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Long,
+        },
+        Ticker: {
+            id: SymbolFieldId.Ticker,
+            jsonValue: 'Ticker',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ticker,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ticker,
+        },
+        Gics: {
+            id: SymbolFieldId.Gics,
+            jsonValue: 'Gics',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Gics,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Gics,
+        },
+        Isin: {
+            id: SymbolFieldId.Isin,
+            jsonValue: 'Isin',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Isin,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Isin,
+        },
+        Base: {
+            id: SymbolFieldId.Base,
+            jsonValue: 'Base',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Base,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Base,
+        },
+        Ric: {
+            id: SymbolFieldId.Ric,
+            jsonValue: 'Ric',
+            displayId: StringId.QuerySymbolsDataDefinitionFieldDisplay_Ric,
+            descriptionId: StringId.QuerySymbolsDataDefinitionFieldDescription_Ric,
+        },
+    } as const;
+
+    export const idCount = Object.keys(infoObject).length;
+    const infos = Object.values(infoObject);
+    export const allIds: readonly SymbolFieldId[] = infos.map(info => info.id);
+
+    export function idToDisplayId(id: Id) {
+        return infos[id].displayId;
+    }
+
+    export function idToJsonValue(id: Id) {
+        return infos[id].jsonValue;
+    }
+
+    export function tryJsonValueToId(jsonValue: string) {
+        for (let id = 0; id < idCount; id++) {
+            if (infos[id].jsonValue === jsonValue) {
+                return id;
+            }
+        }
+        return undefined;
+    }
+
+    export function idToDisplay(id: Id) {
+        return Strings[idToDisplayId(id)];
+    }
+
+    export function idToDescriptionId(id: Id) {
+        return infos[id].descriptionId;
+    }
+
+    export function idToDescription(id: Id) {
+        return Strings[idToDescriptionId(id)];
+    }
+
+    export function idArrayToJsonValue(idArray: readonly Id[]) {
+        const count = idArray.length;
+        const stringArray = new Array<string>(count);
+        for (let i = 0; i < count; i++) {
+            const id = idArray[i];
+            stringArray[i] = idToJsonValue(id);
+        }
+        return CommaText.fromStringArray(stringArray);
+    }
+
+    export function tryJsonValueToIdArray(value: string) {
+        const toStringArrayResult = CommaText.toStringArrayWithResult(value);
+        if (!toStringArrayResult.success) {
+            return undefined;
+        } else {
+            const stringArray = toStringArrayResult.array;
+            const count = stringArray.length;
+            const result = new Array<Id>(count);
+            for (let i = 0; i < count; i++) {
+                const jsonValue = stringArray[i];
+                const id = tryJsonValueToId(jsonValue);
+                if (id === undefined) {
+                    return undefined;
+                } else {
+                    result[i] = id;
+                }
+            }
+
+            return result;
+        }
+    }
+
+    export function initialise() {
+        const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+        if (outOfOrderIdx >= 0) {
+            throw new EnumInfoOutOfOrderError('SymbolFieldId', outOfOrderIdx, idToDisplay(outOfOrderIdx));
+        }
+    }
+
+}
+
 /*export namespace EquityOrderType {
     export type Id = EquityOrderTypeId;
 
@@ -6850,5 +7068,6 @@ export namespace DataTypesModule {
         OrderCommandResult.initialise();
         DepthStyle.initialise();
         ChartInterval.initialise();
+        SymbolField.initialise();
     }
 }

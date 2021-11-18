@@ -40,13 +40,18 @@ export class SymbolsDataItem extends PublisherSubscriptionDataItem {
             super.processMessage(msg);
         } else {
             assert(msg instanceof SymbolsDataMessage, 'ID:7203122950');
-            const TypedMsg = msg as SymbolsDataMessage;
+            const typedMsg = msg as SymbolsDataMessage;
 
             this.beginUpdate();
             try {
                 this.advisePublisherResponseUpdateReceived();
                 this.notifyUpdateChange();
-                this.processChanges(TypedMsg.changes);
+                const changes = typedMsg.changes;
+                if (changes === undefined) {
+
+                } else {
+                    this.processChanges(changes);
+                }
             } finally {
                 this.endUpdate();
             }

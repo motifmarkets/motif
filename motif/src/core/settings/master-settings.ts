@@ -6,6 +6,7 @@
 
 import { StringId, Strings } from 'src/res/internal-api';
 import { AssertInternalError, EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
+import { TypedKeyValueSettings } from './typed-key-value-settings';
 import { TypedKeyValueSettingsGroup } from './typed-key-value-settings-group';
 
 export class MasterSettings extends TypedKeyValueSettingsGroup {
@@ -16,7 +17,7 @@ export class MasterSettings extends TypedKeyValueSettingsGroup {
             name: 'applicationEnvironmentSelectorId',
             defaulter: () => this.formatApplicationEnvironmentSelectorId(MasterSettings.Default.applicationEnvironmentSelectorId),
             getter: () => this.formatApplicationEnvironmentSelectorId(this._applicationEnvironmentSelectorId),
-            pusher: (value: TypedKeyValueSettingsGroup.PushValue) => {
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
                 this._applicationEnvironmentSelectorId = this.parseApplicationEnvironmentSelectorId(value);
             }
         },
@@ -44,7 +45,7 @@ export class MasterSettings extends TypedKeyValueSettingsGroup {
         return MasterSettings.ApplicationEnvironmentSelector.idToSettingValue(value);
     }
 
-    private parseApplicationEnvironmentSelectorId(pushValue: TypedKeyValueSettingsGroup.PushValue) {
+    private parseApplicationEnvironmentSelectorId(pushValue: TypedKeyValueSettings.PushValue) {
         const { info, value } = pushValue;
         if (value === undefined) {
             return this.parseDefaultApplicationEnvironmentSelectorId(info);
@@ -58,7 +59,7 @@ export class MasterSettings extends TypedKeyValueSettingsGroup {
         }
     }
 
-    private parseDefaultApplicationEnvironmentSelectorId(info: TypedKeyValueSettingsGroup.Info) {
+    private parseDefaultApplicationEnvironmentSelectorId(info: TypedKeyValueSettings.Info) {
         const defaultValueText = info.defaulter();
         if (defaultValueText === undefined) {
             throw new AssertInternalError('MSPDAESIU2228111', defaultValueText);
@@ -80,7 +81,7 @@ export namespace MasterSettings {
         ApplicationEnvironmentSelectorId,
     }
 
-    export type InfosObject = { [id in keyof typeof Id]: TypedKeyValueSettingsGroup.Info };
+    export type InfosObject = { [id in keyof typeof Id]: TypedKeyValueSettings.Info };
 
     export namespace Default {
         export const applicationEnvironmentSelectorId = ApplicationEnvironmentSelector.SelectorId.ExchangeEnvironment;

@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { DataDefinitionModule } from './data-definition';
 import { DataTypesModule } from './data-types';
 import { LitIvemAlternateCodesModule } from './lit-ivem-alternate-codes';
 import { OrderStatusModule } from './order-status';
@@ -16,7 +15,6 @@ export namespace CommonStaticInitialise {
         DataTypesModule.initialiseStatic();
         TradingStateModule.initialiseStatic();
         OrderStatusModule.initialiseStatic();
-        DataDefinitionModule.initialiseStatic();
         LitIvemAlternateCodesModule.initialiseStatic();
         OrderTriggerModule.initialiseStatic();
     }

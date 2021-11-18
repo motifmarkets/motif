@@ -1,0 +1,26 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-caption-label #groupLabel for="groupInput"></app-caption-label>
+<app-text-input #groupControl id="groupControl" inputId="groupInput" size="10"></app-text-input>
+<app-caption-label #fieldsLabel for="fieldsInput"></app-caption-label>
+<section id="fieldsSection">
+    <app-captioned-enum-array-checkbox #codeControl inputId="codeCheckbox"></app-captioned-enum-array-checkbox>
+    <app-captioned-enum-array-checkbox #nameControl inputId="nameCheckbox"></app-captioned-enum-array-checkbox>
+    <app-enum-array-input #fieldsControl inputId="fieldsInput" inputSize="3em"></app-enum-array-input>
+</section>
+<app-caption-label #optionsLabel></app-caption-label>
+<section id="optionsSection">
+    <app-captioned-checkbox #caseSensitiveControl inputId="caseSensitiveCheckbox"></app-captioned-checkbox>
+    <app-captioned-enum-array-checkbox #matchExactControl inputId="matchExactCheckbox"></app-captioned-enum-array-checkbox>
+    <app-captioned-enum-array-checkbox #matchFromStartControl inputId="matchFromStartCheckbox"></app-captioned-enum-array-checkbox>
+    <app-captioned-enum-array-checkbox #matchFromEndControl inputId="matchFromEndCheckbox"></app-captioned-enum-array-checkbox>
+</section>
+<app-caption-label #textLabel for="textInput"></app-caption-label>
+<section id="textSection">
+    <app-text-input #textControl id="textControl" inputId="textInput" size="10"></app-text-input>
+    <app-svg-button #searchTextButton></app-svg-button>
+</section>

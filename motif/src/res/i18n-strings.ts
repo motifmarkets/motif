@@ -826,6 +826,7 @@ export const enum StringId {
     CallPutFieldDisplay_UnderlyingIsIndex,
     CallPutFieldHeading_UnderlyingIsIndex,
     ExerciseTypeDisplay_American,
+    ExerciseTypeDisplay_Asian,
     ExerciseTypeDisplay_European,
     EtoPriceQuotationSymbolInputTitle,
     EtoPriceQuotationApplySymbolCaption,
@@ -861,6 +862,10 @@ export const enum StringId {
     SettingTitle_Format_24Hour,
     SettingCaption_Format_DateTimeTimezoneModeId,
     SettingTitle_Format_DateTimeTimezoneModeId,
+    SettingCaption_Symbol_ExplicitSearchFieldsEnabled,
+    SettingTitle_Symbol_ExplicitSearchFieldsEnabled,
+    SettingCaption_Symbol_ExplicitSearchFields,
+    SettingTitle_Symbol_ExplicitSearchFields,
     SettingCaption_Master_SettingsProfile,
     SettingTitle_Master_SettingsProfile,
     SettingCaption_Grid_RowHeight,
@@ -903,6 +908,10 @@ export const enum StringId {
     SettingTitle_OrderPad_ReviewEnabled,
     SettingCaption_OrderPad_DefaultOrderTypeId,
     SettingTitle_OrderPad_DefaultOrderTypeId,
+    SettingCaption_Exchange_SymbolSearchFields,
+    SettingTitle_Exchange_SymbolSearchFields,
+    SettingCaption_Exchange_SymbolNameField,
+    SettingTitle_Exchange_SymbolNameField,
     DefaultOrderTypeIdNotSpecified,
     SettingCaption_OrderPad_DefaultTimeInForceId,
     SettingTitle_OrderPad_DefaultTimeInForceId,
@@ -1375,6 +1384,10 @@ export const enum StringId {
     BaseLitIvemDetailHeading_Name,
     BaseLitIvemDetailDisplay_ExchangeId,
     BaseLitIvemDetailHeading_ExchangeId,
+    BaseLitIvemDetailDisplay_AlternateCodes,
+    BaseLitIvemDetailHeading_AlternateCodes,
+    ExtendedLitIvemDetailDisplay_Cfi,
+    ExtendedLitIvemDetailHeading_Cfi,
     ExtendedLitIvemDetailDisplay_DepthDirectionId,
     ExtendedLitIvemDetailHeading_DepthDirectionId,
     ExtendedLitIvemDetailDisplay_IsIndex,
@@ -1391,8 +1404,6 @@ export const enum StringId {
     ExtendedLitIvemDetailHeading_ContractSize,
     ExtendedLitIvemDetailDisplay_LotSize,
     ExtendedLitIvemDetailHeading_LotSize,
-    ExtendedLitIvemDetailDisplay_AlternateCodes,
-    ExtendedLitIvemDetailHeading_AlternateCodes,
     ExtendedLitIvemDetailDisplay_Attributes,
     ExtendedLitIvemDetailHeading_Attributes,
     ExtendedLitIvemDetailDisplay_TmcLegs,
@@ -1443,10 +1454,20 @@ export const enum StringId {
     MyxDeliveryBasisDisplay_DesignatedBasisT1,
     MyxDeliveryBasisDisplay_ReadyBasisT2,
     MyxDeliveryBasisDisplay_ImmediateBasisT1,
+    SearchSymbolsIndicesInclusion_ExcludeCaption,
+    SearchSymbolsIndicesInclusion_ExcludeTitle,
+    SearchSymbolsIndicesInclusion_IncludeCaption,
+    SearchSymbolsIndicesInclusion_IncludeTitle,
+    SearchSymbolsIndicesInclusion_OnlyCaption,
+    SearchSymbolsIndicesInclusion_OnlyTitle,
     QuerySymbolsDataDefinitionFieldDisplay_Code,
     QuerySymbolsDataDefinitionFieldDescription_Code,
     QuerySymbolsDataDefinitionFieldDisplay_Name,
     QuerySymbolsDataDefinitionFieldDescription_Name,
+    QuerySymbolsDataDefinitionFieldDisplay_Short,
+    QuerySymbolsDataDefinitionFieldDescription_Short,
+    QuerySymbolsDataDefinitionFieldDisplay_Long,
+    QuerySymbolsDataDefinitionFieldDescription_Long,
     QuerySymbolsDataDefinitionFieldDisplay_Ticker,
     QuerySymbolsDataDefinitionFieldDescription_Ticker,
     QuerySymbolsDataDefinitionFieldDisplay_Gics,
@@ -1467,6 +1488,8 @@ export const enum StringId {
     SymbolsDitemControlCaption_Cfi,
     SymbolsDitemControlTitle_Fields,
     SymbolsDitemControlCaption_Fields,
+    SymbolsDitemControlTitle_Indices,
+    SymbolsDitemControlCaption_Indices,
     SymbolsDitemControlTitle_Partial,
     SymbolsDitemControlCaption_Partial,
     SymbolsDitemControlTitle_PreferExact,
@@ -5768,137 +5791,142 @@ export namespace I18nStrings {
         },
         CallPutFieldDisplay_ExercisePrice: {
             id: StringId.CallPutFieldDisplay_ExercisePrice, translations: {
-               en: 'Exercise Price',
+                en: 'Exercise Price',
             }
         },
         CallPutFieldHeading_ExercisePrice: {
             id: StringId.CallPutFieldHeading_ExercisePrice, translations: {
-               en: 'Exercise',
+                en: 'Exercise',
             }
         },
         CallPutFieldDisplay_ExpiryDate: {
             id: StringId.CallPutFieldDisplay_ExpiryDate, translations: {
-               en: 'Expiry Date',
+                en: 'Expiry Date',
             }
         },
         CallPutFieldHeading_ExpiryDate: {
             id: StringId.CallPutFieldHeading_ExpiryDate, translations: {
-               en: 'Expiry',
+                en: 'Expiry',
             }
         },
         CallPutFieldDisplay_LitId: {
             id: StringId.CallPutFieldDisplay_LitId, translations: {
-               en: 'Market',
+                en: 'Market',
             }
         },
         CallPutFieldHeading_LitId: {
             id: StringId.CallPutFieldHeading_LitId, translations: {
-               en: 'Market',
+                en: 'Market',
             }
         },
         CallPutFieldDisplay_CallLitIvemId: {
             id: StringId.CallPutFieldDisplay_CallLitIvemId, translations: {
-               en: 'Call Symbol',
+                en: 'Call Symbol',
             }
         },
         CallPutFieldHeading_CallLitIvemId: {
             id: StringId.CallPutFieldHeading_CallLitIvemId, translations: {
-               en: 'C.Symbol',
+                en: 'C.Symbol',
             }
         },
         CallPutFieldDisplay_PutLitIvemId: {
             id: StringId.CallPutFieldDisplay_PutLitIvemId, translations: {
-               en: 'Put Symbol',
+                en: 'Put Symbol',
             }
         },
         CallPutFieldHeading_PutLitIvemId: {
             id: StringId.CallPutFieldHeading_PutLitIvemId, translations: {
-               en: 'P.Symbol',
+                en: 'P.Symbol',
             }
         },
         CallPutFieldDisplay_ContractMultiplier: {
             id: StringId.CallPutFieldDisplay_ContractMultiplier, translations: {
-               en: 'Contract Multiplier',
+                en: 'Contract Multiplier',
             }
         },
         CallPutFieldHeading_ContractMultiplier: {
             id: StringId.CallPutFieldHeading_ContractMultiplier, translations: {
-               en: 'Multiplier',
+                en: 'Multiplier',
             }
         },
         CallPutFieldDisplay_ExerciseTypeId: {
             id: StringId.CallPutFieldDisplay_ExerciseTypeId, translations: {
-               en: 'Exercise Type',
+                en: 'Exercise Type',
             }
         },
         CallPutFieldHeading_ExerciseTypeId: {
             id: StringId.CallPutFieldHeading_ExerciseTypeId, translations: {
-               en: 'Type',
+                en: 'Type',
             }
         },
         CallPutFieldDisplay_UnderlyingIvemId: {
             id: StringId.CallPutFieldDisplay_UnderlyingIvemId, translations: {
-               en: 'Underlying Symbol',
+                en: 'Underlying Symbol',
             }
         },
         CallPutFieldHeading_UnderlyingIvemId: {
             id: StringId.CallPutFieldHeading_UnderlyingIvemId, translations: {
-               en: 'Underlying',
+                en: 'Underlying',
             }
         },
         CallPutFieldDisplay_UnderlyingIsIndex: {
             id: StringId.CallPutFieldDisplay_UnderlyingIsIndex, translations: {
-               en: 'Underlying is Index',
+                en: 'Underlying is Index',
             }
         },
         CallPutFieldHeading_UnderlyingIsIndex: {
             id: StringId.CallPutFieldHeading_UnderlyingIsIndex, translations: {
-               en: 'Index?',
+                en: 'Index?',
             }
         },
         ExerciseTypeDisplay_American: {
             id: StringId.ExerciseTypeDisplay_American, translations: {
-               en: 'American',
+                en: 'American',
+            }
+        },
+        ExerciseTypeDisplay_Asian: {
+            id: StringId.ExerciseTypeDisplay_Asian, translations: {
+                en: 'Asian',
             }
         },
         ExerciseTypeDisplay_European: {
             id: StringId.ExerciseTypeDisplay_European, translations: {
-               en: 'European',
+                en: 'European',
             }
         },
         EtoPriceQuotationSymbolInputTitle: {
             id: StringId.EtoPriceQuotationSymbolInputTitle, translations: {
-               en: 'Enter underlying symbol',
+                en: 'Enter underlying symbol',
             }
         },
         EtoPriceQuotationApplySymbolCaption: {
             id: StringId.EtoPriceQuotationApplySymbolCaption, translations: {
-               en: 'Get options',
+                en: 'Get options',
             }
         },
         EtoPriceQuotationApplySymbolTitle: {
             id: StringId.EtoPriceQuotationApplySymbolTitle, translations: {
-               en: 'Get options for symbol',
+                en: 'Get options for symbol',
             }
         },
         TradeAffects_None: {
             id: StringId.TradeAffects_None, translations: {
-               en: 'None',
+                en: 'None',
             }
         },
         TradeAffects_Price: {
             id: StringId.TradeAffects_Price, translations: {
-               en: 'Price',
+                en: 'Price',
             }
         },
         TradeAffects_Volume: {
             id: StringId.TradeAffects_Volume, translations: {
-               en: 'Volume',
+                en: 'Volume',
             }
         },
         TradeAffects_Vwap: {
             id: StringId.TradeAffects_Vwap, translations: {
-               en: 'VWAP',
+                en: 'VWAP',
             }
         },
         TradeAttribute_OffMarketTrade: {
@@ -6034,6 +6062,26 @@ export namespace I18nStrings {
         SettingTitle_Format_DateTimeTimezoneModeId: {
             id: StringId.SettingTitle_Format_DateTimeTimezoneModeId, translations: {
                 en: 'Specify which timezone times should be converted to',
+            }
+        },
+        SettingCaption_Symbol_ExplicitSearchFieldsEnabled: {
+            id: StringId.SettingCaption_Symbol_ExplicitSearchFieldsEnabled, translations: {
+                en: 'Explicit (no exchange) search Fields Enabled',
+            }
+        },
+        SettingTitle_Symbol_ExplicitSearchFieldsEnabled: {
+            id: StringId.SettingTitle_Symbol_ExplicitSearchFieldsEnabled, translations: {
+                en: 'Use explicit search fields when no exchange is specified (otherwise use default exchange\'s search fields)',
+            }
+        },
+        SettingCaption_Symbol_ExplicitSearchFields: {
+            id: StringId.SettingCaption_Symbol_ExplicitSearchFields, translations: {
+                en: 'Explicit (no exchange) search fields',
+            }
+        },
+        SettingTitle_Symbol_ExplicitSearchFields: {
+            id: StringId.SettingTitle_Symbol_ExplicitSearchFields, translations: {
+                en: 'Symbol fields searched when an exchange is not specified',
             }
         },
         SettingCaption_Master_SettingsProfile: {
@@ -6245,6 +6293,26 @@ export namespace I18nStrings {
         SettingTitle_OrderPad_DefaultOrderTypeId: {
             id: StringId.SettingTitle_OrderPad_DefaultOrderTypeId, translations: {
                 en: 'Initialise order type for new orders',
+            }
+        },
+        SettingCaption_Exchange_SymbolSearchFields: {
+            id: StringId.SettingCaption_Exchange_SymbolSearchFields, translations: {
+                en: 'Symbol search fields',
+            }
+        },
+        SettingTitle_Exchange_SymbolSearchFields: {
+            id: StringId.SettingTitle_Exchange_SymbolSearchFields, translations: {
+                en: 'Fields to be searched in symbol select control when exchange is specified',
+            }
+        },
+        SettingCaption_Exchange_SymbolNameField: {
+            id: StringId.SettingCaption_Exchange_SymbolNameField, translations: {
+                en: 'Symbol name field',
+            }
+        },
+        SettingTitle_Exchange_SymbolNameField: {
+            id: StringId.SettingTitle_Exchange_SymbolNameField, translations: {
+                en: 'Field used to generate the name of a symbol',
             }
         },
         DefaultOrderTypeIdNotSpecified: {
@@ -8608,6 +8676,26 @@ export namespace I18nStrings {
                 en: 'Exchange',
             }
         },
+        BaseLitIvemDetailDisplay_AlternateCodes: {
+            id: StringId.BaseLitIvemDetailDisplay_AlternateCodes, translations: {
+                en: 'Alternate Codes',
+            }
+        },
+        BaseLitIvemDetailHeading_AlternateCodes: {
+            id: StringId.BaseLitIvemDetailHeading_AlternateCodes, translations: {
+                en: 'Alternate Codes',
+            }
+        },
+        ExtendedLitIvemDetailDisplay_Cfi: {
+            id: StringId.ExtendedLitIvemDetailDisplay_Cfi, translations: {
+                en: 'CFI',
+            }
+        },
+        ExtendedLitIvemDetailHeading_Cfi: {
+            id: StringId.ExtendedLitIvemDetailHeading_Cfi, translations: {
+                en: 'CFI',
+            }
+        },
         ExtendedLitIvemDetailDisplay_DepthDirectionId: {
             id: StringId.ExtendedLitIvemDetailDisplay_DepthDirectionId, translations: {
                 en: 'Depth Direction',
@@ -8686,16 +8774,6 @@ export namespace I18nStrings {
         ExtendedLitIvemDetailHeading_LotSize: {
             id: StringId.ExtendedLitIvemDetailHeading_LotSize, translations: {
                 en: 'Lot Size',
-            }
-        },
-        ExtendedLitIvemDetailDisplay_AlternateCodes: {
-            id: StringId.ExtendedLitIvemDetailDisplay_AlternateCodes, translations: {
-                en: 'Alternate Codes',
-            }
-        },
-        ExtendedLitIvemDetailHeading_AlternateCodes: {
-            id: StringId.ExtendedLitIvemDetailHeading_AlternateCodes, translations: {
-                en: 'Alternate Codes',
             }
         },
         ExtendedLitIvemDetailDisplay_Attributes: {
@@ -8948,6 +9026,36 @@ export namespace I18nStrings {
                 en: 'Immediate basis T1',
             }
         },
+        SearchSymbolsIndicesInclusion_ExcludeCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_ExcludeCaption, translations: {
+                en: 'Exclude',
+            }
+        },
+        SearchSymbolsIndicesInclusion_ExcludeTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_ExcludeTitle, translations: {
+                en: 'Exclude indices from search',
+            }
+        },
+        SearchSymbolsIndicesInclusion_IncludeCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_IncludeCaption, translations: {
+                en: 'Include',
+            }
+        },
+        SearchSymbolsIndicesInclusion_IncludeTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_IncludeTitle, translations: {
+                en: 'Include indices in search',
+            }
+        },
+        SearchSymbolsIndicesInclusion_OnlyCaption: {
+            id: StringId.SearchSymbolsIndicesInclusion_OnlyCaption, translations: {
+                en: 'Only',
+            }
+        },
+        SearchSymbolsIndicesInclusion_OnlyTitle: {
+            id: StringId.SearchSymbolsIndicesInclusion_OnlyTitle, translations: {
+                en: 'Only include indices in search',
+            }
+        },
         QuerySymbolsDataDefinitionFieldDisplay_Code: {
             id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Code, translations: {
                 en: 'Code',
@@ -8966,6 +9074,26 @@ export namespace I18nStrings {
         QuerySymbolsDataDefinitionFieldDescription_Name: {
             id: StringId.QuerySymbolsDataDefinitionFieldDescription_Name, translations: {
                 en: 'Match symbol Name',
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDisplay_Short: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Short, translations: {
+                en: 'Short'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDescription_Short: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDescription_Short, translations: {
+                en: 'Match short symbol name'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDisplay_Long: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDisplay_Long, translations: {
+                en: 'Long'
+            }
+        },
+        QuerySymbolsDataDefinitionFieldDescription_Long: {
+            id: StringId.QuerySymbolsDataDefinitionFieldDescription_Long, translations: {
+                en: 'Match long symbol name'
             }
         },
         QuerySymbolsDataDefinitionFieldDisplay_Ticker: {
@@ -9067,6 +9195,16 @@ export namespace I18nStrings {
         SymbolsDitemControlCaption_Fields: {
             id: StringId.SymbolsDitemControlCaption_Fields, translations: {
                 en: 'Fields',
+            }
+        },
+        SymbolsDitemControlTitle_Indices: {
+            id: StringId.SymbolsDitemControlTitle_Indices, translations: {
+                en: 'Search indices only',
+            }
+        },
+        SymbolsDitemControlCaption_Indices: {
+            id: StringId.SymbolsDitemControlCaption_Indices, translations: {
+                en: 'Indices',
             }
         },
         SymbolsDitemControlTitle_Partial: {

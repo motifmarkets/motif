@@ -17,12 +17,14 @@
         (click)="handleOrderPadSettingsClick()">
         Order Pad
     </button>
+    <button [ngClass]="{ 'selected': exchangesGroupActive }"
+        (click)="handleExchangesSettingsClick()">
+        Exchanges
+    </button>
     <button [ngClass]="{ 'selected': colorGroupActive }"
         (click)="handleColorSettingsClick()">
         Color
     </button>
 </div>
 
-<div id="groupDiv">
-    <ng-template #groupContainer></ng-template>
-</div>
+<ng-template #groupContainer id="groupContainer"></ng-template>

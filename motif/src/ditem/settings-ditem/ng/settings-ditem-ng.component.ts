@@ -10,9 +10,7 @@ import {
     ChangeDetectorRef,
     Component,
     ComponentFactoryResolver,
-
     ElementRef,
-
     Inject,
     OnDestroy,
     ViewChild,
@@ -22,6 +20,7 @@ import { ComponentContainer } from 'golden-layout';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import {
     ColorSettingsNgComponent,
+    ExchangesSettingsNgComponent,
     GeneralSettingsNgComponent,
     GridSettingsNgComponent,
     OrderPadSettingsNgComponent,
@@ -44,6 +43,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     public generalGroupActive: boolean;
     public gridGroupActive: boolean;
     public orderPadGroupActive: boolean;
+    public exchangesGroupActive: boolean;
     public colorGroupActive: boolean;
 
     private _frame: SettingsDitemFrame;
@@ -88,6 +88,10 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.setGroupId(SettingsDitemFrame.SettingsGroupId.Color);
     }
 
+    handleExchangesSettingsClick() {
+        this.setGroupId(SettingsDitemFrame.SettingsGroupId.Exchanges);
+    }
+
     handleGridSettingsClick() {
         this.setGroupId(SettingsDitemFrame.SettingsGroupId.Grid);
     }
@@ -125,39 +129,32 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (value !== this._settingsGroupId) {
             this.clearAllGroupContainers();
 
+            this.generalGroupActive = false;
+            this.gridGroupActive = false;
+            this.orderPadGroupActive = false;
+            this.exchangesGroupActive = false;
+            this.colorGroupActive = false;
+
             switch (value) {
                 case SettingsDitemFrame.SettingsGroupId.General:
                     this.generalGroupActive = true;
-                    this.gridGroupActive = false;
-                    this.orderPadGroupActive = false;
-                    this.colorGroupActive = false;
-                    this._groupComponent =
-                        GeneralSettingsNgComponent.create(this._groupContainer, this._resolver);
-                    // this._gridSettingsComponent.initialise(layoutWithHeadings);
+                    this._groupComponent = GeneralSettingsNgComponent.create(this._groupContainer, this._resolver);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.Grid:
-                    this.generalGroupActive = false;
                     this.gridGroupActive = true;
-                    this.orderPadGroupActive = false;
-                    this.colorGroupActive = false;
                     this._groupComponent = GridSettingsNgComponent.create(this._groupContainer, this._resolver);
-                    // this._gridSettingsComponent.initialise(layoutWithHeadings);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.OrderPad:
-                    this.generalGroupActive = false;
-                    this.gridGroupActive = false;
                     this.orderPadGroupActive = true;
-                    this.colorGroupActive = false;
                     this._groupComponent = OrderPadSettingsNgComponent.create(this._groupContainer, this._resolver);
-                    // this._gridSettingsComponent.initialise(layoutWithHeadings);
+                    break;
+                case SettingsDitemFrame.SettingsGroupId.Exchanges:
+                    this.exchangesGroupActive = true;
+                    this._groupComponent = ExchangesSettingsNgComponent.create(this._groupContainer, this._resolver);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.Color:
-                    this.generalGroupActive = false;
-                    this.gridGroupActive = false;
-                    this.orderPadGroupActive = false;
                     this.colorGroupActive = true;
                     this._groupComponent = ColorSettingsNgComponent.create(this._groupContainer, this._resolver);
-                    // this._colorSettingsComponent.initialise(layoutWithHeadings);
                     break;
             }
 

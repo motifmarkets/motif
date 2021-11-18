@@ -9,7 +9,7 @@ import { SettingsNgService } from 'src/component-services/ng-api';
 import { NgSelectUtils } from 'src/controls/internal-api';
 import { NgSelectOverlayNgService } from 'src/controls/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
-import { AssertInternalError, HtmlTypes, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels } from 'src/sys/internal-api';
 
 @Component({
     selector: 'app-ng-select-overlay',
@@ -22,22 +22,34 @@ export class NgSelectOverlayNgComponent implements OnDestroy {
     @ViewChild('measureCanvas', { static: true }) private _measureCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('measureBoldCanvas', { static: true }) private _measureBoldCanvas: ElementRef<HTMLCanvasElement>;
 
-    private _settingsService: SettingsService;
-    private _colorSettings: ColorSettings;
+    private readonly _element: HTMLElement;
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
 
+    private _firstColumnWidth: number | undefined;
+    private _dropDownPanelClientWidth: number | undefined;
+
+    private _scrollHostCollection: HTMLCollectionOf<Element> | undefined;
+
     constructor(
-        private _placeHolderService: NgSelectOverlayNgService,
-        private _elementRef: ElementRef,
+        private readonly _ngSelectOverlayNgService: NgSelectOverlayNgService,
+        elementRef: ElementRef,
         settingsNgService: SettingsNgService
     ) {
+        this._element = elementRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
         this._colorSettings = this._settingsService.color;
-        this._placeHolderService.dropDownPanelWidthEvent = (width) => this.handleNgSelectDropDownPanelWidthEvent(width);
-        this._placeHolderService.firstColumnWidthEvent = (width) => this.handleNgSelectFirstColumnWidthEvent(width);
+        this._ngSelectOverlayNgService.dropDownPanelClientWidthEvent =
+            (width, widenOnly) => this.handleNgSelectDropDownPanelClientWidthEvent(width, widenOnly);
+        this._ngSelectOverlayNgService.firstColumnWidthEvent =
+            (width, widenOnly) => this.handleNgSelectFirstColumnWidthEvent(width, widenOnly);
+        this._ngSelectOverlayNgService.dropDownOpenEvent = () => this.handleDropDownOpenEvent();
+
+        this._scrollHostCollection = this._element.getElementsByClassName('scroll-host');
     }
 
     ngOnDestroy() {
@@ -63,21 +75,72 @@ export class NgSelectOverlayNgComponent implements OnDestroy {
             measureBoldCanvasContext.font = boldFontParts.join(' ');
             this._measureBoldCanvasContext = measureBoldCanvasContext;
 
-            this._placeHolderService.setMeasureCanvasContexts(this._measureCanvasContext, this._measureBoldCanvasContext);
+            this._firstColumnWidth = undefined;
+            this._dropDownPanelClientWidth = undefined;
+
+            this._ngSelectOverlayNgService.setMeasureCanvasContexts(this._measureCanvasContext, this._measureBoldCanvasContext);
         }
     }
 
     private handleSettingsChangedEvent() {
         const foreColor = this._colorSettings.getFore(ColorScheme.ItemId.TextControl);
         const bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.TextControl);
-        NgSelectUtils.ApplyColors(this._elementRef.nativeElement, foreColor, bkgdColor);
+        NgSelectUtils.ApplyColors(this._element, foreColor, bkgdColor);
     }
 
-    private handleNgSelectDropDownPanelWidthEvent(width: string) {
-        this._elementRef.nativeElement.style.setProperty('--ngSelectDropDownPanelWidth', width);
+    private handleDropDownOpenEvent() {
+        this._firstColumnWidth = undefined;
+        this._dropDownPanelClientWidth = undefined;
     }
 
-    private handleNgSelectFirstColumnWidthEvent(width: string) {
-        this._elementRef.nativeElement.style.setProperty('--ngSelectBoldFirstColumnWidth', width);
+    private handleNgSelectDropDownPanelClientWidthEvent(clientWidth: number, widenOnly: boolean) {
+        const apply = this._dropDownPanelClientWidth === undefined
+            || (clientWidth !== this._dropDownPanelClientWidth && (!widenOnly || clientWidth > this._dropDownPanelClientWidth));
+
+        if (apply) {
+            this._dropDownPanelClientWidth = clientWidth;
+
+            let scrollbarWidth = NgSelectOverlayNgComponent.scrollbarWidth;
+            if (scrollbarWidth === undefined) {
+                scrollbarWidth = 30; // a guess as to scrollbar width
+            }
+            const offsetWidth = clientWidth + scrollbarWidth + NgSelectOverlayNgComponent.dropDownBordersWidth; // allow for border
+            const offsetWidthPixels = numberToPixels(offsetWidth);
+            this._element.style.setProperty('--ngSelectDropDownPanelWidth', offsetWidthPixels);
+
+        }
+
+        this.checkCalculateScrollbarWidth();
     }
+
+    private handleNgSelectFirstColumnWidthEvent(width: number, widenOnly: boolean) {
+        const apply = this._firstColumnWidth === undefined
+            || (width !== this._firstColumnWidth && (!widenOnly || width > this._firstColumnWidth));
+        if (apply) {
+            this._firstColumnWidth = width;
+            const widthPixels = numberToPixels(width);
+            this._element.style.setProperty('--ngSelectBoldFirstColumnWidth', widthPixels);
+        }
+    }
+
+    private checkCalculateScrollbarWidth() {
+        if (NgSelectOverlayNgComponent.scrollbarWidth === undefined) {
+            delay1Tick(() => {
+                if (this._scrollHostCollection !== undefined && this._scrollHostCollection.length > 0) {
+                    const scrollHost = this._scrollHostCollection[0] as HTMLElement;
+                    const currentClientWidth = scrollHost.clientWidth;
+                    const currentOffsetWidth = scrollHost.offsetWidth;
+                    if (currentClientWidth > 0 && currentOffsetWidth > currentClientWidth) {
+                        NgSelectOverlayNgComponent.scrollbarWidth = currentOffsetWidth - currentClientWidth;
+                        this._scrollHostCollection = undefined;
+                    }
+                }
+            });
+        }
+    }
+}
+
+export namespace NgSelectOverlayNgComponent {
+    export let scrollbarWidth: number;
+    export const dropDownBordersWidth = 4;
 }

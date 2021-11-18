@@ -5,15 +5,18 @@
  */
 
 import { StringId, Strings } from 'src/res/internal-api';
-import { EnumInfoOutOfOrderError } from 'src/sys/internal-api';
+import { CommaText, EnumInfoOutOfOrderError } from 'src/sys/internal-api';
 import { FieldDataTypeId } from './data-types';
 
 export class LitIvemAlternateCodes {
-    ticker: string | undefined;
-    gics: string | undefined;
-    isin: string | undefined;
-    ric: string | undefined;
-    base: string | undefined;
+    [key: string]: string | undefined;
+    ticker?: string;
+    gics?: string;
+    isin?: string;
+    ric?: string;
+    base?: string;
+    short?: string;
+    long?: string;
 }
 
 export namespace LitIvemAlternateCodes {
@@ -35,6 +38,15 @@ export namespace LitIvemAlternateCodes {
                 return isEqual(left, right);
             }
         }
+    }
+
+    export function toDisplay(alternateCodes: LitIvemAlternateCodes) {
+        const keyValueDisplays: string[] = [];
+        for (let [key, value] of Object.entries(alternateCodes)) {
+            const keyValueDisplay = key + '=' + value;
+            keyValueDisplays.push(keyValueDisplay);
+        }
+        return CommaText.fromStringArray(keyValueDisplays);
     }
 
     export namespace Field {

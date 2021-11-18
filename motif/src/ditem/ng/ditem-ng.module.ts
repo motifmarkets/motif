@@ -24,7 +24,7 @@ import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
 import { SettingsDitemNgComponent } from '../settings-ditem/ng-api';
 import { StaticInitialise } from '../static-initialise';
 import { StatusDitemNgComponent } from '../status-ditem/ng-api';
-import { SymbolsDitemNgComponent } from '../symbols-ditem/ng-api';
+import { SearchSymbolsDitemNgComponent } from '../search-symbols-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from '../top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from '../trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
@@ -44,7 +44,7 @@ import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api'
         ParidepthDitemNgComponent,
         PlaceholderDitemNgComponent,
         StatusDitemNgComponent,
-        SymbolsDitemNgComponent,
+        SearchSymbolsDitemNgComponent,
         SettingsDitemNgComponent,
         TopShareholdersDitemNgComponent,
         TradesDitemNgComponent,

@@ -32,6 +32,12 @@
             <app-captioned-enum-array-checkbox #nameControl inputId="nameCheckbox"></app-captioned-enum-array-checkbox>
             <app-enum-array-input #fieldsControl inputId="fieldsInput" inputSize="3em"></app-enum-array-input>
         </section>
+        <app-caption-label #indicesLabel for="includeIndicesRadio"></app-caption-label>
+        <section id="indicesSection">
+            <app-captioned-radio #excludeIndicesControl inputId="excludeIndicesRadio" name="indices"></app-captioned-radio>
+            <app-captioned-radio #includeIndicesControl inputId="includeIndicesRadio" name="indices"></app-captioned-radio>
+            <app-captioned-radio #onlyIndicesControl inputId="onlyIndicesRadio" name="indices"></app-captioned-radio>
+        </section>
         <app-caption-label #optionsLabel></app-caption-label>
         <section id="optionsSection">
             <app-captioned-checkbox #partialControl inputId="partialCheckbox"></app-captioned-checkbox>

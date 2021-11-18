@@ -79,7 +79,6 @@ export class LitIvemExtendedDetailTableFieldDefinitionSource extends TableFieldD
 export namespace LitIvemExtendedDetailTableFieldDefinitionSource {
     export namespace Field {
         const unsupportedIds: LitIvemFullDetail.ExtendedField.Id[] = [
-            LitIvemFullDetail.ExtendedField.Id.AlternateCodes,
             LitIvemFullDetail.ExtendedField.Id.Attributes,
             LitIvemFullDetail.ExtendedField.Id.TmcLegs
         ];
@@ -117,7 +116,6 @@ export namespace LitIvemExtendedDetailTableFieldDefinitionSource {
                     return [IntegerDataItemTableGridField, IntegerCorrectnessTableGridValue];
                 case LitIvemFullDetail.ExtendedField.Id.Categories:
                     return [StringArrayDataItemTableGridField, StringArrayCorrectnessTableGridValue];
-                case LitIvemFullDetail.ExtendedField.Id.AlternateCodes:
                 case LitIvemFullDetail.ExtendedField.Id.Attributes:
                 case LitIvemFullDetail.ExtendedField.Id.TmcLegs:
                     throw new AssertInternalError('LIEDTFDSFITTGCA1200069', LitIvemFullDetail.ExtendedField.idToName(id));

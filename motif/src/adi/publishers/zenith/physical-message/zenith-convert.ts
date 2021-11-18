@@ -7,6 +7,7 @@
 import Decimal from 'decimal.js-light';
 import {
     AssertInternalError,
+    CommaText,
     concatenateArrayUniquely,
     defined,
     EnumInfoOutOfOrderError,
@@ -85,6 +86,8 @@ import {
     PercentageTrailingPriceOrderTrigger,
     PriceOrderTrigger,
     PublisherRequest,
+    SearchSymbolsDataDefinition,
+    SymbolFieldId,
     TimeInForceId,
     TradeAffects as AdiTradeAffects,
     TradeAffectsId,
@@ -1882,13 +1885,72 @@ export namespace ZenithConvert {
     }
 
     export namespace ExerciseType {
-        export function toId(value: Zenith.MarketController.SearchSymbols.ExerciseType): ExerciseTypeId | undefined {
+        export function toId(value: Zenith.MarketController.SearchSymbols.FullDetail.ExerciseType): ExerciseTypeId | undefined {
             switch (value) {
-                case Zenith.MarketController.SearchSymbols.ExerciseType.American: return ExerciseTypeId.American;
-                case Zenith.MarketController.SearchSymbols.ExerciseType.European: return ExerciseTypeId.European;
-                case Zenith.MarketController.SearchSymbols.ExerciseType.Unknown: return undefined;
+                case Zenith.MarketController.SearchSymbols.FullDetail.ExerciseType.American: return ExerciseTypeId.American;
+                case Zenith.MarketController.SearchSymbols.FullDetail.ExerciseType.Asian: return ExerciseTypeId.Asian;
+                case Zenith.MarketController.SearchSymbols.FullDetail.ExerciseType.European: return ExerciseTypeId.European;
+                case Zenith.MarketController.SearchSymbols.FullDetail.ExerciseType.Unknown: return undefined;
                 default:
                     throw new UnreachableCaseError('ZCETTI38852', value);
+            }
+        }
+    }
+
+    export namespace SymbolClass {
+        export function fromId(value: IvemClassId): Zenith.MarketController.SearchSymbols.Request.Class | undefined {
+            switch (value) {
+                case IvemClassId.Unknown: return undefined;
+                case IvemClassId.Market: return Zenith.MarketController.SearchSymbols.Request.Class.Market;
+                case IvemClassId.ManagedFund: return Zenith.MarketController.SearchSymbols.Request.Class.ManagedFund;
+                default:
+                    throw new UnreachableCaseError('ZCSCFI39852', value);
+            }
+        }
+    }
+
+    export namespace SymbolAlternateKey {
+        export function fromId(value: SymbolFieldId): Zenith.MarketController.SearchSymbols.AlternateKey | undefined {
+            switch (value) {
+                case SymbolFieldId.Code: return undefined;
+                case SymbolFieldId.Name: return undefined;
+                case SymbolFieldId.Short: return Zenith.MarketController.SearchSymbols.AlternateKey.Short;
+                case SymbolFieldId.Long: return Zenith.MarketController.SearchSymbols.AlternateKey.Long;
+                case SymbolFieldId.Ticker: return Zenith.MarketController.SearchSymbols.AlternateKey.Ticker;
+                case SymbolFieldId.Gics: return Zenith.MarketController.SearchSymbols.AlternateKey.Gics;
+                case SymbolFieldId.Isin: return Zenith.MarketController.SearchSymbols.AlternateKey.Isin;
+                case SymbolFieldId.Base: return Zenith.MarketController.SearchSymbols.AlternateKey.Base;
+                case SymbolFieldId.Ric: return Zenith.MarketController.SearchSymbols.AlternateKey.Ric;
+                default:
+                    throw new UnreachableCaseError('ZCSAK08577', value);
+            }
+        }
+    }
+
+    export namespace SymbolConditionMatch {
+        export function fromIds(ids: SearchSymbolsDataDefinition.Condition.MatchId[]): string {
+            const count = ids.length;
+            const matches = new Array<Zenith.MarketController.SearchSymbols.Condition.Match>(count);
+            for (let i = 0; i < count; i++) {
+                const id = ids[i];
+                matches[i] = fromId(id);
+            }
+
+            return CommaText.fromStringArray(matches);
+        }
+
+        function fromId(value: SearchSymbolsDataDefinition.Condition.MatchId):
+            Zenith.MarketController.SearchSymbols.Condition.Match
+        {
+            switch (value) {
+                case SearchSymbolsDataDefinition.Condition.MatchId.fromStart:
+                    return Zenith.MarketController.SearchSymbols.Condition.Match.FromStart;
+                case SearchSymbolsDataDefinition.Condition.MatchId.fromEnd:
+                    return Zenith.MarketController.SearchSymbols.Condition.Match.FromEnd;
+                case SearchSymbolsDataDefinition.Condition.MatchId.exact:
+                    return Zenith.MarketController.SearchSymbols.Condition.Match.Exact;
+                default:
+                    throw new UnreachableCaseError('ZCSCMFI08777', value);
             }
         }
     }

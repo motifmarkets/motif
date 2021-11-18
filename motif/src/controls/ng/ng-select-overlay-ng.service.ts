@@ -11,7 +11,8 @@ import { MultiEvent } from 'src/sys/internal-api';
     providedIn: 'root'
 })
 export class NgSelectOverlayNgService {
-    dropDownPanelWidthEvent: NgSelectOverlayNgService.SelectDropDownPanelWidthEvent;
+    dropDownOpenEvent: NgSelectOverlayNgService.DropDownOpenEvent;
+    dropDownPanelClientWidthEvent: NgSelectOverlayNgService.SelectDropDownPanelClientWidthEvent;
     firstColumnWidthEvent: NgSelectOverlayNgService.SelectFirstColumnWidthEvent;
 
     private _measureCanvasContext: CanvasRenderingContext2D;
@@ -22,12 +23,16 @@ export class NgSelectOverlayNgService {
     get measureCanvasContext() { return this._measureCanvasContext; }
     get measureBoldCanvasContext() { return this._measureBoldCanvasContext; }
 
-    setDropDownPanelWidth(width: string) {
-        this.dropDownPanelWidthEvent(width);
+    notifyDropDownOpen() {
+        this.dropDownOpenEvent();
     }
 
-    setFirstColumnWidth(width: string) {
-        this.firstColumnWidthEvent(width);
+    setDropDownPanelClientWidth(clientWidth: number, widenOnly: boolean) {
+        this.dropDownPanelClientWidthEvent(clientWidth, widenOnly);
+    }
+
+    setFirstColumnWidth(width: number, widenOnly: boolean) {
+        this.firstColumnWidthEvent(width, widenOnly);
     }
 
     setMeasureCanvasContexts(context: CanvasRenderingContext2D, boldContext: CanvasRenderingContext2D) {
@@ -53,7 +58,8 @@ export class NgSelectOverlayNgService {
 }
 
 export namespace NgSelectOverlayNgService {
-    export type SelectDropDownPanelWidthEvent = (this: void, width: string) => void;
-    export type SelectFirstColumnWidthEvent = (this: void, width: string) => void;
+    export type DropDownOpenEvent = (this: void) => void;
+    export type SelectDropDownPanelClientWidthEvent = (this: void, clientWidth: number, widenOnly: boolean) => void;
+    export type SelectFirstColumnWidthEvent = (this: void, width: number, widenOnly: boolean) => void;
     export type MeasureCanvasContextsEvent = (this: void) => void;
 }

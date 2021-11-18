@@ -19,9 +19,9 @@ import { ExtensionInfo } from '../../extension/internal-api';
 export class ExtensionsSidebarNgComponent implements OnDestroy {
     @HostBinding('style.background-color') bkgdColor: string;
 
-    @Output() infoFocusEmitter = new EventEmitter();
-    @Output() listTransitionStartEmitter = new EventEmitter();
-    @Output() listTransitionFinishEmitter = new EventEmitter();
+    @Output() infoFocusEmitter = new EventEmitter<ExtensionInfo>();
+    @Output() listTransitionStartEmitter = new EventEmitter<ExtensionInfo>();
+    @Output() listTransitionFinishEmitter = new EventEmitter<ExtensionInfo>();
 
     public splitterGutterSize = 3;
 

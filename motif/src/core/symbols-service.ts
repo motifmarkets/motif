@@ -9,6 +9,8 @@ import {
     ExchangeId,
     ExchangeInfo,
     IvemId,
+    LitIvemAlternateCodes,
+    LitIvemDetail,
     LitIvemId,
     MarketId,
     MarketInfo,
@@ -16,7 +18,7 @@ import {
     MarketsDataDefinition,
     MarketsDataItem,
     OrderRoute,
-    RoutedIvemId
+    RoutedIvemId, SymbolFieldId
 } from 'src/adi/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import {
@@ -33,6 +35,7 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
+import { ExchangeSettings } from './internal-api';
 import { CoreSettings } from './settings/core-settings';
 import { SettingsService } from './settings/settings-service';
 
@@ -40,6 +43,7 @@ export class SymbolsService {
     private _finalised = false;
 
     private _coreSettings: CoreSettings;
+    private _exchangeSettingsArray: ExchangeSettings[];
     private _marketsDataItem: MarketsDataItem;
 
     private _defaultDefaultExchangeId = ExchangeId.Asx;
@@ -136,12 +140,13 @@ export class SymbolsService {
 
     constructor(private _settingsService: SettingsService, private _adi: AdiService) {
         this._coreSettings = this._settingsService.core;
+        this._exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedEventSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.handleSettingsChangedEvent()
         );
 
-       this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
-       this._pscMarketMap = new SymbolsService.PscMarketMap();
+        this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
+        this._pscMarketMap = new SymbolsService.PscMarketMap();
     }
 
     start() {
@@ -346,6 +351,81 @@ export class SymbolsService {
         const route = routedIvemId.route;
         const litId = route.getBestLitMarketId();
         return LitIvemId.createFromCodeMarket(routedIvemId.ivemId.code, litId);
+    }
+
+    calculateSymbolNameFromLitIvemDetail(detail: LitIvemDetail) {
+        return this.calculateSymbolName(detail.exchangeId, detail.name, detail.litIvemId.code, detail.alternateCodes);
+    }
+
+    calculateSymbolName(exchangeId: ExchangeId, detailName: string, detailCode: string, detailAlternateCodes: LitIvemAlternateCodes) {
+        const fieldId = this._exchangeSettingsArray[exchangeId].symbolNameFieldId;
+        if (fieldId === SymbolFieldId.Name) {
+            return detailName;
+        } else {
+            const alternateCodes = detailAlternateCodes;
+            if (alternateCodes === undefined) {
+                return detailName;
+            } else {
+                if (fieldId === SymbolFieldId.Ticker) {
+                    const ticker = alternateCodes.ticker;
+                    if (ticker === undefined) {
+                        return detailName;
+                    } else {
+                        return ticker;
+                    }
+                } else {
+                    let result: string | undefined;
+                    switch (fieldId) {
+                        case SymbolFieldId.Code: {
+                            result = detailCode;
+                            break;
+                        }
+                        case SymbolFieldId.Isin: {
+                            result = alternateCodes.isin;
+                            break;
+                        }
+                        case SymbolFieldId.Ric: {
+                            result = alternateCodes.ric;
+                            break;
+                        }
+                        case SymbolFieldId.Base: {
+                            result = alternateCodes.base;
+                            break;
+                        }
+                        case SymbolFieldId.Gics: {
+                            result = alternateCodes.gics;
+                            break;
+                        }
+                        case SymbolFieldId.Long: {
+                            result = alternateCodes.long;
+                            break;
+                        }
+                        case SymbolFieldId.Short: {
+                            result = alternateCodes.short;
+                            break;
+                        }
+                        default:
+                            result = detailName;
+                    }
+                    if (result === undefined) {
+                        result = detailName;
+                    }
+                    return result;
+                }
+            }
+        }
+    }
+
+    calculateSymbolSearchFieldIds(exchangeId: ExchangeId | undefined) {
+        if (exchangeId === undefined) {
+            if (this._coreSettings.symbol_ExplicitSearchFieldsEnabled) {
+                return this._coreSettings.symbol_ExplicitSearchFieldIds;
+            } else {
+                return this._exchangeSettingsArray[this._defaultExchangeId].symbolSearchFieldIds;
+            }
+        } else {
+            return this._exchangeSettingsArray[exchangeId].symbolSearchFieldIds;
+        }
     }
 
     tryGetBestRoutedIvemIdFromLitIvemId(litIvemId: LitIvemId) {

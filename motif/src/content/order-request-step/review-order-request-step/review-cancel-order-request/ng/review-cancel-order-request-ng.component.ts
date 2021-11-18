@@ -60,6 +60,8 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
+        const symbolsService = symbolsNgService.symbolsManager;
+
         this.accountCaption = Strings[StringId.OrderPadAccountCaption];
         const accountId = orderPad.getAccountIdIfOk();
         if (accountId === undefined) {
@@ -89,13 +91,13 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
         if (orderPad.routedIvemId === undefined) {
             throw new AssertInternalError('RMIRCCRI9888332312');
         } else {
-            this.symbolCode = symbolsNgService.symbolsManager.routedIvemIdToNothingHiddenDisplay(orderPad.routedIvemId);
+            this.symbolCode = symbolsService.routedIvemIdToNothingHiddenDisplay(orderPad.routedIvemId);
 
             const detail = orderPad.getSymbolDetailIfOk();
             if (detail === undefined) {
                 throw new AssertInternalError('RMIRCCSD9888332312');
             } else {
-                this.symbolName = detail.name;
+                this.symbolName = symbolsService.calculateSymbolName(detail.exchangeId, detail.name, detail.litIvemId.code, detail.alternateCodes);
             }
         }
 

@@ -9,9 +9,7 @@ import {
     ExternalError,
     ifDefined,
     Logger,
-    newUndefinableDecimal,
-    UnreachableCaseError,
-    ZenithDataError
+    newUndefinableDecimal, ZenithDataError
 } from 'src/sys/internal-api';
 import {
     AurcChangeTypeId,
@@ -25,11 +23,14 @@ import {
     PublisherRequest,
     PublisherSubscription,
     SearchSymbolsDataDefinition,
+    SymbolFieldId,
     SymbolsDataMessage,
     TmcLeg
 } from '../../../common/internal-api';
 import { Zenith } from './zenith';
 import { ZenithConvert } from './zenith-convert';
+import { ZenithMarketAsx } from './zenith-market-asx';
+import { ZenithMarketAsxConvert } from './zenith-market-asx-convert';
 import { ZenithMarketMyx } from './zenith-market-myx';
 import { ZenithMarketMyxConvert } from './zenith-market-myx-convert';
 
@@ -38,7 +39,7 @@ export namespace SymbolsMessageConvert {
     export function createRequestMessage(request: PublisherRequest) {
         const definition = request.subscription.dataDefinition;
         if (definition instanceof SearchSymbolsDataDefinition) {
-            return createPublishMessage(definition);
+            return createSearchPublishMessage(definition);
         } else {
             // if (definition instanceof SymbolsDataDefinition) {
             //     return createSubUnsubMessage(definition, request.typeId);
@@ -61,64 +62,191 @@ export namespace SymbolsMessageConvert {
         }
     }
 
-    function convertField(id: SearchSymbolsDataDefinition.FieldId) {
-        switch (id) {
-            case SearchSymbolsDataDefinition.FieldId.Code: return Zenith.MarketController.SearchSymbols.SearchField.Code;
-            case SearchSymbolsDataDefinition.FieldId.Name: return Zenith.MarketController.SearchSymbols.SearchField.Name;
-            case SearchSymbolsDataDefinition.FieldId.Ticker: return Zenith.MarketController.SearchSymbols.AlternateKey.Ticker;
-            case SearchSymbolsDataDefinition.FieldId.Gics: return Zenith.MarketController.SearchSymbols.AlternateKey.Gics;
-            case SearchSymbolsDataDefinition.FieldId.Isin: return Zenith.MarketController.SearchSymbols.AlternateKey.Isin;
-            case SearchSymbolsDataDefinition.FieldId.Base: return Zenith.MarketController.SearchSymbols.AlternateKey.Base;
-            case SearchSymbolsDataDefinition.FieldId.Ric: return Zenith.MarketController.SearchSymbols.AlternateKey.Ric;
-            default:
-                throw new UnreachableCaseError('MCSCFFI11945', id);
-        }
-    }
+    // function convertField(id: SearchSymbolsDataDefinition.FieldId) {
+    //     switch (id) {
+    //         case SearchSymbolsDataDefinition.FieldId.Code: return Zenith.MarketController.SearchSymbols.SearchField.Code;
+    //         case SearchSymbolsDataDefinition.FieldId.Name: return Zenith.MarketController.SearchSymbols.SearchField.Name;
+    //         // case SearchSymbolsDataDefinition.FieldId.Ticker: return Zenith.MarketController.SearchSymbols.AlternateKey.Ticker;
+    //         // case SearchSymbolsDataDefinition.FieldId.Gics: return Zenith.MarketController.SearchSymbols.AlternateKey.Gics;
+    //         // case SearchSymbolsDataDefinition.FieldId.Isin: return Zenith.MarketController.SearchSymbols.AlternateKey.Isin;
+    //         // case SearchSymbolsDataDefinition.FieldId.Base: return Zenith.MarketController.SearchSymbols.AlternateKey.Base;
+    //         // case SearchSymbolsDataDefinition.FieldId.Ric: return Zenith.MarketController.SearchSymbols.AlternateKey.Ric;
+    //         default:
+    //             // throw new UnreachableCaseError('MCSCFFI11945', id);
+    //     }
+    // }
 
-    function convertFields(ids: readonly SearchSymbolsDataDefinition.FieldId[] | undefined) {
-        if (ids === undefined) {
-            return undefined;
-        } else {
-            const count = ids.length;
-            const zenithFields = new Array<string>(count);
-            for (let i = 0; i < count; i++) {
-                const id = ids[i];
-                zenithFields[i] = convertField(id);
-            }
-            return zenithFields.join(Zenith.MarketController.SearchSymbols.fieldSeparator);
-        }
-    }
+    // function convertFields(ids: readonly SearchSymbolsDataDefinition.FieldId[] | undefined) {
+    //     if (ids === undefined) {
+    //         return undefined;
+    //     } else {
+    //         const count = ids.length;
+    //         const zenithFields = new Array<string>(count);
+    //         for (let i = 0; i < count; i++) {
+    //             const id = ids[i];
+    //             zenithFields[i] = convertField(id);
+    //         }
+    //         return zenithFields.join(Zenith.MarketController.SearchSymbols.fieldSeparator);
+    //     }
+    // }
 
-    function createPublishMessage(definition: SearchSymbolsDataDefinition) {
-        const exchange = definition.exchangeId === undefined ? undefined :
-            ZenithConvert.EnvironmentedExchange.fromId(definition.exchangeId);
-        const targetDate = definition.targetDate === undefined ? undefined :
-        ZenithConvert.Date.DateTimeIso8601.fromDate(definition.targetDate);
+    // function createPublishMessage(definition: SearchSymbolsDataDefinition) {
+    //     const exchange = definition.exchangeId === undefined ? undefined :
+    //         ZenithConvert.EnvironmentedExchange.fromId(definition.exchangeId);
+    //     const targetDate = definition.targetDate === undefined ? undefined :
+    //     ZenithConvert.Date.DateTimeIso8601.fromDate(definition.targetDate);
+
+    //     const result: Zenith.MarketController.SearchSymbols.PublishMessageContainer = {
+    //         Controller: Zenith.MessageContainer.Controller.Market,
+    //         Topic: Zenith.MarketController.TopicName.SearchSymbols,
+    //         Action: Zenith.MessageContainer.Action.Publish,
+    //         TransactionID: PublisherRequest.getNextTransactionId(),
+    //         Data: {
+    //             SearchText: definition.searchText,
+    //             Exchange: exchange,
+    //             Markets: convertMarketsArray(definition.marketIds),
+    //             Field: convertFields(definition.fieldIds),
+    //             IsPartial: definition.isPartial,
+    //             IsCaseSensitive: definition.isCaseSensitive,
+    //             PreferExact: definition.preferExact,
+    //             StartIndex: definition.startIndex,
+    //             Count: definition.count,
+    //             TargetDate: targetDate,
+    //             ShowFull: definition.showFull,
+    //             Account: definition.accountId,
+    //             CFI: definition.cfi,
+    //         }
+    //     };
+
+    //     return result;
+    // }
+
+    function createSearchPublishMessage(definition: SearchSymbolsDataDefinition) {
+        const exchange = definition.exchangeId === undefined
+            ? undefined
+            : ZenithConvert.EnvironmentedExchange.fromId(definition.exchangeId);
+        const ivemClass = definition.ivemClassId === undefined
+            ? undefined
+            : ZenithConvert.SymbolClass.fromId(definition.ivemClassId);
+        const conditions = createSearchConditions(definition.conditions);
+        const expiryDateMin = definition.expiryDateMin === undefined
+            ? undefined
+            : ZenithConvert.Date.DateTimeIso8601.fromDate(definition.expiryDateMin);
+        const expiryDateMax = definition.expiryDateMax === undefined
+            ? undefined
+            : ZenithConvert.Date.DateTimeIso8601.fromDate(definition.expiryDateMax);
+        const strikePriceMin = definition.strikePriceMin === undefined
+            ? undefined
+            : definition.strikePriceMin.toNumber();
+        const strikePriceMax = definition.strikePriceMax === undefined
+            ? undefined
+            : definition.strikePriceMax.toNumber();
 
         const result: Zenith.MarketController.SearchSymbols.PublishMessageContainer = {
             Controller: Zenith.MessageContainer.Controller.Market,
-            Topic: Zenith.MarketController.TopicName.QuerySymbols,
+            Topic: Zenith.MarketController.TopicName.SearchSymbols,
             Action: Zenith.MessageContainer.Action.Publish,
             TransactionID: PublisherRequest.getNextTransactionId(),
             Data: {
-                SearchText: definition.searchText,
+                CFI: definition.cfi,
+                Class: ivemClass,
+                CombinationLeg: definition.combinationLeg,
+                Conditions: conditions,
+                Count: definition.count,
                 Exchange: exchange,
+                ExpiryDateMin: expiryDateMin,
+                ExpiryDateMax: expiryDateMax,
+                FullSymbol: definition.fullSymbol,
+                Index: definition.index,
                 Markets: convertMarketsArray(definition.marketIds),
-                Field: convertFields(definition.fieldIds),
-                IsPartial: definition.isPartial,
-                IsCaseSensitive: definition.isCaseSensitive,
                 PreferExact: definition.preferExact,
                 StartIndex: definition.startIndex,
-                Count: definition.count,
-                TargetDate: targetDate,
-                ShowFull: definition.showFull,
-                Account: definition.accountId,
-                CFI: definition.cfi,
+                StrikePriceMin: strikePriceMin,
+                StrikePriceMax: strikePriceMax,
+                // Field: convertFields(definition.fieldIds),
+                // IsPartial: definition.isPartial,
+                // IsCaseSensitive: definition.isCaseSensitive,
+                // TargetDate: targetDate,
+                // Account: definition.accountId,
             }
         };
 
         return result;
     }
+
+    function createSearchConditions(conditions: SearchSymbolsDataDefinition.Condition[] | undefined) {
+        if (conditions === undefined) {
+            return undefined;
+        } else {
+            const count = conditions.length;
+            let result: Zenith.MarketController.SearchSymbols.Condition[] = [];
+            for (let i = 0; i < count; i++) {
+                const condition = conditions[i];
+                result = [...result, ...createFieldSearchConditions(condition)];
+            }
+            return result;
+        }
+    }
+
+    export function createFieldSearchConditions(condition: SearchSymbolsDataDefinition.Condition) {
+        const fieldIds = condition.fieldIds;
+        let result: Zenith.MarketController.SearchSymbols.Condition[];
+        if (fieldIds === undefined) {
+            result = [createFieldSearchCondition(undefined, undefined, condition)];
+        } else {
+            const maxCount = fieldIds.length;
+            result = new Array<Zenith.MarketController.SearchSymbols.Condition>(maxCount);
+            let count = 0;
+            const containsCode = fieldIds.includes(SymbolFieldId.Code);
+            const containsName = fieldIds.includes(SymbolFieldId.Name);
+            if (containsCode && containsName) {
+                result[count++] = createFieldSearchCondition(undefined, undefined, condition); // undefined field = code + name
+            } else {
+                if (containsCode) {
+                    const field = Zenith.MarketController.SearchSymbols.Condition.Field.Code;
+                    result[count++] = createFieldSearchCondition(field, undefined, condition);
+                }
+                if (containsName) {
+                    const field = Zenith.MarketController.SearchSymbols.Condition.Field.Name;
+                    result[count++] = createFieldSearchCondition(field, undefined, condition);
+                }
+            }
+
+            for (const fieldId of fieldIds) {
+                const alternateKey = ZenithConvert.SymbolAlternateKey.fromId(fieldId);
+                if (alternateKey !== undefined) {
+                    const field = Zenith.MarketController.SearchSymbols.Condition.Field.Alternate;
+                    result[count++] = createFieldSearchCondition(field, alternateKey, condition);
+                }
+            }
+
+            result.length = count;
+        }
+
+        return result;
+    }
+
+    export function createFieldSearchCondition(
+        field: Zenith.MarketController.SearchSymbols.Condition.Field | undefined,
+        alternateKey: Zenith.MarketController.SearchSymbols.AlternateKey | undefined,
+        condition: SearchSymbolsDataDefinition.Condition
+    ) {
+        const match = condition.matchIds === undefined
+            ? undefined
+            : ZenithConvert.SymbolConditionMatch.fromIds(condition.matchIds);
+
+        const result: Zenith.MarketController.SearchSymbols.Condition = {
+            Field: field,
+            Group: condition.group,
+            IsCaseSensitive: condition.isCaseSensitive,
+            Key: alternateKey,
+            Match: match,
+            Text: condition.text,
+        };
+
+        return result;
+    }
+
 
     // function createSubUnsubMessage(definition: SymbolsDataDefinition, requestTypeId: PublisherRequest.TypeId) {
     //     const topicName = Zenith.MarketController.TopicName.Symbols;
@@ -146,23 +274,34 @@ export namespace SymbolsMessageConvert {
             if (actionId !== ZenithConvert.MessageContainer.Action.Id.Publish) {
                 throw new ZenithDataError(ExternalError.Code.SMCPMD558382000, actionId.toString(10));
             } else {
-                if (message.Topic !== Zenith.MarketController.TopicName.QuerySymbols) {
+                if (message.Topic !== Zenith.MarketController.TopicName.SearchSymbols) {
                     throw new ZenithDataError(ExternalError.Code.SMCPMP5885239991, message.Topic);
                 } else {
                     const publishMsg = message as Zenith.MarketController.SearchSymbols.PublishPayloadMessageContainer;
-                    dataMessage.changes = parsePublishPayload(publishMsg.Data);
+                    const data = publishMsg.Data;
+                    if (data !== undefined) {
+                        dataMessage.changes = parsePublishPayload(data);
+                    }
                     return dataMessage;
                 }
             }
         }
     }
 
-    function parsePublishPayload(symbols: Zenith.MarketController.SearchSymbols.Detail[]) {
-        const result = new Array<SymbolsDataMessage.Change>(symbols.length);
+    function parsePublishPayload(symbols: Zenith.MarketController.SearchSymbols.Detail[] | null) {
+        let result: SymbolsDataMessage.Change[];
+        if (symbols === null) {
+            const change: SymbolsDataMessage.ClearChange = {
+                typeId: AurcChangeTypeId.Clear,
+            };
+            result = [change];
+        } else {
+            result = new Array<SymbolsDataMessage.Change>(symbols.length);
 
-        for (let index = 0; index < symbols.length; index++) {
-            const symbol = symbols[index] as Zenith.MarketController.SearchSymbols.FullDetail;
-            result[index] = createAddChange(AurcChangeTypeId.Add, symbol);
+            for (let index = 0; index < symbols.length; index++) {
+                const symbol = symbols[index] as Zenith.MarketController.SearchSymbols.FullDetail;
+                result[index] = createAddChange(AurcChangeTypeId.Add, symbol);
+            }
         }
 
         return result;
@@ -283,7 +422,7 @@ export namespace SymbolsMessageConvert {
                     callOrPutId: ifDefined(detail.CallOrPut, x => ZenithConvert.CallOrPut.toId(x)),
                     contractSize: newUndefinableDecimal(detail.ContractSize),
                     lotSize: detail.LotSize,
-                    alternateCodes: parseAlternates(exchangeId, detail.Alternates),
+                    alternateCodes: parseAlternates(exchangeId, detail.Alternate),
                     attributes: parseAttributes(exchangeId, detail.Attributes),
                     tmcLegs: detail.Legs === null ? undefined : parseLegs(detail.Legs),
                     categories: detail.Categories,
@@ -333,7 +472,7 @@ export namespace SymbolsMessageConvert {
         return result;
     }
 
-    function parseAttributes(exchangeId: ExchangeId, attributes: Zenith.MarketController.SearchSymbols.Detail.Attributes | undefined) {
+    function parseAttributes(exchangeId: ExchangeId, attributes: Zenith.MarketController.SearchSymbols.Attributes | undefined) {
         if (attributes === undefined) {
             return undefined;
         } else {
@@ -350,15 +489,19 @@ export namespace SymbolsMessageConvert {
         }
     }
 
-    function parseAlternates(exchangeId: ExchangeId, value: Zenith.MarketController.SearchSymbols.Detail.Alternates | undefined) {
+    function parseAlternates(exchangeId: ExchangeId, value: Zenith.MarketController.SearchSymbols.Alternates | undefined) {
         if (value === undefined) {
             return undefined;
         } else {
             let result: LitIvemAlternateCodes | undefined;
             switch (exchangeId) {
                 case ExchangeId.Myx:
-                    const myxValue = value as ZenithMarketMyx.MarketController.Symbols.Detail.Alternates;
+                    const myxValue = value as ZenithMarketMyx.MarketController.Symbols.Alternates;
                     result = ZenithMarketMyxConvert.Symbols.Alternates.toAdi(myxValue);
+                    break;
+                case ExchangeId.Asx:
+                    const asxValue = value as ZenithMarketAsx.MarketController.Symbols.Alternates;
+                    result = ZenithMarketAsxConvert.Symbols.Alternates.toAdi(asxValue);
                     break;
                 default:
                     Logger.logDataError('SMCCAUC77667733773', ExchangeInfo.idToName(exchangeId));
@@ -368,7 +511,7 @@ export namespace SymbolsMessageConvert {
         }
     }
 
-    function parseLegs(value: Zenith.MarketController.SearchSymbols.Detail.Leg[] | undefined) {
+    function parseLegs(value: Zenith.MarketController.SearchSymbols.FullDetail.Leg[] | undefined) {
         if (value === undefined) {
             return undefined;
         } else {

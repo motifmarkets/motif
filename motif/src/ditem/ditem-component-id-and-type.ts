@@ -21,7 +21,7 @@ import { ParidepthDitemNgComponent } from './paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from './placeholder-ditem/ng-api';
 import { SettingsDitemNgComponent } from './settings-ditem/ng-api';
 import { StatusDitemNgComponent } from './status-ditem/ng-api';
-import { SymbolsDitemNgComponent } from './symbols-ditem/ng-api';
+import { SearchSymbolsDitemNgComponent } from './search-symbols-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from './top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from './trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from './watchlist-ditem/ng-api';
@@ -46,7 +46,7 @@ export namespace DitemComponentIdAndType {
         },
         Symbols: {
             id: BuiltinDitemFrame.BuiltinTypeId.Symbols,
-            type: SymbolsDitemNgComponent,
+            type: SearchSymbolsDitemNgComponent,
         },
         DepthAndTrades: {
             id: BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades,

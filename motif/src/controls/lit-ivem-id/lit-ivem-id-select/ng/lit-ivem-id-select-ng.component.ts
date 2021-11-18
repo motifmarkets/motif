@@ -25,8 +25,7 @@ import {
     LitIvemId,
     MarketId,
     MarketInfo,
-    SearchSymbolsDataDefinition,
-    SymbolsDataItem,
+    SearchSymbolsDataDefinition, SymbolsDataItem,
     SymbolsDataMessage
 } from 'src/adi/internal-api';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
@@ -42,7 +41,7 @@ import {
     UiAction
 } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, compareString, ComparisonResult, Integer, MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { AssertInternalError, compareString, ComparisonResult, Integer, MultiEvent } from 'src/sys/internal-api';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -86,7 +85,6 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private _measureCanvasContextsEventSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
-    private _ngSelectWidths: LitIvemIdSelectNgComponent.NgSelectWidths | undefined;
 
     override get uiAction() {
         return super.uiAction as LitIvemIdUiAction;
@@ -165,7 +163,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                     `${Strings[StringId.Trading]}: ${tradingMarketsText}`;
 
                 if (nameIncluded) {
-                    const name = detail.name;
+                    const name = this._symbolsService.calculateSymbolNameFromLitIvemDetail(detail);
                     result = `${name === undefined ? '' : name}\n` + result;
                 }
 
@@ -176,7 +174,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
     getItemDetailName(item: LitIvemIdSelectNgComponent.Item) {
         const detail = item.detail;
-        return detail === undefined ? '' : detail.name === undefined ? '' : detail.name;
+        return detail === undefined ? '' : this._symbolsService.calculateSymbolNameFromLitIvemDetail(detail).trim();
     }
 
     public handleSelectChangeEvent(event: unknown) {
@@ -205,6 +203,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     }
 
     public handleSelectOpenEvent() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
         const list = this._ngSelectComponent.itemsList;
         const ngOptions = list.items;
         const count = ngOptions.length;
@@ -260,29 +260,21 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private handleMeasureCanvasContextsEvent() {
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureBoldCanvasContext = this._ngSelectOverlayNgService.measureBoldCanvasContext;
-        this._ngSelectWidths = undefined; // force recalculation
     }
 
     private calculateNgSelectWidths(items: LitIvemIdSelectNgComponent.Item[]) {
-        let maxIdWidth = 0;
         let maxBoldIdWidth = 0;
         let maxNameWidth = 0;
         const count = items.length;
         for (let i = 0; i < count; i++) {
             const item = items[i];
             const id = item.idDisplay;
-            const idMetrics = this._measureCanvasContext.measureText(id);
-            if (idMetrics.width > maxIdWidth) {
-                maxIdWidth = idMetrics.width;
-            }
-            const boldIdMetrics = this._measureBoldCanvasContext.measureText(
-                id
-            );
+            const boldIdMetrics = this._measureBoldCanvasContext.measureText(id);
             if (boldIdMetrics.width > maxBoldIdWidth) {
                 maxBoldIdWidth = boldIdMetrics.width;
             }
             if (item.detail !== undefined) {
-                const name = item.detail.name;
+                const name = this._symbolsService.calculateSymbolNameFromLitIvemDetail(item.detail);
                 const nameMetrics = this._measureCanvasContext.measureText(name);
                 if (nameMetrics.width > maxNameWidth) {
                     maxNameWidth = nameMetrics.width;
@@ -290,11 +282,11 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             }
         }
         const spaceMetrics = this._measureCanvasContext.measureText(' ');
-        const firstColumnRightPaddingWidth = 2 * spaceMetrics.width;
-        const firstColumnWidth = firstColumnRightPaddingWidth + maxBoldIdWidth;
+        const firstColumnRightPaddingWidth = Math.ceil(2 * spaceMetrics.width);
+        const firstColumnWidth = firstColumnRightPaddingWidth + Math.ceil(maxBoldIdWidth);
 
-        let dropDownPanelWidth = firstColumnWidth + maxNameWidth + 2 * NgSelectUtils.ngOptionLeftRightPadding;
-        const componentWidth = this._ngSelectComponent.element.offsetWidth;
+        let dropDownPanelWidth = firstColumnWidth + Math.ceil(maxNameWidth) + 2 * NgSelectUtils.ngOptionLeftRightPadding;
+        const componentWidth = this._ngSelectComponent.element.clientWidth;
         if (dropDownPanelWidth < componentWidth) {
             dropDownPanelWidth = componentWidth;
         }
@@ -322,8 +314,11 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                 (prev, curr) => LitIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
             // debounceTime(800),
-            map((parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(this._adiService, this._symbolsService,
-                    parsedTerm, 800,
+            map((parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(
+                    this._adiService,
+                    this._symbolsService,
+                    parsedTerm,
+                    800,
                     (start) => this.handleQueryStartFinishEvent(start),
                     (start) => this.handleDebounceDelayStartFinishEvent(start)
                 )
@@ -414,31 +409,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private updateNgSelectWidthsFromItems(items: LitIvemIdSelectNgComponent.Item[], widenOnly: boolean) {
         const widths = this.calculateNgSelectWidths(items);
 
-        let dropDownPanelWidth: number | undefined;
-        let firstColumnWidth: number | undefined;
-        if (this._ngSelectWidths === undefined || !widenOnly) {
-            this._ngSelectWidths = widths;
-            dropDownPanelWidth = widths.dropDownPanel;
-            firstColumnWidth = widths.firstColumn;
-        } else {
-            if (widths.dropDownPanel > this._ngSelectWidths.dropDownPanel) {
-                dropDownPanelWidth = widths.dropDownPanel;
-                this._ngSelectWidths.dropDownPanel = dropDownPanelWidth;
-            }
-            if (widths.firstColumn > this._ngSelectWidths.firstColumn) {
-                firstColumnWidth = widths.firstColumn;
-                this._ngSelectWidths.firstColumn = firstColumnWidth;
-            }
-        }
-
-        if (dropDownPanelWidth !== undefined) {
-            const dropDownPanelWidthPixels = numberToPixels(dropDownPanelWidth + 4); // make allowance for borders
-            this._ngSelectOverlayNgService.setDropDownPanelWidth(dropDownPanelWidthPixels);
-        }
-        if (firstColumnWidth !== undefined) {
-            const firstColumnWidthPixels = numberToPixels(firstColumnWidth);
-            this._ngSelectOverlayNgService.setFirstColumnWidth(firstColumnWidthPixels);
-        }
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(widths.dropDownPanel, widenOnly);
+        this._ngSelectOverlayNgService.setFirstColumnWidth(widths.firstColumn, widenOnly);
     }
 
     private async applyValue(value: LitIvemId | undefined, selectAll: boolean = true) {
@@ -548,15 +520,25 @@ export namespace LitIvemIdSelectNgComponent {
         firstColumn: number;
     }
 
-    export function createLitIvemDetailFromCacheDetail(litIvemId: LitIvemId, cacheDetail: SymbolDetailCache.LitIvemIdDetail) {
+    export function createLitIvemDetailFromCacheDetail(
+        litIvemId: LitIvemId,
+        cacheDetail: SymbolDetailCache.LitIvemIdDetail,
+        symbolsService: SymbolsService,
+    ) {
         const exists = cacheDetail.exists;
         let name: string;
         if (exists === true) {
-            name = cacheDetail.name;
+            name = symbolsService.calculateSymbolName(
+                cacheDetail.exchangeId,
+                cacheDetail.name,
+                cacheDetail.litIvemId.code,
+                cacheDetail.alternateCodes
+            );
         } else {
             name = `<${Strings[StringId.SymbolNotFound]}>`;
         }
-        const addUpdateChange: SymbolsDataMessage.AddUpdateChange = {
+        // should be AddUpdateChange - review when AddUpdateChange includes AlternateCodes
+        const addUpdateChange: SymbolsDataMessage.AddChange = {
             typeId: AurcChangeTypeId.Add,
             litIvemId,
             ivemClassId: cacheDetail.ivemClassId,
@@ -564,6 +546,19 @@ export namespace LitIvemIdSelectNgComponent {
             tradingMarketIds: cacheDetail.tradingMarketIds,
             name,
             exchangeId: cacheDetail.exchangeId,
+            alternateCodes: cacheDetail.alternateCodes,
+            cfi: undefined,
+            depthDirectionId: undefined,
+            isIndex: undefined,
+            expiryDate: undefined,
+            strikePrice: undefined,
+            exerciseTypeId: undefined,
+            callOrPutId: undefined,
+            contractSize: undefined,
+            lotSize: undefined,
+            attributes: undefined,
+            tmcLegs: undefined,
+            categories: undefined,
         };
 
         return new LitIvemDetail(addUpdateChange);
@@ -573,7 +568,7 @@ export namespace LitIvemIdSelectNgComponent {
         cacheDetail: SymbolDetailCache.LitIvemIdDetail,
         symbolsService: SymbolsService
     ) {
-        const litIvemDetail = createLitIvemDetailFromCacheDetail(litIvemId, cacheDetail);
+        const litIvemDetail = createLitIvemDetailFromCacheDetail(litIvemId, cacheDetail, symbolsService);
         const item: Item = {
             exists: cacheDetail.exists,
             detail: litIvemDetail,
@@ -593,12 +588,13 @@ export namespace LitIvemIdSelectNgComponent {
         private _termItem: Item;
         private _searchItems: Item[];
 
-        constructor(private _adiService: AdiService,
-            private _symbolsService: SymbolsService,
-            private _term: ParsedSearchTerm,
-            private _searchDelay: Integer,
-            private _queryStartFinishEventHandler: (this: void, start: boolean) => void,
-            private _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
+        constructor(
+            private readonly _adiService: AdiService,
+            private readonly _symbolsService: SymbolsService,
+            private readonly _term: ParsedSearchTerm,
+            private readonly _searchDelay: Integer,
+            private readonly _queryStartFinishEventHandler: (this: void, start: boolean) => void,
+            private readonly _debounceDelayStartFinishEventHandler: (this: void, start: boolean) => void
         ) {
             super((observer) => this.subscribeFtn(observer));
         }
@@ -634,7 +630,7 @@ export namespace LitIvemIdSelectNgComponent {
                     detail = undefined;
                 } else {
                     exists = cachedDetail.exists;
-                    detail = createLitIvemDetailFromCacheDetail(termLitIvemId, cachedDetail);
+                    detail = createLitIvemDetailFromCacheDetail(termLitIvemId, cachedDetail, this._symbolsService);
                 }
 
                 this._termItem = {
@@ -692,14 +688,20 @@ export namespace LitIvemIdSelectNgComponent {
             this._debounceDelayStartFinishEventHandler(false);
             this._queryStartFinishEventHandler(true);
 
+            const exchangeId = this._term.exchangeId;
+            const fieldIds = this._symbolsService.calculateSymbolSearchFieldIds(exchangeId);
+
+            const condition: SearchSymbolsDataDefinition.Condition = {
+                text: this._term.codeOrName,
+                fieldIds,
+                isCaseSensitive: false,
+            };
+
             const definition = new SearchSymbolsDataDefinition();
-            definition.searchText = this._term.codeOrName;
-            definition.exchangeId = this._term.exchangeId;
+            definition.conditions = [condition];
+            definition.exchangeId = exchangeId;
             definition.marketIds = this._term.marketId === undefined ? undefined : [this._term.marketId];
-            definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code, SearchSymbolsDataDefinition.FieldId.Name];
-            definition.isPartial = true;
-            definition.showFull = false;
-            definition.isCaseSensitive = false;
+            definition.fullSymbol = true; // AlternateCodesFix: should be false
             definition.count = 100;
             this._dataItem = this._adiService.subscribe(definition) as SymbolsDataItem;
             if (this._dataItem.incubated) {
@@ -732,9 +734,7 @@ export namespace LitIvemIdSelectNgComponent {
         }
 
         private processDataItemIncubated(dataItem: SymbolsDataItem) {
-            if (dataItem.error) {
-                this._observer.error(dataItem.errorText);
-            } else {
+            if (dataItem.usable) {
                 const records = dataItem.records;
                 const count = records.length;
                 const items = new Array<Item>(count);

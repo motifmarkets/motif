@@ -5,7 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
-import { AdiService, CallOrPutId, IvemId, SearchSymbolsDataDefinition, SymbolsDataItem } from 'src/adi/internal-api';
+import { AdiService, CallOrPutId, IvemId, SearchSymbolsDataDefinition, SymbolFieldId, SymbolsDataItem } from 'src/adi/internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -56,7 +56,14 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
         const definition = new SearchSymbolsDataDefinition();
 
         if (this._underlyingIvemId !== undefined) {
-            definition.underlyingIvemId = this._underlyingIvemId;
+            const condition: SearchSymbolsDataDefinition.Condition = {
+                text: this._underlyingIvemId.code,
+                fieldIds: [SymbolFieldId.Base],
+                isCaseSensitive: false,
+                matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+            };
+            definition.exchangeId = this._underlyingIvemId.exchangeId;
+            definition.conditions = [condition];
             this._dataItem = this._adi.subscribe(definition) as SymbolsDataItem;
             this._dataItemSubscribed = true;
             super.setSingleDataItem(this._dataItem);

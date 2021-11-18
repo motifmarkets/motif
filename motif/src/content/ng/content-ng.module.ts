@@ -18,6 +18,7 @@ import { DelayedBadnessNgComponent } from '../delayed-badness/ng-api';
 import { DepthGridLayoutsEditorNgComponent } from '../depth-grid-layouts-editor/ng-api';
 import { DepthSideNgComponent } from '../depth-side/ng-api';
 import { DepthNgComponent } from '../depth/ng-api';
+import { ExchangeSettingsNgComponent } from '../exchange-settings/ng-api';
 import {
     AvailableExtensionListNgComponent,
     ExtensionDetailNgComponent,
@@ -34,7 +35,7 @@ import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-a
 import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
-import { MotifGridNgComponent } from '../motif-grid/ng/motif-grid-ng.component';
+import { MotifGridNgComponent } from '../motif-grid/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import {
     PadOrderRequestStepNgComponent,
@@ -47,6 +48,8 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { ParidepthGridLayoutsEditorNgComponent } from '../paridepth-grid-layouts-editor/ng-api';
+import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
+import { ExchangesSettingsNgComponent } from '../settings/exchanges-settings/ng-api';
 import {
     ColorSettingsNgComponent,
     GeneralSettingsNgComponent,
@@ -104,6 +107,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ExtensionListRegisteredItemNgComponent,
         MotifGridNgComponent,
         MultiColorPickerNgComponent,
+        ExchangesSettingsNgComponent,
+        ExchangeSettingsNgComponent,
+        SearchSymbolsConditionNgComponent,
     ],
     imports: [
         CommonModule,

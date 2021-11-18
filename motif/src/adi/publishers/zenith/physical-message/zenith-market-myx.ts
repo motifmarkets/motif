@@ -39,40 +39,40 @@ export namespace ZenithMarketMyx {
                 ImmediateBasisT1 = '4',
             }
 
-            export namespace Detail {
-                export interface Attributes extends Zenith.MarketController.SearchSymbols.Detail.Attributes {
-                    Category: string;
-                    Class: MarketClassification;
-                    Delivery?: DeliveryBasis;
-                    MaxRSS?: string;
-                    Sector: string;
-                    Short?: string;
-                    ShortSuspended?: string;
-                    SubSector: string;
-                }
+            export interface Attributes extends Zenith.MarketController.SearchSymbols.Attributes {
+                Category: string;
+                Class: MarketClassification;
+                Delivery?: DeliveryBasis;
+                MaxRSS?: string;
+                Sector: string;
+                Short?: string;
+                ShortSuspended?: string;
+                SubSector: string;
+            }
 
-                export namespace Attributes {
-                    export const enum Key {
-                        Category = 'Category',
-                        Class = 'Class',
-                        Delivery = 'Delivery',
-                        Sector = 'Sector',
-                        Short = 'Short',
-                        ShortSuspended = 'ShortSuspended',
-                        SubSector = 'SubSector',
-                        MaxRss = 'MaxRSS',
-                        ISIN = 'ISIN', // Temporary to handle server issue - remove when server fixed
-                        Ticker = 'Ticker', // Temporary to handle server issue - remove when server fixed
-                    }
+            export namespace Attributes {
+                export const enum Key {
+                    Category = 'Category',
+                    Class = 'Class',
+                    Delivery = 'Delivery',
+                    Sector = 'Sector',
+                    Short = 'Short',
+                    ShortSuspended = 'ShortSuspended',
+                    SubSector = 'SubSector',
+                    MaxRss = 'MaxRSS',
+                    ISIN = 'ISIN', // Temporary to handle server issue - remove when server fixed
+                    Ticker = 'Ticker', // Temporary to handle server issue - remove when server fixed
                 }
+            }
 
-                export interface Alternates extends Zenith.MarketController.SearchSymbols.Detail.Alternates {
-                    Ticker: string;
-                    ISIN?: string;
-                    Base?: string;
-                    GICS: undefined;
-                    RIC: undefined;
-                }
+            export interface Alternates extends Pick<
+                Zenith.MarketController.SearchSymbols.Alternates,
+                'Ticker' | 'ISIN' | 'Base' | 'GICS' | 'RIC'
+            > {
+                // redeclare fields which are not optional
+                Ticker: string;
+                GICS: string;
+                RIC: string;
             }
         }
     }

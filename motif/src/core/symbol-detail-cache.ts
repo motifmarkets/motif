@@ -20,6 +20,7 @@ import {
     OrderRoute,
     RoutedIvemId,
     SearchSymbolsDataDefinition,
+    SymbolFieldId,
     SymbolsDataItem,
     ZenithSubscriptionDataId
 } from 'src/adi/internal-api';
@@ -37,10 +38,10 @@ import {
 import { SymbolsService } from './symbols-service';
 
 export class SymbolDetailCache {
-    private _litIvemIdMap: LitIvemIdMap = new Map<MapKey, SymbolDetailCache.LitIvemIdDetail>();
-    private _ivemIdMap: IvemIdMap = new Map<MapKey, SymbolDetailCache.IvemIdDetail>();
+    private readonly _litIvemIdMap: LitIvemIdMap = new Map<MapKey, SymbolDetailCache.LitIvemIdDetail>();
+    private readonly _ivemIdMap: IvemIdMap = new Map<MapKey, SymbolDetailCache.IvemIdDetail>();
 
-    constructor(private _dataMgr: DataMgr) { }
+    constructor(private readonly _dataMgr: DataMgr, private readonly _symbolsService: SymbolsService) { }
 
     finalise() {
         this.clear();
@@ -109,6 +110,7 @@ export class SymbolDetailCache {
             tradingMarketIds: litIvemDetail.tradingMarketIds,
             name: litIvemDetail.name,
             exchangeId: litIvemDetail.exchangeId,
+            alternateCodes: litIvemDetail.alternateCodes,
         };
         this._litIvemIdMap.set(litIvemId.mapKey, litIvemIdDetail);
     }
@@ -142,7 +144,9 @@ export class SymbolDetailCache {
         if (detail === undefined) {
             detail = this.createEmptyIvemIdDetail(ivemId);
             this._ivemIdMap.set(key, detail);
-            request = new IvemIdRequest(this._dataMgr, detail, (litIvemId) => this.handleGetLitIvemIdDetailEvent(litIvemId) );
+            request = new IvemIdRequest(this._dataMgr, detail,
+                (litIvemId) => this.handleGetLitIvemIdDetailEvent(litIvemId)
+            );
             detail.request = request;
         } else {
             const possiblyUndefinedRequest = detail.request;
@@ -162,6 +166,56 @@ export class SymbolDetailCache {
     clear() {
         this.clearIvemIds();
         this.clearLitIvemIds();
+    }
+
+    createRoutedIvemIdDetail(routedIvemId: RoutedIvemId) {
+        const route = routedIvemId.route;
+        const ivemId = routedIvemId.ivemId;
+        let marketId: MarketId;
+        if (OrderRoute.isMarketRoute(route)) {
+            marketId = route.marketId;
+        } else {
+            marketId = route.getBestLitMarketId();
+        }
+
+        const litIvemName = this._symbolsService.routedIvemIdToDisplay(routedIvemId);
+
+        const litIvemIdDetail: SymbolDetailCache.LitIvemIdDetail = {
+            valid: true,
+            validUntil: SysTick.now(),
+            errorText: undefined,
+            request: undefined,
+            exists: true,
+            litIvemId: LitIvemId.createFromCodeMarket(ivemId.code, marketId),
+            ivemClassId: IvemClassId.Unknown,
+            subscriptionDataIds: [],
+            tradingMarketIds: [marketId],
+            name: litIvemName, // symbolsService.routedIvemIdToDisplay(routedIvemId),
+            exchangeId: MarketInfo.idToExchangeId(marketId),
+            alternateCodes : {
+                ticker: litIvemName,
+                base: litIvemName,
+                gics: litIvemName,
+                isin: litIvemName,
+                ric: litIvemName,
+                long: litIvemName,
+                short: litIvemName,
+            }
+        };
+
+        const ivemIdDetail: SymbolDetailCache.IvemIdDetail = {
+            valid: true,
+            validUntil: SysTick.now(),
+            errorText: undefined,
+            request: undefined,
+            exists: true,
+            ivemId,
+            litIvemIdDetails: [litIvemIdDetail],
+            name: this._symbolsService.ivemIdToDisplay(routedIvemId.ivemId),
+            alternateCodes: litIvemIdDetail.alternateCodes,
+        };
+
+        return ivemIdDetail;
     }
 
     private clearLitIvemIds() {
@@ -206,6 +260,7 @@ export class SymbolDetailCache {
             tradingMarketIds: [],
             name: '',
             exchangeId: ExchangeId.Calastone,
+            alternateCodes: {},
 
             // depthDirectionId: undefined,
             // isIndex: undefined,
@@ -229,11 +284,10 @@ export class SymbolDetailCache {
             valid: false,
             exists: false,
             errorText: undefined,
-
             ivemId,
-
-            name: undefined,
+            name: '',
             litIvemIdDetails: [],
+            alternateCodes: {},
         };
 
         return detail;
@@ -279,7 +333,7 @@ abstract class Request {
     dataItem: SymbolsDataItem | undefined;
     dataCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _dataMgr: DataMgr, definition: DataDefinition) {
+    constructor(private readonly _dataMgr: DataMgr, definition: DataDefinition) {
         this.dataItem = this._dataMgr.subscribe(definition) as SymbolsDataItem;
         this.dataCorrectnessChangeSubscriptionId = this.dataItem.subscribeCorrectnessChangeEvent(
             () => this.handleDataCorrectnessChangeEvent()
@@ -380,14 +434,20 @@ class LitIvemIdRequest extends Request {
 }
 
 namespace LitIvemIdRequest {
+
     export function createDataDefinition(litIvemId: LitIvemId) {
+        const condition: SearchSymbolsDataDefinition.Condition = {
+            text: litIvemId.code,
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: true,
+            matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+        };
+
         const definition = new SearchSymbolsDataDefinition();
+        definition.conditions = [condition];
         definition.marketIds = [litIvemId.litId];
-        definition.searchText = litIvemId.code;
-        // definition.isCaseSensitive = false;
-        definition.isPartial = false;
         definition.preferExact = true;
-        definition.showFull = false;
+        definition.fullSymbol = true; // AlternateCodesFix: should be false
         return definition;
     }
 }
@@ -397,7 +457,9 @@ class IvemIdRequest extends Request {
 
     get detail() { return this._detail; }
 
-    constructor(dataMgr: DataMgr, private _detail: SymbolDetailCache.IvemIdDetail,
+    constructor(
+        dataMgr: DataMgr,
+        private readonly _detail: SymbolDetailCache.IvemIdDetail,
         private _getLitIvemIdDetailEvent: IvemIdRequest.GetLitIvemIdDetailEventHandler
     ) {
         super(dataMgr, IvemIdRequest.createDataDefinition(_detail.ivemId));
@@ -437,6 +499,7 @@ class IvemIdRequest extends Request {
                 const litIvemId = record.litIvemId;
                 if (litIvemId.litId === defaultMarketId) {
                     detail.name = record.name;
+                    detail.alternateCodes = record.alternateCodes;
                 }
                 const litIvemIdDetail = this._getLitIvemIdDetailEvent(litIvemId);
                 // detail may or may not already be populated.  Populate again to be sure
@@ -448,6 +511,7 @@ class IvemIdRequest extends Request {
 
             if (detail.name === undefined) {
                 detail.name = records[0].name;
+                detail.alternateCodes = records[0].alternateCodes;
             }
 
             detail.exists = true;
@@ -467,11 +531,16 @@ namespace IvemIdRequest {
     export type GetLitIvemIdDetailEventHandler = (litIvemId: LitIvemId) => SymbolDetailCache.LitIvemIdDetail;
 
     export function createDataDefinition(ivemId: IvemId) {
+        const condition: SearchSymbolsDataDefinition.Condition = {
+            text: ivemId.code,
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: true,
+            matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+        };
+
         const definition = new SearchSymbolsDataDefinition();
+        definition.conditions = [condition];
         definition.exchangeId = ivemId.exchangeId;
-        definition.searchText = ivemId.code;
-        // definition.isCaseSensitive = false;
-        definition.isPartial = false;
         definition.preferExact = true;
         return definition;
     }
@@ -502,6 +571,7 @@ export namespace SymbolDetailCache {
         tradingMarketIds: MarketId[];
         name: string;
         exchangeId: ExchangeId;
+        alternateCodes: AlternateCodes;
 
         // depthDirectionId: DepthDirectionId | undefined;
         // isIndex: boolean | undefined;
@@ -510,7 +580,6 @@ export namespace SymbolDetailCache {
         // exerciseTypeId: ExerciseTypeId | undefined;
         // callOrPutId: CallOrPutId | undefined;
         // contractSize: Integer | undefined;
-        // alternateCodes: AlternateCodes | undefined;
         // attributes: Attributes | undefined;
         // tmcLegs: TmcLegs | undefined;
     }
@@ -526,6 +595,7 @@ export namespace SymbolDetailCache {
             detail.tradingMarketIds = record.tradingMarketIds;
             detail.name = record.name;
             detail.exchangeId = record.exchangeId;
+            detail.alternateCodes = record.alternateCodes;
             // detail.depthDirectionId = record.depthDirectionId;
             // detail.isIndex = record.isIndex;
             // detail.expiryDate = record.expiryDate;
@@ -541,8 +611,9 @@ export namespace SymbolDetailCache {
 
     export interface IvemIdDetail extends Detail {
         ivemId: IvemId;
-        name: string | undefined;
+        name: string;
         litIvemIdDetails: readonly LitIvemIdDetail[];
+        alternateCodes: AlternateCodes;
     }
 
     export namespace IvemIdDetail {
@@ -566,43 +637,6 @@ export namespace SymbolDetailCache {
                 return tradingMarketIds;
             }
         }
-    }
-
-    export function createRoutedIvemIdDetail(routedIvemId: RoutedIvemId, symbolsService: SymbolsService) {
-        const route = routedIvemId.route;
-        let marketId: MarketId;
-        if (OrderRoute.isMarketRoute(route)) {
-            marketId = route.marketId;
-        } else {
-            marketId = route.getBestLitMarketId();
-        }
-        const litIvemIdDetail: LitIvemIdDetail = {
-            valid: true,
-            validUntil: SysTick.now(),
-            errorText: undefined,
-            request: undefined,
-            exists: true,
-            litIvemId: symbolsService.getBestLitIvemIdFromRoutedIvemId(routedIvemId),
-            ivemClassId: IvemClassId.Unknown,
-            subscriptionDataIds: [],
-            tradingMarketIds: [marketId],
-            name: symbolsService.routedIvemIdToDisplay(routedIvemId),
-            exchangeId: MarketInfo.idToExchangeId(marketId),
-        };
-
-        const ivemId = routedIvemId.ivemId;
-        const ivemIdDetail: IvemIdDetail = {
-            valid: true,
-            validUntil: SysTick.now(),
-            errorText: undefined,
-            request: undefined,
-            exists: true,
-            ivemId,
-            litIvemIdDetails: [litIvemIdDetail],
-            name: symbolsService.ivemIdToDisplay(ivemId),
-        };
-
-        return ivemIdDetail;
     }
 }
 

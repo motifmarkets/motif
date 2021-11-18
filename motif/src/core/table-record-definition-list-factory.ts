@@ -15,11 +15,15 @@ import { HoldingTableRecordDefinitionList } from './holding-table-record-definit
 import { OrderTableRecordDefinitionList } from './order-table-record-definition-list';
 import { PortfolioTableRecordDefinitionList } from './portfolio-table-record-definition-list';
 import { SymbolsDataItemTableRecordDefinitionList } from './symbols-data-item-table-record-definition-list';
+import { SymbolsService } from './symbols-service';
 import { TableRecordDefinitionList } from './table-record-definition-list';
 import { TopShareholderTableRecordDefinitionList } from './top-shareholder-table-record-definition-list';
 
 export class TableRecordDefinitionListFactory {
-    constructor(private _adi: AdiService) { }
+    constructor(
+        private readonly _adi: AdiService,
+        private readonly _symbolsService: SymbolsService
+    ) { }
 
     createUnloadedFromTypeId(typeId: TableRecordDefinitionList.TypeId): TableRecordDefinitionList | undefined {
         switch (typeId) {
@@ -64,7 +68,7 @@ export class TableRecordDefinitionListFactory {
     }
 
     createUnloadedSymbolsDataItem() {
-        return new SymbolsDataItemTableRecordDefinitionList(this._adi);
+        return new SymbolsDataItemTableRecordDefinitionList(this._adi, this._symbolsService);
     }
 
     createUnloadedPortfolio() {

@@ -8,19 +8,23 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
     ComponentFactoryResolver, OnDestroy, OnInit, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { ExchangeInfo } from 'src/adi/internal-api';
+import { ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
 import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import {
+    CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
     CaptionLabelNgComponent,
     CheckboxInputNgComponent,
+    EnumArrayInputNgComponent,
     EnumInputNgComponent,
     IntegerTextInputNgComponent,
     TextInputNgComponent
 } from 'src/controls/ng-api';
 import {
     BooleanUiAction,
+    EnumArrayUiAction,
     EnumUiAction,
+    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
     IntegerUiAction,
     MasterSettings,
@@ -45,14 +49,6 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     @ViewChild('fontSizeControl', { static: true }) private _fontSizeControlComponent: TextInputNgComponent;
     @ViewChild('defaultExchangeLabel', { static: true }) private _defaultExchangeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultExchangeControl', { static: true }) private _defaultExchangeControlComponent: EnumInputNgComponent;
-    @ViewChild('exchangeHideModeLabel', { static: true }) private _exchangeHideModeLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('exchangeHideModeControl', { static: true }) private _exchangeHideModeControlComponent: EnumInputNgComponent;
-    @ViewChild('defaultMarketHiddenLabel', { static: true }) private _defaultMarketHiddenLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('defaultMarketHiddenControl', { static: true }) private _defaultMarketHiddenControlComponent: CheckboxInputNgComponent;
-    @ViewChild('marketCodeAsLocalWheneverPossibleLabel', { static: true })
-        private _marketCodeAsLocalWheneverPossibleLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('marketCodeAsLocalWheneverPossibleControl', { static: true })
-        private _marketCodeAsLocalWheneverPossibleControlComponent: CheckboxInputNgComponent;
     @ViewChild('dropDownEditableSearchTermLabel', { static: true })
         private _dropDownEditableSearchTermLabelComponent: CaptionLabelNgComponent;
     @ViewChild('dropDownEditableSearchTermControl', { static: true })
@@ -75,6 +71,20 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     @ViewChild('settingsProfileLabel', { static: true }) private _settingsProfileLabelComponent: CaptionLabelNgComponent;
     @ViewChild('settingsProfileControl', { static: true }) private _settingsProfileControlComponent: EnumInputNgComponent;
 
+    @ViewChild('exchangeHideModeLabel', { static: true }) private _exchangeHideModeLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('exchangeHideModeControl', { static: true }) private _exchangeHideModeControlComponent: EnumInputNgComponent;
+    @ViewChild('defaultMarketHiddenLabel', { static: true }) private _defaultMarketHiddenLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('defaultMarketHiddenControl', { static: true }) private _defaultMarketHiddenControlComponent: CheckboxInputNgComponent;
+    @ViewChild('marketCodeAsLocalWheneverPossibleLabel', { static: true })
+        private _marketCodeAsLocalWheneverPossibleLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('marketCodeAsLocalWheneverPossibleControl', { static: true })
+        private _marketCodeAsLocalWheneverPossibleControlComponent: CheckboxInputNgComponent;
+    @ViewChild('symbol_ExplicitSearchFieldsLabel', { static: true }) private _symbol_ExplicitSearchFieldsLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('symbol_ExplicitSearchFieldsEnabledControl', { static: true })
+        private _symbol_ExplicitSearchFieldsEnabledControlComponent: CaptionedCheckboxNgComponent;
+    @ViewChild('symbol_ExplicitSearchFieldsControl', { static: true })
+        private _symbol_ExplicitSearchFieldsControlComponent: EnumArrayInputNgComponent;
+
     public restartRequired = false;
     public restartRequiredText = '';
 
@@ -92,6 +102,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     private _minimumPriceFractionDigitsCountUiAction: IntegerUiAction;
     private _24HourUiAction: BooleanUiAction;
     private _dateTimeTimezoneModeUiAction: ExplicitElementsEnumUiAction;
+    private _explicitSymbolSearchFieldsEnabledUiAction: BooleanUiAction;
+    private _explicitSymbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
     private _settingsProfileUiAction: ExplicitElementsEnumUiAction;
 
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
@@ -116,9 +128,12 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._minimumPriceFractionDigitsCountUiAction = this.createMinimumPriceFractionDigitsCountUiAction();
         this._24HourUiAction = this.create24HourUiAction();
         this._dateTimeTimezoneModeUiAction = this.createDateTimeTimezoneModeUiAction();
+        this._explicitSymbolSearchFieldsEnabledUiAction = this.createExplicitSymbolSearchFieldsEnabledUiAction();
+        this._explicitSymbolSearchFieldsUiAction = this.createExplicitSymbolSearchFieldsUiAction();
         this._settingsProfileUiAction = this.createSettingsProfileUiAction();
 
         this.updateAllowedExchangeIds();
+        this.processSettingsChanged();
     }
 
     ngOnInit() {
@@ -153,6 +168,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._minimumPriceFractionDigitsCountUiAction.finalise();
         this._24HourUiAction.finalise();
         this._dateTimeTimezoneModeUiAction.finalise();
+        this._explicitSymbolSearchFieldsEnabledUiAction.finalise();
+        this._explicitSymbolSearchFieldsUiAction.finalise();
         this._settingsProfileUiAction.finalise();
 
         super.finalise();
@@ -294,6 +311,41 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         return action;
     }
 
+    private createExplicitSymbolSearchFieldsEnabledUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExplicitSearchFieldsEnabled]);
+        action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExplicitSearchFieldsEnabled]);
+        action.commitEvent = () => {
+            this.coreSettings.symbol_ExplicitSearchFieldsEnabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
+            this.updateExplicitSearchFieldsUiActionEnabled();
+        };
+        return action;
+    }
+
+    private createExplicitSymbolSearchFieldsUiAction() {
+        const action = new ExplicitElementsEnumArrayUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExplicitSearchFields]);
+        action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExplicitSearchFields]);
+
+        const allowableSymbolSearchFieldIds = SymbolField.allIds;
+        const entryCount = allowableSymbolSearchFieldIds.length;
+        const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
+        for (let i = 0; i < entryCount; i++) {
+            const id = allowableSymbolSearchFieldIds[i];
+            elementPropertiesArray[i] = {
+                element: id,
+                caption: SymbolField.idToDisplay(id),
+                title: SymbolField.idToDescription(id),
+            };
+        }
+
+        action.pushElements(elementPropertiesArray, undefined);
+        action.commitEvent = () => {
+            this.coreSettings.symbol_ExplicitSearchFieldIds = this._explicitSymbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
+        };
+        return action;
+    }
+
     private createSettingsProfileUiAction() {
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Master_SettingsProfile]);
@@ -347,6 +399,9 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
             SourceTzOffsetDateTime.TimezoneModeId.Local);
         this._utcDateTimeTimezoneModeControlComponent.initialiseEnum(this._dateTimeTimezoneModeUiAction,
             SourceTzOffsetDateTime.TimezoneModeId.Utc);
+        this._symbol_ExplicitSearchFieldsLabelComponent.initialise(this._explicitSymbolSearchFieldsUiAction);
+        this._symbol_ExplicitSearchFieldsEnabledControlComponent.initialise(this._explicitSymbolSearchFieldsEnabledUiAction);
+        this._symbol_ExplicitSearchFieldsControlComponent.initialise(this._explicitSymbolSearchFieldsUiAction);
         this._settingsProfileLabelComponent.initialise(this._settingsProfileUiAction);
         this._settingsProfileControlComponent.initialise(this._settingsProfileUiAction);
     }
@@ -363,6 +418,9 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._minimumPriceFractionDigitsCountUiAction.pushValue(this.coreSettings.format_MinimumPriceFractionDigitsCount);
         this._24HourUiAction.pushValue(this.coreSettings.format_24Hour);
         this._dateTimeTimezoneModeUiAction.pushValue(this.coreSettings.format_DateTimeTimezoneModeId);
+        this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldsEnabled);
+        this._explicitSymbolSearchFieldsUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldIds);
+        this.updateExplicitSearchFieldsUiActionEnabled();
         this._settingsProfileUiAction.pushValue(this._masterSettings.applicationEnvironmentSelectorId);
 
         if (this.settingsService.restartRequired !== this.restartRequired) {
@@ -383,6 +441,15 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
             )
         );
         this._defaultExchangeUiAction.pushElements(elementPropertiesArray, undefined);
+    }
+
+    private updateExplicitSearchFieldsUiActionEnabled() {
+        const enabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
+        if (enabled) {
+            this._explicitSymbolSearchFieldsUiAction.pushAccepted();
+        } else {
+            this._explicitSymbolSearchFieldsUiAction.pushDisabled();
+        }
     }
 }
 

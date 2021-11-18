@@ -24,7 +24,7 @@ export * from './paridepth-ditem/ng-api';
 export * from './placeholder-ditem/ng-api';
 export * from './settings-ditem/ng-api';
 export * from './status-ditem/ng-api';
-export * from './symbols-ditem/ng-api';
+export * from './search-symbols-ditem/ng-api';
 export * from './top-shareholders-ditem/ng-api';
 export * from './trades-ditem/ng-api';
 export * from './watchlist-ditem/ng-api';

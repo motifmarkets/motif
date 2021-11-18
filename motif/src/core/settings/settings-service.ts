@@ -7,6 +7,8 @@
 import { AssertInternalError, Integer, JsonElement, Logger, MultiEvent } from 'src/sys/internal-api';
 import { ColorSettings } from './color-settings';
 import { CoreSettings } from './core-settings';
+import { ExchangeSettings } from './exchange-settings';
+import { ExchangesSettings } from './exchanges-settings';
 import { MasterSettings } from './master-settings';
 import { SettingsGroup } from './settings-group';
 
@@ -17,12 +19,14 @@ export class SettingsService {
     private _masterChanged = false;
     private _beginChangesCount = 0;
     private _changed = false;
+    private _changedSettings: SettingsService.GroupSetting[] = [];
     private _saveRequired = false;
     private _restartRequired = false;
 
     private _master: MasterSettings; // not registered
     private _core: CoreSettings;
     private _color: ColorSettings;
+    private _exchanges: ExchangesSettings;
 
     private _masterChangedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
     private _changedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
@@ -31,6 +35,7 @@ export class SettingsService {
     get restartRequired() { return this._restartRequired; }
     get master() { return this._master; }
     get core() { return this._core; }
+    get exchanges() { return this._exchanges; }
     get color() { return this._color; }
 
     constructor() {
@@ -45,6 +50,8 @@ export class SettingsService {
         this.register(this._core);
         this._color = new ColorSettings();
         this.register(this._color);
+        this._exchanges = new ExchangesSettings();
+        this.register(this._exchanges);
     }
 
     register(group: SettingsGroup) {
@@ -61,7 +68,7 @@ export class SettingsService {
             this._registry[result] = group;
             group.beginChangesEvent = () => this.handleBeginChangesEvent();
             group.endChangesEvent = () => this.handleEndChangesEvent();
-            group.settingChangedEvent = (settingId) => this.handleSettingChangedEvent(settingId);
+            group.settingChangedEvent = (settingId) => this.handleSettingChangedEvent(group, settingId);
 
             this._registryEntryCount++;
 
@@ -118,6 +125,15 @@ export class SettingsService {
 
     reportSaved() {
         this._saveRequired = false;
+    }
+
+    hasSymbolNameFieldIdChanged() {
+        for (const {group, id} of this._changedSettings) {
+            if (group === this.exchanges && id === ExchangeSettings.Id.SymbolNameFieldId) {
+                return true;
+            }
+        }
+        return false;
     }
 
     subscribeMasterSettingsChangedEvent(handler: SettingsService.ChangedEventHandler): MultiEvent.DefinedSubscriptionId {
@@ -251,7 +267,13 @@ export class SettingsService {
         this.endChanges();
     }
 
-    private handleSettingChangedEvent(settingId: Integer) {
+    private handleSettingChangedEvent(group: SettingsGroup, settingId: Integer) {
+        const groupSetting: SettingsService.GroupSetting = {
+            group,
+            id: settingId,
+        };
+        this._changedSettings.push(groupSetting);
+
         this.beginChanges();
         try {
             this._changed = true;
@@ -272,6 +294,7 @@ export class SettingsService {
         for (let i = 0; i < handlers.length; i++) {
             handlers[i]();
         }
+        this._changedSettings.length = 0;
     }
 
     private indexOfGroupName(name: string) {
@@ -356,6 +379,11 @@ export class SettingsService {
 
 export namespace SettingsService {
     export type RegistryEntry = SettingsGroup | undefined;
+
+    export interface GroupSetting {
+        group: SettingsGroup;
+        id:  Integer;
+    }
 
     export type ChangedEventHandler = (this: void) => void;
 

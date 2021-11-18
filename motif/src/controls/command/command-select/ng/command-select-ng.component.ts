@@ -10,7 +10,7 @@ import { Account } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { Command, ProcessorCommandUiAction, UiAction } from 'src/core/internal-api';
 import { extStrings } from 'src/res/internal-api';
-import { MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { MultiEvent } from 'src/sys/internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';
@@ -31,7 +31,7 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
 
     private _measureCanvasContextsEventSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
-    private _ngSelectDropDownPanelWidth: string | undefined;
+    private _ngSelectDropDownPanelWidth: number | undefined;
 
     constructor(private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         cdr: ChangeDetectorRef,
@@ -71,11 +71,13 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
     }
 
     public handleSelectOpenEvent() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
         this.uiAction.notifyLatestItemsWanted();
         if (this._ngSelectDropDownPanelWidth === undefined) {
             this._ngSelectDropDownPanelWidth = this.calculateNgSelectDropDownPanelWidth();
         }
-        this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectDropDownPanelWidth);
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(this._ngSelectDropDownPanelWidth, false);
     }
 
     protected override setStateColors(stateId: UiAction.StateId) {
@@ -138,7 +140,7 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
             maxWidth = componentWidth;
         }
 
-        return numberToPixels(maxWidth);
+        return maxWidth;
     }
 
     private updateEntries() {

@@ -24,7 +24,8 @@ export class LitIvemDetail {
     tradingMarketIds: MarketId[];
     name: string;
     exchangeId: ExchangeId;
-    alternateCodes: LitIvemAlternateCodes | undefined; // Currently this actually is part of FullDetail.  Will be here in future
+    // AlternateCodesFix: Currently this actually is part of FullDetail.  Will be here in future
+    alternateCodes: LitIvemAlternateCodes;
 
     private _baseChangeEvent = new MultiEvent<LitIvemDetail.BaseChangeEventHandler>();
 
@@ -34,7 +35,8 @@ export class LitIvemDetail {
     get environmentId() { return this.litIvemId.environmentId; }
     get explicitEnvironmentId() { return this.litIvemId.explicitEnvironmentId; }
 
-    constructor(change: SymbolsDataMessage.AddUpdateChange) {
+    // AlternateCodesFix: should be AddUpdateChange - review when AlternateCodes is moved from FullDetail to Detail
+    constructor(change: SymbolsDataMessage.AddChange) {
         const litIvemId = change.litIvemId;
         let name: string;
         if (change.name !== undefined) {
@@ -50,9 +52,12 @@ export class LitIvemDetail {
         this.tradingMarketIds = change.tradingMarketIds;
         this.name = name;
         this.exchangeId = change.exchangeId;
+        const alternateCodes = change.alternateCodes;
+        this.alternateCodes = alternateCodes === undefined ? {} : alternateCodes;
     }
 
-    update(change: SymbolsDataMessage.AddUpdateChange) {
+    // AlternateCodesFix: should be AddUpdateChange - review when AlternateCodes is moved from FullDetail to Detail
+    update(change: SymbolsDataMessage.UpdateChange) {
         const changeableFieldCount = LitIvemDetail.BaseField.idCount - LitIvemDetail.Key.fieldCount;
         const changedFieldIds = new Array<LitIvemDetail.BaseField.Id>(changeableFieldCount); // won't include fields in key
         let changedCount = 0;
@@ -84,6 +89,21 @@ export class LitIvemDetail {
         if (change.exchangeId !== this.exchangeId) {
             this.exchangeId = change.exchangeId;
             changedFieldIds[changedCount++] = LitIvemDetail.BaseField.Id.ExchangeId;
+        }
+
+        const newAlternateCodes = change.alternateCodes;
+        if (newAlternateCodes !== undefined) {
+            if (newAlternateCodes === null) {
+                if (this.alternateCodes !== undefined) {
+                    this.alternateCodes = {};
+                    changedFieldIds[changedCount++] = LitIvemDetail.BaseField.Id.AlternateCodes;
+                }
+            } else {
+                if (!LitIvemAlternateCodes.isEqual(newAlternateCodes, this.alternateCodes)) {
+                    this.alternateCodes = newAlternateCodes;
+                    changedFieldIds[changedCount++] = LitIvemDetail.BaseField.Id.AlternateCodes;
+                }
+            }
         }
 
         if (changedCount >= 0) {
@@ -125,6 +145,7 @@ export namespace LitIvemDetail {
             Name,
             // eslint-disable-next-line @typescript-eslint/no-shadow
             ExchangeId,
+            AlternateCodes,
         }
 
         interface Info {
@@ -193,6 +214,13 @@ export namespace LitIvemDetail {
                 dataTypeId: FieldDataTypeId.String,
                 displayId: StringId.BaseLitIvemDetailDisplay_ExchangeId,
                 headingId: StringId.BaseLitIvemDetailHeading_ExchangeId,
+            },
+            AlternateCodes: {
+                id: Id.AlternateCodes,
+                name: 'AlternateCodes',
+                dataTypeId: FieldDataTypeId.Object,
+                displayId: StringId.BaseLitIvemDetailDisplay_AlternateCodes,
+                headingId: StringId.BaseLitIvemDetailHeading_AlternateCodes,
             },
         } as const;
 

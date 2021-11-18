@@ -19,7 +19,7 @@ import {
     DepthDirectionId,
     ExerciseTypeId,
     FieldDataTypeId,
-    LitIvemAlternateCodes,
+    // LitIvemAlternateCodes,
     LitIvemAttributes,
     SymbolsDataMessage,
     TmcLegs
@@ -54,7 +54,6 @@ export class LitIvemFullDetail extends LitIvemDetail {
         this.callOrPutId = change.callOrPutId;
         this.contractSize = change.contractSize;
         this.lotSize = change.lotSize;
-        this.alternateCodes = change.alternateCodes;
         this.attributes = change.attributes;
         this.tmcLegs = change.tmcLegs;
         this.categories = change.categories;
@@ -130,13 +129,6 @@ export class LitIvemFullDetail extends LitIvemDetail {
                 changedFieldIds[changedCount++] = LitIvemFullDetail.ExtendedField.Id.LotSize;
             }
         }
-        if (change.alternateCodes !== undefined) {
-            const newAlternateCodes = change.alternateCodes ?? undefined;
-            if (!LitIvemAlternateCodes.isUndefinableEqual(newAlternateCodes, this.alternateCodes)) {
-                this.alternateCodes = newAlternateCodes;
-                changedFieldIds[changedCount++] = LitIvemFullDetail.ExtendedField.Id.AlternateCodes;
-            }
-        }
         if (change.attributes !== undefined) {
             const newAttributes = change.attributes ?? undefined;
             if (!LitIvemAttributes.isUndefinableEqual(newAttributes, this.attributes)) {
@@ -198,7 +190,7 @@ export namespace LitIvemFullDetail {
             CallOrPutId,
             ContractSize,
             LotSize,
-            AlternateCodes,
+            // AlternateCodes,
             Attributes,
             // eslint-disable-next-line @typescript-eslint/no-shadow
             TmcLegs,
@@ -220,8 +212,8 @@ export namespace LitIvemFullDetail {
                 id: Id.Cfi,
                 name: 'Cfi',
                 dataTypeId: FieldDataTypeId.String,
-                displayId: StringId.ExtendedLitIvemDetailDisplay_DepthDirectionId,
-                headingId: StringId.ExtendedLitIvemDetailHeading_DepthDirectionId,
+                displayId: StringId.ExtendedLitIvemDetailDisplay_Cfi,
+                headingId: StringId.ExtendedLitIvemDetailHeading_Cfi,
             },
             DepthDirectionId: {
                 id: Id.DepthDirectionId,
@@ -278,13 +270,6 @@ export namespace LitIvemFullDetail {
                 dataTypeId: FieldDataTypeId.Integer,
                 displayId: StringId.ExtendedLitIvemDetailDisplay_LotSize,
                 headingId: StringId.ExtendedLitIvemDetailHeading_LotSize,
-            },
-            AlternateCodes: {
-                id: Id.AlternateCodes,
-                name: 'AlternateCodes',
-                dataTypeId: FieldDataTypeId.Object,
-                displayId: StringId.ExtendedLitIvemDetailDisplay_AlternateCodes,
-                headingId: StringId.ExtendedLitIvemDetailHeading_AlternateCodes,
             },
             Attributes: {
                 id: Id.Attributes,

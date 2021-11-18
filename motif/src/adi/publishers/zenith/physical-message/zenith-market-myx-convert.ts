@@ -13,8 +13,8 @@ import { ZenithMarketMyx } from './zenith-market-myx';
 export namespace ZenithMarketMyxConvert {
     export namespace Symbols {
         export namespace Attributes {
-            export function toLitIvem(value: Zenith.MarketController.SearchSymbols.Detail.Attributes) {
-                const detailAttributes = value as ZenithMarketMyx.MarketController.Symbols.Detail.Attributes;
+            export function toLitIvem(value: Zenith.MarketController.SearchSymbols.Attributes) {
+                const detailAttributes = value as ZenithMarketMyx.MarketController.Symbols.Attributes;
                 const keys = Object.keys(detailAttributes);
                 const result = new MyxLitIvemAttributes();
                 for (const key of keys) {
@@ -27,34 +27,34 @@ export namespace ZenithMarketMyxConvert {
 
             function parseAttribute(key: string, value: string | undefined, result: MyxLitIvemAttributes) {
                 if (value !== undefined) {
-                    const attributeKey = key as ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key;
+                    const attributeKey = key as ZenithMarketMyx.MarketController.Symbols.Attributes.Key;
                     switch (attributeKey) {
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Category:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Category:
                             result.category = Category.toInteger(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Class:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Class:
                             result.marketClassificationId = Class.toId(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Sector:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Sector:
                             result.sector = parseIntStrict(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Short:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Short:
                             result.short = Short.toIdArray(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.ShortSuspended:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.ShortSuspended:
                             result.shortSuspended = Short.toIdArray(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.SubSector:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.SubSector:
                             result.subSector = parseIntStrict(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.MaxRss:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.MaxRss:
                             result.maxRss = parseNumberStrict(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Delivery:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Delivery:
                             result.deliveryBasisId = Delivery.toId(value);
                             break;
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.ISIN:
-                        case ZenithMarketMyx.MarketController.Symbols.Detail.Attributes.Key.Ticker:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.ISIN:
+                        case ZenithMarketMyx.MarketController.Symbols.Attributes.Key.Ticker:
                             break;
                         default:
                             const neverKey: never = attributeKey;
@@ -143,14 +143,35 @@ export namespace ZenithMarketMyxConvert {
         }
 
         export namespace Alternates {
-            export function toAdi(value: ZenithMarketMyx.MarketController.Symbols.Detail.Alternates) {
-                const result: LitIvemAlternateCodes = {
-                    ticker: value.Ticker,
-                    gics: value.GICS,
-                    isin: value.ISIN,
-                    ric: value.RIC,
-                    base: value.Base,
-                };
+            export function toAdi(alternates: ZenithMarketMyx.MarketController.Symbols.Alternates) {
+                const result: LitIvemAlternateCodes = {};
+
+                for (let [key, value] of Object.entries(alternates)) {
+                    switch (key) {
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Ticker: {
+                            result.ticker = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Gics: {
+                            result.gics = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Isin: {
+                            result.isin = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Ric: {
+                            result.ric = value;
+                            break;
+                        }
+                        case Zenith.MarketController.SearchSymbols.AlternateKey.Base: {
+                            result.base = value;
+                            break;
+                        }
+                        default:
+                            result[key] = value;
+                    }
+                }
                 return result;
             }
         }

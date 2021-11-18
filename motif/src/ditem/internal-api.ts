@@ -29,7 +29,7 @@ export * from './paridepth-ditem/internal-api';
 export * from './placeholder-ditem/internal-api';
 export * from './settings-ditem/internal-api';
 export * from './status-ditem/internal-api';
-export * from './symbols-ditem/internal-api';
+export * from './search-symbols-ditem/internal-api';
 export * from './top-shareholders-ditem/internal-api';
 export * from './trades-ditem/internal-api';
 export * from './watchlist-ditem/internal-api';

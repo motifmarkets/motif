@@ -127,7 +127,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._scrollbarMarginUiAction = this.createScrollbarMarginUiAction();
         this._scrollbarThumbInactiveOpacityUiAction = this.createScrollbarThumbInactiveOpacityUiAction();
 
-        this.pushValues();
+        this.processSettingsChanged();
     }
 
     ngOnDestroy() {

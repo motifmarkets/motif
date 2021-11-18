@@ -12,7 +12,7 @@ import { RevRecordIndex } from 'revgrid';
 import { CommandRegisterNgService, SettingsNgService } from 'src/component-services/ng-api';
 import { AngularSplitTypes } from 'src/controls/internal-api';
 import { SvgButtonNgComponent } from 'src/controls/ng-api';
-import { ColorScheme, ColorSettings, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
+import { ColorScheme, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { assert, delay1Tick, Integer, Logger } from 'src/sys/internal-api';
 import { ColorSchemeGridNgComponent } from '../../../color-scheme-grid/ng-api';
@@ -41,7 +41,6 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 
     private _commandRegisterService: CommandRegisterService;
 
-    private _colorSettings: ColorSettings;
     private _resizeObserver: ResizeObserver;
     private _splitterDragged = false;
 
@@ -58,7 +57,6 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         super(cdr, settingsNgService.settingsService);
 
         this._commandRegisterService = commandRegisterNgService.service;
-        this._colorSettings = this.settingsService.color;
 
         this._saveSchemeUiAction = this.createSaveSchemeUiAction();
     }
@@ -79,7 +77,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     }
 
     handleGuiLoadSelectChange(value: string) {
-        this._colorSettings.loadColorScheme(value);
+        this.colorSettings.loadColorScheme(value);
     }
 
     public handleSplitterDragEnd() {
@@ -139,12 +137,14 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
                 this.updateWidths();
             }
         });
+
+        this.processSettingsChanged();
     }
 
     private showPresetCode() {
         this.isPresetCodeVisible = true;
 
-        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this._resolver, this._colorSettings);
+        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this._resolver, this.colorSettings);
         closePromise.then(
             () => {
                 this.closePresetCode();

@@ -28,7 +28,7 @@
     >
         <ng-template ng-option-tmp let-item="item">
             <span [title]="generateTitle(item, false)">
-                <span class="ngSelectBoldFirstColumn">{{item.idDisplay}}</span>{{getItemDisplayName(item)}}
+                <span class="ngSelectBoldFirstColumn">{{item.idDisplay}}</span><span>{{getItemDisplayName(item)}}</span>
             </span>
         </ng-template>
     </ng-select>

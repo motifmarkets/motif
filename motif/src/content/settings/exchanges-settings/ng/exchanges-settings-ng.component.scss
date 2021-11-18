@@ -4,5 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './symbols-ditem-frame';
-
+:host {
+    display: block;
+    overflow-y: auto;
+    min-height: 0;
+}

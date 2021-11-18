@@ -36,15 +36,8 @@ import {
     IvemClassId,
     MarketBoardId,
     MarketId,
-
-
-
-
-
-
-
-
-    MovementId, OrderId,
+    MovementId,
+    OrderId,
     OrderPriceUnitTypeId,
     OrderRequestError,
     OrderRequestResultId,
@@ -52,7 +45,6 @@ import {
     TimeInForceId,
     TradeAffectsId,
     TradeFlagId,
-
     ZenithPublisherReconnectReasonId,
     ZenithPublisherStateId,
     ZenithSubscriptionDataId

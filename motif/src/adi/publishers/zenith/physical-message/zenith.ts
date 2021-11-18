@@ -36,7 +36,7 @@ export namespace Zenith {
         TransactionID?: Integer;
         Action: MessageContainer.Action;
         // eslint-disable-next-line @typescript-eslint/ban-types
-        Data?: object | string | string[];
+        Data?: object | string | string[] | null;
         Confirm?: boolean;
     }
 
@@ -70,7 +70,7 @@ export namespace Zenith {
 
     export namespace ResponseUpdateMessageContainer {
         // eslint-disable-next-line @typescript-eslint/ban-types
-        export type Payload = object;
+        export type Payload = object | undefined | null;
 
         // Note that Error type = undefined specifies 'NotAuthorised' Error.  This may be converted to an error code in the future
         export type Error = string | string[] | undefined;
@@ -394,7 +394,8 @@ export namespace Zenith {
             QueryTradingStates = 'QueryTradingStates',
             Markets = 'Markets',
             QueryMarkets = 'QueryMarkets',
-            QuerySymbols = 'QuerySymbols',
+            // QuerySymbols = 'QuerySymbols',
+            SearchSymbols = 'SearchSymbols',
             Symbols = 'Symbols',
             Security = 'Security',
             QuerySecurity = 'QuerySecurity',
@@ -597,49 +598,64 @@ export namespace Zenith {
         }*/
 
         export namespace SearchSymbols {
-            export const enum SearchField {
-                Code = 'Code',
-                Name = 'Name',
+            export interface Condition {
+                Field?: Condition.Field; // Should be string but we only use undefined or one Field
+                Group?: string;
+                IsCaseSensitive?: boolean;
+                Key?: AlternateKey;
+                Match?: string;
+                Text: string;
             }
 
-            export const enum ExerciseType {
-                American = 'American',
-                European = 'European',
-                Unknown = 'Unknown',
-            }
+            export namespace Condition {
+                export const enum Field {
+                    Code = 'Code',
+                    Name = 'Name',
+                    Alternate = 'Alternate',
+                    Attribute = 'Attribute',
+                }
 
-            export const enum AlternateKey {
-                Ticker = 'Ticker',
-                Gics = 'GICS',
-                Isin = 'ISIN',
-                Ric = 'RIC',
-                Base = 'Base',
-            }
+                export const fieldSeparator = ',';
 
-            export const fieldSeparator = '+';
+                export const enum Match {
+                    FromStart = 'FromStart',
+                    FromEnd = 'FromEnd',
+                    Exact = 'Exact',
+                }
+            }
 
             export interface Request {
+                CFI?: string;
+                Class?: Request.Class;
+                CombinationLeg?: string;
+                Conditions?: Condition[];
+                Count?: Integer;
                 Exchange?: string;
+                ExpiryDateMin?: DateTimeIso8601,
+                ExpiryDateMax?: DateTimeIso8601,
+                FullSymbol?: boolean;
+                Index?: boolean;
                 Market?: string;
                 Markets?: string[];
-                SearchText: string;
-                Field?: string;
-                IsPartial?: boolean;
-                IsCaseSensitive?: boolean;
                 PreferExact?: boolean;
                 StartIndex?: Integer;
-                Count?: Integer;
-                TargetDate?: DateTimeIso8601;
-                ShowFull?: boolean;
-                Account?: string;
-                CFI?: string;
+                StrikePriceMin?: Decimal,
+                StrikePriceMax?: Decimal,
+            }
+
+            export namespace Request {
+                // Like Zenith.SecurityClass but without Unknown
+                export const enum Class {
+                    Market = 'Market',
+                    ManagedFund = 'ManagedFund',
+                }
             }
 
             export interface PublishMessageContainer extends RequestMessageContainer {
                 Data: Request;
             }
 
-            export type ResponsePayload = Detail[];
+            export type ResponsePayload = Detail[] | undefined | null;
             export interface PublishPayloadMessageContainer extends ResponseUpdateMessageContainer {
                 Data: ResponsePayload;
             }
@@ -659,33 +675,31 @@ export namespace Zenith {
                 TradingMarkets: string[];
             }
 
+            export namespace Detail {
+            }
+
             export interface FullDetail extends Detail {
                 CFI: string;
                 DepthDirection?: DepthDirection;
                 IsIndex?: boolean;
                 ExpiryDate?: DateYYYYMMDD;
                 StrikePrice?: Decimal;
-                ExerciseType?: ExerciseType;
+                ExerciseType?: FullDetail.ExerciseType;
                 CallOrPut?: CallOrPut;
                 ContractSize?: Integer;
                 LotSize?: Integer;
-                Alternates?: Detail.Alternates;
-                Attributes?: Detail.Attributes;
-                Legs?: Detail.Leg[] | null;
+                Alternate?: Alternates; // Will be moved into Detail in the future
+                Attributes?: Attributes;
+                Legs?: FullDetail.Leg[] | null;
                 Categories?: string[];
             }
 
-            export namespace Detail {
-                export interface Alternates {
-                    Ticker?: string;
-                    GICS?: string;
-                    ISIN?: string;
-                    RIC?: string;
-                    Base?: string;
-                }
-
-                export interface Attributes {
-                    [index: string]: string | undefined;
+            export namespace FullDetail {
+                export const enum ExerciseType {
+                    American = 'American',
+                    Asian = 'Asian',
+                    European = 'European',
+                    Unknown = 'Unknown',
                 }
 
                 export interface Leg {
@@ -693,6 +707,30 @@ export namespace Zenith {
                     Side: Side;
                     Ratio: Decimal;
                 }
+            }
+
+            export interface Alternates {
+                Ticker?: string;
+                ISIN?: string;
+                Base?: string;
+                GICS?: string;
+                RIC?: string;
+                Short?: string;
+                Long?: string;
+            }
+
+            export const enum AlternateKey {
+                Ticker = 'Ticker',
+                Isin = 'ISIN',
+                Base = 'Base',
+                Gics = 'GICS',
+                Ric = 'RIC',
+                Short = 'Short',
+                Long = 'Long',
+            }
+
+            export interface Attributes {
+                [index: string]: string | undefined;
             }
         }
 

@@ -9,6 +9,15 @@
     margin-bottom: 0.4em;
 }
 
+#items {
+    > :nth-child(2n) {
+        background-color: var(--color-grid-base-bkgd);
+    }
+    > :nth-child(2n + 1) {
+        background-color: var(--color-grid-base-alt-bkgd);
+    }
+}
+
 app-extension-list-info-item {
     &:hover {
         background-color: var(--item-hover-background-color);

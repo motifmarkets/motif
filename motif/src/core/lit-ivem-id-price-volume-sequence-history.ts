@@ -20,6 +20,7 @@ import {
     SearchSymbolsDataDefinition,
     SecurityDataDefinition,
     SecurityDataItem,
+    SymbolFieldId,
     SymbolsDataItem,
     TradeAffectsId,
     TradesDataItem
@@ -348,13 +349,17 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
     }
 
     private activateSymbols() {
+        const condition: SearchSymbolsDataDefinition.Condition = {
+            text: this.litIvemId.code,
+            fieldIds: [SymbolFieldId.Code],
+            isCaseSensitive: false,
+            matchIds: [SearchSymbolsDataDefinition.Condition.MatchId.exact],
+        };
+
         const definition = new SearchSymbolsDataDefinition();
-        definition.searchText = this.litIvemId.code;
-        definition.showFull = true;
+        definition.conditions = [condition];
+        definition.fullSymbol = true;
         definition.marketIds = [this.litIvemId.litId];
-        definition.fieldIds = [SearchSymbolsDataDefinition.FieldId.Code];
-        definition.isPartial = false;
-        definition.isCaseSensitive = false;
         definition.preferExact = true;
         definition.count = 2; // 2 or more then no good
         this._symbolsDataItem = this._adi.subscribe(definition) as SymbolsDataItem;

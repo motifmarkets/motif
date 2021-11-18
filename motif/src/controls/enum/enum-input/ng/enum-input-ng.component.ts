@@ -9,7 +9,7 @@ import { NgSelectComponent } from '@ng-select/ng-select';
 import { Account } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { UiAction } from 'src/core/internal-api';
-import { Integer, MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { Integer, MultiEvent } from 'src/sys/internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';
@@ -32,7 +32,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     private _measureCanvasContextsEventSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
-    private _ngSelectDropDownPanelWidth: string | undefined;
+    private _ngSelectDropDownPanelWidth: number | undefined;
 
     constructor(private _renderer: Renderer2,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
@@ -73,10 +73,12 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
     }
 
     public handleSelectOpenEvent() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
         if (this._ngSelectDropDownPanelWidth === undefined) {
             this._ngSelectDropDownPanelWidth = this.calculateNgSelectDropDownPanelWidth();
         }
-        this._ngSelectOverlayNgService.setDropDownPanelWidth(this._ngSelectDropDownPanelWidth);
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(this._ngSelectDropDownPanelWidth, false);
     }
 
     protected override setStateColors(stateId: UiAction.StateId) {
@@ -147,7 +149,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
             maxWidth = componentWidth;
         }
 
-        return numberToPixels(maxWidth);
+        return maxWidth;
     }
 
     private updateEntries() {
