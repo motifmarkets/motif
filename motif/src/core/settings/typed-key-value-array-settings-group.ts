@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { count } from 'rxjs/operators';
 import { IndexSignatureHack, JsonElement } from 'src/sys/internal-api';
 import { SettingsGroup } from './settings-group';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
@@ -29,7 +28,9 @@ export abstract class TypedKeyValueArraySettingsGroup extends SettingsGroup {
                 for (const namedInfoArrayElement of namedInfoArrayElements) {
                     const name = namedInfoArrayElement.tryGetString(TypedKeyValueArraySettingsGroup.InfosArrayJsonName.name);
                     if (name !== undefined) {
-                        const infoArrayElement = namedInfoArrayElement.tryGetElement(TypedKeyValueArraySettingsGroup.InfosArrayJsonName.infoArray);
+                        const infoArrayElement = namedInfoArrayElement.tryGetElement(
+                            TypedKeyValueArraySettingsGroup.InfosArrayJsonName.infoArray
+                        );
                         if (infoArrayElement !== undefined) {
                             if (this.loadNamedInfoArrayElement(name, infoArrayElement, namedInfoArrays)) {
                                 loadedNames[loadedNameCount++] = name;
@@ -83,7 +84,7 @@ export abstract class TypedKeyValueArraySettingsGroup extends SettingsGroup {
         infoArrayElement: JsonElement,
         namedInfoArrays: TypedKeyValueArraySettingsGroup.NamedInfoArray[]
     ) {
-        const namedInfoArray = namedInfoArrays.find((namedInfoArray) => namedInfoArray.name === name);
+        const namedInfoArray = namedInfoArrays.find((array) => array.name === name);
         if (namedInfoArray === undefined) {
             return false;
         } else {

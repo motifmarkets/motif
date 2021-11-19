@@ -3,6 +3,7 @@ import { ExternalError, GridLayoutError } from 'src/sys/internal-api';
 
 /**
  * Provides access to a saved layout for a Grid
+ *
  * @public
  */
 export class GridLayout {
@@ -11,6 +12,7 @@ export class GridLayout {
 
     /**
      * Creates a new Layout
+     *
      * @param fields - The fields to pre-populate it with
      */
     constructor(
@@ -27,6 +29,7 @@ export class GridLayout {
 
     /**
      * Registers a new Field with the Layout
+     *
      * @param gridField - The field to register
      */
     addField(fieldName: string, visible = true): GridLayout.Column {
@@ -59,6 +62,7 @@ export class GridLayout {
 
     /**
      * Deserialises a saved layout into this Grid Layout
+     *
      * @param layout - A layout previously returned by @see Serialise
      */
     deserialise(source: GridLayout.SerialisedColumn[]): void {
@@ -205,6 +209,15 @@ export class GridLayout {
         }
     }
 
+    setFieldsVisible(fieldNames: string[], visible: boolean): void {
+        for (let idx = 0; idx < fieldNames.length; idx++) {
+            const columnIdx = this.getFieldColumnIndexByFieldName(fieldNames[idx]);
+            if (columnIdx !== undefined) {
+                this._recordColumns[columnIdx].visible = visible;
+            }
+        }
+    }
+
     private setFieldWidthByColumn(column: GridLayout.Column, width?: number): void {
         if (width === undefined) {
             delete column.width;
@@ -216,15 +229,6 @@ export class GridLayout {
     // SetFieldVisible(field: TFieldIndex | GridLayout.Field, visible: boolean): void {
     //     this.columns[this.GetFieldColumnIndex(field)].Visible = visible;
     // }
-
-    setFieldsVisible(fieldNames: string[], visible: boolean): void {
-        for (let idx = 0; idx < fieldNames.length; idx++) {
-            const columnIdx = this.getFieldColumnIndexByFieldName(fieldNames[idx]);
-            if (columnIdx !== undefined) {
-                this._recordColumns[columnIdx].visible = visible;
-            }
-        }
-    }
 
     private setColumnVisible(columnIndex: number, visible: boolean): void {
         this._recordColumns[columnIndex].visible = visible;

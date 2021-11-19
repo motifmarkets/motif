@@ -10,6 +10,7 @@ export * from './allowed-exchanges-enum-ui-action';
 export * from './allowed-markets-enum-array-ui-action';
 export * from './allowed-markets-enum-ui-action';
 export * from './app-storage-service';
+export * from './array-ui-action';
 export * from './balances-table-definition';
 export * from './balances-table-field-definition-source';
 export * from './balances-table-record-definition';

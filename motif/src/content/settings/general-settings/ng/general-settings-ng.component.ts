@@ -20,6 +20,7 @@ import {
     IntegerTextInputNgComponent,
     TextInputNgComponent
 } from 'src/controls/ng-api';
+import { ArrayUiAction } from 'src/core/array-ui-action';
 import {
     BooleanUiAction,
     EnumArrayUiAction,
@@ -79,7 +80,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         private _marketCodeAsLocalWheneverPossibleLabelComponent: CaptionLabelNgComponent;
     @ViewChild('marketCodeAsLocalWheneverPossibleControl', { static: true })
         private _marketCodeAsLocalWheneverPossibleControlComponent: CheckboxInputNgComponent;
-    @ViewChild('symbol_ExplicitSearchFieldsLabel', { static: true }) private _symbol_ExplicitSearchFieldsLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('symbol_ExplicitSearchFieldsLabel', { static: true })
+        private _symbol_ExplicitSearchFieldsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbol_ExplicitSearchFieldsEnabledControl', { static: true })
         private _symbol_ExplicitSearchFieldsEnabledControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('symbol_ExplicitSearchFieldsControl', { static: true })
@@ -329,7 +331,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
         const allowableSymbolSearchFieldIds = SymbolField.allIds;
         const entryCount = allowableSymbolSearchFieldIds.length;
-        const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let i = 0; i < entryCount; i++) {
             const id = allowableSymbolSearchFieldIds[i];
             elementPropertiesArray[i] = {

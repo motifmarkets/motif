@@ -27,7 +27,7 @@ export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
     }
 
     loadPage(url: string) {
-        this._componentAccess.loadPage(url)
+        this._componentAccess.loadPage(url);
     }
 }
 

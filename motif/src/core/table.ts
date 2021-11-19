@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { nanoid } from 'nanoid';
 import { RevRecordInvalidatedValue } from 'revgrid';
 import { GridLayout } from 'src/content/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
@@ -20,7 +21,6 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from 'src/sys/internal-api';
-import { v1 as uuid } from 'uuid';
 import { BaseDirectory } from './base-directory';
 import { GridLayoutIO } from './grid-layout-io';
 import { TableDefinition } from './table-definition';
@@ -106,7 +106,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
         if (this._definition !== undefined) {
             this._definition.checkCloseAndUnlockRecordDefinitionList(this);
         }
-        this._id = uuid();
+        this._id = nanoid();
 
         this._definition = value;
         this._recordDefinitionList = this._definition.lockRecordDefinitionList(this);
@@ -154,7 +154,7 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
         if (loadedId !== undefined) {
             this._id = loadedId;
         } else {
-            this._id = uuid();
+            this._id = nanoid();
             modified = true;
         }
 

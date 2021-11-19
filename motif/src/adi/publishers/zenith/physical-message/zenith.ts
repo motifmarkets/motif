@@ -631,16 +631,16 @@ export namespace Zenith {
                 Conditions?: Condition[];
                 Count?: Integer;
                 Exchange?: string;
-                ExpiryDateMin?: DateTimeIso8601,
-                ExpiryDateMax?: DateTimeIso8601,
+                ExpiryDateMin?: DateTimeIso8601;
+                ExpiryDateMax?: DateTimeIso8601;
                 FullSymbol?: boolean;
                 Index?: boolean;
                 Market?: string;
                 Markets?: string[];
                 PreferExact?: boolean;
                 StartIndex?: Integer;
-                StrikePriceMin?: Decimal,
-                StrikePriceMax?: Decimal,
+                StrikePriceMin?: Decimal;
+                StrikePriceMax?: Decimal;
             }
 
             export namespace Request {

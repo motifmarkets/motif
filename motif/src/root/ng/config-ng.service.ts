@@ -398,11 +398,13 @@ export namespace ConfigNgService {
         }
 
         export namespace Telemetry {
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             export interface Json {
                 enabled?: boolean;
                 maxErrorCount?: number;
             }
 
+            // eslint-disable-next-line @typescript-eslint/no-shadow
             export function parseJson(json: Json | undefined) {
                 let enabled: boolean;
                 let maxErrorCount: number;
@@ -511,7 +513,7 @@ export namespace ConfigNgService {
                 return {
                     startupSplashWebPageUrl: undefined,
                     desktopBarLeftImageUrl: undefined,
-                }
+                };
             } else {
                 let startupSplashWebPageUrl = json.startupSplashWebPageUrl;
                 if (startupSplashWebPageUrl !== undefined) {
@@ -530,7 +532,7 @@ export namespace ConfigNgService {
                 return {
                     startupSplashWebPageUrl,
                     desktopBarLeftImageUrl,
-                }
+                };
             }
         }
     }

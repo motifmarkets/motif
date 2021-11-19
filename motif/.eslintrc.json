@@ -20,9 +20,10 @@
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
       "rules": {
+        "no-fallthrough":"error",
         "no-underscore-dangle": "off",
         "prefer-arrow/prefer-arrow-functions": "off",
-        "newline-after-description": "never",
+        "newline-after-description": "off",
         "@angular-eslint/component-selector": [
           "error",
           {

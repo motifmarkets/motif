@@ -69,10 +69,10 @@ export class MotifServicesService {
             'Content-Type': 'application/json'
         });
 
-        const ApplicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
+        const applicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
         const request: MotifServicesService.GetRequestPayload = {
             applicationFlavour: this._applicationFlavour,
-            applicationEnvironment: ApplicationEnvironment,
+            applicationEnvironment,
             key,
         };
         const body = JSON.stringify(request);
@@ -110,10 +110,10 @@ export class MotifServicesService {
             ['Content-Type', 'application/json'],
         ]);
 
-        const ApplicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
+        const applicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
         const request: MotifServicesService.SetRequestPayload = {
             applicationFlavour: this._applicationFlavour,
-            applicationEnvironment: ApplicationEnvironment,
+            applicationEnvironment,
             key,
             value,
         };
@@ -172,6 +172,129 @@ export class MotifServicesService {
                 }
                 if (payload.successful) {
                     return Promise.resolve();
+                } else {
+                    return Promise.reject(`${Strings[StringId.MotifServicesResponsePayloadError]}: ${payload.reason}`);
+                }
+            } else {
+                return Promise.reject(`${Strings[StringId.MotifServicesResponseStatusError]}: ${response.status}: ${response.statusText}`);
+            }
+        } catch (reason) {
+            return Promise.reject(`${Strings[StringId.MotifServicesFetchError]}: ${reason}`);
+        }
+    }
+
+    async getKeysBeginningWith(searchKey: string, overrideApplicationEnvironment?: string): Promise<string | undefined> {
+        const endpointPath = MotifServicesService.EndpointPath.getKeysBeginningWith;
+        const credentials = 'include';
+        const method = 'POST';
+        const headers = new Headers({
+            Authorization: this._getAuthorizationHeaderValue(),
+            'Content-Type': 'application/json'
+        });
+
+        const applicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
+        const request: MotifServicesService.SearchKeyRequestPayload = {
+            ApplicationFlavour: this._applicationFlavour,
+            ApplicationEnvironment: applicationEnvironment,
+            SearchKey: searchKey,
+        };
+        const body = JSON.stringify(request);
+
+        const url = new URL(endpointPath, this._baseUrl);
+        try {
+            const response = await fetch(url.href, { credentials, headers, method, body });
+            if (response.status === 200) {
+                const payloadText = await response.text();
+                let payload: MotifServicesService.GetResponsePayload;
+                try {
+                    payload = JSON.parse(payloadText);
+                } catch (e) {
+                    throw new MotifServicesError(ExternalError.Code.ParseMotifServicesServiceGetResponsePayload, payloadText);
+                }
+                if (payload.successful) {
+                    return Promise.resolve(payload.data);
+                } else {
+                    return Promise.reject(`${Strings[StringId.MotifServicesResponsePayloadError]}: ${payload.reason}`);
+                }
+            } else {
+                return Promise.reject(`${Strings[StringId.MotifServicesResponseStatusError]}: ${response.status}: ${response.statusText}`);
+            }
+        } catch (reason) {
+            return Promise.reject(`${Strings[StringId.MotifServicesFetchError]}: ${reason}`);
+        }
+    }
+
+    async getKeysEndingWith(searchKey: string, overrideApplicationEnvironment?: string): Promise<string | undefined> {
+        const endpointPath = MotifServicesService.EndpointPath.getKeysEndingWith;
+        const credentials = 'include';
+        const method = 'POST';
+        const headers = new Headers({
+            Authorization: this._getAuthorizationHeaderValue(),
+            'Content-Type': 'application/json'
+        });
+
+        const applicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
+        const request: MotifServicesService.SearchKeyRequestPayload = {
+            ApplicationFlavour: this._applicationFlavour,
+            ApplicationEnvironment: applicationEnvironment,
+            SearchKey: searchKey,
+        };
+        const body = JSON.stringify(request);
+
+        const url = new URL(endpointPath, this._baseUrl);
+        try {
+            const response = await fetch(url.href, { credentials, headers, method, body });
+            if (response.status === 200) {
+                const payloadText = await response.text();
+                let payload: MotifServicesService.GetResponsePayload;
+                try {
+                    payload = JSON.parse(payloadText);
+                } catch (e) {
+                    throw new MotifServicesError(ExternalError.Code.ParseMotifServicesServiceGetResponsePayload, payloadText);
+                }
+                if (payload.successful) {
+                    return Promise.resolve(payload.data);
+                } else {
+                    return Promise.reject(`${Strings[StringId.MotifServicesResponsePayloadError]}: ${payload.reason}`);
+                }
+            } else {
+                return Promise.reject(`${Strings[StringId.MotifServicesResponseStatusError]}: ${response.status}: ${response.statusText}`);
+            }
+        } catch (reason) {
+            return Promise.reject(`${Strings[StringId.MotifServicesFetchError]}: ${reason}`);
+        }
+    }
+
+    async getKeysContaining(searchKey: string, overrideApplicationEnvironment?: string): Promise<string | undefined> {
+        const endpointPath = MotifServicesService.EndpointPath.getKeysContaining;
+        const credentials = 'include';
+        const method = 'POST';
+        const headers = new Headers({
+            Authorization: this._getAuthorizationHeaderValue(),
+            'Content-Type': 'application/json'
+        });
+
+        const applicationEnvironment = overrideApplicationEnvironment ?? this._applicationEnvironment;
+        const request: MotifServicesService.SearchKeyRequestPayload = {
+            ApplicationFlavour: this._applicationFlavour,
+            ApplicationEnvironment: applicationEnvironment,
+            SearchKey: searchKey,
+        };
+        const body = JSON.stringify(request);
+
+        const url = new URL(endpointPath, this._baseUrl);
+        try {
+            const response = await fetch(url.href, { credentials, headers, method, body });
+            if (response.status === 200) {
+                const payloadText = await response.text();
+                let payload: MotifServicesService.GetResponsePayload;
+                try {
+                    payload = JSON.parse(payloadText);
+                } catch (e) {
+                    throw new MotifServicesError(ExternalError.Code.ParseMotifServicesServiceGetResponsePayload, payloadText);
+                }
+                if (payload.successful) {
+                    return Promise.resolve(payload.data);
                 } else {
                     return Promise.reject(`${Strings[StringId.MotifServicesResponsePayloadError]}: ${payload.reason}`);
                 }
@@ -251,19 +374,28 @@ export class MotifServicesService {
 export namespace MotifServicesService {
     export type GetAuthorizationHeaderValueCallback = (this: void) => string;
     export interface RequestPayload {
+    }
+
+    export interface KeyRequestPayload extends RequestPayload {
         applicationFlavour: string;
         applicationEnvironment: string;
         key: string;
     }
 
-    export interface GetRequestPayload extends RequestPayload {
+    export interface GetRequestPayload extends KeyRequestPayload {
     }
 
-    export interface SetRequestPayload extends RequestPayload {
+    export interface SetRequestPayload extends KeyRequestPayload {
         value: string;
     }
 
-    export interface DeleteRequestPayload extends RequestPayload {
+    export interface DeleteRequestPayload extends KeyRequestPayload {
+    }
+
+    export interface SearchKeyRequestPayload extends RequestPayload {
+        ApplicationFlavour: string;
+        ApplicationEnvironment: string;
+        SearchKey: string;
     }
 
     export interface ResponsePayload {
@@ -285,6 +417,9 @@ export namespace MotifServicesService {
         export const getUserSetting = '/api/Settings/GetUserSetting';
         export const setUserSetting = '/api/Settings/SetUserSetting';
         export const deleteUserSetting = '/api/Settings/DeleteUserSetting';
+        export const getKeysBeginningWith = '/api/Settings/SearchForKey/BeginsWith';
+        export const getKeysEndingWith = '/api/Settings/SearchForKey/EndsWith';
+        export const getKeysContaining = '/api/Settings/SearchForKey/Contains';
     }
 
     export const defaultApplicationFlavour = 'motif';

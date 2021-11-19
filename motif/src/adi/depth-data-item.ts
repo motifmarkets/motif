@@ -574,7 +574,9 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         if (newPrice !== undefined) {
             if (!isDecimalEqual(newPrice, order.price)) {
                 const newIsGreater = isDecimalGreaterThan(newPrice, order.price);
-                const recentChangeTypeId = newIsGreater ? RevRecordValueRecentChangeTypeId.Increase : RevRecordValueRecentChangeTypeId.Decrease;
+                const recentChangeTypeId = newIsGreater
+                    ? RevRecordValueRecentChangeTypeId.Increase
+                    : RevRecordValueRecentChangeTypeId.Decrease;
                 order.price = newPrice;
                 changes[changeCount++] = {
                     fieldId: DepthDataItem.Order.Field.Id.Price,
@@ -620,7 +622,9 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
         if (newQuantity !== undefined) {
             if (newQuantity !== order.quantity) {
                 const newIsGreater = newQuantity > order.quantity;
-                const recentChangeTypeId = newIsGreater ? RevRecordValueRecentChangeTypeId.Increase : RevRecordValueRecentChangeTypeId.Decrease;
+                const recentChangeTypeId = newIsGreater
+                    ? RevRecordValueRecentChangeTypeId.Increase
+                    : RevRecordValueRecentChangeTypeId.Decrease;
                 order.quantity = newQuantity;
                 changes[changeCount++] = {
                     fieldId: DepthDataItem.Order.Field.Id.Quantity,

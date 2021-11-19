@@ -210,8 +210,8 @@ export const enum StringId {
     SymbolNotFound,
     NoMatchingSymbolsOrNamesFound,
     Layout_InvalidJson,
-    Layout_SchemaNotDefinedLoadingDefault,
-    Layout_SchemaIncompatibleLoadingDefault,
+    Layout_SerialisationFormatNotDefinedLoadingDefault,
+    Layout_SerialisationFormatIncompatibleLoadingDefault,
     Layout_GoldenNotDefinedLoadingDefault,
     SecurityFieldDisplay_Symbol,
     SecurityFieldHeading_Symbol,
@@ -2804,14 +2804,14 @@ export namespace I18nStrings {
                 en: 'Invalid Json',
             }
         },
-        Layout_SchemaNotDefinedLoadingDefault: {
-            id: StringId.Layout_SchemaNotDefinedLoadingDefault, translations: {
-                en: 'Layout schema not defined. Loading default',
+        Layout_SerialisationFormatNotDefinedLoadingDefault: {
+            id: StringId.Layout_SerialisationFormatNotDefinedLoadingDefault, translations: {
+                en: 'Layout serialisation format not defined. Loading default',
             }
         },
-        Layout_SchemaIncompatibleLoadingDefault: {
-            id: StringId.Layout_SchemaIncompatibleLoadingDefault, translations: {
-                en: 'Incompatible layout schema. Loading default',
+        Layout_SerialisationFormatIncompatibleLoadingDefault: {
+            id: StringId.Layout_SerialisationFormatIncompatibleLoadingDefault, translations: {
+                en: 'Incompatible layout serialisation format. Loading default',
             }
         },
         Layout_GoldenNotDefinedLoadingDefault: {

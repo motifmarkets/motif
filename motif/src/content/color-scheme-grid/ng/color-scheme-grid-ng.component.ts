@@ -150,7 +150,7 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
                 resolvedForeColorField,
                 readabilityField,
                 isReadableField,
-            ])
+            ]);
 
             this.setFieldState(displayField, ColorSchemeGridRecordStore.DisplayField.fieldStateDefinition);
             // this.setFieldState(bkgdItemStateField, ColorSchemeGridDataStore.BkgdItemStateField.fieldStateDefinition);

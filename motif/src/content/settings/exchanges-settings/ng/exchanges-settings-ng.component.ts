@@ -4,7 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver, OnDestroy, ViewContainerRef } from '@angular/core';
+import {
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ComponentFactoryResolver,
+    OnDestroy,
+    ViewContainerRef
+} from '@angular/core';
 import { ExchangeId } from 'src/adi/internal-api';
 import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
 import { ExchangeSettings, ExchangesSettings, SymbolsService } from 'src/core/internal-api';

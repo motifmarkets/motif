@@ -6,28 +6,6 @@ export class ExchangeSettings {
     private _symbolSearchFieldIds: SymbolFieldId[];
     private _symbolNameFieldId: SymbolFieldId;
 
-    constructor(
-        readonly exchangeId: ExchangeId,
-        private readonly _settingChangedEventer: ExchangeSettings.SettingChangedEventer,
-    ) {
-        if (ExchangeSettings.idCount !== this.infos.length) {
-            throw new AssertInternalError('EXCIC23331', `${ExchangeSettings.idCount} !== ${this.infos.length}`);
-        } else {
-            this._symbolSearchFieldIds = ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId).slice();
-            this._symbolNameFieldId = ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId);
-        }
-    }
-
-    get symbolNameFieldId() { return this._symbolNameFieldId; }
-    set symbolNameFieldId(value: SymbolFieldId) { this._symbolNameFieldId = value;
-        this._settingChangedEventer(ExchangeSettings.Id.SymbolNameFieldId);
-    }
-
-    get symbolSearchFieldIds() { return this._symbolSearchFieldIds; }
-    set symbolSearchFieldIds(value: SymbolFieldId[]) { this._symbolSearchFieldIds = value;
-        this._settingChangedEventer(ExchangeSettings.Id.SymbolSearchFieldIds);
-    }
-
     private _infosObject: ExchangeSettings.InfosObject = {
         SymbolNameFieldId: { id: ExchangeSettings.Id.SymbolNameFieldId,
             name: 'symbolNameFieldId',
@@ -67,9 +45,35 @@ export class ExchangeSettings {
                 }
             }
         },
+    };
+
+    private readonly _infos = Object.values(this._infosObject);
+
+    get infos() { return this._infos; }
+
+    constructor(
+        readonly exchangeId: ExchangeId,
+        private readonly _settingChangedEventer: ExchangeSettings.SettingChangedEventer,
+    ) {
+        if (ExchangeSettings.idCount !== this._infos.length) {
+            throw new AssertInternalError('EXCIC23331', `${ExchangeSettings.idCount} !== ${this._infos.length}`);
+        } else {
+            this._symbolSearchFieldIds = ExchangeInfo.idToDefaultSymbolSearchFieldIds(this.exchangeId).slice();
+            this._symbolNameFieldId = ExchangeInfo.idToDefaultSymbolNameFieldId(this.exchangeId);
+        }
     }
 
-    readonly infos = Object.values(this._infosObject);
+    get symbolNameFieldId() { return this._symbolNameFieldId; }
+    set symbolNameFieldId(value: SymbolFieldId) {
+        this._symbolNameFieldId = value;
+        this._settingChangedEventer(ExchangeSettings.Id.SymbolNameFieldId);
+    }
+
+    get symbolSearchFieldIds() { return this._symbolSearchFieldIds; }
+    set symbolSearchFieldIds(value: SymbolFieldId[]) {
+        this._symbolSearchFieldIds = value;
+        this._settingChangedEventer(ExchangeSettings.Id.SymbolSearchFieldIds);
+    }
 }
 
 export namespace ExchangeSettings {
