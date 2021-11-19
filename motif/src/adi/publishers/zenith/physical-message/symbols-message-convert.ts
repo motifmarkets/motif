@@ -239,6 +239,8 @@ export namespace SymbolsMessageConvert {
             ? undefined
             : ZenithConvert.SymbolConditionMatch.fromIds(condition.matchIds);
 
+        const group = condition.group === undefined ? '--Common%%' : condition.group;
+
         const result: Zenith.MarketController.SearchSymbols.Condition = {
             Field: field,
             Group: condition.group,
