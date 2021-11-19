@@ -576,12 +576,14 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
                 this.notifyListChange(UsableListChangeTypeId.Insert, recordIdx, recordCount);
                 break;
             case UsableListChangeTypeId.Remove:
-                this.notifyListChange(UsableListChangeTypeId.Remove, recordIdx, recordCount);
+                // Delete records before notifying so that grid matches correctly
                 this.deleteRecords(recordIdx, recordCount);
+                this.notifyListChange(UsableListChangeTypeId.Remove, recordIdx, recordCount);
                 break;
-            case UsableListChangeTypeId.Clear:
-                this.notifyListChange(UsableListChangeTypeId.Clear, 0, this.recordCount);
+                case UsableListChangeTypeId.Clear:
+                // Clear records before notifying so that grid matches correctly
                 this.clearRecords();
+                this.notifyListChange(UsableListChangeTypeId.Clear, 0, this.recordCount);
                 break;
             default:
                 throw new UnreachableCaseError('THTRDLLCE20098', listChangeTypeId);
