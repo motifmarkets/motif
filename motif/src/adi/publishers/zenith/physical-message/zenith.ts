@@ -717,6 +717,7 @@ export namespace Zenith {
                 RIC?: string;
                 Short?: string;
                 Long?: string;
+                UID?: string;
             }
 
             export const enum AlternateKey {
@@ -727,6 +728,7 @@ export namespace Zenith {
                 Ric = 'RIC',
                 Short = 'Short',
                 Long = 'Long',
+                Uid = 'UID',
             }
 
             export interface Attributes {

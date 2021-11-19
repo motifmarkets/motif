@@ -146,7 +146,7 @@ export namespace ZenithMarketMyxConvert {
             export function toAdi(alternates: ZenithMarketMyx.MarketController.Symbols.Alternates) {
                 const result: LitIvemAlternateCodes = {};
 
-                for (let [key, value] of Object.entries(alternates)) {
+                for (const [key, value] of Object.entries(alternates)) {
                     switch (key) {
                         case Zenith.MarketController.SearchSymbols.AlternateKey.Ticker: {
                             result.ticker = value;
