@@ -2,7 +2,15 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild
 import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
-import { EnumArrayUiAction, EnumUiAction, ExchangeSettings, ExplicitElementsEnumArrayUiAction, ExplicitElementsEnumUiAction, SettingsService } from 'src/core/internal-api';
+import { ArrayUiAction } from 'src/core/array-ui-action';
+import {
+    EnumArrayUiAction,
+    EnumUiAction,
+    ExchangeSettings,
+    ExplicitElementsEnumArrayUiAction,
+    ExplicitElementsEnumUiAction,
+    SettingsService
+} from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick } from 'src/sys/internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
@@ -87,9 +95,9 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
         action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolSearchFields]);
         action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolSearchFields]);
 
-        const allowableSymbolSearchFieldIds = ExchangeInfo.idToAllowableSymbolSearchFieldIds(this.exchangeId)
+        const allowableSymbolSearchFieldIds = ExchangeInfo.idToAllowableSymbolSearchFieldIds(this.exchangeId);
         const entryCount = allowableSymbolSearchFieldIds.length;
-        const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let i = 0; i < entryCount; i++) {
             const id = allowableSymbolSearchFieldIds[i];
             elementPropertiesArray[i] = {

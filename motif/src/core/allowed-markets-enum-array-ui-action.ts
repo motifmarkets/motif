@@ -6,6 +6,7 @@
 
 import { MarketId, MarketInfo } from 'src/adi/internal-api';
 import { Integer, MultiEvent } from 'src/sys/internal-api';
+import { ArrayUiAction } from './array-ui-action';
 import { EnumArrayUiAction } from './enum-array-ui-action';
 import { SymbolsService } from './symbols-service';
 
@@ -37,7 +38,7 @@ export class AllowedMarketsEnumArrayUiAction extends EnumArrayUiAction {
     getElementPropertiesArray() {
         const marketIds = this._symbolsManager.allowedMarketIds;
         const count = marketIds.length;
-        const result = new Array<EnumArrayUiAction.ElementProperties>(count);
+        const result = new Array<ArrayUiAction.ElementProperties<MarketId>>(count);
         for (let i = 0; i < count; i++) {
             const marketId = marketIds[i];
             result[i] = this.createEnumArrayUiActionElementProperties(marketId);
@@ -50,7 +51,7 @@ export class AllowedMarketsEnumArrayUiAction extends EnumArrayUiAction {
     }
 
     private createEnumArrayUiActionElementProperties(marketId: MarketId) {
-        const result: EnumArrayUiAction.ElementProperties = {
+        const result: ArrayUiAction.ElementProperties<MarketId> = {
             element: marketId,
             caption: this._symbolsManager.getMarketGlobalCode(marketId),
             title: MarketInfo.idToDisplay(marketId),

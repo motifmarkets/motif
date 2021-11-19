@@ -70,7 +70,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'symbol_DefaultParseModeAuto',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.symbol_DefaultParseModeAuto),
             getter: () => TypedKeyValueSettings.formatBoolean(this._symbol_DefaultParseModeAuto),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_DefaultParseModeAuto = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_DefaultParseModeAuto = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Symbol_ExplicitDefaultParseModeId: { id: CoreSettings.Id.Symbol_ExplicitDefaultParseModeId,
             name: 'symbol_ExplicitDefaultParseModeId',
@@ -92,7 +94,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'symbol_DefaultExchangeId',
             defaulter: () => TypedKeyValueSettings.formatEnumString(CoreSettings.Default.symbol_DefaultExchangeId),
             getter: () => TypedKeyValueSettings.formatEnumString(this._symbol_DefaultExchangeId),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_DefaultExchangeId = TypedKeyValueSettings.parseEnumString(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_DefaultExchangeId = TypedKeyValueSettings.parseEnumString(value);
+            }
         },
         Symbol_RicAnnouncerChar: { id: CoreSettings.Id.Symbol_RicAnnouncerChar,
             name: 'symbol_RicAnnouncerChar',
@@ -110,25 +114,33 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'symbol_PscExchangeAnnouncerChar',
             defaulter: () => TypedKeyValueSettings.formatChar(CoreSettings.Default.symbol_PscExchangeAnnouncerChar),
             getter: () => TypedKeyValueSettings.formatChar(this._symbol_PscExchangeAnnouncerChar),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_PscExchangeAnnouncerChar = TypedKeyValueSettings.parseChar(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_PscExchangeAnnouncerChar = TypedKeyValueSettings.parseChar(value);
+            }
         },
         Symbol_PscMarketAnnouncerChar: { id: CoreSettings.Id.Symbol_PscMarketAnnouncerChar,
             name: 'symbol_PscMarketAnnouncerChar',
             defaulter: () => TypedKeyValueSettings.formatChar(CoreSettings.Default.symbol_PscMarketAnnouncerChar),
             getter: () => TypedKeyValueSettings.formatChar(this._symbol_PscMarketAnnouncerChar),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_PscMarketAnnouncerChar = TypedKeyValueSettings.parseChar(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_PscMarketAnnouncerChar = TypedKeyValueSettings.parseChar(value);
+            }
         },
         Symbol_PscExchangeHideModeId: { id: CoreSettings.Id.Symbol_PscExchangeHideModeId,
             name: 'symbol_PscExchangeHideModeId',
             defaulter: () => TypedKeyValueSettings.formatEnumString(CoreSettings.Default.symbol_PscExchangeHideModeId),
             getter: () => TypedKeyValueSettings.formatEnumString(this._symbol_PscExchangeHideModeId),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_PscExchangeHideModeId = TypedKeyValueSettings.parseEnumString(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_PscExchangeHideModeId = TypedKeyValueSettings.parseEnumString(value);
+            }
         },
         Symbol_PscDefaultMarketHidden: { id: CoreSettings.Id.Symbol_PscDefaultMarketHidden,
             name: 'symbol_PscDefaultMarketHidden',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.symbol_PscDefaultMarketHidden),
             getter: () => TypedKeyValueSettings.formatBoolean(this._symbol_PscDefaultMarketHidden),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._symbol_PscDefaultMarketHidden = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._symbol_PscDefaultMarketHidden = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Symbol_PscMarketCodeAsLocalWheneverPossible: { id: CoreSettings.Id.Symbol_PscMarketCodeAsLocalWheneverPossible,
             name: 'symbol_PscMarketCodeAsLocalWheneverPossible',
@@ -179,19 +191,25 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'grid_HorizontalLinesVisible',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_HorizontalLinesVisible),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_HorizontalLinesVisible),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_HorizontalLinesVisible = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_HorizontalLinesVisible = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Grid_VerticalLinesVisible: { id: CoreSettings.Id.Grid_VerticalLinesVisible,
             name: 'grid_VerticalLinesVisible',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_VerticalLinesVisible),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_VerticalLinesVisible),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_VerticalLinesVisible = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_VerticalLinesVisible = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Grid_HorizontalLineWidth: { id: CoreSettings.Id.Grid_HorizontalLineWidth,
             name: 'grid_HorizontalLineWidth',
             defaulter: () => TypedKeyValueSettings.formatNumber(CoreSettings.Default.grid_HorizontalLineWidth),
             getter: () => TypedKeyValueSettings.formatNumber(this._grid_HorizontalLineWidth),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_HorizontalLineWidth = TypedKeyValueSettings.parseNumber(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_HorizontalLineWidth = TypedKeyValueSettings.parseNumber(value);
+            }
         },
         Grid_VerticalLineWidth: { id: CoreSettings.Id.Grid_VerticalLineWidth,
             name: 'grid_VerticalLineWidth',
@@ -215,13 +233,17 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'grid_AllChangedRecentDuration',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_AllChangedRecentDuration),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_AllChangedRecentDuration),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_AllChangedRecentDuration = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_AllChangedRecentDuration = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_RecordInsertedRecentDuration: { id: CoreSettings.Id.Grid_RecordInsertedRecentDuration,
             name: 'grid_RecordInsertedRecentDuration',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_RecordInsertedRecentDuration),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_RecordInsertedRecentDuration),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_RecordInsertedRecentDuration = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_RecordInsertedRecentDuration = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_RecordUpdatedRecentDuration: { id: CoreSettings.Id.Grid_RecordUpdatedRecentDuration,
             name: 'grid_RecordUpdatedRecentDuration',
@@ -235,7 +257,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'grid_ValueChangedRecentDuration',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_ValueChangedRecentDuration),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_ValueChangedRecentDuration),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_ValueChangedRecentDuration = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_ValueChangedRecentDuration = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_FontFamily: { id: CoreSettings.Id.Grid_FontFamily,
             name: 'grid_FontFamily',
@@ -253,49 +277,65 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'grid_ColumnHeaderFontSize',
             defaulter: () => TypedKeyValueSettings.formatString(CoreSettings.Default.grid_ColumnHeaderFontSize),
             getter: () => TypedKeyValueSettings.formatString(this._grid_ColumnHeaderFontSize),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_ColumnHeaderFontSize = TypedKeyValueSettings.parseString(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_ColumnHeaderFontSize = TypedKeyValueSettings.parseString(value);
+            }
         },
         Grid_FocusedRowColored: { id: CoreSettings.Id.Grid_FocusedRowColored,
             name: 'grid_FocusedRowColored',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_FocusedRowColored),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_FocusedRowColored),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_FocusedRowColored = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_FocusedRowColored = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Grid_FocusedRowBordered: { id: CoreSettings.Id.Grid_FocusedRowBordered,
             name: 'grid_FocusedRowBordered',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_FocusedRowBordered),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_FocusedRowBordered),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_FocusedRowBordered = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_FocusedRowBordered = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Grid_FocusedRowBorderWidth: { id: CoreSettings.Id.Grid_FocusedRowBorderWidth,
             name: 'grid_FocusedRowBorderWidth',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_FocusedRowBorderWidth),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_FocusedRowBorderWidth),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_FocusedRowBorderWidth = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_FocusedRowBorderWidth = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_HorizontalScrollbarWidth: { id: CoreSettings.Id.Grid_HorizontalScrollbarWidth,
             name: 'grid_HorizontalScrollbarWidth',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_HorizontalScrollbarWidth),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_HorizontalScrollbarWidth),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_HorizontalScrollbarWidth = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_HorizontalScrollbarWidth = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_VerticalScrollbarWidth: { id: CoreSettings.Id.Grid_VerticalScrollbarWidth,
             name: 'grid_VerticalScrollbarWidth',
             defaulter: () => TypedKeyValueSettings.formatInteger(CoreSettings.Default.grid_VerticalScrollbarWidth),
             getter: () => TypedKeyValueSettings.formatInteger(this._grid_VerticalScrollbarWidth),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_VerticalScrollbarWidth = TypedKeyValueSettings.parseInteger(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_VerticalScrollbarWidth = TypedKeyValueSettings.parseInteger(value);
+            }
         },
         Grid_ScrollbarThumbInactiveOpacity: { id: CoreSettings.Id.Grid_ScrollbarThumbInactiveOpacity,
             name: 'grid_ScrollbarThumbInactiveOpacity',
             defaulter: () => TypedKeyValueSettings.formatNumber(CoreSettings.Default.grid_ScrollbarThumbInactiveOpacity),
             getter: () => TypedKeyValueSettings.formatNumber(this._grid_ScrollbarThumbInactiveOpacity),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_ScrollbarThumbInactiveOpacity = TypedKeyValueSettings.parseNumber(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_ScrollbarThumbInactiveOpacity = TypedKeyValueSettings.parseNumber(value);
+            }
         },
         Grid_ScrollbarsOverlayAllowed: { id: CoreSettings.Id.Grid_ScrollbarsOverlayAllowed,
             name: 'grid_ScrollbarsOverlayAllowed',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_ScrollbarsOverlayAllowed),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_ScrollbarsOverlayAllowed),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_ScrollbarsOverlayAllowed = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_ScrollbarsOverlayAllowed = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Grid_ScrollbarMargin: { id: CoreSettings.Id.Grid_ScrollbarMargin,
             name: 'grid_ScrollbarMargin',
@@ -307,7 +347,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'grid_ScrollHorizontallySmoothly',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.grid_ScrollHorizontallySmoothly),
             getter: () => TypedKeyValueSettings.formatBoolean(this._grid_ScrollHorizontallySmoothly),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._grid_ScrollHorizontallySmoothly = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._grid_ScrollHorizontallySmoothly = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Data_InitialTradesHistoryCount: { id: CoreSettings.Id.Data_InitialTradesHistoryCount,
             name: 'data_InitialTradesHistoryCount',
@@ -321,7 +363,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'format_NumberGroupingActive',
             defaulter: () => TypedKeyValueSettings.formatBoolean(CoreSettings.Default.format_NumberGroupingActive),
             getter: () => TypedKeyValueSettings.formatBoolean(this._format_NumberGroupingActive),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._format_NumberGroupingActive = TypedKeyValueSettings.parseBoolean(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._format_NumberGroupingActive = TypedKeyValueSettings.parseBoolean(value);
+            }
         },
         Format_MinimumPriceFractionDigitsCount: { id: CoreSettings.Id.Format_MinimumPriceFractionDigitsCount,
             name: 'format_MinimumPriceFractionDigitsCount',
@@ -343,7 +387,10 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'format_DateTimeTimezoneModeId',
             defaulter: () => TypedKeyValueSettings.formatEnumString(
                 SourceTzOffsetDateTime.TimezoneMode.idToJsonValue(CoreSettings.Default.format_DateTimeTimezoneModeId)),
-            getter: () => TypedKeyValueSettings.formatEnumString(SourceTzOffsetDateTime.TimezoneMode.idToJsonValue(this._format_DateTimeTimezoneModeId)),
+            getter: () => {
+                const jsonValue = SourceTzOffsetDateTime.TimezoneMode.idToJsonValue(this._format_DateTimeTimezoneModeId);
+                return TypedKeyValueSettings.formatEnumString(jsonValue);
+            },
             pusher: (value: TypedKeyValueSettings.PushValue) => {
                 if (value.value === undefined) {
                     this._format_DateTimeTimezoneModeId = CoreSettings.Default.format_DateTimeTimezoneModeId;
@@ -405,7 +452,9 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
             name: 'instrumentMovementColorSet',
             defaulter: () => TypedKeyValueSettings.formatEnumString(CoreSettings.Default.instrumentMovementColorSet),
             getter: () => TypedKeyValueSettings.formatEnumString(this._instrumentMovementColorSet),
-            pusher: (value: TypedKeyValueSettings.PushValue) => { this._instrumentMovementColorSet = TypedKeyValueSettings.parseEnumString(value); }
+            pusher: (value: TypedKeyValueSettings.PushValue) => {
+                this._instrumentMovementColorSet = TypedKeyValueSettings.parseEnumString(value);
+            }
         },
     } as const;
 

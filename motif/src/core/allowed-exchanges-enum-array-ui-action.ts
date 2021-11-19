@@ -6,6 +6,7 @@
 
 import { ExchangeId, ExchangeInfo } from 'src/adi/internal-api';
 import { Integer, MultiEvent } from 'src/sys/internal-api';
+import { ArrayUiAction } from './array-ui-action';
 import { EnumArrayUiAction } from './enum-array-ui-action';
 import { SymbolsService } from './symbols-service';
 
@@ -37,7 +38,7 @@ export class AllowedExchangesEnumArrayUiAction extends EnumArrayUiAction {
     getElementPropertiesArray() {
         const exchangeIds = this._symbolsManager.allowedExchangeIds;
         const count = exchangeIds.length;
-        const result = new Array<EnumArrayUiAction.ElementProperties>(count);
+        const result = new Array<ArrayUiAction.ElementProperties<ExchangeId>>(count);
         for (let i = 0; i < count; i++) {
             const exchangeId = exchangeIds[i];
             result[i] = this.createEnumArrayUiActionElementProperties(exchangeId);
@@ -50,7 +51,7 @@ export class AllowedExchangesEnumArrayUiAction extends EnumArrayUiAction {
     }
 
     private createEnumArrayUiActionElementProperties(exchangeId: ExchangeId) {
-        const result: EnumArrayUiAction.ElementProperties = {
+        const result: ArrayUiAction.ElementProperties<ExchangeId> = {
             element: exchangeId,
             caption: ExchangeInfo.idToAbbreviatedDisplay(exchangeId),
             title: ExchangeInfo.idToFullDisplay(exchangeId),

@@ -3966,7 +3966,7 @@ export namespace ExchangeInfo {
         defaultPscCode: string;
         defaultSymbolNameFieldId: SymbolFieldId;
         allowableSymbolNameFieldIds: readonly SymbolFieldId[];
-        defaultSymbolSearchFieldIds: readonly SymbolFieldId[],
+        defaultSymbolSearchFieldIds: readonly SymbolFieldId[];
         allowableSymbolSearchFieldIds: readonly SymbolFieldId[];
     }
 
@@ -3983,7 +3983,8 @@ export namespace ExchangeInfo {
             defaultSymbolNameFieldId: SymbolFieldId.Name,
             allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Short, SymbolFieldId.Long],
             defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name],
-            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Short, SymbolFieldId.Long, SymbolFieldId.Base, SymbolFieldId.Isin],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name,
+                SymbolFieldId.Short, SymbolFieldId.Long, SymbolFieldId.Base, SymbolFieldId.Isin],
         },
         Cxa: {
             id: ExchangeId.Cxa,
@@ -4031,7 +4032,8 @@ export namespace ExchangeInfo {
             defaultSymbolNameFieldId: SymbolFieldId.Ticker,
             allowableSymbolNameFieldIds: [SymbolFieldId.Code, SymbolFieldId.Name, SymbolFieldId.Ticker],
             defaultSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Ticker],
-            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Ticker, SymbolFieldId.Name, SymbolFieldId.Base, SymbolFieldId.Isin, SymbolFieldId.Gics],
+            allowableSymbolSearchFieldIds: [SymbolFieldId.Code, SymbolFieldId.Ticker,
+                SymbolFieldId.Name, SymbolFieldId.Base, SymbolFieldId.Isin, SymbolFieldId.Gics],
         },
         Calastone: {
             id: ExchangeId.Calastone,

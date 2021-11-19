@@ -31,6 +31,7 @@ import {
 import {
     AllowedExchangesEnumUiAction,
     AllowedMarketsEnumArrayUiAction,
+    ArrayUiAction,
     BooleanUiAction,
     EnumArrayUiAction,
     EnumUiAction,
@@ -482,7 +483,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Fields]);
 
         const entryCount = SymbolField.idCount;
-        const elementPropertiesArray = new Array<EnumArrayUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

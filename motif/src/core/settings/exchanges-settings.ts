@@ -46,7 +46,7 @@ export class ExchangesSettings extends TypedKeyValueArraySettingsGroup {
     }
 
     private handleExchangeSettingChangedEvent(settingId: ExchangeSettings.Id) {
-        this.settingChangedEvent(settingId)
+        this.settingChangedEvent(settingId);
     }
 }
 
