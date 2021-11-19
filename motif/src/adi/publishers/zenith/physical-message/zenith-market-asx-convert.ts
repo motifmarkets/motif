@@ -14,7 +14,7 @@ export namespace ZenithMarketAsxConvert {
             export function toAdi(alternates: ZenithMarketAsx.MarketController.Symbols.Alternates) {
                 const result: LitIvemAlternateCodes = {};
 
-                for (let [key, value] of Object.entries(alternates)) {
+                for (const [key, value] of Object.entries(alternates)) {
                     switch (key) {
                         case Zenith.MarketController.SearchSymbols.AlternateKey.Short: {
                             result.short = value;

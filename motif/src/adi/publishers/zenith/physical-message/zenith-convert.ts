@@ -1940,8 +1940,8 @@ export namespace ZenithConvert {
         }
 
         function fromId(value: SearchSymbolsDataDefinition.Condition.MatchId):
-            Zenith.MarketController.SearchSymbols.Condition.Match
-        {
+            Zenith.MarketController.SearchSymbols.Condition.Match {
+
             switch (value) {
                 case SearchSymbolsDataDefinition.Condition.MatchId.fromStart:
                     return Zenith.MarketController.SearchSymbols.Condition.Match.FromStart;

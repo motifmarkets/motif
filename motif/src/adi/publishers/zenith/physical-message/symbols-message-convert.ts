@@ -31,8 +31,12 @@ import { Zenith } from './zenith';
 import { ZenithConvert } from './zenith-convert';
 import { ZenithMarketAsx } from './zenith-market-asx';
 import { ZenithMarketAsxConvert } from './zenith-market-asx-convert';
+import { ZenithMarketFnsx } from './zenith-market-fnsx';
+import { ZenithMarketFnsxConvert } from './zenith-market-fnsx-convert';
 import { ZenithMarketMyx } from './zenith-market-myx';
 import { ZenithMarketMyxConvert } from './zenith-market-myx-convert';
+import { ZenithMarketPtx } from './zenith-market-ptx';
+import { ZenithMarketPtxConvert } from './zenith-market-ptx-convert';
 
 export namespace SymbolsMessageConvert {
 
@@ -495,14 +499,26 @@ export namespace SymbolsMessageConvert {
         } else {
             let result: LitIvemAlternateCodes | undefined;
             switch (exchangeId) {
-                case ExchangeId.Myx:
+                case ExchangeId.Myx: {
                     const myxValue = value as ZenithMarketMyx.MarketController.Symbols.Alternates;
                     result = ZenithMarketMyxConvert.Symbols.Alternates.toAdi(myxValue);
                     break;
-                case ExchangeId.Asx:
+                }
+                case ExchangeId.Asx: {
                     const asxValue = value as ZenithMarketAsx.MarketController.Symbols.Alternates;
                     result = ZenithMarketAsxConvert.Symbols.Alternates.toAdi(asxValue);
                     break;
+                }
+                case ExchangeId.Ptx: {
+                    const ptxValue = value as ZenithMarketPtx.MarketController.Symbols.Alternates;
+                    result = ZenithMarketPtxConvert.Symbols.Alternates.toAdi(ptxValue);
+                    break;
+                }
+                case ExchangeId.Fnsx: {
+                    const fnsxValue = value as ZenithMarketFnsx.MarketController.Symbols.Alternates;
+                    result = ZenithMarketFnsxConvert.Symbols.Alternates.toAdi(fnsxValue);
+                    break;
+                }
                 default:
                     Logger.logDataError('SMCCAUC77667733773', ExchangeInfo.idToName(exchangeId));
                     result = undefined;
