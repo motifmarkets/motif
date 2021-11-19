@@ -113,6 +113,23 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         const orderPad = new OrderPad(this.symbolsService, this.adi);
         orderPad.loadPlace();
         orderPad.applySettingsDefaults(this._settingsService.core);
+        if (this.brokerageAccountGroupLinked) {
+            const group = this.brokerageAccountGroup;
+            if (group !== undefined) {
+                if (BrokerageAccountGroup.isSingle(group)) {
+                    orderPad.accountId = group.id;
+                }
+            }
+        }
+        if (this.litIvemIdLinked) {
+            const litIvemId = this.litIvemId;
+            if (litIvemId !== undefined) {
+                const routedIvemId = this.symbolsService.tryGetBestRoutedIvemIdFromLitIvemId(litIvemId);
+                if (routedIvemId !== undefined) {
+                    orderPad.routedIvemId = routedIvemId;
+                }
+            }
+        }
         this.applyOrderPad(orderPad, true);
     }
 
@@ -266,7 +283,9 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
             this._litIvemIdbrokerageAccountGroupApplying = true;
             try {
                 if (selfInitiated || (this._padFrame !== undefined && this._padFrame.litIvemIdSetting)) {
-                    return true; // to avoid routedIvemId <-> litIvemId conversion issues, routedIvemIds are immediately set in OrderPad
+                    // To avoid routedIvemId <-> litIvemId conversion issues, routedIvemIds are immediately set in OrderPad
+                    // Also, applyLitIvemId is used when applying new orderpad
+                    return super.applyLitIvemId(litIvemId, selfInitiated);
                 } else {
                     if (litIvemId === undefined) {
                         return false;
@@ -276,7 +295,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
                             return false;
                         } else {
                             this._orderPad.routedIvemId = routedIvemId;
-                            return true;
+                            return super.applyLitIvemId(litIvemId, selfInitiated);;
                         }
                     }
                 }
@@ -293,8 +312,9 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
             this._litIvemIdbrokerageAccountGroupApplying = true;
             try {
                 if (selfInitiated || (this._padFrame !== undefined && this._padFrame.brokerageAccountGroupSetting)) {
-                    return true; // to avoid accountId <-> BrokerageAccountGroup conversion issues,
-                                 // accountIds are immediately set in OrderPad
+                    // to avoid accountId <-> BrokerageAccountGroup conversion issues, accountIds are immediately set in OrderPad
+                    // Also, applyBrokerageAccountGroup is used when applying new orderpad
+                    return super.applyBrokerageAccountGroup(group, selfInitiated);
                 } else {
                     if (group === undefined) {
                         return false;
@@ -303,7 +323,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
                             return false;
                         } else {
                             this._orderPad.accountId = group.id;
-                            return true;
+                            return super.applyBrokerageAccountGroup(group, selfInitiated);
                         }
                     }
                 }
