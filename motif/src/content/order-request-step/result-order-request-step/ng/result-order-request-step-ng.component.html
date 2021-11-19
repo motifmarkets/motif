@@ -19,7 +19,7 @@
         spellCheck="false"
         readonly
         wrap="off"
-        [style.background-color]="errorsTextAreaBkgdColor"
-        [style.color]="errorsTextAreaForeColor"
+        [style.background-color]="success ? errorsTextAreaSuccessBkgdColor : errorsTextAreaErrorBkgdColor"
+        [style.color]="success ? errorsTextAreaSuccessForeColor : errorsTextAreaErrorForeColor"
     >{{errorsText}}</textarea>
 </div>

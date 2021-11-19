@@ -31,10 +31,14 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
     @ViewChild('orderIdInput', { static: true }) private _orderIdInputComponent: TextInputNgComponent;
     @ViewChild('errorsLabel', { static: true }) private _errorsLabelComponent: CaptionLabelNgComponent;
 
+    public success = false;
+
     public errorsText = '';
     public errorsTitle = '';
-    public errorsTextAreaBkgdColor: string;
-    public errorsTextAreaForeColor: string;
+    public errorsTextAreaSuccessBkgdColor: string;
+    public errorsTextAreaSuccessForeColor: string;
+    public errorsTextAreaErrorBkgdColor: string;
+    public errorsTextAreaErrorForeColor: string;
 
     private readonly _settingsService: SettingsService;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
@@ -81,8 +85,13 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
     }
 
     // Component Access Methods
-    public pushStatus(value: string) {
+    public pushStatus(success: boolean, value: string) {
         this._statusUiAction.pushValue(value);
+
+        if (success !== this.success) {
+            this.success = success;
+            this.markForCheck();
+        }
     }
 
     public pushErrors(text: string, title: string) {
@@ -115,8 +124,10 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
 
     private applySettings() {
         const colorSettings = this._settingsService.color;
-        this.errorsTextAreaBkgdColor = colorSettings.getBkgd(ColorScheme.ItemId.TextControl_Error);
-        this.errorsTextAreaForeColor = colorSettings.getFore(ColorScheme.ItemId.TextControl_Error);
+        this.errorsTextAreaSuccessBkgdColor = colorSettings.getBkgd(ColorScheme.ItemId.TextControl_Valid);
+        this.errorsTextAreaSuccessForeColor = colorSettings.getFore(ColorScheme.ItemId.TextControl_Valid);
+        this.errorsTextAreaErrorBkgdColor = colorSettings.getBkgd(ColorScheme.ItemId.TextControl_Error);
+        this.errorsTextAreaErrorForeColor = colorSettings.getFore(ColorScheme.ItemId.TextControl_Error);
     }
 
     private createStatusUiAction() {

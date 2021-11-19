@@ -165,8 +165,9 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
     }
 
     private pushStatus() {
+        const success = this._statusId === ResultOrderRequestStepFrame.StatusId.Success;
         const statusText = ResultOrderRequestStepFrame.Status.idToDisplay(this._statusId);
-        this._componentAccess.pushStatus(statusText);
+        this._componentAccess.pushStatus(success, statusText);
     }
 
     private pushOrderId() {
@@ -300,7 +301,7 @@ export namespace ResultOrderRequestStepFrame {
     }
 
     export interface ComponentAccess {
-        pushStatus(value: string): void;
+        pushStatus(success: boolean, value: string): void;
         pushErrors(text: string, title: string): void;
         pushOrderId(value: string): void;
 

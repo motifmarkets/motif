@@ -116,7 +116,12 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
             if (detail === undefined) {
                 throw new AssertInternalError('RAIRCCSD9888332312');
             } else {
-                this.symbolName = symbolsService.calculateSymbolName(detail.exchangeId, detail.name, detail.litIvemId.code, detail.alternateCodes);
+                this.symbolName = symbolsService.calculateSymbolName(
+                    detail.exchangeId,
+                    detail.name,
+                    detail.litIvemId.code,
+                    detail.alternateCodes
+                );
             }
         }
 
