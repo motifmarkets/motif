@@ -29,9 +29,7 @@ import {
     Logger,
     MultiEvent,
     StringBuilder,
-    UnexpectedUndefinedError,
-    UnreachableCaseError,
-    UsableListChangeTypeId
+    UnexpectedUndefinedError
 } from 'src/sys/internal-api';
 import { ContentFrame } from '../content-frame';
 
@@ -247,49 +245,65 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         }
     }
 
-    notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, itemIdx: Integer, changeCount: Integer) {
-        switch (listChangeTypeId) {
-            case UsableListChangeTypeId.Unusable:
-                // handled through badness change
-                break;
-            case UsableListChangeTypeId.PreUsableClear:
-                this._recordsEventers.allRecordsDeleted();
-                break;
-            case UsableListChangeTypeId.PreUsableAdd:
-                if (this._table === undefined) {
-                    throw new AssertInternalError('TFNTRLCA388590');
-                } else {
-                    // if (this._table.changeRecordDefinitionOrderAllowed) {
-                        this._recordsEventers.recordsInserted(itemIdx, changeCount);
-                    // } else {
-                    //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
-                    // }
-                }
-                break;
-            case UsableListChangeTypeId.Usable:
-                // handled through badness change
-                break;
-            case UsableListChangeTypeId.Insert:
-                if (this._table === undefined) {
-                    throw new AssertInternalError('TFNTRLCI388590');
-                } else {
-                    // if (this._table.changeRecordDefinitionOrderAllowed) {
-                        this._recordsEventers.recordsInserted(itemIdx, changeCount);
-                    // } else {
-                    //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
-                    // }
-                }
-                break;
-            case UsableListChangeTypeId.Remove:
-                this._recordsEventers.recordsDeleted(itemIdx, changeCount);
-                break;
-            case UsableListChangeTypeId.Clear:
-                this._recordsEventers.allRecordsDeleted();
-                break;
-            default:
-                throw new UnreachableCaseError('TFNTRLC2323597', listChangeTypeId);
-        }
+    notifyTableRecordsLoaded() {
+        this._recordsEventers.recordsLoaded();
     }
+
+    notifyTableRecordsInserted(index: Integer, count: Integer) {
+        this._recordsEventers.recordsInserted(index, count);
+    }
+
+    notifyTableRecordsDeleted(index: Integer, count: Integer) {
+        this._recordsEventers.recordsDeleted(index, count);
+    }
+
+    notifyTableAllRecordsDeleted() {
+        this._recordsEventers.allRecordsDeleted();
+    }
+
+    // notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, itemIdx: Integer, changeCount: Integer) {
+    //     switch (listChangeTypeId) {
+    //         case UsableListChangeTypeId.Unusable:
+    //             // handled through badness change
+    //             break;
+    //         case UsableListChangeTypeId.PreUsableClear:
+    //             this._recordsEventers.allRecordsDeleted();
+    //             break;
+    //         case UsableListChangeTypeId.PreUsableAdd:
+    //             if (this._table === undefined) {
+    //                 throw new AssertInternalError('TFNTRLCA388590');
+    //             } else {
+    //                 // if (this._table.changeRecordDefinitionOrderAllowed) {
+    //                     this._recordsEventers.recordsInserted(itemIdx, changeCount);
+    //                 // } else {
+    //                 //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
+    //                 // }
+    //             }
+    //             break;
+    //         case UsableListChangeTypeId.Usable:
+    //             // handled through badness change
+    //             break;
+    //         case UsableListChangeTypeId.Insert:
+    //             if (this._table === undefined) {
+    //                 throw new AssertInternalError('TFNTRLCI388590');
+    //             } else {
+    //                 // if (this._table.changeRecordDefinitionOrderAllowed) {
+    //                     this._recordsEventers.recordsInserted(itemIdx, changeCount);
+    //                 // } else {
+    //                 //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
+    //                 // }
+    //             }
+    //             break;
+    //         case UsableListChangeTypeId.Remove:
+    //             this._recordsEventers.recordsDeleted(itemIdx, changeCount);
+    //             break;
+    //         case UsableListChangeTypeId.Clear:
+    //             this._recordsEventers.allRecordsDeleted();
+    //             break;
+    //         default:
+    //             throw new UnreachableCaseError('TFNTRLC2323597', listChangeTypeId);
+    //     }
+    // }
 
     notifyTableRecordValuesChanged(recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) {
         // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater

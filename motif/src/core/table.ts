@@ -37,7 +37,11 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
     openEvent: Table.OpenEvent;
     openChangeEvent: Table.OpenChangeEvent;
     badnessChangeEvent: Table.BadnessChangeEvent;
-    listChangeEvent: Table.ListChangeEvent;
+    recordsLoadedEvent: Table.RecordsLoadedEvent;
+    recordsInsertedEvent: Table.RecordsInsertedEvent;
+    recordsDeletedEvent: Table.RecordsDeletedEvent;
+    allRecordsDeletedEvent: Table.AllRecordsDeletedEvent;
+    // listChangeEvent: Table.ListChangeEvent;
     recordValuesChangedEvent: Table.RecordValuesChangedEvent;
     recordFieldsChangedEvent: Table.RecordFieldsChangedEvent;
     recordChangedEvent: Table.RecordChangedEvent;
@@ -457,8 +461,20 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
         this.badnessChangeEvent();
     }
 
-    private notifyListChange(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) {
-        this.listChangeEvent(listChangeTypeId, recordIdx, recordCount);
+    private notifyTableRecordsLoaded() {
+        this.recordsLoadedEvent();
+    }
+
+    private notifyTableRecordsInserted(index: Integer, count: Integer) {
+        this.recordsInsertedEvent(index, count);
+    }
+
+    private notifyTableRecordsDeleted(index: Integer, count: Integer) {
+        this.recordsDeletedEvent(index, count);
+    }
+
+    private notifyTableAllRecordsDeleted() {
+        this.allRecordsDeletedEvent();
     }
 
     private notifyLayoutChange(opener: Table.Opener) {
@@ -479,18 +495,22 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
 
     private processUsableChange() {
         if (this._usable) {
-            this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
-            const usableRecordCount = this.recordCount;
-            if (usableRecordCount > 0) {
-                this.notifyListChange(UsableListChangeTypeId.PreUsableAdd, 0, usableRecordCount);
-            }
+            this.notifyTableRecordsLoaded();
+            // this.notifyTableAllRecordsDeleted(); // This needs further investigation - may crash because records do not match grid rows
+            // // this.notifyListChange(UsableListChangeTypeId.PreUsableClear, 0, 0);
+            // const usableRecordCount = this.recordCount;
+            // if (usableRecordCount > 0) {
+            //     this.notifyTableRecordsInserted(0, usableRecordCount);
+            //     // this.notifyListChange(UsableListChangeTypeId.PreUsableAdd, 0, usableRecordCount);
+            // }
             if (!this._orderedRecordDefinitionsValidated) {
                 this.validateOrderedRecordDefinitions();
             }
             if (!this.firstUsable) {
                 this.checkProcessRecordsFirstUsable();
             }
-            this.notifyListChange(UsableListChangeTypeId.Usable, 0, 0);
+            // Usable Change status handled by Badness change event
+            // this.notifyListChange(UsableListChangeTypeId.Usable, 0, 0);
         }
     }
 
@@ -573,17 +593,20 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
                 break;
             case UsableListChangeTypeId.Insert:
                 this.insertRecords(recordIdx, recordCount);
-                this.notifyListChange(UsableListChangeTypeId.Insert, recordIdx, recordCount);
+                this.notifyTableRecordsInserted(recordIdx, recordCount);
+                // this.notifyListChange(UsableListChangeTypeId.Insert, recordIdx, recordCount);
                 break;
             case UsableListChangeTypeId.Remove:
                 // Delete records before notifying so that grid matches correctly
                 this.deleteRecords(recordIdx, recordCount);
-                this.notifyListChange(UsableListChangeTypeId.Remove, recordIdx, recordCount);
+                this.notifyTableRecordsDeleted(recordIdx, recordCount);
+                // this.notifyListChange(UsableListChangeTypeId.Remove, recordIdx, recordCount);
                 break;
                 case UsableListChangeTypeId.Clear:
                 // Clear records before notifying so that grid matches correctly
                 this.clearRecords();
-                this.notifyListChange(UsableListChangeTypeId.Clear, 0, this.recordCount);
+                this.notifyTableAllRecordsDeleted();
+                // this.notifyListChange(UsableListChangeTypeId.Clear, 0, this.recordCount);
                 break;
             default:
                 throw new UnreachableCaseError('THTRDLLCE20098', listChangeTypeId);
@@ -797,7 +820,11 @@ export namespace Table {
 
         notifyTableOpen(recordDefinitionList: TableRecordDefinitionList): void;
         notifyTableOpenChange(opened: boolean): void;
-        notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, changeCount: Integer): void;
+        notifyTableRecordsLoaded(): void;
+        notifyTableRecordsInserted(index: Integer, count: Integer): void;
+        notifyTableRecordsDeleted(index: Integer, count: Integer): void;
+        notifyTableAllRecordsDeleted(): void;
+        // notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, recordIdx: Integer, changeCount: Integer): void;
         notifyTableBadnessChange(): void;
         notifyTableRecordValuesChanged(recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]): void;
         notifyTableRecordFieldsChanged(recordIdx: number, fieldIndex: number, fieldCount: number): void;
@@ -817,7 +844,11 @@ export namespace Table {
     export type OpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
     export type OpenChangeEvent = (this: void, opened: boolean) => void;
     export type BadnessChangeEvent = (this: void) => void;
-    export type ListChangeEvent = (this: void, listChangeType: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) => void;
+    export type RecordsLoadedEvent = (this: void) => void;
+    export type RecordsInsertedEvent = (this: void, index: Integer, count: Integer) => void;
+    export type RecordsDeletedEvent = (this: void, index: Integer, count: Integer) => void;
+    export type AllRecordsDeletedEvent = (this: void) => void;
+    // export type ListChangeEvent = (this: void, listChangeType: UsableListChangeTypeId, recordIdx: Integer, recordCount: Integer) => void;
     export type RecordValuesChangedEvent = (this: void, recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) => void;
     export type RecordFieldsChangedEvent = (this: void, recordIdx: Integer, fieldIdx: Integer, fieldCount: Integer) => void;
     export type RecordChangedEvent = (this: void, recordIdx: Integer) => void;
@@ -893,8 +924,13 @@ export class OpenedTable extends Table {
         this.openEvent = (recordDefinitionList) => this.opener.notifyTableOpen(recordDefinitionList);
         this.openChangeEvent = (opened) => this.opener.notifyTableOpenChange(opened);
         this.badnessChangeEvent = () => this.opener.notifyTableBadnessChange();
-        this.listChangeEvent =
-            (listChangeTypeId, recordIdx, recordCount) => this.opener.notifyTableRecordListChange(listChangeTypeId, recordIdx, recordCount);
+        this.recordsLoadedEvent = () => this.opener.notifyTableRecordsLoaded();
+        this.recordsInsertedEvent = (index, count) => this.opener.notifyTableRecordsInserted(index, count);
+        this.recordsDeletedEvent = (index, count) => this.opener.notifyTableRecordsDeleted(index, count);
+        this.allRecordsDeletedEvent = () => this.opener.notifyTableAllRecordsDeleted();
+        // this.listChangeEvent =
+        //     (listChangeTypeId, recordIdx, recordCount) =>
+        //         this.opener.notifyTableRecordListChange(listChangeTypeId, recordIdx, recordCount);
         this.recordValuesChangedEvent = (recordIdx, invalidatedValues) =>
             this.opener.notifyTableRecordValuesChanged(recordIdx, invalidatedValues);
         this.recordFieldsChangedEvent = (recordIdx, fieldIndex, fieldCount) =>
