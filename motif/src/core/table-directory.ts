@@ -12,8 +12,7 @@ import {
     JsonElement,
     Logger,
     mSecsPerSec,
-    SysTick,
-    UsableListChangeTypeId
+    SysTick
 } from 'src/sys/internal-api';
 import { Table, TableList } from './table';
 import { TableRecordDefinitionList } from './table-record-definition-list';
@@ -246,8 +245,16 @@ export namespace TableDirectory {
                 this.handleOpenChangeEvent(opened);
             this.table.badnessChangeEvent = () =>
                 this.handleBadnessChangeEvent();
-            this.table.listChangeEvent = (typeId, itemIdx, itemCount) =>
-                this.handleListChangeEvent(typeId, itemIdx, itemCount);
+            this.table.recordsLoadedEvent = () =>
+                this.handleTableRecordsLoadedEvent();
+            this.table.recordsInsertedEvent = (index, count) =>
+                this.handleTableRecordsInsertedEvent(index, count);
+            this.table.recordsDeletedEvent = (index, count) =>
+                this.handleTableRecordsDeletedEvent(index, count);
+            this.table.allRecordsDeletedEvent = () =>
+                this.handleTableAllRecordsDeletedEvent();
+            // this.table.listChangeEvent = (typeId, itemIdx, itemCount) =>
+            //     this.handleListChangeEvent(typeId, itemIdx, itemCount);
             this.table.recordValuesChangedEvent = (recordIdx, invalidatedValues) =>
                 this.handleRecordValuesChangedEvent(recordIdx, invalidatedValues);
             this.table.recordFieldsChangedEvent = (recordIndex, fieldIndex, fieldCount) =>
@@ -362,17 +369,49 @@ export namespace TableDirectory {
             );
         }
 
-        private handleListChangeEvent(
-            typeId: UsableListChangeTypeId,
-            itemIdx: Integer,
-            itemCount: Integer
-        ) {
+        private handleTableRecordsLoadedEvent() {
             this.openers.forEach((opener: Opener) =>
-                opener.notifyTableRecordListChange(typeId, itemIdx, itemCount)
+                opener.notifyTableRecordsLoaded()
             );
 
             this.saveRequiredEvent();
         }
+
+        private handleTableRecordsInsertedEvent(index: Integer, count: Integer) {
+            this.openers.forEach((opener: Opener) =>
+                opener.notifyTableRecordsInserted(index, count)
+            );
+
+            this.saveRequiredEvent();
+        }
+
+        private handleTableRecordsDeletedEvent(index: Integer, count: Integer) {
+            this.openers.forEach((opener: Opener) =>
+                opener.notifyTableRecordsDeleted(index, count)
+            );
+
+            this.saveRequiredEvent();
+        }
+
+        private handleTableAllRecordsDeletedEvent() {
+            this.openers.forEach((opener: Opener) =>
+                opener.notifyTableAllRecordsDeleted()
+            );
+
+            this.saveRequiredEvent();
+        }
+
+        // private handleListChangeEvent(
+        //     typeId: UsableListChangeTypeId,
+        //     itemIdx: Integer,
+        //     itemCount: Integer
+        // ) {
+        //     this.openers.forEach((opener: Opener) =>
+        //         opener.notifyTableRecordListChange(typeId, itemIdx, itemCount)
+        //     );
+
+        //     this.saveRequiredEvent();
+        // }
 
         private handleRecordValuesChangedEvent(recordIndex: Integer, invalidatedValues: RevRecordInvalidatedValue[]) {
             this.openers.forEach((opener: Opener) =>
