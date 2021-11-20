@@ -37,7 +37,6 @@ export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
     }
 
     protected override applyValue(value: Integer | undefined) {
-        super.applyValue(value);
         const newChecked = value === undefined ? false : value === this.element;
 
         if (newChecked !== this.checked) {

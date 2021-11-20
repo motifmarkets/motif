@@ -89,7 +89,6 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     protected override applyValue(value: Integer | undefined) {
         if (!this.uiAction.edited) {
-            super.applyValue(value);
             this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             // if (value === undefined) {

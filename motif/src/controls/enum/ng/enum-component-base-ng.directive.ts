@@ -27,10 +27,6 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         super(cdr, settingsService, stateColorItemIdArray);
     }
 
-    protected applyValue(value: Integer | undefined) {
-        this.markForCheck();
-    }
-
     protected applyFilter(filter: readonly Integer[] | undefined) {
         if (filter === undefined) {
             this._filter = undefined;
@@ -97,4 +93,6 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
     private handleElementsPushEvent() {
         this.applyElements();
     }
+
+    protected abstract applyValue(value: Integer | undefined): void;
 }
