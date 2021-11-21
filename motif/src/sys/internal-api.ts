@@ -17,6 +17,7 @@ export * from './iso8601';
 export * from './json-element';
 export * from './logger';
 export * from './mapped-comparable-list';
+export * from './motif-error';
 export * from './multi-event';
 // export * from './Scheduler';
 export * from './source-tz-offset-date';

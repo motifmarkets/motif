@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ExternalError, UnexpectedCaseError, ZenithDataError } from 'src/sys/internal-api';
+import { AssertInternalError, ExternalError, MotifError, UnexpectedCaseError, ZenithDataError } from 'src/sys/internal-api';
 import {
     AuiChangeTypeId,
     BrokerageAccountTransactionsDataDefinition,
@@ -117,8 +117,7 @@ export namespace TransactionsMessageConvert {
                 };
                 result[index] = change;
             } catch (e) {
-                e.message += ` Index: ${index}`;
-                throw e;
+                throw MotifError.appendToErrorMessage(e, ` Index: ${index}`);
             }
         }
         return result;
@@ -132,8 +131,7 @@ export namespace TransactionsMessageConvert {
                 const change = ZenithConvert.Transactions.toDataMessageChange(zenithChange);
                 result[index] = change;
             } catch (e) {
-                e.message += ` Index: ${index}`;
-                throw e;
+                throw MotifError.appendToErrorMessage(e, ` Index: ${index}`);
             }
         }
         return result;

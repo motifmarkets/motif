@@ -10,6 +10,7 @@ import {
     ExternalError,
     ifDefined,
     ifDefinedAndNotNull,
+    MotifError,
     newUndefinableDecimal,
     UnexpectedCaseError,
     ZenithDataError
@@ -174,8 +175,7 @@ export namespace SecurityMessageConvert {
             } as const;
             return result;
         } catch (error) {
-            error.message = 'Security Data Message: ' + error.message;
-            throw error;
+            throw MotifError.prependErrorMessage(error, 'Security Data Message: ');
         }
     }
 

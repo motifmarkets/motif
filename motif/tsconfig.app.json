@@ -50,6 +50,11 @@
         "src/extensions/api/exposed/core/icon-button-ui-action-api.ts",
         "src/extensions/implementation/exposed/core/order-pad-api-implementation.ts",
         "src/extensions/api/exposed/core/order-pad-api.ts",
+        "src/core/layout.ts",
+        "src/core/layouts-service.ts",
+        "src/core/motif-services-instance-item.ts",
+        "src/core/motif-services-instance-service.ts",
+        "src/sys/mumurhash3.ts",
         "e2e/app.po.ts",
         "e2e/app.e2e-spec.ts",
         "webpack.config.dev.ts"

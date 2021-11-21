@@ -22,9 +22,17 @@ declare interface WebpackDevServer {
 }
 
 declare interface DevServer extends WebpackDevServer {
-    contentBase?: string[] | false;
+    static?: false | string | string[] | DevServer.Static | DevServer.Static[];
     contentBasePublicPath?: string[] | false;
     stats?: 'verbose'; // can be other things as well
+}
+
+declare namespace DevServer {
+    export interface Static {
+        directory?: string;
+        publicPath?: string;
+        watch?: boolean;
+    }
 }
 
 // module.exports = {
@@ -214,43 +222,92 @@ function updateDevtool(config: webpack.WebpackOptionsNormalized, development: bo
 function updateDevServer(config: webpack.WebpackOptionsNormalized) {
     const configDevServer = config.devServer;
     if (configDevServer !== undefined) {
-        updateDevServerContentBase(configDevServer);
+        updateDevServerStatic(configDevServer);
     }
 }
 
-function updateDevServerContentBase(devServer: DevServer) {
-    const configDoNotDeleteSrcFolder = path.resolve(__dirname, 'dev_static/_config-do-not-delete');
+function updateDevServerStatic(devServer: DevServer) {
+    const configDoNotDeleteDirectory = path.resolve(__dirname, 'dev_static/_config-do-not-delete');
     const configDoNotDeletePublicPath = '/_config-do-not-delete';
-    const extensionsSrcFolder = path.resolve(__dirname, '../extensions');
+    const extensionsDirectory = path.resolve(__dirname, '../extensions');
     const extensionsPublicPath = '/extensions';
 
-    const contentBase: string[] = devServer.contentBase === undefined || devServer.contentBase === false ? [] : devServer.contentBase;
-    const contentBasePublicPath: string[] =
-        devServer.contentBasePublicPath === undefined || devServer.contentBasePublicPath === false ? [] : devServer.contentBasePublicPath;
-
-    if (contentBase.length !== contentBasePublicPath.length) {
-        throw new Error(`${webpackConfigFileName}: contentBase and contentBasePublicPath different lengths`);
-    } else {
-        const configDoNotDeleteSrcIdx = contentBase.indexOf(configDoNotDeleteSrcFolder);
-        if (configDoNotDeleteSrcIdx >= 0) {
-            contentBasePublicPath[configDoNotDeleteSrcIdx] = configDoNotDeletePublicPath;
-        } else {
-            contentBase.push(configDoNotDeleteSrcFolder);
-            contentBasePublicPath.push(configDoNotDeletePublicPath);
-        }
-
-        const extensionsSrcIdx = contentBase.indexOf(extensionsSrcFolder);
-        if (extensionsSrcIdx >= 0) {
-            contentBasePublicPath[extensionsSrcIdx] = extensionsPublicPath;
-        } else {
-            contentBase.push(extensionsSrcFolder);
-            contentBasePublicPath.push(extensionsPublicPath);
+    function checkIfDirectoryIsConfigDoNotDeleteOrExtensions(directory: string, directoryStatic: DevServer.Static) {
+        switch (directory) {
+            case configDoNotDeleteDirectory: {
+                configDoNotDeleteStatic = directoryStatic;
+                break;
+            }
+            case extensionsDirectory: {
+                extensionsStatic = directoryStatic;
+                break;
+            }
         }
     }
 
-    devServer.contentBase = contentBase;
-    devServer.contentBasePublicPath = contentBasePublicPath;
-    devServer.stats = 'verbose';
+    let configDoNotDeleteStatic: DevServer.Static | undefined;
+    let extensionsStatic: DevServer.Static | undefined;
+    const existingStatics = devServer.static;
+    const newStatics: DevServer.Static[] = [];
+    if (existingStatics !== undefined && existingStatics !== false) {
+        if (typeof existingStatics === 'string') {
+            const directory = existingStatics;
+            const stringStatic: DevServer.Static = {
+                directory,
+            };
+            checkIfDirectoryIsConfigDoNotDeleteOrExtensions(directory, stringStatic);
+            newStatics.push(stringStatic);
+        } else {
+            if (typeof existingStatics === 'object') {
+                if (!Array.isArray(existingStatics)) {
+                    // must be of type DevServer.Static
+                    const singleStatic = existingStatics as DevServer.Static;
+                    const directory = singleStatic.directory;
+                    if (directory !== undefined) {
+                        checkIfDirectoryIsConfigDoNotDeleteOrExtensions(directory, singleStatic);
+                    }
+                    newStatics.push(singleStatic);
+                } else {
+                    for (const existingStatic of existingStatics) {
+                        if (typeof existingStatic === 'string') {
+                            const directory = existingStatic;
+                            const stringStatic: DevServer.Static = {
+                                directory,
+                            };
+                            checkIfDirectoryIsConfigDoNotDeleteOrExtensions(directory, stringStatic);
+                            newStatics.push(stringStatic);
+                        } else {
+                            if (existingStatic !== undefined) {
+                                const directory = existingStatic.directory;
+                                if (directory !== undefined) {
+                                    checkIfDirectoryIsConfigDoNotDeleteOrExtensions(directory, existingStatic);
+                                }
+                                newStatics.push(existingStatic);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (configDoNotDeleteStatic === undefined) {
+        configDoNotDeleteStatic = {};
+        newStatics.push(configDoNotDeleteStatic);
+    }
+
+    if (extensionsStatic === undefined) {
+        extensionsStatic = {};
+        newStatics.push(extensionsStatic);
+    }
+
+    configDoNotDeleteStatic.directory = configDoNotDeleteDirectory;
+    configDoNotDeleteStatic.publicPath = configDoNotDeletePublicPath;
+    extensionsStatic.directory = extensionsDirectory;
+    extensionsStatic.publicPath = extensionsPublicPath;
+
+    devServer.static = newStatics;
+    // devServer.stats = 'verbose';
 }
 
 

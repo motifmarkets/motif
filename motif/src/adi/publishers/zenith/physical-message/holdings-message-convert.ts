@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ExternalError, UnexpectedCaseError, ZenithDataError } from 'src/sys/internal-api';
+import { AssertInternalError, ExternalError, MotifError, UnexpectedCaseError, ZenithDataError } from 'src/sys/internal-api';
 import {
     AurcChangeTypeId,
     BrokerageAccountHoldingsDataDefinition,
@@ -116,8 +116,7 @@ export namespace HoldingsMessageConvert {
                 };
                 result[index] = changeRecord;
             } catch (e) {
-                e.message += ` Index: ${index}`;
-                throw e;
+                throw MotifError.appendToErrorMessage(e, ` Index: ${index}`);
             }
         }
         return result;
@@ -131,8 +130,7 @@ export namespace HoldingsMessageConvert {
                 const changeRecord = ZenithConvert.Holdings.toDataMessageChangeRecord(zenithChangeRecord);
                 result[index] = changeRecord;
             } catch (e) {
-                e.message += ` Index: ${index}`;
-                throw e;
+                throw MotifError.appendToErrorMessage(e, ` Index: ${index}`);
             }
         }
         return result;
