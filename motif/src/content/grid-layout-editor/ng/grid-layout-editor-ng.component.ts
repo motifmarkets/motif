@@ -26,6 +26,7 @@ import {
 import { StringId, Strings } from 'src/res/internal-api';
 import { assigned, defined, delay1Tick, Integer } from 'src/sys/internal-api';
 import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-grid-layout-editor',
@@ -34,7 +35,7 @@ import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/n
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
+export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     @ViewChild('cancelSearchButton', { static: true }) private _cancelSearchButtonComponent: SvgButtonNgComponent;
     @ViewChild('searchNextButton', { static: true }) private _searchNextButtonComponent: SvgButtonNgComponent;
     @ViewChild('searchInput', { static: true }) private _searchInputComponent: TextInputNgComponent;
@@ -51,7 +52,8 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
     @ViewChild('fieldVisibleCheckbox', { static: true }) private _fieldVisibleCheckboxComponent: CaptionedCheckboxNgComponent;
     @ViewChild('grid', { static: true }) private _gridComponent: GridLayoutEditorGridNgComponent;
 
-    public showLegend = '';
+    public readonly showRadioName: string;
+    public readonly showLegend: string;
     public fieldName: string | undefined = undefined;
 
     private _commandRegisterService: CommandRegisterService;
@@ -70,8 +72,11 @@ export class GridLayoutEditorNgComponent implements OnDestroy, AfterViewInit {
     // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
 
+        this.showRadioName = this.generateInstancedRadioName('show');
         const showText = Strings[StringId.Show];
         this.showLegend = showText.charAt(0).toUpperCase() + showText.slice(1);
 

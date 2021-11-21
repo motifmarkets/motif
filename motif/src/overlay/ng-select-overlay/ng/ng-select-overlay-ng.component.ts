@@ -10,6 +10,7 @@ import { NgSelectUtils } from 'src/controls/internal-api';
 import { NgSelectOverlayNgService } from 'src/controls/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
 import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base-ng.directive';
 
 @Component({
     selector: 'app-ng-select-overlay',
@@ -18,7 +19,7 @@ import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels 
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class NgSelectOverlayNgComponent implements OnDestroy {
+export class NgSelectOverlayNgComponent extends OverlayComponentBaseNgDirective implements OnDestroy {
     @ViewChild('measureCanvas', { static: true }) private _measureCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('measureBoldCanvas', { static: true }) private _measureBoldCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -39,6 +40,8 @@ export class NgSelectOverlayNgComponent implements OnDestroy {
         elementRef: ElementRef,
         settingsNgService: SettingsNgService
     ) {
+        super();
+
         this._element = elementRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());

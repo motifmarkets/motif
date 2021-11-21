@@ -8,10 +8,11 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } 
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { MotifGrid } from 'src/content/internal-api';
-import { MotifGridNgComponent } from 'src/content/ng-api';
 import { ColorScheme, ColorSchemeGridRecordStore } from 'src/core/internal-api';
 import { Strings } from 'src/res/internal-api';
 import { Integer } from 'src/sys/internal-api';
+import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-color-scheme-grid',
@@ -20,7 +21,7 @@ import { Integer } from 'src/sys/internal-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
+export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements OnInit, AfterViewInit {
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
     recordFocusEventer: ColorSchemeGridComponent.RecordFocusEventer;
@@ -34,14 +35,19 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
     private _filterActive = false;
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
 
+    constructor(settingsNgService: SettingsNgService) {
+        super();
+        this._recordStore = new ColorSchemeGridRecordStore(settingsNgService.settingsService);
+    }
+
+    get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
+    get fixedColumnsViewWidth() { return this._grid.fixedColumnsViewWidth; }
+    get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
+
     public get filterFolderId() { return this._filterFolderId; }
     public set filterFolderId(value: ColorScheme.Item.FolderId) {
         this._filterFolderId = value;
         this.applyFilter();
-    }
-
-    constructor(settingsNgService: SettingsNgService) {
-        this._recordStore = new ColorSchemeGridRecordStore(settingsNgService.settingsService);
     }
 
     ngOnInit() {
@@ -62,10 +68,6 @@ export class ColorSchemeGridNgComponent implements OnInit, AfterViewInit {
 
         this.prepareGrid();
     }
-
-    get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
-    get fixedColumnsViewWidth() { return this._grid.fixedColumnsViewWidth; }
-    get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
 
     calculateActiveColumnsWidth() {
         return this._grid.calculateActiveColumnsWidth();

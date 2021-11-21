@@ -27,12 +27,12 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
 
     private _pushTextEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as StringUiAction; }
-
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'TextInput' + this.instanceNumber.toString(10);
+        this.inputId = 'TextInput' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as StringUiAction; }
 
     focus() {
         // this does not work.  needs further investigation

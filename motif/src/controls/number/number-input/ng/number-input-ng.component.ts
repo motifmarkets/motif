@@ -32,7 +32,7 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'NumberInput' + this.instanceNumber.toString(10);
+        this.inputId = 'NumberInput' + this.componentInstanceId;
     }
 
     ngOnInit() {

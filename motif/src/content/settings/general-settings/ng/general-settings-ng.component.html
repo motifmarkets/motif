@@ -23,9 +23,9 @@
     <app-checkbox-input #24HourControl id="24HourControl" inputId="24HourControlCheckbox"></app-checkbox-input>
     <app-caption-label #dateTimeTimezoneModeLabel for="sourceDateTimeTimezoneModeRadio"></app-caption-label>
     <div id="dateTimeTimezoneMode">
-        <app-captioned-radio #sourceDateTimeTimezoneModeControl id="sourceDateTimeTimezoneModeControl" inputId="sourceDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
-        <app-captioned-radio #localDateTimeTimezoneModeControl id="localDateTimeTimezoneModeControl" inputId="localDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
-        <app-captioned-radio #utcDateTimeTimezoneModeControl id="utcDateTimeTimezoneModeControl" inputId="utcDateTimeTimezoneModeRadio" name="dateTimeTimezoneMode"></app-captioned-radio>
+        <app-captioned-radio #sourceDateTimeTimezoneModeControl id="sourceDateTimeTimezoneModeControl" inputId="sourceDateTimeTimezoneModeRadio" [name]="dateTimeTimezoneModeRadioName"></app-captioned-radio>
+        <app-captioned-radio #localDateTimeTimezoneModeControl id="localDateTimeTimezoneModeControl" inputId="localDateTimeTimezoneModeRadio" [name]="dateTimeTimezoneModeRadioName"></app-captioned-radio>
+        <app-captioned-radio #utcDateTimeTimezoneModeControl id="utcDateTimeTimezoneModeControl" inputId="utcDateTimeTimezoneModeRadio" [name]="dateTimeTimezoneModeRadioName"></app-captioned-radio>
     </div>
     <app-caption-label #settingsProfileLabel for="settingsProfileSelect"></app-caption-label>
     <div id="settingsProfileDiv">

@@ -26,14 +26,13 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
 
     private _value: boolean;
 
-    private get value() { return this._value; }
-
-    public override get uiAction() { return super.uiAction as ButtonUiAction; }
-
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'Button' + this.instanceNumber.toString(10);
+        this.inputId = 'Button' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as ButtonUiAction; }
+    private get value() { return this._value; }
 
     ngOnInit() {
         this.setInitialiseReady();

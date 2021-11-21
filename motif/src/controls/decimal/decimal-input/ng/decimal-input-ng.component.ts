@@ -37,7 +37,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'DecimalInput' + this.instanceNumber.toString(10);
+        this.inputId = 'DecimalInput' + this.componentInstanceId;
     }
 
     ngOnInit() {

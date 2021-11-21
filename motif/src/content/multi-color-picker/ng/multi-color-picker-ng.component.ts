@@ -5,6 +5,7 @@ import { ColorPickerProps, ColorPickerState, IroColorPicker } from '@jaames/iro/
 import { ColorScheme } from 'src/core/internal-api';
 import { compareInteger, Integer, RGB } from 'src/sys/internal-api';
 import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-error';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-multi-color-picker',
@@ -12,11 +13,9 @@ import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-erro
     styleUrls: ['./multi-color-picker-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class MultiColorPickerNgComponent {
+export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective {
     activeChangedEventer: MultiColorPickerNgComponent.ActiveChangedEventer;
     inputChangeEventer: MultiColorPickerNgComponent.InputChangeEventer;
-
-    get approximateWidth() { return this._colorPicker.el.offsetWidth; }
 
     private _hostElement: HTMLElement;
     private _pickerType = MultiColorPickerNgComponent.PickerTypeId.HueSaturation;
@@ -37,6 +36,15 @@ export class MultiColorPickerNgComponent {
         }
     ];
 
+    constructor(elRef: ElementRef) {
+        super();
+
+        this._hostElement = elRef.nativeElement;
+        this._colorPicker = this.createColorPicker();
+    }
+
+    get approximateWidth() { return this._colorPicker.el.offsetWidth; }
+
     get pickerType() { return this._pickerType; }
     set pickerType(value: MultiColorPickerNgComponent.PickerTypeId) {
         this._pickerType = value;
@@ -45,11 +53,6 @@ export class MultiColorPickerNgComponent {
             layout,
         };
         this._colorPicker.setOptions(options);
-    }
-
-    constructor(elRef: ElementRef) {
-        this._hostElement = elRef.nativeElement;
-        this._colorPicker = this.createColorPicker();
     }
 
     requestActive(bkgdForeId: ColorScheme.BkgdForeId) {

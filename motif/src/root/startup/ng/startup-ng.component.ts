@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { SessionState, SessionStateId } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
@@ -19,7 +20,7 @@ import { SessionService } from '../../session-service';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StartupNgComponent implements OnInit, OnDestroy {
+export class StartupNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
     public logTextAreaDisplayed = false;
     public log = 'Startup Log';
 
@@ -34,6 +35,8 @@ export class StartupNgComponent implements OnInit, OnDestroy {
         configNgService: ConfigNgService,
         private _sessionService: SessionNgService,
     ) {
+        super();
+
         this._session = this._sessionService.session;
 
         const config = configNgService.config;

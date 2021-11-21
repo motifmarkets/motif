@@ -11,9 +11,9 @@
 </div>
 <app-caption-label #sideLabel></app-caption-label>
 <div id="sideDiv" class="horizontalChildrenSeparator">
-    <app-captioned-radio #buySideRadio inputId="buySideRadio" name="side"></app-captioned-radio>
-    <app-captioned-radio #sellSideRadio inputId="sellSideRadio" name="side"></app-captioned-radio>
-    <app-captioned-radio #shortSellSideRadio inputId="shortSellSideRadio" name="side"></app-captioned-radio>
+    <app-captioned-radio #buySideRadio inputId="buySideRadio" [name]="sideRadioName"></app-captioned-radio>
+    <app-captioned-radio #sellSideRadio inputId="sellSideRadio" [name]="sideRadioName"></app-captioned-radio>
+    <app-captioned-radio #shortSellSideRadio inputId="shortSellSideRadio" [name]="sideRadioName"></app-captioned-radio>
 </div>
 <app-caption-label #symbolLabel for="symbolInput"></app-caption-label>
 <div id="symbolDiv">
@@ -32,8 +32,8 @@
 <app-caption-label #orderTypeLabel for="orderTypeInput"></app-caption-label>
 <div id="orderTypeDiv">
     <div id="orderTypeRadioDiv">
-        <app-captioned-radio #limitOrderTypeRadio inputId="limitOrderTypeRadio" name="orderType"></app-captioned-radio>
-        <app-captioned-radio #marketOrderTypeRadio inputId="marketOrderTypeRadio" name="orderType"></app-captioned-radio>
+        <app-captioned-radio #limitOrderTypeRadio inputId="limitOrderTypeRadio" [name]="orderTypeRadioName"></app-captioned-radio>
+        <app-captioned-radio #marketOrderTypeRadio inputId="marketOrderTypeRadio" [name]="orderTypeRadioName"></app-captioned-radio>
     </div>
     <app-enum-input #orderTypeInput id="orderTypeControl" inputId="orderTypeInput"></app-enum-input>
 </div>
@@ -45,15 +45,15 @@
 <app-caption-label #timeInForceLabel></app-caption-label>
 <div id="timeInForceDiv">
     <div id="timeInForceRow1Div" class="horizontalRadioSeparator">
-        <app-captioned-radio #untilCancelRadio inputId="untilCancelRadio" name="timeInForce"></app-captioned-radio>
-        <app-captioned-radio #fillAndKillRadio inputId="fillAndKillRadio" name="timeInForce"></app-captioned-radio>
+        <app-captioned-radio #untilCancelRadio inputId="untilCancelRadio" [name]="timeInForceRadioName"></app-captioned-radio>
+        <app-captioned-radio #fillAndKillRadio inputId="fillAndKillRadio" [name]="timeInForceRadioName"></app-captioned-radio>
     </div>
     <div id="timeInForceRow2Div" class="horizontalRadioSeparator">
-        <app-captioned-radio #fillOrKillRadio inputId="fillOrKillRadio" name="timeInForce"></app-captioned-radio>
-        <app-captioned-radio #dayRadio inputId="dayRadio" name="timeInForce"></app-captioned-radio>
+        <app-captioned-radio #fillOrKillRadio inputId="fillOrKillRadio" [name]="timeInForceRadioName"></app-captioned-radio>
+        <app-captioned-radio #dayRadio inputId="dayRadio" [name]="timeInForceRadioName"></app-captioned-radio>
     </div>
     <div id="timeInForceRow3Div" class="horizontalChildrenSeparator">
-        <app-captioned-radio #untilDateRadio inputId="untilDateRadio" name="timeInForce"></app-captioned-radio>
+        <app-captioned-radio #untilDateRadio inputId="untilDateRadio" [name]="timeInForceRadioName"></app-captioned-radio>
         <app-date-input #expiryDateInput></app-date-input>
     </div>
 </div>
@@ -61,8 +61,8 @@
 <div id="triggerDiv">
     <div id="triggerTypeDiv">
         <div id="triggerTypeRadioDiv" class="horizontalRadioSeparator">
-            <app-captioned-radio #immediateTriggerTypeRadio inputId="immediateTriggerTypeRadio" name="triggerType"></app-captioned-radio>
-            <app-captioned-radio #priceTriggerTypeRadio inputId="priceTriggerTypeRadio" name="triggerType"></app-captioned-radio>
+            <app-captioned-radio #immediateTriggerTypeRadio inputId="immediateTriggerTypeRadio" [name]="triggerTypeRadioName"></app-captioned-radio>
+            <app-captioned-radio #priceTriggerTypeRadio inputId="priceTriggerTypeRadio" [name]="triggerTypeRadioName"></app-captioned-radio>
         </div>
         <!-- <app-enum-input #triggerTypeInput id="triggerTypeControl" inputId="triggerTypeInput"></app-enum-input> -->
     </div>
@@ -73,12 +73,12 @@
         </div>
         <!-- <app-enum-input #triggerFieldSelect id="triggerFieldControl" inputId="triggerFieldSelect"></app-enum-input> -->
         <div id="triggerFieldMovementDiv">
-            <app-captioned-radio #lastTriggerFieldRadio inputId="lastTriggerFieldRadio" name="triggerField"></app-captioned-radio>
-            <app-captioned-radio #bestBidTriggerFieldRadio inputId="bestBidTriggerFieldRadio" name="triggerField"></app-captioned-radio>
-            <app-captioned-radio #bestAskTriggerFieldRadio inputId="bestAskTriggerFieldRadio" name="triggerField"></app-captioned-radio>
-            <app-captioned-radio #noneTriggerMovementRadio inputId="noneTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
-            <app-captioned-radio #upTriggerMovementRadio inputId="upTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
-            <app-captioned-radio #downTriggerMovementRadio inputId="downTriggerMovementRadio" name="triggerMovement"></app-captioned-radio>
+            <app-captioned-radio #lastTriggerFieldRadio inputId="lastTriggerFieldRadio" [name]="triggerFieldRadioName"></app-captioned-radio>
+            <app-captioned-radio #bestBidTriggerFieldRadio inputId="bestBidTriggerFieldRadio" [name]="triggerFieldRadioName"></app-captioned-radio>
+            <app-captioned-radio #bestAskTriggerFieldRadio inputId="bestAskTriggerFieldRadio" [name]="triggerFieldRadioName"></app-captioned-radio>
+            <app-captioned-radio #noneTriggerMovementRadio inputId="noneTriggerMovementRadio" [name]="triggerMovementRadioName"></app-captioned-radio>
+            <app-captioned-radio #upTriggerMovementRadio inputId="upTriggerMovementRadio" [name]="triggerMovementRadioName"></app-captioned-radio>
+            <app-captioned-radio #downTriggerMovementRadio inputId="downTriggerMovementRadio" [name]="triggerMovementRadioName"></app-captioned-radio>
         </div>
     </div>
 </div>

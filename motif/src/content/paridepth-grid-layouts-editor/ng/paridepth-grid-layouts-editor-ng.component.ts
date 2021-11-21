@@ -27,6 +27,7 @@ import { StringId } from 'src/res/internal-api';
 import { assert, delay1Tick, UnreachableCaseError } from 'src/sys/internal-api';
 import { DepthFrame } from '../../depth/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-paridepth-grid-layouts-editor',
@@ -35,7 +36,7 @@ import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ParidepthGridLayoutsEditorNgComponent implements AfterViewInit, OnDestroy {
+export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('bidDepthButton', { static: true }) private _bidDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('askDepthButton', { static: true }) private _askDepthButtonComponent: ButtonInputNgComponent;
@@ -60,6 +61,8 @@ export class ParidepthGridLayoutsEditorNgComponent implements AfterViewInit, OnD
     private _closeReject: (reason: unknown) => void;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
 
         this._bidDepthUiAction = this.createBidDepthUiAction();

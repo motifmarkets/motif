@@ -10,6 +10,7 @@ import { MotifGrid } from 'src/content/internal-api';
 import { Badness, Integer, numberToPixels } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { DepthSideNgComponent } from '../../depth-side/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { DepthFrame } from '../depth-frame';
 
@@ -20,7 +21,7 @@ import { DepthFrame } from '../depth-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepthNgComponent implements OnDestroy, AfterViewInit, DepthFrame.ComponentAccess {
+export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, DepthFrame.ComponentAccess {
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(SplitComponent) private _split: SplitComponent;
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
@@ -41,20 +42,22 @@ export class DepthNgComponent implements OnDestroy, AfterViewInit, DepthFrame.Co
     public askWidthPercent = 50;
     public splitterGutterSize = 3;
 
-    private _frame: DepthFrame;
-
-    public get frame(): DepthFrame { return this._frame; }
+    private readonly _frame: DepthFrame;
 
     constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        super();
+
         this._frame = contentService.createDepthFrame(this);
     }
 
+    public get frame(): DepthFrame { return this._frame; }
+
     ngOnDestroy() {
-        this.frame.finalise();
+        this._frame.finalise();
     }
 
     ngAfterViewInit() {
-        this.frame.bindChildFrames(this._bidComponent.frame, this._askComponent.frame);
+        this._frame.bindChildFrames(this._bidComponent.frame, this._askComponent.frame);
     }
 
     // Component Access Methods

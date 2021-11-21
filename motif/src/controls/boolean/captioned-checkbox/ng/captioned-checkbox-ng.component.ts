@@ -38,10 +38,6 @@ export class CaptionedCheckboxNgComponent
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() {
-        return super.uiAction as BooleanUiAction;
-    }
-
     constructor(
         private _renderer: Renderer2,
         cdr: ChangeDetectorRef,
@@ -52,8 +48,10 @@ export class CaptionedCheckboxNgComponent
             settingsNgService.settingsService,
             ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
         );
-        this.inputId = 'CaptionedCheckbox' + this.instanceNumber.toString(10);
+        this.inputId = 'CaptionedCheckbox' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as BooleanUiAction; }
 
     ngOnInit() {
         this.setInitialiseReady();

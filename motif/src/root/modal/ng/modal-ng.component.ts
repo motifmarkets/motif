@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ModalNgService } from '../../ng/modal-ng.service';
 
 
@@ -15,11 +16,12 @@ import { ModalNgService } from '../../ng/modal-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ModalNgComponent implements OnInit, OnDestroy {
+export class ModalNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
     @Input() id: string;
     // private element: any;
 
     constructor(private modalService: ModalNgService, private el: ElementRef) {
+        super();
         // this.element = el.nativeElement;
     }
 

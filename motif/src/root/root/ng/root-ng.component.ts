@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDe
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import { SettingsNgService, UserAlertNgService } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ColorScheme, CoreSettings, SessionStateId, SettingsService } from 'src/core/internal-api';
 import { OverlayOriginNgComponent } from 'src/overlay/ng-api';
 import { delay1Tick, MultiEvent, UserAlertService } from 'src/sys/internal-api';
@@ -22,7 +23,7 @@ import { UserAlertNgComponent } from '../../user-alert/ng-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RootNgComponent implements OnInit, OnDestroy {
+export class RootNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
 
     @ViewChild('userAlert', { static: true }) private _userAlertComponent: UserAlertNgComponent;
     @ViewChild('overlayOrigin', { static: true }) private _overlayOriginComponent: OverlayOriginNgComponent;
@@ -49,6 +50,8 @@ export class RootNgComponent implements OnInit, OnDestroy {
         settingsNgService: SettingsNgService,
         userAlertNgService: UserAlertNgService,
     ) {
+        super();
+
         this._session = this._sessionService.session;
         this._sessionStateChangeSubscriptionId =
             this._session.subscribeStateChangeEvent((stateId) => this.handleSessionStateChangeEvent(stateId));

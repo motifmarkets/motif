@@ -7,10 +7,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { RevRecordFieldIndex, RevRecordIndex, RevRecordValueRecentChangeTypeId } from 'revgrid';
 import { GridLayout, MotifGrid } from 'src/content/internal-api';
-import { MotifGridNgComponent } from 'src/content/ng-api';
 import { EnumUiAction, GridLayoutChange, GridLayoutRecordStore } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
+import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-grid-layout-editor-grid',
@@ -19,7 +20,7 @@ import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/inte
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorGridNgComponent implements AfterViewInit {
+export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
     recordFocusEventer: GridLayoutEditorGridNgComponent.RecordFocusEventer;
@@ -34,6 +35,12 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
 
     private _columnFilterId: GridLayoutEditorGridNgComponent.ColumnFilterId = GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll;
 
+    constructor() {
+        super();
+
+        this._recordStore = new GridLayoutRecordStore();
+    }
+
     get gridLayout() { return this._recordStore.getLayout(); }
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
@@ -41,10 +48,6 @@ export class GridLayoutEditorGridNgComponent implements AfterViewInit {
     public set columnFilterId(value: GridLayoutEditorGridNgComponent.ColumnFilterId) {
         this._columnFilterId = value;
         this.applyColumnFilter();
-    }
-
-    constructor() {
-        this._recordStore = new GridLayoutRecordStore();
     }
 
     ngAfterViewInit() {

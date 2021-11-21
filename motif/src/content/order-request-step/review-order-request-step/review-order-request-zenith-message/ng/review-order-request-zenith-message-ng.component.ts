@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/c
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
 import { MultiEvent } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-review-order-zenith-message-definition',
@@ -15,7 +16,7 @@ import { MultiEvent } from 'src/sys/internal-api';
     styleUrls: ['./review-order-request-zenith-message-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ReviewOrderRequestZenithMessageNgComponent implements OnDestroy {
+export class ReviewOrderRequestZenithMessageNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     @Input() zenithMessageTitle = '';
     @Input() zenithMessageText = '';
 
@@ -27,6 +28,8 @@ export class ReviewOrderRequestZenithMessageNgComponent implements OnDestroy {
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private readonly _settingsNgService: SettingsNgService) {
+        super();
+
         this._settingsService = this._settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
 

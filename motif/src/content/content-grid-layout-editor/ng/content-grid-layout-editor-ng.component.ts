@@ -16,6 +16,7 @@ import { CommandRegisterService, IconButtonUiAction, InternalCommand } from 'src
 import { StringId } from 'src/res/internal-api';
 import { assert, delay1Tick } from 'src/sys/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-content-grid-layout-editor',
@@ -24,7 +25,7 @@ import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContentGridLayoutEditorNgComponent implements AfterViewInit, OnDestroy {
+export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
@@ -43,6 +44,8 @@ export class ContentGridLayoutEditorNgComponent implements AfterViewInit, OnDest
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
     ) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();

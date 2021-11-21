@@ -25,11 +25,11 @@
         <fieldset id=showFieldset>
             <legend>{{showLegend}}</legend>
             <div id="showDivRadio">
-                <app-radio-input #showAllRadio inputId="showAllRadio" name="show"></app-radio-input>
+                <app-radio-input #showAllRadio inputId="showAllRadio" [name]="showRadioName"></app-radio-input>
                 <app-enum-element-caption #showAllLabel for="showAllRadio"></app-enum-element-caption>
-                <app-radio-input #showVisibleRadio inputId="showVisibleRadio" name="show"></app-radio-input>
+                <app-radio-input #showVisibleRadio inputId="showVisibleRadio" [name]="showRadioName"></app-radio-input>
                 <app-enum-element-caption #showVisibleLabel for="showVisibleRadio"></app-enum-element-caption>
-                <app-radio-input #showHiddenRadio inputId="showHiddenRadio" name="show"></app-radio-input>
+                <app-radio-input #showHiddenRadio inputId="showHiddenRadio" [name]="showRadioName"></app-radio-input>
                 <app-enum-element-caption #showHiddenLabel for="showHiddenRadio"></app-enum-element-caption>
             </div>
         </fieldset>

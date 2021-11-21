@@ -49,8 +49,6 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
     private readonly _orderIdUiAction: StringUiAction;
     private readonly _errorsUiAction: StringUiAction;
 
-    get frame() { return this._frame; }
-
     constructor(cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         private _contentService: ContentNgService
@@ -70,6 +68,8 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
 
         this.applySettings();
     }
+
+    get frame() { return this._frame; }
 
     ngOnDestroy() {
         this.finalise();

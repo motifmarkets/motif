@@ -125,38 +125,52 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     @ViewChild('errorsInput', { static: true }) private _errorsInputComponent: TextInputNgComponent;
     // @ViewChild('noErrorsLabel', { static: true }) private _noErrorsLabelComponent: LabelComponent;
 
+    public readonly sideRadioName: string;
+    public readonly orderTypeRadioName: string;
+    public readonly timeInForceRadioName: string;
+    public readonly triggerTypeRadioName: string;
+    public readonly triggerFieldRadioName: string;
+    public readonly triggerMovementRadioName: string;
+
     public priceTriggerTypeVisible = false;
     public existingOrderVisible = false;
     public destinationAccountVisible = false;
 
-    private _frame: PadOrderRequestStepFrame;
-    private _settingsService: SettingsService;
-    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private readonly _frame: PadOrderRequestStepFrame;
+    private readonly _settingsService: SettingsService;
+    private readonly _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _accountGroupUiAction: BrokerageAccountGroupUiAction;
-    private _sideUiAction: ExplicitElementsEnumUiAction;
-    private _symbolUiAction: RoutedIvemIdUiAction;
-    private _routeUiAction: OrderRouteUiAction;
-    private _totalQuantityUiAction: IntegerUiAction;
-    private _orderTypeUiAction: ExplicitElementsEnumUiAction;
-    private _limitValueUiAction: DecimalUiAction;
-    private _limitUnitUiAction: ExplicitElementsEnumUiAction;
-    private _triggerTypeUiAction: ExplicitElementsEnumUiAction;
-    private _triggerValueUiAction: DecimalUiAction;
-    private _triggerFieldUiAction: ExplicitElementsEnumUiAction;
-    private _triggerMovementUiAction: ExplicitElementsEnumUiAction;
-    private _timeInForceUiAction: ExplicitElementsEnumUiAction;
-    private _expiryDateUiAction: DateUiAction;
-    private _existingOrderIdUiAction: StringUiAction;
-    private _destinationAccountGroupUiAction: BrokerageAccountGroupUiAction;
-    private _errorCountUiAction: IntegerUiAction;
-    private _errorsUiAction: StringUiAction;
+    private readonly _accountGroupUiAction: BrokerageAccountGroupUiAction;
+    private readonly _sideUiAction: ExplicitElementsEnumUiAction;
+    private readonly _symbolUiAction: RoutedIvemIdUiAction;
+    private readonly _routeUiAction: OrderRouteUiAction;
+    private readonly _totalQuantityUiAction: IntegerUiAction;
+    private readonly _orderTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _limitValueUiAction: DecimalUiAction;
+    private readonly _limitUnitUiAction: ExplicitElementsEnumUiAction;
+    private readonly _triggerTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _triggerValueUiAction: DecimalUiAction;
+    private readonly _triggerFieldUiAction: ExplicitElementsEnumUiAction;
+    private readonly _triggerMovementUiAction: ExplicitElementsEnumUiAction;
+    private readonly _timeInForceUiAction: ExplicitElementsEnumUiAction;
+    private readonly _expiryDateUiAction: DateUiAction;
+    private readonly _existingOrderIdUiAction: StringUiAction;
+    private readonly _destinationAccountGroupUiAction: BrokerageAccountGroupUiAction;
+    private readonly _errorCountUiAction: IntegerUiAction;
+    private readonly _errorsUiAction: StringUiAction;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
         super(cdr);
 
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
+
+        this.sideRadioName = this.generateInstancedRadioName('side');
+        this.orderTypeRadioName = this.generateInstancedRadioName('orderType');
+        this.timeInForceRadioName = this.generateInstancedRadioName('timeInForce');
+        this.triggerTypeRadioName = this.generateInstancedRadioName('triggerType');
+        this.triggerFieldRadioName = this.generateInstancedRadioName('triggerField');
+        this.triggerMovementRadioName = this.generateInstancedRadioName('triggerMovement');
 
         this._frame = contentNgService.createPadOrderRequestStepFrame(this);
 
@@ -200,6 +214,8 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this.initialiseUiFieldErrorState(OrderPad.FieldId.DestinationAccount, this._destinationAccountGroupUiAction);
     }
 
+    get frame() { return this._frame; }
+
     ngOnDestroy() {
         this.finalise();
     }
@@ -207,8 +223,6 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     ngAfterViewInit() {
         delay1Tick(() => this.initialiseComponents());
     }
-
-    get frame() { return this._frame; }
 
     orderPadSet() {
         switch (this.frame.orderPad.requestTypeId) {

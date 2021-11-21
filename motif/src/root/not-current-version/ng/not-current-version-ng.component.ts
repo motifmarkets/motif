@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { nanoid } from 'nanoid';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { Version } from 'src/generated/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import { ConfigNgService } from '../../ng/config-ng.service';
@@ -16,7 +17,7 @@ import { ConfigNgService } from '../../ng/config-ng.service';
     styleUrls: ['./not-current-version-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NotCurrentVersionNgComponent {
+export class NotCurrentVersionNgComponent extends ComponentBaseNgDirective {
     public notRunningCurrentVersionText = Strings[StringId.NotCurrentVersion_NotRunningCurrentVersion];
     public currentCaption = Strings[StringId.NotCurrentVersion_CurrentCaption];
     public currentVersion: string;
@@ -27,6 +28,7 @@ export class NotCurrentVersionNgComponent {
     public moreInfo = Strings[StringId.NotCurrentVersion_MoreInfo];
 
     constructor(configNgService: ConfigNgService) {
+        super();
         this.currentVersion = configNgService.version;
     }
 

@@ -8,6 +8,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostBindi
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
 import { MultiEvent } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/internal-api';
 
 @Component({
@@ -16,7 +17,7 @@ import { ExtensionInfo } from '../../extension/internal-api';
     styleUrls: ['./extensions-sidebar-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionsSidebarNgComponent implements OnDestroy {
+export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     @HostBinding('style.background-color') bkgdColor: string;
 
     @Output() infoFocusEmitter = new EventEmitter<ExtensionInfo>();
@@ -29,16 +30,18 @@ export class ExtensionsSidebarNgComponent implements OnDestroy {
     private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    get width() {
-        const domRect = (this._elRef.nativeElement as HTMLElement).getBoundingClientRect();
-        return Math.round(domRect.width);
-    }
-
     constructor(private readonly _elRef: ElementRef, settingsNgService: SettingsNgService) {
+        super();
+
         this._settingsService = settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
         this.applySettings();
+    }
+
+    get width() {
+        const domRect = (this._elRef.nativeElement as HTMLElement).getBoundingClientRect();
+        return Math.round(domRect.width);
     }
 
     ngOnDestroy() {

@@ -17,6 +17,7 @@ import {
 import { SessionInfoNgService } from 'src/component-services/ng-api';
 import { AssertInternalError, Badness } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { ZenithStatusFrame } from '../zenith-status-frame';
 
@@ -26,7 +27,9 @@ import { ZenithStatusFrame } from '../zenith-status-frame';
     styleUrls: ['./zenith-status-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ZenithStatusNgComponent implements ZenithStatusFrame.ComponentAccess, OnInit, OnDestroy {
+export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
+    implements ZenithStatusFrame.ComponentAccess, OnInit, OnDestroy {
+
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     public endpoint: string;
@@ -63,9 +66,11 @@ export class ZenithStatusNgComponent implements ZenithStatusFrame.ComponentAcces
     public softwareVersion: string;
     public protocolVersion: string;
 
-    private _frame: ZenithStatusFrame;
+    private readonly _frame: ZenithStatusFrame;
 
     constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
+        super();
+
         this._frame = contentService.createZenithStatusFrame(this, sessionInfoNgService.service.zenithEndpoint);
     }
 

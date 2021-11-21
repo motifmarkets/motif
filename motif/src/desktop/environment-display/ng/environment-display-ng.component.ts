@@ -14,6 +14,7 @@ import {
 import { ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo } from 'src/adi/internal-api';
 import { SessionInfoService } from 'src/component-services/internal-api';
 import { SessionInfoNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ColorScheme, ColorSettings, SessionState, SessionStateId } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { MultiEvent, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
@@ -24,7 +25,7 @@ import { MultiEvent, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/i
     styleUrls: ['./environment-display-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EnvironmentDisplayNgComponent implements OnDestroy, AfterViewInit {
+export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     public showEnvironmentText = true;
     public environmentText = '?';
     public environmentBkgdColor = 'yellow';
@@ -41,6 +42,8 @@ export class EnvironmentDisplayNgComponent implements OnDestroy, AfterViewInit {
         settingsNgService: SettingsNgService,
         sessionInfoNgService: SessionInfoNgService
     ) {
+        super();
+
         this._colorSettings = settingsNgService.settingsService.color;
 
         this._sessionInfoService = sessionInfoNgService.service;

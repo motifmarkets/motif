@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
     selector: 'app-layout',
@@ -13,9 +14,11 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class LayoutNgComponent implements OnInit {
+export class LayoutNgComponent extends ComponentBaseNgDirective implements OnInit {
 
-    constructor() { }
+    constructor() {
+        super();
+    }
 
     ngOnInit() {
     }

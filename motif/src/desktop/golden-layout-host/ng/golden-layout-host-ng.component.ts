@@ -25,6 +25,7 @@ import {
     VirtualLayout
 } from 'golden-layout';
 import { SessionInfoNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ExtensionId } from 'src/content/internal-api';
 import { ExtensionsAccessNgService } from 'src/content/ng-api';
 import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
@@ -62,7 +63,7 @@ import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostFrame.ComponentAccess {
+export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implements OnDestroy, GoldenLayoutHostFrame.ComponentAccess {
     @ViewChild('componentsViewContainer', { read: ViewContainerRef, static: true }) private _componentsViewContainerRef: ViewContainerRef;
 
     private readonly _frame: GoldenLayoutHostFrame;
@@ -78,8 +79,6 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _componentsParentBoundingClientRect: DOMRect = new DOMRect();
 
-    get frame() { return this._frame; }
-
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         private readonly _elRef: ElementRef<HTMLElement>,
@@ -90,6 +89,8 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
     ) {
+        super();
+
         this._componentsParentHtmlElement = this._elRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
@@ -110,6 +111,8 @@ export class GoldenLayoutHostNgComponent implements OnDestroy, GoldenLayoutHostF
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
+
+    get frame() { return this._frame; }
 
     @HostListener('window:resize', ['$event']) onResize(event: UIEvent) {
         const { left: layoutLeft, top: layoutTop} = getElementDocumentPosition(this._elRef.nativeElement);

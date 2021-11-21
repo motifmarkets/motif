@@ -42,6 +42,7 @@ import {
 } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick, EnumInfoOutOfOrderError, HtmlTypes, MultiEvent, RGB, UnreachableCaseError } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 
 @Component({
@@ -51,7 +52,7 @@ import { delay1Tick, EnumInfoOutOfOrderError, HtmlTypes, MultiEvent, RGB, Unreac
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorControlsNgComponent implements AfterViewInit, OnDestroy {
+export class ColorControlsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @HostBinding('style.flex-direction') public flexDirection: string;
 
     @ViewChild('hideInPickerControl', { static: true }) private _hideInPickerControl: CaptionedCheckboxNgComponent;
@@ -120,6 +121,37 @@ export class ColorControlsNgComponent implements AfterViewInit, OnDestroy {
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
+    constructor(private _cdr: ChangeDetectorRef,
+        commandRegisterNgService: CommandRegisterNgService,
+        settingsNgService: SettingsNgService
+    ) {
+        super();
+
+        this._commandRegisterService = commandRegisterNgService.service;
+        this._settingsService = settingsNgService.settingsService;
+        this._colorSettings = settingsNgService.settingsService.color;
+
+        this._hideInPickerUiAction = this.createHideInPickerUiAction();
+        this._itemColorTypeUiAction = this.createItemColorTypeUiAction();
+        this._lightenUiAction = this.createLightenUiAction();
+        this._darkenUiAction = this.createDarkenUiAction();
+        this._brightenUiAction = this.createBrightenUiAction();
+        this._complementUiAction = this.createComplementUiAction();
+        this._saturateUiAction = this.createSaturateUiAction();
+        this._desaturateUiAction = this.createDesaturateUiAction();
+        this._spinUiAction = this.createSpinUiAction();
+        this._copyUiAction = this.createCopyUiAction();
+        this._hexUiAction = this.createHexUiAction();
+        this._redUiAction = this.createRedUiAction();
+        this._greenUiAction = this.createGreenUiAction();
+        this._blueUiAction = this.createBlueUiAction();
+        this._hueUiAction = this.createHueUiAction();
+        this._saturationUiAction = this.createSaturationUiAction();
+        this._valueUiAction = this.createValueUiAction();
+
+        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.processSettingsChanged());
+    }
+
     get bkgdFore() { return this._bkgdForeId; }
     set bkdgFore(value: ColorScheme.BkgdForeId) {
         this._bkgdForeId = value;
@@ -135,6 +167,7 @@ export class ColorControlsNgComponent implements AfterViewInit, OnDestroy {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get position() { return this._position; }
     set position(value: ColorControlsNgComponent.Position) {
         this._position = value;
@@ -151,6 +184,7 @@ export class ColorControlsNgComponent implements AfterViewInit, OnDestroy {
         this.markForCheck();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get itemId() { return this._enabledItemId; }
     set itemId(value: ColorScheme.ItemId | undefined) {
         this._itemId = value;
@@ -213,35 +247,6 @@ export class ColorControlsNgComponent implements AfterViewInit, OnDestroy {
             this._saturationUiAction.pushAccepted();
             this._valueUiAction.pushAccepted();
         }
-    }
-
-    constructor(private _cdr: ChangeDetectorRef,
-        commandRegisterNgService: CommandRegisterNgService,
-        settingsNgService: SettingsNgService
-    ) {
-        this._commandRegisterService = commandRegisterNgService.service;
-        this._settingsService = settingsNgService.settingsService;
-        this._colorSettings = settingsNgService.settingsService.color;
-
-        this._hideInPickerUiAction = this.createHideInPickerUiAction();
-        this._itemColorTypeUiAction = this.createItemColorTypeUiAction();
-        this._lightenUiAction = this.createLightenUiAction();
-        this._darkenUiAction = this.createDarkenUiAction();
-        this._brightenUiAction = this.createBrightenUiAction();
-        this._complementUiAction = this.createComplementUiAction();
-        this._saturateUiAction = this.createSaturateUiAction();
-        this._desaturateUiAction = this.createDesaturateUiAction();
-        this._spinUiAction = this.createSpinUiAction();
-        this._copyUiAction = this.createCopyUiAction();
-        this._hexUiAction = this.createHexUiAction();
-        this._redUiAction = this.createRedUiAction();
-        this._greenUiAction = this.createGreenUiAction();
-        this._blueUiAction = this.createBlueUiAction();
-        this._hueUiAction = this.createHueUiAction();
-        this._saturationUiAction = this.createSaturationUiAction();
-        this._valueUiAction = this.createValueUiAction();
-
-        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.processSettingsChanged());
     }
 
     @HostListener('click') handleClickEvent() {

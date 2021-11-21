@@ -5,19 +5,19 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
-  selector: 'app-cash-holdings',
-  templateUrl: './cash-holdings-ng.component.html',
-  styleUrls: ['./cash-holdings-ng.component.scss'],
+    selector: 'app-cash-holdings',
+    templateUrl: './cash-holdings-ng.component.html',
+    styleUrls: ['./cash-holdings-ng.component.scss'],
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CashHoldingsNgComponent implements OnInit {
+export class CashHoldingsNgComponent extends ContentComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+    ngOnInit() {}
 }

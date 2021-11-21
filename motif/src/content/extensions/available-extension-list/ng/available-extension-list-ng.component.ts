@@ -19,6 +19,7 @@ import { ColorScheme, SettingsService } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import { Integer, ListChangeTypeId } from 'src/sys/internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';
 import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service';
@@ -30,7 +31,7 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class AvailableExtensionListNgComponent implements OnDestroy {
+export class AvailableExtensionListNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
     @HostBinding('style.border-color') borderColor: string;
@@ -47,15 +48,13 @@ export class AvailableExtensionListNgComponent implements OnDestroy {
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _uninstalledBundledListChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get infos() {
-        return this._extensionsAccessService.uninstalledBundledArray;
-    }
-
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         extensionsAccessNgService: ExtensionsAccessNgService,
         settingsNgService: SettingsNgService
     ) {
+        super();
+
         this._extensionsAccessService = extensionsAccessNgService.service;
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
@@ -73,6 +72,10 @@ export class AvailableExtensionListNgComponent implements OnDestroy {
         );
 
         this.applySettings();
+    }
+
+    public get infos() {
+        return this._extensionsAccessService.uninstalledBundledArray;
     }
 
     ngOnDestroy() {

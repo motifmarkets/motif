@@ -19,6 +19,7 @@ import { SettingsNgService } from 'src/component-services/ng-api';
 import { ColorScheme, SettingsService } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/extension-info';
 import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';
 
@@ -28,17 +29,11 @@ import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';
     styleUrls: ['./extension-list-info-item-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionListInfoItemNgComponent implements OnDestroy {
+export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     @Output() installSignalEmitter = new EventEmitter();
     @Output() focusEmitter = new EventEmitter();
 
     @HostBinding('style.color') color = '';
-
-    @Input() set info(value: ExtensionInfo) {
-        if (value !== this._info) {
-            this.setInfo(value);
-        }
-    }
 
     public isInstallable = false;
 
@@ -49,6 +44,20 @@ export class ExtensionListInfoItemNgComponent implements OnDestroy {
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _installedExtensionLoadedChangedSubscriptionId: MultiEvent.SubscriptionId;
+
+    constructor(
+        private readonly _cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService
+    ) {
+        super();
+
+        this._settingsService = settingsNgService.settingsService;
+        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
+            () => this.applySettings()
+        );
+
+        this.applySettings();
+    }
 
     public get abbreviatedPublisherTypeDisplay() {
         return ExtensionId.PublisherType.idToAbbreviatedDisplay(
@@ -71,16 +80,10 @@ export class ExtensionListInfoItemNgComponent implements OnDestroy {
         return Strings[StringId.Extensions_ExtensionInstallCaption];
     }
 
-    constructor(
-        private readonly _cdr: ChangeDetectorRef,
-        settingsNgService: SettingsNgService
-    ) {
-        this._settingsService = settingsNgService.settingsService;
-        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
-            () => this.applySettings()
-        );
-
-        this.applySettings();
+    @Input() set info(value: ExtensionInfo) {
+        if (value !== this._info) {
+            this.setInfo(value);
+        }
     }
 
     @HostListener('click', []) handleHostClick() {

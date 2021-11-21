@@ -23,7 +23,6 @@ import {
 import { ArrayUiAction } from 'src/core/array-ui-action';
 import {
     BooleanUiAction,
-    EnumArrayUiAction,
     EnumUiAction,
     ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
@@ -87,26 +86,27 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     @ViewChild('symbol_ExplicitSearchFieldsControl', { static: true })
         private _symbol_ExplicitSearchFieldsControlComponent: EnumArrayInputNgComponent;
 
+    public readonly dateTimeTimezoneModeRadioName: string;
     public restartRequired = false;
     public restartRequiredText = '';
 
-    private _masterSettings: MasterSettings;
-    private _symbolsService: SymbolsService;
+    private readonly _masterSettings: MasterSettings;
+    private readonly _symbolsService: SymbolsService;
 
-    private _fontFamilyUiAction: StringUiAction;
-    private _fontSizeUiAction: StringUiAction;
-    private _defaultExchangeUiAction: ExplicitElementsEnumUiAction;
-    private _exchangeHideModeUiAction: ExplicitElementsEnumUiAction;
-    private _defaultMarketHiddenUiAction: BooleanUiAction;
-    private _marketCodeAsLocalWheneverPossibleUiAction: BooleanUiAction;
-    private _dropDownEditableSearchTermUiAction: BooleanUiAction;
-    private _numberGroupingActiveUiAction: BooleanUiAction;
-    private _minimumPriceFractionDigitsCountUiAction: IntegerUiAction;
-    private _24HourUiAction: BooleanUiAction;
-    private _dateTimeTimezoneModeUiAction: ExplicitElementsEnumUiAction;
-    private _explicitSymbolSearchFieldsEnabledUiAction: BooleanUiAction;
-    private _explicitSymbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
-    private _settingsProfileUiAction: ExplicitElementsEnumUiAction;
+    private readonly _fontFamilyUiAction: StringUiAction;
+    private readonly _fontSizeUiAction: StringUiAction;
+    private readonly _defaultExchangeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _exchangeHideModeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _defaultMarketHiddenUiAction: BooleanUiAction;
+    private readonly _marketCodeAsLocalWheneverPossibleUiAction: BooleanUiAction;
+    private readonly _dropDownEditableSearchTermUiAction: BooleanUiAction;
+    private readonly _numberGroupingActiveUiAction: BooleanUiAction;
+    private readonly _minimumPriceFractionDigitsCountUiAction: IntegerUiAction;
+    private readonly _24HourUiAction: BooleanUiAction;
+    private readonly _dateTimeTimezoneModeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _explicitSymbolSearchFieldsEnabledUiAction: BooleanUiAction;
+    private readonly _explicitSymbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
+    private readonly _settingsProfileUiAction: ExplicitElementsEnumUiAction;
 
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -114,6 +114,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         super(cdr, settingsNgService.settingsService);
         this._masterSettings = settingsNgService.settingsService.master;
         this._symbolsService = symbolsNgService.symbolsManager;
+
+        this.dateTimeTimezoneModeRadioName = this.generateInstancedRadioName('dateTimeTimezoneMode');
 
         this._allowedExchangeIdsChangedSubscriptionId = this._symbolsService.subscribeAllowedExchangeIdsChangedEvent(
             () => this.handleAllowedExchangeIdsChangedEvent()

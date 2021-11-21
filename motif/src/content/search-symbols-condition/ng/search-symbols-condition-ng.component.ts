@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-search-symbols-condition-ng',
@@ -12,8 +13,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./search-symbols-condition-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchSymbolsConditionNgComponent implements OnInit {
-    constructor() {}
+export class SearchSymbolsConditionNgComponent extends ContentComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
     ngOnInit(): void {}
 }

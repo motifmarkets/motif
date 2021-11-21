@@ -25,7 +25,7 @@ export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementCompo
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'CaptionedEnumArrayCheckbox' + this.instanceNumber.toString(10);
+        this.inputId = 'CaptionedEnumArrayCheckbox' + this.componentInstanceId;
     }
 
     override ngOnDestroy() {

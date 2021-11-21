@@ -33,7 +33,6 @@ import {
     AllowedMarketsEnumArrayUiAction,
     ArrayUiAction,
     BooleanUiAction,
-    EnumArrayUiAction,
     EnumUiAction,
     ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
@@ -117,44 +116,43 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         gridRightAligned: false,
     };
 
+    public readonly exchangeRadioName: string;
+    public readonly indicesRadioName: string;
+
     public paginationActive = false; // hide this until implemented
 
-    private _toggleSymbolLinkingUiAction: IconButtonUiAction;
-    private _columnsUiAction: IconButtonUiAction;
+    private readonly _toggleSymbolLinkingUiAction: IconButtonUiAction;
+    private readonly _columnsUiAction: IconButtonUiAction;
 
     // Query
-    private _sourceUiAction: StringUiAction;
-    private _exchangeUiAction: AllowedExchangesEnumUiAction;
-    private _marketsUiAction: AllowedMarketsEnumArrayUiAction;
-    private _cfiUiAction: StringUiAction;
-    private _fieldsUiAction: ExplicitElementsEnumArrayUiAction;
-    private _optionsUiAction: StringUiAction;
-    private _indicesInclusionUiAction: EnumUiAction;
-    private _partialUiAction: BooleanUiAction;
-    private _preferExactUiAction: BooleanUiAction;
-    private _showFullUiAction: BooleanUiAction;
-    private _pageSizeUiAction: IntegerUiAction;
-    private _searchUiAction: StringUiAction;
-    private _queryUiAction: IconButtonUiAction;
+    private readonly _sourceUiAction: StringUiAction;
+    private readonly _exchangeUiAction: AllowedExchangesEnumUiAction;
+    private readonly _marketsUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _cfiUiAction: StringUiAction;
+    private readonly _fieldsUiAction: ExplicitElementsEnumArrayUiAction;
+    private readonly _optionsUiAction: StringUiAction;
+    private readonly _indicesInclusionUiAction: EnumUiAction;
+    private readonly _partialUiAction: BooleanUiAction;
+    private readonly _preferExactUiAction: BooleanUiAction;
+    private readonly _showFullUiAction: BooleanUiAction;
+    private readonly _pageSizeUiAction: IntegerUiAction;
+    private readonly _searchUiAction: StringUiAction;
+    private readonly _queryUiAction: IconButtonUiAction;
 
     // Description
-    private _descriptionUiAction: StringUiAction;
+    private readonly _descriptionUiAction: StringUiAction;
 
     // Top page indicator
-    private _pageUiAction: StringUiAction;
-    private _pageNumberUiAction: IntegerUiAction;
-    private _ofUiAction: StringUiAction;
-    private _pageCountUiAction: IntegerUiAction;
-    private _nextPageUiAction: BooleanUiAction;
+    private readonly _pageUiAction: StringUiAction;
+    private readonly _pageNumberUiAction: IntegerUiAction;
+    private readonly _ofUiAction: StringUiAction;
+    private readonly _pageCountUiAction: IntegerUiAction;
+    private readonly _nextPageUiAction: BooleanUiAction;
 
-    private _symbolsService: SymbolsService;
-    private _frame: SearchSymbolsDitemFrame;
+    private readonly _symbolsService: SymbolsService;
+    private readonly _frame: SearchSymbolsDitemFrame;
 
     private _modeId = SearchSymbolsDitemNgComponent.ModeId.Main;
-
-    protected get stateSchemaVersion() { return SearchSymbolsDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
 
     constructor(
         cdr: ChangeDetectorRef,
@@ -170,6 +168,9 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._symbolsService = symbolsNgService.symbolsManager;
+
+        this.exchangeRadioName = this.generateInstancedRadioName('exchange');
+        this.indicesRadioName = this.generateInstancedRadioName('indices');
 
         this._frame = new SearchSymbolsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
@@ -210,6 +211,10 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         this._pageSizeUiAction.pushValue(this._frame.queryCount);
         this._searchUiAction.pushValue(this._frame.querySearchText);
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return SearchSymbolsDitemNgComponent.stateSchemaVersion; }
 
     public ngOnInit() {
         delay1Tick(() => this.initialise());

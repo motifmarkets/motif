@@ -58,11 +58,11 @@ export namespace ApiContentComponentFactoryNgService {
     export class GenericFactoryComponentRefImplementation<T extends ContentComponentBaseNgDirective>
         extends ApiComponentFactoryServiceBaseNgDirective.FactoryComponentRefImplementation {
 
-        get componentRef() { return this._componentRef; }
-        get instance() { return this._componentRef.instance; }
-
         constructor(private readonly _componentRef: ComponentRef<T>) {
             super();
         }
+
+        get componentRef() { return this._componentRef; }
+        get instance() { return this._componentRef.instance; }
     }
 }

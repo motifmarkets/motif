@@ -17,8 +17,6 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
 
     private _filter: readonly Integer[] | undefined;
 
-    protected override get uiAction() { return super.uiAction as EnumUiAction; }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
@@ -26,6 +24,8 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
     }
+
+    protected override get uiAction() { return super.uiAction as EnumUiAction; }
 
     protected applyFilter(filter: readonly Integer[] | undefined) {
         if (filter === undefined) {

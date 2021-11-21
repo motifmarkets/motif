@@ -8,5 +8,5 @@ import { Directive } from '@angular/core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Directive()
-export abstract class ContentComponentBaseNgDirective extends ComponentBaseNgDirective {
+export abstract class OverlayComponentBaseNgDirective extends ComponentBaseNgDirective {
 }

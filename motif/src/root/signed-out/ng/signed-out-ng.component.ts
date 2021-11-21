@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
 import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ButtonInputNgComponent } from 'src/controls/ng-api';
 import { ButtonUiAction, CommandRegisterService, InternalCommand } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/internal-api';
@@ -19,7 +20,7 @@ import { StringId, Strings } from 'src/res/internal-api';
     styleUrls: ['./signed-out-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SignedOutNgComponent implements OnInit, OnDestroy {
+export class SignedOutNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
     @ViewChild('signInAgainButton', { static: true }) _signInAgainButtonComponent: ButtonInputNgComponent;
 
     public signedOutText = Strings[StringId.SignedOut];
@@ -30,6 +31,8 @@ export class SignedOutNgComponent implements OnInit, OnDestroy {
     constructor(private _router: Router,
         commandRegisterNgService: CommandRegisterNgService
     ) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
         this._signInAgainUiAction = this.createSignInAgainUiAction();
     }

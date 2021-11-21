@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-extensions-search',
@@ -12,8 +13,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./extensions-search-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionsSearchNgComponent implements OnInit {
-    constructor() {}
+export class ExtensionsSearchNgComponent extends ContentComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
     ngOnInit(): void {}
 }
