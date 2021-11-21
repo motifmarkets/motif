@@ -13,9 +13,9 @@ import { SignOutService } from '../sign-out-service';
 export class SignOutNgService {
     private readonly _service: SignOutService;
 
-    get service() { return this._service; }
-
     constructor() {
         this._service = new SignOutService();
     }
+
+    get service() { return this._service; }
 }

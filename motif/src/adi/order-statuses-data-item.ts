@@ -11,11 +11,11 @@ import { FeedSubscriptionDataItem } from './feed-subscription-data-item';
 export class OrderStatusesDataItem extends FeedSubscriptionDataItem {
     private _orderStatuses: OrderStatuses;
 
-    get orderStatuses() { return this._orderStatuses; }
-
     constructor(definition: DataDefinition) {
         super(definition, true);
     }
+
+    get orderStatuses() { return this._orderStatuses; }
 
     override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.OrderStatuses) {

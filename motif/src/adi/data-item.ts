@@ -62,6 +62,13 @@ export abstract class DataItem {
     private _correctnessChangeMultiEvent = new MultiEvent<DataItem.CorrectnessChangeEventHandler>();
     private _badnessChangeMultiEvent = new MultiEvent<DataItem.BadnessChangeEventHandler>();
 
+    constructor(definition: DataDefinition) {
+        this._definition = definition;
+        this._channelId = definition.channelId;
+
+        this._id = /* this._definition.snapshot ? invalidDataItemId :*/ DataItem.getNextDataItemId();
+    }
+
     get id() { return this._id; }
     get channelName() { return this.getChannelName(); }
     get activeRequestNr() { return this._activeRequestNr; }
@@ -83,12 +90,7 @@ export abstract class DataItem {
     get errorText() { return Badness.generateText(this._badness); }
     get deactivationDelayed(): boolean { return this._deactivationDelayed; }
 
-    constructor(definition: DataDefinition) {
-        this._definition = definition;
-        this._channelId = definition.channelId;
-
-        this._id = /* this._definition.snapshot ? invalidDataItemId :*/ DataItem.getNextDataItemId();
-    }
+    protected get beginUpdateCount(): number { return this._beginUpdateCount; }
 
     private static getNextDataItemId(): Integer {
         return this._nextDataItemId++;
@@ -260,8 +262,6 @@ export abstract class DataItem {
             }
         }
     }
-
-    protected get beginUpdateCount(): number { return this._beginUpdateCount; }
 
     protected processUsableChanged() {
         // available for override

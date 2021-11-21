@@ -121,19 +121,13 @@ export class MotifGrid extends Revgrid {
             this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 
-    override destroy(): void {
-        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-        this._settingsChangedSubscriptionId = undefined;
-        this.canvas.canvas.removeEventListener('mousemove', this._ctrlKeyMousemoveListener);
-        this._mainRecordAdapter.destroy();
-        super.destroy();
-    }
-
     get sortable(): boolean { return this.properties.sortable; }
     set sortable(value: boolean) { this.properties.sortable = value; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get columnCount(): number { return this.getActiveColumnCount(); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get continuousFiltering(): boolean { return this._mainRecordAdapter.continuousFiltering; }
     set continuousFiltering(value: boolean) {
         const oldContinuousFiltering = this._mainRecordAdapter.continuousFiltering;
@@ -147,16 +141,21 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get rowOrderReversed() { return this._mainRecordAdapter.rowOrderReversed; }
     set rowOrderReversed(value: boolean) { this._mainRecordAdapter.rowOrderReversed = value; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get fieldCount(): number { return this._fieldAdapter.fieldCount; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get fixedCols(): number { return this.getFixedColumnCount(); }
     set fixedCols(value: number) { this.setFixedColumnCount(value); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get fixedRows(): number { return this.getFixedRowCount(); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get focusedRecordIndex(): RevRecordIndex | undefined {
         const selections = this.selections;
 
@@ -188,16 +187,22 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get headerRowCount(): number {
         return this._headerRecordAdapter.getRowCount();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get isFiltered(): boolean { return this._mainRecordAdapter.isFiltered; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get sortColumns(): number { return this._mainRecordAdapter.sortColumnCount; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get gridRightAligned(): boolean { return this.properties.gridRightAligned; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get rowHeight(): number { return this.properties.defaultRowHeight; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get recordFocusEventer() { return this._recordFocusEventer; }
     set recordFocusEventer(value: MotifGrid.RecordFocusEventer | undefined) {
         if (this._recordFocusEventer !== undefined) {
@@ -210,6 +215,7 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get mainClickEventer() { return this._mainClickEventer; }
     set mainClickEventer(value: MotifGrid.MainClickEventer | undefined) {
         if (this._mainClickEventer !== undefined) {
@@ -222,6 +228,7 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get mainDblClickEventer() { return this._mainDblClickEventer; }
     set mainDblClickEventer(value: MotifGrid.MainDblClickEventer | undefined) {
         if (this._mainDblClickEventer !== undefined) {
@@ -234,6 +241,7 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get resizedEventer() { return this._resizedEventer; }
     set resizedEventer(value: MotifGrid.ResizedEventer | undefined) {
         if (this._resizedEventer !== undefined) {
@@ -246,6 +254,7 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get columnsViewWidthsChangedEventer() { return this._columnsViewWidthsChangedEventer; }
     set columnsViewWidthsChangedEventer(value: MotifGrid.ColumnsViewWidthsChangedEventer | undefined) {
         if (this._columnsViewWidthsChangedEventer !== undefined) {
@@ -258,6 +267,7 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get renderedEventer() { return this._renderedEventer; }
     set renderedEventer(value: MotifGrid.RenderedEventer | undefined) {
         if (this._renderedEventer !== undefined) {
@@ -270,9 +280,18 @@ export class MotifGrid extends Revgrid {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get rowRecIndices(): number[] {
         return [];
         // todo
+    }
+
+    override destroy(): void {
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+        this._settingsChangedSubscriptionId = undefined;
+        this.canvas.canvas.removeEventListener('mousemove', this._ctrlKeyMousemoveListener);
+        this._mainRecordAdapter.destroy();
+        super.destroy();
     }
 
     applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {

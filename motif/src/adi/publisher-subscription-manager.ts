@@ -51,13 +51,13 @@ export abstract class PublisherSubscriptionManager {
     private _offlineDeactivating = false;
     private _finalised = false;
 
-    protected get subscriptionByMessageMap() { return this._subscriptionByMessageMap; }
-
-    get subscriptionCount() { return this._subscriptionByDataItemIdMap.size; }
-
     constructor() {
         this._exerciseDataMessages = new PublisherSubscriptionManager.ExerciseDataMessageList();
     }
+
+    get subscriptionCount() { return this._subscriptionByDataItemIdMap.size; }
+
+    protected get subscriptionByMessageMap() { return this._subscriptionByMessageMap; }
 
     finalise() {
         Logger.logInfo('PublisherRequestEngine finalising');
@@ -635,8 +635,6 @@ export namespace PublisherSubscriptionManager {
         private _normalThrottleSendCount = 100;
         private _normalThrottleEarliestNextSendTime: SysTick.Time = 0;
 
-        get priority() { return this._priority; }
-
         constructor(private _priority: PublisherSubscription.RequestSendPriorityId) {
             super();
 
@@ -651,6 +649,8 @@ export namespace PublisherSubscriptionManager {
                     throw new UnreachableCaseError('FSRESQCP292929555', this.priority);
             }
         }
+
+        get priority() { return this._priority; }
 
         getReadyCount(nowTickTime: SysTick.Time) {
             if (this.batchingActive) {

@@ -54,7 +54,6 @@ export class ZenithExtConnectionDataItem extends ExtConnectionDataItem {
     private _userNotAuthorisedSubscriptionErrorCount = 0;
     private _serverWarningSubscriptionErrorCount = 0;
 
-    public get AuthStatusId(): AuthStatusId { return this._authStatusId; }
     private _authStatusId: AuthStatusId = AuthStatusId.NotAuthorised;
 
     private _publisherStateChangeMultiEvent = new MultiEvent<ZenithExtConnectionDataItem.PublisherStateChangeEventHandler>();
@@ -63,6 +62,13 @@ export class ZenithExtConnectionDataItem extends ExtConnectionDataItem {
     private _counterMultiEvent = new MultiEvent<ZenithExtConnectionDataItem.CounterEventHandler>();
     private _logMultiEvent = new MultiEvent<ZenithExtConnectionDataItem.LogEventHandler>();
     private _sessionKickedOffMultiEvent = new MultiEvent<ZenithExtConnectionDataItem.SessionKickedOffEventHandler>();
+
+    constructor(MyDataDefinition: DataDefinition) {
+        super(MyDataDefinition);
+        assert(MyDataDefinition.channelId === DataChannelId.ZenithExtConnection);
+    }
+
+    public get AuthStatusId(): AuthStatusId { return this._authStatusId; }
 
     get publisherOnline() { return this._publisherOnline; }
     get publisherOnlineChangeHistory() { return this._publisherOnlineChangeHistory; }
@@ -91,11 +97,6 @@ export class ZenithExtConnectionDataItem extends ExtConnectionDataItem {
     get dataErrorSubscriptionErrorCount() { return this._dataErrorSubscriptionErrorCount; }
     get userNotAuthorisedSubscriptionErrorCount() { return this._userNotAuthorisedSubscriptionErrorCount; }
     get serverWarningSubscriptionErrorCount() { return this._serverWarningSubscriptionErrorCount; }
-
-    constructor(MyDataDefinition: DataDefinition) {
-        super(MyDataDefinition);
-        assert(MyDataDefinition.channelId === DataChannelId.ZenithExtConnection);
-    }
 
     updateAccessToken(value: string) {
         (this._publisher as ZenithPublisher).updateAuthAccessToken(value);

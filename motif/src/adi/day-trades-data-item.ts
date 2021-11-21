@@ -53,9 +53,6 @@ export class DayTradesDataItem extends DataItem {
     private _listChangeMultiEvent = new MultiEvent<DayTradesDataItem.ListChangeEventHandler>();
     private _recordChangeMultiEvent = new MultiEvent<DayTradesDataItem.RecordChangeEventHandler>();
 
-    get records() { return this._records; }
-    get recordCount() { return this._recordCount; }
-
     constructor(dataDefinition: DataDefinition) {
         super(dataDefinition);
         const typedDefinition = this.definition as DayTradesDataDefinition;
@@ -64,6 +61,9 @@ export class DayTradesDataItem extends DataItem {
 
         this.reset();
     }
+
+    get records() { return this._records; }
+    get recordCount() { return this._recordCount; }
 
     subscribeListChangeEvent(handler: DayTradesDataItem.ListChangeEventHandler) {
         return this._listChangeMultiEvent.subscribe(handler);

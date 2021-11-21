@@ -86,6 +86,53 @@ export class Order implements BrokerageAccountDataRecord {
     private _changedMultiEvent = new MultiEvent<Order.ChangedEventHandler>();
     private _correctnessChangedMultiEvent = new MultiEvent<Order.CorrectnessChangedEventHandler>();
 
+    constructor(private readonly _account: Account,
+        change: OrdersDataMessage.AddChange,
+        private _correctnessId: CorrectnessId
+    ) {
+        this._id = change.id;
+        this._accountId = change.accountId;
+        this._externalId = change.externalId;
+        this._depthOrderId = change.depthOrderId;
+        this._marketId = change.marketId;
+        this._marketBoardId = change.marketBoardId;
+        this._currencyId = change.currencyId;
+        this._estimatedBrokerage = change.estimatedBrokerage;
+        this._currentBrokerage = change.currentBrokerage;
+        this._estimatedTax = change.estimatedTax;
+        this._currentTax = change.currentTax;
+        this._currentValue = change.currentValue;
+        this._createdDate = change.createdDate;
+        this._updatedDate = change.updatedDate;
+        this._children = change.children;
+        this._executedQuantity = change.executedQuantity;
+        if (change.averagePrice === null) {
+            this._averagePrice = undefined;
+        } else {
+            this._averagePrice = change.averagePrice;
+        }
+        this._exchangeId = change.exchangeId;
+        this._environmentId = change.environmentId;
+        this._code = change.code;
+        this._sideId = change.sideId;
+        this._brokerageSchedule = change.brokerageSchedule;
+        this._equityOrderTypeId = change.equityOrderTypeId;
+        this._limitPrice = change.limitPrice;
+        this._quantity = change.quantity;
+        this._hiddenQuantity = change.hiddenQuantity;
+        this._minimumQuantity = change.minimumQuantity;
+        this._timeInForceId = change.timeInForceId;
+        this._expiryDate = change.expiryDate;
+        this._unitTypeId = change.unitTypeId;
+        this._unitAmount = change.unitAmount;
+        this._managedFundCurrency = change.managedFundCurrency;
+        this._physicalDelivery = change.physicalDelivery;
+        this._route = change.route;
+        this._trigger = change.trigger;
+
+        this.setStatus(change.status);
+    }
+
     get account() { return this._account; }
 
     get id() { return this._id; }
@@ -170,53 +217,6 @@ export class Order implements BrokerageAccountDataRecord {
     }
     get triggerExtraParamsText() {
         return this.trigger.extraParamsText;
-    }
-
-    constructor(private readonly _account: Account,
-        change: OrdersDataMessage.AddChange,
-        private _correctnessId: CorrectnessId
-    ) {
-        this._id = change.id;
-        this._accountId = change.accountId;
-        this._externalId = change.externalId;
-        this._depthOrderId = change.depthOrderId;
-        this._marketId = change.marketId;
-        this._marketBoardId = change.marketBoardId;
-        this._currencyId = change.currencyId;
-        this._estimatedBrokerage = change.estimatedBrokerage;
-        this._currentBrokerage = change.currentBrokerage;
-        this._estimatedTax = change.estimatedTax;
-        this._currentTax = change.currentTax;
-        this._currentValue = change.currentValue;
-        this._createdDate = change.createdDate;
-        this._updatedDate = change.updatedDate;
-        this._children = change.children;
-        this._executedQuantity = change.executedQuantity;
-        if (change.averagePrice === null) {
-            this._averagePrice = undefined;
-        } else {
-            this._averagePrice = change.averagePrice;
-        }
-        this._exchangeId = change.exchangeId;
-        this._environmentId = change.environmentId;
-        this._code = change.code;
-        this._sideId = change.sideId;
-        this._brokerageSchedule = change.brokerageSchedule;
-        this._equityOrderTypeId = change.equityOrderTypeId;
-        this._limitPrice = change.limitPrice;
-        this._quantity = change.quantity;
-        this._hiddenQuantity = change.hiddenQuantity;
-        this._minimumQuantity = change.minimumQuantity;
-        this._timeInForceId = change.timeInForceId;
-        this._expiryDate = change.expiryDate;
-        this._unitTypeId = change.unitTypeId;
-        this._unitAmount = change.unitAmount;
-        this._managedFundCurrency = change.managedFundCurrency;
-        this._physicalDelivery = change.physicalDelivery;
-        this._route = change.route;
-        this._trigger = change.trigger;
-
-        this.setStatus(change.status);
     }
 
     dispose() {
@@ -1040,6 +1040,10 @@ export namespace Order {
             this._mapKey = Key.generateMapKey(orderId, accountId);
         }
 
+        get mapKey() {
+            return this._mapKey;
+        }
+
         static createNull() {
             // will not match any valid holding
             return new Key(NullId, BrokerageAccountId.nullId);
@@ -1048,10 +1052,6 @@ export namespace Order {
         saveToJson(element: JsonElement, includeEnvironment: boolean = false) {
             element.setString(Key.JsonTag_OrderId, this.orderId);
             element.setString(Key.JsonTag_AccountId, this.accountId);
-        }
-
-        get mapKey() {
-            return this._mapKey;
         }
     }
 

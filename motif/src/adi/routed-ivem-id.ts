@@ -13,6 +13,8 @@ export class RoutedIvemId {
     /*get SourceId(): TSymbolSourceId { return TMarketId.IdToSourceId(this.LitId); }
     get RootSourceId(): TSymbolSourceId { return TSymbolSourceId.IdToRoot(this.SourceId); }*/
 
+    constructor(public ivemId: IvemId, public route: OrderRoute) { }
+
     get mapKey() {
         if (this._mapKey === undefined) {
             this._mapKey = RoutedIvemId.generateMapKey(this.ivemId, this.route);
@@ -20,7 +22,9 @@ export class RoutedIvemId {
         return this._mapKey;
     }
 
-    constructor(public ivemId: IvemId, public route: OrderRoute) { }
+    get name(): string {
+        return this.ivemId.name + '@' + this.route.name;
+    }
 
     static isUndefinableEqual(left: RoutedIvemId | undefined, right: RoutedIvemId | undefined): boolean {
         if (left === undefined) {
@@ -98,10 +102,6 @@ export class RoutedIvemId {
 
     createCopy() {
         return new RoutedIvemId(this.ivemId.createCopy(), this.route.createCopy());
-    }
-
-    get name(): string {
-        return this.ivemId.name + '@' + this.route.name;
     }
 
     toJson() {

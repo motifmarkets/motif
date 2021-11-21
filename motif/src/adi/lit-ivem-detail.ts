@@ -29,12 +29,6 @@ export class LitIvemDetail {
 
     private _baseChangeEvent = new MultiEvent<LitIvemDetail.BaseChangeEventHandler>();
 
-    get key() { return this.litIvemId; }
-    get code() { return this.litIvemId.code; }
-    get marketId() { return this.litIvemId.litId; }
-    get environmentId() { return this.litIvemId.environmentId; }
-    get explicitEnvironmentId() { return this.litIvemId.explicitEnvironmentId; }
-
     // AlternateCodesFix: should be AddUpdateChange - review when AlternateCodes is moved from FullDetail to Detail
     constructor(change: SymbolsDataMessage.AddChange) {
         const litIvemId = change.litIvemId;
@@ -55,6 +49,12 @@ export class LitIvemDetail {
         const alternateCodes = change.alternateCodes;
         this.alternateCodes = alternateCodes === undefined ? {} : alternateCodes;
     }
+
+    get key() { return this.litIvemId; }
+    get code() { return this.litIvemId.code; }
+    get marketId() { return this.litIvemId.litId; }
+    get environmentId() { return this.litIvemId.environmentId; }
+    get explicitEnvironmentId() { return this.litIvemId.explicitEnvironmentId; }
 
     // AlternateCodesFix: should be AddUpdateChange - review when AlternateCodes is moved from FullDetail to Detail
     update(change: SymbolsDataMessage.UpdateChange) {

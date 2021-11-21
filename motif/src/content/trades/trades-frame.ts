@@ -31,8 +31,6 @@ export class TradesFrame extends ContentFrame {
     private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
-    get recordStore() { return this._recordStore; }
-
     constructor(
         private readonly _componentAccess: TradesFrame.ComponentAccess,
         protected readonly adi: AdiService
@@ -44,6 +42,8 @@ export class TradesFrame extends ContentFrame {
         this._recordStore.recordChangeEvent = (index) => this.handleDataStoreRecordChangeEvent(index);
         this._recordStore.allRecordsChangeEvent = () => this.handleDataStoreAllRecordsChangeEvent();
     }
+
+    get recordStore() { return this._recordStore; }
 
     override finalise() {
         if (!this.finalised) {

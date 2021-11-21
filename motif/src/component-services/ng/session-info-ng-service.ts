@@ -13,9 +13,9 @@ import { SessionInfoService } from '../session-info-service';
 export class SessionInfoNgService {
     private _service: SessionInfoService;
 
-    get service() { return this._service; }
-
     constructor() { }
+
+    get service() { return this._service; }
 
     setSessionInfo(value: SessionInfoService) {
         this._service = value;

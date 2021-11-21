@@ -25,6 +25,7 @@ export class DataItemsActivationMgr {
     get activeSubscriptionsLimit(): number { return this._activeSubscriptionsLimit; }
     set activeSubscriptionsLimit(value: number) { this.setActiveSubscriptionsLimit(value); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get cacheDataSubscriptions(): boolean { return this._cacheDataSubscriptions; }
     set cacheDataSubscriptions(value: boolean) { this.setCacheDataSubscriptions(value); }
 

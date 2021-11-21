@@ -86,16 +86,6 @@ export class DataMgr {
 
     private readonly _orphanedDataItemList = new DataMgr.OrphanedDataItemList();
 
-    get dataItemCount(): Integer {
-        return this._allDataItems.count;
-    }
-
-    get dataSubscriptionCachingEnabled() { return this._dataSubscriptionsCachingEnabled; }
-    set dataSubscriptionCachingEnabled(value: boolean) {
-        this._dataSubscriptionsCachingEnabled = value;
-        this.setActivationMgrsCacheDataSubscriptions(this._dataSubscriptionsCachingEnabled);
-    }
-
     constructor() {
         this._processInterval =
             this._nextProcessTickTime = SysTick.now() + this._processInterval;
@@ -113,6 +103,16 @@ export class DataMgr {
         }
 
         this._permanentDependsOnChannels = [];
+    }
+
+    get dataItemCount(): Integer {
+        return this._allDataItems.count;
+    }
+
+    get dataSubscriptionCachingEnabled() { return this._dataSubscriptionsCachingEnabled; }
+    set dataSubscriptionCachingEnabled(value: boolean) {
+        this._dataSubscriptionsCachingEnabled = value;
+        this.setActivationMgrsCacheDataSubscriptions(this._dataSubscriptionsCachingEnabled);
     }
 
     isPermanentSubscription(definition: DataDefinition): boolean {
@@ -631,6 +631,10 @@ export namespace DataMgr {
     export class AllDataItems {
         private _map = new Map<DataItemId, DataItem>();
 
+        get count() {
+            return this._map.size;
+        }
+
         get(id: DataItemId) {
             return this._map.get(id);
         }
@@ -645,10 +649,6 @@ export namespace DataMgr {
             } else {
                 this._map.set(dataItem.id, dataItem);
             }
-        }
-
-        get count() {
-            return this._map.size;
         }
 
         values() {

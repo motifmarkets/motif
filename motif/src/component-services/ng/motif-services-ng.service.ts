@@ -14,9 +14,9 @@ import { CoreNgService } from './core-ng.service';
 export class MotifServicesNgService {
     private _service: MotifServicesService;
 
-    get service() { return this._service; }
-
     constructor(coreNgService: CoreNgService) {
         this._service = coreNgService.motifServicesService;
     }
+
+    get service() { return this._service; }
 }

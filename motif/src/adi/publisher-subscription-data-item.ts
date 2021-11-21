@@ -50,8 +50,6 @@ export abstract class PublisherSubscriptionDataItem extends DataItem {
 
     // private _retryAlgorithmId: PublisherSubscriptionRetryAlgorithmId;
 
-    get publisherRequestSent() { return this._publisherRequestSent; }
-
     constructor(definition: DataDefinition) {
         super(definition);
         if (!(definition instanceof PublisherSubscriptionDataDefinition)) {
@@ -66,6 +64,8 @@ export abstract class PublisherSubscriptionDataItem extends DataItem {
             this._publisherSubscriptionStateBadness = this.createSubscriptionStateBadness(initialStateId);
         }
     }
+
+    get publisherRequestSent() { return this._publisherRequestSent; }
 
     override processMessage(msg: DataMessage) {
         switch (msg.typeId) {

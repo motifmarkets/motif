@@ -25,15 +25,15 @@ export class StatusSummaryFrame extends ContentFrame {
     private _serverInfoFieldValuesChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    get publisherOnline() { return this._extConnectionDataItem.publisherOnline ? Strings[StringId.Online] : Strings[StringId.Offline]; }
-    get publisherStateId() { return ZenithPublisherState.idToDisplay(this._extConnectionDataItem.publisherStateId); }
-    get serverName() { return this._serverInfoDataItem.serverName === undefined ? '' : this._serverInfoDataItem.serverName; }
-
     constructor(private _componentAccess: StatusSummaryFrame.ComponentAccess, private _adi: AdiService,
         public readonly zenithEndpoint: string
     ) {
         super();
     }
+
+    get publisherOnline() { return this._extConnectionDataItem.publisherOnline ? Strings[StringId.Online] : Strings[StringId.Offline]; }
+    get publisherStateId() { return ZenithPublisherState.idToDisplay(this._extConnectionDataItem.publisherStateId); }
+    get serverName() { return this._serverInfoDataItem.serverName === undefined ? '' : this._serverInfoDataItem.serverName; }
 
     initialise() {
         this.subscribeZenithExtConnection();

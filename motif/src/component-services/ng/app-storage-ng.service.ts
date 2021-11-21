@@ -14,9 +14,9 @@ import { CoreNgService } from './core-ng.service';
 export class AppStorageNgService {
     private _appStorage: AppStorageService;
 
-    get appStorage() { return this._appStorage; }
-
     constructor(coreNgService: CoreNgService) {
         this._appStorage = coreNgService.appStorageService;
     }
+
+    get appStorage() { return this._appStorage; }
 }

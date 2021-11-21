@@ -33,28 +33,37 @@ export class SessionInfoService {
         this.notifyStateChanged();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get kickedOff() { return this._kickedOff; }
     set kickedOff(value: boolean) {
         this._kickedOff = value;
         this.notifyKickedOffChanged();
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get serviceName() { return this._serviceName; }
     set serviceName(value: string) { this._serviceName = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get serviceDescription() { return this._serviceDescription; }
     set serviceDescription(value: string | undefined) { this._serviceDescription = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get userId() { return this._userId; }
     set userId(value: string) { this._userId = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get username() { return this._username; }
     set username(value: string) { this._username = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get userFullName() { return this._userFullName; }
     set userFullName(value: string) { this._userFullName = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get zenithEndpoint() { return this._zenithEndpoint; }
     set zenithEndpoint(value: string) { this._zenithEndpoint = value; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get bannerOverrideExchangeEnvironmentId() { return this._bannerOverrideExchangeEnvironmentId; }
     set bannerOverrideExchangeEnvironmentId(value: ExchangeEnvironmentId | undefined) { this._bannerOverrideExchangeEnvironmentId = value; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get defaultLayout() { return this._defaultLayout; }
     set defaultLayout(value: SessionInfoService.DefaultLayout) { this._defaultLayout = value; }
 

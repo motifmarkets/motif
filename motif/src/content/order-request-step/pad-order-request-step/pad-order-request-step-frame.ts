@@ -40,6 +40,21 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     private _litIvemIdSetting = false;
     private _brokerageAccountGroupSetting = false;
 
+    constructor(private _componentAccess: PadOrderRequestStepFrame.ComponentAccess, private _symbolsManager: SymbolsService) {
+        super(OrderRequestStepFrame.StepId.Pad);
+
+        for (let id = 0; id < OrderPad.Field.idCount; id++) {
+            this._fieldErrorStates[id] = {
+                padValid: false,
+                padReasonId: OrderPad.Field.StatusReasonId.Unknown,
+                uiEdited: false,
+                uiValid: false,
+                uiMissing: false,
+                uiErrorText: undefined
+            };
+        }
+    }
+
     get orderPad() { return this._orderPad; }
     get litIvemIdSetting() { return this._litIvemIdSetting; }
     get brokerageAccountGroupSetting() { return this._brokerageAccountGroupSetting; }
@@ -86,21 +101,6 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     set expiryDate(value: Date | undefined) { this._orderPad.expiryDate = value; }
     set existingOrderId(value: OrderId | undefined) { this._orderPad.existingOrderId = value; }
     set destinationAccountId(value: BrokerageAccountId | undefined) { this._orderPad.destinationAccountId = value; }
-
-    constructor(private _componentAccess: PadOrderRequestStepFrame.ComponentAccess, private _symbolsManager: SymbolsService) {
-        super(OrderRequestStepFrame.StepId.Pad);
-
-        for (let id = 0; id < OrderPad.Field.idCount; id++) {
-            this._fieldErrorStates[id] = {
-                padValid: false,
-                padReasonId: OrderPad.Field.StatusReasonId.Unknown,
-                uiEdited: false,
-                uiValid: false,
-                uiMissing: false,
-                uiErrorText: undefined
-            };
-        }
-    }
 
     override finalise() {
         this.unbindOrderPad();

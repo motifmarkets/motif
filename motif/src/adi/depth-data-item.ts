@@ -61,6 +61,9 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
 
     get depthDefinition() { return this._depthDefinition; }
 
+    get bidRecords(): DepthDataItem.Order[] { return this._bidOrders; }
+    get askRecords(): DepthDataItem.Order[] { return this._askOrders; }
+
     getOrders(sideId: BidAskSideId): DepthDataItem.Order[] {
         switch (sideId) {
             case BidAskSideId.Bid:
@@ -107,9 +110,6 @@ export class DepthDataItem extends MarketSubscriptionDataItem {
             }
         }
     }
-
-    get bidRecords(): DepthDataItem.Order[] { return this._bidOrders; }
-    get askRecords(): DepthDataItem.Order[] { return this._askOrders; }
 
     subscribeBeforeOrderRemoveEvent(sideId: BidAskSideId,
         handler: DepthDataItem.BeforeOrderRemoveEventHandler

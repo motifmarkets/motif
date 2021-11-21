@@ -59,12 +59,12 @@ export class DepthFrame extends ContentFrame {
 
     // private _nextRenderedActiveWidthResolveFtns: DepthFrame.NextRenderedActiveWidthResolveFtns = [];
 
-    get filterActive() { return this._filterActive; }
-    get filterXrefs() { return this._filterXrefs; }
-
     constructor(private _componentAccess: DepthFrame.ComponentAccess, private _adi: AdiService) {
         super();
     }
+
+    get filterActive() { return this._filterActive; }
+    get filterXrefs() { return this._filterXrefs; }
 
     initialise() {
         this._bidDepthSideFrame.setBidAskSideId(BidAskSideId.Bid);

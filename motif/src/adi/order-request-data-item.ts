@@ -21,6 +21,10 @@ export abstract class OrderRequestDataItem extends PublisherSubscriptionDataItem
     protected _order: OrdersDataMessage.AddUpdateChange | undefined;
     protected _errors: OrderRequestError[] | undefined;
 
+    constructor(MyDataDefinition: DataDefinition, private _requestTypeId: OrderRequestTypeId) {
+        super(MyDataDefinition);
+    }
+
     get requestTypeId() { return this._requestTypeId; }
     get result() { return this._result; }
     get order() { return this._order; }
@@ -29,10 +33,6 @@ export abstract class OrderRequestDataItem extends PublisherSubscriptionDataItem
     abstract get estimatedBrokerage(): Decimal | undefined;
     abstract get estimatedTax(): Decimal | undefined;
     abstract get estimatedValue(): Decimal | undefined;
-
-    constructor(MyDataDefinition: DataDefinition, private _requestTypeId: OrderRequestTypeId) {
-        super(MyDataDefinition);
-    }
 
     protected override processSubscriptionPreOnline() {
         if (this._result !== undefined) {

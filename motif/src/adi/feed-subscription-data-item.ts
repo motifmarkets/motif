@@ -19,13 +19,13 @@ export abstract class FeedSubscriptionDataItem extends FeedStatusSubscriptionDat
     private _feedCorrectnessChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _feedStatusChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    get feed() { return this._feed; } // not to be cached
-    get feeds() { return this._feedsDataItem.records; }
-    get feedsUsable() { return this._feedsDataItem.usable; }
-
     constructor(definition: DataDefinition, private readonly _useListFeedCorrectness: boolean = false) {
         super(definition);
     }
+
+    get feed() { return this._feed; } // not to be cached
+    get feeds() { return this._feedsDataItem.records; }
+    get feedsUsable() { return this._feedsDataItem.usable; }
 
     override setFeedId(value: FeedId) {
         super.setFeedId(value);

@@ -18,11 +18,11 @@ export abstract class CommandParametersComponentNgDirective {
     private _commandParameters: CommandParameters;
     private _executeUiAction: IconButtonUiAction;
 
-    get parameters() { return this._commandParameters; }
-
     constructor(private _commandRegisterService: CommandRegisterService) {
         this._executeUiAction = this.createExecuteUiAction();
     }
+
+    get parameters() { return this._commandParameters; }
 
     setContext(context: CommandContext) {
         this._commandParameters = this.createParameters(context);

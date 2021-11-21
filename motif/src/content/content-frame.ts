@@ -10,9 +10,9 @@ export class ContentFrame extends Frame {
 
     private _finalised = false;
 
-    protected get finalised() { return this._finalised; }
-
     get layoutConfigLoading() { return this._layoutConfigLoading; }
+
+    protected get finalised() { return this._finalised; }
 
     finalise() {
         this._finalised = true;

@@ -43,15 +43,14 @@ export class MarketsFrame extends ContentFrame {
     private _offlineMarketCount = 0;
     private _tradingMarketBoardCount = 0;
 
+    constructor(private _componentAccess: MarketsFrame.ComponentAccess, private _coreSettings: CoreSettings, private _adi: AdiService) {
+        super();
+    }
+
     get displayRecords() { return this._displayRecords; }
     get marketCount() { return this._marketCount; }
     get offlineMarketCount() { return this._offlineMarketCount; }
     get tradingMarketCount() { return this._tradingMarketBoardCount; }
-
-
-    constructor(private _componentAccess: MarketsFrame.ComponentAccess, private _coreSettings: CoreSettings, private _adi: AdiService) {
-        super();
-    }
 
     initialise() {
         const dataDefinition = new MarketsDataDefinition();

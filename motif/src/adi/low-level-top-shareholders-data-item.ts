@@ -10,9 +10,9 @@ import { PublisherSubscriptionDataItem } from './publisher-subscription-data-ite
 
 export class LowLevelTopShareholdersDataItem extends PublisherSubscriptionDataItem {
 
-    get topShareholders(): TopShareholder[] | undefined { return this._topShareholders; }
     private _topShareholders: TopShareholder[] | undefined;
 
+    get topShareholders(): TopShareholder[] | undefined { return this._topShareholders; }
     get count(): Integer { return (this._topShareholders) ? this._topShareholders.length : 0; }
 
     override processMessage(msg: DataMessage) {

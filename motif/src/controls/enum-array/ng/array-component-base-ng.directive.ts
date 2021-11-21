@@ -17,8 +17,6 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
 
     private _filter: readonly T[] | undefined;
 
-    protected override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
@@ -26,6 +24,8 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
     }
+
+    protected override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
 
     protected applyValue(value: readonly T[] | undefined) {
         this.markForCheck();
