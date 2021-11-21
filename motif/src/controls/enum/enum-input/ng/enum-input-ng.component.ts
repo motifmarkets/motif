@@ -40,7 +40,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         settingsNgService: SettingsNgService
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'EnumInput' + this.instanceNumber.toString(10);
+        this.inputId = 'EnumInput' + this.componentInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
             () => this.handleMeasureCanvasContextsEvent()

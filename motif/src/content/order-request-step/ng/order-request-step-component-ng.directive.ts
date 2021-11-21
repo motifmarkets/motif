@@ -5,11 +5,14 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 @Directive()
-export abstract class OrderRequestStepComponentNgDirective {
-    constructor(private _cdr: ChangeDetectorRef) { }
+export abstract class OrderRequestStepComponentNgDirective extends ContentComponentBaseNgDirective {
+    constructor(private _cdr: ChangeDetectorRef) {
+        super();
+    }
 
     abstract get frame(): OrderRequestStepFrame;
 

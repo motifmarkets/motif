@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { NgSelectOverlayNgComponent } from '../../ng-select-overlay/ng-api';
+import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base-ng.directive';
 
 @Component({
     selector: 'app-overlay-origin',
@@ -13,10 +14,12 @@ import { NgSelectOverlayNgComponent } from '../../ng-select-overlay/ng-api';
     styleUrls: ['./overlay-origin-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OverlayOriginNgComponent {
+export class OverlayOriginNgComponent extends OverlayComponentBaseNgDirective {
     @ViewChild('ngSelectOverlay', { static: true }) private _ngSelectOverlayComponent: NgSelectOverlayNgComponent;
 
-    constructor() {}
+    constructor() {
+        super();
+    }
 
     updateMeasure(fontFamily: string, fontSize: string) {
         this._ngSelectOverlayComponent.updateMeasure(fontFamily, fontSize);

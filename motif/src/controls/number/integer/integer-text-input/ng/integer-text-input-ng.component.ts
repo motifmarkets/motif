@@ -31,7 +31,7 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'IntegerInput' + this.instanceNumber.toString(10);
+        this.inputId = 'IntegerInput' + this.componentInstanceId;
     }
 
     ngOnInit() {

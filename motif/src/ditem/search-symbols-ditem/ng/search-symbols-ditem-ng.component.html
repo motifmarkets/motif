@@ -16,7 +16,7 @@
     <section id="parametersSection">
         <app-caption-label #exchangeLabel for="exchangeInput"></app-caption-label>
         <section id="exchangeSection">
-            <app-captioned-radio #defaultExchangeControl inputId="defaultExchangeRadio" name="exchange"></app-captioned-radio>
+            <app-captioned-radio #defaultExchangeControl inputId="defaultExchangeRadio" [name]="exchangeRadioName"></app-captioned-radio>
             <app-enum-input #exchangeControl inputId="exchangeInput"></app-enum-input>
         </section>
         <app-caption-label #marketsLabel for="marketsInput"></app-caption-label>
@@ -34,9 +34,9 @@
         </section>
         <app-caption-label #indicesLabel for="includeIndicesRadio"></app-caption-label>
         <section id="indicesSection">
-            <app-captioned-radio #excludeIndicesControl inputId="excludeIndicesRadio" name="indices"></app-captioned-radio>
-            <app-captioned-radio #includeIndicesControl inputId="includeIndicesRadio" name="indices"></app-captioned-radio>
-            <app-captioned-radio #onlyIndicesControl inputId="onlyIndicesRadio" name="indices"></app-captioned-radio>
+            <app-captioned-radio #excludeIndicesControl inputId="excludeIndicesRadio" [name]="indicesRadioName"></app-captioned-radio>
+            <app-captioned-radio #includeIndicesControl inputId="includeIndicesRadio" [name]="indicesRadioName"></app-captioned-radio>
+            <app-captioned-radio #onlyIndicesControl inputId="onlyIndicesRadio" [name]="indicesRadioName"></app-captioned-radio>
         </section>
         <app-caption-label #optionsLabel></app-caption-label>
         <section id="optionsSection">

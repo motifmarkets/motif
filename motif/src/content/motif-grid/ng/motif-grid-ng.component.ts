@@ -3,6 +3,7 @@ import { GridProperties, RevRecordStore } from 'revgrid';
 import { SettingsNgService } from 'src/component-services/ng-api';
 import { SettingsService } from 'src/core/internal-api';
 import { numberToPixels } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { MotifGrid } from '../motif-grid';
 import { MotifGridCellPainter } from '../motif-grid-cell-painter';
 
@@ -13,7 +14,7 @@ import { MotifGridCellPainter } from '../motif-grid-cell-painter';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class MotifGridNgComponent implements OnDestroy {
+export class MotifGridNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     destroyEventer: MotifGridNgComponent.DestroyEventer;
 
     private readonly _hostElement: HTMLElement;
@@ -33,18 +34,9 @@ export class MotifGridNgComponent implements OnDestroy {
     private _scrollbarThumbInactiveOpaqueSetTimeoutId: ReturnType<typeof setInterval> | undefined;
     private _scrollbarThumbInactiveOpaqueExtended = false;
 
-    get grid() { return this._grid; }
-    get horizontalScrollbarHeight() { return this._horizontalScrollbarWidth; }
-    get horizontalScrollbarThumbHeight() { return this._horizontalScrollbarThumbWidth; }
-    get verticalScrollbarWidth() { return this._verticalScrollbarWidth; }
-    get verticalScrollbarThumbWidth() { return this._verticalScrollbarThumbWidth; }
-    get scrollbarThumbInactiveOpacity() { return this._scrollbarThumbInactiveOpacity; }
-    get scrollbarMargin() { return this._scrollbarMargin; }
-    get gridRightAligned() { return this._gridRightAligned; }
-
-    get horizontalScrollbarMarginedHeight() { return this._horizontalScrollbarWidth + this._scrollbarMargin; }
-
     constructor(elRef: ElementRef, settingsNgService: SettingsNgService) {
+        super();
+
         this._hostElement = elRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
 
@@ -55,6 +47,17 @@ export class MotifGridNgComponent implements OnDestroy {
 
         this.applySettings();
     }
+
+    get grid() { return this._grid; }
+    get horizontalScrollbarHeight() { return this._horizontalScrollbarWidth; }
+    get horizontalScrollbarThumbHeight() { return this._horizontalScrollbarThumbWidth; }
+    get verticalScrollbarWidth() { return this._verticalScrollbarWidth; }
+    get verticalScrollbarThumbWidth() { return this._verticalScrollbarThumbWidth; }
+    get scrollbarThumbInactiveOpacity() { return this._scrollbarThumbInactiveOpacity; }
+    get scrollbarMargin() { return this._scrollbarMargin; }
+    get gridRightAligned() { return this._gridRightAligned; }
+
+    get horizontalScrollbarMarginedHeight() { return this._horizontalScrollbarWidth + this._scrollbarMargin; }
 
     ngOnDestroy() {
         if (this.destroyEventer !== undefined) {

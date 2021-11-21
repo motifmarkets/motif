@@ -7,7 +7,6 @@
 export * from './ng/adi-ng.service';
 export * from './ng/app-storage-ng.service';
 export * from './ng/command-register-ng.service';
-export * from './ng/component-base-ng.directive';
 export * from './ng/core-ng.service';
 export * from './ng/motif-services-ng.service';
 export * from './ng/session-info-ng-service';

@@ -9,6 +9,7 @@ import { MotifGrid } from 'src/content/internal-api';
 import { MotifGridNgComponent } from 'src/content/motif-grid/ng-api';
 import { Badness } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { TradesFrame } from '../trades-frame';
 
@@ -19,17 +20,23 @@ import { TradesFrame } from '../trades-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TradesNgComponent implements OnDestroy, AfterViewInit, TradesFrame.ComponentAccess {
+export class TradesNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, TradesFrame.ComponentAccess {
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
-    private _frame: TradesFrame;
+    private readonly _frame: TradesFrame;
 
     constructor(
         contentService: ContentNgService,
     ) {
+        super();
+
         this._frame = contentService.createTradesFrame(this);
     }
+
+    get frame(): TradesFrame { return this._frame; }
+    get id(): string { return this.componentInstanceId; }
+
 
     ngOnDestroy() {
         // this._onAutoAdjustColumnWidths = undefined;
@@ -46,18 +53,9 @@ export class TradesNgComponent implements OnDestroy, AfterViewInit, TradesFrame.
         this._frame.setGrid(grid);
     }
 
-    get frame(): TradesFrame { return this._frame; }
-
     // onColumnWidthChanged(columnIndex: Integer) {
     //     this._frame.adviseColumnWidthChanged(columnIndex);
     // }
-
-   // Component Access members
-
-    get id(): string {
-        return '';
-        // todo - needs to return a unique id for this component
-    }
 
     // public gridGetRenderedActiveWidth() {
     //     return this._gridAdapter.GetRenderedActiveWidth(false);

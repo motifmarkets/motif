@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, EventEmitter, Input, Output } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionId, ExtensionInfo } from '../../extension/internal-api';
 
 @Component({
@@ -13,7 +14,7 @@ import { ExtensionId, ExtensionInfo } from '../../extension/internal-api';
     styleUrls: ['./extension-list-registered-item-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionListRegisteredItemNgComponent {
+export class ExtensionListRegisteredItemNgComponent extends ContentComponentBaseNgDirective {
 
     @Output() installSignalEmitter = new EventEmitter();
     @Input() private _info: ExtensionInfo;

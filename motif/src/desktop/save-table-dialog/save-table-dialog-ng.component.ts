@@ -5,19 +5,19 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
-  selector: 'app-save-table-dialog',
-  templateUrl: './save-table-dialog-ng.component.html',
-  styleUrls: ['./save-table-dialog-ng.component.scss'],
+    selector: 'app-save-table-dialog',
+    templateUrl: './save-table-dialog-ng.component.html',
+    styleUrls: ['./save-table-dialog-ng.component.scss'],
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SaveTableDialogNgComponent implements OnInit {
+export class SaveTableDialogNgComponent extends ComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+    ngOnInit() {}
 }

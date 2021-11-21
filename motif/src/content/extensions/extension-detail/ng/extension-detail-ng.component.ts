@@ -9,6 +9,7 @@ import { SettingsNgService } from 'src/component-services/ng-api';
 import { ColorScheme, SettingsService } from 'src/core/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import { AssertInternalError, HtmlTypes, MultiEvent } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionId, ExtensionInfo, RegisteredExtension } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';
 import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service';
@@ -19,13 +20,7 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     styleUrls: ['./extension-detail-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionDetailNgComponent implements OnDestroy {
-    @Input() set info(value: ExtensionInfo) {
-        if (value !== this._info) {
-            this.setInfo(value);
-        }
-    }
-
+export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     @HostBinding('style.display') hostDisplay = HtmlTypes.Display.None;
 
     public isInstallable = false;
@@ -50,17 +45,12 @@ export class ExtensionDetailNgComponent implements OnDestroy {
 
     private _installedExtensionLoadedChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    public get name() { return this._info.name; }
-    public get publisherTypeDisplay() { return ExtensionId.PublisherType.idToDisplay(this._info.publisherTypeId); }
-    public get publisherName() { return this._info.publisherName; }
-    public get version() { return this._info.version; }
-    public get shortDescription() { return this._info.shortDescription; }
-    public get longDescription() { return this._info.longDescription; }
-
     constructor(private readonly _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         extensionsAccessNgService: ExtensionsAccessNgService
     ) {
+        super();
+
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
@@ -72,6 +62,19 @@ export class ExtensionDetailNgComponent implements OnDestroy {
         this.uninstallCaption = Strings[StringId.Extensions_ExtensionUninstallCaption];
 
         this.applySettings();
+    }
+
+    public get name() { return this._info.name; }
+    public get publisherTypeDisplay() { return ExtensionId.PublisherType.idToDisplay(this._info.publisherTypeId); }
+    public get publisherName() { return this._info.publisherName; }
+    public get version() { return this._info.version; }
+    public get shortDescription() { return this._info.shortDescription; }
+    public get longDescription() { return this._info.longDescription; }
+
+    @Input() set info(value: ExtensionInfo) {
+        if (value !== this._info) {
+            this.setInfo(value);
+        }
     }
 
     ngOnDestroy() {

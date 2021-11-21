@@ -22,6 +22,7 @@ import {
     SymbolsNgService,
     UserAlertNgService
 } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ExtensionsAccessNgService } from 'src/content/ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'src/controls/ng-api';
 import { ButtonUiAction, ColorScheme, CommandRegisterService, InternalCommand, SettingsService } from 'src/core/internal-api';
@@ -38,7 +39,7 @@ import { DesktopFrame } from '../desktop-frame';
     styleUrls: ['./desktop-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class DesktopNgComponent implements AfterViewInit, OnDestroy {
+export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;
@@ -70,6 +71,8 @@ export class DesktopNgComponent implements AfterViewInit, OnDestroy {
         menuBarNgService: MenuBarNgService,
         commandRegisterNgService: CommandRegisterNgService,
     ) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());

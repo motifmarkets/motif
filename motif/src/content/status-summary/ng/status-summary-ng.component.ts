@@ -20,6 +20,7 @@ import { SessionInfoNgService } from 'src/component-services/ng-api';
 import { Version } from 'src/generated/internal-api';
 import { AssertInternalError, Badness } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { StatusSummaryFrame } from '../status-summary-frame';
 
@@ -29,7 +30,9 @@ import { StatusSummaryFrame } from '../status-summary-frame';
     styleUrls: ['./status-summary-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class StatusSummaryNgComponent implements OnInit, OnDestroy, StatusSummaryFrame.ComponentAccess {
+export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
+    implements OnInit, OnDestroy, StatusSummaryFrame.ComponentAccess {
+
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     public serviceName: string;
@@ -52,6 +55,8 @@ export class StatusSummaryNgComponent implements OnInit, OnDestroy, StatusSummar
         sessionInfoNgService: SessionInfoNgService,
         contentService: ContentNgService,
     ) {
+        super();
+
         const sessionInfoService = sessionInfoNgService.service;
 
         this.serviceName = sessionInfoService.serviceName;

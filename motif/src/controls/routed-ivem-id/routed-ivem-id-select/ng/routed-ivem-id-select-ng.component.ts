@@ -95,7 +95,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
             symbolsNgService,
         );
         this._adiService = adiNgService.adiService;
-        this.inputId = 'RoutedIvemIdInput' + this.instanceNumber.toString(10);
+        this.inputId = 'RoutedIvemIdInput' + this.componentInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;

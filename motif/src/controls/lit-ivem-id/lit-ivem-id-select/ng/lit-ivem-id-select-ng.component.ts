@@ -86,10 +86,6 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
 
-    override get uiAction() {
-        return super.uiAction as LitIvemIdUiAction;
-    }
-
     constructor(
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
@@ -105,7 +101,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         );
         this._adiService = adiNgService.adiService;
         this._symbolsService = symbolsNgService.symbolsManager;
-        this.inputId = 'LitIvemIdInput' + this.instanceNumber.toString(10);
+        this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
@@ -114,6 +110,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             () => this.handleMeasureCanvasContextsEvent()
         );
     }
+
+    override get uiAction() { return super.uiAction as LitIvemIdUiAction; }
 
     ngOnInit() {
         this.startSearchProcessor();

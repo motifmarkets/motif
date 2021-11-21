@@ -20,13 +20,21 @@ import {
 } from 'src/adi/internal-api';
 import { OrderPad } from 'src/core/internal-api';
 import { UnexpectedCaseError } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()
-export class ReviewOrderRequestComponentNgDirective {
+export class ReviewOrderRequestComponentNgDirective extends ContentComponentBaseNgDirective {
     public zenithMessageTitle = '';
 
     private _zenithMessageActive = false;
     private _zenithMessageText: string;
+
+    constructor(private readonly _cdr: ChangeDetectorRef,
+        private readonly _orderPad: OrderPad,
+        private readonly _dataDefinition: OrderRequestDataDefinition
+    ) {
+        super();
+    }
 
     public get zenithMessageActive() { return this._zenithMessageActive; }
     public get zenithMessageText() {
@@ -38,11 +46,6 @@ export class ReviewOrderRequestComponentNgDirective {
 
     get orderPad() { return this._orderPad; }
     get dataDefinition() { return this._dataDefinition; }
-
-    constructor(private readonly _cdr: ChangeDetectorRef,
-        private readonly _orderPad: OrderPad,
-        private readonly _dataDefinition: OrderRequestDataDefinition
-    ) { }
 
     setZenithMessageActive(value: boolean) {
         if (value !== this._zenithMessageActive) {

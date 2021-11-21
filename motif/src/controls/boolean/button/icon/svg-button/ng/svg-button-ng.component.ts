@@ -78,8 +78,6 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
 
     private _value: boolean | undefined;
 
-    public override get uiAction() { return super.uiAction as IconButtonUiAction; }
-
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._bkgdColorCssVarName = this.getBkgdColorCssVariableName(SvgButtonNgComponent.buttonColorItemId);
@@ -87,8 +85,10 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this._selectedBorderForeColorCssVarName = this.getForeColorCssVariableName(SvgButtonNgComponent.selectedBorderColorItemId);
         this._hoverBkgdColorCssVarName = this.getBkgdColorCssVariableName(SvgButtonNgComponent.hoverColorItemId);
 
-        this.inputId = 'SvgButton' + this.instanceNumber.toString(10);
+        this.inputId = 'SvgButton' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as IconButtonUiAction; }
 
     ngOnInit() {
         this.setInitialiseReady();

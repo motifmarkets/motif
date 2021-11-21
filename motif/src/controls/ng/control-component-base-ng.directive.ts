@@ -5,30 +5,13 @@
  */
 
 import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ColorScheme, ColorSettings, CoreSettings, ExchangeSettings, SettingsService, UiAction } from 'src/core/internal-api';
 import { delay1Tick, HtmlTypes, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {
     @HostBinding('style.display') displayPropertyNoneOverride = ''; // no override
-
-    // Assumes that the component has DOM display attribute !== 'none'
-    @Input()
-    get displayed() { return this.displayPropertyNoneOverride === ''; }
-    set displayed(value: boolean) {
-        if (value) {
-            if (!this.displayed) {
-                this.displayPropertyNoneOverride = '';
-                this.markForCheck();
-            }
-        } else {
-            if (this.displayed) {
-                this.displayPropertyNoneOverride = HtmlTypes.Display.None;
-                this.markForCheck();
-            }
-        }
-    }
 
     initialiseReady = false;
     initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler;
@@ -56,17 +39,6 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     private _readonlyAlways = false;
 
-    protected get uiAction() { return this._uiAction; }
-    protected get stateId() { return this._stateId; }
-    protected get coreSettings() { return this._coreSettings; }
-    protected get colorSettings() { return this._colorSettings; }
-
-    get readonlyAlways() { return this._readonlyAlways; }
-    set readonlyAlways(value: boolean) {
-        this._readonlyAlways = value;
-        this.applyStateId(this.stateId);
-    }
-
     constructor(private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
         private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
@@ -77,6 +49,39 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
+
+    // Assumes that the component has DOM display attribute !== 'none'
+    @Input()
+    get displayed() { return this.displayPropertyNoneOverride === ''; }
+    set displayed(value: boolean) {
+        if (value) {
+            if (!this.displayed) {
+                this.displayPropertyNoneOverride = '';
+                this.markForCheck();
+            }
+        } else {
+            if (this.displayed) {
+                this.displayPropertyNoneOverride = HtmlTypes.Display.None;
+                this.markForCheck();
+            }
+        }
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get readonlyAlways() { return this._readonlyAlways; }
+    set readonlyAlways(value: boolean) {
+        this._readonlyAlways = value;
+        this.applyStateId(this.stateId);
+    }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    protected get uiAction() { return this._uiAction; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    protected get stateId() { return this._stateId; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    protected get coreSettings() { return this._coreSettings; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    protected get colorSettings() { return this._colorSettings; }
 
     ngOnDestroy() {
         this.finalise();

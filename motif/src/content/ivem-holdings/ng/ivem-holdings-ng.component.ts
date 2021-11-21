@@ -5,19 +5,19 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
-  selector: 'app-ivem-holdings',
-  templateUrl: './ivem-holdings-ng.component.html',
-  styleUrls: ['./ivem-holdings-ng.component.scss'],
+    selector: 'app-ivem-holdings',
+    templateUrl: './ivem-holdings-ng.component.html',
+    styleUrls: ['./ivem-holdings-ng.component.scss'],
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IvemHoldingsNgComponent implements OnInit {
+export class IvemHoldingsNgComponent extends ContentComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+    ngOnInit() {}
 }

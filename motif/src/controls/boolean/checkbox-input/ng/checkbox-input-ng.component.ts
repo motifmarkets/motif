@@ -25,12 +25,12 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as BooleanUiAction; }
-
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'Checkbox' + this.instanceNumber.toString(10);
+        this.inputId = 'Checkbox' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as BooleanUiAction; }
 
     ngOnInit() {
         this.setInitialiseReady();

@@ -25,7 +25,7 @@ export class EnumArrayCheckboxNgComponent extends EnumArrayElementComponentBaseN
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'EnumArrayCheckbox' + this.instanceNumber.toString(10);
+        this.inputId = 'EnumArrayCheckbox' + this.componentInstanceId;
     }
 
     override ngOnDestroy() {

@@ -15,9 +15,10 @@ import {
     ViewChild
 } from '@angular/core';
 import { MotifGrid } from 'src/content/internal-api';
-import { MotifGridNgComponent } from 'src/content/ng-api';
 import { Badness, numberToPixels } from 'src/sys/internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
+import { MotifGridNgComponent } from '../../motif-grid/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { TableFrame } from '../table-frame';
 
@@ -28,7 +29,7 @@ import { TableFrame } from '../table-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableNgComponent implements OnDestroy, AfterViewInit, TableFrame.ComponentAccess {
+export class TableNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, TableFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
     @Input() frameGridProperties: MotifGrid.FrameGridProperties;
@@ -36,14 +37,30 @@ export class TableNgComponent implements OnDestroy, AfterViewInit, TableFrame.Co
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
-    private _frame: TableFrame;
+    private readonly _frame: TableFrame;
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         contentService: ContentNgService,
     ) {
+        super();
+
         this._frame = contentService.createTableFrame(this);
         // this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
+    }
+
+    get frame(): TableFrame { return this._frame; }
+    get gridRowHeight() { return this._frame.gridRowHeight; }
+
+    // Component Access members
+
+    get id(): string {
+        return '';
+        // todo - needs to return a unique id for this component
+    }
+
+    get gridHorizontalScrollbarMarginedHeight() {
+        return this._gridComponent.horizontalScrollbarMarginedHeight;
     }
 
     ngOnDestroy() {
@@ -60,19 +77,7 @@ export class TableNgComponent implements OnDestroy, AfterViewInit, TableFrame.Co
         this._frame.setGrid(grid);
     }
 
-    get frame(): TableFrame { return this._frame; }
-    get gridRowHeight() { return this._frame.gridRowHeight; }
-
     // Component Access members
-
-    get id(): string {
-        return '';
-        // todo - needs to return a unique id for this component
-    }
-
-    get gridHorizontalScrollbarMarginedHeight() {
-        return this._gridComponent.horizontalScrollbarMarginedHeight;
-    }
 
     getHeaderPlusFixedLineHeight() {
         return this._frame.getHeaderPlusFixedLineHeight();

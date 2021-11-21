@@ -13,6 +13,7 @@ import { ColorScheme, ColorSettings, EnumUiAction, ExplicitElementsEnumUiAction,
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick, EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
 import { ColorControlsNgComponent } from '../../color-controls/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-color-scheme-item-properties',
@@ -21,7 +22,7 @@ import { ColorControlsNgComponent } from '../../color-controls/ng-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDestroy {
+export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('bkgdControls', { static: true }) private _bkgdControls: ColorControlsNgComponent;
     @ViewChild('multiPicker', { static: true }) private _multiPicker: MultiColorPickerNgComponent;
     @ViewChild('foreControls', { static: true }) private _foreControls: ColorControlsNgComponent;
@@ -43,6 +44,8 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
     private _width: Integer;
 
     constructor(private _cdr: ChangeDetectorRef, private readonly _hostElementRef: ElementRef, settingsNgService: SettingsNgService) {
+        super();
+
         this._colorSettings = settingsNgService.settingsService.color;
 
         this._readabilityUiAction = this.createReadbilityUiAction();
@@ -50,6 +53,40 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
     }
 
     get approximateWidth() { return this._multiPicker.approximateWidth; }
+
+    get itemId() { return this._itemId; }
+    set itemId(value: ColorScheme.ItemId | undefined) {
+        this._itemId = value;
+        let hasBkgd: boolean;
+        let hasFore: boolean;
+        if (this._itemId === undefined) {
+            hasBkgd = false;
+            hasFore = false;
+        } else {
+            hasBkgd = ColorScheme.Item.idHasBkgd(this._itemId);
+            hasFore = ColorScheme.Item.idHasFore(this._itemId);
+        }
+
+        let checkRequired = false;
+        if (hasBkgd !== this.hasBkgd) {
+            this.hasBkgd = hasBkgd;
+            checkRequired = true;
+        }
+
+        if (hasFore !== this.hasFore) {
+            this.hasFore = hasFore;
+            checkRequired = true;
+        }
+
+        if (checkRequired) {
+            this.markForCheck();
+        }
+
+        this._bkgdControls.itemId = value;
+        this._foreControls.itemId = value;
+
+        this.updateReadability();
+    }
 
     ngAfterViewInit() {
         this._bkgdControls.bkdgFore = ColorScheme.BkgdForeId.Bkgd;
@@ -91,40 +128,6 @@ export class ColorSchemeItemPropertiesNgComponent implements AfterViewInit, OnDe
 
     ngOnDestroy() {
         this.finalise();
-    }
-
-    get itemId() { return this._itemId; }
-    set itemId(value: ColorScheme.ItemId | undefined) {
-        this._itemId = value;
-        let hasBkgd: boolean;
-        let hasFore: boolean;
-        if (this._itemId === undefined) {
-            hasBkgd = false;
-            hasFore = false;
-        } else {
-            hasBkgd = ColorScheme.Item.idHasBkgd(this._itemId);
-            hasFore = ColorScheme.Item.idHasFore(this._itemId);
-        }
-
-        let checkRequired = false;
-        if (hasBkgd !== this.hasBkgd) {
-            this.hasBkgd = hasBkgd;
-            checkRequired = true;
-        }
-
-        if (hasFore !== this.hasFore) {
-            this.hasFore = hasFore;
-            checkRequired = true;
-        }
-
-        if (checkRequired) {
-            this.markForCheck();
-        }
-
-        this._bkgdControls.itemId = value;
-        this._foreControls.itemId = value;
-
-        this.updateReadability();
     }
 
     processSettingsChanged() {

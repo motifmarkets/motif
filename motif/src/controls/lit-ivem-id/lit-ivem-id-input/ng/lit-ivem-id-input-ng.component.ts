@@ -36,8 +36,6 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _symbolsManager: SymbolsService;
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as LitIvemIdUiAction; }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
@@ -45,8 +43,10 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._symbolsManager = _symbolsManagerService.symbolsManager;
-        this.inputId = 'LitIvemIdInput' + this.instanceNumber.toString(10);
+        this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as LitIvemIdUiAction; }
 
     focus() {
         // this does not work.  needs further investigation

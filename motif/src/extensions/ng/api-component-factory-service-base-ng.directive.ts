@@ -5,16 +5,16 @@
  */
 
 import { ApplicationRef, ComponentRef, Directive, EmbeddedViewRef } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component-services/ng-api';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ApiComponentFactory, ComponentImplementation, FactoryComponentRef } from '../implementation/internal-api';
 
 @Directive()
 export abstract class ApiComponentFactoryServiceBaseNgDirective implements ApiComponentFactory {
-    get appRef() { return this._appRef; }
-
     constructor(
         private readonly _appRef: ApplicationRef,
     ) { }
+
+    get appRef() { return this._appRef; }
 
     destroyComponent(component: ComponentImplementation) {
         component.destroy();
@@ -30,7 +30,7 @@ export abstract class ApiComponentFactoryServiceBaseNgDirective implements ApiCo
 
 export namespace ApiComponentFactoryServiceBaseNgDirective {
     export abstract class FactoryComponentRefImplementation implements FactoryComponentRef {
-        abstract get componentRef(): ComponentRef<ComponentBaseNgDirective>;
         get rootHtmlElement() { return (this.componentRef.hostView as EmbeddedViewRef<unknown>).rootNodes[0] as HTMLElement; }
+        abstract get componentRef(): ComponentRef<ComponentBaseNgDirective>;
     }
 }

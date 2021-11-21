@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-extension-lists',
@@ -12,8 +13,10 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./extension-lists-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExtensionListsNgComponent implements OnInit {
-    constructor() {}
+export class ExtensionListsNgComponent extends ContentComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
     ngOnInit(): void {}
 }

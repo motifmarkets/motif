@@ -17,6 +17,7 @@ import { StringId } from 'src/res/internal-api';
 import { assert, delay1Tick, UnreachableCaseError } from 'src/sys/internal-api';
 import { DepthFrame } from '../../depth/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-depth-grid-layouts-editor',
@@ -25,19 +26,19 @@ import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepthGridLayoutsEditorNgComponent implements AfterViewInit, OnDestroy {
+export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('bidDepthButton', { static: true }) private _bidDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('askDepthButton', { static: true }) private _askDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
 
-    private _commandRegisterService: CommandRegisterService;
+    private readonly _commandRegisterService: CommandRegisterService;
 
-    private _bidDepthUiAction: ButtonUiAction;
-    private _askDepthUiAction: ButtonUiAction;
-    private _okUiAction: IconButtonUiAction;
-    private _cancelUiAction: IconButtonUiAction;
+    private readonly _bidDepthUiAction: ButtonUiAction;
+    private readonly _askDepthUiAction: ButtonUiAction;
+    private readonly _okUiAction: IconButtonUiAction;
+    private readonly _cancelUiAction: IconButtonUiAction;
 
     private _closeResolve: (value: DepthFrame.GridLayouts | undefined) => void;
     private _closeReject: (reason: unknown) => void;
@@ -46,6 +47,8 @@ export class DepthGridLayoutsEditorNgComponent implements AfterViewInit, OnDestr
     private _sideId: BidAskSideId;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
 
         this._bidDepthUiAction = this.createBidDepthUiAction();

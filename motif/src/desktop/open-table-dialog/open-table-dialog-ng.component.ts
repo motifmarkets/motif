@@ -5,19 +5,19 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
-  selector: 'app-open-table-dialog',
-  templateUrl: './open-table-dialog-ng.component.html',
-  styleUrls: ['./open-table-dialog-ng.component.scss'],
+    selector: 'app-open-table-dialog',
+    templateUrl: './open-table-dialog-ng.component.html',
+    styleUrls: ['./open-table-dialog-ng.component.scss'],
 
-  changeDetection: ChangeDetectionStrategy.OnPush
+    changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OpenTableDialogNgComponent implements OnInit {
+export class OpenTableDialogNgComponent extends ComponentBaseNgDirective implements OnInit {
+    constructor() {
+        super();
+    }
 
-  constructor() { }
-
-  ngOnInit() {
-  }
-
+    ngOnInit() {}
 }

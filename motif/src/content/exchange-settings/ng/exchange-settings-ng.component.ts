@@ -4,7 +4,6 @@ import { SettingsNgService } from 'src/component-services/ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
 import { ArrayUiAction } from 'src/core/array-ui-action';
 import {
-    EnumArrayUiAction,
     EnumUiAction,
     ExchangeSettings,
     ExplicitElementsEnumArrayUiAction,
@@ -14,6 +13,7 @@ import {
 import { StringId, Strings } from 'src/res/internal-api';
 import { delay1Tick } from 'src/sys/internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-exchange-settings',
@@ -21,7 +21,7 @@ import { MultiEvent } from 'src/sys/multi-event';
     styleUrls: ['./exchange-settings-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
+export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective implements OnInit, OnDestroy {
     @Input() exchangeId: ExchangeId;
 
     @ViewChild('symbolNameFieldLabel', { static: true }) private _symbolNameFieldLabelComponent: CaptionLabelNgComponent;
@@ -39,9 +39,9 @@ export class ExchangeSettingsNgComponent implements OnInit, OnDestroy {
     private _symbolNameFieldUiAction: ExplicitElementsEnumUiAction;
     private _symbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
 
-    constructor(
-        settingsNgService: SettingsNgService,
-    ) {
+    constructor(settingsNgService: SettingsNgService) {
+        super();
+
         this._settingsService = settingsNgService.settingsService;
         this._settingsChangedSubsciptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }

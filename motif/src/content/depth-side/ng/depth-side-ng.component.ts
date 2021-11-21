@@ -7,7 +7,8 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import { RevRecordStore } from 'revgrid';
 import { MotifGrid } from 'src/content/internal-api';
-import { MotifGridNgComponent } from 'src/content/ng-api';
+import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { DepthSideFrame } from '../depth-side-frame';
 
@@ -18,21 +19,24 @@ import { DepthSideFrame } from '../depth-side-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepthSideNgComponent implements OnDestroy, DepthSideFrame.ComponentAccess {
+export class DepthSideNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthSideFrame.ComponentAccess {
     @Input() frameGridProperties: MotifGrid.FrameGridProperties;
     @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
 
-    private _frame: DepthSideFrame;
+    private readonly _frame: DepthSideFrame;
 
     constructor(private _contentService: ContentNgService) {
+        super();
+
         this._frame = this._contentService.createDepthSideFrame(this);
     }
 
-    ngOnDestroy() {
-        this.frame.finalise();
-    }
-
     get frame(): DepthSideFrame { return this._frame; }
+    get id(): string { return this.componentInstanceId; }
+
+    ngOnDestroy() {
+        this._frame.finalise();
+    }
 
     // onColumnWidthChanged(columnIndex: Integer) {
     //     this._frame.adviseColumnWidthChanged(columnIndex);
@@ -43,11 +47,6 @@ export class DepthSideNgComponent implements OnDestroy, DepthSideFrame.Component
     // }
 
     // Component Access members
-
-    get id(): string {
-        return '';
-        // todo - needs to return a unique id for this component
-    }
 
     createGrid(dataStore: RevRecordStore) {
         this._gridComponent.destroyEventer = () => {

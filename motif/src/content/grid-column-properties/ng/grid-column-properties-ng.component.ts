@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 import { GridLayout } from 'src/content/internal-api';
 import { Integer } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-grid-column-properties',
@@ -15,7 +16,7 @@ import { Integer } from 'src/sys/internal-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridColumnPropertiesNgComponent implements OnInit {
+export class GridColumnPropertiesNgComponent extends ContentComponentBaseNgDirective implements OnInit {
     columnChangeEvent: GridColumnPropertiesComponent.ColumnChangeEvent;
     positionChangeEvent: GridColumnPropertiesComponent.PositionChangeEvent;
 
@@ -25,7 +26,11 @@ export class GridColumnPropertiesNgComponent implements OnInit {
     private _position: Integer;
 
     constructor() {
+        super();
     }
+
+    get column() { return this._column; }
+    get position() { return this._position; }
 
     ngOnInit() {
     }
@@ -35,9 +40,6 @@ export class GridColumnPropertiesNgComponent implements OnInit {
         this._position = position;
         this.load();
     }
-
-    get column() { return this._column; }
-    get position() { return this._position; }
 
     private load() {
 

@@ -14,6 +14,7 @@ import { SvgButtonNgComponent } from 'src/controls/ng-api';
 import { ColorScheme, ColorSettings, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
 import { StringId } from 'src/res/internal-api';
 import { assert, delay1Tick, StringBuilder } from 'src/sys/internal-api';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-color-scheme-preset-code',
@@ -22,7 +23,7 @@ import { assert, delay1Tick, StringBuilder } from 'src/sys/internal-api';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemePresetCodeNgComponent implements AfterViewInit, OnDestroy {
+export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static readonly _tabs2 = ' '.repeat(8);
     private static readonly _tabs3 = ' '.repeat(12);
 
@@ -41,6 +42,8 @@ export class ColorSchemePresetCodeNgComponent implements AfterViewInit, OnDestro
     private _closeReject: (reason: unknown) => void;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super();
+
         this._commandRegisterService = commandRegisterNgService.service;
 
         this._returnUiAction = this.createReturnUiAction();

@@ -26,7 +26,7 @@ export class CaptionedRadioNgComponent extends EnumElementComponentBaseNgDirecti
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'CaptionedRadio' + this.instanceNumber.toString(10);
+        this.inputId = 'CaptionedRadio' + this.componentInstanceId;
     }
 
     onChange(checked: boolean) {

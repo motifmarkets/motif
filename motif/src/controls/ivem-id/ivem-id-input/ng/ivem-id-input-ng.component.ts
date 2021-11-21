@@ -36,8 +36,6 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _symbolsManager: SymbolsService;
     private _pushIvemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as IvemIdUiAction; }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
@@ -45,8 +43,10 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._symbolsManager = _symbolsManagerService.symbolsManager;
-        this.inputId = 'IvemIdInput' + this.instanceNumber.toString(10);
+        this.inputId = 'IvemIdInput' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as IvemIdUiAction; }
 
     focus() {
         // this does not work.  needs further investigation

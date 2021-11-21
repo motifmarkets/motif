@@ -33,11 +33,11 @@ export class DepthSideFrame extends ContentFrame {
     private _filterXrefs: string[] = [];
     // private _activeWidth = 0;
 
-    get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
-
     constructor(private readonly _componentAccess: DepthSideFrame.ComponentAccess) {
         super();
     }
+
+    get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
 
     override finalise() {
         if (!this.finalised) {

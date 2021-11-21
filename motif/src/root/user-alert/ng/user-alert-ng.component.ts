@@ -5,6 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { StringId, Strings } from 'src/res/internal-api';
 import { HtmlTypes, UserAlertService } from 'src/sys/internal-api';
 
@@ -14,7 +15,7 @@ import { HtmlTypes, UserAlertService } from 'src/sys/internal-api';
     styleUrls: ['./user-alert-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserAlertNgComponent {
+export class UserAlertNgComponent extends ComponentBaseNgDirective {
     public restartDisplay = HtmlTypes.Display.Flex;
     public restartCaption = Strings[StringId.Restart];
     public errorCountDisplay = HtmlTypes.Display.None;
@@ -29,6 +30,7 @@ export class UserAlertNgComponent {
     private _errorCount = 0;
 
     constructor(private readonly _cdr: ChangeDetectorRef, private readonly _elRef: ElementRef<HTMLElement>) {
+        super();
     }
 
     pushAlerts(alerts: readonly UserAlertService.Alert[]) {

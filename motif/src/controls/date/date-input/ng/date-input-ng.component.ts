@@ -28,12 +28,12 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
 
     private _pushDateEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as DateUiAction; }
-
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'DateInput' + this.instanceNumber.toString(10);
+        this.inputId = 'DateInput' + this.componentInstanceId;
     }
+
+    public override get uiAction() { return super.uiAction as DateUiAction; }
 
     onInput(value: string): void {
         this.input(value);

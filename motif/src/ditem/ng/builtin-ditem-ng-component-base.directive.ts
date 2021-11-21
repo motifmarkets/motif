@@ -6,6 +6,7 @@
 
 import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ColorScheme, CommandRegisterService, SettingsService } from 'src/core/internal-api';
 import { Json, JsonElement, MultiEvent } from 'src/sys/internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -13,20 +14,13 @@ import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';
 
 @Directive()
-export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFrame.ComponentAccess, DitemComponent {
+export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBaseNgDirective
+    implements DitemFrame.ComponentAccess, DitemComponent {
+
     private readonly _rootHtmlElement: HTMLElement;
 
     private _focused = false;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
-
-    protected abstract get stateSchemaVersion(): string;
-    protected get settingsService() { return this._settingsService; }
-    protected get commandRegisterService() { return this._commandRegisterService; }
-
-    abstract get ditemFrame(): BuiltinDitemFrame;
-    get container() { return this._container; }
-    get rootHtmlElement() { return this._rootHtmlElement; }
-    get focused() { return this._focused; }
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
@@ -35,6 +29,8 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFra
         private readonly _settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
     ) {
+        super();
+
         this._rootHtmlElement = this._elRef.nativeElement;
 
         this._container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
@@ -46,6 +42,17 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFra
 
         this.initialiseFocusDetectionHandling();
     }
+
+    get container() { return this._container; }
+    get rootHtmlElement() { return this._rootHtmlElement; }
+    get focused() { return this._focused; }
+
+    protected get settingsService() { return this._settingsService; }
+    protected get commandRegisterService() { return this._commandRegisterService; }
+    protected get elRef() { return this._elRef; }
+
+    abstract get ditemFrame(): BuiltinDitemFrame;
+    protected abstract get stateSchemaVersion(): string;
 
     focus() {
         this._container.focus();
@@ -66,8 +73,6 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective implements DitemFra
     public processPrimaryChanged() {
         // descendants can override as necessary
     }
-
-    protected get elRef() { return this._elRef; }
 
     protected initialise() {
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
