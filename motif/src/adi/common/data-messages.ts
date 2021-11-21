@@ -898,11 +898,11 @@ export abstract class PublisherBroadcastDataMessage extends PublisherDataMessage
 export class SynchronisedPublisherSubscriptionDataMessage extends PublisherSubscriptionDataMessage {
     static readonly typeId = DataMessageTypeId.Synchronised;
 
-    get alreadyUnsubscribed() { return this._alreadyUnsubscribed; }
-
     constructor(dataItemId: DataItemId, dataItemRequestNr: Integer, private _alreadyUnsubscribed: boolean) {
         super(SynchronisedPublisherSubscriptionDataMessage.typeId, dataItemId, dataItemRequestNr);
     }
+
+    get alreadyUnsubscribed() { return this._alreadyUnsubscribed; }
 }
 
 export class OnlinedPublisherSubscriptionDataMessage extends PublisherBroadcastDataMessage {
@@ -924,20 +924,15 @@ export class OffliningPublisherSubscriptionDataMessage extends PublisherBroadcas
 export class WarningPublisherSubscriptionDataMessage extends PublisherSubscriptionDataMessage {
     private static readonly typeId = DataMessageTypeId.PublisherSubscription_Warning;
 
-    get warningText() { return this._warningText; }
-
     constructor(dataItemId: DataItemId, dataItemRequestNr: Integer, private _warningText: string) {
         super(WarningPublisherSubscriptionDataMessage.typeId, dataItemId, dataItemRequestNr);
     }
+
+    get warningText() { return this._warningText; }
 }
 
 export abstract class ErrorPublisherSubscriptionDataMessage extends PublisherDataMessage {
     private static readonly typeId = DataMessageTypeId.PublisherSubscription_Error;
-
-    get errorTypeId() { return this._errorTypeId; }
-    get errorText() { return this._errorText; }
-    get allowedRetryTypeId() { return this._allowedRetryTypeId; }
-    get requestSent() { return this._requestSent; }
 
     constructor(dataItemId: DataItemId, dataItemRequestNr: Integer,
         private _errorTypeId: PublisherSubscription.ErrorTypeId, private _errorText: string,
@@ -946,6 +941,11 @@ export abstract class ErrorPublisherSubscriptionDataMessage extends PublisherDat
     ) {
         super(ErrorPublisherSubscriptionDataMessage.typeId, dataItemId, dataItemRequestNr);
     }
+
+    get errorTypeId() { return this._errorTypeId; }
+    get errorText() { return this._errorText; }
+    get allowedRetryTypeId() { return this._allowedRetryTypeId; }
+    get requestSent() { return this._requestSent; }
 }
 
 // eslint-disable-next-line @typescript-eslint/naming-convention

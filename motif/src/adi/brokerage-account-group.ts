@@ -10,6 +10,8 @@ import { Account } from './account';
 export abstract class BrokerageAccountGroup {
     private _upperId: string;
 
+    constructor(private _typeId: BrokerageAccountGroup.TypeId) { }
+
     get typeId() { return this._typeId; }
 
     get id() { return this.getId(); }
@@ -19,8 +21,6 @@ export abstract class BrokerageAccountGroup {
         }
         return this._upperId;
     }
-
-    constructor(private _typeId: BrokerageAccountGroup.TypeId) { }
 
     saveToJson(element: JsonElement) {
         element.setString(BrokerageAccountGroup.JsonTag.TypeId, BrokerageAccountGroup.Type.idToJsonValue(this.typeId));
@@ -189,11 +189,11 @@ export namespace BrokerageAccountGroup {
 }
 
 export class SingleBrokerageAccountGroup extends BrokerageAccountGroup {
-    get accountKey() { return this._accountKey; }
-
     constructor(private _accountKey: Account.Key) {
         super(SingleBrokerageAccountGroup.typeId);
     }
+
+    get accountKey() { return this._accountKey; }
 
     override saveToJson(element: JsonElement) {
         super.saveToJson(element);

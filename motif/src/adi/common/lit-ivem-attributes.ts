@@ -9,9 +9,9 @@ import { ExchangeId } from './data-types';
 export abstract class LitIvemAttributes {
     private _unrecognisedAttributes: LitIvemAttributes.UnrecognisedAttributes = [];
 
-    get exchangeId() { return this._exchangeId; }
-
     constructor(private _exchangeId: ExchangeId) { }
+
+    get exchangeId() { return this._exchangeId; }
 
     get unrecognisedAttributes() { return this._unrecognisedAttributes; }
     get unrecognisedCount() { return this._unrecognisedAttributes.length; }

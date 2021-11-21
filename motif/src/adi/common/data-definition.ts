@@ -39,13 +39,12 @@ export abstract class DataDefinition {
     private _id: Integer;
     private _referencableKey: MapKey;
 
-    abstract get referencable(): boolean;
-    get channelId() { return this._channelId; }
-    get description(): string { return this.getDescription(); }
-
     constructor(private _channelId: DataChannelId) {
         this._id = ++DataDefinition._lastConstructedId;
     }
+
+    get channelId() { return this._channelId; }
+    get description(): string { return this.getDescription(); }
 
     get referencableKey() {
         if (this._referencableKey === undefined) {
@@ -53,6 +52,8 @@ export abstract class DataDefinition {
         }
         return this._referencableKey;
     }
+
+    abstract get referencable(): boolean;
 
     /** Create key specific to a channel which can be referenced.
      * By default, creates key unique across all channels but this normally cannot be referenced
@@ -95,11 +96,11 @@ export abstract class BrokerageAccountDataRecordsSubscriptionDataDefinition exte
 export class FeedsDataDefinition extends PublisherSubscriptionDataDefinition {
     override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Feeds);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return ''; // only is one (for now)
@@ -109,11 +110,11 @@ export class FeedsDataDefinition extends PublisherSubscriptionDataDefinition {
 export class ClassFeedsDataDefinition extends DataDefinition {
     classId: FeedClassId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.ClassFeeds);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return FeedClass.idToName(this.classId);
@@ -125,11 +126,11 @@ export class TradingStatesDataDefinition extends MarketSubscriptionDataDefinitio
 
     marketId: MarketId;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.TradingStates);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ' Query: Market: ' + MarketInfo.idToName(this.marketId);
@@ -139,11 +140,11 @@ export class TradingStatesDataDefinition extends MarketSubscriptionDataDefinitio
 export class MarketsDataDefinition extends PublisherSubscriptionDataDefinition {
     override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Markets);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return ''; // only is one (for now)
@@ -151,11 +152,11 @@ export class MarketsDataDefinition extends PublisherSubscriptionDataDefinition {
 }
 
 export class QueryMarketsDataDefinition extends PublisherSubscriptionDataDefinition {
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.Markets);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ' Query';
@@ -166,11 +167,11 @@ export class SymbolsDataDefinition extends MarketSubscriptionDataDefinition {
     marketId: MarketId;
     classId: IvemClassId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Symbols);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return MarketInfo.idToName(this.marketId) + '|' + IvemClass.idToName(this.classId);
@@ -194,11 +195,11 @@ export class SearchSymbolsDataDefinition extends MarketSubscriptionDataDefinitio
     strikePriceMin?: Decimal;
     strikePriceMax?: Decimal;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.Symbols);
     }
+
+    get referencable() { return false; }
 
     createCopy() {
         const result = new SearchSymbolsDataDefinition();
@@ -463,11 +464,11 @@ export namespace SearchSymbolsDataDefinition {
 export class SecurityDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Security);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -481,11 +482,11 @@ export class SecurityDataDefinition extends MarketSubscriptionDataDefinition {
 export class QuerySecurityDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.Security);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -495,11 +496,11 @@ export class QuerySecurityDataDefinition extends MarketSubscriptionDataDefinitio
 export class DepthDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Depth);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
@@ -513,11 +514,11 @@ export class DepthDataDefinition extends MarketSubscriptionDataDefinition {
 export class QueryDepthDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.Depth);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
@@ -527,11 +528,11 @@ export class QueryDepthDataDefinition extends MarketSubscriptionDataDefinition {
 export class DepthLevelsDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.DepthLevels);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription() + ` Query: LitIvemId:  ${this.litIvemId.name}`;
@@ -545,11 +546,11 @@ export class DepthLevelsDataDefinition extends MarketSubscriptionDataDefinition 
 export class QueryDepthLevelsDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.DepthLevels);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
@@ -563,11 +564,11 @@ export class QueryTradesDataDefinition extends MarketSubscriptionDataDefinition 
     lastTradeId?: Integer;
     tradingDate?: Date; // #TestingRequired: I think this needs to be UTC time. But this should be checked.
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.Trades);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         let result = `${super.getDescription()} Query: ${this.litIvemId.name}`;
@@ -590,11 +591,11 @@ export class QueryTradesDataDefinition extends MarketSubscriptionDataDefinition 
 export class TradesDataDefinition extends MarketSubscriptionDataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.Trades);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return `${super.getDescription()} LitIvemId: ${this.litIvemId.name}`;
@@ -608,11 +609,11 @@ export class TradesDataDefinition extends MarketSubscriptionDataDefinition {
 export class LatestTradingDayTradesDataDefinition extends DataDefinition {
     litIvemId: LitIvemId;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.LatestTradingDayTrades);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription() + ` LitIvemId: ${this.litIvemId.name}`;
@@ -628,6 +629,10 @@ export class DayTradesDataDefinition extends DataDefinition {
 
     private _date: Date | undefined;
 
+    constructor() {
+        super(DataChannelId.DayTrades);
+    }
+
     get referencable() { return true; }
 
     get date() { return this._date; }
@@ -638,10 +643,6 @@ export class DayTradesDataDefinition extends DataDefinition {
             value.setUTCHours(0, 0, 0, 0);
             this._date = value;
         }
-    }
-
-    constructor() {
-        super(DataChannelId.DayTrades);
     }
 
     protected override getDescription(): string {
@@ -659,11 +660,11 @@ export class LowLevelTopShareholdersDataDefinition extends PublisherSubscription
     litIvemId: LitIvemId;
     tradingDate: Date | undefined;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.LowLevelTopShareholders);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -683,11 +684,11 @@ export class TopShareholdersDataDefinition extends DataDefinition {
     tradingDate: Date | undefined;
     compareToTradingDate: Date | undefined;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.TopShareholders);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -708,11 +709,11 @@ export class TopShareholdersDataDefinition extends DataDefinition {
 export class BrokerageAccountsDataDefinition extends FeedSubscriptionDataDefinition {
     override publisherRequestSendPriorityId = PublisherSubscription.RequestSendPriorityId.High;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.BrokerageAccounts);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -724,11 +725,11 @@ export class BrokerageAccountsDataDefinition extends FeedSubscriptionDataDefinit
 }
 
 export class QueryBrokerageAccountsDataDefinition extends FeedSubscriptionDataDefinition {
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.BrokerageAccounts);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ' Query';
@@ -739,11 +740,11 @@ export abstract class OrdersBrokerageAccountSubscriptionDataDefinition extends B
 }
 
 export class BrokerageAccountOrdersDataDefinition extends OrdersBrokerageAccountSubscriptionDataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountOrders);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription() {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
@@ -757,11 +758,11 @@ export class BrokerageAccountOrdersDataDefinition extends OrdersBrokerageAccount
 export class QueryBrokerageAccountOrdersDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
     orderId: OrderId | undefined = undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountOrders);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -773,11 +774,11 @@ export class QueryBrokerageAccountOrdersDataDefinition extends BrokerageAccountD
 }
 
 export class AllOrdersDataDefinition extends DataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.AllOrders);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return '';
@@ -788,11 +789,11 @@ export abstract class HoldingsBrokerageAccountSubscriptionDataDefinition extends
 }
 
 export class BrokerageAccountHoldingsDataDefinition extends HoldingsBrokerageAccountSubscriptionDataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountHoldings);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription() {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
@@ -806,11 +807,11 @@ export class BrokerageAccountHoldingsDataDefinition extends HoldingsBrokerageAcc
 export class QueryBrokerageAccountHoldingsDataDefinition extends HoldingsBrokerageAccountSubscriptionDataDefinition {
     ivemId: IvemId | undefined = undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountHoldings);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -822,11 +823,11 @@ export class QueryBrokerageAccountHoldingsDataDefinition extends HoldingsBrokera
 }
 
 export class AllHoldingsDataDefinition extends DataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.AllHoldings);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return '';
@@ -837,11 +838,11 @@ export abstract class BalancesBrokerageAccountSubscriptionDataDefinition extends
 }
 
 export class BrokerageAccountBalancesDataDefinition extends BalancesBrokerageAccountSubscriptionDataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountBalances);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
@@ -853,11 +854,11 @@ export class BrokerageAccountBalancesDataDefinition extends BalancesBrokerageAcc
 }
 
 export class QueryBrokerageAccountBalancesDataDefinition extends BalancesBrokerageAccountSubscriptionDataDefinition {
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountBalances);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         return `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -865,11 +866,11 @@ export class QueryBrokerageAccountBalancesDataDefinition extends BalancesBrokera
 }
 
 export class AllBalancesDataDefinition extends DataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.AllBalances);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return '';
@@ -880,11 +881,11 @@ export abstract class TransactionsBrokerageAccountSubscriptionDataDefinition ext
 }
 
 export class BrokerageAccountTransactionsDataDefinition extends TransactionsBrokerageAccountSubscriptionDataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountTransactions);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return `${super.getDescription()} AccountId: ${this.accountId}`;
@@ -905,11 +906,11 @@ export class QueryTransactionsDataDefinition extends TransactionsBrokerageAccoun
     code: string | undefined;
     orderId: OrderId | undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.BrokerageAccountTransactions);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -939,11 +940,11 @@ export class QueryTransactionsDataDefinition extends TransactionsBrokerageAccoun
 }
 
 export class AllTransactionsDataDefinition extends DataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.AllTransactions);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return '';
@@ -953,11 +954,11 @@ export class AllTransactionsDataDefinition extends DataDefinition {
 export class OrderRequestsDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
     // brokerageAccountGroup: BrokerageAccountGroup;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.OrderRequests);
     }
+
+    get referencable() { return true; }
 
     // protected getDescription(): string {
     //     return `${super.getDescription()} GroupId: ${this.brokerageAccountGroup.id}`;
@@ -972,11 +973,11 @@ export class QueryOrderRequestsDataDefinition extends BrokerageAccountDataRecord
     override accountId: BrokerageAccountId;
     orderId: OrderId | undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.OrderRequests);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -990,11 +991,11 @@ export class QueryOrderRequestsDataDefinition extends BrokerageAccountDataRecord
 export class OrderAuditDataDefinition extends BrokerageAccountDataRecordsSubscriptionDataDefinition {
     // brokerageAccountGroup: BrokerageAccountGroup;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.OrderAudit);
     }
+
+    get referencable() { return true; }
 
     // protected getDescription(): string {
     //     return `${super.getDescription()} GroupId: ${this.brokerageAccountGroup.id}`;
@@ -1012,11 +1013,11 @@ export class QueryOrderAuditDataDefinition extends BrokerageAccountDataRecordsSu
     count: Integer | undefined;
     orderId: OrderId | undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.OrderAudit);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription() {
         let result = `${super.getDescription()} Query: AccountId: ${this.accountId}`;
@@ -1041,11 +1042,11 @@ export class OrderStatusesDataDefinition extends FeedSubscriptionDataDefinition 
 
     tradingFeedId: FeedId;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.OrderStatuses);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return `${super.getDescription()} FeedId: ${FeedInfo.idToName(this.tradingFeedId)}`;
@@ -1059,11 +1060,11 @@ export class QueryChartHistoryDataDefinition extends MarketSubscriptionDataDefin
     fromDate: Date | undefined;
     toDate: Date | undefined;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.ChartHistory);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription();
@@ -1160,11 +1161,11 @@ export class ZenithExtConnectionDataDefinition extends DataDefinition {
     zenithWebsocketEndpoint: string; // 'wss://wsapistaging.paritech.com:443/Zenith?version=1.6.1';
     useAuthOwnerZenithAuthentication = false;
 
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.ZenithExtConnection);
     }
+
+    get referencable() { return true; }
 
     protected override calculateChannelReferencableKey() {
         return this.zenithWebsocketEndpoint;
@@ -1172,11 +1173,11 @@ export class ZenithExtConnectionDataDefinition extends DataDefinition {
 }
 
 export class ZenithServerInfoDataDefinition extends PublisherSubscriptionDataDefinition {
-    get referencable() { return true; }
-
     constructor() {
         super(DataChannelId.ZenithServerInfo);
     }
+
+    get referencable() { return true; }
 
     protected override getDescription(): string {
         return super.getDescription();

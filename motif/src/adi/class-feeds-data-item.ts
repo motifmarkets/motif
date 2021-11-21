@@ -21,9 +21,6 @@ export class ClassFeedsDataItem extends DataItem {
 
     private _listChangeMultiEvent = new MultiEvent<ClassFeedsDataItem.ListChangeEventHandler>();
 
-    get feeds() { return this._feeds; }
-    get count() { return this._feeds.length; }
-
     constructor(definition: DataDefinition) {
         super(definition);
 
@@ -33,6 +30,9 @@ export class ClassFeedsDataItem extends DataItem {
             this._classId = definition.classId;
         }
     }
+
+    get feeds() { return this._feeds; }
+    get count() { return this._feeds.length; }
 
     getFeed(feedId: FeedId) {
         for (const feed of this._feeds) {
