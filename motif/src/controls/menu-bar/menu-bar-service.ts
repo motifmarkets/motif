@@ -50,13 +50,6 @@ export class MenuBarService {
 
     private _keyboardActiveChangedMultiEvent = new MultiEvent<MenuBarService.KeyboardActiveChangedEventHandler>();
 
-    get rootMenu() { return this._rootMenu; }
-
-    get keyboardActive() { return this._keyboardActive; }
-    get menuMouseOver() { return this._mouseOverMenu !== undefined; }
-    get missingCommandMenuItem() { return this._missingCommandMenuItem; }
-    get missingChildMenuItem() { return this._missingChildMenuItem; }
-
     constructor(private _commandRegisterService: CommandRegisterService,
     ) {
         // this._missingCommandUiAction = this.createMissingCommandUiAction();
@@ -67,6 +60,13 @@ export class MenuBarService {
         this._menuByIdMap.set(this._rootMenu.id, this._rootMenu);
         globalThis.addEventListener('mousedown', this._globalMouseDownListener);
     }
+
+    get rootMenu() { return this._rootMenu; }
+
+    get keyboardActive() { return this._keyboardActive; }
+    get menuMouseOver() { return this._mouseOverMenu !== undefined; }
+    get missingCommandMenuItem() { return this._missingCommandMenuItem; }
+    get missingChildMenuItem() { return this._missingChildMenuItem; }
 
     finalise() {
         globalThis.removeEventListener('mousedown', this._globalMouseDownListener);
@@ -605,7 +605,11 @@ export namespace MenuBarService {
 
         private _modified = true;
 
-        abstract get isRoot(): boolean;
+        constructor(private readonly _name: string,
+            private readonly _registrationPath: Menu.Path
+        ) {
+            this._id = Menu.getNextId();
+        }
 
         get name() { return this._name; }
         get registrationPath() { return this._registrationPath; }
@@ -615,11 +619,7 @@ export namespace MenuBarService {
 
         get modified() { return this._modified; }
 
-        constructor(private readonly _name: string,
-            private readonly _registrationPath: Menu.Path
-        ) {
-            this._id = Menu.getNextId();
-        }
+        abstract get isRoot(): boolean;
 
         registerItem(item: MenuItem) {
             this._items.push(item);
@@ -782,11 +782,11 @@ export namespace MenuBarService {
     }
 
     export class RootMenu extends Menu {
-        get isRoot() { return true; }
-
         constructor() {
             super(MenuBarService.RootMenuName, []);
         }
+
+        get isRoot() { return true; }
     }
 
     export class ChildMenu extends Menu {
@@ -795,15 +795,14 @@ export namespace MenuBarService {
         private readonly _stack: ChildMenu.Stack;
         private _rendered = false;
 
-        get isRoot() { return false; }
-        get rendered() { return this._rendered; }
-        get stack() { return this._stack; }
-
-
         constructor(name: string, parentRegistrationPath: Menu.Path, parentStack: ChildMenu.Stack) {
             super(name, [...parentRegistrationPath, name]);
             this._stack = [...parentStack, this];
         }
+
+        get isRoot() { return false; }
+        get rendered() { return this._rendered; }
+        get stack() { return this._stack; }
 
         generateUnembeddedStack(): ChildMenu.Stack {
             const depth = this._stack.length;
@@ -857,8 +856,9 @@ export namespace MenuBarService {
         private _highlightTypeId = MenuItem.HighlightTypeId.Not;
         private _stateId = MenuItem.StateId.NotRendered;
 
-        abstract get caption(): string;
-        abstract get accessibleCaption(): CommandUiAction.AccessibleCaption; // use AccessibleCaption for ChildMenu as well
+        constructor(private readonly _typeId: MenuItem.TypeId, private readonly _defaultPosition: MenuBarService.MenuItem.Position) {
+            this._id = MenuItem.getNextId();
+        }
 
         get defaultPosition() { return this._defaultPosition; }
         get rank() { return this._defaultPosition.rank; }
@@ -870,9 +870,8 @@ export namespace MenuBarService {
         get removePending() { return this.unrenderedEvent !== undefined; }
         get stateId() { return this._stateId; }
 
-        constructor(private readonly _typeId: MenuItem.TypeId, private readonly _defaultPosition: MenuBarService.MenuItem.Position) {
-            this._id = MenuItem.getNextId();
-        }
+        abstract get caption(): string;
+        abstract get accessibleCaption(): CommandUiAction.AccessibleCaption; // use AccessibleCaption for ChildMenu as well
 
         finalise() {
             // can be overridden in descendants
@@ -1050,6 +1049,10 @@ export namespace MenuBarService {
         private _uiAction: CommandUiAction;
         private _uiActionPushEventsSubscriptionId: MultiEvent.SubscriptionId;
 
+        constructor(private readonly _command: Command, defaultPosition: MenuItem.Position) {
+            super(MenuItem.TypeId.Command, defaultPosition);
+        }
+
         get command() { return this._command; }
         get uiAction() { return this._uiAction; }
 
@@ -1057,10 +1060,6 @@ export namespace MenuBarService {
         get accessibleCaption() { return this._uiAction.accessibleCaption; }
         get title() { return this._uiAction.title; }
         get value() { return this._uiAction.value; }
-
-        constructor(private readonly _command: Command, defaultPosition: MenuItem.Position) {
-            super(MenuItem.TypeId.Command, defaultPosition);
-        }
 
         override finalise() {
             this.disconnect();
@@ -1148,10 +1147,6 @@ export namespace MenuBarService {
         private _caption: string;
         private _accessibleCaption: CommandUiAction.AccessibleCaption;
 
-        get childMenu() { return this._childMenu; }
-        get caption() { return this._caption; }
-        get accessibleCaption() { return this._accessibleCaption; }
-
         constructor(private readonly _childMenu: ChildMenu, defaultPosition: MenuBarService.MenuItem.Position) {
             super(MenuItem.TypeId.ChildMenu, defaultPosition);
             this._caption = this._childMenu.name;
@@ -1162,6 +1157,10 @@ export namespace MenuBarService {
             };
             this._accessibleCaption = unaccessibleCaption;
         }
+
+        get childMenu() { return this._childMenu; }
+        get caption() { return this._caption; }
+        get accessibleCaption() { return this._accessibleCaption; }
 
         setDisplayIdAndAccessKeyId(displayId: ExtStringId | undefined, accessKeyId: ExtStringId | undefined) {
             if (displayId !== this._displayId) {

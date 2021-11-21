@@ -12,11 +12,11 @@ import { MenuBarNgService } from './menu-bar-ng.service';
 export abstract class MenuBarComponentNgDirective {
     private _menuBarService: MenuBarService;
 
-    protected get menuBarService() { return this._menuBarService; }
-
     constructor(private _cdr: ChangeDetectorRef, menuBarNgService: MenuBarNgService) {
         this._menuBarService = menuBarNgService.service;
     }
+
+    protected get menuBarService() { return this._menuBarService; }
 
     protected markForCheck() {
         this._cdr.markForCheck();

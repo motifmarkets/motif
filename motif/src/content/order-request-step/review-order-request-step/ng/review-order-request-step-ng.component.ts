@@ -41,8 +41,6 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
 
     private _requestTypeComponent: ReviewOrderRequestComponentNgDirective;
 
-    get frame() { return this._frame; }
-
     constructor(cdr: ChangeDetectorRef,
         private _resolver: ComponentFactoryResolver,
         private _contentService: ContentNgService
@@ -50,6 +48,8 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
         super(cdr);
         this._frame = this._contentService.createReviewOrderRequestStepFrame(this);
     }
+
+    get frame() { return this._frame; }
 
     setZenithMessageActive(value: boolean) {
         this._requestTypeComponent.setZenithMessageActive(value);

@@ -14,9 +14,9 @@ import { MenuBarService } from '../menu-bar-service';
 export class MenuBarNgService {
     private _service: MenuBarService;
 
-    get service() { return this._service; }
-
     constructor(commandRegisterNgService: CommandRegisterNgService) {
         this._service = new MenuBarService(commandRegisterNgService.service);
     }
+
+    get service() { return this._service; }
 }

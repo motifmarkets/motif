@@ -29,15 +29,15 @@ export abstract class MenuBarMenuItemComponentNgDirective extends MenuBarRenderI
 
     private _stateColorId: MenuBarMenuItemComponentNgDirective.StateColorId;
 
-    protected abstract get menuItem(): MenuBarService.MenuItem;
-    protected get stateColorId() { return this._stateColorId; }
-    protected get colorSettings() { return this._colorSettings; }
-
     constructor(cdr: ChangeDetectorRef, private readonly _settingsService: SettingsService, menuBarNgService: MenuBarNgService) {
         super(cdr, menuBarNgService);
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
+
+    protected get stateColorId() { return this._stateColorId; }
+    protected get colorSettings() { return this._colorSettings; }
+    protected abstract get menuItem(): MenuBarService.MenuItem;
 
     protected initialise() {
         this.keyboardActive = this.menuBarService.keyboardActive;
