@@ -6,8 +6,9 @@
 
 import { I18nStrings, StringId } from 'src/res/internal-api';
 import { Logger } from './logger';
+import { MotifError } from './motif-error';
 
-abstract class BaseInternalError extends Error {
+abstract class BaseInternalError extends MotifError {
     constructor(errorTypeDescription: StringId, code: string, message?: string) {
         super(message === undefined || message === '' ?
             I18nStrings.getStringPlusEnglish(errorTypeDescription) + `: ${code}`

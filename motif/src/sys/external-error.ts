@@ -6,10 +6,9 @@
 
 import { I18nStrings, StringId } from 'src/res/internal-api';
 import { Logger } from './logger';
+import { MotifError } from './motif-error';
 
-export abstract class ExternalError extends Error {
-    get code() { return this._code; }
-
+export abstract class ExternalError extends MotifError {
     constructor(errorTypeDescription: StringId, private _code: ExternalError.Code, message?: string) {
         super(message === undefined || message === '' ?
             I18nStrings.getStringPlusEnglish(errorTypeDescription) + `: ${_code}`
@@ -17,6 +16,8 @@ export abstract class ExternalError extends Error {
             I18nStrings.getStringPlusEnglish(errorTypeDescription) + `: ${_code}: ${message}`);
         Logger.logError(this.message, 120);
     }
+
+    get code() { return this._code; }
 }
 
 export class GeneralExternalError extends ExternalError {
