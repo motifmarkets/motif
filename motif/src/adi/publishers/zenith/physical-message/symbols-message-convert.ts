@@ -243,7 +243,7 @@ export namespace SymbolsMessageConvert {
 
         const result: Zenith.MarketController.SearchSymbols.Condition = {
             Field: field,
-            Group: condition.group,
+            Group: group,
             IsCaseSensitive: condition.isCaseSensitive,
             Key: alternateKey,
             Match: match,
