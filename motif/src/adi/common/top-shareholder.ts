@@ -196,6 +196,13 @@ export namespace TopShareholder {
 
         constructor(public holderKey?: string, public name?: string) { }
 
+        get mapKey() {
+            if (this._mapKey === undefined) {
+                this._mapKey = Key.toString(this.holderKey, this.name);
+            }
+            return this._mapKey;
+        }
+
         static createNull() {
             // will not match any valid holding
             return new Key(undefined, undefined);
@@ -213,13 +220,6 @@ export namespace TopShareholder {
             if (this.name !== undefined) {
                 element.setString(Key.JsonTag_Name, this.name);
             }
-        }
-
-        get mapKey() {
-            if (this._mapKey === undefined) {
-                this._mapKey = Key.toString(this.holderKey, this.name);
-            }
-            return this._mapKey;
         }
     }
 

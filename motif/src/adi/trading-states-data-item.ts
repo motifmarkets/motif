@@ -20,9 +20,6 @@ export class TradingStatesDataItem extends FeedSubscriptionDataItem {
     private _marketId: MarketId;
     private _states: TradingStates;
 
-    get marketId() { return this._marketId; }
-    get states() { return this._states; }
-
     constructor(definition: DataDefinition) {
         super(definition);
         if (!(definition instanceof TradingStatesDataDefinition)) {
@@ -31,6 +28,9 @@ export class TradingStatesDataItem extends FeedSubscriptionDataItem {
             this._marketId = definition.marketId;
         }
     }
+
+    get marketId() { return this._marketId; }
+    get states() { return this._states; }
 
     override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.TradingStates) {

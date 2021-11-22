@@ -14,9 +14,9 @@ import { CoreNgService } from './core-ng.service';
 export class AdiNgService {
     private _adiService: AdiService;
 
-    get adiService() { return this._adiService; }
-
     constructor(coreNgService: CoreNgService) {
         this._adiService = coreNgService.adi;
     }
+
+    get adiService() { return this._adiService; }
 }

@@ -26,15 +26,6 @@ export class ChartHistoryDataItem extends PublisherSubscriptionDataItem {
 
     private _records: ChartHistoryDataItem.Record[] = [];
 
-    get litIvemId() { return this._litIvemId; }
-    get intervalId() { return this._intervalId; }
-    get requestCount() { return this._requestCount; }
-    get fromDate() { return this._fromDate; }
-    get toDate() { return this._toDate; }
-
-    get records() { return this._records; }
-    public get count() { return this._records.length; }
-
     constructor(definition: DataDefinition) {
         super(definition);
 
@@ -48,6 +39,15 @@ export class ChartHistoryDataItem extends PublisherSubscriptionDataItem {
             this._toDate = definition.toDate;
         }
     }
+
+    get litIvemId() { return this._litIvemId; }
+    get intervalId() { return this._intervalId; }
+    get requestCount() { return this._requestCount; }
+    get fromDate() { return this._fromDate; }
+    get toDate() { return this._toDate; }
+
+    get records() { return this._records; }
+    public get count() { return this._records.length; }
 
     override processMessage(msg: DataMessage) { // virtual;
         if (msg.typeId !== DataMessageTypeId.ChartHistory) {

@@ -54,6 +54,23 @@ export class Holding implements BrokerageAccountDataRecord {
     private _changedMultiEvent = new MultiEvent<Holding.ChangedEventHandler>();
     private _correctnessChangedMultiEvent = new MultiEvent<Holding.CorrectnessChangedEventHandler>();
 
+    constructor(private readonly _account: Account,
+        changeData: HoldingsDataMessage.MarketChangeData,
+        private _correctnessId: CorrectnessId
+    ) {
+        this._exchangeId = changeData.exchangeId;
+        this._environmentId = changeData.environmentId;
+        this._code = changeData.code;
+        this._accountId = changeData.accountId;
+        this._styleId = changeData.styleId;
+        this._cost = changeData.cost;
+        this._currencyId = changeData.currencyId;
+        const changeMarketDetail = changeData.marketDetail;
+        this._totalQuantity = changeMarketDetail.totalQuantity;
+        this._totalAvailableQuantity = changeMarketDetail.totalAvailableQuantity;
+        this._averagePrice = changeMarketDetail.averagePrice;
+    }
+
     get account() { return this._account; }
 
     get exchangeId() { return this._exchangeId; }
@@ -86,23 +103,6 @@ export class Holding implements BrokerageAccountDataRecord {
     }
     get ivemId() {
         return new IvemId(this.code, this.exchangeId);
-    }
-
-    constructor(private readonly _account: Account,
-        changeData: HoldingsDataMessage.MarketChangeData,
-        private _correctnessId: CorrectnessId
-    ) {
-        this._exchangeId = changeData.exchangeId;
-        this._environmentId = changeData.environmentId;
-        this._code = changeData.code;
-        this._accountId = changeData.accountId;
-        this._styleId = changeData.styleId;
-        this._cost = changeData.cost;
-        this._currencyId = changeData.currencyId;
-        const changeMarketDetail = changeData.marketDetail;
-        this._totalQuantity = changeMarketDetail.totalQuantity;
-        this._totalAvailableQuantity = changeMarketDetail.totalAvailableQuantity;
-        this._averagePrice = changeMarketDetail.averagePrice;
     }
 
     dispose() {
@@ -383,8 +383,6 @@ export namespace Holding {
 
         private _mapKey: string;
 
-        get mapKey() { return this._mapKey; }
-
         constructor(public exchangeId: ExchangeId,
             public code: string,
             public accountId: BrokerageAccountId,
@@ -392,6 +390,8 @@ export namespace Holding {
         ) {
             this._mapKey = Key.generateMapKey(this.exchangeId, this.code, this.accountId, this.environmentId);
         }
+
+        get mapKey() { return this._mapKey; }
 
         static createNull() {
             // will not match any valid holding

@@ -20,16 +20,16 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
 
     private _pushCommandEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected override get uiAction() {
-        return super.uiAction as ProcessorCommandUiAction;
-    }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
+    }
+
+    protected override get uiAction() {
+        return super.uiAction as ProcessorCommandUiAction;
     }
 
     protected applyValue(value: ProcessorCommandUiAction.Item | undefined) {

@@ -54,10 +54,6 @@ export class TradesDataItem extends MarketSubscriptionDataItem implements Trades
     private _recordChangeMultiEvent = new MultiEvent<TradesDataItem.RecordChangeEventHandler>();
     private _outOfRangeUpdateChangeMultiEvent = new MultiEvent<TradesDataItem.OutOfRangeUpdateChangeEventHandler>();
 
-    get records() { return this._records; }
-    get recordCount() { return this._recordCount; }
-    get mostRecentPriorFirstTradeId() { return this._mostRecentPriorFirstTradeId; }
-
     constructor(MyDataDefinition: DataDefinition) {
         super(MyDataDefinition);
         const tradesSubscriptionDefinition = this.definition as TradesDataDefinition;
@@ -67,6 +63,10 @@ export class TradesDataItem extends MarketSubscriptionDataItem implements Trades
 
         this.reset();
     }
+
+    get records() { return this._records; }
+    get recordCount() { return this._recordCount; }
+    get mostRecentPriorFirstTradeId() { return this._mostRecentPriorFirstTradeId; }
 
     getRecord(idx: Integer) {
         return this._records[idx];

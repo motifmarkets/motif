@@ -11,6 +11,8 @@ import { ExchangeId, ExchangeInfo } from './data-types';
 export class IvemId {
     private _mapKey: MapKey;
 
+    constructor(private _code: string, private _exchangeId: ExchangeId) { }
+
     get code(): string { return this._code; }
     get exchangeId(): ExchangeId { return this._exchangeId; }
 
@@ -21,7 +23,9 @@ export class IvemId {
         return this._mapKey;
     }
 
-    constructor(private _code: string, private _exchangeId: ExchangeId) { }
+    get name(): string {
+        return this._code + '.' + ExchangeInfo.idToName(this._exchangeId);
+    }
 
     static isUndefinableEqual(Left: IvemId | undefined, Right: IvemId | undefined): boolean {
         if (Left === undefined) {
@@ -41,10 +45,6 @@ export class IvemId {
 
     createCopy() {
         return new IvemId(this.code, this.exchangeId);
-    }
-
-    get name(): string {
-        return this._code + '.' + ExchangeInfo.idToName(this._exchangeId);
     }
 
     toJson(): IvemId.PersistJson {

@@ -34,19 +34,6 @@ export class BrokerageAccountSubscriptionDataItem extends SubscribabilityExtentS
     private _account: Account | undefined;
     private _accountCorrectnessChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    get accountId() {
-        return this.accountKey.id;
-    }
-    get account() {
-        return this._account;
-    } // not to be cached
-    get accounts() {
-        return this._accountsDataItem.records;
-    }
-    get accountsUsable() {
-        return this._accountsDataItem.usable;
-    }
-
     constructor(definition: DataDefinition) {
         super(definition);
         if (
@@ -62,6 +49,19 @@ export class BrokerageAccountSubscriptionDataItem extends SubscribabilityExtentS
                 definition.environmentId
             );
         }
+    }
+
+    get accountId() {
+        return this.accountKey.id;
+    }
+    get account() {
+        return this._account;
+    } // not to be cached
+    get accounts() {
+        return this._accountsDataItem.records;
+    }
+    get accountsUsable() {
+        return this._accountsDataItem.usable;
     }
 
     protected override start() {

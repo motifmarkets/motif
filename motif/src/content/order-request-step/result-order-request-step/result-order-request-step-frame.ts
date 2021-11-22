@@ -45,11 +45,11 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
     private _dataItemBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    get order() { return this._order; }
-
     constructor(private readonly _componentAccess: ResultOrderRequestStepFrame.ComponentAccess, private readonly _adi: AdiService) {
         super(OrderRequestStepFrame.StepId.Result);
     }
+
+    get order() { return this._order; }
 
     override finalise() {
         this.checkUnsubscribeDataItem();

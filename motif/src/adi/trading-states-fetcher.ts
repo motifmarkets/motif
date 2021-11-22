@@ -17,11 +17,6 @@ export class TradingStatesFetcher {
 
     private _unsubscribeDateItemFtn: DataItem.UnsubscribeDataItemFtn;
 
-    get badness(): Badness { return this._dataItem.badness; }
-    get completed() { return Correctness.idIsIncubated(this.correctnessId); }
-    get correctnessId(): CorrectnessId { return this._dataItem.correctnessId; }
-    get states() { return this._dataItem.states; }
-
     constructor(marketId: MarketId, subscribeDateItemFtn: DataItem.SubscribeDataItemFtn,
         unsubscribeDateItemFtn: DataItem.UnsubscribeDataItemFtn
     ) {
@@ -37,6 +32,11 @@ export class TradingStatesFetcher {
             );
         }
     }
+
+    get badness(): Badness { return this._dataItem.badness; }
+    get completed() { return Correctness.idIsIncubated(this.correctnessId); }
+    get correctnessId(): CorrectnessId { return this._dataItem.correctnessId; }
+    get states() { return this._dataItem.states; }
 
     finalise() {
         this._dataItem.unsubscribeCorrectnessChangeEvent(this._correctnessChangeSubscriptionId);

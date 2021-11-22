@@ -27,6 +27,10 @@ export class GridLayout {
         }
     }
 
+    get columnCount(): number {
+        return this._recordColumns.length;
+    }
+
     /**
      * Registers a new Field with the Layout
      *
@@ -96,10 +100,6 @@ export class GridLayout {
 
     hasField(fieldName: string): boolean {
         return this._fields.findIndex((field) => field.name === fieldName) >= 0;
-    }
-
-    get columnCount(): number {
-        return this._recordColumns.length;
     }
 
     getColumn(columnIndex: number): GridLayout.Column {

@@ -18,13 +18,13 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
 
     private _pushDecimalEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as DecimalUiAction; }
-
     constructor(cdr: ChangeDetectorRef,
         settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray) {
         super(cdr, settingsService, stateColorItemIdArray);
     }
+
+    public override get uiAction() { return super.uiAction as DecimalUiAction; }
 
     protected applyValue(value: Decimal | undefined) {
         this.markForCheck();

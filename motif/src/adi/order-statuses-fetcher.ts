@@ -17,11 +17,6 @@ export class OrderStatusesFetcher {
 
     private _unsubscribeDateItemFtn: DataItem.UnsubscribeDataItemFtn;
 
-    get badness(): Badness { return this._dataItem.badness; }
-    get completed() { return Correctness.idIsIncubated(this.correctnessId); }
-    get correctnessId(): CorrectnessId { return this._dataItem.correctnessId; }
-    get orderStatuses() { return this._dataItem.orderStatuses; }
-
     constructor(tradingFeedId: FeedId, subscribeDateItemFtn: DataItem.SubscribeDataItemFtn,
         unsubscribeDateItemFtn: DataItem.UnsubscribeDataItemFtn
     ) {
@@ -37,6 +32,11 @@ export class OrderStatusesFetcher {
             );
         }
     }
+
+    get badness(): Badness { return this._dataItem.badness; }
+    get completed() { return Correctness.idIsIncubated(this.correctnessId); }
+    get correctnessId(): CorrectnessId { return this._dataItem.correctnessId; }
+    get orderStatuses() { return this._dataItem.orderStatuses; }
 
     finalise() {
         this._dataItem.unsubscribeCorrectnessChangeEvent(this._correctnessChangeSubscriptionId);

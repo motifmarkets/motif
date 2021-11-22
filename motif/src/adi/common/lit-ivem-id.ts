@@ -19,23 +19,9 @@ export class LitIvemId {
 
     constructor(private _code: string, private _litId: MarketId, private _environmentId: ExchangeEnvironmentId) { }
 
-    createCopy() {
-        return new LitIvemId(this.code, this.litId, this.environmentId);
-    }
-
     get code() { return this._code; }
     get litId() { return this._litId; }
     get environmentId() { return this._environmentId; }
-
-    get explicitEnvironmentId() { return this._explicitEnvironmentId; }
-    set explicitEnvironmentId(value: ExchangeEnvironmentId | undefined) {
-        this.explicitEnvironmentId = value;
-        if (value === undefined) {
-            this._environmentId = ExchangeInfo.getDefaultEnvironmentId();
-        } else {
-            this._environmentId = value;
-        }
-    }
 
     get persistKey() {
         if (this._persistKey === undefined) {
@@ -56,6 +42,20 @@ export class LitIvemId {
 
     get ivemId() {
         return new IvemId(this.code, this.exchangeId);
+    }
+
+    get explicitEnvironmentId() { return this._explicitEnvironmentId; }
+    set explicitEnvironmentId(value: ExchangeEnvironmentId | undefined) {
+        this.explicitEnvironmentId = value;
+        if (value === undefined) {
+            this._environmentId = ExchangeInfo.getDefaultEnvironmentId();
+        } else {
+            this._environmentId = value;
+        }
+    }
+
+    createCopy() {
+        return new LitIvemId(this.code, this.litId, this.environmentId);
     }
 
     toJson(): LitIvemId.Json {

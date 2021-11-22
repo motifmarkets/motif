@@ -55,18 +55,6 @@ export class Market implements DataRecord {
     private _tradingMarketBoards: TradingMarketBoards | undefined;
     private _tradingStates: TradingStates = [];
 
-    get usable() { return this._usable; }
-    get correctnessId() { return this._correctnessId; }
-    get tradingStates() { return this._tradingStates; }
-    get tradingMarketBoards() { return this._tradingMarketBoards; }
-
-    get mapKey() {
-        if (this._mapKey === undefined) {
-            this._mapKey = Market.Key.generateMapKey(this.marketId);
-        }
-        return this._mapKey;
-    }
-
     constructor(msgMarket: MarketsDataMessage.Market,
         private _listCorrectnessId: CorrectnessId,
     ) {
@@ -83,6 +71,18 @@ export class Market implements DataRecord {
         this.updateTradingMarketBoards(msgMarket.tradingMarketBoards);
 
         this.updateCorrectness();
+    }
+
+    get usable() { return this._usable; }
+    get correctnessId() { return this._correctnessId; }
+    get tradingStates() { return this._tradingStates; }
+    get tradingMarketBoards() { return this._tradingMarketBoards; }
+
+    get mapKey() {
+        if (this._mapKey === undefined) {
+            this._mapKey = Market.Key.generateMapKey(this.marketId);
+        }
+        return this._mapKey;
     }
 
     initialise(subscribeDateItemFtn: DataItem.SubscribeDataItemFtn,
@@ -531,6 +531,13 @@ export namespace Market {
 
         constructor(public marketId: MarketId | undefined) { }
 
+        get mapKey() {
+            if (this._mapKey === undefined) {
+                this._mapKey = Key.generateMapKey(this.marketId);
+            }
+            return this._mapKey;
+        }
+
         static createNull() {
             // will not match any valid holding
             return new Key(undefined);
@@ -546,13 +553,6 @@ export namespace Market {
             } else {
                 element.setString(Key.jsonTag_MarketId, MarketInfo.idToJsonValue(this.marketId));
             }
-        }
-
-        get mapKey() {
-            if (this._mapKey === undefined) {
-                this._mapKey = Key.generateMapKey(this.marketId);
-            }
-            return this._mapKey;
         }
     }
 

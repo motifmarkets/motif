@@ -500,16 +500,6 @@ export namespace AllBrokerageAccountsDataRecordsDataItem {
         private _listChangeSubscriptionId: MultiEvent.SubscriptionId;
         private _correctnessChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-        get accountMapKey() { return this._dataItem.accountKey.mapKey; }
-        get accountId() { return this._dataItem.accountId; }
-
-        get records() { return this._dataItem.records; }
-        get recordCount() { return this._dataItem.records.length; }
-
-        get incubated() { return this._incubated; }
-        get usable() { return this._dataItem.usable; }
-        get error() { return this._dataItem.error; }
-
         constructor(private _dataItem: DataRecordsBrokerageAccountSubscriptionDataItem<Record>) {
             this._listChangeSubscriptionId = this._dataItem.subscribeListChangeEvent(
                 (listChangeTypeId, idx, count) => this.handleListChangeEvent(listChangeTypeId, idx, count)
@@ -520,6 +510,16 @@ export namespace AllBrokerageAccountsDataRecordsDataItem {
 
             this._incubated = this._dataItem.incubated;
         }
+
+        get accountMapKey() { return this._dataItem.accountKey.mapKey; }
+        get accountId() { return this._dataItem.accountId; }
+
+        get records() { return this._dataItem.records; }
+        get recordCount() { return this._dataItem.records.length; }
+
+        get incubated() { return this._incubated; }
+        get usable() { return this._dataItem.usable; }
+        get error() { return this._dataItem.error; }
 
         dispose() {
             this._dataItem.unsubscribeListChangeEvent(this._listChangeSubscriptionId);

@@ -41,16 +41,23 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
     private _askLevelChangeMultiEvent = new MultiEvent<DepthLevelsDataItem.LevelChangeEventHandler>();
     private _beforeLevelsClearMultiEvent = new MultiEvent<DepthLevelsDataItem.BeforeLevelsClearEventHandler>();
 
-    get depthLevelsDefinition() {
-        return this._depthLevelsDefinition;
-    }
-
     constructor(MyDataDefinition: DataDefinition) {
         super(MyDataDefinition);
         this._depthLevelsDefinition = this
             .definition as DepthLevelsDataDefinition;
 
         this.setMarketId(this._depthLevelsDefinition.litIvemId.litId);
+    }
+
+    get depthLevelsDefinition() {
+        return this._depthLevelsDefinition;
+    }
+
+    get bidRecords() {
+        return this._bidLevels;
+    }
+    get askRecords() {
+        return this._askLevels;
     }
 
     getLevels(sideId: BidAskSideId): DepthLevelsDataItem.Level[] {
@@ -95,13 +102,6 @@ export class DepthLevelsDataItem extends MarketSubscriptionDataItem {
                 this.endUpdate();
             }
         }
-    }
-
-    get bidRecords() {
-        return this._bidLevels;
-    }
-    get askRecords() {
-        return this._askLevels;
     }
 
     subscribeBeforeLevelRemoveEvent(sideId: BidAskSideId, handler: DepthLevelsDataItem.BeforeLevelRemoveEventHandler) {

@@ -21,6 +21,10 @@ export class BrokerageAccountIncubator {
         this._brokerageAccountsDataItemIncubator = new DataItemIncubator(this._adi);
     }
 
+    get incubating() {
+        return this._brokerageAccountsDataItemIncubator.incubating;
+    }
+
     initialise() {
         const brokerageAccountsDefinition = new BrokerageAccountsDataDefinition();
         this._brokerageAccountsDataItemIncubator.initiateSubscribeIncubation(brokerageAccountsDefinition);
@@ -46,10 +50,6 @@ export class BrokerageAccountIncubator {
                 return this.incubateInitialised(accountId);
             }
         }
-    }
-
-    get incubating() {
-        return this._brokerageAccountsDataItemIncubator.incubating;
     }
 
     cancel() {

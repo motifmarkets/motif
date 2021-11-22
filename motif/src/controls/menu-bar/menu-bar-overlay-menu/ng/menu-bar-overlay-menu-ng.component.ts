@@ -41,10 +41,6 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
     private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get menu() {
-        return this._menu;
-    }
-
     constructor(
         cdr: ChangeDetectorRef,
         private readonly _elRef: ElementRef<HTMLElement>,
@@ -78,6 +74,10 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
         this._menu.getIsMouseOverEvent = (mouseClientX, mouseClientY) =>
             this.handleGetIsMouseOverEvent(mouseClientX, mouseClientY);
         this._menu.flagRendered();
+    }
+
+    protected get menu() {
+        return this._menu;
     }
 
     ngOnDestroy() {

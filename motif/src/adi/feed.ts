@@ -21,16 +21,6 @@ export class Feed implements DataRecord {
     private _correctnessChangedEvent = new MultiEvent<Feed.CorrectnessChangedEventHandler>();
     private _listCorrectnessChangedEvent = new MultiEvent<Feed.CorrectnessChangedEventHandler>();
 
-    get usable() { return this._usable; }
-    get statusId() { return this._statusId; }
-    get correctnessId() { return this._correctnessId; }
-
-    // OrderStatuses DataItem is needs to know when base correctness is usable.  (It determines when usable is set)
-    get baseUsable() { return Correctness.idIsUsable(this._listCorrectnessId); }
-    get listCorrectnessId() { return this._listCorrectnessId; }
-
-    get mapKey() { return this.name; }
-
     constructor(public readonly id: FeedId,
         public readonly environmentId: ExchangeEnvironmentId | undefined,
         private _statusId: FeedStatusId,
@@ -41,6 +31,16 @@ export class Feed implements DataRecord {
         this.classId = FeedInfo.idToClassId(this.id);
         this._correctnessId = this._listCorrectnessId;
     }
+
+    get usable() { return this._usable; }
+    get statusId() { return this._statusId; }
+    get correctnessId() { return this._correctnessId; }
+
+    // OrderStatuses DataItem is needs to know when base correctness is usable.  (It determines when usable is set)
+    get baseUsable() { return Correctness.idIsUsable(this._listCorrectnessId); }
+    get listCorrectnessId() { return this._listCorrectnessId; }
+
+    get mapKey() { return this.name; }
 
     dispose() {
         // available for descendants to override
@@ -232,13 +232,13 @@ export namespace Feed {
             this._mapKey = Key.generateMapKey(this.name);
         }
 
+        get mapKey() {
+            return this._mapKey;
+        }
+
         static createNull() {
             // will not match any valid holding
             return new Key('');
-        }
-
-        get mapKey() {
-            return this._mapKey;
         }
 
         saveToJson(element: JsonElement) {

@@ -5,9 +5,9 @@
  */
 
 export abstract class BaseNgService {
-    get id() { return this._id; }
-
     constructor(private _id: BaseNgService.Id) { }
+
+    get id() { return this._id; }
 }
 
 export namespace BaseNgService {

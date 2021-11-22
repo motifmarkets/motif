@@ -40,6 +40,13 @@ export class Balances implements BrokerageAccountDataRecord {
     private _changedMultiEvent = new MultiEvent<Balances.ChangedEventHandler>();
     private _correctnessChangedMultiEvent = new MultiEvent<Balances.FeedCorrectnessChangedEventHandler>();
 
+    constructor(private readonly _account: Account,
+        private readonly _currencyId: CurrencyId,
+        private _correctnessId: CorrectnessId
+    ) {
+        this._mapKey = Balances.Key.generateMapKey(this.accountId, this.environmentId, this.currencyId);
+    }
+
     get accountId() { return this._account.id; }
     get environmentId() { return this._account.environmentId; }
     get currencyId() { return this._currencyId; }
@@ -54,13 +61,6 @@ export class Balances implements BrokerageAccountDataRecord {
 
     get mapKey() { return this._mapKey; }
     get accountMapKey() { return this._account.mapKey; }
-
-    constructor(private readonly _account: Account,
-        private readonly _currencyId: CurrencyId,
-        private _correctnessId: CorrectnessId
-    ) {
-        this._mapKey = Balances.Key.generateMapKey(this.accountId, this.environmentId, this.currencyId);
-    }
 
     dispose() {
         // no resources to release
@@ -356,14 +356,17 @@ export namespace Balances {
 
         private _mapKey: string;
 
-        get mapKey() { return this._mapKey; }
-
         constructor(public accountId: BrokerageAccountId,
             public environmentId: ExchangeEnvironmentId,
             public currencyId: CurrencyId,
         ) {
             this._mapKey = Key.generateMapKey(this.accountId, this.environmentId, this.currencyId);
         }
+
+        get mapKey() { return this._mapKey; }
+        // get generateMapKey() {
+        //     return this._mapKey;
+        // }
 
         static createNull() {
             // will not match any valid holding
@@ -376,10 +379,6 @@ export namespace Balances {
             if (includeEnvironment) {
                 element.setString(Key.JsonTag_EnvironmentId, ExchangeEnvironment.idToJsonValue(this.environmentId));
             }
-        }
-
-        get generateMapKey() {
-            return this._mapKey;
         }
     }
 

@@ -14,11 +14,11 @@ export class ZenithQueryConfigureDataDefinition extends PublisherSubscriptionDat
 
     controller: Zenith.MessageContainer.Controller;
 
-    get referencable() { return false; }
-
     constructor() {
         super(DataChannelId.ZenithQueryConfigure);
     }
+
+    get referencable() { return false; }
 
     protected override getDescription(): string {
         return super.getDescription() + ' Controller: ' + this.controller;

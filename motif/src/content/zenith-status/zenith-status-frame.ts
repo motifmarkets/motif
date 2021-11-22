@@ -29,6 +29,12 @@ export class ZenithStatusFrame extends ContentFrame {
     private _serverInfoFieldValuesChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
+    constructor(private _componentAccess: ZenithStatusFrame.ComponentAccess, private _adi: AdiService,
+        public readonly endpoint: string
+    ) {
+        super();
+    }
+
     // PublisherOnlineChangeEvent
     get publisherOnline() { return this._extConnectionDataItem.publisherOnline ? Strings[StringId.Online] : Strings[StringId.Offline]; }
     get publisherOnlineChangeHistory() { return this._extConnectionDataItem.publisherOnlineChangeHistory; }
@@ -84,12 +90,6 @@ export class ZenithStatusFrame extends ContentFrame {
     get serverClass() { return this._serverInfoDataItem.serverClass === undefined ? '' : this._serverInfoDataItem.serverClass; }
     get softwareVersion() { return this._serverInfoDataItem.softwareVersion === undefined ? '' : this._serverInfoDataItem.softwareVersion; }
     get protocolVersion() { return this._serverInfoDataItem.protocolVersion === undefined ? '' : this._serverInfoDataItem.protocolVersion; }
-
-    constructor(private _componentAccess: ZenithStatusFrame.ComponentAccess, private _adi: AdiService,
-        public readonly endpoint: string
-    ) {
-        super();
-    }
 
     initialise() {
         this.subscribeZenithExtConnection();

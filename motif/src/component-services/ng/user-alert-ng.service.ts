@@ -13,9 +13,9 @@ import { UserAlertService } from 'src/sys/internal-api';
 export class UserAlertNgService {
     private _service: UserAlertService;
 
-    get service() { return this._service; }
-
     constructor() {
         this._service = new UserAlertService();
     }
+
+    get service() { return this._service; }
 }

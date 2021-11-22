@@ -16,9 +16,12 @@ import {
 import { Movement, MovementId, OrderTriggerTypeId } from './data-types';
 
 export abstract class OrderTrigger {
+    constructor(private _typeId: OrderTriggerTypeId) { }
+
     get typeId() { return this._typeId; }
 
-    constructor(private _typeId: OrderTriggerTypeId) { }
+    abstract get value(): Decimal | undefined;
+    abstract get extraParamsText(): string | undefined;
 
     static isEqual(left: OrderTrigger, right: OrderTrigger) {
         if (left.typeId !== right.typeId) {
@@ -32,8 +35,10 @@ export abstract class OrderTrigger {
                 case OrderTriggerTypeId.TrailingPrice:
                     return TrailingPriceOrderTrigger.isEqual(left as TrailingPriceOrderTrigger, right as TrailingPriceOrderTrigger);
                 case OrderTriggerTypeId.PercentageTrailingPrice:
-                    return PercentageTrailingPriceOrderTrigger.isEqual(left as PercentageTrailingPriceOrderTrigger,
-                                                                       right as PercentageTrailingPriceOrderTrigger);
+                    return PercentageTrailingPriceOrderTrigger.isEqual(
+                        left as PercentageTrailingPriceOrderTrigger,
+                        right as PercentageTrailingPriceOrderTrigger
+                    );
                 case OrderTriggerTypeId.Overnight:
                     return OvernightOrderTrigger.isEqual(left as OvernightOrderTrigger, right as OvernightOrderTrigger);
                 default:
@@ -43,14 +48,18 @@ export abstract class OrderTrigger {
     }
 
     abstract createCopy(): OrderTrigger;
-
-    abstract get value(): Decimal | undefined;
-    abstract get extraParamsText(): string | undefined;
 }
 
 export class ImmediateOrderTrigger extends OrderTrigger {
     constructor() {
         super(OrderTriggerTypeId.Immediate);
+    }
+
+    get value() {
+        return undefined;
+    }
+    get extraParamsText() {
+        return undefined;
     }
 
     static override isEqual(left: ImmediateOrderTrigger, right: ImmediateOrderTrigger) {
@@ -60,23 +69,10 @@ export class ImmediateOrderTrigger extends OrderTrigger {
     createCopy() {
         return new ImmediateOrderTrigger();
     }
-
-    get value() {
-        return undefined;
-    }
-    get extraParamsText() {
-        return undefined;
-    }
 }
 
 export class PriceOrderTrigger extends OrderTrigger {
     private readonly _extraParamsText: string;
-
-    get value() { return this._value; }
-    get fieldId() { return this._fieldId; }
-    get movementId() { return this._movementId; }
-
-    get extraParamsText() { return this._extraParamsText; }
 
     constructor(
         private readonly _value: Decimal | undefined,
@@ -86,6 +82,12 @@ export class PriceOrderTrigger extends OrderTrigger {
         super(OrderTriggerTypeId.Price);
         this._extraParamsText = this.generateExtraParamsText();
     }
+
+    get value() { return this._value; }
+    get fieldId() { return this._fieldId; }
+    get movementId() { return this._movementId; }
+
+    get extraParamsText() { return this._extraParamsText; }
 
     createCopy() {
         return new PriceOrderTrigger(newUndefinableDecimal(this._value), this._fieldId, this._movementId);
@@ -169,16 +171,16 @@ export class TrailingPriceOrderTrigger extends OrderTrigger {
     limit: Decimal;
     stop: Decimal | undefined;
 
-    get extraParamsText() { return undefined; }
-
     constructor() {
         super(OrderTriggerTypeId.TrailingPrice);
     }
 
+    get extraParamsText() { return undefined; }
+
     static override isEqual(left: TrailingPriceOrderTrigger, right: TrailingPriceOrderTrigger) {
         return isDecimalEqual(left.value, right.value)
-               && isDecimalEqual(left.limit, right.limit)
-               && isUndefinableDecimalEqual(left.stop, right.stop);
+            && isDecimalEqual(left.limit, right.limit)
+            && isUndefinableDecimalEqual(left.stop, right.stop);
     }
 
     createCopy() {
@@ -195,16 +197,16 @@ export class PercentageTrailingPriceOrderTrigger extends OrderTrigger {
     limit: Decimal;
     stop: Decimal | undefined;
 
-    get extraParamsText() { return undefined; }
-
     constructor() {
         super(OrderTriggerTypeId.PercentageTrailingPrice);
     }
 
+    get extraParamsText() { return undefined; }
+
     static override isEqual(left: PercentageTrailingPriceOrderTrigger, right: PercentageTrailingPriceOrderTrigger) {
         return isDecimalEqual(left.value, right.value)
-               && isDecimalEqual(left.limit, right.limit)
-               && isUndefinableDecimalEqual(left.stop, right.stop);
+            && isDecimalEqual(left.limit, right.limit)
+            && isUndefinableDecimalEqual(left.stop, right.stop);
     }
 
     createCopy() {
@@ -217,19 +219,11 @@ export class PercentageTrailingPriceOrderTrigger extends OrderTrigger {
 }
 
 export class OvernightOrderTrigger extends OrderTrigger {
-    get extraParamsText() { return undefined; }
-
     constructor() {
         super(OrderTriggerTypeId.Immediate);
     }
 
-    static override isEqual(left: OvernightOrderTrigger, right: OvernightOrderTrigger) {
-        return true;
-    }
-
-    createCopy() {
-        return new ImmediateOrderTrigger();
-    }
+    get extraParamsText() { return undefined; }
 
     get value() {
         return undefined;
@@ -239,6 +233,14 @@ export class OvernightOrderTrigger extends OrderTrigger {
     }
     get stop() {
         return undefined;
+    }
+
+    static override isEqual(left: OvernightOrderTrigger, right: OvernightOrderTrigger) {
+        return true;
+    }
+
+    createCopy() {
+        return new ImmediateOrderTrigger();
     }
 }
 

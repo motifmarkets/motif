@@ -21,15 +21,15 @@ export abstract class Publisher {
 
     private _batchSubscriptionChanges: boolean;
 
-    get publisherTypeId(): PublisherTypeId { return this._publisherTypeId; }
-    get id(): Integer { return this._id; }
-    get batchSubscriptionChanges(): boolean { return this._batchSubscriptionChanges; }
-    set batchSubscriptionChanges(value: boolean) { this._batchSubscriptionChanges = value; }
-
     constructor(publisherTypeId?: PublisherTypeId) {
         this._publisherTypeId = (publisherTypeId) ? publisherTypeId : this.getPublisherTypeId();
         this._id = TUID.getUID();
     }
+
+    get publisherTypeId(): PublisherTypeId { return this._publisherTypeId; }
+    get id(): Integer { return this._id; }
+    get batchSubscriptionChanges(): boolean { return this._batchSubscriptionChanges; }
+    set batchSubscriptionChanges(value: boolean) { this._batchSubscriptionChanges = value; }
 
     finalise(): boolean { // virtual
         // The Finalise function will be called when Pulse is shutting down.

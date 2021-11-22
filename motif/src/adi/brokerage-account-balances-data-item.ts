@@ -312,6 +312,12 @@ export namespace BalancesDataItem {
         private _balances: Balances.BalanceValue[];
         private _balanceCount = 0;
 
+        constructor(private _currencyId: CurrencyId, private _mapKey: MapKey) {
+            this._balances = new Array<Balances.BalanceValue>(
+                AddUpdateDeleteItem.defaultBalanceCapacityEstimate
+            );
+        }
+
         get balances() {
             return this._balances;
         }
@@ -324,12 +330,6 @@ export namespace BalancesDataItem {
         }
         get mapKey() {
             return this._mapKey;
-        }
-
-        constructor(private _currencyId: CurrencyId, private _mapKey: MapKey) {
-            this._balances = new Array<Balances.BalanceValue>(
-                AddUpdateDeleteItem.defaultBalanceCapacityEstimate
-            );
         }
 
         mergeAddUpdateChange(change: BalancesDataMessage.AddUpdateChange) {
@@ -409,6 +409,10 @@ export namespace BalancesDataItem {
         private _firstUpdateIndex: Integer;
         private _updateCount: Integer;
 
+        constructor() {
+            super(AddUpdateDeleteList.compareItems);
+        }
+
         get firstDeleteIndex() {
             return this._firstDeleteIndex;
         }
@@ -426,10 +430,6 @@ export namespace BalancesDataItem {
         }
         get updateCount() {
             return this._updateCount;
-        }
-
-        constructor() {
-            super(AddUpdateDeleteList.compareItems);
         }
 
         override sort() {

@@ -24,15 +24,15 @@ export abstract class DataRecordsBrokerageAccountSubscriptionDataItem<Record ext
     private _beforeRecordChangeMultiEvent = new MultiEvent<DataRecordList.BeforeRecordChangeEventHandler>();
     private _afterRecordChangedMultiEvent = new MultiEvent<DataRecordList.AfterRecordChangedEventHandler>();
 
-    get brokerageAccountGroup() { return this._brokerageAccountGroup; }
-
-    get records() { return this._records; }
-    get count() { return this._records.length; }
-
     constructor(definition: DataDefinition) {
         super(definition);
         this._brokerageAccountGroup = new SingleBrokerageAccountGroup(this.accountKey);
     }
+
+    get brokerageAccountGroup() { return this._brokerageAccountGroup; }
+
+    get records() { return this._records; }
+    get count() { return this._records.length; }
 
     getRecordByMapKey(mapKey: MapKey) {
         return this._recordsMap.get(mapKey);

@@ -31,14 +31,14 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private _dataItem: BrokerageAccountsDataItem;
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
-    protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
-
     constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
         pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
         this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adi);
     }
+
+    protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
 
     focus() {
         // this does not work.  needs further investigation

@@ -19,9 +19,9 @@ export abstract class OrderDetails {
     brokerageSchedule: string | undefined;
     instructions: readonly string[] | undefined;
 
-    get styleId() { return this._styleId; }
-
     constructor(private _styleId: IvemClassId) { }
+
+    get styleId() { return this._styleId; }
 
     protected assign(other: OrderDetails) {
         this.exchangeId = other.exchangeId;

@@ -49,15 +49,15 @@ export class LatestTradingDayTradesDataItem extends DataItem implements TradesDa
     private _listChangeMultiEvent = new MultiEvent<TradesDataItem.ListChangeEventHandler>();
     private _recordChangeMultiEvent = new MultiEvent<TradesDataItem.RecordChangeEventHandler>();
 
-    get recordCount() {
-        return this._recordCount;
-    }
-
     constructor(dataDefinition: DataDefinition) {
         super(dataDefinition);
         const typedDefinition = this
             .definition as LatestTradingDayTradesDataDefinition;
         this._litIvemId = typedDefinition.litIvemId;
+    }
+
+    get recordCount() {
+        return this._recordCount;
     }
 
     getRecord(idx: Integer) {

@@ -15,11 +15,11 @@ import { CoreNgService } from './core-ng.service';
 export class SymbolsNgService {
     private _symbolsManager: SymbolsService;
 
-    get symbolsManager() { return this._symbolsManager; }
-
     constructor(coreNgService: CoreNgService) {
         this._symbolsManager = coreNgService.symbolsManager;
     }
+
+    get symbolsManager() { return this._symbolsManager; }
 
     litIvemIdToDisplay(litIvemId: LitIvemId): string {
         return this._symbolsManager.litIvemIdToDisplay(litIvemId);

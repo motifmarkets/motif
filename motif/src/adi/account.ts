@@ -34,24 +34,6 @@ export class Account implements DataRecord {
     private _changeEvent = new MultiEvent<Account.ChangeEventHandler>();
     private _correctnessChangedEvent = new MultiEvent<Account.CorrectnessChangedEventHandler>();
 
-    get id() { return this._id; }
-    get upperId() { return this._upperId; }
-    get name() { return this._name; }
-    get upperName() { return this._upperName; }
-    get environmentId() { return this._environmentId; }
-    get tradingFeed() { return this._tradingFeed; }
-    get currencyId() { return this._currencyId; }
-
-    get usable() { return this._usable; }
-    get correctnessId() { return this._correctnessId; }
-
-    get mapKey() {
-        if (this._mapKey === undefined) {
-            this._mapKey = Account.Key.generateMapKey(this.id, this.environmentId);
-        }
-        return this._mapKey;
-    }
-
     constructor(private _id: Account.Id,
         private _name: string,
         private _environmentId: ExchangeEnvironmentId,
@@ -69,6 +51,24 @@ export class Account implements DataRecord {
             () => this.updateCorrectness()
         );
         this.updateCorrectness();
+    }
+
+    get id() { return this._id; }
+    get upperId() { return this._upperId; }
+    get name() { return this._name; }
+    get upperName() { return this._upperName; }
+    get environmentId() { return this._environmentId; }
+    get tradingFeed() { return this._tradingFeed; }
+    get currencyId() { return this._currencyId; }
+
+    get usable() { return this._usable; }
+    get correctnessId() { return this._correctnessId; }
+
+    get mapKey() {
+        if (this._mapKey === undefined) {
+            this._mapKey = Account.Key.generateMapKey(this.id, this.environmentId);
+        }
+        return this._mapKey;
     }
 
     dispose() {
@@ -280,13 +280,13 @@ export namespace Account {
 
         private _mapKey: MapKey;
 
-        get id() { return this._id; }
-        get environmentId() { return this._environmentId; }
-        get mapKey() { return this._mapKey; }
-
         constructor(private _id: Account.Id, private _environmentId: ExchangeEnvironmentId) {
             this._mapKey = Key.generateMapKey(this.id, this.environmentId);
         }
+
+        get id() { return this._id; }
+        get environmentId() { return this._environmentId; }
+        get mapKey() { return this._mapKey; }
 
         static createNull() {
             // will not match any valid holding

@@ -59,12 +59,28 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    get gridRowHeight() { return this._grid.rowHeight; }
-    get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
-
     constructor(private readonly _componentAccess: TableFrame.ComponentAccess, private readonly _settingsService: SettingsService) {
         super();
     }
+
+    get gridRowHeight() { return this._grid.rowHeight; }
+    get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
+
+    // ILocker members
+
+    get lockerName(): string {
+        if (this._table === undefined) {
+            throw new AssertInternalError('TFGLNT20095');
+        } else {
+            return this._componentAccess.id + ':' + this._table.name;
+        }
+    }
+
+    // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
+    // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
+    get table(): Table | undefined { return this._table; }
+    get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
+    get tableOpened(): boolean { return this._table !== undefined; }
 
     override finalise() {
         if (!this.finalised) {
@@ -126,16 +142,6 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     subscriberInterfaceDescriminator() {
         // no code
-    }
-
-    // ILocker members
-
-    get lockerName(): string {
-        if (this._table === undefined) {
-            throw new AssertInternalError('TFGLNT20095');
-        } else {
-            return this._componentAccess.id + ':' + this._table.name;
-        }
     }
 
     // IOpener members
@@ -793,12 +799,6 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             };
         }
     }
-
-    // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
-    // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
-    get table(): Table | undefined { return this._table; }
-    get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
-    get tableOpened(): boolean { return this._table !== undefined; }
 
     private handleSettingChangedEvent() {
         this.applySettings();
