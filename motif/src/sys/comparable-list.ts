@@ -15,18 +15,19 @@ export class ComparableList<T> {
     private _count: Integer = 0;
     private _compareItemsFtn: CompareFtn<T>;
 
-    get items() { return this._items; }
-    get capacity(): Integer { return this.getCapacity(); }
-    set capacity(value: Integer) { this.setCapacity(value); }
-    get count(): Integer { return this._count; }
-    set count(value: Integer) { this.setCount(value); }
-    get lastIndex() { return this._count - 1; }
-
     constructor(compareItemsFtn?: CompareFtn<T>) {
         if (compareItemsFtn !== undefined) {
             this._compareItemsFtn = compareItemsFtn;
         }
     }
+
+    get items() { return this._items; }
+    get lastIndex() { return this._count - 1; }
+    get capacity(): Integer { return this.getCapacity(); }
+    set capacity(value: Integer) { this.setCapacity(value); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get count(): Integer { return this._count; }
+    set count(value: Integer) { this.setCount(value); }
 
     getItem(index: Integer): T {
         this.checkItemRangeInline(index);

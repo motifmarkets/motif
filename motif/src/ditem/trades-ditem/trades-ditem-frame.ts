@@ -15,8 +15,6 @@ import { DitemFrame } from '../ditem-frame';
 export class TradesDitemFrame extends BuiltinDitemFrame {
     private _contentFrame: TradesFrame;
 
-    get initialised() { return this._contentFrame !== undefined; }
-
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -28,6 +26,8 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
             commandRegisterService, desktopAccessService, symbolsMgr, adi
         );
     }
+
+    get initialised() { return this._contentFrame !== undefined; }
 
     initialise(tradesContentFrame: TradesFrame, frameElement: JsonElement | undefined): void {
         this._contentFrame = tradesContentFrame;

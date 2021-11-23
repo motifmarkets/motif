@@ -50,10 +50,6 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     private _frame: BalancesDitemFrame;
 
-    protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -78,6 +74,10 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.pushAccountLinkButtonState();
         this._accountGroupUiAction.pushValue(BrokerageAccountGroup.createAll());
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
         assert(this._tableComponent !== undefined, 'BDCNAVI22953');

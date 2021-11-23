@@ -22,6 +22,8 @@ import { OrderTimeInForceImplementation } from './order-time-in-force-api-implem
 import { OrderTypeImplementation } from './order-type-api-implementation';
 
 export class OrderRouteImplementation implements OrderRouteApi {
+    constructor(private readonly _actual: OrderRoute) { }
+
     get actual() { return this._actual; }
 
     get algorithm() { return OrderRouteAlgorithmImplementation.toApi(this._actual.algorithmId); }
@@ -30,8 +32,6 @@ export class OrderRouteImplementation implements OrderRouteApi {
     get code() { return this._actual.code; }
     get name() { return this._actual.name; }
     get display() { return this._actual.display; }
-
-    constructor(private readonly _actual: OrderRoute) { }
 
     createCopy() {
         const orderRoute = this._actual.createCopy();

@@ -18,8 +18,6 @@ export class OhlcIntervalHistorySequenceSeries extends IntervalHistorySequenceSe
     private _pointUpdatedEventSubscriptionId: MultiEvent.SubscriptionId;
     private _emptyIntervalsInsertedEventSubscriptionId: MultiEvent.SubscriptionId;
 
-    get points() { return this._points; }
-
     constructor(sequencer: IntervalHistorySequencer) {
         super(sequencer);
         this._pointInsertedEventSubscriptionId = this.intervalSequencer.subscribePointInsertedEvent(
@@ -32,6 +30,8 @@ export class OhlcIntervalHistorySequenceSeries extends IntervalHistorySequenceSe
             (index, count) => this.handleEmptyIntervalsInsertedEvent(index, count)
         );
     }
+
+    get points() { return this._points; }
 
     override finalise() {
         this.intervalSequencer.unsubscribePointInsertedEvent(this._pointInsertedEventSubscriptionId);

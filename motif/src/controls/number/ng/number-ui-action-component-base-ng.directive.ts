@@ -20,14 +20,14 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
     private _numberFormat: Intl.NumberFormat = new Intl.NumberFormat(undefined, { useGrouping: false });
     private _pushNumberEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get numberFormat() { return this._numberFormat; }
-
-    public override get uiAction() { return super.uiAction as NumberUiAction; }
-
     constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray) {
         super(cdr, settingsService, stateColorItemIdArray);
     }
+
+    public override get uiAction() { return super.uiAction as NumberUiAction; }
+
+    protected get numberFormat() { return this._numberFormat; }
 
     onInput(value: string): void {
         this.input(value);

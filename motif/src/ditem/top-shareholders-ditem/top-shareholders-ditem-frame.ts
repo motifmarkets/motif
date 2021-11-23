@@ -26,8 +26,6 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
     private _historicalDate: Date | undefined;
     private _compareDate: Date | undefined;
 
-    get initialised() { return this._tableFrame !== undefined; }
-
     constructor(
         private readonly _componentAccess: TopShareholdersDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -39,6 +37,8 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
             commandRegisterService, desktopAccessService, mySymbolsMgr, myAdi
         );
     }
+
+    get initialised() { return this._tableFrame !== undefined; }
 
     initialise(contentFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = contentFrame;

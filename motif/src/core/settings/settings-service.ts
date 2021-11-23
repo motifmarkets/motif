@@ -31,13 +31,6 @@ export class SettingsService {
     private _masterChangedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
     private _changedMultiEvent = new MultiEvent<SettingsService.ChangedEventHandler>();
 
-    get saveRequired() { return this._saveRequired; }
-    get restartRequired() { return this._restartRequired; }
-    get master() { return this._master; }
-    get core() { return this._core; }
-    get exchanges() { return this._exchanges; }
-    get color() { return this._color; }
-
     constructor() {
         // automatically create master group but handle differently from others.
         this._master = new MasterSettings();
@@ -53,6 +46,13 @@ export class SettingsService {
         this._exchanges = new ExchangesSettings();
         this.register(this._exchanges);
     }
+
+    get saveRequired() { return this._saveRequired; }
+    get restartRequired() { return this._restartRequired; }
+    get master() { return this._master; }
+    get core() { return this._core; }
+    get exchanges() { return this._exchanges; }
+    get color() { return this._color; }
 
     register(group: SettingsGroup) {
         const existingIdx = this.indexOfGroupName(group.name);

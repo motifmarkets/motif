@@ -275,6 +275,14 @@ export namespace TableDirectory {
             return this._table;
         }
 
+        get lockCount() {
+            return this.lockers.length;
+        }
+
+        get openCount() {
+            return this.openers.length;
+        }
+
         open(opener: Opener) {
             this.openers.push(opener);
             if (this.openers.length === 1) {
@@ -297,10 +305,6 @@ export namespace TableDirectory {
             }
         }
 
-        get openCount() {
-            return this.openers.length;
-        }
-
         lock(locker: Locker) {
             this.lockers.push(locker);
         }
@@ -315,10 +319,6 @@ export namespace TableDirectory {
             } else {
                 this.lockers.splice(idx, 1);
             }
-        }
-
-        get lockCount() {
-            return this.lockers.length;
         }
 
         isLocked(ignoreLocker: Locker | undefined) {

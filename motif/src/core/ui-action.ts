@@ -37,6 +37,16 @@ export abstract class UiAction {
     private _stateTitleActive = false;
     private _placeholder: string;
 
+    constructor(valueRequired: boolean | undefined = true) {
+        if (valueRequired === false) {
+            this._valueRequired = false;
+            this._stateId = UiAction.StateId.Valid;
+        } else {
+            this._valueRequired = true;
+            this._stateId = UiAction.StateId.Missing;
+        }
+    }
+
     get stateId() { return this._stateId; }
     get enabled() { return this._stateId !== UiAction.StateId.Disabled; }
     get edited() { return this._edited; }
@@ -48,7 +58,6 @@ export abstract class UiAction {
     get title() { return this._title; }
     get placeholder() { return this._placeholder; }
 
-    abstract get valueUndefined(): boolean;
     get valueRequired() { return this._valueRequired; }
     set valueRequired(value: boolean) {
         if (value !== this._valueRequired) {
@@ -74,33 +83,34 @@ export abstract class UiAction {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get commitOnAnyValidInput() { return this._commitOnAnyValidInput; }
     set commitOnAnyValidInput(value: boolean) { this._commitOnAnyValidInput = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoAcceptanceTypeId() { return this._autoAcceptanceTypeId; }
     set autoAcceptanceTypeId(value: UiAction.AutoAcceptanceTypeId) { this._autoAcceptanceTypeId = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoEchoCommit() { return this._autoEchoCommit; }
     set autoEchoCommit(value: boolean) { this._autoEchoCommit = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoInvalid() { return this._autoInvalid; }
     set autoInvalid(value: boolean) { this._autoInvalid = value; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get commitEvent() { return this._commitEvent; }
     set commitEvent(value: UiAction.CommitEventHandler | undefined) { this._commitEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get inputEvent() { return this._inputEvent; }
     set inputEvent(value: UiAction.InputEventHandler | undefined) { this._inputEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get signalEvent() { return this._signalEvent; }
     set signalEvent(value: UiAction.SignalEventHandler | undefined) { this._signalEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get editedChangeEvent() { return this._editedChangeEvent; }
     set editedChangeEvent(value: UiAction.EditedChangeEventHandler | undefined) { this._editedChangeEvent = value; }
 
-    constructor(valueRequired: boolean | undefined = true) {
-        if (valueRequired === false) {
-            this._valueRequired = false;
-            this._stateId = UiAction.StateId.Valid;
-        } else {
-            this._valueRequired = true;
-            this._stateId = UiAction.StateId.Missing;
-        }
-    }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    abstract get valueUndefined(): boolean;
 
     finalise() {
         // for descendants (if required)

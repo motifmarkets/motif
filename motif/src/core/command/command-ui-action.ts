@@ -16,15 +16,15 @@ export class CommandUiAction extends BooleanUiAction {
 
     private _commandPushMultiEvent = new MultiEvent<CommandUiAction.PushEventHandlersInterface>();
 
-    get command() { return this._command; }
-    get accessKey() { return this._accessKey; }
-    get accessibleCaption() { return this._accessibleCaption; }
-
     constructor(private _command: Command) {
         super(false);
         const caption = extStrings[this._command.extensionHandle][this._command.defaultDisplayIndex];
         this.pushCaption(caption);
     }
+
+    get command() { return this._command; }
+    get accessKey() { return this._accessKey; }
+    get accessibleCaption() { return this._accessibleCaption; }
 
     override pushCaption(caption: string) {
         super.pushCaption(caption);

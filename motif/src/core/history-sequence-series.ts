@@ -13,11 +13,11 @@ export abstract class HistorySequenceSeries implements HistorySequenceSeriesInte
     private _pointsInsertedMultiEvent = new MultiEvent<HistorySequenceSeriesInterface.PointsInsertedEventHandler>();
     private _pointUpdatedMultiEvent = new MultiEvent<HistorySequenceSeriesInterface.PointUpdatedEventHandler>();
 
+    constructor(private _sequencer: HistorySequencer) { }
+
     get sequencer() { return this._sequencer; }
 
     get pointCount() { return this.getPointCount(); }
-
-    constructor(private _sequencer: HistorySequencer) { }
 
     finalise() {
         this.clear();

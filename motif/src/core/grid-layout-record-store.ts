@@ -17,6 +17,10 @@ export class GridLayoutRecordStore implements RevRecordStore {
 
     constructor() { }
 
+    get recordCount(): number {
+        return this._layout.columnCount;
+    }
+
     setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
         this.fieldsEventers = fieldsEventers;
     }
@@ -67,10 +71,6 @@ export class GridLayoutRecordStore implements RevRecordStore {
 
     getRecords() {
         return this._layout.getRecords();
-    }
-
-    get recordCount(): number {
-        return this._layout.columnCount;
     }
 }
 

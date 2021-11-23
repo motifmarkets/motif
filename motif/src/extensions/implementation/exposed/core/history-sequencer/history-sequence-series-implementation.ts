@@ -12,12 +12,12 @@ import {
 } from '../../../../api/extension-api';
 
 export abstract class HistorySequenceSeriesImplementation implements HistorySequenceSeriesApi {
-    abstract get actual(): HistorySequenceSeries;
-    get pointCount() { return this.actual.pointCount; }
-
     constructor() {
 
     }
+
+    get pointCount() { return this.actual.pointCount; }
+    abstract get actual(): HistorySequenceSeries;
 
     finalise() {
         this.actual.finalise();

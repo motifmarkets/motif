@@ -61,10 +61,6 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     private _modeId = EtoPriceQuotationDitemNgComponent.ModeId.Input;
     private _frame: EtoPriceQuotationDitemFrame;
 
-    protected get stateSchemaVersion() { return EtoPriceQuotationDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -88,6 +84,10 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
 
         this.pushSymbol();
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return EtoPriceQuotationDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
         delay1Tick(() => this.initialise());

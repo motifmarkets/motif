@@ -20,9 +20,9 @@ import { ApiContentComponentFactory } from './api-content-component-factory';
 export class ContentSvcImplementation implements ContentSvc {
     private _components: ContentComponentImplementation[] = [];
 
-    get components() { return this._components; }
-
     constructor(private readonly _componentFactory: ApiContentComponentFactory) { }
+
+    get components() { return this._components; }
 
     public destroyAllComponents() {
         const count = this._components.length;

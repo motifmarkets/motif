@@ -469,149 +469,196 @@ export class CoreSettings extends TypedKeyValueSettingsGroup {
     get symbol_DefaultParseModeAuto() { return this._symbol_DefaultParseModeAuto; }
     set symbol_DefaultParseModeAuto(value: boolean) { this._symbol_DefaultParseModeAuto = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_DefaultParseModeAuto); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_ExplicitDefaultParseModeId() { return this._symbol_ExplicitDefaultParseModeId; }
     set symbol_ExplicitDefaultParseModeId(value: TypedKeyValueSettings.EnumString) { this._symbol_ExplicitDefaultParseModeId = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_ExplicitDefaultParseModeId); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PromptDefaultExchangeIfRicParseModeId() { return this._symbol_PromptDefaultExchangeIfRicParseModeId; }
     set symbol_PromptDefaultExchangeIfRicParseModeId(value: boolean) { this._symbol_PromptDefaultExchangeIfRicParseModeId = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PromptDefaultExchangeIfRicParseModeId); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_DefaultExchangeId() { return this._symbol_DefaultExchangeId; }
     set symbol_DefaultExchangeId(value: TypedKeyValueSettings.EnumString) { this._symbol_DefaultExchangeId = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_DefaultExchangeId); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_RicAnnouncerChar() { return this._symbol_RicAnnouncerChar; }
     set symbol_RicAnnouncerChar(value: string) { this._symbol_RicAnnouncerChar = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_RicAnnouncerChar); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscAnnouncerChar() { return this._symbol_PscAnnouncerChar; }
     set symbol_PscAnnouncerChar(value: string) { this._symbol_PscAnnouncerChar = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscAnnouncerChar); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscExchangeAnnouncerChar() { return this._symbol_PscExchangeAnnouncerChar; }
     set symbol_PscExchangeAnnouncerChar(value: string) { this._symbol_PscExchangeAnnouncerChar = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscExchangeAnnouncerChar); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscMarketAnnouncerChar() { return this._symbol_PscMarketAnnouncerChar; }
     set symbol_PscMarketAnnouncerChar(value: string) { this._symbol_PscMarketAnnouncerChar = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscMarketAnnouncerChar); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscExchangeHideModeId() { return this._symbol_PscExchangeHideModeId; }
     set symbol_PscExchangeHideModeId(value: TypedKeyValueSettings.EnumString) { this._symbol_PscExchangeHideModeId = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscExchangeHideModeId); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscDefaultMarketHidden() { return this._symbol_PscDefaultMarketHidden; }
     set symbol_PscDefaultMarketHidden(value: boolean) { this._symbol_PscDefaultMarketHidden = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscDefaultMarketHidden); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_PscMarketCodeAsLocalWheneverPossible() { return this._symbol_PscMarketCodeAsLocalWheneverPossible; }
     set symbol_PscMarketCodeAsLocalWheneverPossible(value: boolean) { this._symbol_PscMarketCodeAsLocalWheneverPossible = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_PscMarketCodeAsLocalWheneverPossible); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_AutoSelectDefaultMarketDest() { return this._symbol_AutoSelectDefaultMarketDest; }
     set symbol_AutoSelectDefaultMarketDest(value: boolean) { this._symbol_AutoSelectDefaultMarketDest = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_AutoSelectDefaultMarketDest); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_ExplicitSearchFieldsEnabled() { return this._symbol_ExplicitSearchFieldsEnabled; }
     set symbol_ExplicitSearchFieldsEnabled(value: boolean) { this._symbol_ExplicitSearchFieldsEnabled = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_ExplicitSearchFieldsEnabled); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbol_ExplicitSearchFieldIds() { return this._symbol_ExplicitSearchFieldIds; }
     set symbol_ExplicitSearchFieldIds(value: SymbolFieldId[]) { this._symbol_ExplicitSearchFieldIds = value;
         this.notifySettingChanged(CoreSettings.Id.Symbol_ExplicitSearchFieldIds); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_HorizontalLinesVisible() { return this._grid_HorizontalLinesVisible; }
     set grid_HorizontalLinesVisible(value) { this._grid_HorizontalLinesVisible = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_HorizontalLinesVisible); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_VerticalLinesVisible() { return this._grid_VerticalLinesVisible; }
     set grid_VerticalLinesVisible(value) { this._grid_VerticalLinesVisible = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_VerticalLinesVisible); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_HorizontalLineWidth() { return this._grid_HorizontalLineWidth; }
     set grid_HorizontalLineWidth(value) { this._grid_HorizontalLineWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_HorizontalLineWidth); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_VerticalLineWidth() { return this._grid_VerticalLineWidth; }
     set grid_VerticalLineWidth(value) { this._grid_VerticalLineWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_VerticalLineWidth); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_RowHeight() { return this._grid_RowHeight; }
     set grid_RowHeight(value) { this._grid_RowHeight = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_RowHeight); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_CellPadding() { return this._grid_CellPadding; }
     set grid_CellPadding(value) { this._grid_CellPadding = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_CellPadding); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_AllChangedRecentDuration() { return this._grid_AllChangedRecentDuration; }
     set grid_AllChangedRecentDuration(value) { this._grid_AllChangedRecentDuration = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_AllChangedRecentDuration); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_RecordInsertedRecentDuration() { return this._grid_RecordInsertedRecentDuration; }
     set grid_RecordInsertedRecentDuration(value) { this._grid_RecordInsertedRecentDuration = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_RecordInsertedRecentDuration); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_RecordUpdatedRecentDuration() { return this._grid_RecordUpdatedRecentDuration; }
     set grid_RecordUpdatedRecentDuration(value) { this._grid_RecordUpdatedRecentDuration = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_RecordUpdatedRecentDuration); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ValueChangedRecentDuration() { return this._grid_ValueChangedRecentDuration; }
     set grid_ValueChangedRecentDuration(value) { this._grid_ValueChangedRecentDuration = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ValueChangedRecentDuration); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_FontFamily() { return this._grid_FontFamily; }
     set grid_FontFamily(value) { this._grid_FontFamily = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FontFamily); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_FontSize() { return this._grid_FontSize; }
     set grid_FontSize(value) { this._grid_FontSize = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FontSize); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ColumnHeaderFontSize() { return this._grid_ColumnHeaderFontSize; }
     set grid_ColumnHeaderFontSize(value) { this._grid_ColumnHeaderFontSize = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ColumnHeaderFontSize); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_FocusedRowColored() { return this._grid_FocusedRowColored; }
     set grid_FocusedRowColored(value) { this._grid_FocusedRowColored = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FocusedRowColored); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_FocusedRowBordered() { return this._grid_FocusedRowBordered; }
     set grid_FocusedRowBordered(value) { this._grid_FocusedRowBordered = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FocusedRowBordered); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_FocusedRowBorderWidth() { return this._grid_FocusedRowBorderWidth; }
     set grid_FocusedRowBorderWidth(value) { this._grid_FocusedRowBorderWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_FocusedRowBorderWidth); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_HorizontalScrollbarWidth() { return this._grid_HorizontalScrollbarWidth; }
     set grid_HorizontalScrollbarWidth(value) { this._grid_HorizontalScrollbarWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_HorizontalScrollbarWidth); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_VerticalScrollbarWidth() { return this._grid_VerticalScrollbarWidth; }
     set grid_VerticalScrollbarWidth(value) { this._grid_VerticalScrollbarWidth = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_VerticalScrollbarWidth); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ScrollbarThumbInactiveOpacity() { return this._grid_ScrollbarThumbInactiveOpacity; }
     set grid_ScrollbarThumbInactiveOpacity(value) { this._grid_ScrollbarThumbInactiveOpacity = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarThumbInactiveOpacity); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ScrollbarsOverlayAllowed() { return this._grid_ScrollbarsOverlayAllowed; }
     set grid_ScrollbarsOverlayAllowed(value) { this._grid_ScrollbarsOverlayAllowed = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarsOverlayAllowed); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ScrollbarMargin() { return this._grid_ScrollbarMargin; }
     set grid_ScrollbarMargin(value) { this._grid_ScrollbarMargin = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollbarMargin); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get grid_ScrollHorizontallySmoothly() { return this._grid_ScrollHorizontallySmoothly; }
     set grid_ScrollHorizontallySmoothly(value) { this._grid_ScrollHorizontallySmoothly = value;
         this.notifySettingChanged(CoreSettings.Id.Grid_ScrollHorizontallySmoothly); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get data_InitialTradesHistoryCount() { return this._data_InitialTradesHistoryCount; }
     set data_InitialTradesHistoryCount(value) { this._data_InitialTradesHistoryCount = value;
         this.notifySettingChanged(CoreSettings.Id.Data_InitialTradesHistoryCount); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get format_NumberGroupingActive() { return this._format_NumberGroupingActive; }
     set format_NumberGroupingActive(value) { this._format_NumberGroupingActive = value;
         this.notifySettingChanged(CoreSettings.Id.Format_NumberGroupingActive); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get format_MinimumPriceFractionDigitsCount() { return this._format_MinimumPriceFractionDigitsCount; }
     set format_MinimumPriceFractionDigitsCount(value) { this._format_MinimumPriceFractionDigitsCount = value;
         this.notifySettingChanged(CoreSettings.Id.Format_MinimumPriceFractionDigitsCount); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get format_24Hour() { return this._format_24Hour; }
     set format_24Hour(value) { this._format_24Hour = value;
         this.notifySettingChanged(CoreSettings.Id.Format_24Hour); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get format_DateTimeTimezoneModeId() { return this._format_DateTimeTimezoneModeId; }
     set format_DateTimeTimezoneModeId(value) { this._format_DateTimeTimezoneModeId = value;
         this.notifySettingChanged(CoreSettings.Id.Format_DateTimeTimezoneModeId); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get control_DropDownEditableSearchTerm() { return this._control_DropDownEditableSearchTerm; }
     set control_DropDownEditableSearchTerm(value) { this._control_DropDownEditableSearchTerm = value;
         this.notifySettingChanged(CoreSettings.Id.Control_DropDownEditableSearchTerm); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get orderPad_ReviewEnabled() { return this._orderPad_ReviewEnabled; }
     set orderPad_ReviewEnabled(value) { this._orderPad_ReviewEnabled = value;
         this.notifySettingChanged(CoreSettings.Id.OrderPad_ReviewEnabled); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get orderPad_DefaultOrderTypeId() { return this._orderPad_DefaultOrderTypeId; }
     set orderPad_DefaultOrderTypeId(value) { this._orderPad_DefaultOrderTypeId = value;
         this.notifySettingChanged(CoreSettings.Id.OrderPad_DefaultOrderTypeId); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get orderPad_DefaultTimeInForceId() { return this._orderPad_DefaultTimeInForceId; }
     set orderPad_DefaultTimeInForceId(value) { this._orderPad_DefaultTimeInForceId = value;
         this.notifySettingChanged(CoreSettings.Id.OrderPad_DefaultTimeInForceId); }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get fontFamily() { return this._fontFamily; }
     set fontFamily(value) { this._fontFamily = value;
         this.notifySettingChanged(CoreSettings.Id.FontFamily); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get fontSize() { return this._fontSize; }
     set fontSize(value) { this._fontSize = value;
         this.notifySettingChanged(CoreSettings.Id.FontSize); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get instrumentMovementColorSet() { return this._instrumentMovementColorSet; }
     set instrumentMovementColorSet(value) { this._instrumentMovementColorSet = value;
         this.notifySettingChanged(CoreSettings.Id.InstrumentMovementColorSet); }

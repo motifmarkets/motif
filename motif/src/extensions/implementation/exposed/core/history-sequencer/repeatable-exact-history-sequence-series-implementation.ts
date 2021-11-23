@@ -15,12 +15,12 @@ import { RepeatableExactHistorySequencerImplementation } from './repeatable-exac
 export abstract class RepeatableExactHistorySequenceSeriesImplementation extends HistorySequenceSeriesImplementation
     implements RepeatableExactHistorySequenceSeriesApi {
 
-    abstract override get actual(): RepeatableExactHistorySequenceSeries;
-
     get repeatableExactSequencer() { return RepeatableExactHistorySequencerImplementation.toApi(this.actual.repeatableExactSequencer); }
     get sequencerPoints() { return RepeatableExactHistorySequencerImplementation.PointList.toApi(this.actual.sequencerPoints); }
 
+    abstract override get actual(): RepeatableExactHistorySequenceSeries;
+
     getSequencerPoint(idx: IntegerApi) {
-       return this.actual.getSequencerPoint(idx);
+        return this.actual.getSequencerPoint(idx);
     }
 }

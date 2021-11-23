@@ -10,6 +10,10 @@ import { OrderRouteImplementation } from '../adi/order-route-implementation';
 import { UiActionImplementation } from './ui-action-api-implementation';
 
 export class OrderRouteUiActionImplementation extends UiActionImplementation implements OrderRouteUiActionApi {
+    constructor(private readonly _orderRouteActual: OrderRouteUiAction) {
+        super(_orderRouteActual);
+    }
+
     get orderRouteActual() { return this._orderRouteActual; }
 
     get value() {
@@ -18,10 +22,6 @@ export class OrderRouteUiActionImplementation extends UiActionImplementation imp
     }
     get definedValue() { return OrderRouteImplementation.toApi(this._orderRouteActual.definedValue); }
     get allowedValues() { return OrderRouteImplementation.arrayToApi(this._orderRouteActual.allowedValues); }
-
-    constructor(private readonly _orderRouteActual: OrderRouteUiAction) {
-        super(_orderRouteActual);
-    }
 
     public pushValue(value: OrderRouteApi | undefined) {
         const actualOrderRoute = value === undefined ? undefined : OrderRouteImplementation.fromApi(value);

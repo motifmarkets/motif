@@ -329,10 +329,10 @@ export namespace ApiControlComponentFactoryNgService {
     export class GenericFactoryComponentRefImplementation<T extends ControlComponentBaseNgDirective>
         extends ApiComponentFactoryServiceBaseNgDirective.FactoryComponentRefImplementation {
 
-        get componentRef() { return this._componentRef; }
-
         constructor(private readonly _componentRef: ComponentRef<T>) {
             super();
         }
+
+        get componentRef() { return this._componentRef; }
     }
 }

@@ -13,14 +13,14 @@ import { HistorySequenceSeriesImplementation } from './history-sequence-series-i
 import { IntervalHistorySequencerImplementation } from './interval-history-sequencer-implementation';
 
 export abstract class IntervalHistorySequenceSeriesImplementation extends HistorySequenceSeriesImplementation
-   implements IntervalHistorySequenceSeriesApi {
+    implements IntervalHistorySequenceSeriesApi {
 
-   abstract override get actual(): IntervalHistorySequenceSeries;
+    get intervalSequencer() { return IntervalHistorySequencerImplementation.toApi(this.actual.intervalSequencer); }
+    get sequencerPoints() { return IntervalHistorySequencerImplementation.PointList.toApi(this.actual.sequencerPoints); }
 
-   get intervalSequencer() { return IntervalHistorySequencerImplementation.toApi(this.actual.intervalSequencer); }
-   get sequencerPoints() { return IntervalHistorySequencerImplementation.PointList.toApi(this.actual.sequencerPoints); }
+    abstract override get actual(): IntervalHistorySequenceSeries;
 
-   getSequencerPoint(idx: IntegerApi) {
-      return this.actual.getSequencerPoint(idx);
-   }
+    getSequencerPoint(idx: IntegerApi) {
+        return this.actual.getSequencerPoint(idx);
+    }
 }

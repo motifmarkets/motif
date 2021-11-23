@@ -14,28 +14,40 @@ import { TableGridFieldAndStateArrays } from './table-grid-field-and-state-array
 import { TableGridValue } from './table-grid-value';
 
 export class TableFieldList {
-    private sources: TableFieldSource[] = [];
+    private _sources: TableFieldSource[] = [];
     private _fieldCount: Integer = 0;
     private _gridFields: TableGridField[] | undefined = undefined;
     private _gridFieldInitialStates: MotifGrid.FieldState[] | undefined = undefined;
 
+    get sourceCount() { return this._sources.length; }
+    get fieldCount() { return this._fieldCount; }
+
+    get gridFields(): TableGridField[] {
+        return this.getGridFields();
+    }
+
+    get gridFieldInitialStates(): MotifGrid.FieldState[] {
+        return this.getGridFieldInitialStates();
+    }
+
+    get gridFieldsAndInitialStates(): TableGridFieldAndStateArrays {
+        return this.getGridFieldsAndInitialStates();
+    }
+
     clear() {
-        this.sources = [];
+        this._sources = [];
         this._fieldCount = 0;
         this._gridFields = undefined;
         this._gridFieldInitialStates = undefined;
     }
 
-    get sourceCount() { return this.sources.length; }
-    get fieldCount() { return this._fieldCount; }
-
-    getSource(idx: Integer) { return this.sources[idx]; }
+    getSource(idx: Integer) { return this._sources[idx]; }
     getFieldName(idx: Integer) {
         const findFieldResult = this.findFieldSourceIndex(idx);
         if (!findFieldResult.found) {
             throw new AssertInternalError('TFLGFN84312', `${idx}`);
         } else {
-            return this.sources[findFieldResult.sourceIndex].getIndexAdjustedFieldName(findFieldResult.sourceFieldIndex);
+            return this._sources[findFieldResult.sourceIndex].getIndexAdjustedFieldName(findFieldResult.sourceFieldIndex);
         }
     }
 
@@ -44,18 +56,18 @@ export class TableFieldList {
         if (!findFieldResult.found) {
             throw new AssertInternalError('TFLGFH45576', `${idx}`);
         } else {
-            return this.sources[findFieldResult.sourceIndex].getIndexAdjustedFieldHeading(findFieldResult.sourceFieldIndex);
+            return this._sources[findFieldResult.sourceIndex].getIndexAdjustedFieldHeading(findFieldResult.sourceFieldIndex);
         }
     }
 
     findFieldByName(name: string): Integer | undefined {
-        const sourceCount = this.sources.length;
+        const sourceCount = this._sources.length;
         if (sourceCount <= 0) {
             return undefined;
         } else {
             const upperName = name.toUpperCase();
             for (let i = 0; i < sourceCount; i++) {
-                const source = this.sources[i];
+                const source = this._sources[i];
                 const sourceFieldIdx = source.findFieldByName(upperName);
                 if (sourceFieldIdx !== undefined) {
                     return sourceFieldIdx + source.fieldIndexOffset;
@@ -79,7 +91,7 @@ export class TableFieldList {
         source.fieldIndexOffset = this._fieldCount;
         source.nextFieldIndexOffset = source.fieldIndexOffset + sourceFieldCount;
 
-        this.sources.push(source);
+        this._sources.push(source);
 
         this._fieldCount += sourceFieldCount;
     }
@@ -100,13 +112,13 @@ export class TableFieldList {
     // }
 
     createSourceUndefinedTableGridValueArray(sourceIdx: Integer) {
-        const source = this.sources[sourceIdx];
+        const source = this._sources[sourceIdx];
         return source.createUndefinedTableGridValueArray();
     }
 
     createUndefinedTableGridValueArray(): TableGridValue[] {
         let result = new Array<TableGridValue>(0);
-        for (let i = 0; i < this.sources.length; i++) {
+        for (let i = 0; i < this._sources.length; i++) {
             const valueArray = this.createSourceUndefinedTableGridValueArray(i);
             result = result.concat(valueArray);
         }
@@ -115,20 +127,8 @@ export class TableFieldList {
 
     addMissingFieldsToLayout(layout: GridLayout, visible: boolean) {
         for (let i = 0; i < this.sourceCount; i++) {
-            this.addMissingSourceFieldsToLayout(layout, this.sources[i], visible);
+            this.addMissingSourceFieldsToLayout(layout, this._sources[i], visible);
         }
-    }
-
-    get gridFields(): TableGridField[] {
-        return this.getGridFields();
-    }
-
-    get gridFieldInitialStates(): MotifGrid.FieldState[] {
-        return this.getGridFieldInitialStates();
-    }
-
-    get gridFieldsAndInitialStates(): TableGridFieldAndStateArrays {
-        return this.getGridFieldsAndInitialStates();
     }
 
     private getGridFields(): TableGridField[] {
@@ -138,7 +138,7 @@ export class TableFieldList {
         } else {
             result = new Array<TableGridField>(0);
             for (let i = 0; i < this.sourceCount; i++) {
-                const source = this.sources[i];
+                const source = this._sources[i];
                 result = result.concat(source.getGridFields());
             }
             this._gridFields = result;
@@ -153,7 +153,7 @@ export class TableFieldList {
         } else {
             result = new Array<MotifGrid.FieldState>(0);
             for (let i = 0; i < this.sourceCount; i++) {
-                const source = this.sources[i];
+                const source = this._sources[i];
                 result = result.concat(source.getGridFieldInitialStates());
             }
             this._gridFieldInitialStates = result;
@@ -169,15 +169,15 @@ export class TableFieldList {
     }
 
     private indexOfSource(name: string): Integer {
-        return this.sources.findIndex((source: TableFieldSource) => source.name === name);
+        return this._sources.findIndex((source: TableFieldSource) => source.name === name);
     }
 
     private findFieldSourceIndex(idx: Integer): TableFieldList.FindFieldSourceIndexResult {
         if (idx >= 0) {
-            const sourceCount = this.sources.length;
+            const sourceCount = this._sources.length;
             if (sourceCount > 0) {
                 for (let i = 0; i < sourceCount; i++) {
-                    const source = this.sources[i];
+                    const source = this._sources[i];
                     if (idx < source.nextFieldIndexOffset) {
                         return {
                             found: true,

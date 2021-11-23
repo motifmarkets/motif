@@ -25,10 +25,6 @@ export abstract class TableDefinition {
     private _recordDefinitionListOpener: TableRecordDefinitionList.Opener;
     private _opened = false;
 
-    protected get recordDefinitionList() { return this._recordDefinitionList; }
-    get opened() { return this._opened; }
-    get fieldList() { return this._fieldList; }
-
     constructor(recordDefinitionListOrId: TableRecordDefinitionList | Guid) {
         if (recordDefinitionListOrId instanceof TableRecordDefinitionList) {
             this._recordDefinitionList = recordDefinitionListOrId;
@@ -37,6 +33,10 @@ export abstract class TableDefinition {
         }
         this._recordDefinitionListOpener = new TableRecordDefinitionList.Opener('Unnamed');
     }
+
+    get opened() { return this._opened; }
+    get fieldList() { return this._fieldList; }
+    protected get recordDefinitionList() { return this._recordDefinitionList; }
 
     createDefaultLayout() {
         return this._defaultLayout.createCopy();

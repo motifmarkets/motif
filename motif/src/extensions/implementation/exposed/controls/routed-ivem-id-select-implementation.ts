@@ -12,10 +12,10 @@ import { RoutedIvemIdUiActionImplementation } from '../core/internal-api';
 export class RoutedIvemIdSelectImplementation extends RoutedIvemIdUiActionImplementation
     implements RoutedIvemIdSelectApi, FactoryComponent {
 
-    get factoryComponentRef() { return this._factoryComponentRef; }
-    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
-
     constructor(private readonly _factoryComponentRef: FactoryComponentRef, uiAction: RoutedIvemIdUiAction) {
         super(uiAction);
     }
+
+    get factoryComponentRef() { return this._factoryComponentRef; }
+    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
 }

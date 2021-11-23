@@ -10,6 +10,10 @@ import { DecimalImplementation } from '../sys/decimal-implementation';
 import { UiActionImplementation } from './ui-action-api-implementation';
 
 export class DecimalUiActionImplementation extends UiActionImplementation implements DecimalUiActionApi {
+    constructor(private readonly _decimalActual: DecimalUiAction) {
+        super(_decimalActual);
+    }
+
     get decimalActual() { return this._decimalActual; }
 
     get value() {
@@ -18,10 +22,6 @@ export class DecimalUiActionImplementation extends UiActionImplementation implem
     }
     get definedValue() { return DecimalImplementation.toApi(this._decimalActual.definedValue); }
     get options() { return this._decimalActual.options; }
-
-    constructor(private readonly _decimalActual: DecimalUiAction) {
-        super(_decimalActual);
-    }
 
     public pushValue(value: DecimalApi | undefined) {
         const actualDecimal = value === undefined ? undefined : DecimalImplementation.fromApi(value);

@@ -31,9 +31,6 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     private _currentFocusedAccountIdSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
-    get initialised() { return this._tableFrame !== undefined; }
-    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
-
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -45,6 +42,9 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get initialised() { return this._tableFrame !== undefined; }
+    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = tableFrame;

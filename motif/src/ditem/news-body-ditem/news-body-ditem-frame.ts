@@ -11,9 +11,6 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class NewsBodyDitemFrame extends BuiltinDitemFrame {
-    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.NewsBody; }
-    get initialised() { return true; }
-
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -25,6 +22,9 @@ export class NewsBodyDitemFrame extends BuiltinDitemFrame {
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.NewsBody; }
+    get initialised() { return true; }
 }
 
 export namespace NewsBodyDitemFrame {

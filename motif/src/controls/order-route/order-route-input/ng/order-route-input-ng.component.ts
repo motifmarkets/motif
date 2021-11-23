@@ -32,11 +32,11 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
 
     private _pushOrderRouteEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    public override get uiAction() { return super.uiAction as OrderRouteUiAction; }
-
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
     }
+
+    public override get uiAction() { return super.uiAction as OrderRouteUiAction; }
 
     ngOnInit() {
         this.setInitialiseReady();

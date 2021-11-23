@@ -8,13 +8,13 @@ import { Command } from 'src/core/internal-api';
 import { Command as CommandApi } from '../../../api/extension-api';
 
 export class CommandImplementation implements CommandApi {
+    constructor(private readonly _actual: Command) { }
+
     get actual() { return this._actual; }
 
     get name() { return this._actual.name; }
     get defaultDisplayId() { return this._actual.defaultDisplayIndex; }
     get defaultMenuBarItemPosition() { return this._actual.defaultMenuBarItemPosition; }
-
-    constructor(private readonly _actual: Command) { }
 }
 
 export namespace CommandImplementation {

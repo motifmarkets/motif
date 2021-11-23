@@ -40,9 +40,13 @@ class Event {
 }
 
 export class Scheduler {
-    private eventList: Event[] = [];
-    private firedTimerStack = new FiredTimerStack();
-    private FPaused = false;
+    private _eventList: Event[] = [];
+    private _firedTimerStack = new FiredTimerStack();
+    private _paused = false;
+
+    get paused() {
+        return this._paused;
+    }
 
     createTimer(): Scheduler.Timer {
         return new Scheduler.Timer(this);
@@ -50,7 +54,7 @@ export class Scheduler {
 
     freeTimer(timer: Scheduler.Timer) {
         if (timer !== undefined) {
-            this.firedTimerStack.undefineTimer(timer);
+            this._firedTimerStack.undefineTimer(timer);
             timer.cancel();
         }
     }
@@ -59,23 +63,23 @@ export class Scheduler {
         const event = new Event();
         event.timer = timer;
         event.tickTime = tickTime;
-        const searchResult = earliestBinarySearch(this.eventList, event, (left, right) => compareNumber(left.tickTime, right.tickTime) );
-        this.eventList.splice(searchResult.index, 0, event);
+        const searchResult = earliestBinarySearch(this._eventList, event, (left, right) => compareNumber(left.tickTime, right.tickTime) );
+        this._eventList.splice(searchResult.index, 0, event);
     }
 
     removeEvent(Timer: Scheduler.Timer) {
-        for (let i = this.eventList.length - 1; i >= 0; i--) {
-            if (this.eventList[i].timer === Timer) {
-                this.eventList.splice(i, 1);
+        for (let i = this._eventList.length - 1; i >= 0; i--) {
+            if (this._eventList[i].timer === Timer) {
+                this._eventList.splice(i, 1);
             }
         }
     }
 
     exercise() {
-        if (this.eventList.length > 0 && !this.FPaused) {
+        if (this._eventList.length > 0 && !this._paused) {
             do {
                 const currentTickTime = SysTick.now();
-                const event = this.eventList[0];
+                const event = this._eventList[0];
                 if (currentTickTime < event.tickTime) {
                     break;
                 } else {
@@ -88,13 +92,13 @@ export class Scheduler {
                         restartFireTime = timer.calculateFireTime();
                     }
 
-                    this.eventList.shift();
+                    this._eventList.shift();
 
-                    this.firedTimerStack.push(timer);
+                    this._firedTimerStack.push(timer);
                     try {
                         timer.fire();
                     } finally {
-                        timer = this.firedTimerStack.pop();
+                        timer = this._firedTimerStack.pop();
                     }
 
                     if (timer !== undefined) {
@@ -106,20 +110,16 @@ export class Scheduler {
                         }
                     }
                 }
-            } while (this.eventList.length !== 0);
+            } while (this._eventList.length !== 0);
         }
     }
 
-    get paused() {
-        return this.FPaused;
-    }
-
     pause() {
-        this.FPaused = true;
+        this._paused = true;
     }
 
     continue() {
-        this.FPaused = false;
+        this._paused = false;
     }
 }
 

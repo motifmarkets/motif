@@ -42,11 +42,11 @@ export class CallPutFromUnderlyingTableRecordDefinitionList extends SingleDataIt
         this._changeDefinitionOrderAllowed = true;
     }
 
+    get dataItem() { return this._dataItem; }
+
     load(underlyingIvemId: IvemId) {
         this._underlyingIvemId = underlyingIvemId;
     }
-
-    get dataItem() { return this._dataItem; }
 
     getDefinition(idx: Integer): TableRecordDefinition {
         return this._list[idx];

@@ -189,6 +189,25 @@ export class OrderPad {
 
     private _fieldsChangedMultiEvent = new MultiEvent<OrderPad.FieldsChangedEventHandler>();
 
+    constructor(private _symbolsService: SymbolsService, private _adi: AdiService) {
+        for (let i = 0; i < this._fields.length; i++) {
+            this._fields[i] = new OrderPad.Field();
+        }
+
+        this._brokerageAccountsDataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(this._adi);
+        const brokerageAccountsDefinition = new BrokerageAccountsDataDefinition();
+        this._brokerageAccountsDataItemIncubator.initiateSubscribeIncubation(brokerageAccountsDefinition);
+
+        this._brokerageAccountIncubator = new BrokerageAccountIncubator(this._adi);
+        this._brokerageAccountIncubator.initialise();
+
+        this._destinationBrokerageAccountIncubator = new BrokerageAccountIncubator(this._adi);
+        this._destinationBrokerageAccountIncubator.initialise();
+
+        this._priceStepperIncubator = new PriceStepperIncubator(this._adi);
+        this._priceStepperIncubator.initialise();
+    }
+
     get readonly() { return this._readonly; }
     get sent() { return this._sent; }
 
@@ -211,10 +230,12 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get account() {
         return this._account;
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get sideId() { return this._sideId; }
     set sideId(value: SideId | undefined) {
         if (this._readonly) {
@@ -232,8 +253,10 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allowedSideIds() { return this._allowedSideIds; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get routedIvemId() { return this._routedIvemId; }
     set routedIvemId(value: RoutedIvemId | undefined) {
         if (this._readonly) {
@@ -251,6 +274,7 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allowedRoutes() { return this._allowedRoutes; }
     set route(value: OrderRoute) {
         if (this.routedIvemId === undefined) {
@@ -262,6 +286,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get expiryDate() { return this._expiryDate; }
     set expiryDate(value: Date | undefined) {
         if (this._readonly) {
@@ -280,6 +305,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get orderTypeId() { return this._orderTypeId; }
     set orderTypeId(value: OrderTypeId | undefined) {
         if (this._readonly) {
@@ -297,8 +323,10 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allowedOrderTypeIds() { return this._allowedOrderTypeIds; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get triggerTypeId() { return this._triggerTypeId; }
     set triggerTypeId(value: OrderTriggerTypeId | undefined) {
         if (this._readonly) {
@@ -316,8 +344,10 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allowedTriggerTypeIds() { return this._allowedTriggerTypeIds; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get triggerValue() { return this._triggerValue; }
     set triggerValue(value: Decimal | undefined) {
         if (this._readonly) {
@@ -336,6 +366,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get triggerFieldId() { return this._triggerFieldId; }
     set triggerFieldId(value: PriceOrderTrigger.FieldId | undefined) {
         if (this._readonly) {
@@ -354,6 +385,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get triggerMovementId() { return this._triggerMovementId; }
     set triggerMovementId(value: MovementId | undefined) {
         if (this._readonly) {
@@ -372,6 +404,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get totalQuantity() { return this._totalQuantity; }
     set totalQuantity(value: Integer | undefined) {
         if (this._readonly) {
@@ -390,6 +423,7 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get limitValue() { return this._limitValue; }
     set limitValue(value: Decimal | undefined) {
         if (this._readonly) {
@@ -408,8 +442,10 @@ export class OrderPad {
         }
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get limitUnitId() { return this._limitUnitId; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get timeInForceId() { return this._timeInForceId; }
     set timeInForceId(value: TimeInForceId | undefined) {
         if (this._readonly) {
@@ -427,8 +463,10 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allowedTimeInForceIds() { return this._allowedTimeInForceIds === undefined ? TimeInForce.all : this._allowedTimeInForceIds; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get existingOrderId() { return this._existingOrderId; }
     set existingOrderId(value: OrderId | undefined) {
         if (this._readonly) {
@@ -446,8 +484,10 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get existingOrder() { return this._existingOrder; }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get destinationAccountId() { return this._destinationAccountId; }
     set destinationAccountId(value: BrokerageAccountId | undefined) {
         if (this._readonly) {
@@ -465,27 +505,9 @@ export class OrderPad {
             }
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get destinationAccount() {
         return this._destinationAccount;
-    }
-
-    constructor(private _symbolsService: SymbolsService, private _adi: AdiService) {
-        for (let i = 0; i < this._fields.length; i++) {
-            this._fields[i] = new OrderPad.Field();
-        }
-
-        this._brokerageAccountsDataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(this._adi);
-        const brokerageAccountsDefinition = new BrokerageAccountsDataDefinition();
-        this._brokerageAccountsDataItemIncubator.initiateSubscribeIncubation(brokerageAccountsDefinition);
-
-        this._brokerageAccountIncubator = new BrokerageAccountIncubator(this._adi);
-        this._brokerageAccountIncubator.initialise();
-
-        this._destinationBrokerageAccountIncubator = new BrokerageAccountIncubator(this._adi);
-        this._destinationBrokerageAccountIncubator.initialise();
-
-        this._priceStepperIncubator = new PriceStepperIncubator(this._adi);
-        this._priceStepperIncubator.initialise();
     }
 
     finalise() {

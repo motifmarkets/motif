@@ -14,12 +14,12 @@ import {
 import { ComparisonResultImplementation, UnreachableCaseApiErrorImplementation } from '../sys/internal-api';
 
 export abstract class BrokerageAccountGroupImplementation implements BrokerageAccountGroupApi {
+    constructor(private readonly _actual: BrokerageAccountGroup) { }
+
     get actual() { return this._actual; }
 
     get type() { return BrokerageAccountGroupImplementation.TypeId.toApi(this._actual.typeId); }
     get id() { return this._actual.id; }
-
-    constructor(private readonly _actual: BrokerageAccountGroup) { }
 
     isSingle() { return this._actual.isSingle(); }
     isAll() { return this._actual.isAll(); }
@@ -39,11 +39,11 @@ export abstract class BrokerageAccountGroupImplementation implements BrokerageAc
 export class SingleBrokerageAccountGroupImplementation extends BrokerageAccountGroupImplementation
     implements SingleBrokerageAccountGroupApi {
 
-    get accountId() { return this._singleActual.accountKey.id; }
-
     constructor(private readonly _singleActual: SingleBrokerageAccountGroup) {
         super(_singleActual);
     }
+
+    get accountId() { return this._singleActual.accountKey.id; }
 }
 
 export class AllBrokerageAccountGroupImplementation extends BrokerageAccountGroupImplementation

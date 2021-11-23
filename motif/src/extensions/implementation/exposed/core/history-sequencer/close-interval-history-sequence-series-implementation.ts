@@ -14,11 +14,11 @@ export class CloseIntervalHistorySequenceSeriesImplementation extends IntervalHi
     implements CloseIntervalHistorySequenceSeriesApi
 // eslint-disable-next-line brace-style
 {
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: CloseIntervalHistorySequenceSeries) {
         super();
     }
+
+    get actual() { return this._actual; }
 
     getNumberPoint(idx: IntegerApi): CloseIntervalHistorySequenceSeriesApi.Point {
         return this._actual.getNumberPoint(idx);

@@ -167,6 +167,13 @@ export namespace CallPut {
 
         constructor(public exercisePrice: Decimal, public expiryDate: Date, public litId: MarketId) { }
 
+        get mapKey() {
+            if (this._mapKey === undefined) {
+                this._mapKey = Key.toString(this.exercisePrice, this.expiryDate, this.litId);
+            }
+            return this._mapKey;
+        }
+
         static createNull() {
             // will not match any valid CallPut
             return new Key(nullDecimal, nullDate, MarketId.AsxBookBuild);
@@ -182,13 +189,6 @@ export namespace CallPut {
             element.setDecimal(Key.JsonTag_ExercisePrice, this.exercisePrice);
             element.setDate(Key.JsonTag_ExpiryDate, this.expiryDate);
             element.setString(Key.JsonTag_LitId, MarketInfo.idToJsonValue(this.litId));
-        }
-
-        get mapKey() {
-            if (this._mapKey === undefined) {
-                this._mapKey = Key.toString(this.exercisePrice, this.expiryDate, this.litId);
-            }
-            return this._mapKey;
         }
     }
 

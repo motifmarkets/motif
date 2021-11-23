@@ -35,10 +35,10 @@ export class ControlsSvcImplementation implements ControlsSvc {
     private _controls: ControlComponentApi[] = [];
     private _uiActions: UiActionApi[] = [];
 
+    constructor(private readonly _componentFactory: ApiControlComponentFactory) { }
+
     get controls() { return this._controls; }
     get uiActions() { return this._uiActions; }
-
-    constructor(private readonly _componentFactory: ApiControlComponentFactory) { }
 
     public destroyAllControls() {
         const count = this._controls.length;

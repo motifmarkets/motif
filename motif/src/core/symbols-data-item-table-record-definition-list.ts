@@ -57,15 +57,15 @@ export class SymbolsDataItemTableRecordDefinitionList extends SingleDataItemTabl
         this._changeDefinitionOrderAllowed = true;
     }
 
+    get dataItem() { return this._dataItem; }
+    get exchangeId() { return this._exchangeId; }
+    get isFullDetail() { return this._isFullDetail; }
+
     load(dataDefinition: SearchSymbolsDataDefinition) {
         this._dataDefinition = dataDefinition;
         this._exchangeId = this.calculateExchangeId(dataDefinition);
         this._isFullDetail = dataDefinition.fullSymbol;
     }
-
-    get dataItem() { return this._dataItem; }
-    get exchangeId() { return this._exchangeId; }
-    get isFullDetail() { return this._isFullDetail; }
 
     getDefinition(idx: Integer): TableRecordDefinition {
         return this._list[idx];

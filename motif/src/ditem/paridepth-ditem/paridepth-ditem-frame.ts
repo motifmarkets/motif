@@ -29,11 +29,6 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     // private _depthCommandProcessor: DepthCommandProcessor;
     // private _tradesCommandProcessor: TradesCommandProcessor;
 
-    get initialised() { return this._depthFrame !== undefined; }
-
-    get filterActive() { return this._depthFrame.filterActive; }
-    get filterXrefs() { return this._depthFrame.filterXrefs; }
-
     constructor(
         private _componentAccess: ParidepthDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -45,6 +40,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get initialised() { return this._depthFrame !== undefined; }
+
+    get filterActive() { return this._depthFrame.filterActive; }
+    get filterXrefs() { return this._depthFrame.filterXrefs; }
 
     initialise(tableContentFrame: TableFrame, depthContentFrame: DepthFrame, tradesContentFrame: TradesFrame,
         frameElement: JsonElement | undefined

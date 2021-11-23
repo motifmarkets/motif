@@ -11,6 +11,10 @@ import { LitIvemIdParseDetailsImplementation } from './lit-ivem-id-parse-details
 import { UiActionImplementation } from './ui-action-api-implementation';
 
 export class LitIvemIdUiActionImplementation extends UiActionImplementation implements LitIvemIdUiActionApi {
+    constructor(private readonly _litIvemIdActual: LitIvemIdUiAction) {
+        super(_litIvemIdActual);
+    }
+
     get litIvemIdActual() { return this._litIvemIdActual; }
 
     get value() {
@@ -34,10 +38,6 @@ export class LitIvemIdUiActionImplementation extends UiActionImplementation impl
         } else {
             return LitIvemIdParseDetailsImplementation.toApi(parseDetails);
         }
-    }
-
-    constructor(private readonly _litIvemIdActual: LitIvemIdUiAction) {
-        super(_litIvemIdActual);
     }
 
     public pushValue(value: LitIvemIdApi | undefined) {

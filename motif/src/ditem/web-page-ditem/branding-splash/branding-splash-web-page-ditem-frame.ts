@@ -11,9 +11,6 @@ import { DesktopAccessService } from '../../desktop-access-service';
 import { DitemFrame } from '../../ditem-frame';
 
 export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
-    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage; }
-    get initialised() { return true; }
-
     constructor(
         private readonly _componentAccess: BrandingSplashWebPageDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -25,6 +22,9 @@ export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
             _componentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage; }
+    get initialised() { return true; }
 
     loadPage(url: string) {
         this._componentAccess.loadPage(url);

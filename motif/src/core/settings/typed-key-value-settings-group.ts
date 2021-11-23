@@ -9,11 +9,11 @@ import { SettingsGroup } from './settings-group';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
 
 export abstract class TypedKeyValueSettingsGroup extends SettingsGroup {
-    protected abstract get idCount(): Integer;
-
     constructor(groupName: string) {
         super(SettingsGroup.Type.Id.TypedKeyValue, groupName);
     }
+
+    protected abstract get idCount(): Integer;
 
     load(element: JsonElement | undefined) {
         const count = this.idCount;

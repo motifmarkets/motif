@@ -13,6 +13,10 @@ import { BrokerageAccountGroupImplementation } from '../adi/internal-api';
 import { UiActionImplementation } from './ui-action-api-implementation';
 
 export class BrokerageAccountGroupUiActionImplementation extends UiActionImplementation implements BrokerageAccountGroupUiActionApi {
+    constructor(private readonly _brokerageAccountGroupActual: BrokerageAccountGroupUiAction) {
+        super(_brokerageAccountGroupActual);
+    }
+
     get brokerageAccountGroupActual() { return this._brokerageAccountGroupActual; }
 
     get value() {
@@ -21,10 +25,6 @@ export class BrokerageAccountGroupUiActionImplementation extends UiActionImpleme
     }
     get definedValue() { return BrokerageAccountGroupImplementation.toApi(this._brokerageAccountGroupActual.definedValue); }
     get options() { return this._brokerageAccountGroupActual.options; }
-
-    constructor(private readonly _brokerageAccountGroupActual: BrokerageAccountGroupUiAction) {
-        super(_brokerageAccountGroupActual);
-    }
 
     public pushValue(value: BrokerageAccountGroupApi | undefined) {
         const group = value === undefined ? undefined : BrokerageAccountGroupImplementation.fromApi(value);

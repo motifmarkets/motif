@@ -26,8 +26,6 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
     private _accountGroupApplying = false;
     private _currentFocusedAccountIdSetting = false;
 
-    get initialised() { return this._tableFrame !== undefined; }
-
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -39,6 +37,8 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get initialised() { return this._tableFrame !== undefined; }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined) {
         this._tableFrame = tableFrame;

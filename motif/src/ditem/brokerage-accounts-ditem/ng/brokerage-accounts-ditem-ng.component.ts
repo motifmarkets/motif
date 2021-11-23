@@ -45,10 +45,6 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     private _frame: BrokerageAccountsDitemFrame;
     private _toggleAccountLinkingUiAction: IconButtonUiAction;
 
-    protected get stateSchemaVersion() { return BrokerageAccountsDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -68,6 +64,10 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         this.constructLoad(this.getInitialComponentStateJsonElement());
         this.pushAccountLinkButtonState();
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return BrokerageAccountsDitemNgComponent.stateSchemaVersion; }
 
     ngOnDestroy() {
         this.finalise();

@@ -10,6 +10,18 @@ import { ApiError as ApiErrorApi, UiAction as UiActionApi } from '../../../api/e
 import { UnreachableCaseApiErrorImplementation } from '../sys/api-error-api-implementation';
 
 export class UiActionImplementation implements UiActionApi {
+    commitEventer: UiActionApi.CommitEventHandler | undefined;
+    inputEventer: UiActionApi.InputEventHandler | undefined;
+    signalEventer: UiActionApi.SignalEventHandler | undefined;
+    editedChangeEventer: UiActionApi.EditedChangeEventHandler | undefined;
+
+    constructor(private readonly _actual: UiAction) {
+        this._actual.commitEvent = (typeId) => this.handleCommitEvent(typeId);
+        this._actual.inputEvent = () => this.handleInputEvent();
+        this._actual.signalEvent = (signalTypeId, downKeys) => this.handleSignalEvent(signalTypeId, downKeys);
+        this._actual.editedChangeEvent = () => this.handleEditedChangeEvent();
+    }
+
     get state() { return UiActionImplementation.StateId.toApi(this._actual.stateId); }
     get enabled() { return this._actual.enabled; }
     get edited() { return this._actual.edited; }
@@ -22,28 +34,20 @@ export class UiActionImplementation implements UiActionApi {
 
     get required() { return this._actual.valueRequired; }
     set required(value: boolean) { this._actual.valueRequired = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get commitOnAnyValidInput() { return this._actual.commitOnAnyValidInput; }
     set commitOnAnyValidInput(value: boolean) { this._actual.commitOnAnyValidInput = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoAcceptanceType() { return UiActionImplementation.AutoAcceptanceTypeId.toApi(this._actual.autoAcceptanceTypeId); }
     set autoAcceptanceType(value: UiActionApi.AutoAcceptanceType) {
         this._actual.autoAcceptanceTypeId = UiActionImplementation.AutoAcceptanceTypeId.fromApi(value);
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoEchoCommit() { return this._actual.autoEchoCommit; }
     set autoEchoCommit(value: boolean) { this._actual.autoEchoCommit = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get autoInvalid() { return this._actual.autoInvalid; }
     set autoInvalid(value: boolean) { this._actual.autoInvalid = value; }
-
-    commitEventer: UiActionApi.CommitEventHandler | undefined;
-    inputEventer: UiActionApi.InputEventHandler | undefined;
-    signalEventer: UiActionApi.SignalEventHandler | undefined;
-    editedChangeEventer: UiActionApi.EditedChangeEventHandler | undefined;
-
-    constructor(private readonly _actual: UiAction) {
-        this._actual.commitEvent = (typeId) => this.handleCommitEvent(typeId);
-        this._actual.inputEvent = () => this.handleInputEvent();
-        this._actual.signalEvent = (signalTypeId, downKeys) => this.handleSignalEvent(signalTypeId, downKeys);
-        this._actual.editedChangeEvent = () => this.handleEditedChangeEvent();
-    }
 
     destroy() {
         this._actual.finalise();

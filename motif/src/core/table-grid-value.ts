@@ -67,13 +67,7 @@ export abstract class GenericTableGridValue<T> extends TableGridValue {
     private _data: T | undefined;
     private _definedData: T;
 
-    isUndefined() {
-        return this._data === undefined;
-    }
-
-    clear() {
-        this._data = undefined;
-    }
+    get definedData() { return this._definedData; }
 
     get data() { return this._data; }
     set data(value: T | undefined) {
@@ -83,7 +77,13 @@ export abstract class GenericTableGridValue<T> extends TableGridValue {
         }
     }
 
-    get definedData() { return this._definedData; }
+    isUndefined() {
+        return this._data === undefined;
+    }
+
+    clear() {
+        this._data = undefined;
+    }
 }
 
 export class StringTableGridValue extends GenericTableGridValue<string> {
@@ -109,34 +109,34 @@ export class IntegerTableGridValue extends GenericTableGridValue<Integer> {
     }
 }
 export class DateTableGridValue extends GenericTableGridValue<Date> {
-    protected createRenderValue() {
-        return new DateRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
 
     override set data(value: Date | undefined) {
         super.data = newUndefinableDate(value);
     }
+
+    protected createRenderValue() {
+        return new DateRenderValue(this.data);
+    }
 }
 export class IvemIdTableGridValue extends GenericTableGridValue<IvemId> {
-    protected createRenderValue() {
-        return new IvemIdRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: IvemId | undefined) {
         super.data = value?.createCopy();
     }
+
+    protected createRenderValue() {
+        return new IvemIdRenderValue(this.data);
+    }
 }
 export class LitIvemIdTableGridValue extends GenericTableGridValue<LitIvemId> {
-    protected createRenderValue() {
-        return new LitIvemIdRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: LitIvemId | undefined) {
         super.data = value?.createCopy();
+    }
+
+    protected createRenderValue() {
+        return new LitIvemIdRenderValue(this.data);
     }
 }
 
@@ -237,13 +237,7 @@ export abstract class GenericCorrectnessTableGridValue<T> extends CorrectnessTab
     private _data: T | undefined;
     private _definedData: T;
 
-    isUndefined() {
-        return this._data === undefined;
-    }
-
-    clear() {
-        this._data = undefined;
-    }
+    get definedData() { return this._definedData; }
 
     get data() { return this._data; }
     set data(value: T | undefined) {
@@ -253,7 +247,13 @@ export abstract class GenericCorrectnessTableGridValue<T> extends CorrectnessTab
         }
     }
 
-    get definedData() { return this._definedData; }
+    isUndefined() {
+        return this._data === undefined;
+    }
+
+    clear() {
+        this._data = undefined;
+    }
 }
 
 export class StringCorrectnessTableGridValue extends GenericCorrectnessTableGridValue<string> {
@@ -280,13 +280,13 @@ export class IntegerCorrectnessTableGridValue extends GenericCorrectnessTableGri
 }
 
 export class DateCorrectnessTableGridValue extends GenericCorrectnessTableGridValue<Date> {
-    protected createRenderValue() {
-        return new DateRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: Date | undefined) {
         super.data = newUndefinableDate(value);
+    }
+
+    protected createRenderValue() {
+        return new DateRenderValue(this.data);
     }
 }
 export abstract class BaseSourceTzOffsetDateTimeCorrectnessTableGridValue
@@ -308,33 +308,33 @@ export class SourceTzOffsetDateTimeDateCorrectnessTableGridValue extends BaseSou
     }
 }
 export class SourceTzOffsetDateCorrectnessTableGridValue extends GenericCorrectnessTableGridValue<SourceTzOffsetDate> {
-    protected createRenderValue() {
-        return new SourceTzOffsetDateRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: SourceTzOffsetDate | undefined) {
         super.data = SourceTzOffsetDate.newUndefinable(value);
     }
+
+    protected createRenderValue() {
+        return new SourceTzOffsetDateRenderValue(this.data);
+    }
 }
 export class IvemIdCorrectnessTableGridValue extends GenericCorrectnessTableGridValue<IvemId> {
-    protected createRenderValue() {
-        return new IvemIdRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: IvemId | undefined) {
         super.data = value?.createCopy();
     }
+
+    protected createRenderValue() {
+        return new IvemIdRenderValue(this.data);
+    }
 }
 export class LitIvemIdCorrectnessTableGridValue extends GenericCorrectnessTableGridValue<LitIvemId> {
-    protected createRenderValue() {
-        return new LitIvemIdRenderValue(this.data);
-    }
-
     override get data() { return super.data; }
     override set data(value: LitIvemId | undefined) {
         super.data = value?.createCopy();
+    }
+
+    protected createRenderValue() {
+        return new LitIvemIdRenderValue(this.data);
     }
 }
 

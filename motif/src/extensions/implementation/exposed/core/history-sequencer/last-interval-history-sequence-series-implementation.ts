@@ -14,11 +14,11 @@ import { IntervalHistorySequenceSeriesImplementation } from './interval-history-
 export class LastIntervalHistorySequenceSeriesImplementation extends IntervalHistorySequenceSeriesImplementation
     implements LastIntervalHistorySequenceSeriesApi {
 
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: LastIntervalHistorySequenceSeries) {
         super();
     }
+
+    get actual() { return this._actual; }
 
     getNumberPoint(idx: IntegerApi): LastIntervalHistorySequenceSeriesApi.Point {
         return this._actual.getNumberPoint(idx);

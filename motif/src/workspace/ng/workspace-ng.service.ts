@@ -16,12 +16,12 @@ import { WorkspaceNgModule } from './workspace-ng.module';
 export class WorkspaceNgService implements OnDestroy {
     private _service: WorkspaceService;
 
-    get service() { return this._service; }
-
     constructor(private readonly _desktopAccessNgService: DesktopAccessNgService) {
         this._service = new WorkspaceService();
         this._desktopAccessNgService.initialLoadedEvent = () => this.handleDesktopAccessNgServiceInitialLoadedEvent();
     }
+
+    get service() { return this._service; }
 
     ngOnDestroy() {
         // this._ditemService.dispose();

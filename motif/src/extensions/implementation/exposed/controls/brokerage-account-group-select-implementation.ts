@@ -12,10 +12,10 @@ import { BrokerageAccountGroupUiActionImplementation } from '../core/internal-ap
 export class BrokerageAccountGroupSelectImplementation extends BrokerageAccountGroupUiActionImplementation
     implements BrokerageAccountGroupSelectApi, FactoryComponent {
 
-    get factoryComponentRef() { return this._factoryComponentRef; }
-    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
-
     constructor(private readonly _factoryComponentRef: FactoryComponentRef, uiAction: BrokerageAccountGroupUiAction) {
         super(uiAction);
     }
+
+    get factoryComponentRef() { return this._factoryComponentRef; }
+    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
 }

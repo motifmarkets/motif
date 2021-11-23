@@ -44,6 +44,8 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         this._sideIdDisplay = BidAskSide.idToDisplay(sideId);
     }
 
+    get recordCount(): number { return this.getRecordCount(); }
+
     finalise() {
         this.finaliseDataItem();
     }
@@ -161,9 +163,7 @@ export class FullDepthSideGridRecordStore extends DepthSideGridRecordStore imple
         this._newPriceLevelAsOrder = true;
     }
 
-    // GridDataStore properties/methods
-    get recordCount(): number { return this.getRecordCount(); }
-
+    // GridDataStore methods
     getRecord(recordIndex: RevRecordIndex) {
         return this._records[recordIndex];
     }

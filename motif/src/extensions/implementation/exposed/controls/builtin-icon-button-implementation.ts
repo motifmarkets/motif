@@ -12,10 +12,10 @@ import { BuiltinIconButtonUiActionImplementation } from '../core/internal-api';
 export class BuiltinIconButtonImplementation extends BuiltinIconButtonUiActionImplementation
     implements BuiltinIconButtonApi, FactoryComponent {
 
-    get factoryComponentRef() { return this._factoryComponentRef; }
-    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
-
     constructor(private readonly _factoryComponentRef: FactoryComponentRef, uiAction: IconButtonUiAction) {
         super(uiAction);
     }
+
+    get factoryComponentRef() { return this._factoryComponentRef; }
+    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
 }

@@ -33,8 +33,9 @@ export class TableRecordDefinitionListDirectory {
     private _markDeletedCount = 0;
 
     get nullListId() { return this._nullListId; }
-    getList(idx: Integer) { return this.entries[idx].list; }
     get count() { return this.entries.length; }
+
+    getList(idx: Integer) { return this.entries[idx].list; }
 
     indexOfList(list: TableRecordDefinitionList): Integer {
         return this.entries.findIndex((entry: TableRecordDefinitionListDirectory.Entry) => entry.list === list);
@@ -335,6 +336,9 @@ export namespace TableRecordDefinitionListDirectory {
         }
 
         get list() { return this._list; }
+        get lockCount() { return this.lockers.length; }
+        get openCount() { return this.openers.length; }
+        get deleted() { return this._deleted; }
 
         open(opener: TableRecordDefinitionList.Opener) {
             this.openers.push(opener);
@@ -355,8 +359,6 @@ export namespace TableRecordDefinitionListDirectory {
             }
         }
 
-        get openCount() { return this.openers.length; }
-
         lock(locker: ILocker) {
             this.lockers.push(locker);
         }
@@ -370,8 +372,6 @@ export namespace TableRecordDefinitionListDirectory {
             }
         }
 
-        get lockCount() { return this.lockers.length; }
-
         isLocked(ignoreLocker: ILocker | undefined) {
             switch (this.lockCount) {
                 case 0: return false;
@@ -379,8 +379,6 @@ export namespace TableRecordDefinitionListDirectory {
                 default: return true;
             }
         }
-
-        get deleted() { return this._deleted; }
 
         markDeleted() {
             this._deleted = true;

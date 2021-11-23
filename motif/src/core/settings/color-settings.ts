@@ -19,11 +19,11 @@ export class ColorSettings extends SettingsGroup {
 
     private _lastOpaqueItems = new Array<ColorSettings.LastOpaqueItem>(ColorScheme.Item.idCount);
 
-    get lastNonInheritedItems() { return this._lastOpaqueItems; }
-
     constructor() {
         super(SettingsGroup.Type.Id.Color, ColorSettings.groupName);
     }
+
+    get lastNonInheritedItems() { return this._lastOpaqueItems; }
 
     override beginChanges() {
         this._beginChangeCount++;

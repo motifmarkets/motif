@@ -16,8 +16,6 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
     private _watchContentFrame: TableFrame;
     private _callPutContentFrame: TableFrame;
 
-    get initialised() { return this._callPutContentFrame !== undefined; }
-
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -29,6 +27,8 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get initialised() { return this._callPutContentFrame !== undefined; }
 
     initialise(watchContentFrame: TableFrame, callPutContentFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._watchContentFrame = watchContentFrame;

@@ -49,11 +49,6 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    get initialised() { return this._initialised; }
-    get stepId() { return this._stepId; }
-    get orderPad() { return this._orderPad; }
-    get symbolAccountIncomingLinkable() { return this._symbolAccountIncomingLinkable; }
-
     constructor(
         private readonly _componentAccess: OrderRequestDitemFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
@@ -69,6 +64,11 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
         this._reviewEnabled = this._settingsService.core.orderPad_ReviewEnabled;
     }
+
+    get initialised() { return this._initialised; }
+    get stepId() { return this._stepId; }
+    get orderPad() { return this._orderPad; }
+    get symbolAccountIncomingLinkable() { return this._symbolAccountIncomingLinkable; }
 
     initialise(frameElement: JsonElement | undefined) {
         if (frameElement !== undefined) {

@@ -73,6 +73,17 @@ export class SymbolsService {
     private _allowedMarketIdsChangedMultiEvent = new MultiEvent<SymbolsService.AllowedMarketIdsChangedEventHandler>();
     private _allowedExchangeIdsChangedMultiEvent = new MultiEvent<SymbolsService.AllowedExchangeIdsChangedEventHandler>();
 
+    constructor(private _settingsService: SettingsService, private _adi: AdiService) {
+        this._coreSettings = this._settingsService.core;
+        this._exchangeSettingsArray = this._settingsService.exchanges.exchanges;
+        this._settingsChangedEventSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
+            () => this.handleSettingsChangedEvent()
+        );
+
+        this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
+        this._pscMarketMap = new SymbolsService.PscMarketMap();
+    }
+
     get defaultDefaultExchangeId() { return this._defaultDefaultExchangeId; }
     get allowedExchangeIds() { return this._allowedExchangeIds; }
     get allowedMarketIds() { return this._allowedMarketIds; }
@@ -85,42 +96,50 @@ export class SymbolsService {
         this._promptDefaultExchangeIfRicParseModeId = value;
         this._coreSettings.symbol_PromptDefaultExchangeIfRicParseModeId = this._promptDefaultExchangeIfRicParseModeId;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get defaultExchangeId() { return this._defaultExchangeId; }
     set defaultExchangeId(value: ExchangeId) {
         this._defaultExchangeId = value;
         this._coreSettings.symbol_DefaultExchangeId = ExchangeInfo.idToJsonValue(this._defaultExchangeId);
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get ricAnnouncerChar() { return this._ricAnnouncerChar; }
     set ricAnnouncerChar(value: string) {
         this._ricAnnouncerChar = value;
         this._coreSettings.symbol_RicAnnouncerChar = this._ricAnnouncerChar;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscAnnouncerChar() { return this._pscAnnouncerChar; }
     set pscAnnouncerChar(value: string) {
         this._pscAnnouncerChar = value;
         this._coreSettings.symbol_PscAnnouncerChar = this._pscAnnouncerChar;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscExchangeAnnouncerChar() { return this._pscExchangeAnnouncerChar; }
     set pscExchangeAnnouncerChar(value: string) {
         this._pscExchangeAnnouncerChar = this.checkFixSymbolSourceSeparator(value);
         this._coreSettings.symbol_PscExchangeAnnouncerChar = this._pscExchangeAnnouncerChar;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscMarketSeparatorChar() { return this._pscMarketAnnouncerChar; }
     set pscMarketSeparatorChar(value: string) {
         this._pscMarketAnnouncerChar = this.checkFixMarketSeparator(value);
         this._coreSettings.symbol_PscMarketAnnouncerChar = this._pscMarketAnnouncerChar;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscExchangeHideModeId() { return this._pscExchangeHideModeId; }
     set pscExchangeHideModeId(value: SymbolsService.ExchangeHideMode.Id) {
         this._pscExchangeHideModeId = value;
         this._coreSettings.symbol_PscExchangeHideModeId =
             SymbolsService.ExchangeHideMode.idToJsonValue(this._pscExchangeHideModeId);
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscDefaultMarketHidden() { return this._pscDefaultMarketHidden; }
     set pscDefaultMarketHidden(value: boolean) {
         this._pscDefaultMarketHidden = value;
         this._coreSettings.symbol_PscDefaultMarketHidden = this._pscDefaultMarketHidden;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get pscMarketCodeAsLocalWheneverPossible() { return this._pscMarketCodeAsLocalWheneverPossible; }
     set pscMarketCodeAsLocalWheneverPossible(value: boolean) {
         this._pscMarketCodeAsLocalWheneverPossible = value;
@@ -136,17 +155,6 @@ export class SymbolsService {
         this._explicitDefaultParseModeId = value;
         this.updateDefaultParseModeId();
         this._coreSettings.symbol_ExplicitDefaultParseModeId = SymbolsService.ParseMode.idToJsonValue(this._explicitDefaultParseModeId);
-    }
-
-    constructor(private _settingsService: SettingsService, private _adi: AdiService) {
-        this._coreSettings = this._settingsService.core;
-        this._exchangeSettingsArray = this._settingsService.exchanges.exchanges;
-        this._settingsChangedEventSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
-            () => this.handleSettingsChangedEvent()
-        );
-
-        this._pscExchangeDisplayCodeMap = new SymbolsService.PscExchangeDisplayCodeMap();
-        this._pscMarketMap = new SymbolsService.PscMarketMap();
     }
 
     start() {

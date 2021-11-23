@@ -73,9 +73,6 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
     get recordCount() { return this._records.length; }
     get records(): readonly TableRecord[] { return this._records; }
 
-    get layout() { return this._layout; }
-    set layout(value: GridLayout) { this._layout = value; }
-
     get recordDefinitionList() { return this._recordDefinitionList; }
     get recordDefinitionListName() { return this.getRecordDefinitionListName(); }
     get recordDefinitionListTypeAbbr() { return this.getRecordDefinitionListTypeAbbr(); }
@@ -87,6 +84,9 @@ export class Table implements TableRecordDefinitionListDirectory.ILocker {
 
     get changeRecordDefinitionOrderAllowed(): boolean { return this.getChangeRecordDefinitionOrderAllowed(); }
     get addDeleteRecordDefinitionsAllowed(): boolean { return this.getAddDeleteRecordDefinitionsAllowed(); }
+
+    get layout() { return this._layout; }
+    set layout(value: GridLayout) { this._layout = value; }
 
     // ILocker function
 

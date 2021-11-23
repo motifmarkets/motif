@@ -18,8 +18,6 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
     private _workspaceServiceLocalDesktopFrameLoadedSubscriptionId: MultiEvent.SubscriptionId;
     private _getLoadedLocalDesktopResolveFtns: WorkspaceSvcImplementation.GetLoadedLocalDesktopResolveFtn[]  = [];
 
-    get localDesktop() { return this._localDesktop; }
-
     constructor(
         private readonly _registeredExtension: RegisteredExtension,
         private readonly _workspaceService: WorkspaceService,
@@ -34,6 +32,8 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
             this.loadLocalDesktop();
         }
     }
+
+    get localDesktop() { return this._localDesktop; }
 
     destroy() {
         this.checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent();

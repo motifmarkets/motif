@@ -21,9 +21,6 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
 
     private _frame: BrandingSplashWebPageDitemFrame;
 
-    protected get stateSchemaVersion() { return BrandingSplashWebPageDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
@@ -41,6 +38,9 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return BrandingSplashWebPageDitemNgComponent.stateSchemaVersion; }
 
     ngOnInit(): void {}
 

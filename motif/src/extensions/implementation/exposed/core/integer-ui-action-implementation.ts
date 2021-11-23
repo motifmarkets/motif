@@ -9,9 +9,9 @@ import { IntegerUiAction as IntegerUiActionApi } from '../../../api/extension-ap
 import { NumberUiActionImplementation } from './number-ui-action-implementation';
 
 export class IntegerUiActionImplementation extends NumberUiActionImplementation implements IntegerUiActionApi {
-    get integerActual() { return this._integerActual; }
-
     constructor(private readonly _integerActual: IntegerUiAction) {
         super(_integerActual);
     }
+
+    get integerActual() { return this._integerActual; }
 }

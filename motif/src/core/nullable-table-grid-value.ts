@@ -25,17 +25,7 @@ export abstract class GenericNullableCorrectnessTableGridValue<T> extends Nullab
     private _data: T | null | undefined;
     private _nonNullData: T;
 
-    isUndefined() {
-        return this.data === undefined;
-    }
-
-    clear() {
-        this._data = undefined;
-    }
-
-    isNull() {
-        return this.data === null;
-    }
+    get nonNullData() { return this._nonNullData; }
 
     get data(): T | null | undefined {
         return this._data;
@@ -48,7 +38,17 @@ export abstract class GenericNullableCorrectnessTableGridValue<T> extends Nullab
         }
     }
 
-    get nonNullData() { return this._nonNullData; }
+    isUndefined() {
+        return this.data === undefined;
+    }
+
+    clear() {
+        this._data = undefined;
+    }
+
+    isNull() {
+        return this.data === null;
+    }
 }
 
 export class NullableStringCorrectnessTableGridValue extends GenericNullableCorrectnessTableGridValue<string> {
@@ -67,14 +67,14 @@ export class NullableIntegerCorrectnessTableGridValue extends GenericNullableCor
     }
 }
 export class NullableDateCorrectnessTableGridValue extends GenericNullableCorrectnessTableGridValue<Date> {
-    protected createRenderValue() {
-        return new DateRenderValue(this.data === null ? undefined : this.data);
-    }
-
     override get data() { return super.data; }
 
     override set data(value: Date | null | undefined) {
         super.data = value === null ? null : newUndefinableDate(value);
+    }
+
+    protected createRenderValue() {
+        return new DateRenderValue(this.data === null ? undefined : this.data);
     }
 }
 

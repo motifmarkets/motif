@@ -10,14 +10,14 @@ import { MarketIdImplementation } from './market-id-api-implementation';
 import { OrderRouteImplementation } from './order-route-implementation';
 
 export class MarketOrderRouteImplementation extends OrderRouteImplementation implements MarketOrderRouteApi {
+    constructor(private readonly _marketActual: MarketOrderRoute) {
+        super(_marketActual);
+    }
+
     get marketActual() { return this._marketActual; }
 
     get marketId() { return MarketIdImplementation.toApi(this._marketActual.marketId); }
     get marketIdHandle() { return this._marketActual.marketId; }
-
-    constructor(private readonly _marketActual: MarketOrderRoute) {
-        super(_marketActual);
-    }
 
     isEqualTo(other: MarketOrderRouteApi) {
         const actualOther = MarketOrderRouteImplementation.marketFromApi(other);

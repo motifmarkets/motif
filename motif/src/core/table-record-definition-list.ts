@@ -48,6 +48,10 @@ export abstract class TableRecordDefinitionList {
     private _beforeRecDefinitionChangeMultiEvent = new MultiEvent<TableRecordDefinitionList.RecDefinitionChangeEventHandler>();
     private _afterRecDefinitionChangeMultiEvent = new MultiEvent<TableRecordDefinitionList.RecDefinitionChangeEventHandler>();
 
+    constructor(private _typeId: TableRecordDefinitionList.TypeId) {
+
+    }
+
     get id(): Guid { return this._id; }
     get name(): string { return this._name; }
     get builtIn(): boolean { return this._builtIn; }
@@ -55,8 +59,6 @@ export abstract class TableRecordDefinitionList {
     get typeId(): TableRecordDefinitionList.TypeId { return this._typeId; }
     get typeAsDisplay(): string { return this.getListTypeAsDisplay(); }
     get typeAsAbbr(): string { return this.getListTypeAsAbbr(); }
-    get missing(): boolean { return this._missing; }
-    set missing(value: boolean) { this._missing = value; }
 
     get active(): boolean { return this._active; }
 
@@ -67,14 +69,14 @@ export abstract class TableRecordDefinitionList {
     get count(): Integer { return this.getCount(); }
     get AsArray(): TableRecordDefinitionArray { return this.getAsArray(); }
 
-    get capacity(): Integer { return this.getCapacity(); }
-    set capacity(value: Integer) { this.setCapacity(value); }
     get changeDefinitionOrderAllowed(): boolean { return this._changeDefinitionOrderAllowed; }
     get addDeleteDefinitionsAllowed(): boolean { return this.getAddDeleteDefinitionsAllowed(); }
 
-    constructor(private _typeId: TableRecordDefinitionList.TypeId) {
-
-    }
+    get missing(): boolean { return this._missing; }
+    set missing(value: boolean) { this._missing = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get capacity(): Integer { return this.getCapacity(); }
+    set capacity(value: Integer) { this.setCapacity(value); }
 
     getListTypeAsDisplay(): string {
         return TableRecordDefinitionList.Type.idToDisplay(this._typeId);

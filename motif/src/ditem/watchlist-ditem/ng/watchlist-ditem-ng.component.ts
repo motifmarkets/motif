@@ -70,16 +70,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _frame: WatchlistDitemFrame;
     private _forceOnNextCommit = false;
 
-    protected get stateSchemaVersion() { return WatchlistDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-    public get frameGridProperties(): MotifGrid.FrameGridProperties {
-        return {
-            fixedColumnCount: 1,
-            gridRightAligned: false,
-        };
-    }
-
     constructor(cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
         elRef: ElementRef,
@@ -119,6 +109,16 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushSymbolLinkSelectState();
     }
 
+
+    get ditemFrame() { return this._frame; }
+    public get frameGridProperties(): MotifGrid.FrameGridProperties {
+        return {
+            fixedColumnCount: 1,
+            gridRightAligned: false,
+        };
+    }
+
+    protected get stateSchemaVersion() { return WatchlistDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
         assert(assigned(this._contentComponent), '3111100759');

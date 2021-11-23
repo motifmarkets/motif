@@ -30,13 +30,14 @@ export abstract class HistorySequencer {
 
     private _emptyPointsInsertMultiEvent = new MultiEvent<HistorySequencer.EmptyPointsInsertEventHandler>();
 
-    private get historiesChangeBegun() { return this._historiesChangeBegun; }
+    constructor(private _typeId: HistorySequencer.TypeId) { }
 
     get typeId() { return this._typeId; }
     get changeBegun() { return this._changeBegun; }
     get allSeriesLoading() { return this._allSeriesLoading; }
+    get pointCount() { return this.getPointCount(); }
 
-    constructor(private _typeId: HistorySequencer.TypeId) { }
+    private get historiesChangeBegun() { return this._historiesChangeBegun; }
 
     finalise() {
         if (this._histories.length > 0) {
@@ -46,8 +47,6 @@ export abstract class HistorySequencer {
             this.cancelAllHistoriesUsableTimer();
         }
     }
-
-    get pointCount() { return this.getPointCount(); }
 
     beginChange() {
         if (this._changeBeginCount++ === 0) {

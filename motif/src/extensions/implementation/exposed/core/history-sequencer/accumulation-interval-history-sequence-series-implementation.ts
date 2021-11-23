@@ -13,11 +13,11 @@ import { IntervalHistorySequenceSeriesImplementation } from './interval-history-
 export class AccumulationIntervalHistorySequenceSeriesImplementation extends IntervalHistorySequenceSeriesImplementation
     implements AccumulationIntervalHistorySequenceSeriesApi {
 
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: AccumulationIntervalHistorySequenceSeries) {
         super();
     }
+
+    get actual() { return this._actual; }
 
     getNumberPoint(idx: IntegerApi): AccumulationIntervalHistorySequenceSeriesApi.Point {
         return this._actual.getNumberPoint(idx);

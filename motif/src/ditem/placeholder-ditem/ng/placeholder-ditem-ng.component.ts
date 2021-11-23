@@ -44,20 +44,6 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
 
     private _frame: PlaceholderDitemFrame;
 
-    protected get stateSchemaVersion() { return PlaceholderDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
-    public get placeheldExtensionPublisherType() { return this._frame.placeheldExtensionPublisherType; }
-    public get placeheldExtensionPublisher() { return this._frame.placeheldExtensionPublisher; }
-    public get placeheldExtensionName() { return this._frame.placeheldExtensionName; }
-    public get placeheldConstructionMethod() { return this._frame.placeheldConstructionMethod; }
-    public get placeheldComponentTypeName() { return this._frame.placeheldComponentTypeName; }
-    public get placeheldComponentState() { return this._frame.placeheldComponentState; }
-    public get placeheldReason() { return this._frame.placeheldReason; }
-
-    public get invalid() { return this._frame.invalid; }
-    public get invalidReason() { return this._frame.invalidReason; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -74,6 +60,21 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }
+
+    get ditemFrame() { return this._frame; }
+
+    public get placeheldExtensionPublisherType() { return this._frame.placeheldExtensionPublisherType; }
+    public get placeheldExtensionPublisher() { return this._frame.placeheldExtensionPublisher; }
+    public get placeheldExtensionName() { return this._frame.placeheldExtensionName; }
+    public get placeheldConstructionMethod() { return this._frame.placeheldConstructionMethod; }
+    public get placeheldComponentTypeName() { return this._frame.placeheldComponentTypeName; }
+    public get placeheldComponentState() { return this._frame.placeheldComponentState; }
+    public get placeheldReason() { return this._frame.placeheldReason; }
+
+    public get invalid() { return this._frame.invalid; }
+    public get invalidReason() { return this._frame.invalidReason; }
+
+    protected get stateSchemaVersion() { return PlaceholderDitemNgComponent.stateSchemaVersion; }
 
     ngOnDestroy() {
         this.finalise();

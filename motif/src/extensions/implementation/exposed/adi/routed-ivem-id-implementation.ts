@@ -11,6 +11,8 @@ import { IvemIdImplementation } from './ivem-id-implementation';
 import { OrderRouteImplementation } from './order-route-implementation';
 
 export class RoutedIvemIdImplementation implements RoutedIvemIdApi {
+    constructor(private readonly _actual: RoutedIvemId) { }
+
     get actual() { return this._actual; }
 
     get code() { return this._actual.ivemId.code; }
@@ -18,8 +20,6 @@ export class RoutedIvemIdImplementation implements RoutedIvemIdApi {
     get ivemId() { return IvemIdImplementation.toApi(this._actual.ivemId); }
     get route() { return OrderRouteImplementation.toApi(this._actual.route); }
     get name() { return this._actual.name; }
-
-    constructor(private readonly _actual: RoutedIvemId) { }
 
     toJson(): JsonApi {
         return this._actual.toJson();

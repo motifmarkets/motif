@@ -10,6 +10,8 @@ import { ExchangeEnvironmentIdImplementation } from './exchange-environment-id-a
 import { MarketIdImplementation } from './market-id-api-implementation';
 
 export class LitIvemIdImplementation implements LitIvemIdApi {
+    constructor(private readonly _actual: LitIvemId) { }
+
     get actual() { return this._actual; }
 
     get code() { return this._actual.code; }
@@ -25,8 +27,6 @@ export class LitIvemIdImplementation implements LitIvemIdApi {
     }
     get name() { return this._actual.name; }
     get persistKey() { return this._actual.persistKey; }
-
-    constructor(private readonly _actual: LitIvemId) { }
 
     toJson(): JsonApi {
         return this._actual.toJson();

@@ -16,12 +16,11 @@ import { HistorySequencerImplementation } from './history-sequencer-implementati
 export class RepeatableExactHistorySequencerImplementation extends HistorySequencerImplementation
     implements RepeatableExactHistorySequencerApi {
 
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: RepeatableExactHistorySequencer) {
         super();
     }
 
+    get actual() { return this._actual; }
     get pointList() { return RepeatableExactHistorySequencerImplementation.PointList.toApi(this._actual.pointList); }
 }
 

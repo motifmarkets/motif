@@ -22,6 +22,8 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
     private _levelChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _levelsClearSubscriptionId: MultiEvent.SubscriptionId;
 
+    get recordCount(): number { return this.getRecordCount(); }
+
     finalise() {
         this.finaliseDataItem();
     }
@@ -75,8 +77,6 @@ export class ShortDepthSideGridRecordStore extends DepthSideGridRecordStore impl
     }
 
     // GridDataStore properties/methods
-    get recordCount(): number { return this.getRecordCount(); }
-
     getRecord(recordIndex: RevRecordIndex) {
         return this._records[recordIndex];
     }

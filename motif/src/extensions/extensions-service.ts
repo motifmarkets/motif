@@ -73,14 +73,6 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         new MultiEvent<ExtensionsAccessService.UnInstalledBundledListChangedEventHandler>();
     private readonly _installErrorMultiEvent = new MultiEvent<ExtensionsAccessService.InstallErrorEventHandler>();
 
-    get internalHandle() { return this._internalHandle; }
-    get internalRegisteredExtensionInfo() { return this._registrations[this._internalHandle]; }
-
-    public get installedArray() { return this._installedArray; }
-    public get installedCount() { return this._installedArray.length; }
-    public get uninstalledBundledArray() { return this._uninstalledBundledArray; }
-    public get uninstalledBundledCount() { return this._uninstalledBundledArray.length; }
-
     constructor(
         private readonly _adiService: AdiService,
         private readonly _commandRegisterService: CommandRegisterService,
@@ -98,6 +90,14 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
         window.motifExtensionRegistrar = new ExtensionRegistrarImplementation();
     }
+
+    get internalHandle() { return this._internalHandle; }
+    get internalRegisteredExtensionInfo() { return this._registrations[this._internalHandle]; }
+
+    public get installedArray() { return this._installedArray; }
+    public get installedCount() { return this._installedArray.length; }
+    public get uninstalledBundledArray() { return this._uninstalledBundledArray; }
+    public get uninstalledBundledCount() { return this._uninstalledBundledArray.length; }
 
     destroy() {
         this.checkActiveDownloadsTimoutCheckIntervalStopped();
