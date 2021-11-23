@@ -14,8 +14,7 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { merge, Observable, Observer, of, Subject, Unsubscribable } from 'rxjs';
-import { distinctUntilChanged, map, switchAll, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
 import {
     AdiService,
     AurcChangeTypeId,
@@ -306,13 +305,19 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     }
 
     private startSearchProcessor() {
-        const searchItemsObservable = this.typeahead.pipe(
-            map((term) => this.createParsedSearchTerm(term)),
-            distinctUntilChanged(
+        const searchItemsObservable = this.typeahead.pipe<
+            LitIvemIdSelectNgComponent.ParsedSearchTerm,
+            LitIvemIdSelectNgComponent.ParsedSearchTerm,
+            Observable<LitIvemIdSelectNgComponent.Item[]>,
+            Observable<LitIvemIdSelectNgComponent.Item[]>
+        >(
+            map<string | null, LitIvemIdSelectNgComponent.ParsedSearchTerm>((term) => this.createParsedSearchTerm(term)),
+            distinctUntilChanged<LitIvemIdSelectNgComponent.ParsedSearchTerm>(
                 (prev, curr) => LitIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
             // debounceTime(800),
-            map((parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(
+            map<LitIvemIdSelectNgComponent.ParsedSearchTerm, Observable<LitIvemIdSelectNgComponent.Item[]>>(
+                (parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(
                     this._adiService,
                     this._symbolsService,
                     parsedTerm,
@@ -321,12 +326,12 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                     (start) => this.handleDebounceDelayStartFinishEvent(start)
                 )
             ),
-            tap(() => { this._nextSearchNumber++; }) // this needs to be reviewed
+            tap<Observable<LitIvemIdSelectNgComponent.Item[]>>(() => { this._nextSearchNumber++; }) // this needs to be reviewed
         );
 
-        this.items = merge<Observable<LitIvemIdSelectNgComponent.Item[]>>(searchItemsObservable, this._selectedObservable).pipe(
+        this.items = merge<Observable<LitIvemIdSelectNgComponent.Item[]>[]>(searchItemsObservable, this._selectedObservable).pipe(
             switchAll(),
-            tap((itemArray) => this.updateNgSelectWidthsFromItems(itemArray, true))
+            tap<LitIvemIdSelectNgComponent.Item[]>((itemArray) => this.updateNgSelectWidthsFromItems(itemArray, true))
         );
     }
 
