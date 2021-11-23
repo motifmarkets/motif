@@ -6,8 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { merge, Observable, Observer, of, Subject, Unsubscribable } from 'rxjs';
-import { distinctUntilChanged, map, switchAll, tap } from 'rxjs/operators';
+import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
 import {
     AdiService,
     ExchangeId,
@@ -276,12 +275,18 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     }
 
     private startSearchProcessor() {
-        const searchItemsObservable = this.typeahead.pipe(
-            map((term) => this.createParsedSearchTerm(term)),
-            distinctUntilChanged(
+        const searchItemsObservable = this.typeahead.pipe<
+            RoutedIvemIdSelectNgComponent.ParsedSearchTerm,
+            RoutedIvemIdSelectNgComponent.ParsedSearchTerm,
+            Observable<RoutedIvemIdSelectNgComponent.Item[]>,
+            Observable<RoutedIvemIdSelectNgComponent.Item[]>
+        >(
+            map<string | null, RoutedIvemIdSelectNgComponent.ParsedSearchTerm>((term) => this.createParsedSearchTerm(term)),
+            distinctUntilChanged<RoutedIvemIdSelectNgComponent.ParsedSearchTerm>(
                 (prev, curr) => RoutedIvemIdSelectNgComponent.ParsedSearchTerm.isEqual(prev, curr)
             ),
-            map((parsedTerm) => new RoutedIvemIdSelectNgComponent.ItemArrayObservable(
+            map<RoutedIvemIdSelectNgComponent.ParsedSearchTerm, Observable<RoutedIvemIdSelectNgComponent.Item[]>>(
+                (parsedTerm) => new RoutedIvemIdSelectNgComponent.ItemArrayObservable(
                     this._adiService,
                     this.symbolsService,
                     parsedTerm, 800,
@@ -289,12 +294,12 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                     (start) => this.handleDebounceDelayStartFinishEvent(start)
                 )
             ),
-            tap(() => { this._nextSearchNumber++; }) // this needs to be reviewed
+            tap<Observable<RoutedIvemIdSelectNgComponent.Item[]>>(() => { this._nextSearchNumber++; }) // this needs to be reviewed
         );
 
-        this.items = merge<Observable<RoutedIvemIdSelectNgComponent.Item[]>>(searchItemsObservable, this._selectedObservable).pipe(
+        this.items = merge<Observable<RoutedIvemIdSelectNgComponent.Item[]>[]>(searchItemsObservable, this._selectedObservable).pipe(
             switchAll(),
-            tap((itemArray) => this.updateNgSelectWidthsFromItems(itemArray, true))
+            tap<RoutedIvemIdSelectNgComponent.Item[]>((itemArray) => this.updateNgSelectWidthsFromItems(itemArray, true))
         );
     }
 
