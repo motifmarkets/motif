@@ -18,8 +18,8 @@ export class TableValueList {
     private _beenUsable = false;
     private _beginValuesChangeCount = 0;
 
-
     get fieldCount() { return this._fieldCount; }
+    get beenUsable(): boolean { return this._beenUsable; }
 
     activate() {
         let record: TableGridValue[] = [];
@@ -49,8 +49,6 @@ export class TableValueList {
         this._sources.add(source);
         this._fieldCount += source.fieldCount;
     }
-
-    get beenUsable(): boolean { return this._beenUsable; }
 
     getAllValues(): TableGridValue[] {
         if (this._sources.count === 1) {

@@ -59,9 +59,6 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private _frame: DepthDitemFrame;
 
-    protected get stateSchemaVersion() { return DepthDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -92,6 +89,9 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.pushSymbol(this._frame.litIvemId);
         this.pushSymbolLinkSelectState();
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return DepthDitemNgComponent.stateSchemaVersion; }
 
     public ngOnDestroy() {
         this.finalise();

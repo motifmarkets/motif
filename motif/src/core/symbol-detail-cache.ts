@@ -389,11 +389,11 @@ abstract class Request {
 class LitIvemIdRequest extends Request {
     resolveFtnArray: LitIvemIdResolveFtn[] = [];
 
-    get detail() { return this._detail; }
-
     constructor(dataMgr: DataMgr, private _detail: SymbolDetailCache.LitIvemIdDetail) {
         super(dataMgr, LitIvemIdRequest.createDataDefinition(_detail.litIvemId));
     }
+
+    get detail() { return this._detail; }
 
     resolve(detail: SymbolDetailCache.LitIvemIdDetail | undefined) {
         const ftnArray = this.resolveFtnArray;
@@ -455,8 +455,6 @@ namespace LitIvemIdRequest {
 class IvemIdRequest extends Request {
     resolveFtnArray: IvemIdResolveFtn[] = [];
 
-    get detail() { return this._detail; }
-
     constructor(
         dataMgr: DataMgr,
         private readonly _detail: SymbolDetailCache.IvemIdDetail,
@@ -464,6 +462,8 @@ class IvemIdRequest extends Request {
     ) {
         super(dataMgr, IvemIdRequest.createDataDefinition(_detail.ivemId));
     }
+
+    get detail() { return this._detail; }
 
     resolve(detail: SymbolDetailCache.IvemIdDetail | undefined) {
         const ftnArray = this.resolveFtnArray;

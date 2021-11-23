@@ -17,10 +17,10 @@ export class CommandRegisterService {
 
     private _nullCommand: InternalCommand;
 
+    constructor() { }
+
     get internalExtensionHandle() { return this._internalExtensionHandle; }
     get nullCommand() { return this._nullCommand; }
-
-    constructor() { }
 
     setInternalExtensionHandle(value: ExtensionHandle) {
         this._internalExtensionHandle = value;

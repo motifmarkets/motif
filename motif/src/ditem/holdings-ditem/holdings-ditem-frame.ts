@@ -51,13 +51,6 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     private _currentFocusedAccountIdSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
-    get initialised() {
-        return this._holdingsTableFrame !== undefined;
-    }
-    get focusedRecordIndex() {
-        return this._holdingsTableFrame.getFocusedRecordIndex();
-    }
-
     constructor(
         private readonly _componentAccess: HoldingsDitemFrame.ComponentAccess,
         settingsService: SettingsService,
@@ -76,6 +69,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         );
 
         this._coreSettings = settingsService.core;
+    }
+
+    get initialised() {
+        return this._holdingsTableFrame !== undefined;
+    }
+    get focusedRecordIndex() {
+        return this._holdingsTableFrame.getFocusedRecordIndex();
     }
 
     initialise(

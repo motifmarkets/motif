@@ -19,9 +19,6 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
     private _symbolsManager: SymbolsService;
     private _pushRoutedIvemIdEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get symbolsService() { return this._symbolsManager; }
-    public override get uiAction() { return super.uiAction as RoutedIvemIdUiAction; }
-
     constructor(
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
@@ -32,7 +29,10 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         this._symbolsManager = _symbolsManagerService.symbolsManager;
     }
 
+    public override get uiAction() { return super.uiAction as RoutedIvemIdUiAction; }
     get symbolsManager() { return this._symbolsManager; }
+
+    protected get symbolsService() { return this._symbolsManager; }
 
     protected override pushSettings() {
         super.pushSettings();

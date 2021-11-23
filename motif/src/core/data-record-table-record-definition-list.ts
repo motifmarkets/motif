@@ -22,12 +22,12 @@ export abstract class DataRecordTableRecordDefinitionList<Record extends DataRec
     private _dataRecordListAfterRecordChangedEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataRecordListbadnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
 
-    get dataRecordList() { return this._dataRecordList; }
-
     // setting accountId to undefined will return orders for all accounts
     constructor(typeId: TableRecordDefinitionList.TypeId) {
         super(typeId);
     }
+
+    get dataRecordList() { return this._dataRecordList; }
 
     getDefinition(idx: Integer): TableRecordDefinition {
         return this._definitions[idx];

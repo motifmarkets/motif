@@ -20,8 +20,6 @@ export class AccumulationIntervalHistorySequenceSeries extends IntervalHistorySe
     private _pointUpdatedEventSubscriptionId: MultiEvent.SubscriptionId;
     private _emptyIntervalsInsertedEventSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get points() { return this._points; }
-
     constructor(sequencer: IntervalHistorySequencer) {
         super(sequencer);
         this._pointInsertedEventSubscriptionId = this.intervalSequencer.subscribePointInsertedEvent(
@@ -34,6 +32,8 @@ export class AccumulationIntervalHistorySequenceSeries extends IntervalHistorySe
             (index, count) => this.handleEmptyIntervalsInsertedEvent(index, count)
         );
     }
+
+    protected get points() { return this._points; }
 
     override finalise() {
         this.intervalSequencer.unsubscribePointInsertedEvent(this._pointInsertedEventSubscriptionId);

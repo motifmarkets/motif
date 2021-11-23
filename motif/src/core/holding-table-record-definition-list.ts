@@ -26,13 +26,13 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class HoldingTableRecordDefinitionList extends BrokerageAccountGroupDataRecordTableRecordDefinitionList<Holding> {
     private static _constructCount = 0;
 
-    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupHoldingList; }
-
     constructor(private _adi: AdiService) {
         super(TableRecordDefinitionList.TypeId.Holding);
         this.setName(HoldingTableRecordDefinitionList.createName());
         this._changeDefinitionOrderAllowed = true;
     }
+
+    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupHoldingList; }
 
     private static createName() {
         return HoldingTableRecordDefinitionList.baseName + (++HoldingTableRecordDefinitionList._constructCount).toString(10);

@@ -256,6 +256,8 @@ abstract class GenericRenderValue<T> extends RenderValue {
         }
     }
 
+    get definedData() { return this._data; }
+
     isUndefined() {
         return this._data === undefined;
     }
@@ -267,8 +269,6 @@ abstract class GenericRenderValue<T> extends RenderValue {
     //         this._definedData = value;
     //     }
     // }
-
-    get definedData() { return this._data; }
 }
 
 export class StringRenderValue extends GenericRenderValue<string> {

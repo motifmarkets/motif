@@ -63,10 +63,6 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     private _frame: HoldingsDitemFrame;
 
-    protected get stateSchemaVersion() { return HoldingsDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -94,6 +90,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.pushSymbolLinkButtonState();
         this._accountGroupUiAction.pushValue(BrokerageAccountGroup.createAll());
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return HoldingsDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
         delay1Tick(() => this.initialise());

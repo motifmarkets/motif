@@ -49,8 +49,6 @@ export class ExchangeSettings {
 
     private readonly _infos = Object.values(this._infosObject);
 
-    get infos() { return this._infos; }
-
     constructor(
         readonly exchangeId: ExchangeId,
         private readonly _settingChangedEventer: ExchangeSettings.SettingChangedEventer,
@@ -63,12 +61,15 @@ export class ExchangeSettings {
         }
     }
 
+    get infos() { return this._infos; }
+
     get symbolNameFieldId() { return this._symbolNameFieldId; }
     set symbolNameFieldId(value: SymbolFieldId) {
         this._symbolNameFieldId = value;
         this._settingChangedEventer(ExchangeSettings.Id.SymbolNameFieldId);
     }
 
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get symbolSearchFieldIds() { return this._symbolSearchFieldIds; }
     set symbolSearchFieldIds(value: SymbolFieldId[]) {
         this._symbolSearchFieldIds = value;

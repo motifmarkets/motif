@@ -9,11 +9,11 @@ import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/
 export class ColorScheme {
     private _items = new Array<ColorScheme.Item>(ColorScheme.Item.idCount);
 
+    constructor(private _name: string, private _builtIn: boolean) { }
+
     get name() { return this._name; }
     get builtIn() { return this._builtIn; }
     get items() { return this._items; }
-
-    constructor(private _name: string, private _builtIn: boolean) { }
 
     resolve(itemId: ColorScheme.ItemId): ColorScheme.ResolvedItem {
         let bkgdResolver = ColorScheme.Item.idToBkgdResolver(itemId);

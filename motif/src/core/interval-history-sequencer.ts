@@ -30,6 +30,11 @@ export class IntervalHistorySequencer extends HistorySequencer {
     private _pointUpdatedMultiEvent = new MultiEvent<IntervalHistorySequencer.PointUpdatedEventHandler>();
     private _emptyIntervalsInsertedMultiEvent = new MultiEvent<IntervalHistorySequencer.EmptyIntervalsInsertedEventHandler>();
 
+    constructor() {
+        super(HistorySequencer.TypeId.Interval);
+        this._pointList.capacityIncSize = 1000;
+    }
+
     get unitId() { return this._unitId; }
     get unitCount() { return this._unitCount; }
     get emptyPeriodsSkipped() { return this._emptyPeriodsSkipped; }
@@ -38,11 +43,6 @@ export class IntervalHistorySequencer extends HistorySequencer {
     get paddingActive() { return this._paddingActive; }
 
     get pointList() { return this._pointList; }
-
-    constructor() {
-        super(HistorySequencer.TypeId.Interval);
-        this._pointList.capacityIncSize = 1000;
-    }
 
     setParameters(unitId: IntervalHistorySequencer.UnitId,
         unitCount: Integer,

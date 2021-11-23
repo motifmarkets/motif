@@ -22,9 +22,6 @@ import { NewsHeadlinesDitemFrame } from '../news-headlines-ditem-frame';
 export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy {
     private _frame: NewsHeadlinesDitemFrame;
 
-    protected get stateSchemaVersion() { return NewsHeadlinesDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -42,6 +39,9 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return NewsHeadlinesDitemNgComponent.stateSchemaVersion; }
 
     ngOnDestroy() {
         this.finalise();

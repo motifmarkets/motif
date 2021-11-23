@@ -13,8 +13,6 @@ import { SetAccountLinkingDitemCommandParameters, SetSecurityLinkingDitemCommand
 export class DitemCommandProcessor extends CommandProcessor {
     private _commandRegister: readonly InternalDitemCommand[];
 
-    get commandCount() { return this._commandRegister.length; }
-
     constructor(private _commandContext: DitemCommandContext, private _commandRegisterService: CommandRegisterService) {
         super();
 
@@ -27,6 +25,8 @@ export class DitemCommandProcessor extends CommandProcessor {
         }
         this._commandRegister = register;
     }
+
+    get commandCount() { return this._commandRegister.length; }
 
     getBarExecutableCommands() {
         const maxCount = this._commandRegister.length;

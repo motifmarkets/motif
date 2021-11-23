@@ -38,16 +38,16 @@ export class ShortDepthRecord extends DepthRecord {
         super(DepthRecord.TypeId.PriceLevel, index, volumeAhead, auctionQuantity);
     }
 
+    get level() { return this._level; }
+    get price(): PriceOrRemainder { return this._level.price; }
+    get orderCount() { return this._level.orderCount; }
+    get hasUndisclosed() { return this._level.hasUndisclosed; }
+
     getVolume() { return this._level.volume === undefined ? 0 : this._level.volume; } // virtual override
     getRenderVolume() { return this._level.volume; } // virtual override
     acceptedByFilter(filterXrefs: string[]) { // virtual override
         return true; // not supported in short depth so accept everything
     }
-
-    get level() { return this._level; }
-    get price(): PriceOrRemainder { return this._level.price; }
-    get orderCount() { return this._level.orderCount; }
-    get hasUndisclosed() { return this._level.hasUndisclosed; }
 
     processValueChanges(valueChanges: DepthLevelsDataItem.Level.ValueChange[]) {
         const valueChangeCount = valueChanges.length;

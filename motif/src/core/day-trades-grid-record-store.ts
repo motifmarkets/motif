@@ -24,6 +24,8 @@ export class DayTradesGridRecordStore implements RevRecordStore {
     private _dataItemRecordChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
+    get recordCount() { return this._recordCount; }
+
     setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
         this.fieldsEventers = fieldsEventers;
     }
@@ -71,8 +73,6 @@ export class DayTradesGridRecordStore implements RevRecordStore {
             this._records = [];
         }
     }
-
-    get recordCount() { return this._recordCount; }
 
     getRecord(index: Integer) {
         return this._records[index];

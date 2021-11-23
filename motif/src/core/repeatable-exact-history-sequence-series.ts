@@ -10,12 +10,12 @@ import { RepeatableExactHistorySequencer } from './repeatable-exact-history-sequ
 
 export abstract class RepeatableExactHistorySequenceSeries extends HistorySequenceSeries {
 
-    get repeatableExactSequencer() { return this._repeatableExactSequencer; }
-    get sequencerPoints() { return this._repeatableExactSequencer.pointList; }
-
     constructor(private _repeatableExactSequencer: RepeatableExactHistorySequencer) {
         super(_repeatableExactSequencer);
     }
+
+    get repeatableExactSequencer() { return this._repeatableExactSequencer; }
+    get sequencerPoints() { return this._repeatableExactSequencer.pointList; }
 
     getSequencerPoint(idx: Integer) { return this.sequencerPoints.getItem(idx); }
 }

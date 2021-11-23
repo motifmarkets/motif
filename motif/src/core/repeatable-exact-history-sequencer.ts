@@ -24,12 +24,12 @@ export class RepeatableExactHistorySequencer extends HistorySequencer {
     private _pointInsertedMultiEvent = new MultiEvent<RepeatableExactHistorySequencer.PointInsertedEventHandler>();
     private _pointUpdatedMultiEvent = new MultiEvent<RepeatableExactHistorySequencer.PointUpdatedEventHandler>();
 
-    get pointList() { return this._pointList; }
-
     constructor() {
         super(HistorySequencer.TypeId.Interval);
         this._pointList.capacityIncSize = 1000;
     }
+
+    get pointList() { return this._pointList; }
 
     clear(fromIdx: Integer = 0) {
         this._pointList.clear();

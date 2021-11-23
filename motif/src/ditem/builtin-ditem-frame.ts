@@ -13,8 +13,6 @@ import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 
 export abstract class BuiltinDitemFrame extends DitemFrame {
-    get builtinDitemTypeId() { return this._builtinDitemTypeId; }
-
     constructor(private readonly _builtinDitemTypeId: BuiltinDitemFrame.BuiltinTypeId,
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -26,6 +24,8 @@ export abstract class BuiltinDitemFrame extends DitemFrame {
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get builtinDitemTypeId() { return this._builtinDitemTypeId; }
 }
 
 export namespace BuiltinDitemFrame {

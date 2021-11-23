@@ -26,13 +26,13 @@ import { TableRecordDefinitionList } from './table-record-definition-list';
 export class OrderTableRecordDefinitionList extends BrokerageAccountGroupDataRecordTableRecordDefinitionList<Order> {
     private static _constructCount = 0;
 
-    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupOrderList; }
-
     constructor(private _adi: AdiService) {
         super(TableRecordDefinitionList.TypeId.Order);
         this.setName(OrderTableRecordDefinitionList.createName());
         this._changeDefinitionOrderAllowed = true;
     }
+
+    override get dataRecordList() { return super.dataRecordList as BrokerageAccountGroupOrderList; }
 
     private static createName() {
         return OrderTableRecordDefinitionList.baseName + (++OrderTableRecordDefinitionList._constructCount).toString(10);

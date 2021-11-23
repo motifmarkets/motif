@@ -24,8 +24,6 @@ export class ColorSchemeGridRecordStore implements RevRecordStore {
     private _colorSettings: ColorSettings;
     private _settingsChangedEventSubscriptionId: MultiEvent.SubscriptionId;
 
-    get colorSettings() { return this._colorSettings; }
-
     constructor(private readonly _settingsService: SettingsService) {
         this._colorSettings = this._settingsService.color;
 
@@ -39,6 +37,12 @@ export class ColorSchemeGridRecordStore implements RevRecordStore {
 
         this._settingsChangedEventSubscriptionId =
             this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
+    }
+
+    get colorSettings() { return this._colorSettings; }
+
+    get recordCount(): number {
+        return ColorScheme.Item.idCount;
     }
 
     finalise() {
@@ -75,10 +79,6 @@ export class ColorSchemeGridRecordStore implements RevRecordStore {
 
     getRecords(): readonly ColorSchemeGridRecordStore.Record[] {
         return this._records;
-    }
-
-    get recordCount(): number {
-        return ColorScheme.Item.idCount;
     }
 
     private handleSettingsChangedEvent() {

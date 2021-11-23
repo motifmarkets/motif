@@ -141,23 +141,28 @@ export class DesktopFrame implements DesktopAccessService {
 
     // editOrderRequestFromMarketOrderIdEvent: DesktopFrame.EditOrderRequestFromMarketOrderIdEvent;
 
-    public get litIvemIdChangedEvent(): DesktopFrame.TLitIvemIdChangedEvent { return this._litIvemIdChangedEvent; }
-    public set litIvemIdChangedEvent(value: DesktopFrame.TLitIvemIdChangedEvent) { this._litIvemIdChangedEvent = value; }
+    constructor(private readonly _settingsService: SettingsService,
+        private readonly _storage: AppStorageService,
+        private readonly _userAlertService: UserAlertService,
+        private readonly _extensionsAccessService: ExtensionsAccessService,
+        private readonly _symbolsService: SymbolsService,
+        private readonly _adiService: AdiService,
+        private readonly _signOutService: SignOutService,
+        private readonly _menuBarService: MenuBarService,
+        private readonly _commandRegisterService: CommandRegisterService,
+        private readonly _startupSplashWebPageUrl: string | undefined,
+        private readonly _getBuiltinDitemFrameFromComponent: DesktopFrame.GetBuiltinDitemFrameFromComponent
+    ) {
+        this.createUiActions();
+    }
 
     get historicalAccountIds(): string[] { return this._historicalAccountIds; }
     get FrameCount(): Integer { return this.getFrameCount(); }
 
     get litIvemId() { return this._litIvemId; }
-    get litIvemIdAppLinked() { return this._litIvemIdAppLinked; }
-    set litIvemIdAppLinked(value: boolean) { this.setLitIvemIdAppLinked(value); }
     get brokerageAccountGroup() { return this._brokerageAccountGroup; }
-    get accountAggregationAppLinked(): boolean { return this._brokerageAccountGroupAppLinked; }
-    set accountAggregationAppLinked(value: boolean) { this.setAccountAggregationAppLinked(value); }
 
     get lastSingleBrokerageAccountGroup() { return this._lastSingleBrokerageAccountGroup; }
-
-    get saveLayoutLitIvemIdsAndAccountAggregations(): boolean { return this._saveLayoutLitIvemIdsAndBrokerageAccountGroups; }
-    set saveLayoutLitIvemIdsAndAccountAggregations(value: boolean) { this._saveLayoutLitIvemIdsAndBrokerageAccountGroups = value; }
 
     get lastFocusedLitIvemIdValid() { return this.getLastFocusedLitIvemIdValid(); }
     get lastFocusedLitIvemId() { return this._lastFocusedLitIvemId; }
@@ -183,20 +188,20 @@ export class DesktopFrame implements DesktopAccessService {
 
     get menuBarService() { return this._menuBarService; }
 
-    constructor(private readonly _settingsService: SettingsService,
-        private readonly _storage: AppStorageService,
-        private readonly _userAlertService: UserAlertService,
-        private readonly _extensionsAccessService: ExtensionsAccessService,
-        private readonly _symbolsService: SymbolsService,
-        private readonly _adiService: AdiService,
-        private readonly _signOutService: SignOutService,
-        private readonly _menuBarService: MenuBarService,
-        private readonly _commandRegisterService: CommandRegisterService,
-        private readonly _startupSplashWebPageUrl: string | undefined,
-        private readonly _getBuiltinDitemFrameFromComponent: DesktopFrame.GetBuiltinDitemFrameFromComponent
-    ) {
-        this.createUiActions();
-    }
+    get litIvemIdAppLinked() { return this._litIvemIdAppLinked; }
+    set litIvemIdAppLinked(value: boolean) { this.setLitIvemIdAppLinked(value); }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get accountAggregationAppLinked(): boolean { return this._brokerageAccountGroupAppLinked; }
+    set accountAggregationAppLinked(value: boolean) { this.setAccountAggregationAppLinked(value); }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get saveLayoutLitIvemIdsAndAccountAggregations(): boolean { return this._saveLayoutLitIvemIdsAndBrokerageAccountGroups; }
+    set saveLayoutLitIvemIdsAndAccountAggregations(value: boolean) { this._saveLayoutLitIvemIdsAndBrokerageAccountGroups = value; }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    public get litIvemIdChangedEvent(): DesktopFrame.TLitIvemIdChangedEvent { return this._litIvemIdChangedEvent; }
+    public set litIvemIdChangedEvent(value: DesktopFrame.TLitIvemIdChangedEvent) { this._litIvemIdChangedEvent = value; }
 
     async initialise(goldenLayoutHostFrame: GoldenLayoutHostFrame) {
         this._goldenLayoutHostFrame = goldenLayoutHostFrame;

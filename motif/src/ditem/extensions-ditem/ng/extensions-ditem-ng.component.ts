@@ -50,9 +50,6 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     private _frame: ExtensionsDitemFrame;
     private _listTransitioningInfo: ExtensionInfo | undefined;
 
-    protected get stateSchemaVersion() { return ExtensionsDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -75,6 +72,9 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
 
         this.applySettings();
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return ExtensionsDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
         delay1Tick(() => this.initialise());

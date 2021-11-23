@@ -13,11 +13,6 @@ import { DitemFrame } from './ditem-frame';
 export class ExtensionDitemFrame extends DitemFrame {
     persistStateRequestEventer: ExtensionDitemFrame.PersistStateRequestEventHandler;
 
-    get extensionHandle() { return this.ditemTypeId.extensionHandle; }
-    get typeName() { return this.ditemTypeId.name; }
-
-    get initialised() { return false; }
-
     constructor(
         ditemTypeId: DitemFrame.TypeId,
         private readonly _componentAccess: ExtensionDitemFrame.ComponentAccess,
@@ -30,6 +25,11 @@ export class ExtensionDitemFrame extends DitemFrame {
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
+
+    get extensionHandle() { return this.ditemTypeId.extensionHandle; }
+    get typeName() { return this.ditemTypeId.name; }
+
+    get initialised() { return false; }
 
     getPersistState() {
         const jsonElement = new JsonElement();

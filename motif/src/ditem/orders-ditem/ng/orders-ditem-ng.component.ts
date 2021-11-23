@@ -62,10 +62,6 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _modeId = OrdersDitemNgComponent.ModeId.Main;
     private _frame: OrdersDitemFrame;
 
-    protected get stateSchemaVersion() { return OrdersDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -103,6 +99,10 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.pushSymbolLinkButtonState();
         this._accountGroupUiAction.pushValue(BrokerageAccountGroup.createAll());
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return OrdersDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
         assert(assigned(this._tableComponent), 'OICNAVI33885');

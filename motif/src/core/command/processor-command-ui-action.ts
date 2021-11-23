@@ -21,12 +21,6 @@ export class ProcessorCommandUiAction extends UiAction {
 
     private _commandPushMultiEvent = new MultiEvent<ProcessorCommandUiAction.PushEventHandlersInterface>();
 
-    get valueUndefined() { return this._value === undefined; }
-
-    get value() { return this._value; }
-    get definedValue() { return this._definedValue; }
-    get items() { return this._items; }
-
     constructor(private _commandRegisterService: CommandRegisterService) {
         super();
         this._undefinedItem = {
@@ -35,6 +29,12 @@ export class ProcessorCommandUiAction extends UiAction {
         } as const;
         this._definedValue = this._undefinedItem;
     }
+
+    get valueUndefined() { return this._value === undefined; }
+
+    get value() { return this._value; }
+    get definedValue() { return this._definedValue; }
+    get items() { return this._items; }
 
     isValueDefined() {
         return this._value !== undefined && !CommandRegisterService.isNullCommand(this._value.command);

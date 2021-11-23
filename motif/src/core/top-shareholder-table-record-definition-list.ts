@@ -40,13 +40,13 @@ export class TopShareholderTableRecordDefinitionList extends SingleDataItemTable
         this._changeDefinitionOrderAllowed = true;
     }
 
+    get dataItem() { return this._dataItem; }
+
     load(litIvemId: LitIvemId, tradingDate: Date | undefined, compareToTradingDate: Date | undefined) {
         this._litIvemId = litIvemId;
         this._tradingDate = tradingDate;
         this._compareToTradingDate = compareToTradingDate;
     }
-
-    get dataItem() { return this._dataItem; }
 
     getDefinition(idx: Integer): TableRecordDefinition {
         return this._list[idx];

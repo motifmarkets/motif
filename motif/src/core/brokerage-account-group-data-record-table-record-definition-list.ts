@@ -20,17 +20,17 @@ export abstract class BrokerageAccountGroupDataRecordTableRecordDefinitionList<
 > extends BrokerageAccountDataRecordTableRecordDefinitionList<Record> {
     private _brokerageAccountGroup: BrokerageAccountGroup;
 
+    // setting accountId to undefined will return orders for all accounts
+    constructor(typeId: TableRecordDefinitionList.TypeId) {
+        super(typeId);
+    }
+
     get brokerageAccountGroup() {
         return this._brokerageAccountGroup;
     }
     override get dataRecordList() {
         return super
             .dataRecordList as BrokerageAccountGroupDataRecordList<Record>;
-    }
-
-    // setting accountId to undefined will return orders for all accounts
-    constructor(typeId: TableRecordDefinitionList.TypeId) {
-        super(typeId);
     }
 
     load(group: BrokerageAccountGroup) {

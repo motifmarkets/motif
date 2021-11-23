@@ -11,13 +11,13 @@ import { IntervalHistorySequencer } from './interval-history-sequencer';
 export abstract class IntervalHistorySequenceSeries extends HistorySequenceSeries {
     private _completedIntervalsVisibleOnly = false;
 
-    get intervalSequencer() { return this._intervalSequencer; }
-    get sequencerPoints() { return this._intervalSequencer.pointList; }
-    get completedIntervalsVisibleOnly() { return this._completedIntervalsVisibleOnly; }
-
     constructor(private _intervalSequencer: IntervalHistorySequencer) {
         super(_intervalSequencer);
     }
+
+    get intervalSequencer() { return this._intervalSequencer; }
+    get sequencerPoints() { return this._intervalSequencer.pointList; }
+    get completedIntervalsVisibleOnly() { return this._completedIntervalsVisibleOnly; }
 
     getSequencerPoint(idx: Integer) { return this.sequencerPoints.getItem(idx); }
 

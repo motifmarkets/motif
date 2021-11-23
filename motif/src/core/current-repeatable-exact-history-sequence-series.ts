@@ -18,8 +18,6 @@ export class CurrentRepeatableExactHistorySequenceSeries extends RepeatableExact
     private _pointInsertedEventSubscriptionId: MultiEvent.SubscriptionId;
     private _pointUpdatedEventSubscriptionId: MultiEvent.SubscriptionId;
 
-    protected get points() { return this._points; }
-
     constructor(sequencer: RepeatableExactHistorySequencer) {
         super(sequencer);
         this._pointInsertedEventSubscriptionId = this.repeatableExactSequencer.subscribePointInsertedEvent(
@@ -29,6 +27,8 @@ export class CurrentRepeatableExactHistorySequenceSeries extends RepeatableExact
             (index) => this.handlePointUpdatedEvent(index)
         );
     }
+
+    protected get points() { return this._points; }
 
     override finalise() {
         this.repeatableExactSequencer.unsubscribePointInsertedEvent(this._pointInsertedEventSubscriptionId);

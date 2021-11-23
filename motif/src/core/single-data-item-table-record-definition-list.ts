@@ -10,9 +10,9 @@ import { RandomIdTableRecordDefinitionList } from './table-record-definition-lis
 export abstract class SingleDataItemTableRecordDefinitionList extends RandomIdTableRecordDefinitionList {
     private _singleDataItem: DataItem;
 
+    get singleDataItem() { return this._singleDataItem; }
+
     protected setSingleDataItem(value: DataItem) {
         this._singleDataItem = value;
     }
-
-    get singleDataItem() { return this._singleDataItem; }
 }

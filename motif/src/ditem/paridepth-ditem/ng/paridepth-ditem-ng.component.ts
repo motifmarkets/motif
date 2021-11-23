@@ -101,10 +101,6 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _modeId = ParidepthDitemNgComponent.ModeId.Input;
     private _frame: ParidepthDitemFrame;
 
-    protected get stateSchemaVersion() { return ParidepthDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -137,6 +133,10 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushSymbol(this._frame.litIvemId);
         this.pushSymbolLinkSelectState();
     }
+
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return ParidepthDitemNgComponent.stateSchemaVersion; }
 
     public ngOnDestroy() {
         this.finalise();

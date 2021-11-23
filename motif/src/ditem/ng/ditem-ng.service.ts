@@ -16,8 +16,6 @@ import { DitemNgModule } from './ditem-ng.module';
 export class DitemNgService implements OnDestroy {
     private _service: DitemService;
 
-    get service() { return this._service; }
-
     constructor(coreNgService: CoreNgService,
         destopAccessNgService: DesktopAccessNgService,
         sessionInfoNgService: SessionInfoNgService
@@ -27,6 +25,8 @@ export class DitemNgService implements OnDestroy {
         const sessionInfoService = sessionInfoNgService.service;
         this._service = new DitemService(coreService, desktopAccessService, sessionInfoService);
     }
+
+    get service() { return this._service; }
 
     ngOnDestroy() {
         // this._ditemService.dispose();

@@ -103,6 +103,10 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
     private _securityDataItemBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _securityDataItemFieldValuesChangedSubscriptionId: MultiEvent.SubscriptionId;
 
+    constructor(private _symbolsManager: SymbolsService, private _adi: AdiService, private _litIvemId: LitIvemId) {
+        super();
+    }
+
     get active() { return this._active; }
     get litIvemId() { return this._litIvemId; }
 
@@ -112,10 +116,6 @@ export class LitIvemIdPriceVolumeSequenceHistory extends SequenceHistory {
     get ivemClassId() { return this._ivemClassId; }
     get tradingMarketIds() { return this._tradingMarketIds; }
     get name() { return this._name; }
-
-    constructor(private _symbolsManager: SymbolsService, private _adi: AdiService, private _litIvemId: LitIvemId) {
-        super();
-    }
 
     finalise() {
         this.setSequencer(undefined);

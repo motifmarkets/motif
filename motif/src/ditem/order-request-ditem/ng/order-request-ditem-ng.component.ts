@@ -90,11 +90,6 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
 
     private _padHtmlElement: HTMLDivElement;
 
-    protected get stateSchemaVersion() { return OrderRequestDitemNgComponent.stateSchemaVersion; }
-
-    get frame() { return this._frame; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -128,6 +123,11 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         this.pushAccountLinkedSelectState();
         this.pushSymbolAccountIncomingLinkableChanged();
     }
+
+    get frame() { return this._frame; }
+    get ditemFrame() { return this._frame; }
+
+    protected get stateSchemaVersion() { return OrderRequestDitemNgComponent.stateSchemaVersion; }
 
     ngOnDestroy() {
         this.finalise();

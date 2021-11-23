@@ -13,13 +13,13 @@ export abstract class SettingsGroup {
 
     private _upperName: string;
 
-    get name() { return this._name; }
-    get upperName() { return this._upperName; }
-    get typeId() { return this._typeId; }
-
     constructor(private _typeId: SettingsGroup.Type.Id, private _name: string) {
         this._upperName = this._name.toUpperCase();
     }
+
+    get name() { return this._name; }
+    get upperName() { return this._upperName; }
+    get typeId() { return this._typeId; }
 
     beginChanges() {
         this.beginChangesEvent();

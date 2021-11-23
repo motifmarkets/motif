@@ -33,10 +33,6 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
-    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
-    get initialised() { return this._tableFrame !== undefined; }
-    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
-
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         settingsService: SettingsService,
@@ -51,6 +47,10 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
         this._coreSettings = settingsService.core;
     }
+
+    override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
+    get initialised() { return this._tableFrame !== undefined; }
+    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = tableFrame;
