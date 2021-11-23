@@ -24,8 +24,6 @@ import { ApiControlComponentFactoryNgService } from './api-control-component-fac
 export class ExtensionsNgService implements OnDestroy {
     private _service: ExtensionsService;
 
-    get service() { return this._service; }
-
     constructor(
         extensionsAccessNgService: ExtensionsAccessNgService,
         adiNgService: AdiNgService,
@@ -50,6 +48,8 @@ export class ExtensionsNgService implements OnDestroy {
         extensionsAccessNgService.setService(this._service);
         commandRegisterNgService.service.setInternalExtensionHandle(this._service.internalHandle);
     }
+
+    get service() { return this._service; }
 
     ngOnDestroy() {
         this._service.destroy();

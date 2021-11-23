@@ -10,6 +10,10 @@ export class MultiEvent<T> {
     private handlers: T[] = [];
     private subscriptionIds: MultiEvent.DefinedSubscriptionId[] = [];
 
+    public get count(): number {
+        return this.handlers.length;
+    }
+
     public subscribe(handler: T): MultiEvent.DefinedSubscriptionId {
         const id = MultiEvent.getNextSubscriptionId();
         return this.subscribeWithId(handler, id);
@@ -34,10 +38,6 @@ export class MultiEvent<T> {
 
     public copyHandlers(): T[] {
         return this.handlers.slice();
-    }
-
-    public get count(): number {
-        return this.handlers.length;
     }
 
     private findIndexBySubscriptionId(uid: MultiEvent.DefinedSubscriptionId): Integer {

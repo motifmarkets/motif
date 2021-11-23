@@ -43,9 +43,6 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     private _frame: StatusDitemFrame;
 
-    protected get stateSchemaVersion() { return StatusDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -61,6 +58,9 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this._frame = new StatusDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return StatusDitemNgComponent.stateSchemaVersion; }
 
     ngOnInit() {
         this.initialise();

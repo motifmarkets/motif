@@ -51,9 +51,6 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     private _groupComponent: SettingsComponentBaseNgDirective | undefined;
 
-    protected get stateSchemaVersion() { return SettingsDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -71,6 +68,9 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return SettingsDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
         delay1Tick(() => this.initialise());

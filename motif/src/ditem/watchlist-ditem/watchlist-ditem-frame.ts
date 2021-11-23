@@ -31,8 +31,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     private _litIvemIdApplying = false;
     private _currentFocusedLitIvemIdSetting = false;
 
-    get initialised() { return this._tableFrame !== undefined; }
-
     constructor(
         componentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
@@ -44,6 +42,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             commandRegisterService, desktopAccessService, symbolsMgr, adi
         );
     }
+
+    get initialised() { return this._tableFrame !== undefined; }
 
     initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = tableFrame;

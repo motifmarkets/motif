@@ -8,9 +8,9 @@ import { Decimal } from 'decimal.js-light';
 import { Decimal as DecimalApi } from '../../../api/extension-api';
 
 export class DecimalImplementation implements DecimalApi {
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: Decimal) { }
+
+    get actual() { return this._actual; }
 
     /**
      * Return a new Decimal whose value is the absolute value of this Decimal.

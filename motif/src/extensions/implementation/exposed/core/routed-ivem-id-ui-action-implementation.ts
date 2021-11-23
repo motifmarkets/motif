@@ -11,6 +11,10 @@ import { RoutedIvemIdParseDetailsImplementation } from './routed-ivem-id-parse-d
 import { UiActionImplementation } from './ui-action-api-implementation';
 
 export class RoutedIvemIdUiActionImplementation extends UiActionImplementation implements RoutedIvemIdUiActionApi {
+    constructor(private readonly _routedIvemIdActual: RoutedIvemIdUiAction) {
+        super(_routedIvemIdActual);
+    }
+
     get routedIvemIdActual() { return this._routedIvemIdActual; }
 
     get value() {
@@ -34,10 +38,6 @@ export class RoutedIvemIdUiActionImplementation extends UiActionImplementation i
         } else {
             return RoutedIvemIdParseDetailsImplementation.toApi(parseDetails);
         }
-    }
-
-    constructor(private readonly _routedIvemIdActual: RoutedIvemIdUiAction) {
-        super(_routedIvemIdActual);
     }
 
     public pushValue(value: RoutedIvemIdApi | undefined) {

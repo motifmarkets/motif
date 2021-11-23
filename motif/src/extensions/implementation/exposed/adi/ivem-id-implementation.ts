@@ -9,13 +9,13 @@ import { IvemId as IvemIdApi, Json as JsonApi } from '../../../api/extension-api
 import { ExchangeIdImplementation } from './exchange-id-api-implementation';
 
 export class IvemIdImplementation implements IvemIdApi {
+    constructor(private readonly _actual: IvemId) { }
+
     get actual() { return this._actual; }
 
     get code() { return this._actual.code; }
     get exchangeId() { return ExchangeIdImplementation.toApi(this._actual.exchangeId); }
     get name() { return this._actual.name; }
-
-    constructor(private readonly _actual: IvemId) { }
 
     toJson(): JsonApi {
         return this._actual.toJson();

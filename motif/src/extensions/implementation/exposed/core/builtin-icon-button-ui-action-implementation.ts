@@ -11,13 +11,13 @@ import { UnreachableCaseApiErrorImplementation } from '../sys/internal-api';
 import { ButtonUiActionImplementation } from './button-ui-action-implementation';
 
 export class BuiltinIconButtonUiActionImplementation extends ButtonUiActionImplementation implements BuiltinIconButtonUiActionApi {
-    get iconButtonActual() { return this._iconButtonActual; }
-
-    public get iconId() { return BuiltinIconButtonUiActionImplementation.IconId.toApi(this._iconButtonActual.iconId); }
-
     constructor(private readonly _iconButtonActual: IconButtonUiAction) {
         super(_iconButtonActual);
     }
+
+    get iconButtonActual() { return this._iconButtonActual; }
+
+    public get iconId() { return BuiltinIconButtonUiActionImplementation.IconId.toApi(this._iconButtonActual.iconId); }
 
     pushIcon(iconId: BuiltinIconButtonUiActionApi.IconId) {
         const iconIdHandle = BuiltinIconButtonUiActionImplementation.IconId.fromApi(iconId);

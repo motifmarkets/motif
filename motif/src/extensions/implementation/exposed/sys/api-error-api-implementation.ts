@@ -8,11 +8,11 @@ import { EnumInfoOutOfOrderError } from 'src/sys/internal-api';
 import { ApiError as ApiErrorApi } from '../../../api/extension-api';
 
 export class ApiErrorImplementation extends Error implements ApiErrorApi {
-    get code() { return this._code; }
-
     constructor(private _code: ApiErrorApi.Code, message?: string) {
         super(ApiErrorImplementation.generateMessage(_code, message));
     }
+
+    get code() { return this._code; }
 }
 
 export class UnreachableCaseApiErrorImplementation extends ApiErrorImplementation {

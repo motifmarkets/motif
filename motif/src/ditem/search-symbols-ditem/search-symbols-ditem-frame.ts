@@ -39,18 +39,44 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
     private _queryShowFull: boolean;
 
+    constructor(
+        private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
+        commandRegisterService: CommandRegisterService,
+        desktopAccessService: DesktopAccessService,
+        symbolsMgr: SymbolsService,
+        adi: AdiService
+    ) {
+        super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
+            commandRegisterService, desktopAccessService, symbolsMgr, adi
+        );
+
+        const defaultExchangeId = this.symbolsService.defaultExchangeId;
+        const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
+
+        this._uiDataDefinition = SymbolsDataItemTableRecordDefinitionList.createDefaultDataDefinition(defaultExchangeId, defaultMarketId);
+        this.setUiConditions();
+    }
+
+    get initialised() { return this._queryTableFrame !== undefined; }
+
     get querySearchText() { return this._uiConditions[0].text; }
     set querySearchText(value: string) { this._uiConditions[0].text = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryShowFull() { return this._uiDataDefinition.fullSymbol; }
     set queryShowFull(value: boolean) { this._uiDataDefinition.fullSymbol = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryExchangeId() { return this._uiDataDefinition.exchangeId; }
     set queryExchangeId(value: ExchangeId | undefined) { this._uiDataDefinition.exchangeId = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryMarketIds() { return this._uiDataDefinition.marketIds; }
     set queryMarketIds(value: readonly MarketId[] | undefined) { this._uiDataDefinition.marketIds = value?.slice(); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryCfi() { return this._uiDataDefinition.cfi; }
     set queryCfi(value: string | undefined) { this._uiDataDefinition.cfi = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryFieldIds() { return this._uiConditions[0].fieldIds; }
     set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiConditions[0].fieldIds = value?.slice(); }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get indicesInclusion() {
         const index = this._uiDataDefinition.index;
         if (index === undefined) {
@@ -78,6 +104,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
                 throw new UnreachableCaseError('SSDFII10091', value);
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryIsPartial() {
         if (this._uiConditions[0].matchIds === undefined) {
             return true;
@@ -92,34 +119,18 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
             this._uiConditions[0].matchIds = undefined;
         }
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryIsCaseSensitive() { return this._uiConditions[0].isCaseSensitive; }
     set queryIsCaseSensitive(value: boolean | undefined) { this._uiConditions[0].isCaseSensitive = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryPreferExact() { return this._uiDataDefinition.preferExact; }
     set queryPreferExact(value: boolean | undefined) { this._uiDataDefinition.preferExact = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryStartIndex() { return this._uiDataDefinition.startIndex; }
     set queryStartIndex(value: Integer | undefined) { this._uiDataDefinition.startIndex = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryCount() { return this._uiDataDefinition.count; }
     set queryCount(value: Integer | undefined) { this._uiDataDefinition.count = value; }
-
-    get initialised() { return this._queryTableFrame !== undefined; }
-
-    constructor(
-        private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
-        commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
-        symbolsMgr: SymbolsService,
-        adi: AdiService
-    ) {
-        super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adi
-        );
-
-        const defaultExchangeId = this.symbolsService.defaultExchangeId;
-        const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
-
-        this._uiDataDefinition = SymbolsDataItemTableRecordDefinitionList.createDefaultDataDefinition(defaultExchangeId, defaultMarketId);
-        this.setUiConditions();
-    }
 
     initialise(queryTableFrame: TableFrame, frameElement: JsonElement | undefined): void {
         this._queryTableFrame = queryTableFrame;

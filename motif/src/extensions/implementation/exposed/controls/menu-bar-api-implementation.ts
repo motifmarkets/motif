@@ -20,20 +20,20 @@ import { CommandUiActionImplementation } from '../core/internal-api';
 import { ApiErrorImplementation } from '../sys/internal-api';
 
 class CommandMenuItemImplementation extends CommandUiActionImplementation implements CommandMenuItemApi {
-    get defaultPosition() { return this._menuItem.defaultPosition; }
-    get actualMenuItem() { return this._menuItem; }
-
     constructor(private readonly _menuItem: MenuBarService.CommandMenuItem) {
         super(_menuItem.uiAction);
     }
+
+    get defaultPosition() { return this._menuItem.defaultPosition; }
+    get actualMenuItem() { return this._menuItem; }
 }
 
 class ChildMenuItemImplementation implements ChildMenuItemApi {
+    constructor(private readonly _actualMenuItem: MenuBarService.ChildMenuItem) { }
+
     get childMenuName() { return this._actualMenuItem.childMenu.name; }
     get defaultPosition() { return this._actualMenuItem.defaultPosition; }
     get actualMenuItem() { return this._actualMenuItem; }
-
-    constructor(private readonly _actualMenuItem: MenuBarService.ChildMenuItem) { }
 }
 
 export class MenuBarImplementation implements MenuBarApi {

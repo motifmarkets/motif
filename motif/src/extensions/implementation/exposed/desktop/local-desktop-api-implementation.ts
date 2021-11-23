@@ -26,13 +26,6 @@ import { MenuBarImplementation } from '../controls/internal-api';
 import { ApiErrorImplementation, UnreachableCaseApiErrorImplementation } from '../sys/internal-api';
 
 export class LocalDesktopImplementation implements LocalDesktopApi {
-    public get getFrameEventer() { return this._getFrameEventer; }
-    public set getFrameEventer(value: LocalDesktopApi.GetFrameEventHandler) {
-        this._getFrameEventer = value;
-        if (!this._placeheldFramesCreated) {
-            delay1Tick(() => this.createPlaceheldFrames());
-        }
-    }
     public releaseFrameEventer: LocalDesktopApi.ReleaseFrameEventHandler | undefined;
 
     private readonly _menuBarImplementation: MenuBarImplementation;
@@ -40,6 +33,18 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
 
     private _placeheldFramesCreated = false;
     private _getFrameEventer: LocalDesktopApi.GetFrameEventHandler;
+
+    constructor(
+        private readonly _registeredExtension: RegisteredExtension,
+        private readonly _desktopFrame: DesktopFrame,
+        commandRegisterService: CommandRegisterService,
+    ) {
+        this._menuBarImplementation = new MenuBarImplementation(
+            this._registeredExtension.handle,
+            this._desktopFrame.menuBarService,
+            commandRegisterService,
+        );
+    }
 
     public get lastFocusedLitIvemId() {
         const actualLitIvemId = this._desktopFrame.lastFocusedLitIvemId;
@@ -87,16 +92,12 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
 
     get menuBar() { return this._menuBarImplementation; }
 
-    constructor(
-        private readonly _registeredExtension: RegisteredExtension,
-        private readonly _desktopFrame: DesktopFrame,
-        commandRegisterService: CommandRegisterService,
-    ) {
-        this._menuBarImplementation = new MenuBarImplementation(
-            this._registeredExtension.handle,
-            this._desktopFrame.menuBarService,
-            commandRegisterService,
-        );
+    public get getFrameEventer() { return this._getFrameEventer; }
+    public set getFrameEventer(value: LocalDesktopApi.GetFrameEventHandler) {
+        this._getFrameEventer = value;
+        if (!this._placeheldFramesCreated) {
+            delay1Tick(() => this.createPlaceheldFrames());
+        }
     }
 
     destroy() {

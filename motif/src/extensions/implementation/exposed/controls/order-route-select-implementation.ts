@@ -10,10 +10,10 @@ import { FactoryComponent, FactoryComponentRef } from '../component/internal-api
 import { OrderRouteUiActionImplementation } from '../core/internal-api';
 
 export class OrderRouteSelectImplementation extends OrderRouteUiActionImplementation implements OrderRouteSelectApi, FactoryComponent {
-    get factoryComponentRef() { return this._factoryComponentRef; }
-    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
-
     constructor(private readonly _factoryComponentRef: FactoryComponentRef, uiAction: OrderRouteUiAction) {
         super(uiAction);
     }
+
+    get factoryComponentRef() { return this._factoryComponentRef; }
+    get rootHtmlElement() { return this._factoryComponentRef.rootHtmlElement; }
 }

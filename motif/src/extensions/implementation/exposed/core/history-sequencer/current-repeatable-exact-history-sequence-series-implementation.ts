@@ -13,10 +13,11 @@ import { RepeatableExactHistorySequenceSeriesImplementation } from './repeatable
 export class CurrentRepeatableExactHistorySequenceSeriesImplementation extends RepeatableExactHistorySequenceSeriesImplementation
     implements CurrentRepeatableExactHistorySequenceSeriesApi {
 
-    get actual() { return this._actual; }
     constructor(private readonly _actual: CurrentRepeatableExactHistorySequenceSeries) {
         super();
     }
+
+    get actual() { return this._actual; }
 
     getNumberPoint(idx: IntegerApi): CurrentRepeatableExactHistorySequenceSeriesApi.Point {
         return this._actual.getNumberPoint(idx);

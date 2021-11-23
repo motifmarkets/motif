@@ -34,7 +34,7 @@
     "build:prod": "npm run file:info && node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng build",
     "test": "ng test",
     "lint": "ng lint motif",
-    "lib": "npm run clean:lib && npx tsc -p .\\tsconfig.app.json --declaration --declarationMap --emitDeclarationOnly --declarationDir ./lib",
+    "lib": "npm run clean:lib && npx tsc -p ./tsconfig.app.json --declaration --declarationMap --emitDeclarationOnly --declarationDir ./lib",
     "rollup": "npx api-extractor run --local --verbose",
     "api": "npm run lib && npm run rollup"
   },

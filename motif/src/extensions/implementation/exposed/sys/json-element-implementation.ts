@@ -16,10 +16,10 @@ import {
 } from '../../../api/extension-api';
 
 export class JsonElementImplementation implements JsonElementApi {
+    constructor(private readonly _actual: JsonElement) { }
+
     get actual() { return this._actual; }
     get json() { return this.actual.json; }
-
-    constructor(private readonly _actual: JsonElement) { }
 
     clear(): void {
         this.actual.clear();

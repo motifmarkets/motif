@@ -16,6 +16,10 @@ import { ComparableListImplementation, UnreachableCaseApiErrorImplementation } f
 import { HistorySequencerImplementation } from './history-sequencer-implementation';
 
 export class IntervalHistorySequencerImplementation extends HistorySequencerImplementation implements IntervalHistorySequencerApi {
+    constructor(private readonly _actual: IntervalHistorySequencer) {
+        super();
+    }
+
     get actual() { return this._actual; }
 
     get unit() { return IntervalHistorySequencerImplementation.UnitId.toApi(this._actual.unitId); }
@@ -24,10 +28,6 @@ export class IntervalHistorySequencerImplementation extends HistorySequencerImpl
     get weekendsSkipped() { return this._actual.weekendsSkipped; }
 
     get pointList() { return IntervalHistorySequencerImplementation.PointList.toApi(this._actual.pointList); }
-
-    constructor(private readonly _actual: IntervalHistorySequencer) {
-        super();
-    }
 
     setParameters(unit: IntervalHistorySequencerApi.Unit,
         unitCount: IntegerApi,

@@ -9,12 +9,12 @@ import { ApiError as ApiErrorApi, Badness as BadnessApi } from '../../../api/ext
 import { UnreachableCaseApiErrorImplementation } from './api-error-api-implementation';
 
 export class BadnessImplementation implements BadnessApi {
+    constructor(private readonly _actual: Badness) { }
+
     get actual() { return this._actual; }
 
     get reason() { return BadnessImplementation.ReasonId.toApi(this._actual.reasonId); }
     get reasonExtra() { return this._actual.reasonExtra; }
-
-    constructor(private readonly _actual: Badness) { }
 }
 
 export namespace BadnessImplementation {

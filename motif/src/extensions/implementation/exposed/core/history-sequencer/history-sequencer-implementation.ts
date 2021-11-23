@@ -10,21 +10,25 @@ import { ApiError as ApiErrorApi, HistorySequencer as HistorySequencerApi } from
 import { UnreachableCaseApiErrorImplementation } from '../../sys/internal-api';
 
 export abstract class HistorySequencerImplementation implements HistorySequencerApi {
-    abstract get actual(): HistorySequencer;
-
     get type() { return HistorySequencerImplementation.TypeId.toApi(this.actual.typeId); }
     get changeBegun() { return this.actual.changeBegun; }
 
     get changeBegunEventer() { return this.actual.changeBegunEvent; }
     set changeBegunEventer(value: HistorySequencerApi.ChangeBegunEventHandler | undefined) { this.actual.changeBegunEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get changeEndedEventer() { return this.actual.changeEndedEvent; }
     set changeEndedEventer(value: HistorySequencerApi.ChangeEndedEventHandler | undefined) { this.actual.changeEndedEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get sequencerLoadedEventer() { return this.actual.sequencerLoadedEvent; }
     set sequencerLoadedEventer(value: HistorySequencerApi.SequencerLoadedEvent | undefined) { this.actual.sequencerLoadedEvent = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allEngineSeriesLoadedEventer() { return this.actual.allEngineSeriesLoadedEvent; }
     set allEngineSeriesLoadedEventer(value: HistorySequencerApi.AllEngineSeriesLoadedEventHandler | undefined) {
         this.actual.allEngineSeriesLoadedEvent = value;
     }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    abstract get actual(): HistorySequencer;
 
     finalise() {
         this.actual.changeBegunEvent = undefined;

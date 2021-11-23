@@ -91,10 +91,6 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     private _modeId: TopShareholdersDitemNgComponent.ModeId;
     private _frame: TopShareholdersDitemFrame;
 
-    protected get stateSchemaVersion() { return TopShareholdersDitemNgComponent.stateSchemaVersion; }
-
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -131,6 +127,9 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         this.pushHistoryCompareButtonTitle();
         this.pushHistoryCompareButtonState();
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return TopShareholdersDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
         delay1Tick(() => this.initialise());

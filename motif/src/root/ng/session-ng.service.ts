@@ -60,11 +60,11 @@ export class SessionNgService implements OnDestroy {
         sessionInfoNgService.setSessionInfo(this._session.infoService);
     }
 
+    get session() { return this._session; }
+
     ngOnDestroy() {
         this._session.finalise();
     }
-
-    get session() { return this._session; }
 
     usingZenithOwnerAuthentication() {
         return false; // this._configService.config.diagnostics.motifServicesBypass.useZenithAuthOwnerAuthentication;

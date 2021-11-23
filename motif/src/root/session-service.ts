@@ -97,14 +97,6 @@ export class SessionService {
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
 
-    get serviceName() { return this._serviceName; }
-    get serviceDescription() { return this._serviceDescription; }
-    get userId() { return this._userId; }
-    get username() { return this._username; }
-    get userFullName() { return this._userFullName; }
-
-    get infoService() { return this._infoService; }
-
     constructor(
         private _telemetryService: TelemetryService,
         private _userAlertService: UserAlertService,
@@ -121,6 +113,14 @@ export class SessionService {
 
         this._signoutService.signOutEvent = () => this.handleSignOut();
     }
+
+    get serviceName() { return this._serviceName; }
+    get serviceDescription() { return this._serviceDescription; }
+    get userId() { return this._userId; }
+    get username() { return this._username; }
+    get userFullName() { return this._userFullName; }
+
+    get infoService() { return this._infoService; }
 
     get stateId() { return this._stateId; }
     get zenithEndpoint() { return this._zenithEndpoint; }

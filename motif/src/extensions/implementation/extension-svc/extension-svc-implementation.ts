@@ -75,35 +75,6 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
     private readonly _symbolSvc: SymbolSvcImplementation;
     private readonly _workspaceSvc: WorkspaceSvcImplementation;
 
-    get selfInfoSvc() { return this._selfInfoSvc; }
-    get resourcesSvc() { return this._resourcesSvc; }
-    get apiErrorSvc() { return this._apiErrorSvc; }
-    get decimalSvc() { return this._decimalSvc; }
-    get commaTextSvc() { return this._commaTextSvc; }
-    get correctnessSvc() { return this._correctnessSvc; }
-    get jsonSvc() { return this._jsonSvc; }
-    get sourceTzOffsetDateTimeSvc() { return this._sourceTzOffsetDateTimeSvc; }
-    get badnessSvc() { return this._badnessSvc; }
-    get brokerageAccountGroupSvc() { return this._brokerageAccountGroupSvcImplementation; }
-    get marketIdSvc() { return this._marketIdSvcImplementation; }
-    get exchangeIdSvc() { return this._exchangeIdSvcImplementation; }
-    get exchangeEnvironmentIdSvc() { return this._exchangeEnvironmentIdSvcImplementation; }
-    get feedIdSvc() { return this._feedIdSvcImplementation; }
-    get feedClassSvc() { return this._feedClassSvcImplementation; }
-    get ivemIdSvc() { return this._ivemIdSvcImplementation; }
-    get litIvemIdSvc() { return this._litIvemIdSvcImplementation; }
-    get orderTypeSvc() { return this._orderTypeSvcImplementation; }
-    get orderSideSvc() { return this._orderSideSvcImplementation; }
-    get orderTimeInForceSvc() { return this._orderTimeInForceSvcImplementation; }
-    get orderRouteSvc() { return this._orderRouteSvcImplementation; }
-    get routedIvemIdSvc() { return this._routedIvemIdSvcImplementation; }
-    get commandSvc() { return this._commandSvc; }
-    get historySequencerSvc() { return this._historySequencerSvc; }
-    get intervalHistorySequencerSvc() { return this._intervalHistorySequencerSvc; }
-    get storageSvc() { return this._storageSvc; }
-    get symbolSvc() { return this._symbolSvc; }
-    get workspaceSvc() { return this._workspaceSvc; }
-
     constructor(
         registeredExtension: RegisteredExtension,
         adiService: AdiService,
@@ -143,6 +114,35 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
         this._symbolSvc = new SymbolSvcImplementation(symbolsService);
         this._workspaceSvc = new WorkspaceSvcImplementation(registeredExtension, workspaceService, commandRegisterService);
     }
+
+    get selfInfoSvc() { return this._selfInfoSvc; }
+    get resourcesSvc() { return this._resourcesSvc; }
+    get apiErrorSvc() { return this._apiErrorSvc; }
+    get decimalSvc() { return this._decimalSvc; }
+    get commaTextSvc() { return this._commaTextSvc; }
+    get correctnessSvc() { return this._correctnessSvc; }
+    get jsonSvc() { return this._jsonSvc; }
+    get sourceTzOffsetDateTimeSvc() { return this._sourceTzOffsetDateTimeSvc; }
+    get badnessSvc() { return this._badnessSvc; }
+    get brokerageAccountGroupSvc() { return this._brokerageAccountGroupSvcImplementation; }
+    get marketIdSvc() { return this._marketIdSvcImplementation; }
+    get exchangeIdSvc() { return this._exchangeIdSvcImplementation; }
+    get exchangeEnvironmentIdSvc() { return this._exchangeEnvironmentIdSvcImplementation; }
+    get feedIdSvc() { return this._feedIdSvcImplementation; }
+    get feedClassSvc() { return this._feedClassSvcImplementation; }
+    get ivemIdSvc() { return this._ivemIdSvcImplementation; }
+    get litIvemIdSvc() { return this._litIvemIdSvcImplementation; }
+    get orderTypeSvc() { return this._orderTypeSvcImplementation; }
+    get orderSideSvc() { return this._orderSideSvcImplementation; }
+    get orderTimeInForceSvc() { return this._orderTimeInForceSvcImplementation; }
+    get orderRouteSvc() { return this._orderRouteSvcImplementation; }
+    get routedIvemIdSvc() { return this._routedIvemIdSvcImplementation; }
+    get commandSvc() { return this._commandSvc; }
+    get historySequencerSvc() { return this._historySequencerSvc; }
+    get intervalHistorySequencerSvc() { return this._intervalHistorySequencerSvc; }
+    get storageSvc() { return this._storageSvc; }
+    get symbolSvc() { return this._symbolSvc; }
+    get workspaceSvc() { return this._workspaceSvc; }
 
     destroy() {
         this._selfInfoSvc.destroy();

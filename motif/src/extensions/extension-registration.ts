@@ -27,20 +27,6 @@ export class ExtensionRegistration implements RegisteredExtension {
 
     private _loadedChangedMultiEvent = new MultiEvent<RegisteredExtension.LoadedChangedEventHandler>();
 
-    get handle() { return this._handle; }
-    get name() { return this._name; }
-    get publisherTypeId() { return this._publisherTypeId; }
-    get publisherName() { return this._publisherName; }
-    get version() { return this._version; }
-    get apiVersion() { return this._apiVersion; }
-    get shortDescription() { return this._shortDescription; }
-    get longDescription() { return this._longDescription; }
-    get urlPath() { return this._urlPath; }
-    get extensionSvc() { return this._extensionSvc; }
-    get persistKey() { return this._persistKey; }
-
-    get loaded() { return this._extension !== undefined; }
-
     constructor(
         private readonly _adiService: AdiService,
         private readonly _commandRegisterService: CommandRegisterService,
@@ -63,6 +49,20 @@ export class ExtensionRegistration implements RegisteredExtension {
 
         this._persistKey = this.generatePersistKey();
     }
+
+    get handle() { return this._handle; }
+    get name() { return this._name; }
+    get publisherTypeId() { return this._publisherTypeId; }
+    get publisherName() { return this._publisherName; }
+    get version() { return this._version; }
+    get apiVersion() { return this._apiVersion; }
+    get shortDescription() { return this._shortDescription; }
+    get longDescription() { return this._longDescription; }
+    get urlPath() { return this._urlPath; }
+    get extensionSvc() { return this._extensionSvc; }
+    get persistKey() { return this._persistKey; }
+
+    get loaded() { return this._extension !== undefined; }
 
     load() {
         if (this.loaded) {

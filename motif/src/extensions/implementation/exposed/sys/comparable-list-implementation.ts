@@ -13,8 +13,18 @@ import { ComparableList } from 'src/sys/internal-api';
 import { ComparisonResultImplementation } from './types-api-implementation';
 
 export class ComparableListImplementation<T> implements ComparableListApi<T> {
+    constructor(private readonly _baseActual: ComparableList<T>) {}
+
+    get items() {
+        return this._baseActual.items;
+    }
+
     get actual() {
         return this._baseActual;
+    }
+
+    get lastIndex() {
+        return this._baseActual.lastIndex;
     }
 
     get capacityIncSize() {
@@ -24,26 +34,20 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         this._baseActual.capacityIncSize = value;
     }
 
-    get items() {
-        return this._baseActual.items;
-    }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get capacity() {
         return this._baseActual.capacity;
     }
     set capacity(value: IntegerApi) {
         this._baseActual.capacity = value;
     }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get count() {
         return this._baseActual.count;
     }
     set count(value: IntegerApi) {
         this._baseActual.count = value;
     }
-    get lastIndex() {
-        return this._baseActual.lastIndex;
-    }
-
-    constructor(private readonly _baseActual: ComparableList<T>) {}
 
     getItem(index: IntegerApi): T {
         return this._baseActual.getItem(index);

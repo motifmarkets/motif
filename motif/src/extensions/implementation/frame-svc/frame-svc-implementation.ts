@@ -42,67 +42,6 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
     private _initialPersistState: JsonElementApi | undefined;
     private _focused = false;
 
-    get ditemFrame() { return this._ditemFrame; }
-    get container() { return this._container; }
-    get shown() { return !this._container.isHidden; }
-    get focused() { return this._focused; }
-
-    get extensionHandle() { return this._ditemFrame.extensionHandle; }
-    get frameTypeName() { return this._ditemFrame.typeName; }
-    get width() {
-        const width = this._container.width;
-        return width === null ? 0 : width;
-    }
-    get height() {
-        const height = this._container.height;
-        return height === null ? 0 : height;
-    }
-    get tabText() { return this._container.title; }
-    set tabText(value: string) { this._container.setTitle(value); }
-    get initialPersistState() { return this._initialPersistState; }
-
-    get litIvemId() {
-        const actual = this._ditemFrame.litIvemId;
-        return actual === undefined ? undefined : LitIvemIdImplementation.toApi(actual);
-    }
-    get oldlitIvemId() {
-        const actual = this._ditemFrame.oldlitIvemId;
-        return actual === undefined ? undefined : LitIvemIdImplementation.toApi(actual);
-    }
-
-    get litIvemIdValid() { return this._ditemFrame.litIvemIdLinkable; }
-    get oldlitIvemIdValid() { return this._ditemFrame.oldlitIvemIdValid; }
-
-    get litIvemIdLinkable() { return this._ditemFrame.litIvemIdLinkable; }
-    set litIvemIdLinkable(value: boolean) { this._ditemFrame.litIvemIdLinkable = value; }
-    get litIvemIdLinked() { return this._ditemFrame.litIvemIdLinked; }
-    set litIvemIdLinked(value: boolean) { this._ditemFrame.litIvemIdLinked = value; }
-
-    get allBrokerageAccountGroupSupported() { return this._ditemFrame.allBrokerageAccountGroupSupported; }
-    set allBrokerageAccountGroupSupported(value: boolean) { this._ditemFrame.allBrokerageAccountGroupSupported = value; }
-
-    get brokerageAccountGroup() {
-        const actual = this._ditemFrame.brokerageAccountGroup;
-        return actual === undefined ? undefined : BrokerageAccountGroupImplementation.toApi(actual);
-    }
-    get oldbrokerageAccountGroup() {
-        const actual = this._ditemFrame.oldbrokerageAccountGroup;
-        return actual === undefined ? undefined : BrokerageAccountGroupImplementation.toApi(actual);
-    }
-
-    get brokerageAccountGroupLinkable() { return this._ditemFrame.brokerageAccountGroupLinkable; }
-    set brokerageAccountGroupLinkable(value: boolean) { this._ditemFrame.brokerageAccountGroupLinkable = value; }
-    get brokerageAccountGroupLinked() { return this._ditemFrame.brokerageAccountGroupLinked; }
-    set brokerageAccountGroupLinked(value: boolean) { this._ditemFrame.brokerageAccountGroupLinked = value; }
-
-    // readonly ditemCommandProcessor
-
-    get primary() { return this._ditemFrame.primary; }
-    set primary(value: boolean) { this._ditemFrame.primary = value; }
-
-    get controlsSvc() { return this._controlsSvc; }
-    get contentSvc() { return this._contentSvc; }
-
     constructor(
         extensionHandle: ExtensionHandle,
         frameTypeName: string,
@@ -132,6 +71,75 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
 
         this.loadInitialPersistState(this._container.initialState);
     }
+
+    get ditemFrame() { return this._ditemFrame; }
+    get container() { return this._container; }
+    get shown() { return !this._container.isHidden; }
+    get focused() { return this._focused; }
+
+    get extensionHandle() { return this._ditemFrame.extensionHandle; }
+    get frameTypeName() { return this._ditemFrame.typeName; }
+    get width() {
+        const width = this._container.width;
+        return width === null ? 0 : width;
+    }
+    get height() {
+        const height = this._container.height;
+        return height === null ? 0 : height;
+    }
+
+    get controlsSvc() { return this._controlsSvc; }
+    get contentSvc() { return this._contentSvc; }
+
+    get initialPersistState() { return this._initialPersistState; }
+
+    get litIvemId() {
+        const actual = this._ditemFrame.litIvemId;
+        return actual === undefined ? undefined : LitIvemIdImplementation.toApi(actual);
+    }
+    get oldlitIvemId() {
+        const actual = this._ditemFrame.oldlitIvemId;
+        return actual === undefined ? undefined : LitIvemIdImplementation.toApi(actual);
+    }
+
+    get litIvemIdValid() { return this._ditemFrame.litIvemIdLinkable; }
+    get oldlitIvemIdValid() { return this._ditemFrame.oldlitIvemIdValid; }
+
+    get brokerageAccountGroup() {
+        const actual = this._ditemFrame.brokerageAccountGroup;
+        return actual === undefined ? undefined : BrokerageAccountGroupImplementation.toApi(actual);
+    }
+    get oldbrokerageAccountGroup() {
+        const actual = this._ditemFrame.oldbrokerageAccountGroup;
+        return actual === undefined ? undefined : BrokerageAccountGroupImplementation.toApi(actual);
+    }
+
+    get tabText() { return this._container.title; }
+    set tabText(value: string) { this._container.setTitle(value); }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get litIvemIdLinkable() { return this._ditemFrame.litIvemIdLinkable; }
+    set litIvemIdLinkable(value: boolean) { this._ditemFrame.litIvemIdLinkable = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get litIvemIdLinked() { return this._ditemFrame.litIvemIdLinked; }
+    set litIvemIdLinked(value: boolean) { this._ditemFrame.litIvemIdLinked = value; }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get allBrokerageAccountGroupSupported() { return this._ditemFrame.allBrokerageAccountGroupSupported; }
+    set allBrokerageAccountGroupSupported(value: boolean) { this._ditemFrame.allBrokerageAccountGroupSupported = value; }
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get brokerageAccountGroupLinkable() { return this._ditemFrame.brokerageAccountGroupLinkable; }
+    set brokerageAccountGroupLinkable(value: boolean) { this._ditemFrame.brokerageAccountGroupLinkable = value; }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get brokerageAccountGroupLinked() { return this._ditemFrame.brokerageAccountGroupLinked; }
+    set brokerageAccountGroupLinked(value: boolean) { this._ditemFrame.brokerageAccountGroupLinked = value; }
+
+    // readonly ditemCommandProcessor
+
+    // eslint-disable-next-line @typescript-eslint/member-ordering
+    get primary() { return this._ditemFrame.primary; }
+    set primary(value: boolean) { this._ditemFrame.primary = value; }
 
     destroy() {
         this._container.stateRequestEvent = undefined;

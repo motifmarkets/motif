@@ -29,6 +29,8 @@ export class SymbolSvcImplementation implements SymbolSvc {
     private _allowedMarketIdsChangedSubscriptionIds: MultiEvent.SubscriptionId[] = [];
     private _allowedExchangeIdsChangedSubscriptionIds: MultiEvent.SubscriptionId[] = [];
 
+    constructor(private readonly _symbolsService: SymbolsService) { }
+
     get defaultDefaultExchangeId() { return ExchangeIdImplementation.toApi(this._symbolsService.defaultDefaultExchangeId); }
     get allowedExchangeIds() { return ExchangeIdImplementation.arrayToApi(this._symbolsService.allowedExchangeIds); }
     get allowedMarketIds() { return MarketIdImplementation.arrayToApi(this._symbolsService.allowedMarketIds); }
@@ -37,8 +39,6 @@ export class SymbolSvcImplementation implements SymbolSvc {
     get marketSeparatorChar() { return this._symbolsService.pscMarketSeparatorChar; }
     get defaultMarketHidden() { return this._symbolsService.pscDefaultMarketHidden; }
     get marketCodeAsLocalWheneverPossible() { return this._symbolsService.pscMarketCodeAsLocalWheneverPossible; }
-
-    constructor(private readonly _symbolsService: SymbolsService) { }
 
     destroy() {
         this.unsubscribeAllEvents();

@@ -15,11 +15,11 @@ import { IntervalHistorySequenceSeriesImplementation } from './interval-history-
 export class OhlcIntervalHistorySequenceSeriesImplementation extends IntervalHistorySequenceSeriesImplementation
     implements OhlcIntervalHistorySequenceSeriesApi {
 
-    get actual() { return this._actual; }
-
     constructor(private readonly _actual: OhlcIntervalHistorySequenceSeries) {
         super();
     }
+
+    get actual() { return this._actual; }
 
     getOhlcPoint(idx: IntegerApi): OhlcHistorySequenceSeriesInterfaceApi.Point {
         return this._actual.getOhlcPoint(idx);

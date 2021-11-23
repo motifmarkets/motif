@@ -52,9 +52,6 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     private _frame: TradesDitemFrame;
 
-    protected get stateSchemaVersion() { return TradesDitemNgComponent.stateSchemaVersion; }
-    get ditemFrame() { return this._frame; }
-
     constructor(
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -83,6 +80,9 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.pushSymbol(this._frame.litIvemId);
         this.pushSymbolLinkButtonState();
     }
+
+    get ditemFrame() { return this._frame; }
+    protected get stateSchemaVersion() { return TradesDitemNgComponent.stateSchemaVersion; }
 
     public ngOnDestroy() {
         this.finalise();

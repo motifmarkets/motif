@@ -15,12 +15,12 @@ import { BadnessImplementation } from '../sys/internal-api';
 import { ContentComponentImplementation } from './content-component-implementation';
 
 export class DelayedBadnessComponentImplementation extends ContentComponentImplementation implements DelayedBadnessComponentApi {
-    get delayTimeSpan() { return this._actual.delayTimeSpan as TimeSpanApi; }
-    set delayTimeSpan(value: TimeSpanApi) { this._actual.delayTimeSpan = value; }
-
     constructor(componentRef: FactoryComponentRef, private readonly _actual: DelayedBadnessComponent) {
         super(componentRef);
     }
+
+    get delayTimeSpan() { return this._actual.delayTimeSpan as TimeSpanApi; }
+    set delayTimeSpan(value: TimeSpanApi) { this._actual.delayTimeSpan = value; }
 
     public setBadness(value: BadnessApi) {
         const actualBadness = BadnessImplementation.fromApi(value);

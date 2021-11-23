@@ -18,6 +18,18 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
     private _placeheld: PlaceholderDitemFrame.Placeheld;
     private _invalidReason: string | undefined;
 
+    constructor(
+        ditemComponentAccess: DitemFrame.ComponentAccess,
+        commandRegisterService: CommandRegisterService,
+        desktopAccessService: DesktopAccessService,
+        symbolsService: SymbolsService,
+        adiService: AdiService,
+    ) {
+        super(BuiltinDitemFrame.BuiltinTypeId.Placeholder,
+            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+        );
+    }
+
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Placeholder; }
     get initialised() { return true; }
 
@@ -37,18 +49,6 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
 
     public get invalid() { return this._invalidReason !== undefined; }
     public get invalidReason() { return this._invalidReason; }
-
-    constructor(
-        ditemComponentAccess: DitemFrame.ComponentAccess,
-        commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
-        symbolsService: SymbolsService,
-        adiService: AdiService,
-    ) {
-        super(BuiltinDitemFrame.BuiltinTypeId.Placeholder,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
-        );
-    }
 
     setPlaceheld(value: PlaceholderDitemFrame.Placeheld) {
         this._placeheld = value;
