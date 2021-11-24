@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { IvemId, LitIvemId } from 'adi-internal-api';
 import { Decimal } from 'decimal.js-light';
-import { IvemId, LitIvemId } from 'src/adi/internal-api';
 import {
     CorrectnessId,
     Integer,
@@ -13,7 +13,7 @@ import {
     newUndefinableDecimal,
     SourceTzOffsetDate,
     SourceTzOffsetDateTime
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     BooleanRenderValue,
     DateRenderValue,

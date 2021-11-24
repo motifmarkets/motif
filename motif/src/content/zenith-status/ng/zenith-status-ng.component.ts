@@ -14,8 +14,8 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { SessionInfoNgService } from 'src/component-services/ng-api';
-import { AssertInternalError, Badness } from 'src/sys/internal-api';
+import { SessionInfoNgService } from 'component-services-ng-api';
+import { AssertInternalError, Badness } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';

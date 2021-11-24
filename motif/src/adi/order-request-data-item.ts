@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { AssertInternalError } from 'src/sys/internal-api';
+import { AssertInternalError } from 'sys-internal-api';
 import {
     DataDefinition,
     OrderRequestError,

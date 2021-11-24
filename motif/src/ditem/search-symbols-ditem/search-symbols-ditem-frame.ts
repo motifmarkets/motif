@@ -14,16 +14,16 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsDataItem
-} from 'src/adi/internal-api';
-import { GridLayout, MotifGrid, TableFrame } from 'src/content/internal-api';
+} from 'adi-internal-api';
+import { GridLayout, MotifGrid, TableFrame } from 'content-internal-api';
 import {
     CommandRegisterService, SymbolsDataItemTableRecordDefinitionList,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, EnumInfoOutOfOrderError, Integer, JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError, Integer, JsonElement, UnreachableCaseError } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

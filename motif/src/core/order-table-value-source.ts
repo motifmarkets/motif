@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Order } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { Order } from 'adi-internal-api';
+import { Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { DataRecordTableValueSource } from './data-record-table-value-source';
 import { OrderTableFieldDefinitionSource } from './order-table-field-definition-source';
 import {

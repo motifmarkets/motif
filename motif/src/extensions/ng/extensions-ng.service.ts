@@ -10,9 +10,9 @@ import {
     AppStorageNgService,
     CommandRegisterNgService,
     SymbolsNgService
-} from 'src/component-services/ng-api';
-import { ExtensionsAccessNgService } from 'src/content/ng-api';
-import { MenuBarNgService } from 'src/controls/ng-api';
+} from 'component-services-ng-api';
+import { ExtensionsAccessNgService } from 'content-ng-api';
+import { MenuBarNgService } from 'controls-ng-api';
 import { WorkspaceNgService } from 'src/workspace/ng-api';
 import { ExtensionsService } from '../extensions-service';
 import { ApiContentComponentFactoryNgService } from './api-content-component-factory-ng.service';

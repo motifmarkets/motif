@@ -12,7 +12,7 @@ import {
     SourceTzOffsetDate,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     MarketId,
     MarketInfo,

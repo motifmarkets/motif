@@ -14,15 +14,15 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import {
     Command,
     CommandContext,
     CommandProcessor,
     CommandRegisterService,
     ProcessorCommandUiAction
-} from 'src/core/internal-api';
-import { AssertInternalError, delay1Tick } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { AssertInternalError, delay1Tick } from 'sys-internal-api';
 import { CommandParametersComponentRegister } from '../../command-parameters-component-register';
 import { CommandSelectNgComponent } from '../../command-select/ng-api';
 import { CommandParametersComponentNgDirective } from '../../ng/ng-api';

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { extStrings } from 'src/res/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { extStrings } from 'res-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { BooleanUiAction } from '../boolean-ui-action';
 import { Command } from './command';
 

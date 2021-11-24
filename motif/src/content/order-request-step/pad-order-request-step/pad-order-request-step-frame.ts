@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import Decimal from 'decimal.js-light';
 import {
     Account,
     BrokerageAccountGroup,
@@ -21,10 +20,11 @@ import {
     SideId,
     SingleBrokerageAccountGroup,
     TimeInForceId
-} from 'src/adi/internal-api';
-import { OrderPad, SymbolsService, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Integer, JsonElement, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'adi-internal-api';
+import { OrderPad, SymbolsService, UiAction } from 'core-internal-api';
+import Decimal from 'decimal.js-light';
+import { StringId, Strings } from 'res-internal-api';
+import { Integer, JsonElement, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class PadOrderRequestStepFrame extends OrderRequestStepFrame {

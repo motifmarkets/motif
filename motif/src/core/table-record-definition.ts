@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemDetail, LitIvemId, TopShareholder } from 'src/adi/internal-api';
-import { EnumInfoOutOfOrderError, ExternalError, JsonElement, JsonLoadError, Logger, MapKey } from 'src/sys/internal-api';
+import { LitIvemDetail, LitIvemId, TopShareholder } from 'adi-internal-api';
+import { EnumInfoOutOfOrderError, ExternalError, JsonElement, JsonLoadError, Logger, MapKey } from 'sys-internal-api';
 import { CallPut } from './call-put';
 
 export abstract class TableRecordDefinition {

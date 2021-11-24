@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, compareInteger, ComparisonResult, EnumInfoOutOfOrderError, Integer, JsonElement } from 'src/sys/internal-api';
+import { AssertInternalError, compareInteger, ComparisonResult, EnumInfoOutOfOrderError, Integer, JsonElement } from 'sys-internal-api';
 import { Account } from './account';
 
 export abstract class BrokerageAccountGroup {

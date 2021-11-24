@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, Badness, CorrectnessId, delay1Tick, Integer, MultiEvent, SysTick } from 'src/sys/internal-api';
+import { assert, AssertInternalError, Badness, CorrectnessId, delay1Tick, Integer, MultiEvent, SysTick } from 'sys-internal-api';
 import {
     DataChannel,
     DataChannelId,

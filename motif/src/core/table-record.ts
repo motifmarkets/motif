@@ -5,7 +5,7 @@
  */
 
 import { RevRecord, RevRecordInvalidatedValue } from 'revgrid';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import { TableGridValue } from './table-grid-value';
 import { TableRecordDefinition } from './table-record-definition';
 import { TableValueList } from './table-value-list';

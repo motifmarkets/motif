@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { I18nStrings, StringId } from 'src/res/internal-api';
+import { I18nStrings, StringId } from 'res-internal-api';
 import { Logger } from './logger';
 import { MotifError } from './motif-error';
 

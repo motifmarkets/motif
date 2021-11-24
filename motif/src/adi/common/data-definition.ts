@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { dateToUtcYYYYMMDD, Integer, MapKey, newUndefinableDate, newUndefinableDecimal } from 'src/sys/internal-api';
+import { dateToUtcYYYYMMDD, Integer, MapKey, newUndefinableDate, newUndefinableDecimal } from 'sys-internal-api';
 import {
     BrokerageAccountId,
     ChartIntervalId,

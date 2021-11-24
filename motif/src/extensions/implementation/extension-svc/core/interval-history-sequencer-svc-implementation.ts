@@ -6,7 +6,7 @@
 
 import {
     IntervalHistorySequencer
-} from 'src/core/internal-api';
+} from 'core-internal-api';
 import {
     IntervalHistorySequencer as IntervalHistorySequencerApi,
     IntervalHistorySequencerSvc

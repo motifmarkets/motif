@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { BidAskSideId, DepthLevelsDataItem } from 'adi-internal-api';
 import { RevRecordInvalidatedValue, RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { BidAskSideId, DepthLevelsDataItem } from 'src/adi/internal-api';
 import {
     compareBoolean,
     compareInteger,
@@ -13,7 +13,7 @@ import {
     Integer,
     PriceOrRemainder,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { DepthRecord } from './depth-record';
 import {
     IntegerRenderValue,

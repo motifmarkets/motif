@@ -9,12 +9,12 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
-import { SvgButtonNgComponent } from 'src/controls/ng-api';
-import { CommandRegisterService, IconButtonUiAction, InternalCommand } from 'src/core/internal-api';
-import { StringId } from 'src/res/internal-api';
-import { assert, delay1Tick } from 'src/sys/internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
+import { SvgButtonNgComponent } from 'controls-ng-api';
+import { CommandRegisterService, IconButtonUiAction, InternalCommand } from 'core-internal-api';
+import { StringId } from 'res-internal-api';
+import { assert, delay1Tick } from 'sys-internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MultiEvent, newUndefinableDate } from 'src/sys/internal-api';
+import { MultiEvent, newUndefinableDate } from 'sys-internal-api';
 import { UiAction } from './ui-action';
 
 export class DateUiAction extends UiAction {

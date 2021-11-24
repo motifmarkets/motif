@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { UiAction } from 'src/core/internal-api';
-import { concatenateElementToArrayUniquely, Integer, subtractElementFromArrayUniquely } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { UiAction } from 'core-internal-api';
+import { concatenateElementToArrayUniquely, Integer, subtractElementFromArrayUniquely } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-element-component-base-ng.directive';
 

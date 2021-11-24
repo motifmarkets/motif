@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, CorrectnessId, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { Badness, CorrectnessId, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'sys-internal-api';
 import { DataDefinition, FeedId, FeedInfo, FeedsDataDefinition } from './common/internal-api';
 import { Feed } from './feed';
 import { FeedStatusSubscriptionDataItem } from './feed-status-subscription-data-item';

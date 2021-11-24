@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { EnumInfoOutOfOrderError, UnreachableCaseError } from './internal-error';
 import { Iso8601 } from './iso8601';
 import { Integer } from './types';

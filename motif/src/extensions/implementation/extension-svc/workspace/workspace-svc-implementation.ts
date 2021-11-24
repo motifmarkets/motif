@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { RegisteredExtension } from 'src/content/internal-api';
-import { CommandRegisterService } from 'src/core/internal-api';
+import { RegisteredExtension } from 'content-internal-api';
+import { CommandRegisterService } from 'core-internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
 import { WorkspaceService } from 'src/workspace/internal-api';
 import { LocalDesktop as LocalDesktopApi, WorkspaceSvc } from '../../../api/extension-api';

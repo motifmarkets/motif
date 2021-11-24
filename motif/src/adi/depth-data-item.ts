@@ -22,7 +22,7 @@ import {
     MultiEvent,
     UnexpectedCaseError,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     BidAskSideId,
     DataDefinition,

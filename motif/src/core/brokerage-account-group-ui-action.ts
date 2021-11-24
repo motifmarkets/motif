@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AllBrokerageAccountGroup, BrokerageAccountGroup } from 'src/adi/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { AllBrokerageAccountGroup, BrokerageAccountGroup } from 'adi-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { UiAction } from './ui-action';
 
 export class BrokerageAccountGroupUiAction extends UiAction {

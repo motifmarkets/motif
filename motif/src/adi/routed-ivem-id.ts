@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, Json, MapKey } from 'src/sys/internal-api';
+import { Integer, Json, MapKey } from 'sys-internal-api';
 import { IvemId, OrderRoute, OrderTypeId, SideId, TimeInForceId } from './common/internal-api';
 
 export class RoutedIvemId {

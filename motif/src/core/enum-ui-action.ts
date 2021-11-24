@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, MultiEvent } from 'src/sys/internal-api';
+import { Integer, MultiEvent } from 'sys-internal-api';
 import { UiAction } from './ui-action';
 
 export abstract class EnumUiAction extends UiAction {

@@ -10,8 +10,8 @@ import {
     ProcessorCommandUiAction,
     SettingsService,
     UiAction
-} from 'src/core/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

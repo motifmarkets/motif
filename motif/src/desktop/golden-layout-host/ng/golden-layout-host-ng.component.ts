@@ -17,18 +17,10 @@ import {
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
-import {
-    ComponentContainer,
-    JsonValue,
-    LogicalZIndex,
-    ResolvedComponentItemConfig,
-    VirtualLayout
-} from 'golden-layout';
-import { SessionInfoNgService, SettingsNgService } from 'src/component-services/ng-api';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { ExtensionId } from 'src/content/internal-api';
-import { ExtensionsAccessNgService } from 'src/content/ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
+import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
+import { ExtensionId } from 'content-internal-api';
+import { ExtensionsAccessNgService } from 'content-ng-api';
+import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
 import {
     BuiltinDitemFrame,
     DitemComponent,
@@ -36,13 +28,21 @@ import {
     DitemFrame,
     ExtensionDitemComponent,
     PlaceholderDitemFrame
-} from 'src/ditem/internal-api';
+} from 'ditem-internal-api';
 import {
     BuiltinDitemNgComponentBaseDirective,
     DesktopAccessNgService,
     DitemComponentFactoryNgService,
     PlaceholderDitemNgComponent
-} from 'src/ditem/ng-api';
+} from 'ditem-ng-api';
+import {
+    ComponentContainer,
+    JsonValue,
+    LogicalZIndex,
+    ResolvedComponentItemConfig,
+    VirtualLayout
+} from 'golden-layout';
+import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import {
     AssertInternalError,
@@ -51,7 +51,7 @@ import {
     Json,
     MultiEvent,
     numberToPixels, UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { FrameExtensionsAccessService } from '../frame-extension-access-service';
 import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
 

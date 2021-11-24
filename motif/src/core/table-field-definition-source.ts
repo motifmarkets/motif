@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { MotifGrid } from 'content-internal-api';
 import { Halign } from 'revgrid';
-import { MotifGrid } from 'src/content/internal-api';
-import { EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError, Integer } from 'sys-internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { CorrectnessTableGridField, TableGridField } from './table-grid-field';
 import { CorrectnessTableGridValue, TableGridValue } from './table-grid-value';

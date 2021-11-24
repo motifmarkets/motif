@@ -8,7 +8,7 @@
 // the classes below can be used.  However try to avoid this
 
 import Decimal from 'decimal.js-light';
-import { Integer, newUndefinableDate, newUndefinableDecimal } from 'src/sys/internal-api';
+import { Integer, newUndefinableDate, newUndefinableDecimal } from 'sys-internal-api';
 import {
     BooleanRenderValue, DateRenderValue, DecimalRenderValue,
     EnumRenderValue, IntegerArrayRenderValue, IntegerRenderValue, NumberRenderValue,

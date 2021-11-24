@@ -15,7 +15,7 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId,
     ZenithDataError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Balances } from './balances';
 import { BrokerageAccountGroupBalancesList } from './brokerage-account-group-balances-list';
 import { BalancesDataMessage, CurrencyId, DataMessage, DataMessageTypeId } from './common/internal-api';

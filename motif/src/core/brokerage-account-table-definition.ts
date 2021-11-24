@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, Feed } from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, Logger } from 'src/sys/internal-api';
+import { Account, Feed } from 'adi-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, Logger } from 'sys-internal-api';
 import { BrokerageAccountTableFieldDefinitionSource } from './brokerage-account-table-field-definition-source';
 import { BrokerageAccountTableRecordDefinition } from './brokerage-account-table-record-definition';
 import { BrokerageAccountTableRecordDefinitionList } from './brokerage-account-table-record-definition-list';

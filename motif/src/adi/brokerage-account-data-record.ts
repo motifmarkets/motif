@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MapKey } from 'src/sys/internal-api';
+import { MapKey } from 'sys-internal-api';
 import { DataRecord } from './data-record';
 
 export interface BrokerageAccountDataRecord extends DataRecord {

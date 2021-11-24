@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, Integer } from 'src/sys/internal-api';
+import { assert, Integer } from 'sys-internal-api';
 import { DataMessage, DataMessageTypeId, TLowLevelTopShareholdersDataMessage, TopShareholder } from './common/internal-api';
 import { PublisherSubscriptionDataItem } from './publisher-subscription-data-item';
 

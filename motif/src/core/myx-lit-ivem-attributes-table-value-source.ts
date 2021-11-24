@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemFullDetail, MyxLitIvemAttributes, SymbolsDataItem } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { LitIvemFullDetail, MyxLitIvemAttributes, SymbolsDataItem } from 'adi-internal-api';
+import { Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { MyxLitIvemAttributesTableFieldDefinitionSource } from './myx-lit-ivem-attributes-table-field-definition-source';
 import {
     CorrectnessTableGridValue,

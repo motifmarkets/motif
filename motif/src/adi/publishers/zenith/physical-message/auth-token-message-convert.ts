@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { defined, ExternalError, Integer, ZenithDataError } from 'src/sys/internal-api';
+import { defined, ExternalError, Integer, ZenithDataError } from 'sys-internal-api';
 import { Zenith } from './zenith';
 
 export namespace AuthTokenMessageConvert {

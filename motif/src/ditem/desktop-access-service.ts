@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { BrokerageAccountGroup, LitIvemId } from 'src/adi/internal-api';
-import { OrderPad } from 'src/core/internal-api';
+import { BrokerageAccountGroup, LitIvemId } from 'adi-internal-api';
+import { OrderPad } from 'core-internal-api';
 import { DitemFrame } from './ditem-frame';
 
 export interface DesktopAccessService {

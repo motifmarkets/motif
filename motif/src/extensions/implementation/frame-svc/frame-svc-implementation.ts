@@ -4,11 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
+import { AdiService, BrokerageAccountGroup, LitIvemId } from 'adi-internal-api';
+import { CommandRegisterService, SymbolsService } from 'core-internal-api';
+import { DesktopAccessService, DitemFrame, ExtensionDitemFrame } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { AdiService, BrokerageAccountGroup, LitIvemId } from 'src/adi/internal-api';
-import { CommandRegisterService, SymbolsService } from 'src/core/internal-api';
-import { DesktopAccessService, DitemFrame, ExtensionDitemFrame } from 'src/ditem/internal-api';
-import { ExtensionHandle, JsonElement, JsonValue } from 'src/sys/internal-api';
+import { ExtensionHandle, JsonElement, JsonValue } from 'sys-internal-api';
 import {
     BrokerageAccountGroup as BrokerageAccountGroupApi,
     FrameSvc,

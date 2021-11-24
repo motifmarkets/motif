@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { DayTradesDataItem } from 'adi-internal-api';
 import { RevRecordStore } from 'revgrid';
-import { DayTradesDataItem } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'sys-internal-api';
 
 export class DayTradesGridRecordStore implements RevRecordStore {
     fieldsEventers: RevRecordStore.FieldsEventers;

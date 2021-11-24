@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AllBrokerageAccountGroup, BrokerageAccountGroup, SingleBrokerageAccountGroup } from 'src/adi/internal-api';
-import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-api';
+import { AllBrokerageAccountGroup, BrokerageAccountGroup, SingleBrokerageAccountGroup } from 'adi-internal-api';
+import { AssertInternalError, UnreachableCaseError } from 'sys-internal-api';
 import {
     AllBrokerageAccountGroup as AllBrokerageAccountGroupApi,
     ApiError as ApiErrorApi, BrokerageAccountGroup as BrokerageAccountGroupApi,

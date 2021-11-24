@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { AdiService } from './adi-service';
 import { DataDefinition } from './common/internal-api';
 import { DataItem } from './data-item';

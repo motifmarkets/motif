@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { BidAskSide, BidAskSideId, DepthDataItem, DepthStyleId } from 'adi-internal-api';
 import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
-import { BidAskSide, BidAskSideId, DepthDataItem, DepthStyleId } from 'src/adi/internal-api';
 import {
     AssertInternalError,
     CorrectnessId,
@@ -15,7 +15,7 @@ import {
     moveElementInArray,
     MultiEvent,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { DepthRecord } from './depth-record';
 import { DepthSideGridRecordStore } from './depth-side-grid-record-store';
 import { FullDepthRecord, OrderFullDepthRecord, PriceLevelFullDepthRecord } from './full-depth-record';

@@ -18,10 +18,10 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { FeedsNgComponent, MarketsNgComponent, StatusSummaryNgComponent, ZenithStatusNgComponent } from 'content-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { FeedsNgComponent, MarketsNgComponent, StatusSummaryNgComponent, ZenithStatusNgComponent } from 'src/content/ng-api';
-import { JsonElement } from 'src/sys/internal-api';
+import { JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { StatusDitemFrame } from '../status-ditem-frame';

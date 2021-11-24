@@ -12,7 +12,7 @@ import {
     newUndefinableDate,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     DataDefinition,
     LatestTradingDayTradesDataDefinition,

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IvemId } from 'src/adi/internal-api';
+import { IvemId } from 'adi-internal-api';
 import { IvemId as IvemIdApi, Json as JsonApi } from '../../../api/extension-api';
 import { ExchangeIdImplementation } from './exchange-id-api-implementation';
 

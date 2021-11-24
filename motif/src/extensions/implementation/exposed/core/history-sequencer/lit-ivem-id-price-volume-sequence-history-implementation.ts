@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemIdPriceVolumeSequenceHistory } from 'src/core/internal-api';
-import { UnreachableCaseError } from 'src/sys/internal-api';
+import { LitIvemIdPriceVolumeSequenceHistory } from 'core-internal-api';
+import { UnreachableCaseError } from 'sys-internal-api';
 import {
     ApiError,
     HistorySequencer as HistorySequencerApi,

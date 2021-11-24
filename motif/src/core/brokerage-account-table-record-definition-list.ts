@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, AdiService, BrokerageAccountsDataDefinition, BrokerageAccountsDataItem, DataRecordList } from 'src/adi/internal-api';
+import { Account, AdiService, BrokerageAccountsDataDefinition, BrokerageAccountsDataItem, DataRecordList } from 'adi-internal-api';
 import { BrokerageAccountTableRecordDefinition } from './brokerage-account-table-record-definition';
 import { DataRecordTableRecordDefinitionList } from './data-record-table-record-definition-list';
 import { TableRecordDefinitionList } from './table-record-definition-list';

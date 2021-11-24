@@ -10,7 +10,7 @@ import {
     ifDefined,
     Logger,
     newUndefinableDecimal, ZenithDataError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     AurcChangeTypeId,
     ExchangeId,

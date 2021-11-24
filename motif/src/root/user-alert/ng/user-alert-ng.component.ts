@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
+import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { HtmlTypes, UserAlertService } from 'src/sys/internal-api';
+import { HtmlTypes, UserAlertService } from 'sys-internal-api';
 
 @Component({
     selector: 'app-user-alert',

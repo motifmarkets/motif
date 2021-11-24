@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeId, ExchangeInfo } from 'src/adi/internal-api';
-import { Integer, MultiEvent } from 'src/sys/internal-api';
+import { ExchangeId, ExchangeInfo } from 'adi-internal-api';
+import { Integer, MultiEvent } from 'sys-internal-api';
 import { ArrayUiAction } from './array-ui-action';
 import { EnumArrayUiAction } from './enum-array-ui-action';
 import { SymbolsService } from './symbols-service';

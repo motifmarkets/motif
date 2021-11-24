@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Feed } from 'src/adi/internal-api';
-import { AssertInternalError, Logger } from 'src/sys/internal-api';
+import { Feed } from 'adi-internal-api';
+import { AssertInternalError, Logger } from 'sys-internal-api';
 import { FeedTableFieldDefinitionSource } from './feed-table-field-definition-source';
 import { FeedTableRecordDefinition } from './feed-table-record-definition';
 import { FeedTableRecordDefinitionList } from './feed-table-record-definition-list';

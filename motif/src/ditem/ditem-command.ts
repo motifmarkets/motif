@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommandRegisterService, InternalCommand } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+import { CommandRegisterService, InternalCommand } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 
 export interface InternalDitemCommand extends InternalCommand {
 }

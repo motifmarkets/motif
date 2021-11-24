@@ -6,10 +6,10 @@
 
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AdiStaticInitialise } from 'src/adi/internal-api';
-import { CoreStaticInitialise } from 'src/core/internal-api';
-import { ResStaticInitialise } from 'src/res/internal-api';
-import { SysStaticInitialise } from 'src/sys/internal-api';
+import { AdiStaticInitialise } from 'adi-internal-api';
+import { CoreStaticInitialise } from 'core-internal-api';
+import { ResStaticInitialise } from 'res-internal-api';
+import { SysStaticInitialise } from 'sys-internal-api';
 import { AppFeature } from './app.feature';
 import { environment } from './environments/environment';
 import { AppNgModule } from './root/ng/app-ng.module';

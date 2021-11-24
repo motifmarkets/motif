@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
+import { GridLayout } from 'content-internal-api';
 import { nanoid } from 'nanoid';
+import { StringId, Strings } from 'res-internal-api';
 import { RevRecordInvalidatedValue } from 'revgrid';
-import { GridLayout } from 'src/content/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -20,7 +20,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { BaseDirectory } from './base-directory';
 import { GridLayoutIO } from './grid-layout-io';
 import { TableDefinition } from './table-definition';

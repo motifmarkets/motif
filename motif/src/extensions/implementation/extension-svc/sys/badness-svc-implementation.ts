@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness } from 'src/sys/internal-api';
+import { Badness } from 'sys-internal-api';
 import { Badness as BadnessApi, BadnessSvc } from '../../../api/extension-api';
 import { BadnessImplementation, CorrectnessImplementation } from '../../exposed/internal-api';
 

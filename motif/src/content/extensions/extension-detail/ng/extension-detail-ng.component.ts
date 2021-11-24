@@ -5,10 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, OnDestroy } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { ColorScheme, SettingsService } from 'src/core/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, SettingsService } from 'core-internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
-import { AssertInternalError, HtmlTypes, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, HtmlTypes, MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionId, ExtensionInfo, RegisteredExtension } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';

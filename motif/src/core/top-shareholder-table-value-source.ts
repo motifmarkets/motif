@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { TopShareholder, TopShareholdersDataItem } from 'src/adi/internal-api';
-import { Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { TopShareholder, TopShareholdersDataItem } from 'adi-internal-api';
+import { Integer, UnreachableCaseError } from 'sys-internal-api';
 import {
     CorrectnessTableGridValue,
     IntegerCorrectnessTableGridValue, StringCorrectnessTableGridValue, TableGridValue

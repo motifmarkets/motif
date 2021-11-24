@@ -5,7 +5,7 @@
  */
 
 import { nanoid } from 'nanoid';
-import { AssertInternalError, Authorisations, EnumInfoOutOfOrderError, Guid, Integer, Logger, SysTick } from 'src/sys/internal-api';
+import { AssertInternalError, Authorisations, EnumInfoOutOfOrderError, Guid, Integer, Logger, SysTick } from 'sys-internal-api';
 import { GroupTableRecordDefinitionList } from './group-table-record-definition-list';
 import { IvemIdServerTableRecordDefinitionList } from './ivem-id-server-table-record-definition-list';
 import { PortfolioTableRecordDefinitionList } from './portfolio-table-record-definition-list';

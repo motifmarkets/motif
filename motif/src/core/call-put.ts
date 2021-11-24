@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
+import { ExerciseTypeId, FieldDataTypeId, IvemId, LitIvemId, MarketId, MarketInfo } from 'adi-internal-api';
 import { Decimal } from 'decimal.js-light';
-import { ExerciseTypeId, FieldDataTypeId, IvemId, LitIvemId, MarketId, MarketInfo } from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { EnumInfoOutOfOrderError, Integer, isDecimalEqual, JsonElement, MapKey, nullDate, nullDecimal } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { EnumInfoOutOfOrderError, Integer, isDecimalEqual, JsonElement, MapKey, nullDate, nullDecimal } from 'sys-internal-api';
 
 export class CallPut {
     exercisePrice: Decimal;

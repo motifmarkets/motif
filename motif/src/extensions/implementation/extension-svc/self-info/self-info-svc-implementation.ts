@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtensionInfo } from 'src/content/internal-api';
+import { ExtensionInfo } from 'content-internal-api';
 import { SelfInfoSvc } from '../../../api/extension-api';
 import { PublisherTypeImplementation } from '../../exposed/internal-api';
 import { SvcImplementation } from '../svc-implementation';

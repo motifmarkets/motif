@@ -5,7 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     assert,
     AssertInternalError,
@@ -29,7 +29,7 @@ import {
     secsPerHour,
     secsPerMin,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 
 // No Enum value should have an external dependency or be persisted. Use exports or imports instead.
 

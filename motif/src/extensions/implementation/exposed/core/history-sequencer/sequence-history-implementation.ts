@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SequenceHistory } from 'src/core/internal-api';
+import { SequenceHistory } from 'core-internal-api';
 import { SequenceHistory as SequenceHistoryApi } from 'src/extensions/api/extension-api';
 import { BadnessImplementation } from '../../sys/internal-api';
 

@@ -19,8 +19,8 @@ import {
     MarketsDataItem,
     OrderRoute,
     RoutedIvemId, SymbolFieldId
-} from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'adi-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     concatenateArrayUniquely,
@@ -34,7 +34,7 @@ import {
     NotImplementedError,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ExchangeSettings } from './internal-api';
 import { CoreSettings } from './settings/core-settings';
 import { SettingsService } from './settings/settings-service';

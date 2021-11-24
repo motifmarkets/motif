@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
 @Component({

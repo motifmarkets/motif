@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { NgSelectConfig, NgSelectModule } from '@ng-select/ng-select';
-import { SettingsNgService } from 'src/component-services/ng-api';
+import { SettingsNgService } from 'component-services-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionedCheckboxNgComponent,

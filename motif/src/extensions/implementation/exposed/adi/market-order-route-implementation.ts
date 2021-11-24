@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MarketOrderRoute } from 'src/adi/internal-api';
+import { MarketOrderRoute } from 'adi-internal-api';
 import { MarketOrderRoute as MarketOrderRouteApi } from '../../../api/extension-api';
 import { MarketIdImplementation } from './market-id-api-implementation';
 import { OrderRouteImplementation } from './order-route-implementation';

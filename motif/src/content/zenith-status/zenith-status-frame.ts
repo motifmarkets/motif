@@ -12,9 +12,9 @@ import {
     ZenithPublisherState,
     ZenithServerInfoDataDefinition,
     ZenithServerInfoDataItem
-} from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Badness, CorrectnessId, MultiEvent, SysTick, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'adi-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { Badness, CorrectnessId, MultiEvent, SysTick, UnreachableCaseError } from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class ZenithStatusFrame extends ContentFrame {

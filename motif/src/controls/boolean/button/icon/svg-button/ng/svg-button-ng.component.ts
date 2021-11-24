@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { ColorScheme, IconButtonUiAction, UiAction } from 'src/core/internal-api';
-import { AssertInternalError, EnumInfoOutOfOrderError, Integer, MultiEvent } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, IconButtonUiAction, UiAction } from 'core-internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError, Integer, MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import './svg/noun_blank_1667007.svg';
 import './svg/noun_bolt_3396896.svg';

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import {
     ApiError as ApiErrorApi,
     ContentComponent as ContentComponentApi,

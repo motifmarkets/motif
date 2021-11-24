@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { NumberUiAction } from 'src/core/internal-api';
+import { NumberUiAction } from 'core-internal-api';
 import { NumberUiAction as NumberUiActionApi } from '../../../api/extension-api';
 import { UiActionImplementation } from './ui-action-api-implementation';
 

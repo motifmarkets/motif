@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, Badness, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { AssertInternalError, Badness, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'sys-internal-api';
 import { BrokerageAccountsDataItem } from './brokerage-accounts-data-item';
 import { BrokerageAccountsDataDefinition } from './common/internal-api';
 import { DataItem } from './data-item';

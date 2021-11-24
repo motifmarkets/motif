@@ -5,7 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
-import { I18nStrings, StringId } from 'src/res/internal-api';
+import { I18nStrings, StringId } from 'res-internal-api';
 import { Logger } from './logger';
 import { Guid, Integer, Json, JsonValue, JsonValueArray } from './types';
 import { dateToDateOnlyIsoString, deepExtendObject } from './utils';

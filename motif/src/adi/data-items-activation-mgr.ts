@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, Logger, SysTick } from 'src/sys/internal-api';
+import { assert, AssertInternalError, Logger, SysTick } from 'sys-internal-api';
 import { DataItemId } from './common/internal-api';
 import { DataItem } from './data-item';
 

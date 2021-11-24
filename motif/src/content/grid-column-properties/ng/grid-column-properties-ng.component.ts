@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { GridLayout } from 'src/content/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { GridLayout } from 'content-internal-api';
+import { Integer } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

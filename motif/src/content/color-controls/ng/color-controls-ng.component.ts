@@ -15,7 +15,7 @@ import {
     ViewChild
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
-import { CommandRegisterNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
@@ -24,7 +24,7 @@ import {
     NumberInputNgComponent,
     SvgButtonNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
+} from 'controls-ng-api';
 import {
     BooleanUiAction,
     ColorScheme,
@@ -39,9 +39,9 @@ import {
     SettingsService,
     StringUiAction,
     UiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick, EnumInfoOutOfOrderError, HtmlTypes, MultiEvent, RGB, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { delay1Tick, EnumInfoOutOfOrderError, HtmlTypes, MultiEvent, RGB, UnreachableCaseError } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 

@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
+import { ColorScheme, ColorSettings, CoreSettings, ExchangeSettings, SettingsService, UiAction } from 'core-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { ColorScheme, ColorSettings, CoreSettings, ExchangeSettings, SettingsService, UiAction } from 'src/core/internal-api';
-import { delay1Tick, HtmlTypes, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { delay1Tick, HtmlTypes, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {

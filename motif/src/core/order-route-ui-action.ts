@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { FixOrderRoute, OrderRoute } from 'src/adi/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { FixOrderRoute, OrderRoute } from 'adi-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { UiAction } from './ui-action';
 
 export class OrderRouteUiAction extends UiAction {

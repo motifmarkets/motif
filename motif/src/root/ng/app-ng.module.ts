@@ -9,8 +9,8 @@
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
-import { ControlsNgModule } from 'src/controls/ng-api';
-import { DesktopNgModule } from 'src/desktop/ng-api';
+import { ControlsNgModule } from 'controls-ng-api';
+import { DesktopNgModule } from 'desktop-ng-api';
 import { ExtensionsNgModule } from 'src/extensions/ng-api';
 import { OverlayNgModule } from 'src/overlay/ng-api';
 import { WorkspaceNgModule } from 'src/workspace/ng-api';

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { AdiService, CallOrPutId, IvemId, SearchSymbolsDataDefinition, SymbolFieldId, SymbolsDataItem } from 'adi-internal-api';
 import { Decimal } from 'decimal.js-light';
-import { AdiService, CallOrPutId, IvemId, SearchSymbolsDataDefinition, SymbolFieldId, SymbolsDataItem } from 'src/adi/internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -16,7 +16,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { CallPut } from './call-put';
 import { SingleDataItemTableRecordDefinitionList } from './single-data-item-table-record-definition-list';
 import { CallPutTableRecordDefinition, TableRecordDefinition } from './table-record-definition';

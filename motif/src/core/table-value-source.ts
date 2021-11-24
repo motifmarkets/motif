@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { AdiService } from 'adi-internal-api';
 import { RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { AdiService } from 'src/adi/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import { TableGridValue } from './table-grid-value';
 
 export abstract class TableValueSource {

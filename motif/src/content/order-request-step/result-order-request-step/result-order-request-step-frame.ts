@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import Decimal from 'decimal.js-light';
 import {
     AdiService, Order, OrderRequestDataDefinition, OrderRequestDataItem,
     OrderRequestError,
@@ -13,9 +12,10 @@ import {
     OrderRequestResultId,
     OrderRequestTypeId,
     OrdersDataMessage
-} from 'src/adi/internal-api';
-import { OrderPad } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'adi-internal-api';
+import { OrderPad } from 'core-internal-api';
+import Decimal from 'decimal.js-light';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -24,7 +24,7 @@ import {
     JsonElement,
     MultiEvent,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {

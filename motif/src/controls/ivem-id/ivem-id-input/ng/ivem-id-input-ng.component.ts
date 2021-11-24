@@ -12,11 +12,11 @@ import {
     Input,
     ViewChild
 } from '@angular/core';
-import { IvemId } from 'src/adi/internal-api';
-import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { IvemIdUiAction, SymbolsService, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { IvemId } from 'adi-internal-api';
+import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { IvemIdUiAction, SymbolsService, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

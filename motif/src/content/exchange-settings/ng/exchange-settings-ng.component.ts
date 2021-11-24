@@ -1,18 +1,18 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
-import { ArrayUiAction } from 'src/core/array-ui-action';
+import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'adi-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import {
     EnumUiAction,
     ExchangeSettings,
     ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
     SettingsService
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { ArrayUiAction } from 'src/core/array-ui-action';
 import { MultiEvent } from 'src/sys/multi-event';
+import { delay1Tick } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

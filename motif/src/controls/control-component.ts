@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Component } from 'src/component/internal-api';
+import { Component } from 'component-internal-api';
 
 export interface ControlComponent extends Component {
 

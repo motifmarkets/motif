@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { NotImplementedError } from 'src/sys/internal-api';
+import { NotImplementedError } from 'sys-internal-api';
 import { DataMessage, PublisherRequest, PublisherSubscription } from '../../../common/internal-api';
 import { Zenith } from './zenith';
 import { ZenithConvert } from './zenith-convert';

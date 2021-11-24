@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { BooleanUiAction, UiAction } from 'src/core/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { BooleanUiAction, UiAction } from 'core-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

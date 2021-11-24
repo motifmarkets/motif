@@ -5,7 +5,6 @@
  */
 
 import { isDevMode } from '@angular/core';
-import { Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client';
 import {
     AdiService,
     ExchangeEnvironment,
@@ -18,9 +17,8 @@ import {
     ZenithPublisherState,
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
-} from 'src/adi/internal-api';
-import { SessionInfoService } from 'src/component-services/internal-api';
-import { SignOutService } from 'src/component-services/sign-out-service';
+} from 'adi-internal-api';
+import { SessionInfoService } from 'component-services-internal-api';
 import {
     AppStorageService,
     MotifServicesService,
@@ -28,10 +26,12 @@ import {
     SessionStateId,
     SettingsService,
     SymbolsService
-} from 'src/core/internal-api';
+} from 'core-internal-api';
+import { Version } from 'generated-internal-api';
+import { Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client';
+import { StringId, Strings } from 'res-internal-api';
+import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
-import { Version } from 'src/generated/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
     ExternalError,
@@ -45,7 +45,7 @@ import {
     MultiEvent,
     SysTick,
     UserAlertService
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Config } from './config';
 import { TelemetryService } from './telemetry-service';
 

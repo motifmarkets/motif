@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
-import { RoutedIvemId } from 'src/adi/internal-api';
-import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { UiAction } from 'src/core/internal-api';
+import { RoutedIvemId } from 'adi-internal-api';
+import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { UiAction } from 'core-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-component-base-ng.directive';
 

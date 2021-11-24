@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ComparableList, compareDate, ComparisonResult, Integer, MultiEvent, newNullDate } from 'src/sys/internal-api';
+import { ComparableList, compareDate, ComparisonResult, Integer, MultiEvent, newNullDate } from 'sys-internal-api';
 import { IntervalHistorySequenceSeries } from './interval-history-sequence-series';
 import { IntervalHistorySequencer } from './interval-history-sequencer';
 import { NumberHistorySequenceSeriesInterface } from './number-history-sequence-series-interface';

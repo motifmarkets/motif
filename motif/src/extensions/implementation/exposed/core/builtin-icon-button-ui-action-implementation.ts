@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { IconButtonUiAction } from 'src/core/internal-api';
-import { UnreachableCaseError } from 'src/sys/internal-api';
+import { IconButtonUiAction } from 'core-internal-api';
+import { UnreachableCaseError } from 'sys-internal-api';
 import { ApiError as ApiErrorApi, BuiltinIconButtonUiAction as BuiltinIconButtonUiActionApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from '../sys/internal-api';
 import { ButtonUiActionImplementation } from './button-ui-action-implementation';

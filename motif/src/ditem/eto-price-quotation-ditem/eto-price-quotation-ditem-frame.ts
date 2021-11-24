@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'src/adi/internal-api';
-import { TableFrame } from 'src/content/internal-api';
-import { CommandRegisterService, SymbolsService, TableRecordDefinitionList } from 'src/core/internal-api';
-import { Integer, JsonElement } from 'src/sys/internal-api';
+import { AdiService } from 'adi-internal-api';
+import { TableFrame } from 'content-internal-api';
+import { CommandRegisterService, SymbolsService, TableRecordDefinitionList } from 'core-internal-api';
+import { Integer, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

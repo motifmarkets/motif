@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommandUiAction } from 'src/core/internal-api';
+import { CommandUiAction } from 'core-internal-api';
 import { CommandUiAction as CommandUiActionApi } from '../../../api/extension-api';
 import { BooleanUiActionImplementation } from './boolean-ui-action-api-implementation';
 import { CommandImplementation } from './command-api-implementation';

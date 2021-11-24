@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, EnumInfoOutOfOrderError, Integer, isUndefinableArrayEqualUniquely } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError, Integer, isUndefinableArrayEqualUniquely } from 'sys-internal-api';
 import { ExchangeId, ExchangeInfo, FieldDataTypeId, LitIvemAttributes } from './common/internal-api';
 
 export class MyxLitIvemAttributes extends LitIvemAttributes {

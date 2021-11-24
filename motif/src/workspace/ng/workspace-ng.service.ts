@@ -5,8 +5,8 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
+import { DesktopAccessNgService } from 'ditem-ng-api';
 import { DesktopFrame } from 'src/desktop/internal-api';
-import { DesktopAccessNgService } from 'src/ditem/ng-api';
 import { WorkspaceService } from '../workspace-service';
 import { WorkspaceNgModule } from './workspace-ng.module';
 

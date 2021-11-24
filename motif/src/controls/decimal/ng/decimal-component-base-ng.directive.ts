@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
+import { DecimalUiAction, SettingsService, UiAction } from 'core-internal-api';
 import Decimal from 'decimal.js-light';
-import { DecimalUiAction, SettingsService, UiAction } from 'src/core/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtensionId } from 'src/content/internal-api';
-import { AssertInternalError, ComparisonResult, UnreachableCaseError } from 'src/sys/internal-api';
+import { ExtensionId } from 'content-internal-api';
+import { AssertInternalError, ComparisonResult, UnreachableCaseError } from 'sys-internal-api';
 import { ComparisonResult as ComparisonResultApi, PublisherType as PublisherTypeApi } from '../../../api/extension-api';
 
 export namespace ComparisonResultImplementation {

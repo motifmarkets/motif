@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, SysTick } from 'src/sys/internal-api';
+import { Integer, SysTick } from 'sys-internal-api';
 import { DataItemId, DataMessage, DataMessageTypeId } from '../../common/internal-api';
 
 export class ZenithQueryConfigureDataMessage extends DataMessage {

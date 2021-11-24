@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { DepthLevelsDataItem } from 'adi-internal-api';
 import { RevRecordIndex, RevRecordStore } from 'revgrid';
-import { DepthLevelsDataItem } from 'src/adi/internal-api';
-import { CorrectnessId, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { CorrectnessId, Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { DepthSideGridRecordStore } from './depth-side-grid-record-store';
 import { ShortDepthRecord } from './short-depth-record';
 

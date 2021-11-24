@@ -6,7 +6,7 @@
 
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { DesktopNgComponent } from 'src/desktop/ng-api';
+import { DesktopNgComponent } from 'desktop-ng-api';
 import { AuthCallbackNgComponent } from '../auth-callback/ng/auth-callback-ng.component';
 import { NotCurrentVersionNgComponent } from '../not-current-version/ng-api';
 import { StartupNgComponent } from '../startup/ng-api';

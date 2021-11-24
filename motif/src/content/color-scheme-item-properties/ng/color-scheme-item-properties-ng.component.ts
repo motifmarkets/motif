@@ -6,12 +6,12 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { isReadable as tinyColorIsReadable, readability as tinyColorReadability } from '@ctrl/tinycolor';
-import { SettingsNgService } from 'src/component-services/ng-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'controls-ng-api';
+import { ColorScheme, ColorSettings, EnumUiAction, ExplicitElementsEnumUiAction, NumberUiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { MultiColorPickerNgComponent } from 'src/content/multi-color-picker/ng/multi-color-picker-ng.component';
-import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'src/controls/ng-api';
-import { ColorScheme, ColorSettings, EnumUiAction, ExplicitElementsEnumUiAction, NumberUiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick, EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { delay1Tick, EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'sys-internal-api';
 import { ColorControlsNgComponent } from '../../color-controls/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 

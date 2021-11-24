@@ -6,7 +6,7 @@
 
 import { Halign } from 'revgrid';
 import { DepthLevelsDataItem } from 'src/adi/depth-levels-data-item';
-import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'sys-internal-api';
 
 export const enum ShortDepthSideFieldId {
     PriceAndHasUndisclosed,

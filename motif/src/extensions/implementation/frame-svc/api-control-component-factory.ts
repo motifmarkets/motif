@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Command } from 'src/core/internal-api';
+import { Command } from 'core-internal-api';
 import {
     BrokerageAccountGroupSelect as BrokerageAccountGroupSelectApi,
     BuiltinIconButton as BuiltinIconButtonApi,

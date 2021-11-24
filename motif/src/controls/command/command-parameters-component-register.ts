@@ -5,8 +5,8 @@
  */
 
 import { Type } from '@angular/core';
-import { Command } from 'src/core/internal-api';
-import { MapKey } from 'src/sys/internal-api';
+import { Command } from 'core-internal-api';
+import { MapKey } from 'sys-internal-api';
 import { CommandParametersComponentNgDirective } from './ng/ng-api';
 
 export namespace CommandParametersComponentRegister {

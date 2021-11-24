@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { HistorySequenceSeries } from 'src/core/internal-api';
+import { HistorySequenceSeries } from 'core-internal-api';
 import {
     HistorySequenceSeries as HistorySequenceSeriesApi,
     HistorySequenceSeriesInterface as HistorySequenceSeriesInterfaceApi,

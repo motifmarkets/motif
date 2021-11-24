@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, JsonElement } from 'src/sys/internal-api';
+import { Integer, JsonElement } from 'sys-internal-api';
 import { SettingsGroup } from './settings-group';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
 

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemFullDetail, SymbolsDataItem } from 'src/adi/internal-api';
-import { AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { LitIvemFullDetail, SymbolsDataItem } from 'adi-internal-api';
+import { AssertInternalError, Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { LitIvemExtendedDetailTableFieldDefinitionSource } from './lit-ivem-extended-detail-table-field-definition-source';
 import {
     BooleanCorrectnessTableGridValue,

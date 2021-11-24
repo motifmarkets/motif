@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, UnexpectedTypeError } from 'src/sys/internal-api';
+import { assert, AssertInternalError, UnexpectedTypeError } from 'sys-internal-api';
 import {
     DataDefinition,
     DataMessage,

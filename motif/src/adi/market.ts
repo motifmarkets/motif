@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     Correctness,
@@ -13,7 +13,7 @@ import {
     JsonElement, MapKey, MultiEvent,
     SourceTzOffsetDate,
     SourceTzOffsetDateTime
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     FeedStatusId,
     FieldDataTypeId,

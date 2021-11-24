@@ -5,10 +5,10 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
+import { ColorScheme, CommandRegisterService, SettingsService } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { ColorScheme, CommandRegisterService, SettingsService } from 'src/core/internal-api';
-import { Json, JsonElement, MultiEvent } from 'src/sys/internal-api';
+import { Json, JsonElement, MultiEvent } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';

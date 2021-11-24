@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Renderer2 } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { UiAction } from 'src/core/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { UiAction } from 'core-internal-api';
+import { Integer } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-component-base-ng.directive';
 

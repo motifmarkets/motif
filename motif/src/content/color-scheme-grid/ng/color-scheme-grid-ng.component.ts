@@ -5,12 +5,12 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { SettingsNgService } from 'component-services-ng-api';
+import { MotifGrid } from 'content-internal-api';
+import { ColorScheme, ColorSchemeGridRecordStore } from 'core-internal-api';
+import { Strings } from 'res-internal-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { ColorScheme, ColorSchemeGridRecordStore } from 'src/core/internal-api';
-import { Strings } from 'src/res/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 

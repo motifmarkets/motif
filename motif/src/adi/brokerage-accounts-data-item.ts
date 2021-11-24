@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, Badness, ExternalError, Integer, UsableListChangeTypeId, ZenithDataError } from 'src/sys/internal-api';
+import { assert, Badness, ExternalError, Integer, UsableListChangeTypeId, ZenithDataError } from 'sys-internal-api';
 import { Account } from './account';
 import {
     BrokerageAccountId,

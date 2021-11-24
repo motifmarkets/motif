@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, SysTick, TUID } from 'src/sys/internal-api';
+import { Integer, SysTick, TUID } from 'sys-internal-api';
 import {
     DataDefinition,
     DataItemId,

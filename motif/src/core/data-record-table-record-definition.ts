@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { DataRecord } from 'src/adi/internal-api';
-import { AssertInternalError, JsonElement } from 'src/sys/internal-api';
+import { DataRecord } from 'adi-internal-api';
+import { AssertInternalError, JsonElement } from 'sys-internal-api';
 import { TableRecordDefinition } from './table-record-definition';
 
 export abstract class DataRecordTableRecordDefinition<Record extends DataRecord> extends TableRecordDefinition {

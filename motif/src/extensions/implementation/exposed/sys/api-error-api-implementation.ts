@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { EnumInfoOutOfOrderError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError } from 'sys-internal-api';
 import { ApiError as ApiErrorApi } from '../../../api/extension-api';
 
 export class ApiErrorImplementation extends Error implements ApiErrorApi {

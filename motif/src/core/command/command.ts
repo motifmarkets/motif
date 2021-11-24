@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtStringId } from 'src/res/internal-api';
-import { ExtensionHandle, Handle, Integer, MapKey } from 'src/sys/internal-api';
+import { ExtStringId } from 'res-internal-api';
+import { ExtensionHandle, Handle, Integer, MapKey } from 'sys-internal-api';
 
 export interface Command {
     readonly extensionHandle: ExtensionHandle;

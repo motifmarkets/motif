@@ -4,14 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { Decimal } from 'decimal.js-light';
 import {
     BidAskSideId, DayTradesDataItem, HigherLowerId, IvemId, LitIvemId, MarketId,
 
     MovementId, OrderStatus, RoutedIvemId, SideId,
     TradeAffectsId,
     TradeFlagId
-} from 'src/adi/internal-api';
+} from 'adi-internal-api';
+import { Decimal } from 'decimal.js-light';
 import {
     CorrectnessId,
     Integer,
@@ -19,7 +19,7 @@ import {
     PriceOrRemainder,
     SourceTzOffsetDate,
     SourceTzOffsetDateTime
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { DepthRecord } from './depth-record';
 import { ColorSettings } from './settings/color-settings';
 

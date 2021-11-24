@@ -5,11 +5,11 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { GridLayout, MotifGrid } from 'content-internal-api';
+import { EnumUiAction, GridLayoutChange, GridLayoutRecordStore } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { RevRecordFieldIndex, RevRecordIndex, RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
-import { EnumUiAction, GridLayoutChange, GridLayoutRecordStore } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
+import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 

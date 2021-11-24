@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { DepthDataItem } from 'adi-internal-api';
 import { Halign } from 'revgrid';
-import { DepthDataItem } from 'src/adi/internal-api';
-import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'sys-internal-api';
 
 export const enum FullDepthSideFieldId {
     PriceAndHasUndisclosed,

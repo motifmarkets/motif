@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, defined, Integer, SourceTzOffsetDateTime } from 'src/sys/internal-api';
+import { assert, AssertInternalError, defined, Integer, SourceTzOffsetDateTime } from 'sys-internal-api';
 import {
     ChartHistoryDataMessage,
     ChartIntervalId,

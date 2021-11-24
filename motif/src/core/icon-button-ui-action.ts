@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MultiEvent } from 'src/sys/internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { BooleanUiAction } from './boolean-ui-action';
 import { ButtonUiAction } from './button-ui-action';
 

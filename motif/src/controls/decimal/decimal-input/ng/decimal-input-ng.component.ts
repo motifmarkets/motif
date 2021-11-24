@@ -5,11 +5,11 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { SettingsNgService } from 'component-services-ng-api';
+import { DecimalUiAction, UiAction } from 'core-internal-api';
 import Decimal from 'decimal.js-light';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { DecimalUiAction, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { Integer, UnreachableCaseError } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { DecimalComponentBaseNgDirective } from '../../ng/decimal-component-base-ng.directive';
 

@@ -4,20 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import {
-    ComponentContainer,
-    ComponentItemConfig,
-    ContentItem,
-    Json,
-    JsonValue,
-    LayoutConfig,
-    LayoutManager,
-    ResolvedLayoutConfig,
-    RowOrColumn,
-    VirtualLayout
-} from 'golden-layout';
-import { SessionInfoService } from 'src/component-services/internal-api';
-import { ExtensionsAccessService } from 'src/content/internal-api';
+import { SessionInfoService } from 'component-services-internal-api';
+import { ExtensionsAccessService } from 'content-internal-api';
 import {
     BalancesDitemFrame,
     BrokerageAccountsDitemFrame,
@@ -32,9 +20,21 @@ import {
     ParidepthDitemFrame,
     PlaceholderDitemFrame,
     WatchlistDitemFrame
-} from 'src/ditem/internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'src/ditem/ng-api';
-import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'ditem-internal-api';
+import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import {
+    ComponentContainer,
+    ComponentItemConfig,
+    ContentItem,
+    Json,
+    JsonValue,
+    LayoutConfig,
+    LayoutManager,
+    ResolvedLayoutConfig,
+    RowOrColumn,
+    VirtualLayout
+} from 'golden-layout';
+import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from 'sys-internal-api';
 
 export class GoldenLayoutHostFrame {
     constructor(

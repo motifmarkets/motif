@@ -14,18 +14,18 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
+import { BrokerageAccountGroup } from 'adi-internal-api';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
+import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { MotifGrid } from 'content-internal-api';
+import { TableNgComponent } from 'content-ng-api';
+import { AngularSplitTypes } from 'controls-internal-api';
+import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { BrokerageAccountGroupUiAction, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { BrokerageAccountGroup } from 'src/adi/internal-api';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { TableNgComponent } from 'src/content/ng-api';
-import { AngularSplitTypes } from 'src/controls/internal-api';
-import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
-import { BrokerageAccountGroupUiAction, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, delay1Tick, Integer, JsonElement } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, delay1Tick, Integer, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { HoldingsDitemFrame } from '../holdings-ditem-frame';

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Balances } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { Balances } from 'adi-internal-api';
+import { Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { BalancesTableFieldDefinitionSource } from './balances-table-field-definition-source';
 import { DataRecordTableValueSource } from './data-record-table-value-source';
 import {

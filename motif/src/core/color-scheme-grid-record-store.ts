@@ -5,9 +5,9 @@
  */
 
 import { isReadable as TinyColorIsReadable, readability as TinyColorReadability } from '@ctrl/tinycolor';
+import { StringId } from 'res-internal-api';
 import { RevRecord, RevRecordField, RevRecordIndex, RevRecordStore } from 'revgrid';
-import { StringId } from 'src/res/internal-api';
-import { MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { ColorScheme } from './color-scheme';
 import {
     ColorRenderValue, ColorSettingsItemStateIdRenderValue, IntegerRenderValue,

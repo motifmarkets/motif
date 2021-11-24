@@ -13,8 +13,8 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { MotifGrid } from 'src/content/internal-api';
-import { AssertInternalError, Badness, delay1Tick } from 'src/sys/internal-api';
+import { MotifGrid } from 'content-internal-api';
+import { AssertInternalError, Badness, delay1Tick } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';

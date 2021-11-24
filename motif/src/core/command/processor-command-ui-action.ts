@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MultiEvent } from 'src/sys/internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { UiAction } from '../ui-action';
 import { Command } from './command';
 import { CommandProcessor } from './command-processor';

@@ -5,7 +5,7 @@
  */
 
 import { Directive, HostBinding, HostListener } from '@angular/core';
-import { AssertInternalError } from 'src/sys/internal-api';
+import { AssertInternalError } from 'sys-internal-api';
 import { MenuBarService } from '../menu-bar-service';
 import { MenuBarMenuItemComponentNgDirective } from './menu-bar-menu-item-component-ng.directive';
 

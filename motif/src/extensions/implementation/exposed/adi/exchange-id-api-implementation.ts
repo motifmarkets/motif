@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeId } from 'src/adi/internal-api';
-import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-api';
+import { ExchangeId } from 'adi-internal-api';
+import { AssertInternalError, UnreachableCaseError } from 'sys-internal-api';
 import { ApiError as ApiErrorApi, ExchangeId as ExchangeIdApi, ExchangeIdEnum as ExchangeIdEnumApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from '../sys/internal-api';
 

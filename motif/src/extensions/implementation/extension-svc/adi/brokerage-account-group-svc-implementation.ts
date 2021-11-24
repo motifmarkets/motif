@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, BrokerageAccountGroup, ExchangeInfo } from 'src/adi/internal-api';
+import { Account, BrokerageAccountGroup, ExchangeInfo } from 'adi-internal-api';
 import {
     AllBrokerageAccountGroup as AllBrokerageAccountGroupApi,
     BrokerageAccountGroup as BrokerageAccountGroupApi,

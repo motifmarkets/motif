@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -12,7 +12,7 @@ import {
     Integer,
     UnexpectedCaseError,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     DataDefinition,
     DataMessage,

@@ -24,8 +24,8 @@ import {
     SymbolsDataItem,
     TradeAffectsId,
     TradesDataItem
-} from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'adi-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -42,7 +42,7 @@ import {
     SourceTzOffsetDateTime,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { HistorySequenceSeries } from './history-sequence-series';
 import { HistorySequencer } from './history-sequencer';
 import { IntervalHistorySequencer } from './interval-history-sequencer';

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SysTick } from 'src/sys/internal-api';
+import { SysTick } from 'sys-internal-api';
 import { PublisherSubscription } from './publisher-subscription';
 
 export interface PublisherRequest {

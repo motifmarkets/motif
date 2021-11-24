@@ -5,9 +5,9 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId, ZenithPublisherSubscriptionManager } from 'src/adi/internal-api';
-import { ExtensionInfo, PersistableExtensionInfo } from 'src/content/internal-api';
-import { ConfigError, createRandomUrlSearch, ExternalError, Logger } from 'src/sys/internal-api';
+import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId, ZenithPublisherSubscriptionManager } from 'adi-internal-api';
+import { ExtensionInfo, PersistableExtensionInfo } from 'content-internal-api';
+import { ConfigError, createRandomUrlSearch, ExternalError, Logger } from 'sys-internal-api';
 import { Config } from '../config';
 
 @Injectable({

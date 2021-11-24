@@ -12,7 +12,7 @@ import {
     isUndefinableDecimalEqual,
     newUndefinableDecimal,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Movement, MovementId, OrderTriggerTypeId } from './data-types';
 
 export abstract class OrderTrigger {

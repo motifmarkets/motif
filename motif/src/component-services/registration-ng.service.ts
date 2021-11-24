@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { BaseNgService } from './base-ng.service';
 
 @Injectable({

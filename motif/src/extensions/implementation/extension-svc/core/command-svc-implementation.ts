@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommandRegisterService } from 'src/core/internal-api';
-import { ExtensionHandle } from 'src/sys/internal-api';
+import { CommandRegisterService } from 'core-internal-api';
+import { ExtensionHandle } from 'sys-internal-api';
 import { Command as CommandApi, CommandSvc as CommandSvcApi, StringId as StringIdApi } from '../../../api/extension-api';
 import { CommandImplementation } from '../../exposed/internal-api';
 

@@ -13,11 +13,11 @@ import {
     Order,
     OrderRequestDataDefinition,
     OrderRequestTypeId
-} from 'src/adi/internal-api';
-import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from 'src/content/internal-api';
+} from 'adi-internal-api';
+import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from 'content-internal-api';
+import { CommandRegisterService, OrderPad, SettingsService, SymbolsService } from 'core-internal-api';
 import { OrderRequestStepFrame } from 'src/content/order-request-step/order-request-step-frame';
-import { CommandRegisterService, OrderPad, SettingsService, SymbolsService } from 'src/core/internal-api';
-import { AssertInternalError, Integer, JsonElement, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { AssertInternalError, Integer, JsonElement, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
