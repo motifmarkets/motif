@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MultiEvent } from 'src/sys/internal-api';
+import { MultiEvent } from 'sys-internal-api';
 
 @Injectable({
     providedIn: 'root'

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeInfo } from 'src/adi/internal-api';
+import { ExchangeInfo } from 'adi-internal-api';
 import { ExchangeId as ExchangeIdApi, ExchangeIdHandle as ExchangeIdHandleApi, ExchangeIdSvc } from '../../../api/extension-api';
 import { ExchangeIdImplementation, MarketIdImplementation } from '../../exposed/internal-api';
 

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, Holding } from 'src/adi/internal-api';
-import { AssertInternalError, Guid, Logger } from 'src/sys/internal-api';
+import { AdiService, Holding } from 'adi-internal-api';
+import { AssertInternalError, Guid, Logger } from 'sys-internal-api';
 import { HoldingTableFieldDefinitionSource } from './holding-table-field-definition-source';
 import { HoldingTableRecordDefinition } from './holding-table-record-definition';
 import { HoldingTableRecordDefinitionList } from './holding-table-record-definition-list';

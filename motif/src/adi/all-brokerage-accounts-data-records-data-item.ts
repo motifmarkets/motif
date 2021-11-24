@@ -16,7 +16,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { AllBrokerageAccountsListChangeDataItem } from './all-brokerage-accounts-list-change-data-item';
 import { BrokerageAccountDataRecord } from './brokerage-account-data-record';
 import { AllBrokerageAccountGroup } from './brokerage-account-group';

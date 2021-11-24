@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { MotifGrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
-import { MotifGrid } from 'src/content/internal-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';

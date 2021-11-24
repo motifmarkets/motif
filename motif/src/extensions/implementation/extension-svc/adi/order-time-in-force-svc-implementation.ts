@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { TimeInForce } from 'src/adi/internal-api';
+import { TimeInForce } from 'adi-internal-api';
 import {
     OrderTimeInForce as OrderTimeInForceApi,
     OrderTimeInForceHandle as OrderTimeInForceHandleApi,

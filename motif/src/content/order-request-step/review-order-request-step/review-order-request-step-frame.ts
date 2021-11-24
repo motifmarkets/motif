@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderRequestDataDefinition, OrderRequestTypeId } from 'src/adi/internal-api';
-import { OrderPad } from 'src/core/internal-api';
-import { JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
+import { OrderRequestDataDefinition, OrderRequestTypeId } from 'adi-internal-api';
+import { OrderPad } from 'core-internal-api';
+import { JsonElement, UnreachableCaseError } from 'sys-internal-api';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ReviewOrderRequestStepFrame extends OrderRequestStepFrame {

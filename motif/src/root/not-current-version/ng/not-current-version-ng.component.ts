@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { Version } from 'generated-internal-api';
 import { nanoid } from 'nanoid';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { Version } from 'src/generated/internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
 import { ConfigNgService } from '../../ng/config-ng.service';
 

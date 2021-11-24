@@ -11,8 +11,8 @@ import {
     BrokerageAccountGroupHoldingList,
     Holding,
     SingleBrokerageAccountGroup
-} from 'src/adi/internal-api';
-import { TableFrame } from 'src/content/internal-api';
+} from 'adi-internal-api';
+import { TableFrame } from 'content-internal-api';
 import {
     CommandRegisterService,
     CoreSettings,
@@ -22,12 +22,12 @@ import {
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'src/core/internal-api';
+} from 'core-internal-api';
 import {
     AssertInternalError,
     Integer,
     JsonElement
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

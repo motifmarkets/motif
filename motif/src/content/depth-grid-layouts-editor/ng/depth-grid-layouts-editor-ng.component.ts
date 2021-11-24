@@ -9,12 +9,12 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { BidAskSideId } from 'src/adi/internal-api';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
-import { ButtonInputNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
-import { ButtonUiAction, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
-import { StringId } from 'src/res/internal-api';
-import { assert, delay1Tick, UnreachableCaseError } from 'src/sys/internal-api';
+import { BidAskSideId } from 'adi-internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { ButtonUiAction, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
+import { StringId } from 'res-internal-api';
+import { assert, delay1Tick, UnreachableCaseError } from 'sys-internal-api';
 import { DepthFrame } from '../../depth/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';

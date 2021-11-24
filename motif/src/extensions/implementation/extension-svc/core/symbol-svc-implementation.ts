@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SymbolsService } from 'src/core/internal-api';
+import { SymbolsService } from 'core-internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
 import {
     ApiError as ApiErrorApi,

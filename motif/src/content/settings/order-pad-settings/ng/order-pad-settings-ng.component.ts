@@ -15,12 +15,12 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { OrderType, TimeInForce } from 'src/adi/internal-api';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'src/controls/ng-api';
-import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick } from 'src/sys/internal-api';
+import { OrderType, TimeInForce } from 'adi-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { delay1Tick } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

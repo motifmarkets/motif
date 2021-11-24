@@ -5,7 +5,7 @@
  */
 
 import { RevRecord } from 'revgrid';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import { IntegerRenderValue, RenderValue } from './render-value';
 
 export abstract class DepthRecord implements RevRecord {

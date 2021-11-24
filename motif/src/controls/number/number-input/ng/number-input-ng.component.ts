@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Integer, isNumberRegex } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { StringId, Strings } from 'res-internal-api';
+import { Integer, isNumberRegex } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
 

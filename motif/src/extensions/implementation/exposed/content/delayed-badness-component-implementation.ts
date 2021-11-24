@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DelayedBadnessComponent } from 'src/content/internal-api';
+import { DelayedBadnessComponent } from 'content-internal-api';
 import {
     Badness as BadnessApi,
     DelayedBadnessComponent as DelayedBadnessComponentApi,

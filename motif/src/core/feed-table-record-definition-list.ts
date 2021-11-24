@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, DataRecordList, Feed, FeedsDataDefinition, FeedsDataItem } from 'src/adi/internal-api';
+import { AdiService, DataRecordList, Feed, FeedsDataDefinition, FeedsDataItem } from 'adi-internal-api';
 import { DataRecordTableRecordDefinitionList } from './data-record-table-record-definition-list';
 import { FeedTableRecordDefinition } from './feed-table-record-definition';
 import { TableRecordDefinitionList } from './table-record-definition-list';

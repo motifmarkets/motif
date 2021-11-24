@@ -5,7 +5,6 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnDestroy, ViewChild } from '@angular/core';
-import Decimal from 'decimal.js-light';
 import {
     Account, BrokerageAccountGroup, BrokerageAccountId,
     ExchangeInfo, Movement, MovementId, Order, OrderRequestTypeId, OrderRoute, OrderTriggerType,
@@ -14,8 +13,8 @@ import {
     OrderTypeId, PriceOrderTrigger, RoutedIvemId, Side,
     SideId, SingleBrokerageAccountGroup, TimeInForce,
     TimeInForceId
-} from 'src/adi/internal-api';
-import { SettingsNgService } from 'src/component-services/ng-api';
+} from 'adi-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
 import {
     BrokerageAccountGroupInputNgComponent,
     BrokerageAccountGroupNameLabelNgComponent,
@@ -31,7 +30,7 @@ import {
     RoutedIvemIdSelectNgComponent,
     SymbolNameLabelNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
+} from 'controls-ng-api';
 import {
     BrokerageAccountGroupUiAction,
     ColorScheme,
@@ -46,8 +45,9 @@ import {
     SettingsService,
     StringUiAction,
     UiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'core-internal-api';
+import Decimal from 'decimal.js-light';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     delay1Tick,
@@ -56,7 +56,7 @@ import {
     newUndefinableDate,
     newUndefinableDecimal,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';
 import { PadOrderRequestStepFrame } from '../pad-order-request-step-frame';

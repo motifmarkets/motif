@@ -15,8 +15,8 @@ import {
     Order,
 
     SingleBrokerageAccountGroup
-} from 'src/adi/internal-api';
-import { UnreachableCaseError } from 'src/sys/internal-api';
+} from 'adi-internal-api';
+import { UnreachableCaseError } from 'sys-internal-api';
 import {
     BrokerageAccountGroupDataRecordTableRecordDefinitionList
 } from './brokerage-account-group-data-record-table-record-definition-list';

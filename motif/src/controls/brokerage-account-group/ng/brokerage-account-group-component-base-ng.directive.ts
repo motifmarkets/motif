@@ -13,11 +13,11 @@ import {
     DataItemIncubator,
     ExchangeInfo,
     SingleBrokerageAccountGroup
-} from 'src/adi/internal-api';
-import { CoreNgService } from 'src/component-services/ng-api';
-import { BrokerageAccountGroupUiAction, SettingsService, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'adi-internal-api';
+import { CoreNgService } from 'component-services-ng-api';
+import { BrokerageAccountGroupUiAction, SettingsService, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

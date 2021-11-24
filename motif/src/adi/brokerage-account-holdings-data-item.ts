@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, Integer, Logger, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { AssertInternalError, Integer, Logger, UnreachableCaseError, UsableListChangeTypeId } from 'sys-internal-api';
 import { BrokerageAccountGroupHoldingList } from './brokerage-account-group-holding-list';
 import { AurcChangeTypeId, DataMessage, DataMessageTypeId, HoldingsDataMessage } from './common/internal-api';
 import { DataRecordsBrokerageAccountSubscriptionDataItem } from './data-records-brokerage-account-subscription-data-item';

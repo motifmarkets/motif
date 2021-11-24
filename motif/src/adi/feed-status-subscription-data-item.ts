@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness } from 'src/sys/internal-api';
+import { Badness } from 'sys-internal-api';
 import { FeedId, FeedInfo, FeedStatus, FeedStatusId, SubscribabilityExtentId } from './common/internal-api';
 import { SubscribabilityExtentSubscriptionDataItem } from './subscribability-extent-subscription-data-item';
 

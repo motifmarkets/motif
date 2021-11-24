@@ -6,11 +6,11 @@
 
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { ButtonInputNgComponent } from 'controls-ng-api';
+import { ButtonUiAction, CommandRegisterService, InternalCommand } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { ButtonInputNgComponent } from 'src/controls/ng-api';
-import { ButtonUiAction, CommandRegisterService, InternalCommand } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
 
 // NOT USED.  Probably best to delete
 

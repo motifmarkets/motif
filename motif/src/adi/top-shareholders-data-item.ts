@@ -14,7 +14,7 @@ import {
     isSameDay,
     MultiEvent,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     DataMessage,
     TopShareholder,

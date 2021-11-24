@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, MultiEvent } from 'src/sys/internal-api';
+import { Integer, MultiEvent } from 'sys-internal-api';
 import { HistorySequenceSeriesInterface } from './history-sequence-series-interface';
 import { HistorySequencer } from './history-sequencer';
 

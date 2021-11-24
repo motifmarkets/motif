@@ -19,7 +19,7 @@ import {
     SysTick,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     AuiChangeTypeId,
     BidAskSideId,

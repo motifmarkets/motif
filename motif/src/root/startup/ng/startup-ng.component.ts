@@ -5,11 +5,11 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { SessionState, SessionStateId } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { SessionState, SessionStateId } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
-import { delay1Tick, Logger, MultiEvent } from 'src/sys/internal-api';
+import { delay1Tick, Logger, MultiEvent } from 'sys-internal-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
 

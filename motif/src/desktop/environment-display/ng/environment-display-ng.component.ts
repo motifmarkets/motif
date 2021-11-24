@@ -11,13 +11,13 @@ import {
     Component,
     OnDestroy
 } from '@angular/core';
-import { ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo } from 'src/adi/internal-api';
-import { SessionInfoService } from 'src/component-services/internal-api';
-import { SessionInfoNgService, SettingsNgService } from 'src/component-services/ng-api';
+import { ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo } from 'adi-internal-api';
+import { SessionInfoService } from 'component-services-internal-api';
+import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, ColorSettings, SessionState, SessionStateId } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { ColorScheme, ColorSettings, SessionState, SessionStateId } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
+import { MultiEvent, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 
 @Component({
     selector: 'app-environment-display',

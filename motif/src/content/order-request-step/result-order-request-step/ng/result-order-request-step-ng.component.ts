@@ -5,11 +5,11 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { CaptionLabelNgComponent, TextInputNgComponent } from 'src/controls/ng-api';
-import { ColorScheme, SettingsService, StringUiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Badness, delay1Tick, MultiEvent } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { CaptionLabelNgComponent, TextInputNgComponent } from 'controls-ng-api';
+import { ColorScheme, SettingsService, StringUiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { Badness, delay1Tick, MultiEvent } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../../delayed-badness/ng-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';

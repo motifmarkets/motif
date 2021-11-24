@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { BidAskSideId } from 'src/adi/internal-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { CorrectnessId, UnreachableCaseError } from 'src/sys/internal-api';
+import { BidAskSideId } from 'adi-internal-api';
+import { MotifGrid } from 'content-internal-api';
+import { CorrectnessId, UnreachableCaseError } from 'sys-internal-api';
 import { DepthSideGridField } from './depth-side-grid-field';
 import { FullDepthRecord } from './full-depth-record';
 import { FullDepthSideField, FullDepthSideFieldId } from './full-depth-side-field';

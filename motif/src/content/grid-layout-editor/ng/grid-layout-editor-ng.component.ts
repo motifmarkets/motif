@@ -5,15 +5,15 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
     CaptionedCheckboxNgComponent,
     EnumElementCaptionNgComponent,
     RadioInputNgComponent,
     SvgButtonNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
+} from 'controls-ng-api';
 import {
     BooleanUiAction,
     CommandRegisterService,
@@ -22,9 +22,9 @@ import {
     GridLayoutChange, IconButtonUiAction,
     InternalCommand,
     StringUiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { assigned, defined, delay1Tick, Integer } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { assigned, defined, delay1Tick, Integer } from 'sys-internal-api';
 import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 

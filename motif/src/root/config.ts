@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from 'src/adi/internal-api';
+import { ExchangeEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from 'adi-internal-api';
 import { ExtensionsService } from 'src/extensions/internal-api';
 
 export interface Config {

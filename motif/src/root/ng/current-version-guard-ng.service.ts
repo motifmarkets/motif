@@ -6,7 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
-import { Version } from 'src/generated/internal-api';
+import { Version } from 'generated-internal-api';
 import { ConfigNgService } from './config-ng.service';
 
 @Injectable({

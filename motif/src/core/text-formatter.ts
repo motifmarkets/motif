@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { Decimal } from 'decimal.js-light';
 import {
     BidAskSide,
     BidAskSideId,
@@ -59,8 +58,9 @@ import {
     TrailingStopLossOrderConditionTypeId,
     ZenithSubscriptionData,
     ZenithSubscriptionDataId
-} from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'adi-internal-api';
+import { Decimal } from 'decimal.js-light';
+import { StringId, Strings } from 'res-internal-api';
 import {
     CommaText,
     Integer,
@@ -70,7 +70,7 @@ import {
     SourceTzOffsetDate,
     SourceTzOffsetDateTime,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     BooleanRenderValue,
     CountAndXrefsRenderValue,

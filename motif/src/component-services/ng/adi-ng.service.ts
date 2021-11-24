@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AdiService } from 'src/adi/internal-api';
+import { AdiService } from 'adi-internal-api';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

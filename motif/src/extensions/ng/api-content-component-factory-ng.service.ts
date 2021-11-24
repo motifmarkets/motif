@@ -12,7 +12,7 @@ import {
     Injector,
     Type
 } from '@angular/core';
-import { ContentComponentBaseNgDirective, DelayedBadnessNgComponent } from 'src/content/ng-api';
+import { ContentComponentBaseNgDirective, DelayedBadnessNgComponent } from 'content-ng-api';
 import {
     ApiContentComponentFactory,
     DelayedBadnessComponentImplementation

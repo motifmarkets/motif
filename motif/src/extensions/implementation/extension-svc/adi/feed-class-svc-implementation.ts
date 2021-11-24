@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { FeedClass } from 'src/adi/internal-api';
+import { FeedClass } from 'adi-internal-api';
 import {
     FeedClass as FeedClassApi,
     FeedClassHandle as FeedClassHandleApi,

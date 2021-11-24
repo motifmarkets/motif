@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IndexSignatureHack, JsonElement } from 'src/sys/internal-api';
+import { IndexSignatureHack, JsonElement } from 'sys-internal-api';
 import { SettingsGroup } from './settings-group';
 import { TypedKeyValueSettings } from './typed-key-value-settings';
 

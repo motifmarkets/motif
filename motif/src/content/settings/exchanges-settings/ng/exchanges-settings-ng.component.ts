@@ -12,9 +12,9 @@ import {
     OnDestroy,
     ViewContainerRef
 } from '@angular/core';
-import { ExchangeId } from 'src/adi/internal-api';
-import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { ExchangeSettings, ExchangesSettings, SymbolsService } from 'src/core/internal-api';
+import { ExchangeId } from 'adi-internal-api';
+import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { ExchangeSettings, ExchangesSettings, SymbolsService } from 'core-internal-api';
 import { MultiEvent } from 'src/sys/multi-event';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 

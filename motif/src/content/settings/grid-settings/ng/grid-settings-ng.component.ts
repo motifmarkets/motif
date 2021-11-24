@@ -9,17 +9,17 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
+import { SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
     CheckboxInputNgComponent,
     IntegerTextInputNgComponent,
     NumberInputNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
-import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringUiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { assert } from 'src/sys/internal-api';
+} from 'controls-ng-api';
+import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringUiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { assert } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

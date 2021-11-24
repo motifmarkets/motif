@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Command, CommandRegisterService, CommandUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
-import { ExtStringId, extStrings, StringId } from 'src/res/internal-api';
+import { Command, CommandRegisterService, CommandUiAction, InternalCommand, UiAction } from 'core-internal-api';
+import { ExtStringId, extStrings, StringId } from 'res-internal-api';
 import {
     addToArrayByPush,
 
@@ -18,7 +18,7 @@ import {
     Line,
     MultiEvent,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 
 export class MenuBarService {
     addOverlayChildMenuEvent: MenuBarService.AddOverlayChildMenuEvent;

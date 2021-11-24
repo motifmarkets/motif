@@ -15,8 +15,8 @@ import {
     SecurityDataDefinition,
     SecurityDataItem,
     ZenithSubscriptionDataId
-} from 'src/adi/internal-api';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
+} from 'adi-internal-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -28,7 +28,7 @@ import {
     MultiEvent,
     uniqueElementArraysOverlap,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 

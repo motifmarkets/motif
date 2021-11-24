@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectorRef, Directive, Input } from '@angular/core';
-import { ArrayUiAction, SettingsService, UiAction } from 'src/core/internal-api';
-import { isUndefinableArrayEqualUniquely, MultiEvent } from 'src/sys/internal-api';
+import { ArrayUiAction, SettingsService, UiAction } from 'core-internal-api';
+import { isUndefinableArrayEqualUniquely, MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

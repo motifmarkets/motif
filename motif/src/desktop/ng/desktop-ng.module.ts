@@ -6,7 +6,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ControlsNgModule } from 'src/controls/ng-api';
+import { ControlsNgModule } from 'controls-ng-api';
 import { DesktopNgComponent } from '../desktop/ng-api';
 import { EnvironmentDisplayNgComponent } from '../environment-display/ng-api';
 import { GoldenLayoutHostNgComponent } from '../golden-layout-host/ng-api';

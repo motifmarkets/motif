@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ExternalError, Logger, ZenithDataError } from 'src/sys/internal-api';
+import { AssertInternalError, ExternalError, Logger, ZenithDataError } from 'sys-internal-api';
 import {
     MoveOrderRequestDataDefinition,
     MoveOrderResponseDataMessage,

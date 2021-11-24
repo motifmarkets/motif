@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, Integer, JsonElement, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { Badness, Integer, JsonElement, UsableListChangeTypeId } from 'sys-internal-api';
 import { LitIvemIdTableRecordDefinition, TableRecordDefinition } from './table-record-definition';
 import { ServerTableRecordDefinitionList, TableRecordDefinitionList } from './table-record-definition-list';
 

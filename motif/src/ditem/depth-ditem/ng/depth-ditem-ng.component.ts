@@ -11,14 +11,14 @@ import {
 
     Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
+import { LitIvemId } from 'adi-internal-api';
+import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
+import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
+import { IconButtonUiAction, InternalCommand, LitIvemIdUiAction, StringUiAction, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { LitIvemId } from 'src/adi/internal-api';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
-import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'src/content/ng-api';
-import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'src/controls/ng-api';
-import { IconButtonUiAction, InternalCommand, LitIvemIdUiAction, StringUiAction, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { CommaText, delay1Tick, JsonElement, Logger } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { CommaText, delay1Tick, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { DepthDitemFrame } from '../depth-ditem-frame';

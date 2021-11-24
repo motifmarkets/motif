@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'src/adi/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { AdiService } from 'adi-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { AppStorageService } from './app-storage-service';
 import { CommandRegisterService } from './command/internal-api';
 import { MotifServicesService } from './motif-services-service';

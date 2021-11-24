@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, EnumInfoOutOfOrderError } from 'src/sys/internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError } from 'sys-internal-api';
 
 export const enum InstrumentMovementColorSetId {
     American,

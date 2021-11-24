@@ -12,7 +12,7 @@ import {
     SysTick,
     UnreachableCaseError,
     WebsocketCloseCode
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ZenithPublisherReconnectReasonId, ZenithPublisherStateId } from '../../common/internal-api';
 
 export class ZenithConnectionStateEngine {

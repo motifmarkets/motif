@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironment, LitIvemId, MarketInfo } from 'src/adi/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { ExchangeEnvironment, LitIvemId, MarketInfo } from 'adi-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { SymbolsService } from './symbols-service';
 import { UiAction } from './ui-action';
 

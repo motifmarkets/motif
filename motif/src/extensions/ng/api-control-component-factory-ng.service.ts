@@ -26,7 +26,7 @@ import {
     OrderRouteInputNgComponent,
     RoutedIvemIdSelectNgComponent,
     SvgButtonNgComponent
-} from 'src/controls/ng-api';
+} from 'controls-ng-api';
 import {
     BooleanUiAction,
     BrokerageAccountGroupUiAction,
@@ -40,7 +40,7 @@ import {
     NumberUiAction,
     OrderRouteUiAction,
     RoutedIvemIdUiAction
-} from 'src/core/internal-api';
+} from 'core-internal-api';
 import {
     ApiControlComponentFactory, BrokerageAccountGroupSelectImplementation,
     BuiltinIconButtonImplementation,

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, SecurityDataItem } from 'src/adi/internal-api';
-import { Guid, Logger } from 'src/sys/internal-api';
+import { AdiService, SecurityDataItem } from 'adi-internal-api';
+import { Guid, Logger } from 'sys-internal-api';
 import { PortfolioTableRecordDefinitionList } from './portfolio-table-record-definition-list';
 import { SecurityDataItemTableFieldDefinitionSource } from './security-data-item-table-field-definition-source';
 import { SecurityDataItemTableValueSource } from './security-data-item-table-value-source';

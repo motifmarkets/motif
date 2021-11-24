@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Feed } from 'src/adi/internal-api';
-import { JsonElement, Logger } from 'src/sys/internal-api';
+import { Feed } from 'adi-internal-api';
+import { JsonElement, Logger } from 'sys-internal-api';
 import { DataRecordTableRecordDefinition } from './data-record-table-record-definition';
 import { TableRecordDefinition } from './table-record-definition';
 

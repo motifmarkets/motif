@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CloseIntervalHistorySequenceSeries } from 'src/core/internal-api';
+import { CloseIntervalHistorySequenceSeries } from 'core-internal-api';
 import {
     CloseIntervalHistorySequenceSeries as CloseIntervalHistorySequenceSeriesApi, Integer as IntegerApi
 } from '../../../../api/extension-api';

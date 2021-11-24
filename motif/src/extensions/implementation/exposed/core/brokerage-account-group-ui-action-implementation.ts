@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { BrokerageAccountGroupUiAction } from 'src/core/internal-api';
+import { BrokerageAccountGroupUiAction } from 'core-internal-api';
 import {
     BrokerageAccountGroup as BrokerageAccountGroupApi,
     BrokerageAccountGroupUiAction as BrokerageAccountGroupUiActionApi

@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
-import { RoutedIvemId } from 'src/adi/internal-api';
-import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { symbolDetailCache } from 'src/core/internal-api';
+import { RoutedIvemId } from 'adi-internal-api';
+import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { symbolDetailCache } from 'core-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-component-base-ng.directive';
 

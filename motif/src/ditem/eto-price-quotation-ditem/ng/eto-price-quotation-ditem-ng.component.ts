@@ -14,19 +14,19 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { ComponentContainer } from 'golden-layout';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { GridLayoutEditorNgComponent, TableNgComponent } from 'src/content/ng-api';
-import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'src/controls/ng-api';
+import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { MotifGrid } from 'content-internal-api';
+import { GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import {
     ButtonUiAction,
     IconButtonUiAction,
     InternalCommand,
     LitIvemIdUiAction, UiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick, JsonElement } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { ComponentContainer } from 'golden-layout';
+import { StringId, Strings } from 'res-internal-api';
+import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { EtoPriceQuotationDitemFrame } from '../eto-price-quotation-ditem-frame';

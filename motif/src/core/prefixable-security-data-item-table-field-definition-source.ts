@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { FieldDataType, FieldDataTypeId, SecurityDataItem } from 'src/adi/internal-api';
-import { CommaText, Integer, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
+import { FieldDataType, FieldDataTypeId, SecurityDataItem } from 'adi-internal-api';
+import { CommaText, Integer, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { TableFieldDefinitionSource } from './table-field-definition-source';
 import {

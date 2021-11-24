@@ -4,9 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { RevRecordStore } from 'revgrid';
-import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle, DepthStyleId } from 'src/adi/internal-api';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
+import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle, DepthStyleId } from 'adi-internal-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
     DepthRecord,
     DepthSideGridField,
@@ -16,8 +15,9 @@ import {
     GridLayoutIO,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore
-} from 'src/core/internal-api';
-import { assigned, Integer, JsonElement, UnreachableCaseError } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { RevRecordStore } from 'revgrid';
+import { assigned, Integer, JsonElement, UnreachableCaseError } from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {

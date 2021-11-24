@@ -19,7 +19,7 @@ import {
     secsPerMin,
     SysTick,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { AllBalancesDataItem } from './all-balances-data-item';
 import { AllHoldingsDataItem } from './all-holdings-data-item';
 import { AllOrdersDataItem } from './all-orders-data-item';

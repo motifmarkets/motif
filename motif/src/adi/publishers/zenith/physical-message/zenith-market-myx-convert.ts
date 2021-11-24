@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Logger, parseIntStrict, parseNumberStrict, UnreachableCaseError } from 'src/sys/internal-api';
+import { Logger, parseIntStrict, parseNumberStrict, UnreachableCaseError } from 'sys-internal-api';
 import { LitIvemAlternateCodes } from '../../../common/internal-api';
 import { MyxLitIvemAttributes } from '../../../myx-lit-ivem-attributes';
 import { Zenith } from './zenith';

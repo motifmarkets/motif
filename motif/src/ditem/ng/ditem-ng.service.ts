@@ -5,7 +5,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { CoreNgService, SessionInfoNgService } from 'src/component-services/ng-api';
+import { CoreNgService, SessionInfoNgService } from 'component-services-ng-api';
 import { DitemService } from '../ditem-service';
 import { DesktopAccessNgService } from './desktop-access-ng.service';
 import { DitemNgModule } from './ditem-ng.module';

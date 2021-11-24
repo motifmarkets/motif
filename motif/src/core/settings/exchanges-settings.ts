@@ -1,4 +1,4 @@
-import { ExchangeId, ExchangeInfo, SymbolFieldId } from 'src/adi/internal-api';
+import { ExchangeId, ExchangeInfo, SymbolFieldId } from 'adi-internal-api';
 import { ExchangeSettings } from './exchange-settings';
 import { TypedKeyValueArraySettingsGroup } from './typed-key-value-array-settings-group';
 

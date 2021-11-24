@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { UserAlertService } from 'src/sys/internal-api';
+import { UserAlertService } from 'sys-internal-api';
 
 @Injectable({
     providedIn: 'root'

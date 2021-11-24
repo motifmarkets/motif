@@ -5,9 +5,9 @@
  */
 
 import { Directive, ViewChild } from '@angular/core';
-import { SvgButtonNgComponent } from 'src/controls/ng-api';
-import { CommandContext, CommandParameters, CommandRegisterService, IconButtonUiAction, InternalCommand } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+import { SvgButtonNgComponent } from 'controls-ng-api';
+import { CommandContext, CommandParameters, CommandRegisterService, IconButtonUiAction, InternalCommand } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 
 @Directive()
 export abstract class CommandParametersComponentNgDirective {

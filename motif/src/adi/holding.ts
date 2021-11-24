@@ -5,8 +5,8 @@
  */
 
 import { Decimal } from 'decimal.js-light';
+import { StringId, Strings } from 'res-internal-api';
 import { RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { StringId, Strings } from 'src/res/internal-api';
 import {
     CorrectnessId,
     EnumInfoOutOfOrderError,
@@ -18,7 +18,7 @@ import {
     MapKey,
     MultiEvent,
     ZenithDataError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Account } from './account';
 import { BrokerageAccountDataRecord } from './brokerage-account-data-record';
 import {

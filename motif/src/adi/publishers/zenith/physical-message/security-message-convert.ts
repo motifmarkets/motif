@@ -14,7 +14,7 @@ import {
     newUndefinableDecimal,
     UnexpectedCaseError,
     ZenithDataError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     ExchangeEnvironmentId,
     ExchangeId,

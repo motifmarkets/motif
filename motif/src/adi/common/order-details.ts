@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { Integer, newUndefinableDate, newUndefinableDecimal } from 'src/sys/internal-api';
+import { Integer, newUndefinableDate, newUndefinableDecimal } from 'sys-internal-api';
 import {
     BidAskSideId, ExchangeId,
     IvemClassId, OrderPriceUnitTypeId, OrderShortSellTypeId,

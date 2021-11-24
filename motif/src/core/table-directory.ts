@@ -13,7 +13,7 @@ import {
     Logger,
     mSecsPerSec,
     SysTick
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Table, TableList } from './table';
 import { TableRecordDefinitionList } from './table-record-definition-list';
 

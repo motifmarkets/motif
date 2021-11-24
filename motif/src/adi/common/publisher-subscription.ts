@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MapKey, UnreachableCaseError } from 'src/sys/internal-api';
+import { MapKey, UnreachableCaseError } from 'sys-internal-api';
 import { PublisherSubscriptionDataDefinition } from './data-definition';
 
 export interface PublisherSubscription {

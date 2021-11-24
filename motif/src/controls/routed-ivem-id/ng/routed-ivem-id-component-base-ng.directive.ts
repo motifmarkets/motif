@@ -5,11 +5,11 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { RoutedIvemId } from 'src/adi/internal-api';
-import { SymbolsNgService } from 'src/component-services/ng-api';
-import { RoutedIvemIdUiAction, SettingsService, SymbolsService, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { RoutedIvemId } from 'adi-internal-api';
+import { SymbolsNgService } from 'component-services-ng-api';
+import { RoutedIvemIdUiAction, SettingsService, SymbolsService, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

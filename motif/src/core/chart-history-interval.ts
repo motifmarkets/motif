@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
-import { EnumInfoOutOfOrderError, Integer } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { EnumInfoOutOfOrderError, Integer } from 'sys-internal-api';
 
 export namespace ChartHistoryInterval {
     export const enum UnitId {

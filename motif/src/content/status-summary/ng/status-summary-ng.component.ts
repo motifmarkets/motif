@@ -15,10 +15,10 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { ExchangeEnvironment, ExchangeInfo } from 'src/adi/internal-api';
-import { SessionInfoNgService } from 'src/component-services/ng-api';
-import { Version } from 'src/generated/internal-api';
-import { AssertInternalError, Badness } from 'src/sys/internal-api';
+import { ExchangeEnvironment, ExchangeInfo } from 'adi-internal-api';
+import { SessionInfoNgService } from 'component-services-ng-api';
+import { Version } from 'generated-internal-api';
+import { AssertInternalError, Badness } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError, Integer, UnreachableCaseError } from 'sys-internal-api';
 import { ColorScheme } from './color-scheme';
 
 export namespace ColorSchemePreset {

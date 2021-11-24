@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { AdiService, HigherLowerId, LitIvemId, SecurityDataDefinition, SecurityDataItem } from 'adi-internal-api';
 import { Decimal } from 'decimal.js-light';
-import { AdiService, HigherLowerId, LitIvemId, SecurityDataDefinition, SecurityDataItem } from 'src/adi/internal-api';
-import { Integer, InternalError, MultiEvent, SourceTzOffsetDate, UnexpectedCaseError, UnreachableCaseError } from 'src/sys/internal-api';
+import { Integer, InternalError, MultiEvent, SourceTzOffsetDate, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 import { PrefixableSecurityDataItemTableFieldDefinitionSource } from './prefixable-security-data-item-table-field-definition-source';
 import { RenderValue } from './render-value';
 import {

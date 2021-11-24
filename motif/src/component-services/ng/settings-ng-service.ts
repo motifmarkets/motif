@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SettingsService } from 'src/core/internal-api';
+import { SettingsService } from 'core-internal-api';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

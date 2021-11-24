@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { I18nStrings, StringId, Strings } from 'src/res/internal-api';
+import { I18nStrings, StringId, Strings } from 'res-internal-api';
 
 export class Logger {
     static telemetryLogEvent: Logger.LogEvent;

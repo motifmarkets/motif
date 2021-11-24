@@ -5,11 +5,11 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { NgSelectUtils } from 'src/controls/internal-api';
-import { NgSelectOverlayNgService } from 'src/controls/ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
-import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { NgSelectUtils } from 'controls-internal-api';
+import { NgSelectOverlayNgService } from 'controls-ng-api';
+import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
+import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels } from 'sys-internal-api';
 import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base-ng.directive';
 
 @Component({

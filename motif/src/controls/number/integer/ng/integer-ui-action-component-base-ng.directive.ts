@@ -5,8 +5,8 @@
  */
 
 import { Directive } from '@angular/core';
-import { StringId, Strings } from 'src/res/internal-api';
-import { isIntegerRegex, parseIntStrict } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { isIntegerRegex, parseIntStrict } from 'sys-internal-api';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
 
 @Directive()

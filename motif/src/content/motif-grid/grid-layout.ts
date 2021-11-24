@@ -1,5 +1,5 @@
 import { RevRecord, RevRecordFieldIndex, RevRecordMainAdapter } from 'revgrid';
-import { ExternalError, GridLayoutError } from 'src/sys/internal-api';
+import { ExternalError, GridLayoutError } from 'sys-internal-api';
 
 /**
  * Provides access to a saved layout for a Grid

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, Order } from 'src/adi/internal-api';
-import { AssertInternalError, Guid, Logger } from 'src/sys/internal-api';
+import { AdiService, Order } from 'adi-internal-api';
+import { AssertInternalError, Guid, Logger } from 'sys-internal-api';
 import { OrderTableFieldDefinitionSource } from './order-table-field-definition-source';
 import { OrderTableRecordDefinition } from './order-table-record-definition';
 import { OrderTableRecordDefinitionList } from './order-table-record-definition-list';

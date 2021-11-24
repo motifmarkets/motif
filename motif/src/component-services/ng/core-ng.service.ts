@@ -5,7 +5,7 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { AdiService } from 'src/adi/internal-api';
+import { AdiService } from 'adi-internal-api';
 import {
     AppStorageService,
     CommandRegisterService,
@@ -13,7 +13,7 @@ import {
     MotifServicesService,
     SettingsService,
     SymbolsService
-} from 'src/core/internal-api';
+} from 'core-internal-api';
 
 @Injectable({
     providedIn: 'root'

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, Correctness, CorrectnessId, MultiEvent } from 'src/sys/internal-api';
+import { Badness, Correctness, CorrectnessId, MultiEvent } from 'sys-internal-api';
 import { MarketId, MarketInfo, TradingStatesDataDefinition } from './common/internal-api';
 import { DataItem } from './data-item';
 import { TradingStatesDataItem } from './trading-states-data-item';

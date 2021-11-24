@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'src/core/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
 import {
     Badness,
     Correctness,
@@ -17,7 +17,7 @@ import {
     MultiEvent,
     TimeSpan,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { DelayedBadnessComponent } from '../delayed-badness-component';
 

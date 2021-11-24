@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, ExternalError, FeedError, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { assert, ExternalError, FeedError, Integer, MultiEvent, UnreachableCaseError, UsableListChangeTypeId } from 'sys-internal-api';
 import {
     AurcChangeTypeId,
     DataDefinition,

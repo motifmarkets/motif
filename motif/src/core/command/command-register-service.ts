@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtStringId, StringId } from 'src/res/internal-api';
-import { ExtensionHandle, Handle } from 'src/sys/internal-api';
+import { ExtStringId, StringId } from 'res-internal-api';
+import { ExtensionHandle, Handle } from 'sys-internal-api';
 import { Command } from './command';
 import { InternalCommand } from './internal-command';
 

@@ -5,7 +5,7 @@
  */
 
 import { Decimal } from 'decimal.js-light';
-import { AssertInternalError, ExternalError, newUndefinableDecimal, UnreachableCaseError, ZenithDataError } from 'src/sys/internal-api';
+import { AssertInternalError, ExternalError, newUndefinableDecimal, UnreachableCaseError, ZenithDataError } from 'sys-internal-api';
 import {
     AurcChangeTypeId, BestMarketOrderRoute, FixOrderRoute,
     IvemClassId, MarketBoardId, MarketId, MarketOrderRoute,

@@ -8,8 +8,8 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
     ComponentFactoryResolver, OnDestroy, OnInit, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { ExchangeInfo, SymbolField, SymbolFieldId } from 'src/adi/internal-api';
-import { SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { ExchangeInfo, SymbolField, SymbolFieldId } from 'adi-internal-api';
+import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
@@ -19,8 +19,7 @@ import {
     EnumInputNgComponent,
     IntegerTextInputNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
-import { ArrayUiAction } from 'src/core/array-ui-action';
+} from 'controls-ng-api';
 import {
     BooleanUiAction,
     EnumUiAction,
@@ -30,9 +29,10 @@ import {
     MasterSettings,
     StringUiAction,
     SymbolsService
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { assert, delay1Tick, MultiEvent, SourceTzOffsetDateTime } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { ArrayUiAction } from 'src/core/array-ui-action';
+import { assert, delay1Tick, MultiEvent, SourceTzOffsetDateTime } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

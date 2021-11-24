@@ -16,30 +16,30 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import { LitIvemId } from 'adi-internal-api';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
-import { ComponentContainer } from 'golden-layout';
-import { LitIvemId } from 'src/adi/internal-api';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'src/content/ng-api';
-import { AngularSplitTypes } from 'src/controls/internal-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { MotifGrid } from 'content-internal-api';
+import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'content-ng-api';
+import { AngularSplitTypes } from 'controls-internal-api';
 import {
     CommandBarNgComponent,
     DateInputNgComponent,
     LitIvemIdSelectNgComponent,
     SvgButtonNgComponent,
     TextInputNgComponent
-} from 'src/controls/ng-api';
+} from 'controls-ng-api';
 import {
     DateUiAction,
     IconButtonUiAction,
     InternalCommand,
     LitIvemIdUiAction, StringUiAction,
     UiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, CommaText, defined, delay1Tick, JsonElement, Logger } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { ComponentContainer } from 'golden-layout';
+import { StringId, Strings } from 'res-internal-api';
+import { AssertInternalError, CommaText, defined, delay1Tick, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { ParidepthDitemFrame } from '../paridepth-ditem-frame';

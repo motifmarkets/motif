@@ -5,7 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 import { ArrayComponentBaseNgDirective } from './array-component-base-ng.directive';
 
 @Directive()

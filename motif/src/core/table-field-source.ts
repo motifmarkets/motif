@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { MotifGrid } from 'src/content/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { MotifGrid } from 'content-internal-api';
+import { Integer } from 'sys-internal-api';
 import { TableFieldDefinitionSource } from './table-field-definition-source';
 import { TableGridField } from './table-grid-field';
 import { TableGridValue } from './table-grid-value';

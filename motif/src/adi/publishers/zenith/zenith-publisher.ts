@@ -15,7 +15,7 @@ import {
     SysTick,
     UnreachableCaseError,
     WebsocketCloseCode
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     DataDefinition,
     DataItemId,

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
-import { EnumInfoOutOfOrderError, isUndefinableArrayEqualUniquely, MultiEvent } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { EnumInfoOutOfOrderError, isUndefinableArrayEqualUniquely, MultiEvent } from 'sys-internal-api';
 import {
     ExchangeId,
     FieldDataTypeId,

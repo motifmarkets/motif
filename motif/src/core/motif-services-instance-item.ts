@@ -1,4 +1,4 @@
-import { Json } from 'src/sys/internal-api';
+import { Json } from 'sys-internal-api';
 
 export interface MotifServicesInstanceItem extends Json {
     readonly instanceTypeId: MotifServicesInstanceItem.TypeId;

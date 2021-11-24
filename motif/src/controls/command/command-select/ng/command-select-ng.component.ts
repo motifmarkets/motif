@@ -6,11 +6,11 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { Account } from 'src/adi/internal-api';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { Command, ProcessorCommandUiAction, UiAction } from 'src/core/internal-api';
-import { extStrings } from 'src/res/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { Account } from 'adi-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { Command, ProcessorCommandUiAction, UiAction } from 'core-internal-api';
+import { extStrings } from 'res-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';

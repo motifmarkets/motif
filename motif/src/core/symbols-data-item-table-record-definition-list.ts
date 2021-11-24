@@ -16,7 +16,7 @@ import {
     SearchSymbolsDataDefinition,
     SymbolFieldId,
     SymbolsDataItem
-} from 'src/adi/internal-api';
+} from 'adi-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -25,7 +25,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { SingleDataItemTableRecordDefinitionList } from './single-data-item-table-record-definition-list';
 import { SymbolsService } from './symbols-service';
 import { LitIvemDetailTableRecordDefinition, TableRecordDefinition } from './table-record-definition';

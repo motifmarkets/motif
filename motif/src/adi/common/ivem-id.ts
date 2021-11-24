@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId } from 'src/res/internal-api';
-import { compareString, ComparisonResult, Json, JsonElement, Logger, MapKey } from 'src/sys/internal-api';
+import { StringId } from 'res-internal-api';
+import { compareString, ComparisonResult, Json, JsonElement, Logger, MapKey } from 'sys-internal-api';
 import { ExchangeId, ExchangeInfo } from './data-types';
 
 export class IvemId {

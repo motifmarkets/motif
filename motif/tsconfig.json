@@ -29,33 +29,30 @@
     "emitDecoratorMetadata": true,
     "experimentalDecorators": true,
     "typeRoots": [
-        "node_modules/@types",
-        "node_definitions/@types"
+      "node_modules/@types",
+      "node_definitions/@types"
     ],
     "lib": [
-        "es2018",
-        "dom"
+      "es2018",
+      "dom"
     ],
     "rootDir": ".",
     "paths": {
-    //   "#version/internal-api": ["src/version"],
-    //   "#res/internal-api": ["src/res/internal-api"],
-    //   "#sys/internal-api": ["src/sys/internal-api"],
-    //   "#sys/extension-api": ["src/sys/extension-api"],
-    //   "#adi/internal-api": ["src/adi/internal-api"],
-    //   "#adi/extension-api": ["src/adi/extension-api"],
-    //   "#core/internal-api": ["src/core/internal-api"],
-    //   "#core/extension-api": ["src/core/extension-api"],
-    //   "#component-services/internal-api": ["src/component-services/internal-api"],
-    //   "#component-services/ng-api": ["src/component-services/ng-api"],
-    //   "#controls/internal-api": ["src/controls/internal-api"],
-    //   "#controls/ng-api": ["src/controls/ng-api"],
-    //   "#component/internal-api": ["src/component/internal-api"],
-    //   "#content/internal-api": ["src/content/internal-api"],
-    //   "#content/ng-api": ["src/content/ng-api"],
-    //   "#ditem/internal-api": ["src/ditem/internal-api"],
-    //   "#ditem/ng-api": ["src/ditem/ng-api"],
-    //   "#desktop/ng-api": ["src/desktop/ng-api"]
+      "generated-internal-api": ["src/generated/internal-api"],
+      "res-internal-api": ["src/res/internal-api"],
+      "sys-internal-api": ["src/sys/internal-api"],
+      "adi-internal-api": ["src/adi/internal-api"],
+      "core-internal-api": ["src/core/internal-api"],
+      "component-internal-api": ["src/component/internal-api"],
+      "component-services-internal-api": ["src/component-services/internal-api"],
+      "component-services-ng-api": ["src/component-services/ng-api"],
+      "controls-internal-api": ["src/controls/internal-api"],
+      "controls-ng-api": ["src/controls/ng-api"],
+      "content-internal-api": ["src/content/internal-api"],
+      "content-ng-api": ["src/content/ng-api"],
+      "ditem-internal-api": ["src/ditem/internal-api"],
+      "ditem-ng-api": ["src/ditem/ng-api"],
+      "desktop-ng-api": ["src/desktop/ng-api"],
       // make sure we do not import the CommonJS decimal.js-light
       "decimal.js-light": ["node_modules/decimal.js-light/decimal.mjs"]
     }
@@ -72,12 +69,12 @@
     //// revgrid entries end
   },
   "exclude": [
-      "custom_modules",
-      "lib/**/*"
+    "custom_modules",
+    "lib/**/*"
   ],
   "angularCompilerOptions": {
-      "fullTemplateTypeCheck": true,
-      "strictTemplates": true,
-      "strictInjectionParameters": true
+    "fullTemplateTypeCheck": true,
+    "strictTemplates": true,
+    "strictInjectionParameters": true
   }
 }

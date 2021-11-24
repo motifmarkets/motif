@@ -12,7 +12,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { Account } from './account';
 import { BrokerageAccountsDataItem } from './brokerage-accounts-data-item';
 import {

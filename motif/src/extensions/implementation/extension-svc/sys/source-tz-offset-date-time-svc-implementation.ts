@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SourceTzOffsetDateTime } from 'src/sys/internal-api';
+import { SourceTzOffsetDateTime } from 'sys-internal-api';
 import {
     ComparisonResult as ComparisonResultApi,
     SourceTzOffsetDateTime as SourceTzOffsetDateTimeApi,

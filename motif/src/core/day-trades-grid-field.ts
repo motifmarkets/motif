@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
+import { DayTradesDataItem, MovementId, TradeFlagId } from 'adi-internal-api';
+import { MotifGrid } from 'content-internal-api';
+import { StringId } from 'res-internal-api';
 import { RevRecordField } from 'revgrid';
-import { DayTradesDataItem, MovementId, TradeFlagId } from 'src/adi/internal-api';
-import { MotifGrid } from 'src/content/internal-api';
-import { StringId } from 'src/res/internal-api';
 import {
     compareArray,
     compareNumber,
@@ -15,7 +15,7 @@ import {
     compareUndefinableEnum,
     compareUndefinableInteger,
     compareUndefinableString, ComparisonResult, CorrectnessId, Integer, SourceTzOffsetDateTime, UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     BidAskSideIdRenderValue,
     DayTradesDataItemRecordTypeIdRenderValue,

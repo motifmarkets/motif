@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { DataRecord } from 'src/adi/internal-api';
-import { Correctness, MultiEvent } from 'src/sys/internal-api';
+import { DataRecord } from 'adi-internal-api';
+import { Correctness, MultiEvent } from 'sys-internal-api';
 import { TableGridValue } from './table-grid-value';
 import { TableValueSource } from './table-value-source';
 

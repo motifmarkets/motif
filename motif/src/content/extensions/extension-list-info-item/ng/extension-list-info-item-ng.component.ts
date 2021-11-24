@@ -15,10 +15,10 @@ import {
     OnDestroy,
     Output
 } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { ColorScheme, SettingsService } from 'src/core/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { ColorScheme, SettingsService } from 'core-internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
-import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/extension-info';
 import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';

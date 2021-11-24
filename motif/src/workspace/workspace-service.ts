@@ -5,7 +5,7 @@
  */
 
 import { DesktopFrame } from 'src/desktop/internal-api';
-import { AssertInternalError, MultiEvent } from 'src/sys/internal-api';
+import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 
 export class WorkspaceService {
     private _localDesktopFrameLoadedMultiEvent = new MultiEvent<WorkspaceService.LocalDesktopFrameLoadedEventHandler>();

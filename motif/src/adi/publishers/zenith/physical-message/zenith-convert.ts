@@ -28,7 +28,7 @@ import {
     UnreachableCaseError,
     ZenithDataError,
     ZenithDataStateError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     AuiChangeTypeId,
     AurcChangeTypeId,

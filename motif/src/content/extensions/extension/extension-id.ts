@@ -5,7 +5,7 @@
  */
 
 import { StringId, Strings } from 'src/res/i18n-strings';
-import { EnumInfoOutOfOrderError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError } from 'sys-internal-api';
 
 export interface ExtensionId {
     readonly publisherTypeId: ExtensionId.PublisherTypeId;

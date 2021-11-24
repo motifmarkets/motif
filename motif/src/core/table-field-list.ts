@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
-import { AssertInternalError, Integer, JsonElement } from 'src/sys/internal-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
+import { AssertInternalError, Integer, JsonElement } from 'sys-internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { TableFieldDefinitionSource } from './table-field-definition-source';
 import { TableFieldSource } from './table-field-source';

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DateUiAction } from 'src/core/internal-api';
+import { DateUiAction } from 'core-internal-api';
 import { DateInput as DateInputApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { DateUiActionImplementation } from '../core/internal-api';

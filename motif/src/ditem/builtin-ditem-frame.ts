@@ -4,11 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'src/adi/internal-api';
-import { MenuBarService } from 'src/controls/internal-api';
-import { Command, CommandRegisterService, InternalCommand, SymbolsService } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { EnumInfoOutOfOrderError, ExtensionHandle } from 'src/sys/internal-api';
+import { AdiService } from 'adi-internal-api';
+import { MenuBarService } from 'controls-internal-api';
+import { Command, CommandRegisterService, InternalCommand, SymbolsService } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { EnumInfoOutOfOrderError, ExtensionHandle } from 'sys-internal-api';
 import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 

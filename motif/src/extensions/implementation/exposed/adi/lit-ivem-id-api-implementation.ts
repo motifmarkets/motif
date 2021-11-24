@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemId } from 'src/adi/internal-api';
+import { LitIvemId } from 'adi-internal-api';
 import { Json as JsonApi, LitIvemId as LitIvemIdApi } from '../../../api/extension-api';
 import { ExchangeEnvironmentIdImplementation } from './exchange-environment-id-api-implementation';
 import { MarketIdImplementation } from './market-id-api-implementation';

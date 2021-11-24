@@ -9,11 +9,11 @@ import {
     OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
-import { SvgButtonNgComponent } from 'src/controls/ng-api';
-import { ColorScheme, ColorSettings, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'src/core/internal-api';
-import { StringId } from 'src/res/internal-api';
-import { assert, delay1Tick, StringBuilder } from 'src/sys/internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { SvgButtonNgComponent } from 'controls-ng-api';
+import { ColorScheme, ColorSettings, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
+import { StringId } from 'res-internal-api';
+import { assert, delay1Tick, StringBuilder } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

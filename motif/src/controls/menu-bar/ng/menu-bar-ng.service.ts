@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CommandRegisterNgService } from 'src/component-services/ng-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import { MenuBarService } from '../menu-bar-service';
 
 @Injectable({

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IconButtonUiAction } from 'src/core/internal-api';
+import { IconButtonUiAction } from 'core-internal-api';
 import { BuiltinIconButton as BuiltinIconButtonApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { BuiltinIconButtonUiActionImplementation } from '../core/internal-api';

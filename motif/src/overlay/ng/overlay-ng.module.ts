@@ -6,7 +6,7 @@
 
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
-import { ControlsNgModule } from 'src/controls/ng-api';
+import { ControlsNgModule } from 'controls-ng-api';
 import { NgSelectOverlayNgComponent } from '../ng-select-overlay/ng-api';
 import { OverlayOriginNgComponent } from '../overlay-origin/ng-api';
 

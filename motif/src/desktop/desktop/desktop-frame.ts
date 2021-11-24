@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { LayoutConfig } from 'golden-layout';
 import {
     AdiService,
     BrokerageAccountGroup,
@@ -12,10 +11,10 @@ import {
     MarketOrderId,
     OrderRequestTypeId,
     SingleBrokerageAccountGroup
-} from 'src/adi/internal-api';
-import { SignOutService } from 'src/component-services/internal-api';
-import { ExtensionsAccessService } from 'src/content/internal-api';
-import { MenuBarService } from 'src/controls/internal-api';
+} from 'adi-internal-api';
+import { SignOutService } from 'component-services-internal-api';
+import { ExtensionsAccessService } from 'content-internal-api';
+import { MenuBarService } from 'controls-internal-api';
 import {
     AppStorageService,
     Command,
@@ -26,11 +25,12 @@ import {
     SettingsService,
     SymbolsService,
     UiAction
-} from 'src/core/internal-api';
-import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'src/ditem/internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'src/ditem/ng-api';
+} from 'core-internal-api';
+import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
+import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import { LayoutConfig } from 'golden-layout';
+import { StringId, Strings } from 'res-internal-api';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
-import { StringId, Strings } from 'src/res/internal-api';
 import {
     AssertInternalError,
     ExtensionHandle,
@@ -43,7 +43,7 @@ import {
     SuccessOrErrorText,
     SuccessOrErrorText_Success,
     UserAlertService
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
 export class DesktopFrame implements DesktopAccessService {

@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { NumberUiAction, SettingsService, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { NumberUiAction, SettingsService, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

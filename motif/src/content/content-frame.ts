@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Frame } from 'src/component/internal-api';
+import { Frame } from 'component-internal-api';
 export class ContentFrame extends Frame {
     protected _layoutConfigLoading = false;
 

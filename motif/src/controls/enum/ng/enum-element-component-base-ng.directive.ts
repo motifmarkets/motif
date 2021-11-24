@@ -5,8 +5,8 @@
  */
 
 import { Directive } from '@angular/core';
-import { EnumUiAction } from 'src/core/internal-api';
-import { Integer } from 'src/sys/internal-api';
+import { EnumUiAction } from 'core-internal-api';
+import { Integer } from 'sys-internal-api';
 import { EnumComponentBaseNgDirective } from './enum-component-base-ng.directive';
 
 @Directive()

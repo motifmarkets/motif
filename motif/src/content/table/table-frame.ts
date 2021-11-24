@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
     OpenedTable,
     SettingsService,
@@ -17,8 +16,9 @@ import {
     TableRecordDefinition,
     TableRecordDefinitionList,
     tableRecordDefinitionListDirectory
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
 import {
     assert,
     AssertInternalError,
@@ -30,7 +30,7 @@ import {
     MultiEvent,
     StringBuilder,
     UnexpectedUndefinedError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {

@@ -1,3 +1,4 @@
+import { ColorScheme, SettingsService } from 'core-internal-api';
 import {
     CellEvent,
     Column,
@@ -17,9 +18,8 @@ import {
     SelectionDetail,
     Subgrid
 } from 'revgrid';
-import { ColorScheme, SettingsService } from 'src/core/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
 import { AssertInternalError, UnexpectedUndefinedError } from 'src/sys/internal-error';
+import { MultiEvent } from 'sys-internal-api';
 import { GridLayout } from './grid-layout';
 
 /**

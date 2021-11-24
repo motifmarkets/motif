@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { GridLayout, MotifGrid } from 'content-internal-api';
 import { RevRecordField, RevRecordIndex, RevRecordStore } from 'revgrid';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
 import { IntegerRenderValue, StringRenderValue } from './render-value';
 
 export class GridLayoutRecordStore implements RevRecordStore {

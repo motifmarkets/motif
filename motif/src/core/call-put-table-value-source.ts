@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { Integer, UnreachableCaseError } from 'sys-internal-api';
 import { CallPut } from './call-put';
 import { CallPutTableFieldDefinitionSource } from './call-put-table-field-definition-source';
 import {

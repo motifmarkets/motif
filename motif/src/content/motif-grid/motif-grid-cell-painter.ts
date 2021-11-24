@@ -1,12 +1,4 @@
-import {
-    CanvasRenderingContext2DEx,
-    Halign,
-    RevRecordCellPaintConfig,
-    RevRecordCellPainter,
-    RevRecordRecentChangeTypeId,
-    RevRecordValueRecentChangeTypeId
-} from 'revgrid';
-import { BidAskSideId, HigherLowerId } from 'src/adi/internal-api';
+import { BidAskSideId, HigherLowerId } from 'adi-internal-api';
 import {
     ColorRenderValue,
     ColorScheme,
@@ -16,13 +8,21 @@ import {
     RenderValue,
     SettingsService,
     textFormatter
-} from 'src/core/internal-api';
+} from 'core-internal-api';
+import {
+    CanvasRenderingContext2DEx,
+    Halign,
+    RevRecordCellPaintConfig,
+    RevRecordCellPainter,
+    RevRecordRecentChangeTypeId,
+    RevRecordValueRecentChangeTypeId
+} from 'revgrid';
 import {
     CorrectnessId,
     IndexSignatureHack,
     Integer,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 
 const WHITESPACE = /\s\s+/g;
 

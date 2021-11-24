@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { Integer, MultiEvent, newUndefinableDecimal } from 'src/sys/internal-api';
+import { Integer, MultiEvent, newUndefinableDecimal } from 'sys-internal-api';
 import { UiAction } from './ui-action';
 
 export class DecimalUiAction extends UiAction {

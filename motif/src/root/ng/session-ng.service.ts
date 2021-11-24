@@ -15,7 +15,7 @@ import {
     SignOutNgService,
     SymbolsNgService,
     UserAlertNgService
-} from 'src/component-services/ng-api';
+} from 'component-services-ng-api';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { Config } from '../config';
 import { SessionService } from '../session-service';

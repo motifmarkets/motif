@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'src/adi/internal-api';
+import { AdiService } from 'adi-internal-api';
 import { SecurityPriceStepper } from './security-price-stepper';
 import { SymbolDetailCache } from './symbol-detail-cache';
 

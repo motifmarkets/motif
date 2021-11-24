@@ -14,11 +14,11 @@ import {
     InjectionToken,
     OnDestroy
 } from '@angular/core';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { StringId, Strings } from 'res-internal-api';
 import { ColorScheme } from 'src/core/color-scheme';
-import { StringId, Strings } from 'src/res/internal-api';
-import { delay1Tick, JsonElement } from 'src/sys/internal-api';
+import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { PlaceholderDitemFrame } from '../placeholder-ditem-frame';

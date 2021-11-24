@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { assert, AssertInternalError, defined, ifDefined, newUndefinableDecimal } from 'src/sys/internal-api';
+import { assert, AssertInternalError, defined, ifDefined, newUndefinableDecimal } from 'sys-internal-api';
 import {
     DataMessage,
     DepthLevelsDataDefinition,

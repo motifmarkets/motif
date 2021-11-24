@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import { ExtensionId, PersistableExtensionId } from './extension-id';
 
 export interface ExtensionInfo extends ExtensionId {

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ComparisonResult, Integer, Json, NotImplementedError, UnreachableCaseError } from 'src/sys/internal-api';
+import { ComparisonResult, Integer, Json, NotImplementedError, UnreachableCaseError } from 'sys-internal-api';
 import {
     MarketId,
     MarketInfo, OrderRouteAlgorithm, OrderRouteAlgorithmId,

@@ -6,11 +6,11 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { OrderRoute } from 'src/adi/internal-api';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { OrderRouteUiAction, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { isArrayEqualUniquely, MultiEvent } from 'src/sys/internal-api';
+import { OrderRoute } from 'adi-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { OrderRouteUiAction, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { isArrayEqualUniquely, MultiEvent } from 'sys-internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 

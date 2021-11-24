@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { StringId, Strings } from 'res-internal-api';
 import { RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Correctness, CorrectnessId, EnumInfoOutOfOrderError, Integer, JsonElement, MapKey, MultiEvent } from 'src/sys/internal-api';
+import { Correctness, CorrectnessId, EnumInfoOutOfOrderError, Integer, JsonElement, MapKey, MultiEvent } from 'sys-internal-api';
 import {
     BrokerageAccountId,
     Currency,

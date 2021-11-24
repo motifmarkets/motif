@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, Logger, UnexpectedCaseError } from 'src/sys/internal-api';
+import { AssertInternalError, Logger, UnexpectedCaseError } from 'sys-internal-api';
 import { DataChannel, DataChannelId, DataMessage, PublisherRequest, PublisherSubscription } from '../../../common/internal-api';
 import { AccountsMessageConvert } from './accounts-message-convert';
 import { AmendOrderMessageConvert } from './amend-order-message-convert';

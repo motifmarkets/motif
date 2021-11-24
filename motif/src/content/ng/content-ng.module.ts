@@ -7,7 +7,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
-import { ControlsNgModule } from 'src/controls/ng-api';
+import { ControlsNgModule } from 'controls-ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';

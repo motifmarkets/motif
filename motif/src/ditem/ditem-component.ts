@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { Component } from 'src/component/internal-api';
-import { ExtensionId, PersistableExtensionId } from 'src/content/internal-api';
+import { Component } from 'component-internal-api';
+import { ExtensionId, PersistableExtensionId } from 'content-internal-api';
 import { StringId, Strings } from 'src/res/i18n-strings';
-import { EnumInfoOutOfOrderError } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError } from 'sys-internal-api';
 
 // This represents the Golden Layout Component Object
 

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, CorrectnessId, Integer, MapKey, MultiEvent, UsableListChangeTypeId } from 'src/sys/internal-api';
+import { Badness, CorrectnessId, Integer, MapKey, MultiEvent, UsableListChangeTypeId } from 'sys-internal-api';
 import { DataItem } from './data-item';
 import { DataRecord } from './data-record';
 

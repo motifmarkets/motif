@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeId, LitIvemAlternateCodes, LitIvemDetail, LitIvemFullDetail, MyxLitIvemAttributes } from 'src/adi/internal-api';
-import { AssertInternalError, Guid, Logger } from 'src/sys/internal-api';
+import { ExchangeId, LitIvemAlternateCodes, LitIvemDetail, LitIvemFullDetail, MyxLitIvemAttributes } from 'adi-internal-api';
+import { AssertInternalError, Guid, Logger } from 'sys-internal-api';
 import { LitIvemAlternateCodesTableFieldDefinitionSource } from './lit-ivem-alternate-codes-table-field-definition-source';
 import { LitIvemAlternateCodesTableValueSource } from './lit-ivem-alternate-codes-table-value-source';
 import { LitIvemBaseDetailTableFieldDefinitionSource } from './lit-ivem-base-detail-table-field-definition-source';

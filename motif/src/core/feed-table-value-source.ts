@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { Feed } from 'adi-internal-api';
 import { RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { Feed } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { FeedTableFieldDefinitionSource } from './feed-table-field-definition-source';
 import {
     CorrectnessTableGridValue,

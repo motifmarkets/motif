@@ -17,13 +17,13 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { SplitComponent } from 'angular-split';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { ExtensionId, ExtensionInfo } from 'content-internal-api';
+import { ExtensionsSidebarNgComponent } from 'content-ng-api';
+import { AngularSplitTypes } from 'controls-internal-api';
+import { ColorScheme } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
-import { ExtensionId, ExtensionInfo } from 'src/content/internal-api';
-import { ExtensionsSidebarNgComponent } from 'src/content/ng-api';
-import { AngularSplitTypes } from 'src/controls/internal-api';
-import { ColorScheme } from 'src/core/internal-api';
-import { AssertInternalError, delay1Tick, JsonElement } from 'src/sys/internal-api';
+import { AssertInternalError, delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { ExtensionsDitemFrame } from '../extensions-ditem-frame';

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DateUiAction } from 'src/core/internal-api';
+import { DateUiAction } from 'core-internal-api';
 import { DateUiAction as DateUiActionApi } from '../../../api/extension-api';
 import { UiActionImplementation } from './ui-action-api-implementation';
 

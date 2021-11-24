@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, EnumInfoOutOfOrderError, Integer, MultiEvent, SourceTzOffsetDateTime } from 'src/sys/internal-api';
+import { AssertInternalError, EnumInfoOutOfOrderError, Integer, MultiEvent, SourceTzOffsetDateTime } from 'sys-internal-api';
 import { SequenceHistory } from './sequence-history';
 
 export abstract class HistorySequencer {

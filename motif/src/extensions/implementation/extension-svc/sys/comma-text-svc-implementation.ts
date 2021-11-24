@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommaText } from 'src/sys/internal-api';
+import { CommaText } from 'sys-internal-api';
 import { CommaTextSvc } from '../../../api/extension-api';
 
 export class CommaTextSvcImplementation implements CommaTextSvc {

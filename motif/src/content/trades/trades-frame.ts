@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, DayTradesDataDefinition, DayTradesDataItem, LitIvemId } from 'src/adi/internal-api';
-import { GridLayout, MotifGrid } from 'src/content/internal-api';
-import { DayTradesGridField, DayTradesGridRecordStore, GridLayoutIO } from 'src/core/internal-api';
+import { AdiService, DayTradesDataDefinition, DayTradesDataItem, LitIvemId } from 'adi-internal-api';
+import { GridLayout, MotifGrid } from 'content-internal-api';
+import { DayTradesGridField, DayTradesGridRecordStore, GridLayoutIO } from 'core-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -16,7 +16,7 @@ import {
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {

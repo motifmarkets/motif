@@ -1,7 +1,7 @@
 import { LayoutConfig } from 'golden-layout';
 import { nanoid } from 'nanoid';
-import { StringId, Strings } from 'src/res/internal-api';
-import { Json, JsonElement } from 'src/sys/internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { Json, JsonElement } from 'sys-internal-api';
 import { MotifServicesInstanceItem } from './motif-services-instance-item';
 
 export interface Layout {

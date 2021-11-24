@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 import { DepthFrame } from '../depth/depth-frame';

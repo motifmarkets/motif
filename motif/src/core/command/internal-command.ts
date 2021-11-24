@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError } from 'src/sys/internal-api';
+import { AssertInternalError } from 'sys-internal-api';
 import { Command } from './command';
 
 export interface InternalCommand extends Command {

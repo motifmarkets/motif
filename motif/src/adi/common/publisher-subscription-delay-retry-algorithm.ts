@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, Integer, mSecsPerMin, mSecsPerSec, UnreachableCaseError } from 'src/sys/internal-api';
+import { AssertInternalError, Integer, mSecsPerMin, mSecsPerSec, UnreachableCaseError } from 'sys-internal-api';
 
 export const enum PublisherSubscriptionDelayRetryAlgorithmId {
     Never,

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout } from 'src/content/internal-api';
-import { defined, JsonElement } from 'src/sys/internal-api';
+import { GridLayout } from 'content-internal-api';
+import { defined, JsonElement } from 'sys-internal-api';
 
 export namespace GridLayoutIO {
 

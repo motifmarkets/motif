@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { LitIvemAlternateCodes, LitIvemFullDetail, SymbolsDataItem } from 'src/adi/internal-api';
-import { Integer, MultiEvent, UnreachableCaseError } from 'src/sys/internal-api';
+import { LitIvemAlternateCodes, LitIvemFullDetail, SymbolsDataItem } from 'adi-internal-api';
+import { Integer, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { LitIvemAlternateCodesTableFieldDefinitionSource } from './lit-ivem-alternate-codes-table-field-definition-source';
 import { CorrectnessTableGridValue, StringCorrectnessTableGridValue, TableGridValue } from './table-grid-value';
 import { TableValueSource } from './table-value-source';

@@ -17,9 +17,9 @@ import {
     OrderRequestDataDefinition,
     PlaceOrderMessageConvert,
     PlaceOrderRequestDataDefinition
-} from 'src/adi/internal-api';
-import { OrderPad } from 'src/core/internal-api';
-import { UnexpectedCaseError } from 'src/sys/internal-api';
+} from 'adi-internal-api';
+import { OrderPad } from 'core-internal-api';
+import { UnexpectedCaseError } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()

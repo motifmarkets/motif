@@ -5,10 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
-import { SettingsNgService } from 'src/component-services/ng-api';
-import { DateUiAction, UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { DateText, MultiEvent } from 'src/sys/internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
+import { DateUiAction, UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { DateText, MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

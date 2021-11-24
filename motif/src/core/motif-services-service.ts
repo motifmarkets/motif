@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironment, ExchangeEnvironmentId } from 'src/adi/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
+import { ExchangeEnvironment, ExchangeEnvironmentId } from 'adi-internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     EnumInfoOutOfOrderError,
     ExternalError,
@@ -15,7 +15,7 @@ import {
     MotifServicesError,
     MultiEvent,
     UnreachableCaseError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { AppStorageService } from './app-storage-service';
 import { MasterSettings } from './settings/master-settings';
 import { SettingsService } from './settings/settings-service';

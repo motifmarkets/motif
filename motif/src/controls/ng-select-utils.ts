@@ -5,7 +5,7 @@
  */
 
 import { TinyColor } from '@ctrl/tinycolor';
-import { ColorScheme, ColorSettings } from 'src/core/internal-api';
+import { ColorScheme, ColorSettings } from 'core-internal-api';
 
 export namespace NgSelectUtils {
     export const ngOptionLeftRightPadding = 3; // should come from src/scss/partials/ng-select/_default_var.theme.scss

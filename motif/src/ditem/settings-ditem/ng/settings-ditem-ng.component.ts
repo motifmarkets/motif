@@ -16,8 +16,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { ComponentContainer } from 'golden-layout';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     ColorSettingsNgComponent,
     ExchangesSettingsNgComponent,
@@ -25,8 +24,9 @@ import {
     GridSettingsNgComponent,
     OrderPadSettingsNgComponent,
     SettingsComponentBaseNgDirective
-} from 'src/content/ng-api';
-import { delay1Tick, JsonElement } from 'src/sys/internal-api';
+} from 'content-ng-api';
+import { ComponentContainer } from 'golden-layout';
+import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { SettingsDitemFrame } from '../settings-ditem-frame';

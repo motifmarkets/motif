@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { EnumInfoOutOfOrderError, Integer, JsonElement } from 'src/sys/internal-api';
+import { EnumInfoOutOfOrderError, Integer, JsonElement } from 'sys-internal-api';
 
 export abstract class SettingsGroup {
     beginChangesEvent: SettingsGroup.BeginChangesEvent;

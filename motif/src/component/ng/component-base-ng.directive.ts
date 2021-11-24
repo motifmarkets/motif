@@ -5,7 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { Integer } from 'src/sys/internal-api';
+import { Integer } from 'sys-internal-api';
 
 @Directive()
 export abstract class ComponentBaseNgDirective {

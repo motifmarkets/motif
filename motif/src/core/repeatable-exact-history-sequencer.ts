@@ -14,7 +14,7 @@ import {
     isDateEqual,
     MultiEvent,
     SourceTzOffsetDateTime
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { HistorySequencer } from './history-sequencer';
 
 export class RepeatableExactHistorySequencer extends HistorySequencer {

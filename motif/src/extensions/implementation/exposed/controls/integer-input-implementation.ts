@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IntegerUiAction } from 'src/core/internal-api';
+import { IntegerUiAction } from 'core-internal-api';
 import { IntegerInput as IntegerInputApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { IntegerUiActionImplementation } from '../core/internal-api';

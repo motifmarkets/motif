@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { MotifGrid } from 'content-internal-api';
 import { RevRecordField } from 'revgrid';
-import { MotifGrid } from 'src/content/internal-api';
-import { CorrectnessId } from 'src/sys/internal-api';
+import { CorrectnessId } from 'sys-internal-api';
 import { DepthRecord } from './depth-record';
 import { RenderValue } from './render-value';
 

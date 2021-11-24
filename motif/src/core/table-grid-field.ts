@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { IvemId, LitIvemId } from 'adi-internal-api';
 import { RevRecordField } from 'revgrid';
-import { IvemId, LitIvemId } from 'src/adi/internal-api';
 import {
     compareArray,
     compareDate,
@@ -15,7 +15,7 @@ import {
     Integer,
     SourceTzOffsetDate,
     SourceTzOffsetDateTime
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { RenderValue } from './render-value';
 import {
     BaseSourceTzOffsetDateTimeCorrectnessTableGridValue,

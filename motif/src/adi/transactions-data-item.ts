@@ -13,7 +13,7 @@ import {
     MultiEvent,
     NotImplementedError,
     UnexpectedTypeError
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     DataMessage,
     DataMessageTypeId,

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderRouteAlgorithmId } from 'src/adi/internal-api';
-import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-api';
+import { OrderRouteAlgorithmId } from 'adi-internal-api';
+import { AssertInternalError, UnreachableCaseError } from 'sys-internal-api';
 import {
     ApiError as ApiErrorApi,
     OrderRouteAlgorithm as OrderRouteAlgorithmApi,

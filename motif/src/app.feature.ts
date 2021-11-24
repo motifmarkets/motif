@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { UnreachableCaseError } from 'src/sys/internal-api';
+import { UnreachableCaseError } from 'sys-internal-api';
 
 export const enum AppFeatureId {
     WatchList,

@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { FieldDataType, FieldDataTypeId, LitIvemAlternateCodes } from 'src/adi/internal-api';
-import { CommaText, Integer, UnreachableCaseError } from 'src/sys/internal-api';
+import { FieldDataType, FieldDataTypeId, LitIvemAlternateCodes } from 'adi-internal-api';
+import { CommaText, Integer, UnreachableCaseError } from 'sys-internal-api';
 import { TableFieldCustomHeadings } from './table-field-custom-headings';
 import { TableFieldDefinitionSource } from './table-field-definition-source';
 import { CorrectnessTableGridField, StringDataItemTableGridField } from './table-grid-field';

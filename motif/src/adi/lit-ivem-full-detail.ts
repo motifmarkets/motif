@@ -5,7 +5,7 @@
  */
 
 import Decimal from 'decimal.js-light';
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     EnumInfoOutOfOrderError,
     Integer,
@@ -13,7 +13,7 @@ import {
     isUndefinableDecimalEqual,
     MultiEvent,
     SourceTzOffsetDate
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     CallOrPutId,
     DepthDirectionId,

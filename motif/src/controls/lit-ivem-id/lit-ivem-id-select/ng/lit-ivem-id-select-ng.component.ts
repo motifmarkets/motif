@@ -14,7 +14,6 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
 import {
     AdiService,
     AurcChangeTypeId,
@@ -26,8 +25,8 @@ import {
     MarketInfo,
     SearchSymbolsDataDefinition, SymbolsDataItem,
     SymbolsDataMessage
-} from 'src/adi/internal-api';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'src/component-services/ng-api';
+} from 'adi-internal-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     BooleanUiAction,
     CommandRegisterService,
@@ -38,9 +37,10 @@ import {
     symbolDetailCache,
     SymbolsService,
     UiAction
-} from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { AssertInternalError, compareString, ComparisonResult, Integer, MultiEvent } from 'src/sys/internal-api';
+} from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
+import { AssertInternalError, compareString, ComparisonResult, Integer, MultiEvent } from 'sys-internal-api';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';

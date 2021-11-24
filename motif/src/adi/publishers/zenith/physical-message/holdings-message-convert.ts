@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ExternalError, MotifError, UnexpectedCaseError, ZenithDataError } from 'src/sys/internal-api';
+import { AssertInternalError, ExternalError, MotifError, UnexpectedCaseError, ZenithDataError } from 'sys-internal-api';
 import {
     AurcChangeTypeId,
     BrokerageAccountHoldingsDataDefinition,

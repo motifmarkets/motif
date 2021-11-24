@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { JsonElement } from 'src/sys/internal-api';
+import { JsonElement } from 'sys-internal-api';
 
 export class TableFieldCustomHeadings {
     // private cachedHeadingIniFile: TMemIniFile;

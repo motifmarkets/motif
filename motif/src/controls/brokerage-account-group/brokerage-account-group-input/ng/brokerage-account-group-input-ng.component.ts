@@ -6,10 +6,10 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Renderer2, ViewChild, ViewEncapsulation } from '@angular/core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { CoreNgService, SettingsNgService } from 'src/component-services/ng-api';
-import { UiAction } from 'src/core/internal-api';
-import { StringId, Strings } from 'src/res/internal-api';
-import { MultiEvent } from 'src/sys/internal-api';
+import { CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { UiAction } from 'core-internal-api';
+import { StringId, Strings } from 'res-internal-api';
+import { MultiEvent } from 'sys-internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';

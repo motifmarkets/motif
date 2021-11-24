@@ -5,7 +5,7 @@
  */
 
 import { nanoid } from 'nanoid';
-import { StringId, Strings } from 'src/res/internal-api';
+import { StringId, Strings } from 'res-internal-api';
 import {
     AssertInternalError,
     Badness,
@@ -20,7 +20,7 @@ import {
     Logger,
     MultiEvent,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { BaseDirectory } from './base-directory';
 import { TableRecordDefinition, TableRecordDefinitionArray } from './table-record-definition';
 

@@ -15,7 +15,7 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError,
     ValueRecentChangeType
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import {
     BidAskSideId,
     DataDefinition,

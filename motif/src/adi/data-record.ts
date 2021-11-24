@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CorrectnessId, JsonElement, MapKey, MultiEvent } from 'src/sys/internal-api';
+import { CorrectnessId, JsonElement, MapKey, MultiEvent } from 'sys-internal-api';
 
 export interface DataRecord {
     readonly correctnessId: CorrectnessId;

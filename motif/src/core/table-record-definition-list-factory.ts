@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'src/adi/internal-api';
-import { JsonElement, Logger, NotImplementedError, UnreachableCaseError } from 'src/sys/internal-api';
+import { AdiService } from 'adi-internal-api';
+import { JsonElement, Logger, NotImplementedError, UnreachableCaseError } from 'sys-internal-api';
 import { BalancesTableRecordDefinitionList } from './balances-table-record-definition-list';
 import { BrokerageAccountTableRecordDefinitionList } from './brokerage-account-table-record-definition-list';
 import { CallPutFromUnderlyingTableRecordDefinitionList } from './call-put-from-underlying-table-record-definition-list';

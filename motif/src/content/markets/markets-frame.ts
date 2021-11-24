@@ -14,8 +14,8 @@ import {
 
     TradingMarketBoard,
     TradingState
-} from 'src/adi/internal-api';
-import { CoreSettings, textFormatter } from 'src/core/internal-api';
+} from 'adi-internal-api';
+import { CoreSettings, textFormatter } from 'core-internal-api';
 import {
     Badness,
     Correctness,
@@ -25,7 +25,7 @@ import {
     SourceTzOffsetDateTime,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'src/sys/internal-api';
+} from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class MarketsFrame extends ContentFrame {
