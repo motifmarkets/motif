@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
+import { ColorScheme, getElementDocumentPositionRect, Line, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme } from 'core-internal-api';
-import { getElementDocumentPositionRect, Line, UnreachableCaseError } from 'sys-internal-api';
 import { MenuBarChildItemComponentNgDirective } from '../../../ng/menu-bar-child-item-component-ng.directive';
 import { MenuBarMenuItemComponentNgDirective } from '../../../ng/menu-bar-menu-item-component-ng.directive';
 import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';

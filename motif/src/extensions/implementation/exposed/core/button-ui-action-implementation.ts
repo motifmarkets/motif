@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ButtonUiAction } from 'core-internal-api';
+import { ButtonUiAction } from '@motifmarkets/motif-core';
 import { ButtonUiAction as ButtonUiActionApi } from '../../../api/extension-api';
 import { CommandUiActionImplementation } from './command-ui-action-api-implementation';
 

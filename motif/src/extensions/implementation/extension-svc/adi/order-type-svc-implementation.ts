@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderType } from 'adi-internal-api';
+import { OrderType } from '@motifmarkets/motif-core';
 import {
     OrderType as OrderTypeApi,
     OrderTypeHandle as OrderTypeHandleApi,

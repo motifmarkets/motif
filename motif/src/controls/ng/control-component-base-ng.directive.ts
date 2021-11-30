@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
-import { ColorScheme, ColorSettings, CoreSettings, ExchangeSettings, SettingsService, UiAction } from 'core-internal-api';
+import { ColorScheme, ColorSettings, CoreSettings, delay1Tick, ExchangeSettings, HtmlTypes, MultiEvent, SettingsService, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { delay1Tick, HtmlTypes, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {

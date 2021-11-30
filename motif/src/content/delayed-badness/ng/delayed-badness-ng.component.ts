@@ -5,19 +5,16 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
-import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
 import {
-    Badness,
-    Correctness,
+    Badness, ColorScheme, ColorSettings, Correctness,
     CorrectnessId,
     HtmlTypes,
     Integer,
     mSecsPerSec,
-    MultiEvent,
-    TimeSpan,
+    MultiEvent, SettingsService, TimeSpan,
     UnreachableCaseError
-} from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { DelayedBadnessComponent } from '../delayed-badness-component';
 

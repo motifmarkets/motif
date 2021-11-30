@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId } from 'adi-internal-api';
+import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
     ExchangeEnvironmentId as ExchangeEnvironmentIdApi,

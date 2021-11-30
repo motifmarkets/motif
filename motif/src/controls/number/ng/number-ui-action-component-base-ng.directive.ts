@@ -5,9 +5,7 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { NumberUiAction, SettingsService, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { MultiEvent, UnreachableCaseError } from 'sys-internal-api';
+import { MultiEvent, NumberUiAction, SettingsService, StringId, Strings, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

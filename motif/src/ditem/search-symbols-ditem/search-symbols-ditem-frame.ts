@@ -6,24 +6,30 @@
 
 import {
     AdiService,
+    AssertInternalError,
+    CommandRegisterService,
+    EnumInfoOutOfOrderError,
     ExchangeId,
     ExchangeInfo,
+    GridLayout,
+    GridLayoutRecordStore,
+    Integer,
+    JsonElement,
     MarketId,
     MarketInfo,
     SearchSymbolsDataDefinition,
+    StringId,
+    Strings,
     SymbolField,
     SymbolFieldId,
-    SymbolsDataItem
-} from 'adi-internal-api';
-import { GridLayout, MotifGrid, TableFrame } from 'content-internal-api';
-import {
-    CommandRegisterService, SymbolsDataItemTableRecordDefinitionList,
+    SymbolsDataItem,
+    SymbolsDataItemTableRecordDefinitionList,
     SymbolsService,
     tableDefinitionFactory,
-    TableRecordDefinitionList
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { AssertInternalError, EnumInfoOutOfOrderError, Integer, JsonElement, UnreachableCaseError } from 'sys-internal-api';
+    TableRecordDefinitionList,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
+import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -166,7 +172,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         this._queryTableFrame.setGridLayout(value);
     }
 
-    getActiveGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap {
+    getActiveGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._queryTableFrame.getGridLayoutWithHeadersMap();
     }
 

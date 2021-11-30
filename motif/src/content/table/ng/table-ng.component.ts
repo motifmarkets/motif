@@ -14,8 +14,8 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
+import { Badness, numberToPixels } from '@motifmarkets/motif-core';
 import { MotifGrid } from 'content-internal-api';
-import { Badness, numberToPixels } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';

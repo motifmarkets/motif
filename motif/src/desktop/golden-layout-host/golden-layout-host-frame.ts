@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SessionInfoService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import {
@@ -34,7 +35,6 @@ import {
     RowOrColumn,
     VirtualLayout
 } from 'golden-layout';
-import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from 'sys-internal-api';
 
 export class GoldenLayoutHostFrame {
     constructor(

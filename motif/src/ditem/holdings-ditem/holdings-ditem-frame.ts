@@ -6,28 +6,15 @@
 
 import {
     Account,
-    AdiService,
-    BrokerageAccountGroup,
-    BrokerageAccountGroupHoldingList,
-    Holding,
-    SingleBrokerageAccountGroup
-} from 'adi-internal-api';
-import { TableFrame } from 'content-internal-api';
-import {
-    CommandRegisterService,
-    CoreSettings,
-    HoldingTableRecordDefinitionList,
-    OrderPad,
-    SettingsService,
-    SymbolsService,
+    AdiService, AssertInternalError, BrokerageAccountGroup,
+    BrokerageAccountGroupHoldingList, CommandRegisterService,
+    CoreSettings, Holding, HoldingTableRecordDefinitionList, Integer,
+    JsonElement, OrderPad,
+    SettingsService, SingleBrokerageAccountGroup, SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'core-internal-api';
-import {
-    AssertInternalError,
-    Integer,
-    JsonElement
-} from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

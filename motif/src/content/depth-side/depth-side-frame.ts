@@ -4,20 +4,30 @@
  * License: motionite.trade/license/motif
  */
 
-import { BidAskSideId, DataItem, DepthDataItem, DepthLevelsDataItem, DepthStyle, DepthStyleId } from 'adi-internal-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
+    assigned,
+    BidAskSideId,
+    DataItem,
+    DepthDataItem,
+    DepthLevelsDataItem,
     DepthRecord,
     DepthSideGridField,
     DepthSideGridRecordStore,
+    DepthStyle,
+    DepthStyleId,
     FullDepthSideGridField,
     FullDepthSideGridRecordStore,
+    GridLayout,
     GridLayoutIO,
+    GridRecordFieldState,
+    Integer,
+    JsonElement,
     ShortDepthSideGridField,
-    ShortDepthSideGridRecordStore
-} from 'core-internal-api';
+    ShortDepthSideGridRecordStore,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
+import { MotifGrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
-import { assigned, Integer, JsonElement, UnreachableCaseError } from 'sys-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {
@@ -339,7 +349,7 @@ export namespace DepthSideFrame {
 
     export class StyleCacheElement {
         gridFields: DepthSideGridField[];
-        defaultGridFieldStates: MotifGrid.FieldState[];
+        defaultGridFieldStates: GridRecordFieldState[];
         defaultGridFieldVisibles: boolean[];
         lastLayout: GridLayout;
         store: DepthSideGridRecordStore;

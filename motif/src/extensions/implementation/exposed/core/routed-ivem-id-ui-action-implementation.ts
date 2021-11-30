@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { RoutedIvemIdUiAction } from 'core-internal-api';
+import { RoutedIvemIdUiAction } from '@motifmarkets/motif-core';
 import { RoutedIvemId as RoutedIvemIdApi, RoutedIvemIdUiAction as RoutedIvemIdUiActionApi } from '../../../api/extension-api';
 import { RoutedIvemIdImplementation } from '../adi/internal-api';
 import { RoutedIvemIdParseDetailsImplementation } from './routed-ivem-id-parse-details-implementation';

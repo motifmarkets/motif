@@ -4,10 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { CommandRegisterService, CommandUiAction as RealCommandUiAction, ExtensionHandle, ExtStringId } from '@motifmarkets/motif-core';
 import { MenuBarService } from 'controls-internal-api';
-import { CommandRegisterService, CommandUiAction as RealCommandUiAction } from 'core-internal-api';
-import { ExtStringId } from 'res-internal-api';
-import { ExtensionHandle } from 'sys-internal-api';
 import {
     ApiError as ApiErrorApi,
     ChildMenuItem as ChildMenuItemApi,

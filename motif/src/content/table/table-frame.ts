@@ -4,10 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
+    assert,
+    AssertInternalError,
+    Badness,
+    GridLayout,
+    GridLayoutRecordStore,
+    Guid,
+    Integer,
+    JsonElement,
+    Logger,
+    MultiEvent,
     OpenedTable,
     SettingsService,
+    StringBuilder,
+    StringId,
+    Strings,
     Table,
     TableDefinition,
     tableDefinitionFactory,
@@ -15,22 +27,11 @@ import {
     tableDirectory,
     TableRecordDefinition,
     TableRecordDefinitionList,
-    tableRecordDefinitionListDirectory
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
-import {
-    assert,
-    AssertInternalError,
-    Badness,
-    Guid,
-    Integer,
-    JsonElement,
-    Logger,
-    MultiEvent,
-    StringBuilder,
+    tableRecordDefinitionListDirectory,
     UnexpectedUndefinedError
-} from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { MotifGrid } from 'content-internal-api';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
@@ -733,7 +734,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         return this._grid.saveLayout();
     }
 
-    getGridLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._grid.getLayoutWithHeadersMap();
     }
 

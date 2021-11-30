@@ -5,8 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { StringId, Strings } from 'res-internal-api';
-import { isIntegerRegex, parseIntStrict } from 'sys-internal-api';
+import { isIntegerRegex, parseIntStrict, StringId, Strings } from '@motifmarkets/motif-core';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
 
 @Directive()

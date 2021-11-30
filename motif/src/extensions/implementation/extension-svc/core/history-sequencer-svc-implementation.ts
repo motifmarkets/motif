@@ -4,10 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'adi-internal-api';
 import {
-    AccumulationIntervalHistorySequenceSeries,
-    CloseIntervalHistorySequenceSeries,
+    AccumulationIntervalHistorySequenceSeries, AdiService, CloseIntervalHistorySequenceSeries,
     CurrentRepeatableExactHistorySequenceSeries,
     HistorySequencer,
     IntervalHistorySequencer,
@@ -16,7 +14,7 @@ import {
     OhlcIntervalHistorySequenceSeries,
     RepeatableExactHistorySequencer,
     SymbolsService
-} from 'core-internal-api';
+} from '@motifmarkets/motif-core';
 import {
     HistorySequencer as HistorySequencerApi,
     HistorySequencerSvc,

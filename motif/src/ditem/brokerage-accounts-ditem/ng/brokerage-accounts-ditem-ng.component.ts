@@ -14,14 +14,12 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
+import { assert, assigned, delay1Tick, IconButtonUiAction, InternalCommand, JsonElement, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { assert, assigned, delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';

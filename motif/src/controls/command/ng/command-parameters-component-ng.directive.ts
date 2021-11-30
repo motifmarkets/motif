@@ -5,9 +5,8 @@
  */
 
 import { Directive, ViewChild } from '@angular/core';
+import { CommandContext, CommandParameters, CommandRegisterService, IconButtonUiAction, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { CommandContext, CommandParameters, CommandRegisterService, IconButtonUiAction, InternalCommand } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 
 @Directive()
 export abstract class CommandParametersComponentNgDirective {

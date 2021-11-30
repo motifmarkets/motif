@@ -1,14 +1,20 @@
-import { BidAskSideId, HigherLowerId } from 'adi-internal-api';
 import {
+    BidAskSideId,
     ColorRenderValue,
     ColorScheme,
     ColorSettings,
     CoreSettings,
+    CorrectnessId,
     DepthRecord,
+    GridRecordRenderValue,
+    HigherLowerId,
+    IndexSignatureHack,
+    Integer,
     RenderValue,
     SettingsService,
-    textFormatter
-} from 'core-internal-api';
+    textFormatter,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import {
     CanvasRenderingContext2DEx,
     Halign,
@@ -17,12 +23,6 @@ import {
     RevRecordRecentChangeTypeId,
     RevRecordValueRecentChangeTypeId
 } from 'revgrid';
-import {
-    CorrectnessId,
-    IndexSignatureHack,
-    Integer,
-    UnreachableCaseError
-} from 'sys-internal-api';
 
 const WHITESPACE = /\s\s+/g;
 
@@ -144,7 +144,7 @@ export class MotifGridCellPainter extends RevRecordCellPainter {
 
                 case RenderValue.AttributeId.DepthRecord:
                     const depthRecordAttribute =
-                        attribute as RenderValue.DepthRecordAttribute;
+                        attribute as GridRecordRenderValue.DepthRecordAttribute;
                     let depthRecordItemId: ColorScheme.ItemId;
                     if (depthRecordAttribute.ownOrder) {
                         depthRecordItemId = altRow

@@ -6,18 +6,12 @@
 
 import { ChangeDetectorRef, Directive, Input } from '@angular/core';
 import {
-    Account,
-    BrokerageAccountGroup,
-    BrokerageAccountsDataDefinition,
+    Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountsDataDefinition,
     BrokerageAccountsDataItem,
     DataItemIncubator,
-    ExchangeInfo,
-    SingleBrokerageAccountGroup
-} from 'adi-internal-api';
+    ExchangeInfo, MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { CoreNgService } from 'component-services-ng-api';
-import { BrokerageAccountGroupUiAction, SettingsService, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { AssertInternalError, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

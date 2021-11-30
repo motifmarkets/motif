@@ -5,30 +5,30 @@
  */
 
 import {
-    AdiService, BidAskSideId,
+    AdiService,
+    AssertInternalError,
+    Badness,
+    BidAskSideId,
+    CommaText,
+    Correctness,
     DepthDataDefinition,
     DepthDataItem,
     DepthLevelsDataDefinition,
     DepthLevelsDataItem,
     DepthStyleId,
-    LitIvemId,
-    SecurityDataDefinition,
-    SecurityDataItem,
-    ZenithSubscriptionDataId
-} from 'adi-internal-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
-import {
-    AssertInternalError,
-    Badness,
-    CommaText,
-    Correctness,
+    GridLayout,
+    GridLayoutRecordStore,
     Integer,
     JsonElement,
+    LitIvemId,
     Logger,
     MultiEvent,
+    SecurityDataDefinition,
+    SecurityDataItem,
     uniqueElementArraysOverlap,
-    UnreachableCaseError
-} from 'sys-internal-api';
+    UnreachableCaseError,
+    ZenithSubscriptionDataId
+} from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 
@@ -557,8 +557,8 @@ export namespace DepthFrame {
     }
 
     export interface GridLayoutsWithHeadersMap {
-        bid: MotifGrid.LayoutWithHeadersMap;
-        ask: MotifGrid.LayoutWithHeadersMap;
+        bid: GridLayoutRecordStore.LayoutWithHeadersMap;
+        ask: GridLayoutRecordStore.LayoutWithHeadersMap;
     }
 
     export interface ComponentAccess {

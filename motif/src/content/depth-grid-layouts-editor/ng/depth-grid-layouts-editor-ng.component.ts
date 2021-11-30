@@ -9,12 +9,20 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { BidAskSideId } from 'adi-internal-api';
+import {
+    assert,
+    BidAskSideId,
+    ButtonUiAction,
+    CommandRegisterService,
+    delay1Tick,
+    IconButtonUiAction,
+    InternalCommand,
+    StringId,
+    UiAction,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { ButtonUiAction, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
-import { StringId } from 'res-internal-api';
-import { assert, delay1Tick, UnreachableCaseError } from 'sys-internal-api';
 import { DepthFrame } from '../../depth/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';

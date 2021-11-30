@@ -5,8 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { LitIvemId } from 'adi-internal-api';
-import { SymbolsService } from 'core-internal-api';
+import { LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

@@ -5,7 +5,7 @@
  */
 
 import { Directive, HostListener } from '@angular/core';
-import { AssertInternalError } from 'sys-internal-api';
+import { AssertInternalError } from '@motifmarkets/motif-core';
 import { MenuBarService } from '../menu-bar-service';
 import { MenuBarMenuItemComponentNgDirective } from './menu-bar-menu-item-component-ng.directive';
 

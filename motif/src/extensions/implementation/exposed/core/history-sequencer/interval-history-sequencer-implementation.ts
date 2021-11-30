@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IntervalHistorySequencer } from 'core-internal-api';
-import { UnreachableCaseError } from 'sys-internal-api';
+import { IntervalHistorySequencer, UnreachableCaseError } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     ComparableList as ComparableListApi,

@@ -1,8 +1,7 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { numberToPixels, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { SettingsService } from 'core-internal-api';
 import { GridProperties, RevRecordStore } from 'revgrid';
-import { numberToPixels } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { MotifGrid } from '../motif-grid';
 import { MotifGridCellPainter } from '../motif-grid-cell-painter';

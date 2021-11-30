@@ -5,11 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Inject, OnDestroy } from '@angular/core';
-import { OrderRequestDataDefinition, SideId } from 'adi-internal-api';
+import { AssertInternalError, ColorScheme, MultiEvent, OrderPad, OrderRequestDataDefinition, SettingsService, SideId, StringId, Strings, textFormatter } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ColorScheme, OrderPad, SettingsService, textFormatter } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
 
 @Component({

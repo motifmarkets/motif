@@ -5,8 +5,8 @@
  */
 
 import { ErrorHandler, Injectable } from '@angular/core';
+import { UserAlertService } from '@motifmarkets/motif-core';
 import { UserAlertNgService } from 'component-services-ng-api';
-import { UserAlertService } from 'sys-internal-api';
 import { TelemetryService } from '../telemetry-service';
 import { TelemetryNgService } from './telemetry-ng.service';
 

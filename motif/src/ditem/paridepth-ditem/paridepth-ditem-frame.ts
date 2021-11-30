@@ -4,17 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, DepthStyleId, LitIvemId } from 'adi-internal-api';
-import { DepthFrame, GridLayout, MotifGrid, TableFrame, TradesFrame } from 'content-internal-api';
 import {
-    CommandRegisterService, LitIvemIdTableRecordDefinition,
+    AdiService,
+    CommandRegisterService,
+    DepthStyleId,
+    GridLayout,
+    GridLayoutRecordStore,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdTableRecordDefinition,
     PortfolioTableDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
     TableRecordDefinitionList
-} from 'core-internal-api';
+} from '@motifmarkets/motif-core';
+import { DepthFrame, TableFrame, TradesFrame } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
-import { JsonElement } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -267,9 +272,9 @@ export namespace ParidepthDitemFrame {
     }
 
     export interface GridLayoutsWithHeaderMaps {
-        watchlist: MotifGrid.LayoutWithHeadersMap;
+        watchlist: GridLayoutRecordStore.LayoutWithHeadersMap;
         depth: DepthFrame.GridLayoutsWithHeadersMap;
-        trades: MotifGrid.LayoutWithHeadersMap;
+        trades: GridLayoutRecordStore.LayoutWithHeadersMap;
     }
 
     export type OpenedEventHandler = (this: void) => void;

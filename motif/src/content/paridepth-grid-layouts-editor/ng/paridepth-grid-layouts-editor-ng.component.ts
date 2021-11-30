@@ -14,17 +14,21 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
-import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import {
+    assert,
     ButtonUiAction,
-    CommandRegisterService, IconButtonUiAction,
+    CommandRegisterService,
+    delay1Tick,
+    GridLayout,
+    GridLayoutRecordStore,
+    IconButtonUiAction,
     InternalCommand,
-    UiAction
-} from 'core-internal-api';
-import { StringId } from 'res-internal-api';
-import { assert, delay1Tick, UnreachableCaseError } from 'sys-internal-api';
+    StringId,
+    UiAction,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { DepthFrame } from '../../depth/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -285,9 +289,9 @@ export namespace ParidepthGridLayoutsEditorNgComponent {
     }
 
     export interface GridLayoutsWithHeadersMap {
-        watchlist: MotifGrid.LayoutWithHeadersMap;
+        watchlist: GridLayoutRecordStore.LayoutWithHeadersMap;
         depth: DepthFrame.GridLayoutsWithHeadersMap;
-        trades: MotifGrid.LayoutWithHeadersMap;
+        trades: GridLayoutRecordStore.LayoutWithHeadersMap;
     }
 
     export type ClosePromise = Promise<GridLayouts | undefined>;

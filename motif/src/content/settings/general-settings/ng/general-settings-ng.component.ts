@@ -8,7 +8,12 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
     ComponentFactoryResolver, OnDestroy, OnInit, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { ExchangeInfo, SymbolField, SymbolFieldId } from 'adi-internal-api';
+import {
+    ArrayUiAction, assert, BooleanUiAction, delay1Tick, EnumUiAction, ExchangeInfo, ExplicitElementsEnumArrayUiAction,
+    ExplicitElementsEnumUiAction,
+    IntegerUiAction,
+    MasterSettings, MultiEvent, SourceTzOffsetDateTime, StringId, Strings, StringUiAction, SymbolField, SymbolFieldId, SymbolsService
+} from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     CaptionedCheckboxNgComponent,
@@ -20,19 +25,6 @@ import {
     IntegerTextInputNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    BooleanUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction,
-    IntegerUiAction,
-    MasterSettings,
-    StringUiAction,
-    SymbolsService
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { ArrayUiAction } from 'src/core/array-ui-action';
-import { assert, delay1Tick, MultiEvent, SourceTzOffsetDateTime } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

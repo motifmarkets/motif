@@ -4,11 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'adi-internal-api';
+import { AdiService, Command, CommandRegisterService, EnumInfoOutOfOrderError, ExtensionHandle, InternalCommand, StringId, Strings, SymbolsService } from '@motifmarkets/motif-core';
 import { MenuBarService } from 'controls-internal-api';
-import { Command, CommandRegisterService, InternalCommand, SymbolsService } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { EnumInfoOutOfOrderError, ExtensionHandle } from 'sys-internal-api';
 import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 

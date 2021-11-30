@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './grid-layout';
 export * from './motif-grid';
 

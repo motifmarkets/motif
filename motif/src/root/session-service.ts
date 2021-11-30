@@ -6,46 +6,31 @@
 
 import { isDevMode } from '@angular/core';
 import {
-    AdiService,
-    ExchangeEnvironment,
+    AdiService, AppStorageService, AssertInternalError, ExchangeEnvironment,
     ExchangeEnvironmentId,
-    ExchangeInfo,
-    ZenithExtConnectionDataDefinition,
+    ExchangeInfo, ExternalError,
+    IdleDeadline,
+    IdleRequestOptions,
+    Integer,
+    JsonElement,
+    Logger,
+    MotifServicesError, MotifServicesService, mSecsPerSec,
+    MultiEvent, SessionState,
+    SessionStateId,
+    SettingsService, StringId, Strings, SymbolsService, SysTick,
+    UserAlertService, ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
     ZenithPublisherReconnectReasonId,
     ZenithPublisherState,
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
-} from 'adi-internal-api';
+} from '@motifmarkets/motif-core';
 import { SessionInfoService } from 'component-services-internal-api';
-import {
-    AppStorageService,
-    MotifServicesService,
-    SessionState,
-    SessionStateId,
-    SettingsService,
-    SymbolsService
-} from 'core-internal-api';
 import { Version } from 'generated-internal-api';
 import { Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client';
-import { StringId, Strings } from 'res-internal-api';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
-import {
-    AssertInternalError,
-    ExternalError,
-    IdleDeadline,
-    IdleRequestOptions,
-    Integer,
-    JsonElement,
-    Logger,
-    MotifServicesError,
-    mSecsPerSec,
-    MultiEvent,
-    SysTick,
-    UserAlertService
-} from 'sys-internal-api';
 import { Config } from './config';
 import { TelemetryService } from './telemetry-service';
 

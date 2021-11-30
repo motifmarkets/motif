@@ -12,10 +12,8 @@ import {
     OnDestroy,
     ViewContainerRef
 } from '@angular/core';
-import { ExchangeId } from 'adi-internal-api';
+import { ExchangeId, ExchangeSettings, ExchangesSettings, MultiEvent, SymbolsService } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ExchangeSettings, ExchangesSettings, SymbolsService } from 'core-internal-api';
-import { MultiEvent } from 'src/sys/multi-event';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

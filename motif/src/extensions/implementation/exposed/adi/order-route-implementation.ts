@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderRoute } from 'adi-internal-api';
+import { OrderRoute } from '@motifmarkets/motif-core';
 import {
     Json as JsonApi,
     OrderRoute as OrderRouteApi,

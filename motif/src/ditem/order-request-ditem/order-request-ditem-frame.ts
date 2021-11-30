@@ -7,17 +7,11 @@
 import {
     AdiService,
     AllOrdersDataDefinition,
-    AllOrdersDataItem,
-    BrokerageAccountGroup,
-    LitIvemId,
-    Order,
-    OrderRequestDataDefinition,
-    OrderRequestTypeId
-} from 'adi-internal-api';
+    AllOrdersDataItem, AssertInternalError, BrokerageAccountGroup, CommandRegisterService, Integer, JsonElement, LitIvemId, MultiEvent, Order, OrderPad, OrderRequestDataDefinition,
+    OrderRequestTypeId, SettingsService, SymbolsService, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from 'content-internal-api';
-import { CommandRegisterService, OrderPad, SettingsService, SymbolsService } from 'core-internal-api';
 import { OrderRequestStepFrame } from 'src/content/order-request-step/order-request-step-frame';
-import { AssertInternalError, Integer, JsonElement, MultiEvent, UnreachableCaseError } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

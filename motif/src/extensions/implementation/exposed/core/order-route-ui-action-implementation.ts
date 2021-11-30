@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderRouteUiAction } from 'core-internal-api';
+import { OrderRouteUiAction } from '@motifmarkets/motif-core';
 import { OrderRoute as OrderRouteApi, OrderRouteUiAction as OrderRouteUiActionApi } from '../../../api/extension-api';
 import { OrderRouteImplementation } from '../adi/order-route-implementation';
 import { UiActionImplementation } from './ui-action-api-implementation';

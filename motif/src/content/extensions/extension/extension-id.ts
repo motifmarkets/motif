@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { StringId, Strings } from 'src/res/i18n-strings';
-import { EnumInfoOutOfOrderError } from 'sys-internal-api';
+import { EnumInfoOutOfOrderError, StringId, Strings } from '@motifmarkets/motif-core';
 
 export interface ExtensionId {
     readonly publisherTypeId: ExtensionId.PublisherTypeId;

@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtStrings } from 'res-internal-api';
-import { ExtensionHandle } from 'sys-internal-api';
+import { ExtensionHandle, ExtStrings } from '@motifmarkets/motif-core';
 import { ResourcesSvc } from '../../../api/extension-api';
 
 export class ResourcesSvcImplementation implements ResourcesSvc {

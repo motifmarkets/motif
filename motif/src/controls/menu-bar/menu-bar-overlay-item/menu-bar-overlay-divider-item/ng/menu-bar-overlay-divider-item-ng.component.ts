@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ColorScheme } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme } from 'core-internal-api';
 import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
 import { MenuBarRenderItemComponentNgDirective } from '../../../ng/menu-bar-render-item-component-ng.directive';
 

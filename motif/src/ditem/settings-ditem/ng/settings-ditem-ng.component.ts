@@ -16,6 +16,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import { delay1Tick, JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     ColorSettingsNgComponent,
@@ -26,7 +27,6 @@ import {
     SettingsComponentBaseNgDirective
 } from 'content-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { SettingsDitemFrame } from '../settings-ditem-frame';

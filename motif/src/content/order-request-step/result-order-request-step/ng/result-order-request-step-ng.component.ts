@@ -5,11 +5,9 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { Badness, ColorScheme, delay1Tick, MultiEvent, SettingsService, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, TextInputNgComponent } from 'controls-ng-api';
-import { ColorScheme, SettingsService, StringUiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { Badness, delay1Tick, MultiEvent } from 'sys-internal-api';
 import { DelayedBadnessNgComponent } from '../../../delayed-badness/ng-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';

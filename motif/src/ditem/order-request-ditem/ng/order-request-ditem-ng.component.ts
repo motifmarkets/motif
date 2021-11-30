@@ -15,25 +15,19 @@ import {
     ViewChild,
     ViewChildren
 } from '@angular/core';
-import { OrderRequestType } from 'adi-internal-api';
+import {
+    BooleanUiAction,
+    ButtonUiAction,
+    ColorScheme, delay1Tick, HtmlTypes, IconButtonUiAction,
+    InternalCommand, JsonElement, numberToPixels, OrderPad, OrderRequestType, StringId, Strings, UiAction
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     OrderRequestStepComponentNgDirective
 } from 'content-ng-api';
 import { ButtonInputNgComponent, CaptionedCheckboxNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import {
-    BooleanUiAction,
-    ButtonUiAction,
-    ColorScheme,
-    IconButtonUiAction,
-    InternalCommand,
-    OrderPad,
-    UiAction
-} from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
 import { OrderRequestStepFrame } from 'src/content/order-request-step/order-request-step-frame';
-import { delay1Tick, HtmlTypes, JsonElement, numberToPixels } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { OrderRequestDitemFrame } from '../order-request-ditem-frame';

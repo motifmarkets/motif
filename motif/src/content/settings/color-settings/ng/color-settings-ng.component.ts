@@ -8,13 +8,11 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
     ElementRef, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
+import { assert, ColorScheme, CommandRegisterService, delay1Tick, IconButtonUiAction, Integer, InternalCommand, Logger, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { ColorScheme, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 import { RevRecordIndex } from 'revgrid';
-import { assert, delay1Tick, Integer, Logger } from 'sys-internal-api';
 import { ColorSchemeGridNgComponent } from '../../../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../../../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../../../color-scheme-preset-code/ng-api';

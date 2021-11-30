@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { NumberUiAction } from 'core-internal-api';
+import { NumberUiAction } from '@motifmarkets/motif-core';
 import { NumberInput as NumberInputApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { NumberUiActionImplementation } from '../core/internal-api';

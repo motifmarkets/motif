@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { JsonElement } from 'sys-internal-api';
+import { JsonElement } from '@motifmarkets/motif-core';
 import {
     Decimal as DecimalApi,
     Guid as GuidApi,

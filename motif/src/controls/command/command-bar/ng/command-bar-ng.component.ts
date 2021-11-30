@@ -14,15 +14,13 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
 import {
-    Command,
+    AssertInternalError, Command,
     CommandContext,
     CommandProcessor,
-    CommandRegisterService,
-    ProcessorCommandUiAction
-} from 'core-internal-api';
-import { AssertInternalError, delay1Tick } from 'sys-internal-api';
+    CommandRegisterService, delay1Tick, ProcessorCommandUiAction
+} from '@motifmarkets/motif-core';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CommandParametersComponentRegister } from '../../command-parameters-component-register';
 import { CommandSelectNgComponent } from '../../command-select/ng-api';
 import { CommandParametersComponentNgDirective } from '../../ng/ng-api';

@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { StringId, Strings } from 'res-internal-api';
+import { HtmlTypes, StringId, Strings, UserAlertService } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { HtmlTypes, UserAlertService } from 'sys-internal-api';
 
 @Component({
     selector: 'app-user-alert',

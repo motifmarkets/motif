@@ -5,9 +5,8 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId, ZenithPublisherSubscriptionManager } from 'adi-internal-api';
+import { ConfigError, createRandomUrlSearch, ExchangeEnvironmentId, ExchangeInfo, ExternalError, LitIvemId, Logger, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
 import { ExtensionInfo, PersistableExtensionInfo } from 'content-internal-api';
-import { ConfigError, createRandomUrlSearch, ExternalError, Logger } from 'sys-internal-api';
 import { Config } from '../config';
 
 @Injectable({

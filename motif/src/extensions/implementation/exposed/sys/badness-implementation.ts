@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, UnreachableCaseError } from 'sys-internal-api';
+import { Badness, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ApiError as ApiErrorApi, Badness as BadnessApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from './api-error-api-implementation';
 

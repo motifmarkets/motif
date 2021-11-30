@@ -16,15 +16,12 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { LitIvemId } from 'adi-internal-api';
+import { assert, assigned, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { IconButtonUiAction, InternalCommand, LitIvemIdUiAction, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { assert, assigned, delay1Tick, Integer, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';

@@ -4,16 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, LitIvemId } from 'adi-internal-api';
-import { GridLayout, MotifGrid, TableFrame } from 'content-internal-api';
 import {
-    CommandRegisterService, LitIvemIdTableRecordDefinition,
+    AdiService,
+    CommandRegisterService,
+    GridLayout,
+    GridLayoutRecordStore,
+    Guid,
+    Integer,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdTableRecordDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'core-internal-api';
-import { Guid, Integer, JsonElement } from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -76,7 +82,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._tableFrame.setGridLayout(value);
     }
 
-    getGridLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 

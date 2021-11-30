@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironment } from 'adi-internal-api';
+import { ExchangeEnvironment } from '@motifmarkets/motif-core';
 import {
     ExchangeEnvironmentId as ExchangeEnvironmentIdApi,
     ExchangeEnvironmentIdHandle as ExchangeEnvironmentIdHandleApi,

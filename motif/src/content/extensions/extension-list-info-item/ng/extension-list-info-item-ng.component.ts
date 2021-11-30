@@ -15,10 +15,8 @@ import {
     OnDestroy,
     Output
 } from '@angular/core';
+import { AssertInternalError, ColorScheme, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, SettingsService } from 'core-internal-api';
-import { StringId, Strings } from 'src/res/i18n-strings';
-import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/extension-info';
 import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';

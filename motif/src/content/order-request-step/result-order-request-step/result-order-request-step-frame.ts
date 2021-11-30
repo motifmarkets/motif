@@ -5,26 +5,20 @@
  */
 
 import {
-    AdiService, Order, OrderRequestDataDefinition, OrderRequestDataItem,
+    AdiService, AssertInternalError,
+    Badness,
+    EnumInfoOutOfOrderError,
+    Integer,
+    JsonElement,
+    MultiEvent, Order, OrderPad, OrderRequestDataDefinition, OrderRequestDataItem,
     OrderRequestError,
     OrderRequestErrorCode,
     OrderRequestErrorCodeId,
     OrderRequestResultId,
     OrderRequestTypeId,
-    OrdersDataMessage
-} from 'adi-internal-api';
-import { OrderPad } from 'core-internal-api';
+    OrdersDataMessage, StringId, Strings, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import Decimal from 'decimal.js-light';
-import { StringId, Strings } from 'res-internal-api';
-import {
-    AssertInternalError,
-    Badness,
-    EnumInfoOutOfOrderError,
-    Integer,
-    JsonElement,
-    MultiEvent,
-    UnreachableCaseError
-} from 'sys-internal-api';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {

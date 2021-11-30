@@ -14,19 +14,15 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
+import {
+    ButtonUiAction, delay1Tick, GridLayoutRecordStore, IconButtonUiAction,
+    InternalCommand, JsonElement, LitIvemIdUiAction, StringId, Strings, UiAction
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import {
-    ButtonUiAction,
-    IconButtonUiAction,
-    InternalCommand,
-    LitIvemIdUiAction, UiAction
-} from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { EtoPriceQuotationDitemFrame } from '../eto-price-quotation-ditem-frame';
@@ -156,7 +152,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private handleColumnsSignalEvent(downKeys: UiAction.DownKeys) {
-        let layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
+        let layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
         if (ButtonUiAction.downKeysIncludesId(downKeys, ButtonUiAction.DownKeyId.Shift)) {
             layoutWithHeadings = this._watchContentComponent.frame.getGridLayoutWithHeadersMap();
         } else {

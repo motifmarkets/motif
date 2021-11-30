@@ -4,10 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, DepthStyleId, LitIvemId } from 'adi-internal-api';
+import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
 import { DepthFrame } from 'content-internal-api';
-import { CommandRegisterService, SymbolsService } from 'core-internal-api';
-import { JsonElement } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

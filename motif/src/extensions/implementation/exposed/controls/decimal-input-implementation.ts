@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DecimalUiAction } from 'core-internal-api';
+import { DecimalUiAction } from '@motifmarkets/motif-core';
 import { DecimalInput as DecimalInputApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { DecimalUiActionImplementation } from '../core/internal-api';

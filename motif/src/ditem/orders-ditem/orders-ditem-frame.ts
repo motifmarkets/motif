@@ -4,18 +4,27 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, AdiService, BrokerageAccountGroup, BrokerageAccountGroupOrderList, Order } from 'adi-internal-api';
-import { GridLayout, MotifGrid, TableFrame } from 'content-internal-api';
 import {
+    Account,
+    AdiService,
+    AssertInternalError,
+    BrokerageAccountGroup,
+    BrokerageAccountGroupOrderList,
     CommandRegisterService,
-    CoreSettings, OrderPad,
+    CoreSettings,
+    GridLayout,
+    GridLayoutRecordStore,
+    Integer,
+    JsonElement,
+    Order,
+    OrderPad,
     OrderTableRecordDefinitionList,
     SettingsService,
     SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'core-internal-api';
-import { AssertInternalError, Integer, JsonElement } from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -160,7 +169,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         this._tableFrame.setGridLayout(value);
     }
 
-    getGridLayoutWithHeadings(): MotifGrid.LayoutWithHeadersMap {
+    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 

@@ -14,11 +14,8 @@ import {
     Output,
     ViewEncapsulation
 } from '@angular/core';
+import { ColorScheme, Integer, ListChangeTypeId, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, SettingsService } from 'core-internal-api';
-import { StringId, Strings } from 'src/res/i18n-strings';
-import { MultiEvent } from 'src/sys/multi-event';
-import { Integer, ListChangeTypeId } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionInfo } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';

@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MotifServicesService } from 'core-internal-api';
+import { MotifServicesService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

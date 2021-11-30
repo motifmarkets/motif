@@ -6,7 +6,7 @@
 
 import {
     IntervalHistorySequencer
-} from 'core-internal-api';
+} from '@motifmarkets/motif-core';
 import {
     IntervalHistorySequencer as IntervalHistorySequencerApi,
     IntervalHistorySequencerSvc

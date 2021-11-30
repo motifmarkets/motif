@@ -14,13 +14,11 @@ import {
     InjectionToken,
     OnDestroy
 } from '@angular/core';
-import { SettingsNgService } from 'component-services-ng-api';
 import {
     ColorScheme,
-    ColorSettings,
-    SettingsService
-} from 'core-internal-api';
-import { Line, MultiEvent, numberToPixels } from 'sys-internal-api';
+    ColorSettings, Line, MultiEvent, numberToPixels, SettingsService
+} from '@motifmarkets/motif-core';
+import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarService } from '../../menu-bar-service';
 import { MenuBarMenuComponentNgDirective } from '../../ng/menu-bar-menu-component-ng.directive';
 import { MenuBarNgService } from '../../ng/menu-bar-ng.service';

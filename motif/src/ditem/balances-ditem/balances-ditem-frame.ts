@@ -4,16 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, AdiService, Balances, BrokerageAccountGroup, BrokerageAccountGroupBalancesList } from 'adi-internal-api';
-import { TableFrame } from 'content-internal-api';
 import {
-    BalancesTableRecordDefinitionList,
-    CommandRegisterService,
-    SymbolsService,
+    Account, AdiService, AssertInternalError, Balances, BalancesTableRecordDefinitionList, BrokerageAccountGroup, BrokerageAccountGroupBalancesList, CommandRegisterService, Integer, JsonElement, SymbolsService,
     tableDefinitionFactory,
     TableRecordDefinitionList
-} from 'core-internal-api';
-import { AssertInternalError, Integer, JsonElement } from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';

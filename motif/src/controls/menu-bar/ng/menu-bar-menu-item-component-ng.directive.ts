@@ -5,8 +5,7 @@
  */
 
 import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core';
-import { ColorSettings, CommandUiAction, SettingsService } from 'core-internal-api';
-import { EnumInfoOutOfOrderError, Integer, MultiEvent } from 'sys-internal-api';
+import { ColorSettings, CommandUiAction, EnumInfoOutOfOrderError, Integer, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { MenuBarService } from '../menu-bar-service';
 import { MenuBarNgService } from './menu-bar-ng.service';
 import { MenuBarRenderItemComponentNgDirective } from './menu-bar-render-item-component-ng.directive';

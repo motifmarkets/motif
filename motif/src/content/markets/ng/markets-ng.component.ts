@@ -14,7 +14,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness } from 'sys-internal-api';
+import { AssertInternalError, Badness } from '@motifmarkets/motif-core';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';

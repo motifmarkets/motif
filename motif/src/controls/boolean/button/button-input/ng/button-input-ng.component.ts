@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AssertInternalError, BooleanUiAction, ButtonUiAction, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { BooleanUiAction, ButtonUiAction, UiAction } from 'core-internal-api';
-import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 
 @Component({

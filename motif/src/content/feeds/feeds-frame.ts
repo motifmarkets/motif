@@ -4,9 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DataRecordList, Feed } from 'adi-internal-api';
-import { FeedTableRecordDefinitionList, tableDefinitionFactory, TableRecordDefinitionList } from 'core-internal-api';
-import { Badness, Integer, MultiEvent } from 'sys-internal-api';
+import { Badness, DataRecordList, Feed, FeedTableRecordDefinitionList, Integer, MultiEvent, tableDefinitionFactory, TableRecordDefinitionList } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 import { TableFrame } from '../table/table-frame';
 

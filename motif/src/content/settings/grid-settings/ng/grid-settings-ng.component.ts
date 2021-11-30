@@ -9,6 +9,7 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import { assert, BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
@@ -17,9 +18,6 @@ import {
     NumberInputNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringUiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { assert } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

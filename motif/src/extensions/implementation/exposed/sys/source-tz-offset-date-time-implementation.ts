@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SourceTzOffsetDateTime, UnreachableCaseError } from 'sys-internal-api';
+import { SourceTzOffsetDateTime, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ApiError as ApiErrorApi, SourceTzOffsetDateTime as SourceTzOffsetDateTimeApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from './api-error-api-implementation';
 

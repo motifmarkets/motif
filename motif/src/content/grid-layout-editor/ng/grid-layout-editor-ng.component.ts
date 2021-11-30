@@ -5,8 +5,25 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import {
+    assigned,
+    BooleanUiAction,
+    CommandRegisterService,
+    defined,
+    delay1Tick,
+    EnumUiAction,
+    ExplicitElementsEnumUiAction,
+    GridLayout,
+    GridLayoutChange,
+    GridLayoutRecordStore,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    StringId,
+    Strings,
+    StringUiAction
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
 import {
     CaptionedCheckboxNgComponent,
     EnumElementCaptionNgComponent,
@@ -14,17 +31,6 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    BooleanUiAction,
-    CommandRegisterService,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
-    GridLayoutChange, IconButtonUiAction,
-    InternalCommand,
-    StringUiAction
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { assigned, defined, delay1Tick, Integer } from 'sys-internal-api';
 import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -109,7 +115,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         return this._gridComponent.gridLayout;
     }
 
-    setGridLayout(layoutWithHeadings: MotifGrid.LayoutWithHeadersMap) {
+    setGridLayout(layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap) {
         this._gridComponent.setLayoutWithHeadersMap(layoutWithHeadings);
     }
 

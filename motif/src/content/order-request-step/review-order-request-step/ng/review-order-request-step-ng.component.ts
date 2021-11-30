@@ -15,8 +15,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { OrderRequestDataDefinition } from 'adi-internal-api';
-import { OrderPad } from 'core-internal-api';
+import { OrderPad, OrderRequestDataDefinition } from '@motifmarkets/motif-core';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';
 import { ReviewAmendOrderRequestNgComponent } from '../review-amend-order-request/ng/review-amend-order-request-ng.component';

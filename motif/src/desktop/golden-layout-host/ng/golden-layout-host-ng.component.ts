@@ -17,10 +17,16 @@ import {
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
+import {
+    AssertInternalError, ColorScheme, ColorSettings, ExtensionHandle,
+    getElementDocumentPosition,
+    Json,
+    MultiEvent,
+    numberToPixels, SettingsService, StringId, Strings, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ExtensionId } from 'content-internal-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
 import {
     BuiltinDitemFrame,
     DitemComponent,
@@ -43,15 +49,6 @@ import {
     VirtualLayout
 } from 'golden-layout';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { StringId, Strings } from 'src/res/i18n-strings';
-import {
-    AssertInternalError,
-    ExtensionHandle,
-    getElementDocumentPosition,
-    Json,
-    MultiEvent,
-    numberToPixels, UnreachableCaseError
-} from 'sys-internal-api';
 import { FrameExtensionsAccessService } from '../frame-extension-access-service';
 import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
 

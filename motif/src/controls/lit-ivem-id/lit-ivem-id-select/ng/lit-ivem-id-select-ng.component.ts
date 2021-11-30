@@ -13,34 +13,19 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { NgSelectComponent } from '@ng-select/ng-select';
 import {
-    AdiService,
-    AurcChangeTypeId,
-    ExchangeId,
-    ExchangeInfo,
-    LitIvemDetail,
-    LitIvemId,
-    MarketId,
-    MarketInfo,
-    SearchSymbolsDataDefinition, SymbolsDataItem,
-    SymbolsDataMessage
-} from 'adi-internal-api';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import {
-    BooleanUiAction,
-    CommandRegisterService,
-    IconButtonUiAction,
-    InternalCommand,
-    LitIvemIdUiAction,
-    SymbolDetailCache,
-    symbolDetailCache,
-    SymbolsService,
+    AdiService, AssertInternalError, AurcChangeTypeId, BooleanUiAction,
+    CommandRegisterService, compareString, ComparisonResult, ExchangeId,
+    ExchangeInfo, IconButtonUiAction, Integer, InternalCommand, LitIvemDetail,
+    LitIvemId, LitIvemIdUiAction, MarketId,
+    MarketInfo, MultiEvent, SearchSymbolsDataDefinition, StringId, Strings, SymbolDetailCache,
+    symbolDetailCache, SymbolsDataItem,
+    SymbolsDataMessage, SymbolsService,
     UiAction
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
+} from '@motifmarkets/motif-core';
+import { NgSelectComponent } from '@ng-select/ng-select';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
-import { AssertInternalError, compareString, ComparisonResult, Integer, MultiEvent } from 'sys-internal-api';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';

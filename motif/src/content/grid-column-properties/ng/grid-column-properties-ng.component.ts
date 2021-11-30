@@ -5,8 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { GridLayout } from 'content-internal-api';
-import { Integer } from 'sys-internal-api';
+import { GridLayout, Integer } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
