@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DateText, DateUiAction, MultiEvent, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -16,7 +16,7 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DateInputNgComponent extends ControlComponentBaseNgDirective {
+export class DateInputNgComponent extends ControlComponentBaseNgDirective implements OnInit{
     @Input() size = '12';
     @Input() inputId: string;
 
@@ -33,17 +33,26 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective {
 
     public override get uiAction() { return super.uiAction as DateUiAction; }
 
-    onInput(value: string): void {
-        this.input(value);
+    ngOnInit() {
         this.setInitialiseReady();
     }
 
+    onInput(value: string): void {
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.input(value);
+        }
+    }
+
     onEnterKeyDown(text: string): void {
-        this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
+        }
     }
 
     onBlur(text: string): void {
-        this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
+        }
     }
 
     protected override pushSettings() {

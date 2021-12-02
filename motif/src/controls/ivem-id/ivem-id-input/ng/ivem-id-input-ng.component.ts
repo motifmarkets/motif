@@ -52,15 +52,21 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     onInput(value: string): void {
-        this.input(value);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.input(value);
+        }
     }
 
     onEnterKeyDown(value: string): void {
-        this.tryCommitText(value, UiAction.CommitTypeId.Explicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(value, UiAction.CommitTypeId.Explicit);
+        }
     }
 
     onBlur(value: string): void {
-        this.tryCommitText(value, UiAction.CommitTypeId.Implicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(value, UiAction.CommitTypeId.Implicit);
+        }
     }
 
     protected override pushSettings() {
