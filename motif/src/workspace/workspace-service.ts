@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { AssertInternalError, MultiEvent } from '@motifmarkets/motif-core';
 import { DesktopFrame } from 'src/desktop/internal-api';
-import { AssertInternalError, MultiEvent } from 'sys-internal-api';
 
 export class WorkspaceService {
     private _localDesktopFrameLoadedMultiEvent = new MultiEvent<WorkspaceService.LocalDesktopFrameLoadedEventHandler>();

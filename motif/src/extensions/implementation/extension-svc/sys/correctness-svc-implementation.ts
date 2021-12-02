@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Correctness } from 'sys-internal-api';
+import { Correctness } from '@motifmarkets/motif-core';
 import { Correctness as CorrectnessApi, CorrectnessSvc } from '../../../api/extension-api';
 import { CorrectnessImplementation } from '../../exposed/internal-api';
 

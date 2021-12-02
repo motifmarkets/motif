@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ColorScheme, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme } from 'core-internal-api';
-import { UnreachableCaseError } from 'sys-internal-api';
 import { MenuBarCommandItemComponentNgDirective } from '../../../ng/menu-bar-command-item-component-ng.directive';
 import { MenuBarMenuItemComponentNgDirective } from '../../../ng/menu-bar-menu-item-component-ng.directive';
 import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';

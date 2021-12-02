@@ -2,9 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
 import { IroColor } from '@irojs/iro-core';
 import iro from '@jaames/iro';
 import { ColorPickerProps, ColorPickerState, IroColorPicker } from '@jaames/iro/dist/ColorPicker';
-import { ColorScheme } from 'core-internal-api';
-import { AssertInternalError, UnreachableCaseError } from 'src/sys/internal-error';
-import { compareInteger, Integer, RGB } from 'sys-internal-api';
+import { AssertInternalError, ColorScheme, compareInteger, Integer, RGB, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

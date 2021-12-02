@@ -4,11 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
+import { getObjectPropertyValue, Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
 import Rollbar from 'rollbar';
 import { environment } from 'src/environments/environment';
 import { EnvironmentSecrets } from 'src/environments/environment-secrets';
-import { getObjectPropertyValue, Logger, UnreachableCaseError } from 'sys-internal-api';
 import { Config } from './config';
 
 export class TelemetryService {

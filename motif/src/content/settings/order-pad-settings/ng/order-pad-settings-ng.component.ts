@@ -15,12 +15,9 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { OrderType, TimeInForce } from 'adi-internal-api';
+import { BooleanUiAction, delay1Tick, EnumUiAction, ExplicitElementsEnumUiAction, OrderType, StringId, Strings, TimeInForce } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
-import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { delay1Tick } from 'sys-internal-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({

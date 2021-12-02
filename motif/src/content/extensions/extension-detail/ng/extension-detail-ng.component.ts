@@ -5,10 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, OnDestroy } from '@angular/core';
+import { AssertInternalError, ColorScheme, HtmlTypes, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, SettingsService } from 'core-internal-api';
-import { StringId, Strings } from 'src/res/i18n-strings';
-import { AssertInternalError, HtmlTypes, MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ExtensionId, ExtensionInfo, RegisteredExtension } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';

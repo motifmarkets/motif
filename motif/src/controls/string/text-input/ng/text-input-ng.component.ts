@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
+import { MultiEvent, StringUiAction, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { StringUiAction, UiAction } from 'core-internal-api';
-import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

@@ -15,6 +15,16 @@ import {
     ViewChild
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
+import {
+    BooleanUiAction,
+    ColorScheme,
+    ColorSettings,
+    CommandRegisterService, delay1Tick, EnumInfoOutOfOrderError, EnumUiAction,
+    ExplicitElementsEnumUiAction, HtmlTypes, IconButtonUiAction,
+    IntegerUiAction,
+    InternalCommand, MultiEvent, NumberUiAction, RGB, SettingsService, StringId, Strings, StringUiAction,
+    UiAction, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionedCheckboxNgComponent,
@@ -25,23 +35,6 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    BooleanUiAction,
-    ColorScheme,
-    ColorSettings,
-    CommandRegisterService,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
-    IconButtonUiAction,
-    IntegerUiAction,
-    InternalCommand,
-    NumberUiAction,
-    SettingsService,
-    StringUiAction,
-    UiAction
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { delay1Tick, EnumInfoOutOfOrderError, HtmlTypes, MultiEvent, RGB, UnreachableCaseError } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 

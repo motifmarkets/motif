@@ -4,12 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
+import { ComparableList } from '@motifmarkets/motif-core';
 import {
     ComparableList as ComparableListApi,
     ComparisonResult as ComparisonResultApi,
     Integer as IntegerApi
 } from 'src/extensions/api/extension-api';
-import { ComparableList } from 'sys-internal-api';
 import { ComparisonResultImplementation } from './types-api-implementation';
 
 export class ComparableListImplementation<T> implements ComparableListApi<T> {

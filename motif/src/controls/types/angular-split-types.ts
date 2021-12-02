@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { parseNumberStrict } from 'sys-internal-api';
+import { parseNumberStrict } from '@motifmarkets/motif-core';
 
 export namespace AngularSplitTypes {
     export const enum Unit {

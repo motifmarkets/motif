@@ -5,11 +5,19 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { GridLayout, MotifGrid } from 'content-internal-api';
-import { EnumUiAction, GridLayoutChange, GridLayoutRecordStore } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
+import {
+    EnumUiAction,
+    GridLayout,
+    GridLayoutChange,
+    GridLayoutRecordStore,
+    Integer,
+    StringId,
+    Strings,
+    UnexpectedCaseError,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
+import { MotifGrid } from 'content-internal-api';
 import { RevRecordFieldIndex, RevRecordIndex, RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { Integer, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -29,7 +37,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     private _recordStore: GridLayoutRecordStore;
     private _grid: MotifGrid;
     private _gridPrepared = false;
-    private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
+    private _layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
 
@@ -65,7 +73,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     // private initialise() {
     // }
 
-    setLayoutWithHeadersMap(layoutWithHeadings: MotifGrid.LayoutWithHeadersMap) {
+    setLayoutWithHeadersMap(layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap) {
         this._layoutWithHeadings = layoutWithHeadings;
         this.prepareGrid();
     }

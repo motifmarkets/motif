@@ -12,11 +12,8 @@ import {
     Input,
     ViewChild
 } from '@angular/core';
-import { LitIvemId } from 'adi-internal-api';
+import { LitIvemId, LitIvemIdUiAction, MultiEvent, StringId, Strings, SymbolsService, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { LitIvemIdUiAction, SymbolsService, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

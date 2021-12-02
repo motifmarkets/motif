@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Side } from 'adi-internal-api';
+import { Side } from '@motifmarkets/motif-core';
 import {
     OrderSide as OrderSideApi,
     OrderSideHandle as OrderSideHandleApi,

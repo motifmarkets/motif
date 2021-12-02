@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { DecimalUiAction, SettingsService, UiAction } from 'core-internal-api';
+import { DecimalUiAction, MultiEvent, SettingsService, UiAction } from '@motifmarkets/motif-core';
 import Decimal from 'decimal.js-light';
-import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

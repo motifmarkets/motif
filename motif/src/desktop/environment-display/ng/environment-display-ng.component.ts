@@ -11,13 +11,10 @@ import {
     Component,
     OnDestroy
 } from '@angular/core';
-import { ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo } from 'adi-internal-api';
+import { ColorScheme, ColorSettings, ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo, MultiEvent, SessionState, SessionStateId, StringId, Strings, UnexpectedCaseError, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SessionInfoService } from 'component-services-internal-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, ColorSettings, SessionState, SessionStateId } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { MultiEvent, UnexpectedCaseError, UnreachableCaseError } from 'sys-internal-api';
 
 @Component({
     selector: 'app-environment-display',

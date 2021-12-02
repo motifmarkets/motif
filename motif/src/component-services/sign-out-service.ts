@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError } from 'sys-internal-api';
+import { AssertInternalError } from '@motifmarkets/motif-core';
 
 export class SignOutService {
     signOutEvent: SignOutService.SignOutEvent;

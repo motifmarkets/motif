@@ -5,39 +5,21 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
-import { NgSelectComponent } from '@ng-select/ng-select';
 import {
-    AdiService,
-    ExchangeId,
-    ExchangeInfo,
-    IvemId,
+    addToGrow15ArrayUniquely, AdiService, AssertInternalError, BooleanUiAction,
+    CommandRegisterService, compareString,
+    ComparisonResult, ExchangeId,
+    ExchangeInfo, IconButtonUiAction, Integer, InternalCommand, IvemId,
     MarketId,
-    MarketOrderRoute,
-    OrderRoute,
+    MarketOrderRoute, MultiEvent, OrderRoute,
     RoutedIvemId,
-    SearchSymbolsDataDefinition, SymbolsDataItem
-} from 'adi-internal-api';
+    SearchSymbolsDataDefinition, StringId, Strings, SymbolDetailCache,
+    symbolDetailCache, SymbolsDataItem, SymbolsService,
+    UiAction, UnreachableCaseError
+} from '@motifmarkets/motif-core';
+import { NgSelectComponent } from '@ng-select/ng-select';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import {
-    BooleanUiAction,
-    CommandRegisterService,
-    IconButtonUiAction,
-    InternalCommand,
-    SymbolDetailCache,
-    symbolDetailCache,
-    SymbolsService,
-    UiAction
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
-import {
-    addToGrow15ArrayUniquely,
-    AssertInternalError,
-    compareString,
-    ComparisonResult,
-    Integer,
-    MultiEvent, UnreachableCaseError
-} from 'sys-internal-api';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';

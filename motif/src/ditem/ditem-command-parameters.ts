@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommandParameters } from 'core-internal-api';
+import { CommandParameters } from '@motifmarkets/motif-core';
 
 export interface DitemCommandParameters extends CommandParameters {
 

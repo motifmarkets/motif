@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { MarketInfo } from 'adi-internal-api';
+import { MarketInfo } from '@motifmarkets/motif-core';
 import {
     MarketId as MarketIdApi,
     MarketIdHandle as MarketIdHandleApi,

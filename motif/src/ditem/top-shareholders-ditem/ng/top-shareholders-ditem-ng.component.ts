@@ -14,25 +14,17 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { ExchangeId, IvemId, LitIvemId, MarketId } from 'adi-internal-api';
+import {
+    assert,
+    assigned, DateUiAction, delay1Tick,
+    EnumInfoOutOfOrderError, ExchangeId, IconButtonUiAction, Integer, InternalCommand, IvemId, IvemIdUiAction, JsonElement, LitIvemId, Logger, MarketId, StringId, Strings, UiAction, UnexpectedCaseError,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { DateUiAction, IconButtonUiAction, InternalCommand, IvemIdUiAction, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import {
-    assert,
-    assigned,
-    delay1Tick,
-    EnumInfoOutOfOrderError,
-    Integer,
-    JsonElement,
-    Logger,
-    UnexpectedCaseError,
-    UnreachableCaseError
-} from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { TopShareholdersDitemFrame } from '../top-shareholders-ditem-frame';

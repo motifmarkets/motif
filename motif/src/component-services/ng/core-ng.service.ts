@@ -5,15 +5,14 @@
  */
 
 import { Injectable, OnDestroy } from '@angular/core';
-import { AdiService } from 'adi-internal-api';
 import {
-    AppStorageService,
+    AdiService, AppStorageService,
     CommandRegisterService,
     CoreService,
     MotifServicesService,
     SettingsService,
     SymbolsService
-} from 'core-internal-api';
+} from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root'

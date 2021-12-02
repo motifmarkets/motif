@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CorrectnessId, UnreachableCaseError } from 'sys-internal-api';
+import { CorrectnessId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     Correctness as CorrectnessApi,

@@ -5,8 +5,7 @@
  */
 
 import { ChangeDetectorRef, Directive, Input } from '@angular/core';
-import { ArrayUiAction, SettingsService, UiAction } from 'core-internal-api';
-import { isUndefinableArrayEqualUniquely, MultiEvent } from 'sys-internal-api';
+import { ArrayUiAction, isUndefinableArrayEqualUniquely, MultiEvent, SettingsService, UiAction } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

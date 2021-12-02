@@ -5,10 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
+import { DateText, DateUiAction, MultiEvent, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { DateUiAction, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { DateText, MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({

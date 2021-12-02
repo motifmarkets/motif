@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtensionHandle, MultiEvent } from 'sys-internal-api';
+import { ExtensionHandle, MultiEvent } from '@motifmarkets/motif-core';
 import { ExtensionInfo } from './extension-info';
 
 export interface RegisteredExtension extends ExtensionInfo {

@@ -5,12 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { isArrayEqualUniquely, MultiEvent, OrderRoute, OrderRouteUiAction, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { OrderRoute } from 'adi-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
-import { OrderRouteUiAction, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { isArrayEqualUniquely, MultiEvent } from 'sys-internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 

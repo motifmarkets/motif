@@ -6,14 +6,18 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import {
-    Account, BrokerageAccountGroup, BrokerageAccountId,
-    ExchangeInfo, Movement, MovementId, Order, OrderRequestTypeId, OrderRoute, OrderTriggerType,
+    Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountId, ColorScheme,
+    DateUiAction,
+    DecimalUiAction, delay1Tick, EnumUiAction, ExchangeInfo, ExplicitElementsEnumUiAction, Integer, IntegerUiAction, Movement, MovementId, MultiEvent,
+    newUndefinableDate,
+    newUndefinableDecimal, Order, OrderPad, OrderRequestTypeId, OrderRoute, OrderRouteUiAction, OrderTriggerType,
     OrderTriggerTypeId,
     OrderType,
-    OrderTypeId, PriceOrderTrigger, RoutedIvemId, Side,
-    SideId, SingleBrokerageAccountGroup, TimeInForce,
-    TimeInForceId
-} from 'adi-internal-api';
+    OrderTypeId, PriceOrderTrigger, RoutedIvemId, RoutedIvemIdUiAction,
+    SettingsService, Side,
+    SideId, SingleBrokerageAccountGroup, StringId, Strings, StringUiAction, TimeInForce,
+    TimeInForceId, UiAction, UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     BrokerageAccountGroupInputNgComponent,
@@ -31,32 +35,7 @@ import {
     SymbolNameLabelNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    BrokerageAccountGroupUiAction,
-    ColorScheme,
-    DateUiAction,
-    DecimalUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
-    IntegerUiAction,
-    OrderPad,
-    OrderRouteUiAction,
-    RoutedIvemIdUiAction,
-    SettingsService,
-    StringUiAction,
-    UiAction
-} from 'core-internal-api';
 import Decimal from 'decimal.js-light';
-import { StringId, Strings } from 'res-internal-api';
-import {
-    AssertInternalError,
-    delay1Tick,
-    Integer,
-    MultiEvent,
-    newUndefinableDate,
-    newUndefinableDecimal,
-    UnreachableCaseError
-} from 'sys-internal-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';
 import { PadOrderRequestStepFrame } from '../pad-order-request-step-frame';

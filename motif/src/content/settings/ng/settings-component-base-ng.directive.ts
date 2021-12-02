@@ -5,8 +5,7 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { ColorSettings, CoreSettings, SettingsService } from 'core-internal-api';
-import { MultiEvent } from 'sys-internal-api';
+import { ColorSettings, CoreSettings, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Directive()

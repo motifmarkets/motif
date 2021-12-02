@@ -9,12 +9,18 @@ import {
     ComponentFactoryResolver, OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
+import {
+    assert,
+    CommandRegisterService,
+    delay1Tick,
+    GridLayout,
+    GridLayoutRecordStore,
+    IconButtonUiAction,
+    InternalCommand,
+    StringId
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { CommandRegisterService, IconButtonUiAction, InternalCommand } from 'core-internal-api';
-import { StringId } from 'res-internal-api';
-import { assert, delay1Tick } from 'sys-internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -60,7 +66,7 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
         this._cancelUiAction.finalise();
     }
 
-    open(layoutWithHeadersMap: MotifGrid.LayoutWithHeadersMap): ContentGridLayoutEditorNgComponent.ClosePromise {
+    open(layoutWithHeadersMap: GridLayoutRecordStore.LayoutWithHeadersMap): ContentGridLayoutEditorNgComponent.ClosePromise {
         this._editorComponent.setGridLayout(layoutWithHeadersMap);
 
         return new Promise<GridLayout | undefined>((resolve, reject) => {
@@ -117,7 +123,7 @@ export namespace ContentGridLayoutEditorNgComponent {
     export function open(
         container: ViewContainerRef,
         resolver: ComponentFactoryResolver,
-        layoutWithHeadersMap: MotifGrid.LayoutWithHeadersMap,
+        layoutWithHeadersMap: GridLayoutRecordStore.LayoutWithHeadersMap,
     ): ClosePromise {
         container.clear();
         const factory = resolver.resolveComponentFactory(ContentGridLayoutEditorNgComponent);

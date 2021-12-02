@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CurrentRepeatableExactHistorySequenceSeries } from 'core-internal-api';
+import { CurrentRepeatableExactHistorySequenceSeries } from '@motifmarkets/motif-core';
 import {
     CurrentRepeatableExactHistorySequenceSeries as CurrentRepeatableExactHistorySequenceSeriesApi, Integer as IntegerApi
 } from '../../../../api/extension-api';

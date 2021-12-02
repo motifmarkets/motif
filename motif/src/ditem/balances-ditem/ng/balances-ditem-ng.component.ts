@@ -14,15 +14,12 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { BrokerageAccountGroup } from 'adi-internal-api';
+import { assert, BrokerageAccountGroup, BrokerageAccountGroupUiAction, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { BrokerageAccountGroupUiAction, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { assert, delay1Tick, Integer, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { BalancesDitemFrame } from '../balances-ditem-frame';

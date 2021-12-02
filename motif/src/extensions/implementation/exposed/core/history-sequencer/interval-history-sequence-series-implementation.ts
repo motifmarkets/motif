@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { IntervalHistorySequenceSeries } from 'core-internal-api';
+import { IntervalHistorySequenceSeries } from '@motifmarkets/motif-core';
 import {
     Integer as IntegerApi,
     IntervalHistorySequenceSeries as IntervalHistorySequenceSeriesApi

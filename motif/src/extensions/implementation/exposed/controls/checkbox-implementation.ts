@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { BooleanUiAction } from 'core-internal-api';
+import { BooleanUiAction } from '@motifmarkets/motif-core';
 import { Checkbox as CheckboxApi } from '../../../api/extension-api';
 import { FactoryComponent, FactoryComponentRef } from '../component/internal-api';
 import { BooleanUiActionImplementation } from '../core/internal-api';

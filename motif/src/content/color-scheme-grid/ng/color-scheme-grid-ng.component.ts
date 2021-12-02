@@ -5,12 +5,10 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
-import { ColorScheme, ColorSchemeGridRecordStore } from 'core-internal-api';
-import { Strings } from 'res-internal-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { Integer } from 'sys-internal-api';
 import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -126,7 +124,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private setFieldState(field: ColorSchemeGridRecordStore.Field, fieldStateDefinition: ColorSchemeGridRecordStore.FieldStateDefinition) {
-        const state: MotifGrid.FieldState = {
+        const state: GridRecordFieldState = {
             header: Strings[fieldStateDefinition.HeaderId],
             width: undefined,
             alignment: fieldStateDefinition.Alignment

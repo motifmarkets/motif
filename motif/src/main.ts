@@ -6,10 +6,6 @@
 
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
-import { AdiStaticInitialise } from 'adi-internal-api';
-import { CoreStaticInitialise } from 'core-internal-api';
-import { ResStaticInitialise } from 'res-internal-api';
-import { SysStaticInitialise } from 'sys-internal-api';
 import { AppFeature } from './app.feature';
 import { environment } from './environments/environment';
 import { AppNgModule } from './root/ng/app-ng.module';
@@ -21,10 +17,7 @@ if (environment.prodMode) {
     AppFeature.dev = true;
 }
 
-ResStaticInitialise.initialise();
-SysStaticInitialise.initialise();
-AdiStaticInitialise.initialise();
-CoreStaticInitialise.initialise();
+// MotifCoreStaticInitialise.initialise();
 
 platformBrowserDynamic().bootstrapModule(AppNgModule)
     .catch((err) => console.log(err));

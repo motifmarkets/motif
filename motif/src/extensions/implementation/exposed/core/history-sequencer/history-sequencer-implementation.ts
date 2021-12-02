@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { HistorySequencer } from 'core-internal-api';
-import { UnreachableCaseError } from 'sys-internal-api';
+import { HistorySequencer, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ApiError as ApiErrorApi, HistorySequencer as HistorySequencerApi } from '../../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from '../../sys/internal-api';
 

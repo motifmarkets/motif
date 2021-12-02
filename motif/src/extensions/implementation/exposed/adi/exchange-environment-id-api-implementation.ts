@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironmentId } from 'adi-internal-api';
-import { UnreachableCaseError } from 'sys-internal-api';
+import { ExchangeEnvironmentId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     ExchangeEnvironmentId as ExchangeEnvironmentIdApi,

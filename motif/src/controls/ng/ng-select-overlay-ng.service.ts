@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { MultiEvent } from 'sys-internal-api';
+import { MultiEvent } from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root'

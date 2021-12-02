@@ -17,7 +17,7 @@ import {
     ViewContainerRef,
     ViewRef
 } from '@angular/core';
-import { AssertInternalError, Line } from 'sys-internal-api';
+import { AssertInternalError, Line } from '@motifmarkets/motif-core';
 import { MenuBarOverlayMenuNgComponent } from '../../menu-bar-overlay-menu/ng-api';
 import { MenuBarService } from '../../menu-bar-service';
 import { MenuBarNgService } from '../../ng/menu-bar-ng.service';

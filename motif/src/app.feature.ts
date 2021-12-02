@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { UnreachableCaseError } from 'sys-internal-api';
+import { UnreachableCaseError } from '@motifmarkets/motif-core';
 
 export const enum AppFeatureId {
     WatchList,
@@ -32,7 +32,7 @@ export namespace AppFeature {
     export function isEnabled(id: AppFeatureId): boolean {
         if (dev || preview) {
             return true;
-       } else {
+        } else {
             switch (id) {
                 case AppFeatureId.WatchList:
                 case AppFeatureId.DepthAndTrades:

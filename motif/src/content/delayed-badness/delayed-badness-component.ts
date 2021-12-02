@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { Badness, TimeSpan } from '@motifmarkets/motif-core';
 import { ContentComponent } from 'content-internal-api';
-import { Badness, TimeSpan } from 'sys-internal-api';
 
 export interface DelayedBadnessComponent extends ContentComponent {
     delayTimeSpan: TimeSpan;

@@ -10,7 +10,15 @@ import {
     OnDestroy, OnInit, ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { ExchangeId, ExchangeInfo, MarketId, SymbolField, SymbolFieldId } from 'adi-internal-api';
+import {
+    AllowedExchangesEnumUiAction,
+    AllowedMarketsEnumArrayUiAction,
+    ArrayUiAction,
+    BooleanUiAction, delay1Tick, EnumUiAction, ExchangeId, ExchangeInfo, ExplicitElementsEnumArrayUiAction,
+    ExplicitElementsEnumUiAction,
+    IconButtonUiAction, Integer, IntegerUiAction,
+    InternalCommand, JsonElement, Logger, MarketId, StringId, Strings, StringUiAction, SymbolField, SymbolFieldId, SymbolsService
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
@@ -27,23 +35,7 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    AllowedExchangesEnumUiAction,
-    AllowedMarketsEnumArrayUiAction,
-    ArrayUiAction,
-    BooleanUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction,
-    IconButtonUiAction,
-    IntegerUiAction,
-    InternalCommand,
-    StringUiAction,
-    SymbolsService
-} from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { delay1Tick, Integer, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { SearchSymbolsDitemFrame } from '../search-symbols-ditem-frame';

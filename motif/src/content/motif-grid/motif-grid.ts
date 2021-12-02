@@ -1,10 +1,18 @@
-import { ColorScheme, SettingsService } from 'core-internal-api';
+import {
+    AssertInternalError,
+    ColorScheme,
+    GridLayout,
+    GridLayoutRecordStore,
+    GridRecordFieldState,
+    MultiEvent,
+    SettingsService,
+    UnexpectedUndefinedError
+} from '@motifmarkets/motif-core';
 import {
     CellEvent,
     Column,
     EventDetail,
     GridProperties,
-    Halign,
     Revgrid,
     RevRecordCellAdapter,
     RevRecordCellPainter,
@@ -18,9 +26,6 @@ import {
     SelectionDetail,
     Subgrid
 } from 'revgrid';
-import { AssertInternalError, UnexpectedUndefinedError } from 'src/sys/internal-error';
-import { MultiEvent } from 'sys-internal-api';
-import { GridLayout } from './grid-layout';
 
 /**
  * Implements a Grid Adapter over the Hypergrid control
@@ -47,33 +52,46 @@ export class MotifGrid extends Revgrid {
     private _mainClickEventer: MotifGrid.MainClickEventer | undefined;
     private _mainDblClickEventer: MotifGrid.MainDblClickEventer | undefined;
     private _resizedEventer: MotifGrid.ResizedEventer | undefined;
-    private _columnsViewWidthsChangedEventer: MotifGrid.ColumnsViewWidthsChangedEventer | undefined;
+    private _columnsViewWidthsChangedEventer:
+        | MotifGrid.ColumnsViewWidthsChangedEventer
+        | undefined;
     private _renderedEventer: MotifGrid.RenderedEventer | undefined;
 
-    private readonly _selectionChangedListener: (event: CustomEvent<SelectionDetail>) => void;
+    private readonly _selectionChangedListener: (
+        event: CustomEvent<SelectionDetail>
+    ) => void;
     private readonly _clickListener: (event: CustomEvent<CellEvent>) => void;
     private readonly _dblClickListener: (event: CustomEvent<CellEvent>) => void;
-    private readonly _resizedListener: (event: CustomEvent<EventDetail.Resize>) => void;
-    private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
+    private readonly _resizedListener: (
+        event: CustomEvent<EventDetail.Resize>
+    ) => void;
+    private readonly _columnsViewWidthsChangedListener: (
+        event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>
+    ) => void;
     private readonly _renderedListener: () => void;
     // private readonly _nextRenderedListener = () => this.handleHypegridNextRenderedEvent();
     private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
-    private readonly _columnSortListener: (event: CustomEvent<EventDetail.ColumnSort>) => void;
+    private readonly _columnSortListener: (
+        event: CustomEvent<EventDetail.ColumnSort>
+    ) => void;
 
     constructor(
         settingsService: SettingsService,
         gridElement: HTMLElement,
         recordStore: RevRecordStore,
         mainCellPainter: RevRecordCellPainter,
-        gridProperties: Partial<GridProperties>,
+        gridProperties: Partial<GridProperties>
     ) {
         const fieldAdapter = new RevRecordFieldAdapter(recordStore);
         const headerRecordAdapter = new RevRecordHeaderAdapter();
         const mainRecordAdapter = new RevRecordMainAdapter(
             fieldAdapter,
-            recordStore,
+            recordStore
         );
-        const recordCellAdapter = new RevRecordCellAdapter(mainRecordAdapter, mainCellPainter);
+        const recordCellAdapter = new RevRecordCellAdapter(
+            mainRecordAdapter,
+            mainCellPainter
+        );
 
         const options: Revgrid.Options = {
             adapterSet: {
@@ -87,7 +105,7 @@ export class MotifGrid extends Revgrid {
                         role: Subgrid.RoleEnum.main,
                         dataModel: mainRecordAdapter,
                         cellModel: recordCellAdapter,
-                    }
+                    },
                 ],
             },
             gridProperties,
@@ -101,36 +119,56 @@ export class MotifGrid extends Revgrid {
         this._headerRecordAdapter = headerRecordAdapter;
         this._mainRecordAdapter = mainRecordAdapter;
 
-        this._selectionChangedListener = (event) => this.handleHypegridSelectionChanged(event);
+        this._selectionChangedListener = (event) =>
+            this.handleHypegridSelectionChanged(event);
         this._clickListener = (event) => this.handleHypegridClickEvent(event);
-        this._dblClickListener = (event) => this.handleHypegridDblClickEvent(event);
-        this._resizedListener = (event) => this.handleHypegridResizedEvent(event);
-        this._columnsViewWidthsChangedListener = (event) => this.handleHypegridColumnsViewWidthsChangedEvent(event);
+        this._dblClickListener = (event) =>
+            this.handleHypegridDblClickEvent(event);
+        this._resizedListener = (event) =>
+            this.handleHypegridResizedEvent(event);
+        this._columnsViewWidthsChangedListener = (event) =>
+            this.handleHypegridColumnsViewWidthsChangedEvent(event);
         this._renderedListener = () => this.handleHypegridRenderedEvent();
-        this._ctrlKeyMousemoveListener = (event) => this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
-        this._columnSortListener = (event) => this.handleHypegridColumnSortEvent(event.detail.column);
+        this._ctrlKeyMousemoveListener = (event) =>
+            this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
+        this._columnSortListener = (event) =>
+            this.handleHypegridColumnSortEvent(event.detail.column);
 
         this.applySettingsToMainRecordAdapter();
 
         this.allowEvents(true);
 
-        this.canvas.canvas.addEventListener('mousemove', this._ctrlKeyMousemoveListener);
+        this.canvas.canvas.addEventListener(
+            'mousemove',
+            this._ctrlKeyMousemoveListener
+        );
         this.addEventListener('rev-column-sort', this._columnSortListener);
 
         this._settingsChangedSubscriptionId =
-            this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
+            this._settingsService.subscribeSettingsChangedEvent(() =>
+                this.handleSettingsChangedEvent()
+            );
     }
 
-    get sortable(): boolean { return this.properties.sortable; }
-    set sortable(value: boolean) { this.properties.sortable = value; }
+    get sortable(): boolean {
+        return this.properties.sortable;
+    }
+    set sortable(value: boolean) {
+        this.properties.sortable = value;
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get columnCount(): number { return this.getActiveColumnCount(); }
+    get columnCount(): number {
+        return this.getActiveColumnCount();
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get continuousFiltering(): boolean { return this._mainRecordAdapter.continuousFiltering; }
+    get continuousFiltering(): boolean {
+        return this._mainRecordAdapter.continuousFiltering;
+    }
     set continuousFiltering(value: boolean) {
-        const oldContinuousFiltering = this._mainRecordAdapter.continuousFiltering;
+        const oldContinuousFiltering =
+            this._mainRecordAdapter.continuousFiltering;
         if (value !== oldContinuousFiltering) {
             this._mainRecordAdapter.continuousFiltering = value;
 
@@ -142,18 +180,30 @@ export class MotifGrid extends Revgrid {
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get rowOrderReversed() { return this._mainRecordAdapter.rowOrderReversed; }
-    set rowOrderReversed(value: boolean) { this._mainRecordAdapter.rowOrderReversed = value; }
+    get rowOrderReversed() {
+        return this._mainRecordAdapter.rowOrderReversed;
+    }
+    set rowOrderReversed(value: boolean) {
+        this._mainRecordAdapter.rowOrderReversed = value;
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get fieldCount(): number { return this._fieldAdapter.fieldCount; }
+    get fieldCount(): number {
+        return this._fieldAdapter.fieldCount;
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get fixedCols(): number { return this.getFixedColumnCount(); }
-    set fixedCols(value: number) { this.setFixedColumnCount(value); }
+    get fixedCols(): number {
+        return this.getFixedColumnCount();
+    }
+    set fixedCols(value: number) {
+        this.setFixedColumnCount(value);
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get fixedRows(): number { return this.getFixedRowCount(); }
+    get fixedRows(): number {
+        return this.getFixedRowCount();
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get focusedRecordIndex(): RevRecordIndex | undefined {
@@ -168,7 +218,9 @@ export class MotifGrid extends Revgrid {
             if (rowIndex >= this._mainRecordAdapter.rowCount) {
                 return undefined;
             } else {
-                return this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
+                return this._mainRecordAdapter.getRecordIndexFromRowIndex(
+                    rowIndex
+                );
             }
         }
     }
@@ -177,7 +229,8 @@ export class MotifGrid extends Revgrid {
         if (recordIndex === undefined) {
             this.clearSelections();
         } else {
-            const rowIndex = this._mainRecordAdapter.getRowIndexFromRecordIndex(recordIndex);
+            const rowIndex =
+                this._mainRecordAdapter.getRowIndexFromRecordIndex(recordIndex);
 
             if (rowIndex === undefined) {
                 this.clearSelections();
@@ -193,30 +246,48 @@ export class MotifGrid extends Revgrid {
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get isFiltered(): boolean { return this._mainRecordAdapter.isFiltered; }
+    get isFiltered(): boolean {
+        return this._mainRecordAdapter.isFiltered;
+    }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get sortColumns(): number { return this._mainRecordAdapter.sortColumnCount; }
+    get sortColumns(): number {
+        return this._mainRecordAdapter.sortColumnCount;
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get gridRightAligned(): boolean { return this.properties.gridRightAligned; }
+    get gridRightAligned(): boolean {
+        return this.properties.gridRightAligned;
+    }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get rowHeight(): number { return this.properties.defaultRowHeight; }
+    get rowHeight(): number {
+        return this.properties.defaultRowHeight;
+    }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get recordFocusEventer() { return this._recordFocusEventer; }
+    get recordFocusEventer() {
+        return this._recordFocusEventer;
+    }
     set recordFocusEventer(value: MotifGrid.RecordFocusEventer | undefined) {
         if (this._recordFocusEventer !== undefined) {
-            this.removeEventListener('rev-selection-changed', this._selectionChangedListener);
+            this.removeEventListener(
+                'rev-selection-changed',
+                this._selectionChangedListener
+            );
         }
         this._recordFocusEventer = value;
 
         if (this._recordFocusEventer !== undefined) {
-            this.addEventListener('rev-selection-changed', this._selectionChangedListener);
+            this.addEventListener(
+                'rev-selection-changed',
+                this._selectionChangedListener
+            );
         }
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get mainClickEventer() { return this._mainClickEventer; }
+    get mainClickEventer() {
+        return this._mainClickEventer;
+    }
     set mainClickEventer(value: MotifGrid.MainClickEventer | undefined) {
         if (this._mainClickEventer !== undefined) {
             this.removeEventListener('rev-click', this._clickListener);
@@ -229,10 +300,15 @@ export class MotifGrid extends Revgrid {
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get mainDblClickEventer() { return this._mainDblClickEventer; }
+    get mainDblClickEventer() {
+        return this._mainDblClickEventer;
+    }
     set mainDblClickEventer(value: MotifGrid.MainDblClickEventer | undefined) {
         if (this._mainDblClickEventer !== undefined) {
-            this.removeEventListener('rev-double-click', this._dblClickListener);
+            this.removeEventListener(
+                'rev-double-click',
+                this._dblClickListener
+            );
         }
         this._mainDblClickEventer = value;
 
@@ -242,7 +318,9 @@ export class MotifGrid extends Revgrid {
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get resizedEventer() { return this._resizedEventer; }
+    get resizedEventer() {
+        return this._resizedEventer;
+    }
     set resizedEventer(value: MotifGrid.ResizedEventer | undefined) {
         if (this._resizedEventer !== undefined) {
             this.removeEventListener('rev-grid-resized', this._resizedListener);
@@ -255,23 +333,38 @@ export class MotifGrid extends Revgrid {
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get columnsViewWidthsChangedEventer() { return this._columnsViewWidthsChangedEventer; }
-    set columnsViewWidthsChangedEventer(value: MotifGrid.ColumnsViewWidthsChangedEventer | undefined) {
+    get columnsViewWidthsChangedEventer() {
+        return this._columnsViewWidthsChangedEventer;
+    }
+    set columnsViewWidthsChangedEventer(
+        value: MotifGrid.ColumnsViewWidthsChangedEventer | undefined
+    ) {
         if (this._columnsViewWidthsChangedEventer !== undefined) {
-            this.removeEventListener('rev-columns-view-widths-changed', this._columnsViewWidthsChangedListener);
+            this.removeEventListener(
+                'rev-columns-view-widths-changed',
+                this._columnsViewWidthsChangedListener
+            );
         }
         this._columnsViewWidthsChangedEventer = value;
 
         if (this._columnsViewWidthsChangedEventer !== undefined) {
-            this.addEventListener('rev-columns-view-widths-changed', this._columnsViewWidthsChangedListener);
+            this.addEventListener(
+                'rev-columns-view-widths-changed',
+                this._columnsViewWidthsChangedListener
+            );
         }
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get renderedEventer() { return this._renderedEventer; }
+    get renderedEventer() {
+        return this._renderedEventer;
+    }
     set renderedEventer(value: MotifGrid.RenderedEventer | undefined) {
         if (this._renderedEventer !== undefined) {
-            this.removeEventListener('rev-grid-rendered', this._renderedListener);
+            this.removeEventListener(
+                'rev-grid-rendered',
+                this._renderedListener
+            );
         }
         this._renderedEventer = value;
 
@@ -287,9 +380,14 @@ export class MotifGrid extends Revgrid {
     }
 
     override destroy(): void {
-        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+        this._settingsService.unsubscribeSettingsChangedEvent(
+            this._settingsChangedSubscriptionId
+        );
         this._settingsChangedSubscriptionId = undefined;
-        this.canvas.canvas.removeEventListener('mousemove', this._ctrlKeyMousemoveListener);
+        this.canvas.canvas.removeEventListener(
+            'mousemove',
+            this._ctrlKeyMousemoveListener
+        );
         this._mainRecordAdapter.destroy();
         super.destroy();
     }
@@ -304,7 +402,8 @@ export class MotifGrid extends Revgrid {
 
     autoSizeFieldColumnWidth(field: RevRecordField): void {
         const fieldIndex = this._fieldAdapter.getFieldIndex(field);
-        const columnIndex = this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
+        const columnIndex =
+            this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
 
         if (columnIndex < 0) {
             throw new RangeError('Field is not visible');
@@ -343,7 +442,7 @@ export class MotifGrid extends Revgrid {
         return this._fieldAdapter.getFieldIndex(field);
     }
 
-    getFieldNameToHeaderMap(): MotifGrid.FieldNameToHeaderMap {
+    getFieldNameToHeaderMap(): GridLayoutRecordStore.FieldNameToHeaderMap {
         const result = new Map<string, string | undefined>();
         const fields = this._fieldAdapter.fields;
         for (let i = 0; i < fields.length; i++) {
@@ -362,37 +461,58 @@ export class MotifGrid extends Revgrid {
         return this._fieldAdapter.fields;
     }
 
-    getFieldSortPriority(field: RevRecordFieldIndex | RevRecordField): number | undefined {
+    getFieldSortPriority(
+        field: RevRecordFieldIndex | RevRecordField
+    ): number | undefined {
         return this._mainRecordAdapter.getFieldSortPriority(field);
     }
 
-    getFieldSortAscending(field: RevRecordFieldIndex | RevRecordField): boolean | undefined {
+    getFieldSortAscending(
+        field: RevRecordFieldIndex | RevRecordField
+    ): boolean | undefined {
         return this._mainRecordAdapter.getFieldSortAscending(field);
     }
 
-    getFieldState(field: RevRecordFieldIndex | RevRecordField): MotifGrid.FieldState {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+    getFieldState(
+        field: RevRecordFieldIndex | RevRecordField
+    ): GridRecordFieldState {
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
         const column = this.getAllColumn(fieldIndex);
         const columnProperties = column.properties;
 
         return {
-            width: !columnProperties.columnAutosized ? columnProperties.width : undefined,
+            width: !columnProperties.columnAutosized
+                ? columnProperties.width
+                : undefined,
             header: (column.schemaColumn as RevRecordField.SchemaColumn).header,
-            alignment: columnProperties.halign
+            alignment: columnProperties.halign,
         };
     }
 
-    getFieldWidth(field: RevRecordFieldIndex | RevRecordField): number | undefined {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+    getFieldWidth(
+        field: RevRecordFieldIndex | RevRecordField
+    ): number | undefined {
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
         const columnProperties = this.getAllColumn(fieldIndex).properties;
 
-        return !columnProperties.columnAutosized ? columnProperties.width : undefined;
+        return !columnProperties.columnAutosized
+            ? columnProperties.width
+            : undefined;
     }
 
     getFieldVisible(field: RevRecordFieldIndex | RevRecordField): boolean {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
         const activeColumns = this.getActiveColumns();
-        return activeColumns.findIndex(column => (column.schemaColumn as RevRecordField.SchemaColumn).index === fieldIndex) !== -1;
+        return (
+            activeColumns.findIndex(
+                (column) =>
+                    (column.schemaColumn as RevRecordField.SchemaColumn)
+                        .index === fieldIndex
+            ) !== -1
+        );
     }
 
     getHeaderPlusFixedLineHeight(): number {
@@ -405,10 +525,10 @@ export class MotifGrid extends Revgrid {
         return rowHeight + lineWidth;
     }
 
-    getLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+    getLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return {
             layout: this.saveLayout(),
-            headersMap: this.getFieldNameToHeaderMap()
+            headersMap: this.getFieldNameToHeaderMap(),
         };
     }
 
@@ -417,7 +537,10 @@ export class MotifGrid extends Revgrid {
     }
 
     getVisibleFields(): RevRecordFieldIndex[] {
-        return this.getActiveColumns().map(column => (column.schemaColumn as RevRecordField.SchemaColumn).index);
+        return this.getActiveColumns().map(
+            (column) =>
+                (column.schemaColumn as RevRecordField.SchemaColumn).index
+        );
     }
 
     isHeaderRow(rowIndex: number): boolean {
@@ -425,17 +548,27 @@ export class MotifGrid extends Revgrid {
     }
 
     loadLayout(layout: GridLayout): void {
-        const columns = layout.getColumns().filter(column => this._fieldAdapter.hasField(column.field.name));
+        const columns = layout
+            .getColumns()
+            .filter((column) => this._fieldAdapter.hasField(column.field.name));
 
         // Show all visible columns. Also sets their positions
         // TODO: Should we care about the position of hidden columns?
         this.showColumns(
             false,
-            columns.filter(column => column.visible).map(column => this._fieldAdapter.getFieldIndexByName(column.field.name))
+            columns
+                .filter((column) => column.visible)
+                .map((column) =>
+                    this._fieldAdapter.getFieldIndexByName(column.field.name)
+                )
         );
         this.showColumns(
             false,
-            columns.filter(column => !column.visible).map(column => this._fieldAdapter.getFieldIndexByName(column.field.name)),
+            columns
+                .filter((column) => !column.visible)
+                .map((column) =>
+                    this._fieldAdapter.getFieldIndexByName(column.field.name)
+                ),
             -1
         );
 
@@ -443,7 +576,9 @@ export class MotifGrid extends Revgrid {
 
         // Apply width settings
         for (const column of columns) {
-            const fieldIndex = this._fieldAdapter.getFieldIndexByName(column.field.name);
+            const fieldIndex = this._fieldAdapter.getFieldIndexByName(
+                column.field.name
+            );
             const gridColumn = gridColumns[fieldIndex];
 
             if (column.width === undefined) {
@@ -454,17 +589,30 @@ export class MotifGrid extends Revgrid {
         }
 
         // Apply sorting
-        const sortedColumns = columns.filter(column => column.sortPriority !== undefined) as GridLayout.SortPrioritizedColumn[];
+        const sortedColumns = columns.filter(
+            (column) => column.sortPriority !== undefined
+        ) as GridLayout.SortPrioritizedColumn[];
 
         if (sortedColumns.length === 0) {
             this.clearSort();
         } else {
-            sortedColumns.sort((left, right) => right.sortPriority - left.sortPriority);
+            sortedColumns.sort(
+                (left, right) => right.sortPriority - left.sortPriority
+            );
 
-            const sortSpecifiers = sortedColumns.map<RevRecordMainAdapter.SortFieldSpecifier>((column) => {
-                const fieldIndex = this._fieldAdapter.getFieldIndexByName(column.field.name);
-                return { fieldIndex, ascending: column.sortAscending === true };
-            });
+            const sortSpecifiers =
+                sortedColumns.map<RevRecordMainAdapter.SortFieldSpecifier>(
+                    (column) => {
+                        const fieldIndex =
+                            this._fieldAdapter.getFieldIndexByName(
+                                column.field.name
+                            );
+                        return {
+                            fieldIndex,
+                            ascending: column.sortAscending === true,
+                        };
+                    }
+                );
 
             this.sortByMany(sortSpecifiers);
         }
@@ -477,29 +625,40 @@ export class MotifGrid extends Revgrid {
         this.showColumns(true, fromColumnIndex, toColumnIndex, false);
     }
 
-    moveFieldColumn(field: RevRecordFieldIndex | RevRecordField, toColumnIndex: number): void {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
-        const fromColumnIndex = this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
+    moveFieldColumn(
+        field: RevRecordFieldIndex | RevRecordField,
+        toColumnIndex: number
+    ): void {
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
+        const fromColumnIndex =
+            this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
 
         if (fromColumnIndex < 0) {
-            throw new AssertInternalError('MGMFC89952', `${fieldIndex}, ${this._fieldAdapter.getField(fieldIndex).name}`);
+            throw new AssertInternalError(
+                'MGMFC89952',
+                `${fieldIndex}, ${this._fieldAdapter.getField(fieldIndex).name}`
+            );
         }
 
         this.moveActiveColumn(fromColumnIndex, toColumnIndex);
     }
 
     override reset(adapterSet?: GridProperties.AdapterSet): void {
-        if (this._fieldAdapter !== undefined) { // will be undefined while grid is being constructed
+        if (this._fieldAdapter !== undefined) {
+            // will be undefined while grid is being constructed
             this._fieldAdapter.reset();
         }
-        if (this._mainRecordAdapter !== undefined) { // will be undefined while grid is being constructed
+        if (this._mainRecordAdapter !== undefined) {
+            // will be undefined while grid is being constructed
             this._mainRecordAdapter.reset();
         }
         super.reset(adapterSet, undefined, false);
     }
 
     recordToRowIndex(recIdx: RevRecordIndex): number {
-        const rowIdx = this._mainRecordAdapter.getRowIndexFromRecordIndex(recIdx);
+        const rowIdx =
+            this._mainRecordAdapter.getRowIndexFromRecordIndex(recIdx);
         if (rowIdx === undefined) {
             throw new UnexpectedUndefinedError('DMIRTRI34449');
         } else {
@@ -514,7 +673,8 @@ export class MotifGrid extends Revgrid {
     }
 
     rowToRecordIndex(rowIdx: number): number {
-        const recIdx = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIdx);
+        const recIdx =
+            this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIdx);
         if (recIdx === undefined) {
             throw new UnexpectedUndefinedError('DMIRTRI34448');
         } else {
@@ -526,25 +686,40 @@ export class MotifGrid extends Revgrid {
         const layout = new GridLayout(this._fieldAdapter.getFieldNames());
 
         // Apply the order of the visible columns
-        const visibleColumnFields = this.getActiveColumns().map(
-            column => this._fieldAdapter.getFieldByName(column.schemaColumn.name)
+        const visibleColumnFields = this.getActiveColumns().map((column) =>
+            this._fieldAdapter.getFieldByName(column.schemaColumn.name)
         );
-        layout.setFieldColumnsByFieldNames(visibleColumnFields.map<string>(field => field.name));
+        layout.setFieldColumnsByFieldNames(
+            visibleColumnFields.map<string>((field) => field.name)
+        );
 
         // Hide all hidden fields
         const visibleSet = new Set(visibleColumnFields);
-        const hiddenColumnFields = this._fieldAdapter.getFilteredFields((field) => !visibleSet.has(field));
-        layout.setFieldsVisible(hiddenColumnFields.map(field => field.name), false);
+        const hiddenColumnFields = this._fieldAdapter.getFilteredFields(
+            (field) => !visibleSet.has(field)
+        );
+        layout.setFieldsVisible(
+            hiddenColumnFields.map((field) => field.name),
+            false
+        );
 
         // Apply width settings
         for (const column of this.getAllColumns()) {
-            const field = this._fieldAdapter.getFieldByName(column.schemaColumn.name);
+            const field = this._fieldAdapter.getFieldByName(
+                column.schemaColumn.name
+            );
             const columnProperties = column.properties;
 
-            if (columnProperties.columnAutosizing && columnProperties.columnAutosized) {
+            if (
+                columnProperties.columnAutosizing &&
+                columnProperties.columnAutosized
+            ) {
                 layout.setFieldWidthByFieldName(field.name);
             } else {
-                layout.setFieldWidthByFieldName(field.name, columnProperties.width);
+                layout.setFieldWidthByFieldName(
+                    field.name,
+                    columnProperties.width
+                );
             }
         }
 
@@ -561,13 +736,19 @@ export class MotifGrid extends Revgrid {
     //     }
     // }
 
-    setFieldHeader(fieldOrIdx: RevRecordFieldIndex | RevRecordField, header: string): void {
-        const fieldIndex = this._fieldAdapter.setFieldHeader(fieldOrIdx, header);
+    setFieldHeader(
+        fieldOrIdx: RevRecordFieldIndex | RevRecordField,
+        header: string
+    ): void {
+        const fieldIndex = this._fieldAdapter.setFieldHeader(
+            fieldOrIdx,
+            header
+        );
 
         this._headerRecordAdapter.invalidateCell(fieldIndex);
     }
 
-    setFieldState(field: RevRecordField, state: MotifGrid.FieldState): void {
+    setFieldState(field: RevRecordField, state: GridRecordFieldState): void {
         // const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const fieldIndex = this.getFieldIndex(field);
 
@@ -575,7 +756,8 @@ export class MotifGrid extends Revgrid {
             state = {};
         }
 
-        const columnIndex = this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
+        const columnIndex =
+            this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
 
         if (columnIndex < 0) {
             return;
@@ -604,8 +786,13 @@ export class MotifGrid extends Revgrid {
         // 	this.dispatchEvent('fin-hypergrid-schema-loaded');
     }
 
-    setFieldsVisible(fields: (RevRecordFieldIndex | RevRecordField)[], visible: boolean): void {
-        const fieldIndexes = fields.map(field => typeof field === 'number' ? field : this.getFieldIndex(field));
+    setFieldsVisible(
+        fields: (RevRecordFieldIndex | RevRecordField)[],
+        visible: boolean
+    ): void {
+        const fieldIndexes = fields.map((field) =>
+            typeof field === 'number' ? field : this.getFieldIndex(field)
+        );
 
         if (visible) {
             this.showColumns(false, fieldIndexes);
@@ -614,8 +801,12 @@ export class MotifGrid extends Revgrid {
         }
     }
 
-    setFieldWidth(field: RevRecordFieldIndex | RevRecordField, width?: number): void {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+    setFieldWidth(
+        field: RevRecordFieldIndex | RevRecordField,
+        width?: number
+    ): void {
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
         const column = this.getAllColumn(fieldIndex);
 
         if (width === undefined) {
@@ -629,9 +820,15 @@ export class MotifGrid extends Revgrid {
         // 	this.dispatchEvent('fin-hypergrid-schema-loaded');
     }
 
-    setFieldVisible(field: RevRecordFieldIndex | RevRecordField, visible: boolean): void {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
-        const column = this.getActiveColumns().find((activeColumn) => activeColumn.index === fieldIndex);
+    setFieldVisible(
+        field: RevRecordFieldIndex | RevRecordField,
+        visible: boolean
+    ): void {
+        const fieldIndex =
+            typeof field === 'number' ? field : this.getFieldIndex(field);
+        const column = this.getActiveColumns().find(
+            (activeColumn) => activeColumn.index === fieldIndex
+        );
 
         if ((column !== undefined) === visible) {
             return;
@@ -672,10 +869,14 @@ export class MotifGrid extends Revgrid {
     /** @internal */
     private handleHypegridClickEvent(event: CustomEvent<CellEvent>): void {
         const gridY = event.detail.gridCell.y;
-        if (gridY !== 0) { // Skip clicks to the column headers
+        if (gridY !== 0) {
+            // Skip clicks to the column headers
             if (this._mainClickEventer !== undefined) {
                 const rowIndex = event.detail.dataCell.y;
-                const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
+                const recordIndex =
+                    this._mainRecordAdapter.getRecordIndexFromRowIndex(
+                        rowIndex
+                    );
                 if (recordIndex === undefined) {
                     throw new UnexpectedUndefinedError('MGHC89877');
                 } else {
@@ -699,26 +900,36 @@ export class MotifGrid extends Revgrid {
 
     /** @internal */
     private handleHypegridDblClickEvent(event: CustomEvent<CellEvent>): void {
-        if (event.detail.gridCell.y !== 0) { // Skip clicks to the column headers
+        if (event.detail.gridCell.y !== 0) {
+            // Skip clicks to the column headers
             if (this._mainDblClickEventer !== undefined) {
                 const rowIndex = event.detail.dataCell.y;
-                const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
+                const recordIndex =
+                    this._mainRecordAdapter.getRecordIndexFromRowIndex(
+                        rowIndex
+                    );
                 if (recordIndex === undefined) {
                     throw new UnexpectedUndefinedError('MGHDC87877');
                 } else {
-                    this._mainDblClickEventer(event.detail.dataCell.x, recordIndex);
+                    this._mainDblClickEventer(
+                        event.detail.dataCell.x,
+                        recordIndex
+                    );
                 }
             }
         }
     }
 
     /** @internal */
-    private handleHypegridSelectionChanged(event: CustomEvent<SelectionDetail>) {
+    private handleHypegridSelectionChanged(
+        event: CustomEvent<SelectionDetail>
+    ) {
         const selections = event.detail.selections;
 
         if (selections.length === 0) {
             if (this._lastNotifiedFocusedRecordIndex !== undefined) {
-                const oldSelectedRecordIndex = this._lastNotifiedFocusedRecordIndex;
+                const oldSelectedRecordIndex =
+                    this._lastNotifiedFocusedRecordIndex;
                 this._lastNotifiedFocusedRecordIndex = undefined;
                 const recordFocusEventer = this.recordFocusEventer;
                 if (recordFocusEventer !== undefined) {
@@ -727,13 +938,22 @@ export class MotifGrid extends Revgrid {
             }
         } else {
             const selection = selections[0];
-            const newFocusedRecordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(selection.firstSelectedCell.y);
-            if (newFocusedRecordIndex !== this._lastNotifiedFocusedRecordIndex) {
-                const oldFocusedRecordIndex = this._lastNotifiedFocusedRecordIndex;
+            const newFocusedRecordIndex =
+                this._mainRecordAdapter.getRecordIndexFromRowIndex(
+                    selection.firstSelectedCell.y
+                );
+            if (
+                newFocusedRecordIndex !== this._lastNotifiedFocusedRecordIndex
+            ) {
+                const oldFocusedRecordIndex =
+                    this._lastNotifiedFocusedRecordIndex;
                 this._lastNotifiedFocusedRecordIndex = newFocusedRecordIndex;
-                const recordFocusEventer= this.recordFocusEventer;
+                const recordFocusEventer = this.recordFocusEventer;
                 if (recordFocusEventer !== undefined) {
-                    recordFocusEventer(newFocusedRecordIndex, oldFocusedRecordIndex);
+                    recordFocusEventer(
+                        newFocusedRecordIndex,
+                        oldFocusedRecordIndex
+                    );
                 }
             }
         }
@@ -747,10 +967,16 @@ export class MotifGrid extends Revgrid {
     }
 
     /** @internal */
-    private handleHypegridColumnsViewWidthsChangedEvent(event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) {
+    private handleHypegridColumnsViewWidthsChangedEvent(
+        event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>
+    ) {
         if (this._columnsViewWidthsChangedEventer !== undefined) {
             const detail = event.detail;
-            this._columnsViewWidthsChangedEventer(detail.fixedChanged, detail.nonFixedChanged, detail.activeChanged);
+            this._columnsViewWidthsChangedEventer(
+                detail.fixedChanged,
+                detail.nonFixedChanged,
+                detail.activeChanged
+            );
         }
     }
 
@@ -780,7 +1006,11 @@ export class MotifGrid extends Revgrid {
             this.settingsChangedEventer();
         }
 
-        const updatedProperties = MotifGrid.createGridPropertiesFromSettings(this._settingsService, undefined, this.properties);
+        const updatedProperties = MotifGrid.createGridPropertiesFromSettings(
+            this._settingsService,
+            undefined,
+            this.properties
+        );
 
         const updatedPropertiesCount = Object.keys(updatedProperties).length;
         let gridPropertiesUpdated: boolean;
@@ -797,10 +1027,14 @@ export class MotifGrid extends Revgrid {
 
     private applySettingsToMainRecordAdapter() {
         const coreSettings = this._settingsService.core;
-        this._mainRecordAdapter.allChangedRecentDuration = coreSettings.grid_AllChangedRecentDuration;
-        this._mainRecordAdapter.recordInsertedRecentDuration = coreSettings.grid_RecordInsertedRecentDuration;
-        this._mainRecordAdapter.recordUpdatedRecentDuration = coreSettings.grid_RecordUpdatedRecentDuration;
-        this._mainRecordAdapter.valueChangedRecentDuration = coreSettings.grid_ValueChangedRecentDuration;
+        this._mainRecordAdapter.allChangedRecentDuration =
+            coreSettings.grid_AllChangedRecentDuration;
+        this._mainRecordAdapter.recordInsertedRecentDuration =
+            coreSettings.grid_RecordInsertedRecentDuration;
+        this._mainRecordAdapter.recordUpdatedRecentDuration =
+            coreSettings.grid_RecordUpdatedRecentDuration;
+        this._mainRecordAdapter.valueChangedRecentDuration =
+            coreSettings.grid_ValueChangedRecentDuration;
     }
 
     // /** @internal */
@@ -885,59 +1119,78 @@ export class MotifGrid extends Revgrid {
     //     return properties;
     // }
 
-    private getColumnFieldIndex(activeColumnIndex: number): RevRecordFieldIndex {
+    private getColumnFieldIndex(
+        activeColumnIndex: number
+    ): RevRecordFieldIndex {
         const column = this.getActiveColumn(activeColumnIndex);
         return column.index;
     }
 
-    private getActiveColumnIndexUsingFieldIndex(fieldIndex: RevRecordFieldIndex): number {
+    private getActiveColumnIndexUsingFieldIndex(
+        fieldIndex: RevRecordFieldIndex
+    ): number {
         return this.getActiveColumnIndexByAllIndex(fieldIndex);
     }
 }
 
 /** @public */
 export namespace MotifGrid {
-    export type FieldNameToHeaderMap = Map<string, string | undefined>;
+    // export type FieldNameToHeaderMap = Map<string, string | undefined>;
 
     export type ResizedEventDetail = EventDetail.Resize;
 
     export type SettingsChangedEventer = (this: void) => void;
     export type CtrlKeyMouseMoveEventer = (this: void) => void;
-    export type RecordFocusEventer = (this: void,
-        newRecordIndex: RevRecordIndex | undefined, oldRecordIndex: RevRecordIndex | undefined
+    export type RecordFocusEventer = (
+        this: void,
+        newRecordIndex: RevRecordIndex | undefined,
+        oldRecordIndex: RevRecordIndex | undefined
     ) => void;
-    export type MainClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
-    export type MainDblClickEventer = (this: void, fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
-    export type ResizedEventer = (this: void, detail: ResizedEventDetail) => void;
-    export type ColumnsViewWidthsChangedEventer =
-        (this: void, fixedChanged: boolean, nonFixedChanged: boolean, allChanged: boolean) => void;
-    export type RenderedEventer = (this: void/*, detail: Hypergrid.GridEventDetail*/) => void;
+    export type MainClickEventer = (
+        this: void,
+        fieldIndex: RevRecordFieldIndex,
+        recordIndex: RevRecordIndex
+    ) => void;
+    export type MainDblClickEventer = (
+        this: void,
+        fieldIndex: RevRecordFieldIndex,
+        recordIndex: RevRecordIndex
+    ) => void;
+    export type ResizedEventer = (
+        this: void,
+        detail: ResizedEventDetail
+    ) => void;
+    export type ColumnsViewWidthsChangedEventer = (
+        this: void,
+        fixedChanged: boolean,
+        nonFixedChanged: boolean,
+        allChanged: boolean
+    ) => void;
+    export type RenderedEventer = (
+        this: void /*, detail: Hypergrid.GridEventDetail*/
+    ) => void;
     export type FieldSortedEventer = (this: void) => void;
-    export type ColumnWidthChangedEventer = (this: void, columnIndex: number) => void;
+    export type ColumnWidthChangedEventer = (
+        this: void,
+        columnIndex: number
+    ) => void;
 
-    export interface LayoutWithHeadersMap {
-        layout: GridLayout;
-        headersMap: FieldNameToHeaderMap;
-    }
-
-    /** Defines the display details of a Field */
-    export interface FieldState {
-        /** Determines the header text of a Field. Undefined to use the raw field name */
-        header?: string;
-        /** Determines the width of a Field. Undefined to auto-size */
-        width?: number;
-        /** The text alignment within a cell */
-        alignment?: Halign;
-    }
+    // export interface LayoutWithHeadersMap {
+    //     layout: GridLayout;
+    //     headersMap: FieldNameToHeaderMap;
+    // }
 
     export type RenderedCallback = (this: void) => void;
 
-    export type FrameGridProperties = Pick<GridProperties, 'gridRightAligned' | 'fixedColumnCount'>;
+    export type FrameGridProperties = Pick<
+        GridProperties,
+        'gridRightAligned' | 'fixedColumnCount'
+    >;
 
     export function createGridPropertiesFromSettings(
         settings: SettingsService,
         frameGridProperties: FrameGridProperties | undefined,
-        existingGridProperties: GridProperties | undefined,
+        existingGridProperties: GridProperties | undefined
     ): Partial<GridProperties> {
         const properties: Partial<GridProperties> = {};
         const core = settings.core;
@@ -945,7 +1198,10 @@ export namespace MotifGrid {
 
         if (frameGridProperties !== undefined) {
             const { fixedColumnCount, gridRightAligned } = frameGridProperties;
-            if (fixedColumnCount >= 0 && fixedColumnCount !== existingGridProperties?.fixedColumnCount) {
+            if (
+                fixedColumnCount >= 0 &&
+                fixedColumnCount !== existingGridProperties?.fixedColumnCount
+            ) {
                 properties.fixedColumnCount = fixedColumnCount;
             }
             if (gridRightAligned !== existingGridProperties?.gridRightAligned) {
@@ -974,7 +1230,10 @@ export namespace MotifGrid {
                 if (font !== existingGridProperties?.columnHeaderFont) {
                     properties.columnHeaderFont = font;
                 }
-                if (font !== existingGridProperties?.columnHeaderForegroundSelectionFont) {
+                if (
+                    font !==
+                    existingGridProperties?.columnHeaderForegroundSelectionFont
+                ) {
                     properties.columnHeaderForegroundSelectionFont = font;
                 }
                 if (font !== existingGridProperties?.filterFont) {
@@ -984,12 +1243,18 @@ export namespace MotifGrid {
         }
 
         const defaultRowHeight = core.grid_RowHeight;
-        if (defaultRowHeight > 0 && defaultRowHeight !== existingGridProperties?.defaultRowHeight) {
+        if (
+            defaultRowHeight > 0 &&
+            defaultRowHeight !== existingGridProperties?.defaultRowHeight
+        ) {
             properties.defaultRowHeight = defaultRowHeight;
         }
 
         const cellPadding = core.grid_CellPadding;
-        if (cellPadding >= 0 && cellPadding !== existingGridProperties?.cellPadding) {
+        if (
+            cellPadding >= 0 &&
+            cellPadding !== existingGridProperties?.cellPadding
+        ) {
             properties.cellPadding = cellPadding;
         }
 
@@ -1004,7 +1269,10 @@ export namespace MotifGrid {
         } else {
             gridLinesHWidth = 0;
         }
-        if (gridLinesHWidth !== existingGridProperties?.gridLinesHWidth && gridLinesHWidth >= 0) {
+        if (
+            gridLinesHWidth !== existingGridProperties?.gridLinesHWidth &&
+            gridLinesHWidth >= 0
+        ) {
             properties.gridLinesHWidth = gridLinesHWidth;
         }
 
@@ -1019,12 +1287,18 @@ export namespace MotifGrid {
         } else {
             gridLinesVWidth = 0;
         }
-        if (gridLinesVWidth !== existingGridProperties?.gridLinesVWidth && gridLinesVWidth >= 0) {
+        if (
+            gridLinesVWidth !== existingGridProperties?.gridLinesVWidth &&
+            gridLinesVWidth >= 0
+        ) {
             properties.gridLinesVWidth = gridLinesVWidth;
         }
 
         const scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
-        if (scrollHorizontallySmoothly !== existingGridProperties?.scrollHorizontallySmoothly) {
+        if (
+            scrollHorizontallySmoothly !==
+            existingGridProperties?.scrollHorizontallySmoothly
+        ) {
             properties.scrollHorizontallySmoothly = scrollHorizontallySmoothly;
         }
 
@@ -1036,37 +1310,67 @@ export namespace MotifGrid {
         if (foreBase !== existingGridProperties?.color) {
             properties.color = foreBase;
         }
-        const bkgdColumnHeader = color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
-        if (bkgdColumnHeader !== existingGridProperties?.columnHeaderBackgroundColor) {
+        const bkgdColumnHeader = color.getBkgd(
+            ColorScheme.ItemId.Grid_ColumnHeader
+        );
+        if (
+            bkgdColumnHeader !==
+            existingGridProperties?.columnHeaderBackgroundColor
+        ) {
             properties.columnHeaderBackgroundColor = bkgdColumnHeader;
         }
-        const foreColumnHeader = color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
+        const foreColumnHeader = color.getFore(
+            ColorScheme.ItemId.Grid_ColumnHeader
+        );
         if (foreColumnHeader !== existingGridProperties?.columnHeaderColor) {
             properties.columnHeaderColor = foreColumnHeader;
         }
-        const bkgdSelection = color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell);
-        if (bkgdSelection !== existingGridProperties?.backgroundSelectionColor) {
+        const bkgdSelection = color.getBkgd(
+            ColorScheme.ItemId.Grid_FocusedCell
+        );
+        if (
+            bkgdSelection !== existingGridProperties?.backgroundSelectionColor
+        ) {
             properties.backgroundSelectionColor = bkgdSelection;
         }
-        const foreSelection = color.getFore(ColorScheme.ItemId.Grid_FocusedCell);
-        if (foreSelection !== existingGridProperties?.foregroundSelectionColor) {
+        const foreSelection = color.getFore(
+            ColorScheme.ItemId.Grid_FocusedCell
+        );
+        if (
+            foreSelection !== existingGridProperties?.foregroundSelectionColor
+        ) {
             properties.foregroundSelectionColor = foreSelection;
         }
-        if (bkgdColumnHeader !== existingGridProperties?.columnHeaderBackgroundSelectionColor) {
+        if (
+            bkgdColumnHeader !==
+            existingGridProperties?.columnHeaderBackgroundSelectionColor
+        ) {
             properties.columnHeaderBackgroundSelectionColor = bkgdColumnHeader;
         }
-        if (foreColumnHeader !== existingGridProperties?.columnHeaderForegroundSelectionColor) {
+        if (
+            foreColumnHeader !==
+            existingGridProperties?.columnHeaderForegroundSelectionColor
+        ) {
             properties.columnHeaderForegroundSelectionColor = foreColumnHeader;
         }
-        const foreFocusedCellBorder = color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
-        if (foreFocusedCellBorder !== existingGridProperties?.selectionRegionOutlineColor) {
+        const foreFocusedCellBorder = color.getFore(
+            ColorScheme.ItemId.Grid_FocusedCellBorder
+        );
+        if (
+            foreFocusedCellBorder !==
+            existingGridProperties?.selectionRegionOutlineColor
+        ) {
             properties.selectionRegionOutlineColor = foreFocusedCellBorder;
         }
-        const foreVerticalLine = color.getFore(ColorScheme.ItemId.Grid_VerticalLine);
+        const foreVerticalLine = color.getFore(
+            ColorScheme.ItemId.Grid_VerticalLine
+        );
         if (foreVerticalLine !== existingGridProperties?.gridLinesHColor) {
             properties.gridLinesHColor = foreVerticalLine;
         }
-        const foreHorizontalLine = color.getFore(ColorScheme.ItemId.Grid_HorizontalLine);
+        const foreHorizontalLine = color.getFore(
+            ColorScheme.ItemId.Grid_HorizontalLine
+        );
         if (foreHorizontalLine !== existingGridProperties?.gridLinesVColor) {
             properties.gridLinesVColor = foreHorizontalLine;
         }
@@ -1090,7 +1394,6 @@ export namespace MotifGrid {
         return properties;
     }
 }
-
 
 // interface Highlight {
 //     index: number;

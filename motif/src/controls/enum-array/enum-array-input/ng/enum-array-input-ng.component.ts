@@ -5,10 +5,9 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { Integer, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
-import { UiAction } from 'core-internal-api';
-import { Integer, MultiEvent } from 'sys-internal-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';

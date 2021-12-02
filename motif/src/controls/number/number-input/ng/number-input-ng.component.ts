@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
+import { Integer, isNumberRegex, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { StringId, Strings } from 'res-internal-api';
-import { Integer, isNumberRegex } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
 

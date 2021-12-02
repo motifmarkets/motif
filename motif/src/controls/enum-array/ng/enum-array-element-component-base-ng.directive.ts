@@ -5,8 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { EnumArrayUiAction } from 'core-internal-api';
-import { Integer } from 'sys-internal-api';
+import { EnumArrayUiAction, Integer } from '@motifmarkets/motif-core';
 import { EnumArrayComponentBaseNgDirective } from './enum-array-component-base-ng.directive';
 
 @Directive()

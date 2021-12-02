@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { SymbolsService } from 'core-internal-api';
+import { SymbolsService } from '@motifmarkets/motif-core';
 import { LitIvemIdParseDetails as LitIvemIdParseDetailsApi } from '../../../api/extension-api';
 import { LitIvemIdImplementation } from '../adi/internal-api';
 

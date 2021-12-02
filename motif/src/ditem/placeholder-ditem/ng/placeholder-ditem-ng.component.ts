@@ -14,11 +14,9 @@ import {
     InjectionToken,
     OnDestroy
 } from '@angular/core';
+import { ColorScheme, delay1Tick, JsonElement, StringId, Strings } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { ColorScheme } from 'src/core/color-scheme';
-import { delay1Tick, JsonElement } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { PlaceholderDitemFrame } from '../placeholder-ditem-frame';

@@ -4,9 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironmentId, LitIvemId } from 'adi-internal-api';
-import { SessionStateId } from 'core-internal-api';
-import { MultiEvent } from 'sys-internal-api';
+import { ExchangeEnvironmentId, LitIvemId, MultiEvent, SessionStateId } from '@motifmarkets/motif-core';
 
 export class SessionInfoService {
     private _stateId: SessionStateId;

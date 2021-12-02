@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { OrderTypeId } from 'adi-internal-api';
-import { AssertInternalError, UnreachableCaseError } from 'sys-internal-api';
+import { AssertInternalError, OrderTypeId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     OrderType as OrderTypeApi,

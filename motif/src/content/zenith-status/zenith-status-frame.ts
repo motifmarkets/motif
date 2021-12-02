@@ -5,16 +5,13 @@
  */
 
 import {
-    AdiService,
-    ZenithExtConnectionDataDefinition,
+    AdiService, Badness, CorrectnessId, MultiEvent, StringId, Strings, SysTick, UnreachableCaseError, ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
     ZenithPublisherState,
     ZenithServerInfoDataDefinition,
     ZenithServerInfoDataItem
-} from 'adi-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { Badness, CorrectnessId, MultiEvent, SysTick, UnreachableCaseError } from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 
 export class ZenithStatusFrame extends ContentFrame {

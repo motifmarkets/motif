@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { UserAlertService } from 'sys-internal-api';
+import { UserAlertService } from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root'

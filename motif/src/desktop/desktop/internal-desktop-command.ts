@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { InternalCommand } from 'core-internal-api';
+import { InternalCommand } from '@motifmarkets/motif-core';
 
 export namespace InternalDesktopCommand {
 

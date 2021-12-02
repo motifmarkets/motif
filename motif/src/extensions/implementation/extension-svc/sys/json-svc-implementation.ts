@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { JsonElement, JsonValue } from 'sys-internal-api';
+import { JsonElement, JsonValue } from '@motifmarkets/motif-core';
 import { Json as JsonApi, JsonElement as JsonElementApi, JsonSvc, JsonValue as JsonValueApi } from '../../../api/extension-api';
 import { JsonElementImplementation } from '../../exposed/internal-api';
 

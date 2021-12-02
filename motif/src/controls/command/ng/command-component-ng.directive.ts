@@ -6,12 +6,10 @@
 
 import { ChangeDetectorRef, Directive, Input } from '@angular/core';
 import {
-    Command,
-    ProcessorCommandUiAction,
+    Command, MultiEvent, ProcessorCommandUiAction,
     SettingsService,
     UiAction
-} from 'core-internal-api';
-import { MultiEvent } from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

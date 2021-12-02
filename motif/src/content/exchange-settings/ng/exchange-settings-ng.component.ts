@@ -1,18 +1,11 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
-import { ExchangeId, ExchangeInfo, SymbolField, SymbolFieldId } from 'adi-internal-api';
+import {
+    ArrayUiAction, delay1Tick, EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
+    ExplicitElementsEnumArrayUiAction,
+    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
-import {
-    EnumUiAction,
-    ExchangeSettings,
-    ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction,
-    SettingsService
-} from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { ArrayUiAction } from 'src/core/array-ui-action';
-import { MultiEvent } from 'src/sys/multi-event';
-import { delay1Tick } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

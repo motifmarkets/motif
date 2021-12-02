@@ -11,14 +11,11 @@ import {
 
     Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { LitIvemId } from 'adi-internal-api';
+import { CommaText, delay1Tick, IconButtonUiAction, InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, StringUiAction, UiAction } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
-import { IconButtonUiAction, InternalCommand, LitIvemIdUiAction, StringUiAction, UiAction } from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { CommaText, delay1Tick, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { DepthDitemFrame } from '../depth-ditem-frame';

@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CommandRegisterService } from 'core-internal-api';
+import { CommandRegisterService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

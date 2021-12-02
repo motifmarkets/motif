@@ -4,12 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'adi-internal-api';
+import { AdiService, AppStorageService, AssertInternalError, CommandRegisterService, CommaText, ExtensionHandle, MultiEvent, SymbolsService } from '@motifmarkets/motif-core';
 import { ExtensionId, RegisteredExtension } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { AppStorageService, CommandRegisterService, SymbolsService } from 'core-internal-api';
 import { WorkspaceService } from 'src/workspace/internal-api';
-import { AssertInternalError, CommaText, ExtensionHandle, MultiEvent } from 'sys-internal-api';
 import { Extension as ExtensionApi, ExtensionRegistrar as ExtensionRegistrarApi } from './api/extension-api';
 import { ExtensionSvcImplementation, PublisherTypeImplementation } from './implementation/internal-api';
 

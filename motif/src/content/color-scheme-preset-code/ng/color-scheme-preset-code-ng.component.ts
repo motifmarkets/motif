@@ -9,11 +9,9 @@ import {
     OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
+import { assert, ColorScheme, ColorSettings, CommandRegisterService, delay1Tick, IconButtonUiAction, InternalCommand, StringBuilder, StringId, UiAction } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { ColorScheme, ColorSettings, CommandRegisterService, IconButtonUiAction, InternalCommand, UiAction } from 'core-internal-api';
-import { StringId } from 'res-internal-api';
-import { assert, delay1Tick, StringBuilder } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { UiAction } from 'core-internal-api';
-import { UnreachableCaseError } from 'sys-internal-api';
+import { UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ApiError as ApiErrorApi, UiAction as UiActionApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from '../sys/api-error-api-implementation';
 

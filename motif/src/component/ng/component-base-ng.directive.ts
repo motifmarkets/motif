@@ -5,7 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { Integer } from 'sys-internal-api';
+import { Integer } from '@motifmarkets/motif-core';
 
 @Directive()
 export abstract class ComponentBaseNgDirective {

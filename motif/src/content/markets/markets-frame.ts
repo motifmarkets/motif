@@ -5,27 +5,16 @@
  */
 
 import {
-    AdiService, FeedStatus,
-    Market,
+    AdiService, Badness, CoreSettings, Correctness, FeedStatus, Integer, Market,
     MarketBoard,
     MarketInfo,
     MarketsDataDefinition,
-    MarketsDataItem,
-
-    TradingMarketBoard,
-    TradingState
-} from 'adi-internal-api';
-import { CoreSettings, textFormatter } from 'core-internal-api';
-import {
-    Badness,
-    Correctness,
-    Integer,
-    MultiEvent,
+    MarketsDataItem, MultiEvent,
     SourceTzOffsetDate,
-    SourceTzOffsetDateTime,
-    UnreachableCaseError,
+    SourceTzOffsetDateTime, textFormatter, TradingMarketBoard,
+    TradingState, UnreachableCaseError,
     UsableListChangeTypeId
-} from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 
 export class MarketsFrame extends ContentFrame {

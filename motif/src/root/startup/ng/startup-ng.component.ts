@@ -5,11 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { SessionState, SessionStateId } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
+import { delay1Tick, Logger, MultiEvent, SessionState, SessionStateId, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
-import { delay1Tick, Logger, MultiEvent } from 'sys-internal-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
 

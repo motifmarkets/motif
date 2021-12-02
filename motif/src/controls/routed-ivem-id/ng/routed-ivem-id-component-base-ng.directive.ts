@@ -5,11 +5,8 @@
  */
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
-import { RoutedIvemId } from 'adi-internal-api';
+import { MultiEvent, RoutedIvemId, RoutedIvemIdUiAction, SettingsService, StringId, Strings, SymbolsService, UiAction } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
-import { RoutedIvemIdUiAction, SettingsService, SymbolsService, UiAction } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
-import { MultiEvent } from 'sys-internal-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

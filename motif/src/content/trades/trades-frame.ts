@@ -4,19 +4,26 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, DayTradesDataDefinition, DayTradesDataItem, LitIvemId } from 'adi-internal-api';
-import { GridLayout, MotifGrid } from 'content-internal-api';
-import { DayTradesGridField, DayTradesGridRecordStore, GridLayoutIO } from 'core-internal-api';
 import {
+    AdiService,
     AssertInternalError,
     Badness,
     CorrectnessId,
+    DayTradesDataDefinition,
+    DayTradesDataItem,
+    DayTradesGridField,
+    DayTradesGridRecordStore,
+    GridLayout,
+    GridLayoutIO,
+    GridLayoutRecordStore,
     Integer,
     JsonElement,
+    LitIvemId,
     MultiEvent,
     UnreachableCaseError,
     UsableListChangeTypeId
-} from 'sys-internal-api';
+} from '@motifmarkets/motif-core';
+import { MotifGrid } from 'content-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
@@ -163,7 +170,7 @@ export class TradesFrame extends ContentFrame {
     //     }
     // }
 
-    getGridLayoutWithHeadersMap(): MotifGrid.LayoutWithHeadersMap {
+    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._grid.getLayoutWithHeadersMap();
     }
 

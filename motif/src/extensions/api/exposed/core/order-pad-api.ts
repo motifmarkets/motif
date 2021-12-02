@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-// import { Order, OrderTriggerTypeId, RoutedIvemId, SideId } from 'adi-internal-api';
+// import { Order, OrderTriggerTypeId, RoutedIvemId, SideId } from '@motifmarkets/motif-core';
 // import { BrokerageAccountId, OrderRequestTypeId } from './data-types-api';
 
 // export interface OrderPad {

@@ -5,45 +5,22 @@
  */
 
 import {
-    AdiService,
-    BrokerageAccountGroup,
-    LitIvemId,
-    MarketOrderId,
-    OrderRequestTypeId,
-    SingleBrokerageAccountGroup
-} from 'adi-internal-api';
+    AdiService, AppStorageService, AssertInternalError, BrokerageAccountGroup, Command,
+    CommandRegisterService,
+    CommandUiAction, ExtensionHandle,
+    Integer, InternalCommand, Json,
+    JsonElement,
+    JsonValue, LitIvemId, Logger, MarketOrderId, MultiEvent, OrderPad, OrderRequestTypeId, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, SuccessOrErrorText,
+    SuccessOrErrorText_Success, SymbolsService,
+    UiAction, UserAlertService
+} from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import {
-    AppStorageService,
-    Command,
-    CommandRegisterService,
-    CommandUiAction,
-    InternalCommand,
-    OrderPad,
-    SettingsService,
-    SymbolsService,
-    UiAction
-} from 'core-internal-api';
 import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
-import {
-    AssertInternalError,
-    ExtensionHandle,
-    Integer,
-    Json,
-    JsonElement,
-    JsonValue,
-    Logger,
-    MultiEvent,
-    SuccessOrErrorText,
-    SuccessOrErrorText_Success,
-    UserAlertService
-} from 'sys-internal-api';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
 export class DesktopFrame implements DesktopAccessService {

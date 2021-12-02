@@ -14,12 +14,12 @@ import {
     DataChannelId,
     MoveOrderMessageConvert,
     MoveOrderRequestDataDefinition,
+    OrderPad,
     OrderRequestDataDefinition,
     PlaceOrderMessageConvert,
-    PlaceOrderRequestDataDefinition
-} from 'adi-internal-api';
-import { OrderPad } from 'core-internal-api';
-import { UnexpectedCaseError } from 'sys-internal-api';
+    PlaceOrderRequestDataDefinition,
+    UnexpectedCaseError
+} from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()

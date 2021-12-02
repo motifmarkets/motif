@@ -11,6 +11,7 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
+import { AssertInternalError, ButtonUiAction, ColorScheme, CommandRegisterService, delay1Tick, InternalCommand, MultiEvent, SettingsService, StringId } from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import {
     AdiNgService,
@@ -23,13 +24,10 @@ import {
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
-import { ButtonUiAction, ColorScheme, CommandRegisterService, InternalCommand, SettingsService } from 'core-internal-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
-import { StringId } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
-import { AssertInternalError, delay1Tick, MultiEvent } from 'sys-internal-api';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';
 import { DesktopFrame } from '../desktop-frame';
 

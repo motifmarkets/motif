@@ -5,8 +5,7 @@
  */
 
 import { Type } from '@angular/core';
-import { Command } from 'core-internal-api';
-import { MapKey } from 'sys-internal-api';
+import { Command, MapKey } from '@motifmarkets/motif-core';
 import { CommandParametersComponentNgDirective } from './ng/ng-api';
 
 export namespace CommandParametersComponentRegister {

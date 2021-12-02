@@ -4,12 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { AssertInternalError, CommandRegisterService, delay1Tick, StringId, Strings } from '@motifmarkets/motif-core';
 import { RegisteredExtension } from 'content-internal-api';
-import { CommandRegisterService } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 import { DesktopFrame, GoldenLayoutHostFrame } from 'src/desktop/internal-api';
-import { delay1Tick } from 'src/sys/utils';
-import { AssertInternalError } from 'sys-internal-api';
 import {
     ApiError as ApiErrorApi,
     Frame as FrameApi,

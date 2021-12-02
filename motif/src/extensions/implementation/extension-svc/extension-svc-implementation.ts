@@ -4,10 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'adi-internal-api';
+import { AdiService, AppStorageService, CommandRegisterService, SymbolsService } from '@motifmarkets/motif-core';
 import { RegisteredExtension } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { AppStorageService, CommandRegisterService, SymbolsService } from 'core-internal-api';
 import { WorkspaceService } from 'src/workspace/internal-api';
 import { ExtensionSvc } from '../../api/extension-api';
 import {

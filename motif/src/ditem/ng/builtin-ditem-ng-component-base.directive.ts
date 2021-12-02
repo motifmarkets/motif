@@ -5,10 +5,9 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
-import { ColorScheme, CommandRegisterService, SettingsService } from 'core-internal-api';
+import { ColorScheme, CommandRegisterService, Json, JsonElement, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { ComponentContainer } from 'golden-layout';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
-import { Json, JsonElement, MultiEvent } from 'sys-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';

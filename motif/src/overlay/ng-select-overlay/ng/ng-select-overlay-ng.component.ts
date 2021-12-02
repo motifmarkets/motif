@@ -5,11 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AssertInternalError, ColorScheme, ColorSettings, delay1Tick, HtmlTypes, MultiEvent, numberToPixels, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from 'controls-internal-api';
 import { NgSelectOverlayNgService } from 'controls-ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
-import { AssertInternalError, delay1Tick, HtmlTypes, MultiEvent, numberToPixels } from 'sys-internal-api';
 import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base-ng.directive';
 
 @Component({

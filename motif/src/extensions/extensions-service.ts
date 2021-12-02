@@ -4,7 +4,18 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService } from 'adi-internal-api';
+import {
+    AdiService, AppStorageService, AssertInternalError, CommandRegisterService, ComparisonResult,
+    ExtensionError,
+    ExtensionHandle,
+    ExternalError, ExtStringId, ExtStrings, Integer,
+    invalidHandle,
+    ListChangeTypeId,
+    Logger,
+    mSecsPerMin,
+    MultiEvent, StringId, Strings, SuccessOrErrorText,
+    SuccessOrErrorText_Success, SymbolsService, SysTick
+} from '@motifmarkets/motif-core';
 import {
     ExtensionId,
     ExtensionInfo,
@@ -12,32 +23,10 @@ import {
     RegisteredExtension
 } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import {
-    AppStorageService,
-    CommandRegisterService,
-    SymbolsService
-} from 'core-internal-api';
 import { ExtensionDitemComponent } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { ExtStringId, ExtStrings, StringId, Strings } from 'res-internal-api';
 import { FrameExtensionsAccessService } from 'src/desktop/internal-api';
 import { WorkspaceService } from 'src/workspace/internal-api';
-import {
-    AssertInternalError,
-    ComparisonResult,
-    ExtensionError,
-    ExtensionHandle,
-    ExternalError,
-    Integer,
-    invalidHandle,
-    ListChangeTypeId,
-    Logger,
-    mSecsPerMin,
-    MultiEvent,
-    SuccessOrErrorText,
-    SuccessOrErrorText_Success,
-    SysTick
-} from 'sys-internal-api';
 import { Extension as ExtensionApi, ExtensionRegistrar as ExtensionRegistrarApi, Frame as FrameApi } from './api/extension-api';
 import { ExtensionRegistration } from './extension-registration';
 import {

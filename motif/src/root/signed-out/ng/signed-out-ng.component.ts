@@ -6,10 +6,9 @@
 
 import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
+import { ButtonUiAction, CommandRegisterService, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
-import { ButtonUiAction, CommandRegisterService, InternalCommand } from 'core-internal-api';
-import { StringId, Strings } from 'res-internal-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 // NOT USED.  Probably best to delete

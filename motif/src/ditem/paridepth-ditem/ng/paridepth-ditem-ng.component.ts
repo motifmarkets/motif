@@ -16,7 +16,11 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { LitIvemId } from 'adi-internal-api';
+import {
+    AssertInternalError, CommaText, DateUiAction, defined, delay1Tick, IconButtonUiAction,
+    InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, StringUiAction,
+    UiAction
+} from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
@@ -30,16 +34,7 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import {
-    DateUiAction,
-    IconButtonUiAction,
-    InternalCommand,
-    LitIvemIdUiAction, StringUiAction,
-    UiAction
-} from 'core-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { StringId, Strings } from 'res-internal-api';
-import { AssertInternalError, CommaText, defined, delay1Tick, JsonElement, Logger } from 'sys-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { ParidepthDitemFrame } from '../paridepth-ditem-frame';

@@ -5,9 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import { ColorScheme, ColorSettings, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { ColorScheme, ColorSettings, SettingsService } from 'core-internal-api';
-import { MultiEvent } from 'sys-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
 @Component({
