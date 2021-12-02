@@ -52,15 +52,21 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     onInput(value: string): void {
-        this.input(value);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.input(value);
+        }
     }
 
     onEnterKeyDown(text: string): void {
-        this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
+        }
     }
 
     onBlur(text: string): void {
-        this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
+        }
     }
 
     protected override pushSettings() {
