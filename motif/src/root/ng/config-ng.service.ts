@@ -5,7 +5,16 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ConfigError, createRandomUrlSearch, ExchangeEnvironmentId, ExchangeInfo, ExternalError, LitIvemId, Logger, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
+import {
+    ConfigError,
+    createRandomUrlSearch,
+    ExchangeEnvironmentId,
+    ExchangeInfo,
+    ExternalError,
+    LitIvemId,
+    Logger,
+    ZenithPublisherSubscriptionManager
+} from '@motifmarkets/motif-core';
 import { ExtensionInfo, PersistableExtensionInfo } from 'content-internal-api';
 import { Config } from '../config';
 
@@ -375,7 +384,7 @@ export namespace ConfigNgService {
             if (json === undefined) {
                 const diagnostics: Config.Diagnostics = {
                     appNotifyErrors: Config.Diagnostics.defaultAppNotifyErrors,
-                    telemetry: Telemetry.parseJson(undefined),
+                    telemetry: Telemetry.parseJson(undefined, serviceName),
                     zenithLogLevelId: Config.Diagnostics.ZenithLog.defaultLevelId,
                     dataSubscriptionCachingDisabled: Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
                     motifServicesBypass: MotifServicesBypass.parseJson(undefined),
@@ -385,7 +394,7 @@ export namespace ConfigNgService {
             } else {
                 const diagnostics: Config.Diagnostics = {
                     appNotifyErrors: json.appNotifyErrors ?? Config.Diagnostics.defaultAppNotifyErrors,
-                    telemetry: Telemetry.parseJson(json.telemetry),
+                    telemetry: Telemetry.parseJson(json.telemetry, serviceName),
                     zenithLogLevelId: ZenithLog.parseJson(json.zenithLogLevel, serviceName),
                     dataSubscriptionCachingDisabled: json.dataSubscriptionCachingDisabled ??
                         Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
@@ -400,27 +409,72 @@ export namespace ConfigNgService {
             // eslint-disable-next-line @typescript-eslint/no-shadow
             export interface Json {
                 enabled?: boolean;
+                itemsPerMinute?: number;
                 maxErrorCount?: number;
+                itemIgnores?: Config.Diagnostics.Telemetry.ItemIgnore[];
             }
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            export function parseJson(json: Json | undefined) {
+            export function parseJson(json: Json | undefined, serviceName: string) {
                 let enabled: boolean;
+                let itemsPerMinute: number;
                 let maxErrorCount: number;
+                let itemIgnores: Config.Diagnostics.Telemetry.ItemIgnore[];
 
                 if (json === undefined) {
                     enabled = Config.Diagnostics.Telemetry.defaultEnabled;
+                    itemsPerMinute = Config.Diagnostics.Telemetry.defaultItemsPerMinute;
                     maxErrorCount = Config.Diagnostics.Telemetry.defaultMaxErrorCount;
+                    itemIgnores = Config.Diagnostics.Telemetry.defaultItemIgnores;
                 } else {
                     enabled = json.enabled ?? Config.Diagnostics.Telemetry.defaultEnabled;
-                    maxErrorCount = json.maxErrorCount ??Config.Diagnostics.Telemetry.defaultMaxErrorCount;
+                    itemsPerMinute = json.itemsPerMinute ?? Config.Diagnostics.Telemetry.defaultItemsPerMinute;
+                    maxErrorCount = json.maxErrorCount ?? Config.Diagnostics.Telemetry.defaultMaxErrorCount;
+                    itemIgnores = parseItemIgnoresJson(json.itemIgnores, serviceName);
                 }
                 const telemetry: Config.Diagnostics.Telemetry = {
                     enabled,
+                    itemsPerMinute,
                     maxErrorCount,
+                    itemIgnores,
                 };
 
                 return telemetry;
+            }
+
+            export function parseItemIgnoresJson(json: Config.Diagnostics.Telemetry.ItemIgnore[] | undefined, serviceName: string) {
+                if (json !== undefined) {
+                    if (!Array.isArray(json)) {
+                        Logger.logConfigError('CNSDTPIIJA13300911', serviceName);
+                    } else {
+                        let invalid = false;
+                        for (const itemIgnore of json) {
+                            if (typeof itemIgnore !== 'object' || itemIgnore === null) {
+                                Logger.logConfigError('CNSDTPIIJO13300911', serviceName);
+                                invalid = true;
+                                break;
+                            } else {
+                                const typeId = itemIgnore.typeId;
+                                if (typeof typeId !== 'string') {
+                                    Logger.logConfigError('CNSDTPIIJS13300911', serviceName);
+                                    invalid = true;
+                                    break;
+                                } else {
+                                    if (!Config.Diagnostics.Telemetry.ItemIgnore.Type.isValidId(typeId)) {
+                                        Logger.logConfigError('CNSDTPIIJTU13300911', `${serviceName}: ${typeId}`);
+                                        invalid = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+                        if (!invalid) {
+                            return json;
+                        }
+                    }
+                }
+                return Config.Diagnostics.Telemetry.defaultItemIgnores;
             }
         }
 
