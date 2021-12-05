@@ -77,6 +77,10 @@ export class TelemetryService {
                         source_map_enabled: true,
                         guess_uncaught_frames: true,
                     }
+                },
+                server: {
+                    root: 'webpack://motif/',
+                    branch: 'main',
                 }
             }
         });

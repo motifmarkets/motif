@@ -16,7 +16,7 @@ REM SET REVISION_NUMBER=%%F
 REM )
 
 :: Get the current Git commit hash with `git rev-parse --verify --short=N HEAD`
-FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --verify --short HEAD`) DO (
+FOR /F "tokens=* USEBACKQ" %%F IN (`git rev-parse --verify HEAD`) DO (
 SET CHANGESET_HASH=%%F
 )
 
