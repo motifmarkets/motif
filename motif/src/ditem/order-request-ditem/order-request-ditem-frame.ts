@@ -21,7 +21,7 @@ import {
     OrderRequestTypeId,
     SettingsService,
     SymbolsService,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from 'content-internal-api';
 import { OrderRequestStepFrame } from 'src/content/order-request-step/order-request-step-frame';
@@ -508,6 +508,21 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
     private setSymbolAccountIncomingLinkable(value: boolean) {
         if (value !== this._symbolAccountIncomingLinkable) {
             this._symbolAccountIncomingLinkable = value;
+            if (value) {
+                if (this.litIvemIdLinked) {
+                    const desktopLitIvemId = this.desktopAccessService.litIvemId;
+                    if (desktopLitIvemId !== undefined) {
+                        this.setLitIvemIdFromDesktop(this.desktopAccessService.litIvemId, undefined);
+                    }
+                }
+
+                if (this.brokerageAccountGroupLinked) {
+                    const desktopBrokerageAccountGroup = this.desktopAccessService.lastSingleBrokerageAccountGroup;
+                    if (desktopBrokerageAccountGroup !== undefined) {
+                        this.setBrokerageAccountGroupFromDesktop(desktopBrokerageAccountGroup, undefined);
+                    }
+                }
+            }
             this._componentAccess.pushSymbolAccountIncomingLinkableChanged();
         }
     }
