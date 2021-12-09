@@ -20,7 +20,7 @@
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,
-    "allowSyntheticDefaultImports": true, // used for RollBar
+    "esModuleInterop": true, // Used by Rollbar. Also enables allowSyntheticDefaultImports which is required by version.ts
     "baseUrl": ".",
     "sourceMap": true,
     "declaration": false,

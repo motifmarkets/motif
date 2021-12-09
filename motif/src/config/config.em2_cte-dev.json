@@ -88,7 +88,25 @@
   ],
   "diagnostics": {
     "telemetry": {
-      "enabled": false
+      "enabled": false,
+      "itemIgnores": [
+        {
+          "typeId": "Message",
+          "message": "^Error TRDLLFJI33858"
+        },
+        {
+          "typeId": "Message",
+          "message": "^ResizeObserver loop limit exceeded"
+        },
+        {
+          "typeId": "Message",
+          "message": "^Zenith Publisher: Abnormal closure (1006)"
+        },
+        {
+          "typeId": "Message",
+          "message": "^Zenith Reconnection: "
+        }
+      ]
     },
     "zenithLogLevel": "off",
     "dataSubscriptionCachingDisabled": true

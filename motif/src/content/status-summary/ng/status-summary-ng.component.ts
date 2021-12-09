@@ -37,6 +37,7 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     public serviceName: string;
     public serviceDescription: string;
     public clientVersion: string;
+    public codeCommit: string;
     public exchangeEnvironment: string;
     public userId: string;
     public username: string;
@@ -60,7 +61,8 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
 
         this.serviceName = sessionInfoService.serviceName;
         this.serviceDescription = sessionInfoService.serviceDescription ?? '';
-        this.clientVersion = `${Version.app} (${isDevMode() ? 'DevMode' : 'ProdMode'} / ${Version.commit})`;
+        this.clientVersion = `${Version.app} (${isDevMode() ? 'DevMode' : 'ProdMode'})`;
+        this.codeCommit = `${Version.commit}`;
         this.exchangeEnvironment = `${ExchangeEnvironment.idToDisplay(ExchangeInfo.getDefaultEnvironmentId())}`;
         this.userId = sessionInfoService.userId;
         this.username = sessionInfoService.username;

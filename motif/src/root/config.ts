@@ -67,12 +67,51 @@ export namespace Config {
 
         export interface Telemetry {
             enabled: boolean;
+            itemsPerMinute: number;
             maxErrorCount: number;
+            itemIgnores: Telemetry.ItemIgnore[];
         }
 
         export namespace Telemetry {
             export const defaultEnabled = true;
+            export const defaultItemsPerMinute = 3;
             export const defaultMaxErrorCount = 1;
+            export const defaultItemIgnores = [];
+
+            export interface ItemIgnore {
+                typeId: ItemIgnore.TypeId;
+                message?: string;
+            }
+
+            export namespace ItemIgnore {
+                export const enum TypeId {
+                    Message = 'Message',
+                    Exception = 'Exception',
+                }
+
+                export namespace Type {
+                    export function isValidId(id: TypeId) {
+                        return [TypeId.Message, TypeId.Exception].includes(id);
+                    }
+                }
+
+                export function isMessage(itemIgnore: ItemIgnore): itemIgnore is MessageItemIgnore {
+                    return itemIgnore.typeId === ItemIgnore.TypeId.Message;
+                }
+
+                export function isException(itemIgnore: ItemIgnore): itemIgnore is ExceptionItemIgnore {
+                    return itemIgnore.typeId === ItemIgnore.TypeId.Exception;
+                }
+            }
+
+            export interface MessageItemIgnore extends ItemIgnore {
+                typeId: ItemIgnore.TypeId.Message;
+            }
+
+            export interface ExceptionItemIgnore extends ItemIgnore {
+                typeId: ItemIgnore.TypeId.Exception;
+                exceptionName?: string;
+            }
         }
 
         export namespace ZenithLog {
