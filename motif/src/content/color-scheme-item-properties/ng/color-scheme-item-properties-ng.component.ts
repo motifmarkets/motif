@@ -6,7 +6,19 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { isReadable as tinyColorIsReadable, readability as tinyColorReadability } from '@ctrl/tinycolor';
-import { ColorScheme, ColorSettings, delay1Tick, EnumInfoOutOfOrderError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, NumberUiAction, StringId, Strings, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    ColorSettings,
+    delay1Tick,
+    EnumInfoOutOfOrderError,
+    EnumUiAction,
+    ExplicitElementsEnumUiAction,
+    Integer,
+    NumberUiAction,
+    StringId,
+    Strings,
+    UnreachableCaseError,
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'controls-ng-api';
 import { MultiColorPickerNgComponent } from 'src/content/multi-color-picker/ng/multi-color-picker-ng.component';

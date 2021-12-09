@@ -5,7 +5,18 @@
  */
 
 import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
-import { ColorScheme, ColorSettings, CoreSettings, delay1Tick, ExchangeSettings, HtmlTypes, MultiEvent, SettingsService, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    ColorSettings,
+    CoreSettings,
+    delay1Tick,
+    ExchangeSettings,
+    HtmlTypes,
+    MultiEvent,
+    SettingsService,
+    UiAction,
+    UnreachableCaseError,
+} from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Directive()

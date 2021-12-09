@@ -16,7 +16,21 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { assert, assigned, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import {
+    assert,
+    assigned,
+    delay1Tick,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdUiAction,
+    Logger,
+    StringId,
+    Strings,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';

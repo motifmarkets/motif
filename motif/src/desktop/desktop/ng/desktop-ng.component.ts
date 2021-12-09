@@ -11,7 +11,17 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { AssertInternalError, ButtonUiAction, ColorScheme, CommandRegisterService, delay1Tick, InternalCommand, MultiEvent, SettingsService, StringId } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ButtonUiAction,
+    ColorScheme,
+    CommandRegisterService,
+    delay1Tick,
+    InternalCommand,
+    MultiEvent,
+    SettingsService,
+    StringId,
+} from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import {
     AdiNgService,

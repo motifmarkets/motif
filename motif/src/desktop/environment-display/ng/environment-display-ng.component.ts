@@ -11,7 +11,20 @@ import {
     Component,
     OnDestroy
 } from '@angular/core';
-import { ColorScheme, ColorSettings, ExchangeEnvironment, ExchangeEnvironmentId, ExchangeInfo, MultiEvent, SessionState, SessionStateId, StringId, Strings, UnexpectedCaseError, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    ColorSettings,
+    ExchangeEnvironment,
+    ExchangeEnvironmentId,
+    ExchangeInfo,
+    MultiEvent,
+    SessionState,
+    SessionStateId,
+    StringId,
+    Strings,
+    UnexpectedCaseError,
+    UnreachableCaseError,
+} from '@motifmarkets/motif-core';
 import { SessionInfoService } from 'component-services-internal-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';

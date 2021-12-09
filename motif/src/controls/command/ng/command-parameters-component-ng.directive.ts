@@ -5,7 +5,15 @@
  */
 
 import { Directive, ViewChild } from '@angular/core';
-import { CommandContext, CommandParameters, CommandRegisterService, IconButtonUiAction, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    CommandContext,
+    CommandParameters,
+    CommandRegisterService,
+    IconButtonUiAction,
+    InternalCommand,
+    StringId,
+    Strings,
+} from '@motifmarkets/motif-core';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 
 @Directive()
