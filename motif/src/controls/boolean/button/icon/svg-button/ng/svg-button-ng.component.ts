@@ -5,7 +5,15 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AssertInternalError, ColorScheme, EnumInfoOutOfOrderError, IconButtonUiAction, Integer, MultiEvent, UiAction } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ColorScheme,
+    EnumInfoOutOfOrderError,
+    IconButtonUiAction,
+    Integer,
+    MultiEvent,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import './svg/noun_blank_1667007.svg';

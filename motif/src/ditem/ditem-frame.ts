@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, BrokerageAccountGroup, CommandRegisterService, ExtensionHandle, Integer, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
+import {
+    AdiService,
+    BrokerageAccountGroup,
+    CommandRegisterService,
+    ExtensionHandle,
+    Integer,
+    JsonElement,
+    LitIvemId,
+    SymbolsService,
+} from '@motifmarkets/motif-core';
 import { Frame } from 'component-internal-api';
 import { ComponentContainer } from 'golden-layout';
 import { DesktopAccessService } from './desktop-access-service';

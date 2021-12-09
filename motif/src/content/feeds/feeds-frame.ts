@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { Badness, DataRecordList, Feed, FeedTableRecordDefinitionList, Integer, MultiEvent, tableDefinitionFactory, TableRecordDefinitionList } from '@motifmarkets/motif-core';
+import {
+    Badness,
+    DataRecordList,
+    Feed,
+    FeedTableRecordDefinitionList,
+    Integer,
+    MultiEvent,
+    tableDefinitionFactory,
+    TableRecordDefinitionList,
+} from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 import { TableFrame } from '../table/table-frame';
 

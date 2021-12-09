@@ -5,7 +5,21 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Inject, OnDestroy } from '@angular/core';
-import { AssertInternalError, ColorScheme, MultiEvent, NotImplementedError, OrderPad, OrderRequestDataDefinition, OrderTriggerTypeId, SettingsService, SideId, StringId, Strings, textFormatter, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ColorScheme,
+    MultiEvent,
+    NotImplementedError,
+    OrderPad,
+    OrderRequestDataDefinition,
+    OrderTriggerTypeId,
+    SettingsService,
+    SideId,
+    StringId,
+    Strings,
+    textFormatter,
+    UnreachableCaseError,
+} from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
 

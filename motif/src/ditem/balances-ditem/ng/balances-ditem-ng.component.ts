@@ -14,7 +14,19 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { assert, BrokerageAccountGroup, BrokerageAccountGroupUiAction, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import {
+    assert,
+    BrokerageAccountGroup,
+    BrokerageAccountGroupUiAction,
+    delay1Tick,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    JsonElement,
+    StringId,
+    Strings,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';

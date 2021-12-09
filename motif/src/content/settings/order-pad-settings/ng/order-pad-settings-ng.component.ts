@@ -15,7 +15,16 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { BooleanUiAction, delay1Tick, EnumUiAction, ExplicitElementsEnumUiAction, OrderType, StringId, Strings, TimeInForce } from '@motifmarkets/motif-core';
+import {
+    BooleanUiAction,
+    delay1Tick,
+    EnumUiAction,
+    ExplicitElementsEnumUiAction,
+    OrderType,
+    StringId,
+    Strings,
+    TimeInForce,
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';

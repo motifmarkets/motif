@@ -5,9 +5,19 @@
  */
 
 import {
-    Account, AdiService, AssertInternalError, Balances, BalancesTableRecordDefinitionList, BrokerageAccountGroup, BrokerageAccountGroupBalancesList, CommandRegisterService, Integer, JsonElement, SymbolsService,
+    Account,
+    AdiService,
+    AssertInternalError,
+    Balances,
+    BalancesTableRecordDefinitionList,
+    BrokerageAccountGroup,
+    BrokerageAccountGroupBalancesList,
+    CommandRegisterService,
+    Integer,
+    JsonElement,
+    SymbolsService,
     tableDefinitionFactory,
-    TableRecordDefinitionList
+    TableRecordDefinitionList,
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

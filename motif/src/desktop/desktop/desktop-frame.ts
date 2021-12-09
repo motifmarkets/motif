@@ -5,14 +5,34 @@
  */
 
 import {
-    AdiService, AppStorageService, AssertInternalError, BrokerageAccountGroup, Command,
+    AdiService,
+    AppStorageService,
+    AssertInternalError,
+    BrokerageAccountGroup,
+    Command,
     CommandRegisterService,
-    CommandUiAction, ExtensionHandle,
-    Integer, InternalCommand, Json,
+    CommandUiAction,
+    ExtensionHandle,
+    Integer,
+    InternalCommand,
+    Json,
     JsonElement,
-    JsonValue, LitIvemId, Logger, MarketOrderId, MultiEvent, OrderPad, OrderRequestTypeId, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, SuccessOrErrorText,
-    SuccessOrErrorText_Success, SymbolsService,
-    UiAction, UserAlertService
+    JsonValue,
+    LitIvemId,
+    Logger,
+    MarketOrderId,
+    MultiEvent,
+    OrderPad,
+    OrderRequestTypeId,
+    SettingsService,
+    SingleBrokerageAccountGroup,
+    StringId,
+    Strings,
+    SuccessOrErrorText,
+    SuccessOrErrorText_Success,
+    SymbolsService,
+    UiAction,
+    UserAlertService,
 } from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';

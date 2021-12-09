@@ -16,9 +16,25 @@ import {
 } from '@angular/core';
 import {
     assert,
-    assigned, DateUiAction, delay1Tick,
-    EnumInfoOutOfOrderError, ExchangeId, IconButtonUiAction, Integer, InternalCommand, IvemId, IvemIdUiAction, JsonElement, LitIvemId, Logger, MarketId, StringId, Strings, UiAction, UnexpectedCaseError,
-    UnreachableCaseError
+    assigned,
+    DateUiAction,
+    delay1Tick,
+    EnumInfoOutOfOrderError,
+    ExchangeId,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    IvemId,
+    IvemIdUiAction,
+    JsonElement,
+    LitIvemId,
+    Logger,
+    MarketId,
+    StringId,
+    Strings,
+    UiAction,
+    UnexpectedCaseError,
+    UnreachableCaseError,
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';

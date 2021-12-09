@@ -7,7 +7,15 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
-import { ColorScheme, CoreSettings, delay1Tick, MultiEvent, SessionStateId, SettingsService, UserAlertService } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    CoreSettings,
+    delay1Tick,
+    MultiEvent,
+    SessionStateId,
+    SettingsService,
+    UserAlertService,
+} from '@motifmarkets/motif-core';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { OverlayOriginNgComponent } from 'src/overlay/ng-api';

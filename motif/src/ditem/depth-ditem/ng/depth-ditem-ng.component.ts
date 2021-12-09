@@ -11,7 +11,20 @@ import {
 
     Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { CommaText, delay1Tick, IconButtonUiAction, InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, StringUiAction, UiAction } from '@motifmarkets/motif-core';
+import {
+    CommaText,
+    delay1Tick,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdUiAction,
+    Logger,
+    StringId,
+    Strings,
+    StringUiAction,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';

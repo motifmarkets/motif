@@ -14,7 +14,19 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    BrokerageAccountGroup,
+    BrokerageAccountGroupUiAction,
+    delay1Tick,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    JsonElement,
+    StringId,
+    Strings,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';

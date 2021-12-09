@@ -9,7 +9,20 @@ import {
     ElementRef,
     Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { assert, assigned, DateUiAction, delay1Tick, IconButtonUiAction, InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    assert,
+    assigned,
+    DateUiAction,
+    delay1Tick,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdUiAction,
+    Logger,
+    StringId,
+    Strings,
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentGridLayoutEditorNgComponent, TradesNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';

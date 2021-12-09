@@ -8,7 +8,21 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
     ComponentFactoryResolver, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
-import { assert, assigned, BrokerageAccountGroup, BrokerageAccountGroupUiAction, delay1Tick, IconButtonUiAction, Integer, InternalCommand, JsonElement, Logger, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import {
+    assert,
+    assigned,
+    BrokerageAccountGroup,
+    BrokerageAccountGroupUiAction,
+    delay1Tick,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    JsonElement,
+    Logger,
+    StringId,
+    Strings,
+    UiAction,
+} from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';

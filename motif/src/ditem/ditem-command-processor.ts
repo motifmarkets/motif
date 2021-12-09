@@ -4,7 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, Command, CommandParameters, CommandProcessor, CommandRegisterService, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    Command,
+    CommandParameters,
+    CommandProcessor,
+    CommandRegisterService,
+    UnreachableCaseError,
+} from '@motifmarkets/motif-core';
 import { InternalDitemCommand } from './ditem-command';
 import { DitemCommandContext } from './ditem-command-context';
 import { SetAccountLinkingDitemCommandParameters, SetSecurityLinkingDitemCommandParameters } from './ditem-command-parameters';
