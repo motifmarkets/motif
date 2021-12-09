@@ -47,8 +47,13 @@
                 "output": "/"
               },
               {
-                "glob": "oidc-client.min.js",
-                "input": "node_modules/oidc-client/dist",
+                "glob": "oidc-client-ts.min.js",
+                "input": "node_modules/oidc-client-ts/dist/browser",
+                "output": "/"
+              },
+              {
+                "glob": "oidc-client-ts.min.js.map",
+                "input": "node_modules/oidc-client-ts/dist/browser",
                 "output": "/"
               },
               {
@@ -63,8 +68,7 @@
             ],
             "baseHref": "/",
             "allowedCommonJsDependencies": [
-              "fin-hypergrid",
-              "inject-stylesheet-template"
+              "crypto-js"
             ]
           },
           "configurations": {

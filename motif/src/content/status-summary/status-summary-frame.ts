@@ -11,9 +11,12 @@ import {
     ZenithServerInfoDataDefinition,
     ZenithServerInfoDataItem
 } from '@motifmarkets/motif-core';
+import { SessionInfoService } from 'component-services-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class StatusSummaryFrame extends ContentFrame {
+    private _userAccessTokenExpiryTimeChangedSubscriptionId: MultiEvent.SubscriptionId;
+
     private _extConnectionDataItem: ZenithExtConnectionDataItem;
     private _extConnectionPublisherOnlineChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _extConnectionPublisherStateChangeSubscriptionId: MultiEvent.SubscriptionId;
@@ -23,9 +26,13 @@ export class StatusSummaryFrame extends ContentFrame {
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private _componentAccess: StatusSummaryFrame.ComponentAccess, private _adi: AdiService,
-        public readonly zenithEndpoint: string
+        public readonly _sessionInfoService: SessionInfoService
     ) {
         super();
+
+        this._userAccessTokenExpiryTimeChangedSubscriptionId = this._sessionInfoService.subscribeUserAccessTokenExpiryTimeChangedEvent(
+            () => this._componentAccess.notifyUserAccessTokenExpiryTimeChange()
+        );
     }
 
     get publisherOnline() { return this._extConnectionDataItem.publisherOnline ? Strings[StringId.Online] : Strings[StringId.Offline]; }
@@ -43,6 +50,9 @@ export class StatusSummaryFrame extends ContentFrame {
     }
 
     override finalise() {
+        this._sessionInfoService.unsubscribeUserAccessTokenExpiryTimeChangedEvent(this._userAccessTokenExpiryTimeChangedSubscriptionId);
+        this._userAccessTokenExpiryTimeChangedSubscriptionId = undefined;
+
         this.unsubscribeZenithExtConnection();
         this.unsubscribeZenithServerInfo();
 
@@ -69,7 +79,7 @@ export class StatusSummaryFrame extends ContentFrame {
 
     private subscribeZenithExtConnection() {
         const dataDefinition = new ZenithExtConnectionDataDefinition();
-        dataDefinition.zenithWebsocketEndpoint = this.zenithEndpoint;
+        dataDefinition.zenithWebsocketEndpoint = this._sessionInfoService.zenithEndpoint;
 
         this._extConnectionDataItem = this._adi.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
         this._extConnectionPublisherOnlineChangeSubscriptionId = this._extConnectionDataItem.subscribePublisherOnlineChangeEvent(
@@ -138,6 +148,7 @@ export class StatusSummaryFrame extends ContentFrame {
 
 export namespace StatusSummaryFrame {
     export interface ComponentAccess {
+        notifyUserAccessTokenExpiryTimeChange(): void;
         notifyPublisherOnlineChange(): void;
         notifyPublisherStateChange(): void;
         notifyServerInfoChanged(): void;

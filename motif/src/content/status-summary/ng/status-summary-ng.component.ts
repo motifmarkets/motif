@@ -16,6 +16,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { AssertInternalError, Badness, ExchangeEnvironment, ExchangeInfo } from '@motifmarkets/motif-core';
+import { SessionInfoService } from 'component-services-internal-api';
 import { SessionInfoNgService } from 'component-services-ng-api';
 import { Version } from 'generated-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
@@ -42,13 +43,15 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     public userId: string;
     public username: string;
     public userFullName: string;
+    public userAccessTokenExpiryTime: string;
 
     public serverName: string;
 
     public publisherOnline: string;
     public publisherStateId: string;
 
-    private _frame: StatusSummaryFrame;
+    private readonly _frame: StatusSummaryFrame;
+    private readonly _sessionInfoService: SessionInfoService;
 
     constructor(
         private _cdr: ChangeDetectorRef,
@@ -57,18 +60,19 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     ) {
         super();
 
-        const sessionInfoService = sessionInfoNgService.service;
+        this._sessionInfoService = sessionInfoNgService.service;
 
-        this.serviceName = sessionInfoService.serviceName;
-        this.serviceDescription = sessionInfoService.serviceDescription ?? '';
+        this.serviceName = this._sessionInfoService.serviceName;
+        this.serviceDescription = this._sessionInfoService.serviceDescription ?? '';
         this.clientVersion = `${Version.app} (${isDevMode() ? 'DevMode' : 'ProdMode'})`;
         this.codeCommit = `${Version.commit}`;
         this.exchangeEnvironment = `${ExchangeEnvironment.idToDisplay(ExchangeInfo.getDefaultEnvironmentId())}`;
-        this.userId = sessionInfoService.userId;
-        this.username = sessionInfoService.username;
-        this.userFullName = sessionInfoService.userFullName;
+        this.userId = this._sessionInfoService.userId;
+        this.username = this._sessionInfoService.username;
+        this.userFullName = this._sessionInfoService.userFullName;
+        this.processUserAccessTokenExpiryTimeChange();
 
-        this._frame = contentService.createStatusSummaryFrame(this, sessionInfoService.zenithEndpoint);
+        this._frame = contentService.createStatusSummaryFrame(this, this._sessionInfoService);
     }
 
     ngOnInit() {
@@ -81,6 +85,10 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
 
     ngOnDestroy() {
         this._frame.finalise();
+    }
+
+    public notifyUserAccessTokenExpiryTimeChange() {
+        this.processUserAccessTokenExpiryTimeChange();
     }
 
     public notifyPublisherOnlineChange() {
@@ -103,13 +111,29 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
         this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 
-    public processPublisherOnlineChange() {
+    private processUserAccessTokenExpiryTimeChange() {
+        const expiryTime = this._sessionInfoService.userAccessTokenExpiryTime;
+        let newExpiryTimeDisplay: string;
+        if (expiryTime === undefined) {
+            newExpiryTimeDisplay = '';
+        } else {
+            const newExpiryTimeAsDate = new Date(expiryTime);
+            newExpiryTimeDisplay = newExpiryTimeAsDate.toLocaleTimeString();
+        }
+
+        if (newExpiryTimeDisplay !== this.userAccessTokenExpiryTime) {
+            this.userAccessTokenExpiryTime = newExpiryTimeDisplay;
+            this._cdr.markForCheck();
+        }
+    }
+
+    private processPublisherOnlineChange() {
         this.publisherOnline = this._frame.publisherOnline;
 
         this._cdr.markForCheck();
     }
 
-    public processPublisherStateChange() {
+    private processPublisherStateChange() {
         this.publisherStateId = this._frame.publisherStateId;
 
         this._cdr.markForCheck();

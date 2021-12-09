@@ -28,7 +28,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { SessionInfoService } from 'component-services-internal-api';
 import { Version } from 'generated-internal-api';
-import { Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client';
+import { Log as OidcLog, User, UserManager, UserManagerSettings, UserProfile } from 'oidc-client-ts';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { Config } from './config';
@@ -49,6 +49,7 @@ export class SessionService {
     private _userId: string;
     private _username: string;
     private _userFullName: string;
+    private _userAccessTokenExpiryTime: number | undefined;
 
     private _motifServicesEndpoint: string;
     private _zenithEndpoint: string;
@@ -65,6 +66,8 @@ export class SessionService {
     private _openIdRedirectUri: string;
     private _openIdSilentRedirectUri: string;
     private _openIdScope: string;
+
+    private _sequentialZenithReconnectionWarningCount = 0;
 
     private _stateChangeMultiEvent = new MultiEvent<SessionService.StateChangeEventHandler>();
     private _kickedOffMultiEvent = new MultiEvent<SessionService.KickedOffEventHandler>();
@@ -260,6 +263,11 @@ export class SessionService {
         this._infoService.userFullName = value;
     }
 
+    private setUserAccessTokenExpiryTime(value: number | undefined) {
+        this._userAccessTokenExpiryTime = value;
+        this._infoService.userAccessTokenExpiryTime = value;
+    }
+
     private setZenithEndpoint(value: string) {
         this._zenithEndpoint = value;
         this._infoService.zenithEndpoint = value;
@@ -268,6 +276,7 @@ export class SessionService {
     private handleZenithFeedOnlineChangeEvent(online: boolean): void {
         if (!this.final) {
             if (online) {
+                this._sequentialZenithReconnectionWarningCount = 0;
                 this.logInfo(`Session online`);
                 this.setStateId(SessionStateId.Online);
             } else {
@@ -285,11 +294,23 @@ export class SessionService {
     }
 
     private handleZenithReconnectEvent(reconnectReasonId: ZenithPublisherReconnectReasonId): void {
-        const logText = `Zenith Reconnection: ${ZenithPublisherReconnectReason.idToDisplay(reconnectReasonId)}`;
+        let logText = `Zenith Reconnection: ${ZenithPublisherReconnectReason.idToDisplay(reconnectReasonId)}`;
         if (ZenithPublisherReconnectReason.idToNormal(reconnectReasonId)) {
             this.logInfo(logText);
         } else {
-            this.logWarning(logText);
+            switch (this._sequentialZenithReconnectionWarningCount) {
+                case 0:
+                    this.logWarning(logText);
+                    this._sequentialZenithReconnectionWarningCount++;
+                    break;
+                case 1:
+                    logText += ' (more than one)';
+                    this.logWarning(logText);
+                    this._sequentialZenithReconnectionWarningCount++;
+                    break;
+                default:
+                    // only log 2 warnings until success
+            }
         }
     }
 
@@ -406,15 +427,26 @@ export class SessionService {
     }
 
     private processUserLoaded(user: User) {
+        interface TempUserProfile extends UserProfile {
+            // hack until newer version of oidc-client-ts is released
+            name: string | undefined;
+            preferred_username: string | undefined;
+        }
         this._access_token = user.access_token;
         this._token_type = user.token_type;
 
-        const profile = user.profile;
-        this.setUserId(profile.sub);
-        this.setUsername(profile.preferred_username ?? '');
-        this.setUserFullName(profile.name ?? '');
+        const expiresAt = user.expires_at;
+        const accessTokenExpiryTime = expiresAt === undefined ? undefined : expiresAt * 1000; // convert to JavaScript time
+        this.setUserAccessTokenExpiryTime(accessTokenExpiryTime);
 
-        const telemetryUsername = profile.preferred_username ?? profile.name ?? this._userId;
+        const profile = user.profile as TempUserProfile;
+        const preferred_username = profile. preferred_username ?? '';
+        const fullName = profile.name ?? '';
+        this.setUserId(profile.sub ?? '');
+        this.setUsername(preferred_username);
+        this.setUserFullName(fullName);
+
+        const telemetryUsername = preferred_username ?? fullName ?? this._userId;
         this._telemetryService.setUser(this._userId, telemetryUsername);
 
         if (this._zenithExtConnectionDataItem !== undefined) {
