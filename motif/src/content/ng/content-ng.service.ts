@@ -5,6 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { SessionInfoService } from 'component-services-internal-api';
 import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
@@ -52,8 +53,8 @@ export class ContentNgService {
         return this._content.createTableFrame(componentAccess);
     }
 
-    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, zenithEndpoint: string) {
-        return this._content.createStatusSummaryFrame(componentAccess, zenithEndpoint);
+    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {
+        return this._content.createStatusSummaryFrame(componentAccess, sessionInfoService);
     }
 
     createDepthSideFrame(componentAccess: DepthSideFrame.ComponentAccess) {

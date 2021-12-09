@@ -15,12 +15,14 @@ export class SessionInfoService {
     private _userId: string;
     private _username: string;
     private _userFullName: string;
+    private _userAccessTokenExpiryTime: number | undefined;
     private _zenithEndpoint: string;
 
     private _defaultLayout: SessionInfoService.DefaultLayout;
 
     private _stateChangedMultiEvent = new MultiEvent<SessionInfoService.StateChangedEventHandler>();
     private _kickedOffChangedMultiEvent = new MultiEvent<SessionInfoService.KickedOffChangedEventHandler>();
+    private _userAccessTokenExpiryTimeChangedMultiEvent = new MultiEvent<SessionInfoService.UserAccessTokenExpiryTimeChangedEventHandler>();
 
     // _bannerOverrideExchangeEnvironmentId is a hack used if you want banner to display a different Exchange EnvironmentId
     private _bannerOverrideExchangeEnvironmentId: ExchangeEnvironmentId | undefined;
@@ -54,6 +56,12 @@ export class SessionInfoService {
     get userFullName() { return this._userFullName; }
     set userFullName(value: string) { this._userFullName = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
+    get userAccessTokenExpiryTime() { return this._userAccessTokenExpiryTime; }
+    set userAccessTokenExpiryTime(value: number | undefined) {
+        this._userAccessTokenExpiryTime = value;
+        this.notifyUserAccessTokenExpiryTimeChanged();
+    }
+    // eslint-disable-next-line @typescript-eslint/member-ordering
     get zenithEndpoint() { return this._zenithEndpoint; }
     set zenithEndpoint(value: string) { this._zenithEndpoint = value; }
 
@@ -70,7 +78,7 @@ export class SessionInfoService {
     }
 
     unsubscribeStateChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
-        return this._stateChangedMultiEvent.unsubscribe(subscriptionId);
+        this._stateChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
     subscribeKickedOffChangedEvent(handler: SessionInfoService.KickedOffChangedEventHandler) {
@@ -78,7 +86,15 @@ export class SessionInfoService {
     }
 
     unsubscribeKickedOffChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
-        return this._kickedOffChangedMultiEvent.unsubscribe(subscriptionId);
+        this._kickedOffChangedMultiEvent.unsubscribe(subscriptionId);
+    }
+
+    subscribeUserAccessTokenExpiryTimeChangedEvent(handler: SessionInfoService.UserAccessTokenExpiryTimeChangedEventHandler) {
+        return this._userAccessTokenExpiryTimeChangedMultiEvent.subscribe(handler);
+    }
+
+    unsubscribeUserAccessTokenExpiryTimeChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
+        this._userAccessTokenExpiryTimeChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
     private notifyStateChanged() {
@@ -94,11 +110,19 @@ export class SessionInfoService {
             handler();
         }
     }
+
+    private notifyUserAccessTokenExpiryTimeChanged() {
+        const handlers = this._userAccessTokenExpiryTimeChangedMultiEvent.copyHandlers();
+        for (const handler of handlers) {
+            handler();
+        }
+    }
 }
 
 export namespace SessionInfoService {
     export type StateChangedEventHandler = (this: void) => void;
     export type KickedOffChangedEventHandler = (this: void) => void;
+    export type UserAccessTokenExpiryTimeChangedEventHandler = (this: void) => void;
 
     export interface DefaultLayout {
         readonly internalName: string | undefined;

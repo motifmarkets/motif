@@ -5,6 +5,7 @@
  */
 
 import { AdiService, AppStorageService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
+import { SessionInfoService } from 'component-services-internal-api';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
@@ -38,8 +39,8 @@ export class ContentService {
         return new TableFrame(componentAccess, this._settingsService);
     }
 
-    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, zenithEndpoint: string) {
-        return new StatusSummaryFrame(componentAccess, this._adiService, zenithEndpoint);
+    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {
+        return new StatusSummaryFrame(componentAccess, this._adiService, sessionInfoService);
     }
 
     createDepthSideFrame(componentAccess: DepthSideFrame.ComponentAccess) {
