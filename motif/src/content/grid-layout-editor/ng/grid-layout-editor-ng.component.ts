@@ -139,7 +139,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createCancelSearchUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_CancelSearch;
+        const commandName = InternalCommand.Id.GridLayoutEditor_CancelSearch;
         const displayId = StringId.GridLayoutEditorCancelSearchCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -150,7 +150,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createSearchNextUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_SearchNext;
+        const commandName = InternalCommand.Id.GridLayoutEditor_SearchNext;
         const displayId = StringId.GridLayoutEditorSearchNextCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -168,7 +168,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createMoveUpUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_MoveUp;
+        const commandName = InternalCommand.Id.GridLayoutEditor_MoveUp;
         const displayId = StringId.GridLayoutEditorMoveUpCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -180,7 +180,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createMoveTopUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_MoveTop;
+        const commandName = InternalCommand.Id.GridLayoutEditor_MoveTop;
         const displayId = StringId.GridLayoutEditorMoveTopCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -192,7 +192,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createMoveDownUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_MoveDown;
+        const commandName = InternalCommand.Id.GridLayoutEditor_MoveDown;
         const displayId = StringId.GridLayoutEditorMoveDownCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -204,7 +204,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createMoveBottomUiAction() {
-        const commandName = InternalCommand.Name.GridLayoutEditor_MoveBottom;
+        const commandName = InternalCommand.Id.GridLayoutEditor_MoveBottom;
         const displayId = StringId.GridLayoutEditorMoveBottomCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

@@ -15,8 +15,8 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    ButtonUiAction, delay1Tick, GridLayoutRecordStore, IconButtonUiAction,
-    InternalCommand, JsonElement, LitIvemIdUiAction, StringId, Strings, UiAction
+    delay1Tick, GridLayoutRecordStore, IconButtonUiAction,
+    InternalCommand, JsonElement, LitIvemIdUiAction, ModifierKey, ModifierKeyId, StringId, Strings
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -151,9 +151,9 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         this.commitSymbol();
     }
 
-    private handleColumnsSignalEvent(downKeys: UiAction.DownKeys) {
+    private handleColumnsSignalEvent(downKeys: ModifierKey.IdSet) {
         let layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
-        if (ButtonUiAction.downKeysIncludesId(downKeys, ButtonUiAction.DownKeyId.Shift)) {
+        if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift)) {
             layoutWithHeadings = this._watchContentComponent.frame.getGridLayoutWithHeadersMap();
         } else {
             layoutWithHeadings = this._callPutContentComponent.frame.getGridLayoutWithHeadersMap();
@@ -185,7 +185,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private createApplySymbolUiAction() {
-        const commandName = InternalCommand.Name.EtoPriceQuotation_ApplySymbol;
+        const commandName = InternalCommand.Id.EtoPriceQuotation_ApplySymbol;
         const displayId = StringId.EtoPriceQuotationApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -196,7 +196,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private createSelectColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -208,7 +208,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

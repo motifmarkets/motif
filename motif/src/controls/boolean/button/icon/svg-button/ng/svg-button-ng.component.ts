@@ -11,8 +11,9 @@ import {
     EnumInfoOutOfOrderError,
     IconButtonUiAction,
     Integer,
+    ModifierKey,
     MultiEvent,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
@@ -105,7 +106,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof MouseEvent)) {
             throw new AssertInternalError('FBICOE9846652');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.MouseClick, downKeys);
         }
     }
@@ -114,7 +115,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('FBICOSED6555739');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.EnterKeyPress, downKeys);
         }
     }
@@ -123,7 +124,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('FBICOSKD232005339');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.SpacebarKeyPress, downKeys);
         }
     }

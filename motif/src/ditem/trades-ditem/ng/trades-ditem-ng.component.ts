@@ -21,7 +21,7 @@ import {
     LitIvemIdUiAction,
     Logger,
     StringId,
-    Strings,
+    Strings
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentGridLayoutEditorNgComponent, TradesNgComponent } from 'content-ng-api';
@@ -211,7 +211,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createSymbolApplyUiAction() {
-        const commandName = InternalCommand.Name.ApplySymbol;
+        const commandName = InternalCommand.Id.ApplySymbol;
         const displayId = StringId.ApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -223,7 +223,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -241,7 +241,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -253,7 +253,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

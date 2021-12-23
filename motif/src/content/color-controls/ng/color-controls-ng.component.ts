@@ -22,7 +22,7 @@ import {
     CommandRegisterService, delay1Tick, EnumInfoOutOfOrderError, EnumUiAction,
     ExplicitElementsEnumUiAction, HtmlTypes, IconButtonUiAction,
     IntegerUiAction,
-    InternalCommand, MultiEvent, NumberUiAction, RGB, SettingsService, StringId, Strings, StringUiAction,
+    InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId, Strings, StringUiAction,
     UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
@@ -312,14 +312,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleLightenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleLightenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 0.5;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift)) {
                     amount = 2.5;
                 } else {
                     amount = 10;
@@ -331,14 +331,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleDarkenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleDarkenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 0.5;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                     amount = 2.5;
                 } else {
                     amount = 10;
@@ -350,14 +350,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleBrightenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleBrightenSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 0.5;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                     amount = 2.5;
                 } else {
                     amount = 10;
@@ -369,7 +369,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleComplementSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleComplementSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             const newTinyColor = tinyColor.complement();
@@ -378,14 +378,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleSaturateSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSaturateSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 0.5;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                     amount = 2.5;
                 } else {
                     amount = 10;
@@ -397,14 +397,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleDesaturateSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleDesaturateSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 0.5;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                     amount = 2.5;
                 } else {
                     amount = 10;
@@ -416,14 +416,14 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleSpinSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSpinSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const tinyColor = new TinyColor(this._tinyColor);
             let amount: number;
-            if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+            if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                 amount = 2;
             } else {
-                if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Ctrl)) {
+                if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Ctrl)) {
                     amount = 10;
                 } else {
                     amount = 45;
@@ -435,7 +435,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         }
     }
 
-    private handleCopySignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleCopySignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this._enabledItemId !== undefined) {
             const otherBkgdForeId = ColorScheme.BkgdFore.getOther(this._bkgdForeId);
             const calculatedColor = this.calculateColor(this._enabledItemId, otherBkgdForeId);
@@ -646,9 +646,9 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createLightenUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Lighten;
+        const commandId = InternalCommand.Id.ColorSelector_Lighten;
         const displayId = StringId.ColorSelector_LightenCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandId, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.ColorSelector_LightenTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Lighten);
@@ -657,9 +657,9 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createDarkenUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Darken;
+        const commandId = InternalCommand.Id.ColorSelector_Darken;
         const displayId = StringId.ColorSelector_DarkenCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandId, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.ColorSelector_DarkenTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Darken);
@@ -668,7 +668,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createBrightenUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Brighten;
+        const commandName = InternalCommand.Id.ColorSelector_Brighten;
         const displayId = StringId.ColorSelector_BrightenCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -679,7 +679,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createComplementUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Complement;
+        const commandName = InternalCommand.Id.ColorSelector_Complement;
         const displayId = StringId.ColorSelector_ComplementCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -690,7 +690,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createSaturateUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Saturate;
+        const commandName = InternalCommand.Id.ColorSelector_Saturate;
         const displayId = StringId.ColorSelector_SaturateCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -701,7 +701,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createDesaturateUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Desaturate;
+        const commandName = InternalCommand.Id.ColorSelector_Desaturate;
         const displayId = StringId.ColorSelector_DesaturateCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -712,7 +712,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createSpinUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Spin;
+        const commandName = InternalCommand.Id.ColorSelector_Spin;
         const displayId = StringId.ColorSelector_SpinCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -723,7 +723,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createCopyUiAction() {
-        const commandName = InternalCommand.Name.ColorSelector_Copy;
+        const commandName = InternalCommand.Id.ColorSelector_Copy;
         const displayId = StringId.ColorSelector_CopyCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

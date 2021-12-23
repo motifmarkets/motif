@@ -134,9 +134,7 @@ function updateRules(config: webpack.WebpackOptionsNormalized, development: bool
         } else {
             excludeSvgButtonIconFolderFromModuleRules(rules);
             addIconSpriteModuleRule(rules);
-            if (development) {
-                addSourceMapLoaderRule(rules);
-            }
+            addSourceMapLoaderRule(rules);
         }
     }
 }

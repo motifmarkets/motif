@@ -1,3 +1,4 @@
+import { ModifierKeys } from '../sys/modifier-key-api';
 
 /** @public */
 export interface UiAction {
@@ -42,7 +43,7 @@ export interface UiAction {
 export namespace UiAction {
     export type CommitEventHandler = (this: void, type: UiAction.CommitType) => void;
     export type InputEventHandler = (this: void) => void;
-    export type SignalEventHandler = (this: void, signalType: SignalType, downKeys: DownKeys) => void;
+    export type SignalEventHandler = (this: void, signalType: SignalType, downKeys: ModifierKeys) => void;
     export type EditedChangeEventHandler = (this: void) => void;
 
     export const enum StateEnum {
@@ -71,16 +72,6 @@ export namespace UiAction {
         SpacebarKeyPress = 'SpacebarKeyPress',
     }
     export type SignalType = keyof typeof SignalTypeEnum;
-
-    export const enum DownKeyEnum {
-        Alt = 'Alt',
-        Ctrl = 'Ctrl',
-        Meta = 'Meta',
-        Shift = 'Shift',
-    }
-    export type DownKey = keyof typeof DownKeyEnum;
-
-    export type DownKeys = DownKey[];
 
     export const enum AutoAcceptanceTypeEnum {
         None = 'None',

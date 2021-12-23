@@ -15,8 +15,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness, ExchangeEnvironment, ExchangeInfo } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
+import { AssertInternalError, Badness, ExchangeEnvironment, ExchangeInfo, SessionInfoService } from '@motifmarkets/motif-core';
 import { SessionInfoNgService } from 'component-services-ng-api';
 import { Version } from 'generated-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';

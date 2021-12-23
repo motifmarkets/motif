@@ -8,6 +8,7 @@ export * from './api-error-api';
 export * from './badness-api';
 export * from './comparable-list-api';
 export * from './correctness-api';
+export * from './modifier-key-api';
 export * from './decimal-api';
 export * from './json-element-api';
 export * from './multi-event-api';

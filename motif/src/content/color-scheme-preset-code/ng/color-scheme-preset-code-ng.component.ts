@@ -17,9 +17,10 @@ import {
     delay1Tick,
     IconButtonUiAction,
     InternalCommand,
+    ModifierKey,
     StringBuilder,
     StringId,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -78,7 +79,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
         });
     }
 
-    private handleCopyToClipboardSignalAction(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleCopyToClipboardSignalAction(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         const listener = (e: ClipboardEvent) => {
             const clipboard = e.clipboardData;
             if (clipboard === null) {
@@ -94,12 +95,12 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
         document.removeEventListener('copy', listener, false);
     }
 
-    private handleReturnSignalAction(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleReturnSignalAction(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.close();
     }
 
     private createReturnUiAction() {
-        const commandName = InternalCommand.Name.ContentGridLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -109,7 +110,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
     }
 
     private createCopyToClipboardUiAction() {
-        const commandName = InternalCommand.Name.ColorSchemePresetCode_CopyToClipboard;
+        const commandName = InternalCommand.Id.ColorSchemePresetCode_CopyToClipboard;
         const displayId = StringId.CopyToClipboard;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

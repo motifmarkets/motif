@@ -23,6 +23,7 @@ import {
     GridLayoutRecordStore,
     IconButtonUiAction,
     InternalCommand,
+    ModifierKey,
     StringId,
     UiAction,
     UnreachableCaseError
@@ -135,32 +136,32 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
         }
     }
 
-    private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(ParidepthGridLayoutsEditorNgComponent.LayoutId.BidDepth);
     }
 
-    private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(ParidepthGridLayoutsEditorNgComponent.LayoutId.AskDepth);
     }
 
-    private handleWatchlistSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleWatchlistSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(ParidepthGridLayoutsEditorNgComponent.LayoutId.AskDepth);
     }
 
-    private handleTradesSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleTradesSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(ParidepthGridLayoutsEditorNgComponent.LayoutId.AskDepth);
     }
 
-    private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.close(true);
     }
 
-    private handleCancelSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleCancelSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.close(false);
     }
 
     private createBidDepthUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_BidDepth;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_BidDepth;
         const displayId = StringId.BidDepth;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -169,7 +170,7 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
     }
 
     private createAskDepthUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_AskDepth;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_AskDepth;
         const displayId = StringId.AskDepth;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -178,7 +179,7 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
     }
 
     private createWatchlistUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_Watchlist;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_Watchlist;
         const displayId = StringId.Watchlist;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -187,7 +188,7 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
     }
 
     private createTradesUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_Trades;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_Trades;
         const displayId = StringId.Trades;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -196,7 +197,7 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
     }
 
     private createOkUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -206,7 +207,7 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
     }
 
     private createCancelUiAction() {
-        const commandName = InternalCommand.Name.PariDepthGridsLayoutEditor_Cancel;
+        const commandName = InternalCommand.Id.PariDepthGridsLayoutEditor_Cancel;
         const displayId = StringId.Cancel;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

@@ -20,7 +20,7 @@ import {
     InternalCommand,
     MultiEvent,
     SettingsService,
-    StringId,
+    StringId
 } from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import {
@@ -148,7 +148,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     }
 
     private createSignOutUiAction(signOutService: SignOutService) {
-        const commandName = InternalCommand.Name.SignOut;
+        const commandName = InternalCommand.Id.SignOut;
         const displayId = StringId.Desktop_SignOutCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);

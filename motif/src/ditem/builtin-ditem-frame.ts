@@ -13,7 +13,7 @@ import {
     InternalCommand,
     StringId,
     Strings,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { MenuBarService } from 'controls-internal-api';
 import { DesktopAccessService } from './desktop-access-service';
@@ -72,7 +72,7 @@ export namespace BuiltinDitemFrame {
         interface Info {
             readonly id: Id;
             readonly name: string;
-            readonly newInternalCommandName: InternalCommand.Name;
+            readonly newInternalCommandId: InternalCommand.Id;
             readonly menuDisplayId: StringId;
             readonly menuBarItemPosition: MenuBarService.MenuItem.Position | undefined;
         }
@@ -83,14 +83,14 @@ export namespace BuiltinDitemFrame {
             Placeholder: {
                 id: BuiltinTypeId.Placeholder,
                 name: 'Placeholder',
-                newInternalCommandName: InternalCommand.Name.NewPlaceholderDitem,
+                newInternalCommandId: InternalCommand.Id.NewPlaceholderDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Placeholder,
                 menuBarItemPosition: undefined,
             },
             Extensions: {
                 id: BuiltinTypeId.Extensions,
                 name: 'Extensions',
-                newInternalCommandName: InternalCommand.Name.NewExtensionsDitem,
+                newInternalCommandId: InternalCommand.Id.NewExtensionsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Extensions,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
@@ -100,7 +100,7 @@ export namespace BuiltinDitemFrame {
             Symbols: {
                 id: BuiltinTypeId.Symbols,
                 name: 'Symbols',
-                newInternalCommandName: InternalCommand.Name.NewSymbolsDitem,
+                newInternalCommandId: InternalCommand.Id.NewSymbolsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Symbols,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
@@ -110,7 +110,7 @@ export namespace BuiltinDitemFrame {
             DepthAndTrades: {
                 id: BuiltinTypeId.DepthAndTrades,
                 name: 'DepthAndTrades',
-                newInternalCommandName: InternalCommand.Name.NewDepthAndTradesDitem,
+                newInternalCommandId: InternalCommand.Id.NewDepthAndTradesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_DepthAndTrades,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.price],
@@ -120,7 +120,7 @@ export namespace BuiltinDitemFrame {
             Watchlist: {
                 id: BuiltinTypeId.Watchlist,
                 name: 'Watchlist',
-                newInternalCommandName: InternalCommand.Name.NewWatchlistDitem,
+                newInternalCommandId: InternalCommand.Id.NewWatchlistDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Watchlist,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.price],
@@ -130,7 +130,7 @@ export namespace BuiltinDitemFrame {
             Depth: {
                 id: BuiltinTypeId.Depth,
                 name: 'Depth',
-                newInternalCommandName: InternalCommand.Name.NewDepthDitem,
+                newInternalCommandId: InternalCommand.Id.NewDepthDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Depth,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.price],
@@ -140,28 +140,28 @@ export namespace BuiltinDitemFrame {
             NewsHeadlines: {
                 id: BuiltinTypeId.NewsHeadlines,
                 name: 'NewsHeadlines',
-                newInternalCommandName: InternalCommand.Name.NewNewsHeadlinesDitem,
+                newInternalCommandId: InternalCommand.Id.NewNewsHeadlinesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsHeadlines,
                 menuBarItemPosition: undefined,
             },
             NewsBody: {
                 id: BuiltinTypeId.NewsBody,
                 name: 'NewsBody',
-                newInternalCommandName: InternalCommand.Name.NewNewsBodyDitem,
+                newInternalCommandId: InternalCommand.Id.NewNewsBodyDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsBody,
                 menuBarItemPosition: undefined,
             },
             TopShareholders: {
                 id: BuiltinTypeId.TopShareholders,
                 name: 'TopShareholders',
-                newInternalCommandName: InternalCommand.Name.NewTopShareholdersDitem,
+                newInternalCommandId: InternalCommand.Id.NewTopShareholdersDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_TopShareholders,
                 menuBarItemPosition: undefined,
             },
             Status: {
                 id: BuiltinTypeId.Status,
                 name: 'Status',
-                newInternalCommandName: InternalCommand.Name.NewStatusDitem,
+                newInternalCommandId: InternalCommand.Id.NewStatusDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Status,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.help],
@@ -171,7 +171,7 @@ export namespace BuiltinDitemFrame {
             Trades: {
                 id: BuiltinTypeId.Trades,
                 name: 'Trades',
-                newInternalCommandName: InternalCommand.Name.NewTradesDitem,
+                newInternalCommandId: InternalCommand.Id.NewTradesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Trades,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.price],
@@ -181,14 +181,14 @@ export namespace BuiltinDitemFrame {
             OrderRequest: {
                 id: BuiltinTypeId.OrderRequest,
                 name: 'OrderRequest',
-                newInternalCommandName: InternalCommand.Name.NewOrderRequestDitem,
+                newInternalCommandId: InternalCommand.Id.NewOrderRequestDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_OrderRequest,
                 menuBarItemPosition: undefined,
             },
             BrokerageAccounts: {
                 id: BuiltinTypeId.BrokerageAccounts,
                 name: 'BrokerageAccounts',
-                newInternalCommandName: InternalCommand.Name.NewBrokerageAccountsDitem,
+                newInternalCommandId: InternalCommand.Id.NewBrokerageAccountsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_BrokerageAccounts,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
@@ -198,7 +198,7 @@ export namespace BuiltinDitemFrame {
             Orders: {
                 id: BuiltinTypeId.Orders,
                 name: 'Orders',
-                newInternalCommandName: InternalCommand.Name.NewOrdersDitem,
+                newInternalCommandId: InternalCommand.Id.NewOrdersDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Orders,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
@@ -208,7 +208,7 @@ export namespace BuiltinDitemFrame {
             Holdings: {
                 id: BuiltinTypeId.Holdings,
                 name: 'Holdings',
-                newInternalCommandName: InternalCommand.Name.NewHoldingsDitem,
+                newInternalCommandId: InternalCommand.Id.NewHoldingsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Holdings,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
@@ -218,7 +218,7 @@ export namespace BuiltinDitemFrame {
             Balances: {
                 id: BuiltinTypeId.Balances,
                 name: 'Balances',
-                newInternalCommandName: InternalCommand.Name.NewBalancesDitem,
+                newInternalCommandId: InternalCommand.Id.NewBalancesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Balances,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
@@ -228,7 +228,7 @@ export namespace BuiltinDitemFrame {
             Settings: {
                 id: BuiltinTypeId.Settings,
                 name: 'Settings',
-                newInternalCommandName: InternalCommand.Name.NewSettingsDitem,
+                newInternalCommandId: InternalCommand.Id.NewSettingsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Settings,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
@@ -238,21 +238,21 @@ export namespace BuiltinDitemFrame {
             EtoPriceQuotation: {
                 id: BuiltinTypeId.EtoPriceQuotation,
                 name: 'EtoPriceQuotation',
-                newInternalCommandName: InternalCommand.Name.NewEtoPriceQuotationDitem,
+                newInternalCommandId: InternalCommand.Id.NewEtoPriceQuotationDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_EtoPriceQuotation,
                 menuBarItemPosition: undefined,
             },
             GeneralWebPage: {
                 id: BuiltinTypeId.GeneralWebPage,
                 name: 'GeneralWebPage',
-                newInternalCommandName: InternalCommand.Name.NewGeneralWebPageDitem,
+                newInternalCommandId: InternalCommand.Id.NewGeneralWebPageDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_GeneralWebPage,
                 menuBarItemPosition: undefined,
             },
             BrandingSplashWebPage: {
                 id: BuiltinTypeId.BrandingSplashWebPage,
                 name: 'BrandingSplashWebPage',
-                newInternalCommandName: InternalCommand.Name.NewBrandingSplashWebPageDitem,
+                newInternalCommandId: InternalCommand.Id.NewBrandingSplashWebPageDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_BrandingSplashWebPage,
                 menuBarItemPosition: undefined,
             },
@@ -290,7 +290,7 @@ export namespace BuiltinDitemFrame {
         }
 
         export function idToNewInternalCommandName(id: Id) {
-            return infos[id].newInternalCommandName;
+            return infos[id].newInternalCommandId;
         }
 
         export function idToMenuDisplayId(id: Id) {

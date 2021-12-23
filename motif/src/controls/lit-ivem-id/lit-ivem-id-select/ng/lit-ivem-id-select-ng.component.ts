@@ -321,7 +321,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     }
 
     private createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterService: CommandRegisterService) {
-        const commandName = InternalCommand.Name.LitIvemIdSelect_ToggleSearchTermNotExchangedMarketProcessed;
+        const commandName = InternalCommand.Id.LitIvemIdSelect_ToggleSearchTermNotExchangedMarketProcessed;
         const displayId = StringId.ToggleSearchTermNotExchangedMarketProcessedCaption;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

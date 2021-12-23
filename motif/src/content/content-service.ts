@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, AppStorageService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
+import { AdiService, SessionInfoService, AppStorageService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';

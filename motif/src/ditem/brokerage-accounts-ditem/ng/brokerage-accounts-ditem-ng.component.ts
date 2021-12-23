@@ -21,9 +21,10 @@ import {
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    ModifierKey,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -127,7 +128,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private createToggleAccountLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleAccountLinking;
+        const commandName = InternalCommand.Id.ToggleAccountLinking;
         const displayId = StringId.ToggleAccountLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -137,7 +138,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         return action;
     }
 
-    private handleAccountLinkButtonSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAccountLinkButtonSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 

@@ -24,9 +24,9 @@ import {
     ZenithPublisherReconnectReasonId,
     ZenithPublisherState,
     ZenithPublisherStateId,
+    SessionInfoService,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
 import { Version } from 'generated-internal-api';
 import { Log as OidcLog, User, UserManager, UserManagerSettings, UserProfile } from 'oidc-client-ts';
 import { SignOutService } from 'src/component-services/sign-out-service';

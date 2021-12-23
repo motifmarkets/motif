@@ -34,7 +34,7 @@ import {
     Strings,
     UiAction,
     UnexpectedCaseError,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -334,7 +334,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createToggleSymbolLinkingButtonUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -345,7 +345,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createTodayModeUiAction() {
-        const commandName = InternalCommand.Name.TopShareholders_TodayMode;
+        const commandName = InternalCommand.Id.TopShareholders_TodayMode;
         const displayId = StringId.TopShareholdersTodayModeCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -357,7 +357,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createHistoricalModeUiAction() {
-        const commandName = InternalCommand.Name.TopShareholders_HistoricalMode;
+        const commandName = InternalCommand.Id.TopShareholders_HistoricalMode;
         const displayId = StringId.TopShareholdersHistoricalModeCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -369,7 +369,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createCompareModeUiAction() {
-        const commandName = InternalCommand.Name.TopShareholders_CompareMode;
+        const commandName = InternalCommand.Id.TopShareholders_CompareMode;
         const displayId = StringId.TopShareholdersCompareModeCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -381,7 +381,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createDetailsModeUiAction() {
-        const commandName = InternalCommand.Name.TopShareholders_DetailsMode;
+        const commandName = InternalCommand.Id.TopShareholders_DetailsMode;
         const displayId = StringId.TopShareholdersDetailsModeCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -393,7 +393,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private createHistoryCompareUiAction() {
-        const commandName = InternalCommand.Name.TopShareholders_Compare;
+        const commandName = InternalCommand.Id.TopShareholders_Compare;
         const displayId = StringId.TopShareholdersCompareModeCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

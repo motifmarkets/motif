@@ -84,7 +84,7 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
     }
 
     private createOkUiAction() {
-        const commandName = InternalCommand.Name.ContentGridLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -94,7 +94,7 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
     }
 
     private createCancelUiAction() {
-        const commandName = InternalCommand.Name.ContentGridLayoutEditor_Cancel;
+        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Cancel;
         const displayId = StringId.Cancel;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

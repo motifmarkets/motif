@@ -10,6 +10,7 @@ import {
     AssertInternalError, Command, CommandRegisterService, CommandUiAction, CommaText,
     compareInteger, ExtStringId, extStrings, Integer, InternalCommand, isArrayEqual,
     Line,
+    ModifierKey,
     MultiEvent, StringId, UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
 
@@ -508,7 +509,7 @@ export class MenuBarService {
     }
 
     private createMissingCommandUiAction() {
-        const commandName = InternalCommand.Name.Missing;
+        const commandName = InternalCommand.Id.Missing;
         const displayId = StringId.Missing;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         return new CommandUiAction(command);
@@ -1085,7 +1086,7 @@ export namespace MenuBarService {
         }
 
         onMouseClick(altKey: boolean, ctrlKey: boolean, metaKey: boolean, shiftKey: boolean) {
-            const downKeys = UiAction.makeDownKeys(altKey, ctrlKey, metaKey, shiftKey);
+            const downKeys = ModifierKey.IdSet.create(altKey, ctrlKey, metaKey, shiftKey);
             this._uiAction.signal(UiAction.SignalTypeId.MouseClick, downKeys);
             this.notifyClearChildMenus();
         }

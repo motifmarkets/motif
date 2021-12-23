@@ -32,7 +32,7 @@ import {
     SuccessOrErrorText_Success,
     SymbolsService,
     UiAction,
-    UserAlertService,
+    UserAlertService
 } from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
@@ -608,7 +608,7 @@ export class DesktopFrame implements DesktopAccessService {
 
         const buySellOrderRequestMenuPath = [...DesktopFrame.BuySellOrderRequestParentMenuPath, DesktopFrame.BuySellOrderRequestMenuName];
 
-        this._newBuyOrderRequestDitemUiAction = this.createCommandUiAction(InternalCommand.Name.NewBuyOrderRequestDitem,
+        this._newBuyOrderRequestDitemUiAction = this.createCommandUiAction(InternalCommand.Id.NewBuyOrderRequestDitem,
             StringId.DitemMenuDisplay_OrderRequest_Buy,
             () => this.handleNewBuyOrderRequestDitemUiActionSignal(),
             {
@@ -617,7 +617,7 @@ export class DesktopFrame implements DesktopAccessService {
             }
         );
 
-        this._newSellOrderRequestDitemUiAction = this.createCommandUiAction(InternalCommand.Name.NewSellOrderRequestDitem,
+        this._newSellOrderRequestDitemUiAction = this.createCommandUiAction(InternalCommand.Id.NewSellOrderRequestDitem,
             StringId.DitemMenuDisplay_OrderRequest_Sell,
             () => this.handleNewSellOrderRequestDitemUiActionSignal(),
             {
@@ -626,7 +626,7 @@ export class DesktopFrame implements DesktopAccessService {
             }
         );
 
-        this._saveLayoutUiAction = this.createCommandUiAction(InternalCommand.Name.SaveLayout,
+        this._saveLayoutUiAction = this.createCommandUiAction(InternalCommand.Id.SaveLayout,
             StringId.Desktop_SaveLayoutCaption,
             () => this.handleSaveLayoutUiActionSignal(),
             {
@@ -634,7 +634,7 @@ export class DesktopFrame implements DesktopAccessService {
                 rank: 30000,
             }
         );
-        this._resetLayoutUiAction = this.createCommandUiAction(InternalCommand.Name.ResetLayout,
+        this._resetLayoutUiAction = this.createCommandUiAction(InternalCommand.Id.ResetLayout,
             StringId.Desktop_ResetLayoutCaption,
             () => this.handleResetLayoutUiActionSignal(),
             {
@@ -642,7 +642,7 @@ export class DesktopFrame implements DesktopAccessService {
                 rank: 30000,
             }
         );
-        this._signOutUiAction = this.createCommandUiAction(InternalCommand.Name.SignOut,
+        this._signOutUiAction = this.createCommandUiAction(InternalCommand.Id.SignOut,
             StringId.Desktop_SignOutCaption,
             () => this.handleSignOutUiActionSignal()
         );
@@ -761,10 +761,10 @@ export class DesktopFrame implements DesktopAccessService {
         return action;
     }
 
-    private createCommandUiAction(commandName: InternalCommand.Name, displayId: StringId, handler: UiAction.SignalEventHandler,
+    private createCommandUiAction(commandId: InternalCommand.Id, displayId: StringId, handler: UiAction.SignalEventHandler,
         menuBarItemPosition?: Command.MenuBarItemPosition
     ) {
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId, menuBarItemPosition);
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandId, displayId, menuBarItemPosition);
         const action = new CommandUiAction(command);
         action.signalEvent = handler;
         return action;

@@ -49,7 +49,7 @@ export class SignedOutNgComponent extends ComponentBaseNgDirective implements On
     }
 
     private createSignInAgainUiAction() {
-        const commandName = InternalCommand.Name.SignInAgain;
+        const commandName = InternalCommand.Id.SignInAgain;
         const displayId = StringId.SignInAgain;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);

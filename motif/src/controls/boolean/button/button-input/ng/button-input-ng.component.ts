@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { AssertInternalError, BooleanUiAction, ButtonUiAction, MultiEvent, UiAction } from '@motifmarkets/motif-core';
+import { AssertInternalError, BooleanUiAction, ButtonUiAction, ModifierKey, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 
@@ -41,7 +41,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         if (!(event instanceof MouseEvent)) {
             throw new AssertInternalError('BICOE1999580');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.MouseClick, downKeys);
         }
     }
@@ -50,7 +50,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('BICOSED33845092');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.EnterKeyPress, downKeys);
         }
     }
@@ -59,7 +59,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('BICOSKD4474982');
         } else {
-            const downKeys = UiAction.makeDownKeys(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
             this.uiAction.signal(UiAction.SignalTypeId.SpacebarKeyPress, downKeys);
         }
     }

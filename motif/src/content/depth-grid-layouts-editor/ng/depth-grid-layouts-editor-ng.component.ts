@@ -17,6 +17,7 @@ import {
     delay1Tick,
     IconButtonUiAction,
     InternalCommand,
+    ModifierKey,
     StringId,
     UiAction,
     UnreachableCaseError
@@ -111,24 +112,24 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         }
     }
 
-    private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(BidAskSideId.Bid);
     }
 
-    private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.setSideId(BidAskSideId.Ask);
     }
 
-    private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.close(true);
     }
 
-    private handleCancelSignal(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleCancelSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.close(false);
     }
 
     private createBidDepthUiAction() {
-        const commandName = InternalCommand.Name.DepthGridsLayoutEditor_BidDepth;
+        const commandName = InternalCommand.Id.DepthGridsLayoutEditor_BidDepth;
         const displayId = StringId.BidDepth;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -137,7 +138,7 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     }
 
     private createAskDepthUiAction() {
-        const commandName = InternalCommand.Name.DepthGridsLayoutEditor_AskDepth;
+        const commandName = InternalCommand.Id.DepthGridsLayoutEditor_AskDepth;
         const displayId = StringId.AskDepth;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -146,7 +147,7 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     }
 
     private createOkUiAction() {
-        const commandName = InternalCommand.Name.DepthGridsLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.DepthGridsLayoutEditor_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -156,7 +157,7 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     }
 
     private createCancelUiAction() {
-        const commandName = InternalCommand.Name.DepthGridsLayoutEditor_Cancel;
+        const commandName = InternalCommand.Id.DepthGridsLayoutEditor_Cancel;
         const displayId = StringId.Cancel;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

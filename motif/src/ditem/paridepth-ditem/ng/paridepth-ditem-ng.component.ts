@@ -18,7 +18,7 @@ import {
 } from '@angular/core';
 import {
     AssertInternalError, CommaText, DateUiAction, defined, delay1Tick, IconButtonUiAction,
-    InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, StringId, Strings, StringUiAction,
+    InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, ModifierKey, ModifierKeyId, StringId, Strings, StringUiAction,
     UiAction
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
@@ -293,23 +293,23 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         }
     }
 
-    private handleSymbolApplyUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSymbolApplyUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.commitSymbol(UiAction.CommitTypeId.Explicit);
     }
 
-    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleRollUpUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
-        this._frame.rollUp(UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift));
+    private handleRollUpUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        this._frame.rollUp(ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift));
     }
 
-    private handleExpandUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
-        this._frame.expand(UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift));
+    private handleExpandUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        this._frame.expand(ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift));
     }
 
-    private handleFilterUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleFilterUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.toggleFilterActive();
         this.pushFilterSelectState();
     }
@@ -329,11 +329,11 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         // this.pushValid();
     }
 
-    private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.showLayoutEditor();
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.autoSizeAllColumnWidths();
     }
 
@@ -347,7 +347,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createSymbolApplyUiAction() {
-        const commandName = InternalCommand.Name.ApplySymbol;
+        const commandName = InternalCommand.Id.ApplySymbol;
         const displayId = StringId.ApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -359,7 +359,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -370,7 +370,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createRollUpUiAction() {
-        const commandName = InternalCommand.Name.Depth_Rollup;
+        const commandName = InternalCommand.Id.Depth_Rollup;
         const displayId = StringId.RollUpDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -381,7 +381,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createExpandUiAction() {
-        const commandName = InternalCommand.Name.Depth_Expand;
+        const commandName = InternalCommand.Id.Depth_Expand;
         const displayId = StringId.ExpandDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -392,7 +392,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createFilterUiAction() {
-        const commandName = InternalCommand.Name.Depth_Filter;
+        const commandName = InternalCommand.Id.Depth_Filter;
         const displayId = StringId.FilterDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -417,7 +417,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -429,7 +429,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
