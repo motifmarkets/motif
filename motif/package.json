@@ -17,6 +17,7 @@
   "scripts": {
     "postinstall": "generate-build-info.bat",
     "ng": "ng",
+    "clean:cache": "npx del-cli .angular/cache",
     "clean:lib": "npx del-cli lib",
     "file:info:build": "generate-build-info.bat",
     "file:info:version": "type package.json | jq .version --raw-output > src/generated/version.txt",

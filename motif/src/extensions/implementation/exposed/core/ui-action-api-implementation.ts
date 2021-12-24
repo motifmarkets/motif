@@ -219,6 +219,7 @@ export namespace UiActionImplementation {
                 case UiAction.SignalTypeId.MouseClick: return UiActionApi.SignalTypeEnum.MouseClick;
                 case UiAction.SignalTypeId.EnterKeyPress: return UiActionApi.SignalTypeEnum.EnterKeyPress;
                 case UiAction.SignalTypeId.SpacebarKeyPress: return UiActionApi.SignalTypeEnum.SpacebarKeyPress;
+                case UiAction.SignalTypeId.KeyboardShortcut: return UiActionApi.SignalTypeEnum.KeyboardShortcut;
                 default: throw new UnreachableCaseError('UAAIRSTITA58843322', value);
             }
         }

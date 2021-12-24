@@ -70,6 +70,7 @@ export namespace UiAction {
         MouseClick = 'MouseClick',
         EnterKeyPress = 'EnterKeyPress',
         SpacebarKeyPress = 'SpacebarKeyPress',
+        KeyboardShortcut = 'KeyboardShortcut',
     }
     export type SignalType = keyof typeof SignalTypeEnum;
 

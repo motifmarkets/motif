@@ -9,15 +9,11 @@ import {
     ChangeDetectionStrategy,
     Component,
     ComponentFactoryResolver,
-    OnDestroy,
-    Type,
-    ViewChild,
+    OnDestroy, ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
-    Command,
-    CommandContext,
-    CommandRegisterService, CommandUiAction, delay1Tick
+    Command, CommandRegisterService, CommandUiAction, delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 // import { CommandParametersComponentRegister } from '../../command-parameters-component-register';
@@ -121,7 +117,7 @@ export class CommandBarNgComponent implements OnDestroy, AfterViewInit {
     // }
 
     private initialiseComponents() {
-        this._commandSelectComponent.initialise(this._commandUiAction);
+        // this._commandSelectComponent.initialise(this._commandUiAction);
     }
 
     private createCommandUiAction(
