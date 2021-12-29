@@ -9,15 +9,20 @@ import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import {
     ColorScheme,
-    CoreSettings,
-    delay1Tick,
+    CommandContext,
+    CoreSettings, delay1Tick,
+    KeyboardService,
     MultiEvent,
     SessionStateId,
     SettingsService,
-    UserAlertService,
+    StringId,
+    UserAlertService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
+import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ExtensionsService } from 'src/extensions/internal-api';
+import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { OverlayOriginNgComponent } from 'src/overlay/ng-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
@@ -37,6 +42,9 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
     public starting = true;
 
+    private _keyboardService: KeyboardService;
+    private _commandContext: CommandContext;
+
     private _userAlertService: UserAlertService;
 
     private _session: SessionService;
@@ -55,6 +63,8 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         private readonly _titleService: Title,
         private readonly _sessionService: SessionNgService,
         settingsNgService: SettingsNgService,
+        extensionsNgService: ExtensionsNgService,
+        keyboardNgService: KeyboardNgService,
         userAlertNgService: UserAlertNgService,
     ) {
         super();
@@ -69,6 +79,9 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
         this._titleService.setTitle('Motif'); // need to improve this
 
+        this._keyboardService = keyboardNgService.service;
+        this._commandContext = this.createCommandContext(this._elRef.nativeElement, extensionsNgService.service);
+        this._keyboardService.registerCommandContext(this._commandContext, true);
         this._userAlertService = userAlertNgService.service;
     }
 
@@ -131,12 +144,24 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     }
 
     private finalise() {
+        this._keyboardService.deregisterCommandContext(this._commandContext);
+
         if (this._settingsChangedSubscriptionId !== undefined) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
         }
+
         if (this._sessionStateChangeSubscriptionId !== undefined) {
             this._session.unsubscribeStateChangeEvent(this._sessionStateChangeSubscriptionId);
             this._sessionStateChangeSubscriptionId = undefined;
         }
+    }
+
+    private createCommandContext(htmlElement: HTMLElement, extensionsService: ExtensionsService) {
+        const id: CommandContext.Id = {
+            name: 'Root',
+            extensionHandle: extensionsService.internalHandle,
+        };
+
+        return new CommandContext(id, StringId.CommandContextDisplay_Root, htmlElement, () => undefined);
     }
 }

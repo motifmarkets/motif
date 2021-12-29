@@ -8,6 +8,7 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     OnDestroy,
     ViewChild
 } from '@angular/core';
@@ -36,6 +37,7 @@ import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
+import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';
@@ -67,6 +69,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     // private _commandBarUiAction: CommandBarUiAction;
 
     constructor(
+        elRef: ElementRef,
         configNgService: ConfigNgService,
         settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,
@@ -78,6 +81,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         signOutNgService: SignOutNgService,
         menuBarNgService: MenuBarNgService,
         commandRegisterNgService: CommandRegisterNgService,
+        keyboardNgService: KeyboardNgService,
     ) {
         super();
 
@@ -98,7 +102,9 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             this.barLeftImageUrl = barLeftImageUrl;
         }
 
-        this._desktopFrame = new DesktopFrame(this._settingsService,
+        this._desktopFrame = new DesktopFrame(
+            elRef.nativeElement,
+            this._settingsService,
             appStorageNgService.appStorage,
             userAlertNgService.service,
             extensionsAccessNgService.service,
@@ -107,6 +113,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             signOutService,
             menuBarNgService.service,
             this._commandRegisterService,
+            keyboardNgService.service,
             configBranding.startupSplashWebPageUrl,
             (component) => this.getBuiltinDitemFrameFromGoldenLayoutComponent(component),
         );

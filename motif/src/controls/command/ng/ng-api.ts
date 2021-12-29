@@ -5,5 +5,4 @@
  */
 
 export * from './command-component-ng.directive';
-// export * from './command-parameters-component-ng.directive';
 

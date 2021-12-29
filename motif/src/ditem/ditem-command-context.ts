@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { ActionCommandContext } from '@motifmarkets/motif-core';
+import { CommandContext } from '@motifmarkets/motif-core';
 
-export interface DitemCommandContext extends ActionCommandContext {
+export interface DitemCommandContext extends CommandContext {
     readonly litIvemIdLinkable: boolean;
     litIvemIdLinked: boolean;
     readonly brokerageAccountGroupLinkable: boolean;

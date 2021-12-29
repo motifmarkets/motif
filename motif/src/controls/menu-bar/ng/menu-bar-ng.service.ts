@@ -6,6 +6,7 @@
 
 import { Injectable } from '@angular/core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
+import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { MenuBarService } from '../menu-bar-service';
 
 @Injectable({
@@ -14,8 +15,11 @@ import { MenuBarService } from '../menu-bar-service';
 export class MenuBarNgService {
     private _service: MenuBarService;
 
-    constructor(commandRegisterNgService: CommandRegisterNgService) {
-        this._service = new MenuBarService(commandRegisterNgService.service);
+    constructor(
+        commandRegisterNgService: CommandRegisterNgService,
+        keyboardNgService: KeyboardNgService,
+    ) {
+        this._service = new MenuBarService(commandRegisterNgService.service, keyboardNgService.service);
     }
 
     get service() { return this._service; }

@@ -6,12 +6,22 @@
 
 import {
     addToArrayByPush,
-
-    AssertInternalError, Command, CommandRegisterService, CommandUiAction, CommaText,
-    compareInteger, ExtStringId, extStrings, Integer, InternalCommand, isArrayEqual,
+    AssertInternalError,
+    Command,
+    CommandRegisterService,
+    CommandUiAction,
+    CommaText,
+    compareInteger,
+    ExtStringId,
+    extStrings,
+    Integer,
+    isArrayEqual,
+    KeyboardService,
     Line,
     ModifierKey,
-    MultiEvent, StringId, UiAction, UnreachableCaseError
+    MultiEvent,
+    UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 
 export class MenuBarService {
@@ -44,7 +54,9 @@ export class MenuBarService {
 
     private _keyboardActiveChangedMultiEvent = new MultiEvent<MenuBarService.KeyboardActiveChangedEventHandler>();
 
-    constructor(private _commandRegisterService: CommandRegisterService,
+    constructor(
+        private readonly _commandRegisterService: CommandRegisterService,
+        private readonly _keyboardService: KeyboardService,
     ) {
         // this._missingCommandUiAction = this.createMissingCommandUiAction();
         // this._missingCommandMenuItem = this.connectMenuItem(this._missingCommandUiAction);
@@ -508,12 +520,12 @@ export class MenuBarService {
         }
     }
 
-    private createMissingCommandUiAction() {
-        const commandName = InternalCommand.Id.Missing;
-        const displayId = StringId.Missing;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        return new CommandUiAction(command);
-    }
+    // private createMissingCommandUiAction() {
+    //     const commandName = InternalCommand.Id.Missing;
+    //     const displayId = StringId.Missing;
+    //     const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+    //     return new CommandUiAction(command);
+    // }
 
     private focusMenuItem(menuItem: MenuBarService.MenuItem) {
         const ownerMenu = menuItem.ownerMenu;
