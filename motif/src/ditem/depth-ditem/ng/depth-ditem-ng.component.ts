@@ -20,10 +20,12 @@ import {
     LitIvemId,
     LitIvemIdUiAction,
     Logger,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
     StringUiAction,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
@@ -191,23 +193,23 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         }
     }
 
-    private handleSymbolApplyUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSymbolApplyUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.commitSymbol(UiAction.CommitTypeId.Explicit);
     }
 
-    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleRollUpUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
-        this._frame.rollUp(UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift));
+    private handleRollUpUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        this._frame.rollUp(ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift));
     }
 
-    private handleExpandUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
-        this._frame.expand(UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift));
+    private handleExpandUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        this._frame.expand(ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift));
     }
 
-    private handleFilterUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleFilterUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.toggleFilterActive();
         this.pushFilterSelectState();
     }
@@ -222,11 +224,11 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         }
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.autoSizeAllColumnWidths();
     }
 
-    private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.showLayoutEditor();
     }
 
@@ -240,7 +242,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createSymbolApplyUiAction() {
-        const commandName = InternalCommand.Name.ApplySymbol;
+        const commandName = InternalCommand.Id.ApplySymbol;
         const displayId = StringId.ApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -252,7 +254,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -263,7 +265,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createRollUpUiAction() {
-        const commandName = InternalCommand.Name.Depth_Rollup;
+        const commandName = InternalCommand.Id.Depth_Rollup;
         const displayId = StringId.RollUpDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -274,7 +276,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createExpandUiAction() {
-        const commandName = InternalCommand.Name.Depth_Expand;
+        const commandName = InternalCommand.Id.Depth_Expand;
         const displayId = StringId.ExpandDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -285,7 +287,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createFilterUiAction() {
-        const commandName = InternalCommand.Name.Depth_Filter;
+        const commandName = InternalCommand.Id.Depth_Filter;
         const displayId = StringId.FilterDepthCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -303,7 +305,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -315,7 +317,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

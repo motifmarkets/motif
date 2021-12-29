@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './session-info-service';
 export * from './sign-out-service';
 

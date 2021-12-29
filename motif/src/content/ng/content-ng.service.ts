@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SessionInfoService } from 'component-services-internal-api';
+import { SessionInfoService } from '@motifmarkets/motif-core';
 import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';

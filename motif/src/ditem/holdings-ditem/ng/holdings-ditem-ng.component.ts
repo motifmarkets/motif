@@ -25,7 +25,7 @@ import {
     JsonElement,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
@@ -242,7 +242,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     }
 
     private createSellUiAction() {
-        const commandName = InternalCommand.Name.SellOrderPad;
+        const commandName = InternalCommand.Id.SellOrderPad;
         const displayId = StringId.SellOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -254,7 +254,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -265,7 +265,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     }
 
     private createToggleAccountGroupLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleAccountLinking;
+        const commandName = InternalCommand.Id.ToggleAccountLinking;
         const displayId = StringId.ToggleAccountLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

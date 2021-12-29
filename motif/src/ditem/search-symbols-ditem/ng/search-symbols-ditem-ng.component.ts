@@ -422,7 +422,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -433,7 +433,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -562,7 +562,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createQueryUiAction() {
-        const commandName = InternalCommand.Name.Symbols_Query;
+        const commandName = InternalCommand.Id.Symbols_Query;
         const displayId = StringId.SymbolsDitemControlCaption_Query;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -601,7 +601,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createNextPageUiAction() {
-        const commandName = InternalCommand.Name.Symbols_NextPage;
+        const commandName = InternalCommand.Id.Symbols_NextPage;
         const displayId = StringId.SymbolsDitemControlCaption_NextPage;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

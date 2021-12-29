@@ -25,7 +25,7 @@ import {
     JsonElement,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -158,7 +158,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     }
 
     private createToggleAccountGroupLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleAccountLinking;
+        const commandName = InternalCommand.Id.ToggleAccountLinking;
         const displayId = StringId.ToggleAccountLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

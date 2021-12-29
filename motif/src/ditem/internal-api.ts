@@ -11,7 +11,7 @@ export * from './depth-ditem/internal-api';
 export * from './desktop-access-service';
 export * from './ditem-command';
 export * from './ditem-command-context';
-export * from './ditem-command-parameters';
+// export * from './ditem-command-parameters';
 export * from './ditem-command-processor';
 export * from './ditem-component';
 export { DitemComponentIdAndType } from './ditem-component-id-and-type';

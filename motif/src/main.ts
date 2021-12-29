@@ -17,7 +17,7 @@ if (environment.prodMode) {
     AppFeature.dev = true;
 }
 
-// MotifCoreStaticInitialise.initialise();
+// CoreStaticInitialise.initialise();
 
 platformBrowserDynamic().bootstrapModule(AppNgModule)
     .catch((err) => console.log(err));

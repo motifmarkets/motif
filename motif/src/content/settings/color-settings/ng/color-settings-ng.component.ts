@@ -17,9 +17,11 @@ import {
     Integer,
     InternalCommand,
     Logger,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -113,14 +115,14 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         this._gridComponent.invalidateRecord(itemId);
     }
 
-    private handleSaveSchemeAction(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
-        if (UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Alt)) {
+    private handleSaveSchemeAction(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Alt)) {
             this.showPresetCode();
         }
     }
 
     private createSaveSchemeUiAction() {
-        const commandName = InternalCommand.Name.ColorSettings_SaveScheme;
+        const commandName = InternalCommand.Id.ColorSettings_SaveScheme;
         const displayId = StringId.SaveColorSchemeCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

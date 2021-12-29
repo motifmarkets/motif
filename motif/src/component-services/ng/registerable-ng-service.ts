@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { BaseNgService } from '../base-ng.service';
-import { RegistrationNgService } from '../registration-ng.service';
+import { BaseNgService } from './base-ng.service';
+import { RegistrationNgService } from './registration-ng.service';
 
 export abstract class RegisterableNgService extends BaseNgService {
     constructor(id: BaseNgService.Id, registrationNgService: RegistrationNgService) {

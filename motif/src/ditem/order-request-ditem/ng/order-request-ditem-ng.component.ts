@@ -19,7 +19,7 @@ import {
     BooleanUiAction,
     ButtonUiAction,
     ColorScheme, delay1Tick, HtmlTypes, IconButtonUiAction,
-    InternalCommand, JsonElement, numberToPixels, OrderPad, OrderRequestType, StringId, Strings, UiAction
+    InternalCommand, JsonElement, ModifierKey, ModifierKeyId, numberToPixels, OrderPad, OrderRequestType, StringId, Strings, UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
@@ -322,11 +322,11 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         this._frame.primary = !this._frame.primary;
     }
 
-    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSymbolLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleAccountLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleAccountLinkUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 
@@ -334,29 +334,29 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         this._frame.setReviewZenithMessageActive(this._reviewZenithMessageActiveUiAction.definedValue);
     }
 
-    private handleNewUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleNewUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         switch (downKeys) {
             case 0:
                 this._frame.newOrderPad();
                 break;
-            case UiAction.DownKeyId.Shift:
+            case ModifierKeyId.Shift:
                 this._frame.newPlaceOrderPadFromPrevious();
                 break;
-            case UiAction.DownKeyId.Ctrl:
+            case ModifierKeyId.Ctrl:
                 this._frame.newAmendOrderPadFromResult();
                 break;
         }
     }
 
-    private handleBackUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleBackUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.back();
     }
 
-    private handleReviewUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleReviewUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.review();
     }
 
-    private handleSendUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSendUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this._frame.send();
     }
 
@@ -367,7 +367,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createPrimaryUiAction() {
-        const commandName = InternalCommand.Name.OrderRequest_TogglePrimary;
+        const commandName = InternalCommand.Id.OrderRequest_TogglePrimary;
         const displayId = StringId.OrderRequest_PrimaryCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -378,7 +378,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -389,7 +389,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createToggleAccountLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleAccountLinking;
+        const commandName = InternalCommand.Id.ToggleAccountLinking;
         const displayId = StringId.ToggleAccountLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -408,7 +408,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createNewUiAction() {
-        const commandName = InternalCommand.Name.OrderRequest_New;
+        const commandName = InternalCommand.Id.OrderRequest_New;
         const displayId = StringId.OrderRequest_NewCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -418,7 +418,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createBackUiAction() {
-        const commandName = InternalCommand.Name.OrderRequest_Back;
+        const commandName = InternalCommand.Id.OrderRequest_Back;
         const displayId = StringId.OrderRequest_BackCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -428,7 +428,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createReviewUiAction() {
-        const commandName = InternalCommand.Name.OrderRequest_Review;
+        const commandName = InternalCommand.Id.OrderRequest_Review;
         const displayId = StringId.OrderRequest_ReviewCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
@@ -438,7 +438,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     }
 
     private createSendUiAction() {
-        const commandName = InternalCommand.Name.OrderRequest_Send;
+        const commandName = InternalCommand.Id.OrderRequest_Send;
         const displayId = StringId.OrderRequest_SendCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);

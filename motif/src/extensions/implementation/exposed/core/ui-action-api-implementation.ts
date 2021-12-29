@@ -4,9 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ModifierKey, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ApiError as ApiErrorApi, UiAction as UiActionApi } from '../../../api/extension-api';
 import { UnreachableCaseApiErrorImplementation } from '../sys/api-error-api-implementation';
+import { ModifierKeyImplementation } from '../sys/modifier-key-implementation';
 
 export class UiActionImplementation implements UiActionApi {
     commitEventer: UiActionApi.CommitEventHandler | undefined;
@@ -121,10 +122,10 @@ export class UiActionImplementation implements UiActionApi {
         }
     }
 
-    private handleSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: UiAction.DownKeys) {
+    private handleSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         if (this.signalEventer !== undefined) {
             const apiSignalTypeId = UiActionImplementation.SignalTypeId.toApi(signalTypeId);
-            const apiDownKeys = UiActionImplementation.DownKey.setToApi(downKeys);
+            const apiDownKeys = ModifierKeyImplementation.setToApi(downKeys);
             this.signalEventer(apiSignalTypeId, apiDownKeys);
         }
     }
@@ -218,39 +219,9 @@ export namespace UiActionImplementation {
                 case UiAction.SignalTypeId.MouseClick: return UiActionApi.SignalTypeEnum.MouseClick;
                 case UiAction.SignalTypeId.EnterKeyPress: return UiActionApi.SignalTypeEnum.EnterKeyPress;
                 case UiAction.SignalTypeId.SpacebarKeyPress: return UiActionApi.SignalTypeEnum.SpacebarKeyPress;
+                case UiAction.SignalTypeId.KeyboardShortcut: return UiActionApi.SignalTypeEnum.KeyboardShortcut;
                 default: throw new UnreachableCaseError('UAAIRSTITA58843322', value);
             }
-        }
-    }
-
-    export namespace DownKey {
-        export function toApi(value: UiAction.DownKeyId): UiActionApi.DownKey {
-            switch (value) {
-                case UiAction.DownKeyId.Alt: return UiActionApi.DownKeyEnum.Alt;
-                case UiAction.DownKeyId.Ctrl: return UiActionApi.DownKeyEnum.Ctrl;
-                case UiAction.DownKeyId.Meta: return UiActionApi.DownKeyEnum.Meta;
-                case UiAction.DownKeyId.Shift: return UiActionApi.DownKeyEnum.Shift;
-                default: throw new UnreachableCaseError('UAAIRSTITA58843322', value);
-            }
-        }
-
-        export function setToApi(value: UiAction.DownKeys) {
-            const result = new Array<UiActionApi.DownKey>(4);
-            let count = 0;
-            if (UiAction.downKeysIncludesId(value, UiAction.DownKeyId.Alt)) {
-                result[count++] = UiActionApi.DownKeyEnum.Alt;
-            }
-            if (UiAction.downKeysIncludesId(value, UiAction.DownKeyId.Ctrl)) {
-                result[count++] = UiActionApi.DownKeyEnum.Ctrl;
-            }
-            if (UiAction.downKeysIncludesId(value, UiAction.DownKeyId.Meta)) {
-                result[count++] = UiActionApi.DownKeyEnum.Meta;
-            }
-            if (UiAction.downKeysIncludesId(value, UiAction.DownKeyId.Shift)) {
-                result[count++] = UiActionApi.DownKeyEnum.Shift;
-            }
-            result.length = count;
-            return result;
         }
     }
 }

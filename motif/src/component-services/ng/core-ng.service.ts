@@ -6,12 +6,14 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import {
-    AdiService, AppStorageService,
+    AdiService,
+    AppStorageService,
     CommandRegisterService,
     CoreService,
+    KeyboardService,
     MotifServicesService,
     SettingsService,
-    SymbolsService
+    SymbolsService,
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -31,6 +33,7 @@ export class CoreNgService implements OnDestroy {
     get adi(): AdiService { return this._service.adi; }
     get symbolsManager(): SymbolsService { return this._service.symbolsManager; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
+    get keyboardService(): KeyboardService { return this._service.keyboardService; }
 
     ngOnDestroy() {
         this._service.finalise();

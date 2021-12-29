@@ -21,7 +21,7 @@ import {
     Logger,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -276,7 +276,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createBuyUiAction() {
-        const commandName = InternalCommand.Name.BuyOrderPad;
+        const commandName = InternalCommand.Id.BuyOrderPad;
         const displayId = StringId.BuyOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -288,7 +288,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createSellUiAction() {
-        const commandName = InternalCommand.Name.SellOrderPad;
+        const commandName = InternalCommand.Id.SellOrderPad;
         const displayId = StringId.SellOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -300,7 +300,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createAmendUiAction() {
-        const commandName = InternalCommand.Name.AmendOrderPad;
+        const commandName = InternalCommand.Id.AmendOrderPad;
         const displayId = StringId.AmendOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -312,7 +312,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createCancelUiAction() {
-        const commandName = InternalCommand.Name.CancelOrderPad;
+        const commandName = InternalCommand.Id.CancelOrderPad;
         const displayId = StringId.CancelOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -324,7 +324,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createMoveUiAction() {
-        const commandName = InternalCommand.Name.MoveOrderPad;
+        const commandName = InternalCommand.Id.MoveOrderPad;
         const displayId = StringId.MoveOrderPadCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -336,7 +336,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -348,7 +348,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -360,7 +360,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -371,7 +371,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createToggleAccountGroupLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleAccountLinking;
+        const commandName = InternalCommand.Id.ToggleAccountLinking;
         const displayId = StringId.ToggleAccountLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

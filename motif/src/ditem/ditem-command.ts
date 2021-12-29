@@ -11,16 +11,14 @@ export interface InternalDitemCommand extends InternalCommand {
 
 export namespace InternalDitemCommand {
 
-    const enum CommandName {
-        ToggleSecurityLinking = InternalCommand.Name.ToggleAccountLinking,
-        SetSecurityLinking = InternalCommand.Name.SetSymbolLinking,
-        ToggleAccountLinking = InternalCommand.Name.ToggleAccountLinking,
-        SetAccountLinking = InternalCommand.Name.SetAccountLinking,
+    export const enum CommandId {
+        ToggleSecurityLinking = InternalCommand.Id.ToggleAccountLinking,
+        SetSecurityLinking = InternalCommand.Id.SetSymbolLinking,
+        ToggleAccountLinking = InternalCommand.Id.ToggleAccountLinking,
+        SetAccountLinking = InternalCommand.Id.SetAccountLinking,
     }
 
-    export type CommandNameUnion = keyof typeof CommandName;
-
-    type InfosObject = { [name in CommandNameUnion]: StringId };
+    type InfosObject = { [id in keyof typeof CommandId]: StringId };
 
     const infosMap: InfosObject = {
         ToggleSecurityLinking: StringId.DitemCommandDisplay_ToggleSecurityLinking,
@@ -30,17 +28,22 @@ export namespace InternalDitemCommand {
     } as const;
 
     export const commandCount = Object.keys(infosMap).length;
-    export const commandNameArray = Object.keys(infosMap);
+    export const commandIdArray = [
+        CommandId.ToggleSecurityLinking,
+        CommandId.SetSecurityLinking,
+        CommandId.ToggleAccountLinking,
+        CommandId.SetAccountLinking,
+    ];
 
-    export function nameToDisplayId(name: CommandNameUnion) {
-        return infosMap[name];
+    export function idToDisplayId(id: CommandId) {
+        return infosMap[id];
     }
 
-    export function idToDisplay(name: CommandNameUnion) {
-        return Strings[nameToDisplayId(name)];
+    export function idToDisplay(id: CommandId) {
+        return Strings[idToDisplayId(id)];
     }
 
-    export function createCommand(name: CommandNameUnion, commandRegisterService: CommandRegisterService) {
-        return commandRegisterService.getOrRegisterInternalCommand(name as InternalCommand.Name, nameToDisplayId(name));
+    export function createCommand(id: CommandId, commandRegisterService: CommandRegisterService) {
+        return commandRegisterService.getOrRegisterInternalCommand(id as unknown as InternalCommand.Id, idToDisplayId(id));
     }
 }

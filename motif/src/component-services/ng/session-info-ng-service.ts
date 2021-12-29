@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SessionInfoService } from '../session-info-service';
+import { SessionInfoService } from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root'

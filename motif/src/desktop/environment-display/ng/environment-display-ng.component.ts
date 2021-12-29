@@ -18,6 +18,7 @@ import {
     ExchangeEnvironmentId,
     ExchangeInfo,
     MultiEvent,
+    SessionInfoService,
     SessionState,
     SessionStateId,
     StringId,
@@ -25,7 +26,6 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError,
 } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 

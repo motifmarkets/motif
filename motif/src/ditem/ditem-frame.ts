@@ -20,7 +20,7 @@ import { DesktopAccessService } from './desktop-access-service';
 import { DitemCommandContext } from './ditem-command-context';
 import { DitemCommandProcessor } from './ditem-command-processor';
 
-export abstract class DitemFrame extends Frame implements DitemCommandContext {
+export abstract class DitemFrame extends Frame {
 
     private static readonly jsonTag_FrameLitIvemId = 'frameLitIvemId';
     private static readonly jsonTag_FrameLitIvemIdLinked = 'frameLitIvemIdLinked';
@@ -66,7 +66,7 @@ export abstract class DitemFrame extends Frame implements DitemCommandContext {
 
         this._frameId = DitemFrame.getNextFrameId();
         this._desktopAccessService.registerFrame(this);
-        this._ditemCommandProcessor = new DitemCommandProcessor(this, this._commandRegisterService);
+        this._ditemCommandProcessor = new DitemCommandProcessor(this._commandRegisterService);
     }
 
     get ditemTypeId() { return this._ditemTypeId; }

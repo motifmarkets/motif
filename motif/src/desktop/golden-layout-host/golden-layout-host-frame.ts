@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ExtensionHandle, TUID, UnreachableCaseError } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
+import { AssertInternalError, SessionInfoService, ExtensionHandle, TUID, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
 import {
     BalancesDitemFrame,

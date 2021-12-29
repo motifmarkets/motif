@@ -27,9 +27,11 @@ import {
     LitIvemId,
     LitIvemIdUiAction,
     Logger,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { MotifGrid } from 'content-internal-api';
@@ -238,8 +240,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.deleteFocusedSymbol();
     }
 
-    private handleNewUiActionSignalEvent(downKeys: UiAction.DownKeys) {
-        const keepCurrentLayout = UiAction.downKeysIncludesId(downKeys, UiAction.DownKeyId.Shift);
+    private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
+        const keepCurrentLayout = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
         this._frame.newPrivate(keepCurrentLayout);
     }
 
@@ -282,7 +284,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createSymbolApplyUiAction() {
-        const commandName = InternalCommand.Name.ApplySymbol;
+        const commandName = InternalCommand.Id.ApplySymbol;
         const displayId = StringId.ApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -294,7 +296,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createDeleteSymbolUiAction() {
-        const commandName = InternalCommand.Name.Watchlist_DeleteSymbol;
+        const commandName = InternalCommand.Id.Watchlist_DeleteSymbol;
         const displayId = StringId.WatchlistDeleteSymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -305,7 +307,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createNewUiAction() {
-        const commandName = InternalCommand.Name.Watchlist_New;
+        const commandName = InternalCommand.Id.Watchlist_New;
         const displayId = StringId.NewWatchlistCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -317,7 +319,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createOpenUiAction() {
-        const commandName = InternalCommand.Name.Watchlist_Open;
+        const commandName = InternalCommand.Id.Watchlist_Open;
         const displayId = StringId.OpenWatchlistCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -329,7 +331,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createSaveUiAction() {
-        const commandName = InternalCommand.Name.Watchlist_Save;
+        const commandName = InternalCommand.Id.Watchlist_Save;
         const displayId = StringId.SaveWatchlistCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -341,7 +343,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createColumnsUiAction() {
-        const commandName = InternalCommand.Name.SelectGridColumns;
+        const commandName = InternalCommand.Id.SelectGridColumns;
         const displayId = StringId.SelectColumnsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -353,7 +355,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createAutoSizeColumnWidthsUiAction() {
-        const commandName = InternalCommand.Name.AutoSizeGridColumnWidths;
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
         const displayId = StringId.AutoSizeColumnWidthsCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -365,7 +367,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private createToggleSymbolLinkingUiAction() {
-        const commandName = InternalCommand.Name.ToggleSymbolLinking;
+        const commandName = InternalCommand.Id.ToggleSymbolLinking;
         const displayId = StringId.ToggleSymbolLinkingCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

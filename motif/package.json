@@ -17,6 +17,7 @@
   "scripts": {
     "postinstall": "generate-build-info.bat",
     "ng": "ng",
+    "clean:cache": "npx del-cli .angular/cache",
     "clean:lib": "npx del-cli lib",
     "file:info:build": "generate-build-info.bat",
     "file:info:version": "type package.json | jq .version --raw-output > src/generated/version.txt",
@@ -50,7 +51,7 @@
     "@angular/router": "^13.0.2",
     "@ctrl/tinycolor": "^3.4.0",
     "@jaames/iro": "^5.5.1",
-    "@motifmarkets/motif-core": "^0.0.4",
+    "@motifmarkets/motif-core": "^0.0.5",
     "@ng-select/ng-select": "^8.1.1",
     "angular-split": "^13.0.1",
     "decimal.js-light": "^2.5.1",

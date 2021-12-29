@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CoreService } from '@motifmarkets/motif-core';
-import { SessionInfoService } from 'component-services-internal-api';
+import { CoreService, SessionInfoService } from '@motifmarkets/motif-core';
 import { DesktopAccessService } from './desktop-access-service';
 
 export class DitemService {

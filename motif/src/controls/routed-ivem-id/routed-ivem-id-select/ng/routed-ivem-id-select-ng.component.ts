@@ -286,7 +286,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     }
 
     private createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterService: CommandRegisterService) {
-        const commandName = InternalCommand.Name.RoutedIvemIdSelect_ToggleSearchTermNotExchangedMarketProcessed;
+        const commandName = InternalCommand.Id.RoutedIvemIdSelect_ToggleSearchTermNotExchangedMarketProcessed;
         const displayId = StringId.ToggleSearchTermNotExchangedMarketProcessedCaption;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
