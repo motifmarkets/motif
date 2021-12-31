@@ -4,9 +4,15 @@
     License: motionite.trade/license/motif
 -->
 
-<section id="restartSection" [style.display]="restartDisplay">
+<section *ngIf="restartReasonCount > 0" id="restartSection">
     <button id="restartButton" (click)="restart()">{{restartCaption}}</button>
-    <span id="restartRequiredReasonSpan">{{restartRequiredReason}}</span>
+    <ng-template [ngIf]="restartReasonCount === 1" [ngIfElse]="multipleReasonsTemplate">
+        <span id="restartRequiredReasonSpan">{{restartReasonsText}}</span>
+    </ng-template>
+
+    <ng-template #multipleReasonsTemplate>
+        <textarea id="restartReasonsText" spellCheck="false" readonly wrap="off">{{restartReasonsText}}</textarea>
+    </ng-template>
 </section>
 <span id="errorCountText" [style.display]="errorCountDisplay">
     {{errorCountText}}

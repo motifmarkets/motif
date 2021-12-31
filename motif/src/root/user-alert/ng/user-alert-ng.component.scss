@@ -27,6 +27,12 @@
     #restartRequiredReasonSpan {
         margin-left: 0.8em;
     }
+
+    #restartReasonsText {
+        flex-direction: row;
+        flex: 1 1 auto;
+        height: 1em;
+    }
 }
 
 #errorCountText {
