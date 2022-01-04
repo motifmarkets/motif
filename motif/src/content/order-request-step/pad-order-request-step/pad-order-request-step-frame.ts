@@ -17,7 +17,7 @@ import {
     SideId,
     SingleBrokerageAccountGroup, StringId, Strings, SymbolsService, TimeInForceId, UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
+import { Decimal } from 'decimal.js-light/decimal';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
