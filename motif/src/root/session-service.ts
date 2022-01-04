@@ -6,29 +6,42 @@
 
 import { isDevMode } from '@angular/core';
 import {
-    AdiService, AppStorageService, AssertInternalError, ExchangeEnvironment,
+    AdiService,
+    AppStorageService,
+    AssertInternalError,
+    ExchangeEnvironment,
     ExchangeEnvironmentId,
-    ExchangeInfo, ExternalError,
+    ExchangeInfo,
+    ExternalError,
+    getErrorMessage,
     IdleDeadline,
     IdleRequestOptions,
     Integer,
     JsonElement,
     Logger,
-    MotifServicesError, MotifServicesService, mSecsPerSec,
-    MultiEvent, SessionState,
+    MotifServicesError,
+    MotifServicesService,
+    mSecsPerSec,
+    MultiEvent,
+    SessionInfoService,
+    SessionState,
     SessionStateId,
-    SettingsService, StringId, Strings, SymbolsService, SysTick,
-    UserAlertService, ZenithExtConnectionDataDefinition,
+    SettingsService,
+    StringId,
+    Strings,
+    SymbolsService,
+    SysTick,
+    UserAlertService,
+    ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
     ZenithPublisherReconnectReasonId,
     ZenithPublisherState,
     ZenithPublisherStateId,
-    SessionInfoService,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
-import { Log as OidcLog, User, UserManager, UserManagerSettings, UserProfile } from 'oidc-client-ts';
+import { ErrorResponse, Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { Config } from './config';
@@ -85,6 +98,9 @@ export class SessionService {
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
 
+    private _sessionRenewalAttemptCount = 0;
+    private _sessionRenewalAttemptDelaySetTimeoutId: ReturnType<typeof setInterval> | undefined;
+
     constructor(
         private _telemetryService: TelemetryService,
         private _userAlertService: UserAlertService,
@@ -121,8 +137,6 @@ export class SessionService {
         } else {
             this.applyConfig(config);
             this._userManager = this.createUserManager();
-            this._userManager.events.addUserLoaded((user) => this.processUserLoaded(user));
-            this._userManager.events.addAccessTokenExpired(() => this.processAccessTokenExpired());
             this._userManager.signinRedirect();
         }
     }
@@ -131,8 +145,6 @@ export class SessionService {
         this.applyConfig(config);
 
         this._userManager = this.createUserManager();
-        this._userManager.events.addUserLoaded((user) => this.processUserLoaded(user));
-        this._userManager.events.addAccessTokenExpired(() => this.processAccessTokenExpired());
         const user = await this._userManager.signinRedirectCallback();
         if (user === undefined || user === null) {
             this.logError(`OIDC UserManager returned null or undefined user`);
@@ -200,6 +212,8 @@ export class SessionService {
     }
 
     finalise() {
+        this.checkCancelSessionRenewalAttempt();
+
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
 
@@ -423,15 +437,18 @@ export class SessionService {
             loadUserInfo: true
         };
 
-        return new UserManager(settings);
+        const userManager = new UserManager(settings);
+        userManager.events.addUserLoaded((user) => this.processUserLoaded(user));
+        userManager.events.addAccessTokenExpired(() => this.processAccessTokenExpired());
+        userManager.events.addSilentRenewError((error: Error) => this.processSilentRenewError(error));
+
+        return userManager;
     }
 
     private processUserLoaded(user: User) {
-        interface TempUserProfile extends UserProfile {
-            // hack until newer version of oidc-client-ts is released
-            name: string | undefined;
-            preferred_username: string | undefined;
-        }
+        this._sessionRenewalAttemptCount = 0;
+        this.checkCancelSessionRenewalAttempt();
+
         this._access_token = user.access_token;
         this._token_type = user.token_type;
 
@@ -439,7 +456,7 @@ export class SessionService {
         const accessTokenExpiryTime = expiresAt === undefined ? undefined : expiresAt * 1000; // convert to JavaScript time
         this.setUserAccessTokenExpiryTime(accessTokenExpiryTime);
 
-        const profile = user.profile as TempUserProfile;
+        const profile = user.profile;
         const preferred_username = profile. preferred_username ?? '';
         const fullName = profile.name ?? '';
         this.setUserId(profile.sub ?? '');
@@ -454,11 +471,109 @@ export class SessionService {
         }
     }
 
-    private processAccessTokenExpired() {
-        this._access_token = SessionService.invalidAccessToken;
+    private async processAccessTokenExpired() {
+        try {
+            await this._userManager.signinSilent();
+        } catch (error) {
+            this._access_token = SessionService.invalidAccessToken;
 
-        if (this._zenithExtConnectionDataItem !== undefined) {
-            this._zenithExtConnectionDataItem.updateAccessToken(SessionService.invalidAccessToken);
+            // if (this._zenithExtConnectionDataItem !== undefined) {
+            //     this._zenithExtConnectionDataItem.updateAccessToken(SessionService.invalidAccessToken);
+            // }
+
+            const errorMessage = getErrorMessage(error);
+
+            this.logError('Session Renewal failure after expiry: ' + errorMessage);
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
+        }
+    }
+
+    private async processSilentRenewError(error: Error) {
+
+        if (error !== undefined && error instanceof ErrorResponse) {
+            // Handle the hopeless.
+            switch (error.error) {
+                case 'interaction_required':
+                case 'login_required':
+                case 'consent_required':
+                case 'account_selection_required':
+                    this.logError('SessionRenewalProblem: ' + error.error);
+                    this._userManager.removeUser();
+                    this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, error.error);
+                    return;
+                default:
+            }
+        }
+
+        const errorMessage = getErrorMessage(error);
+
+        const canAttemptSessionRenewal = await this.canAttemptSessionRenewal(errorMessage);
+        if (canAttemptSessionRenewal) {
+            this.initiateSessionRenewalAttempt(errorMessage);
+        }
+    }
+
+    private async canAttemptSessionRenewal(errorMessage: string): Promise<boolean> {
+        const user = await this._userManager.getUser();
+        if (user === null || user.refresh_token === undefined || user.refresh_token === '') {
+            this._userManager.removeUser();
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
+            return Promise.resolve(false);
+        } else {
+            return Promise.resolve(true);
+        }
+    }
+
+    private initiateSessionRenewalAttempt(errorMessage: string) {
+        if (this._sessionRenewalAttemptCount === 0) {
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.AttemptingSessionRenewal, errorMessage);
+        }
+
+        const sessionRenewalAttemptDelay = this.calculateSessionRenewalAttemptDelay();
+
+        this._sessionRenewalAttemptDelaySetTimeoutId = setTimeout(
+            () => this.attemptSessionRenewal(errorMessage),
+            sessionRenewalAttemptDelay
+        );
+    }
+
+    private async attemptSessionRenewal(errorMessage: string) {
+        this._sessionRenewalAttemptDelaySetTimeoutId = undefined;
+        const user = await this._userManager.getUser();
+        if (user === null) {
+            this._userManager.removeUser();
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
+        } else {
+            this._userManager.stopSilentRenew();
+            this._userManager.startSilentRenew();
+        }
+    }
+
+    private checkCancelSessionRenewalAttempt() {
+        if (this._sessionRenewalAttemptDelaySetTimeoutId !== undefined) {
+            clearTimeout(this._sessionRenewalAttemptDelaySetTimeoutId);
+            this._sessionRenewalAttemptDelaySetTimeoutId = undefined;
+        }
+    }
+
+    private calculateSessionRenewalAttemptDelay() {
+        // Try a few times quickly to renew ASAP if temporary problem.
+        // Otherwise poll infrequently.
+        // Application may be running in background tab and can eventually start working again when problem fixed.
+        switch (this._sessionRenewalAttemptCount) {
+            case 0:
+                return 1000;
+            case 1:
+            case 2:
+                return 5000;
+            case 3:
+            case 4:
+                return 30000;
+            case 5:
+            case 6:
+                return 60000;
+            default:
+                return 300000;
         }
     }
 
