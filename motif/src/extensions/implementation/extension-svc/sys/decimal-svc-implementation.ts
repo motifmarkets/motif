@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Decimal } from 'decimal.js-light';
+import { cloneDecimal, newDecimal } from '@motifmarkets/motif-core';
+import { Decimal } from 'decimal.js-light/decimal';
 import { Decimal as DecimalApi, DecimalSvc } from '../../../api/extension-api';
 import { DecimalImplementation } from '../../exposed/sys/decimal-implementation';
 
@@ -63,9 +64,9 @@ export class DecimalSvcImplementation implements DecimalSvc {
     create(value: DecimalApi.Numeric, config?: DecimalSvc.Config): DecimalApi {
         let actual: Decimal;
         if (config === undefined) {
-            actual = new Decimal(value);
+            actual = newDecimal(value);
         } else {
-            const decimalConstructor = Decimal.clone(config);
+            const decimalConstructor = cloneDecimal(config);
             actual = new decimalConstructor(value);
         }
         return new DecimalImplementation(actual);

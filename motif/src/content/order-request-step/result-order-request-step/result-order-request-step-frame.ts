@@ -18,7 +18,7 @@ import {
     OrderRequestTypeId,
     OrdersDataMessage, StringId, Strings, UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
+import { Decimal } from 'decimal.js-light/decimal';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {

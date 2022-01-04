@@ -53,6 +53,8 @@
       "ditem-internal-api": ["src/ditem/internal-api"],
       "ditem-ng-api": ["src/ditem/ng-api"],
       "desktop-ng-api": ["src/desktop/ng-api"],
+      // make sure we do not import the CommonJS decimal.js-light
+      "decimal.js-light": ["node_modules/decimal.js-light/decimal.mjs"]
     }
     // "traceResolution": true, // can use this to debug paths below
     //// the following entries allow you to link in revgrid without copying dist to Motif.

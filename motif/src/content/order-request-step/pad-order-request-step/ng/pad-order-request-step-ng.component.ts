@@ -47,7 +47,7 @@ import {
     TimeInForce,
     TimeInForceId,
     UiAction,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
@@ -66,7 +66,7 @@ import {
     SymbolNameLabelNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import { Decimal } from 'decimal.js-light';
+import { Decimal } from 'decimal.js-light/decimal';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { OrderRequestStepComponentNgDirective } from '../../ng/order-request-step-component-ng.directive';
 import { PadOrderRequestStepFrame } from '../pad-order-request-step-frame';
