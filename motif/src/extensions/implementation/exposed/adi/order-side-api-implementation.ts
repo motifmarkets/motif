@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, SideId, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { SideId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     OrderSide as OrderSideApi,
@@ -17,20 +17,10 @@ export namespace OrderSideImplementation {
         switch (value) {
             case SideId.Buy: return OrderSideEnumApi.Buy;
             case SideId.Sell: return OrderSideEnumApi.Sell;
-            case SideId.BuyMinus: throw new AssertInternalError('OSAITABM2400091112');
-            case SideId.SellPlus: throw new AssertInternalError('OSAITASP2400091112');
-            case SideId.SellShort: throw new AssertInternalError('OSAITASS2400091112');
-            case SideId.SellShortExempt: throw new AssertInternalError('OSAITASSE2400091112');
-            case SideId.Undisclosed: throw new AssertInternalError('OSAITA24UD00091112');
-            case SideId.Cross: throw new AssertInternalError('OSAITAC2400091112');
-            case SideId.CrossShort: throw new AssertInternalError('OSAITA24CS00091112');
-            case SideId.CrossShortExempt: throw new AssertInternalError('OSAITACSE2400091112');
-            case SideId.AsDefined: throw new AssertInternalError('OSAITAAD2400091112');
-            case SideId.Opposite: throw new AssertInternalError('OSAITAO2400091112');
-            case SideId.Subscribe: throw new AssertInternalError('OSAITAS2400091112');
-            case SideId.Redeem: throw new AssertInternalError('OSAITAR2400091112');
-            case SideId.Lend: throw new AssertInternalError('OSAITAL2400091112');
-            case SideId.Borrow: throw new AssertInternalError('OSAITAB2400091112');
+            case SideId.IntraDayShortSell: return OrderSideEnumApi.IntraDayShortSell;
+            case SideId.RegulatedShortSell: return OrderSideEnumApi.RegulatedShortSell;
+            case SideId.ProprietaryShortSell: return OrderSideEnumApi.ProprietaryShortSell;
+            case SideId.ProprietaryDayTrade: return OrderSideEnumApi.ProprietaryDayTrade;
             default: throw new UnreachableCaseError('OSAITAU2400091112', value);
         }
     }
@@ -40,6 +30,10 @@ export namespace OrderSideImplementation {
         switch (enumValue) {
             case OrderSideEnumApi.Buy: return SideId.Buy;
             case OrderSideEnumApi.Sell: return SideId.Sell;
+            case OrderSideEnumApi.IntraDayShortSell: return SideId.IntraDayShortSell;
+            case OrderSideEnumApi.RegulatedShortSell: return SideId.RegulatedShortSell;
+            case OrderSideEnumApi.ProprietaryShortSell: return SideId.ProprietaryShortSell;
+            case OrderSideEnumApi.ProprietaryDayTrade: return SideId.ProprietaryDayTrade;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidOrderSide, enumValue);
         }
     }

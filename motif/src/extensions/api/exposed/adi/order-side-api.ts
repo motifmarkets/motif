@@ -10,6 +10,10 @@ import { Handle } from '../sys/extension-api';
 export const enum OrderSideEnum {
     Buy = 'Buy',
     Sell = 'Sell',
+    IntraDayShortSell = 'IntraDayShortSell',
+    RegulatedShortSell = 'RegulatedShortSell',
+    ProprietaryShortSell = 'ProprietaryShortSell',
+    ProprietaryDayTrade ='ProprietaryDayTrade',
 }
 
 /** @public */

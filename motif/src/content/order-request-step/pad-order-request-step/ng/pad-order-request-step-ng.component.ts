@@ -89,7 +89,6 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     @ViewChild('sideLabel', { static: true }) private _sideLabelComponent: CaptionLabelNgComponent;
     @ViewChild('buySideRadio', { static: true }) private _buySideRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('sellSideRadio', { static: true }) private _sellSideRadioComponent: CaptionedRadioNgComponent;
-    @ViewChild('shortSellSideRadio', { static: true }) private _shortSellSideRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('symbolLabel', { static: true }) private _symbolLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolInput', { static: true }) private _symbolInputComponent: RoutedIvemIdSelectNgComponent;
     @ViewChild('symbolNameLabel', { static: true }) private _symbolNameLabelComponent: SymbolNameLabelNgComponent;
@@ -634,7 +633,10 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         switch (sideId) {
             case SideId.Buy: return StringId.OrderPadSideTitle_Buy;
             case SideId.Sell: return StringId.OrderPadSideTitle_Sell;
-            case SideId.SellShort: return StringId.OrderPadSideTitle_SellShort;
+            case SideId.IntraDayShortSell: return StringId.OrderPadSideTitle_IntraDayShortSell;
+            case SideId.RegulatedShortSell: return StringId.OrderPadSideTitle_RegulatedShortSell;
+            case SideId.ProprietaryShortSell: return StringId.OrderPadSideTitle_ProprietaryShortSell;
+            case SideId.ProprietaryDayTrade: return StringId.OrderPadSideTitle_ProprietaryDayTrade;
             default: return StringId.UnknownDisplayString;
         }
     }
@@ -644,7 +646,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadSideTitle]);
         action.pushCaption(Strings[StringId.OrderPadSideCaption]);
-        const sideIds: SideId[] = [SideId.Buy, SideId.Sell, SideId.SellShort];
+        const sideIds: SideId[] = [SideId.Buy, SideId.Sell]; // need to fix this
         const elementPropertiesArray = sideIds.map<EnumUiAction.ElementProperties>(
             (sideId) => {
                 const titleStringId = this.getSideTitleStringId(sideId);
@@ -949,7 +951,6 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this._sideLabelComponent.initialise(this._sideUiAction);
         this._buySideRadioComponent.initialiseEnum(this._sideUiAction, SideId.Buy);
         this._sellSideRadioComponent.initialiseEnum(this._sideUiAction, SideId.Sell);
-        this._shortSellSideRadioComponent.initialiseEnum(this._sideUiAction, SideId.SellShort);
         this._symbolLabelComponent.initialise(this._symbolUiAction);
         this._symbolInputComponent.initialise(this._symbolUiAction);
         this._symbolNameLabelComponent.initialise(this._symbolUiAction);
