@@ -16,7 +16,7 @@ import {
     ExchangeIdImplementation,
     FeedIdImplementation,
     MarketIdImplementation,
-    OrderSideImplementation,
+    OrderExtendedSideImplementation,
     OrderTimeInForceImplementation,
     OrderTypeImplementation
 } from '../../exposed/internal-api';
@@ -108,10 +108,10 @@ export class MarketIdSvcImplementation implements MarketIdSvc {
         return OrderTimeInForceImplementation.arrayToApi(allowedTimeinForceIds);
     }
 
-    public toAllowedOrderSides(id: MarketIdApi) {
+    public toAllowedOrderExtendedSides(id: MarketIdApi) {
         const marketId = MarketIdImplementation.fromApi(id);
         const allowedSideIds = MarketInfo.GetAllowedSideIdArray(marketId);
-        return OrderSideImplementation.arrayToApi(allowedSideIds);
+        return OrderExtendedSideImplementation.arrayToApi(allowedSideIds);
     }
 
     public toHandle(id: MarketIdApi) {
@@ -170,7 +170,7 @@ export class MarketIdSvcImplementation implements MarketIdSvc {
         return MarketInfo.getAllowedTimeInForceIdArrayForOrderType(marketIdHandle, orderTypeHandle);
     }
 
-    public handleToAllowedOrderSides(handle: MarketIdHandleApi) {
+    public handleToAllowedOrderExtendedSides(handle: MarketIdHandleApi) {
         return MarketInfo.GetAllowedSideIdArray(handle);
     }
 

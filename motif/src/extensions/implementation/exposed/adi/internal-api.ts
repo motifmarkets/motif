@@ -16,7 +16,7 @@ export * from './market-id-api-implementation';
 export * from './market-order-route-implementation';
 export * from './order-route-algorithm-implementation';
 export * from './order-route-implementation';
-export * from './order-side-api-implementation';
+export * from './order-extended-side-api-implementation';
 export * from './order-time-in-force-api-implementation';
 export * from './order-type-api-implementation';
 export * from './routed-ivem-id-implementation';

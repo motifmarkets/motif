@@ -1,5 +1,4 @@
 import {
-    BidAskSideId,
     ColorRenderValue,
     ColorScheme,
     ColorSettings,
@@ -9,8 +8,7 @@ import {
     GridRecordRenderValue,
     HigherLowerId,
     IndexSignatureHack,
-    Integer,
-    RenderValue,
+    Integer, OrderSideId, RenderValue,
     SettingsService,
     textFormatter,
     UnreachableCaseError
@@ -153,7 +151,7 @@ export class MotifGridCellPainter extends RevRecordCellPainter {
                     } else {
                         depthRecordItemId =
                             calculateDepthRecordBidAskOrderPriceLevelColorSchemeItemId(
-                                depthRecordAttribute.bidAskSideId,
+                                depthRecordAttribute.orderSideId,
                                 depthRecordAttribute.depthRecordTypeId,
                                 altRow
                             );
@@ -707,12 +705,12 @@ function underline(
 }
 
 export function calculateDepthRecordBidAskOrderPriceLevelColorSchemeItemId(
-    sideId: BidAskSideId,
+    sideId: OrderSideId,
     typeId: DepthRecord.TypeId,
     altRow: boolean
 ) {
     switch (sideId) {
-        case BidAskSideId.Bid:
+        case OrderSideId.Bid:
             switch (typeId) {
                 case DepthRecord.TypeId.Order:
                     if (altRow) {
@@ -733,7 +731,7 @@ export function calculateDepthRecordBidAskOrderPriceLevelColorSchemeItemId(
                     );
             }
 
-        case BidAskSideId.Ask:
+        case OrderSideId.Ask:
             switch (typeId) {
                 case DepthRecord.TypeId.Order:
                     if (altRow) {

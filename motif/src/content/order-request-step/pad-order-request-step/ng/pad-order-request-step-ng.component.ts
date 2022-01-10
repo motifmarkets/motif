@@ -25,8 +25,8 @@ import {
     MultiEvent,
     newUndefinableDate,
     newUndefinableDecimal,
-    Order,
-    OrderPad,
+    Order, OrderExtendedSide,
+    OrderExtendedSideId, OrderPad,
     OrderRequestTypeId,
     OrderRoute,
     OrderRouteUiAction,
@@ -37,10 +37,7 @@ import {
     PriceOrderTrigger,
     RoutedIvemId,
     RoutedIvemIdUiAction,
-    SettingsService,
-    Side,
-    SideId,
-    SingleBrokerageAccountGroup,
+    SettingsService, SingleBrokerageAccountGroup,
     StringId,
     Strings,
     StringUiAction,
@@ -275,7 +272,11 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         }
     }
 
-    pushSide(uiActionStateId: UiAction.StateId, title: string | undefined, sideId: SideId | undefined, allowedSideIds: readonly SideId[]) {
+    pushSide(uiActionStateId: UiAction.StateId,
+        title: string | undefined,
+        sideId: OrderExtendedSideId | undefined,
+        allowedSideIds: readonly OrderExtendedSideId[]
+    ) {
         this._sideUiAction.pushFilter(allowedSideIds);
         this._sideUiAction.pushValue(sideId);
         this._sideUiAction.pushState(uiActionStateId, title);
@@ -629,14 +630,14 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         return action;
     }
 
-    private getSideTitleStringId(sideId: SideId) {
+    private getSideTitleStringId(sideId: OrderExtendedSideId) {
         switch (sideId) {
-            case SideId.Buy: return StringId.OrderPadSideTitle_Buy;
-            case SideId.Sell: return StringId.OrderPadSideTitle_Sell;
-            case SideId.IntraDayShortSell: return StringId.OrderPadSideTitle_IntraDayShortSell;
-            case SideId.RegulatedShortSell: return StringId.OrderPadSideTitle_RegulatedShortSell;
-            case SideId.ProprietaryShortSell: return StringId.OrderPadSideTitle_ProprietaryShortSell;
-            case SideId.ProprietaryDayTrade: return StringId.OrderPadSideTitle_ProprietaryDayTrade;
+            case OrderExtendedSideId.Buy: return StringId.OrderPadSideTitle_Buy;
+            case OrderExtendedSideId.Sell: return StringId.OrderPadSideTitle_Sell;
+            case OrderExtendedSideId.IntraDayShortSell: return StringId.OrderPadSideTitle_IntraDayShortSell;
+            case OrderExtendedSideId.RegulatedShortSell: return StringId.OrderPadSideTitle_RegulatedShortSell;
+            case OrderExtendedSideId.ProprietaryShortSell: return StringId.OrderPadSideTitle_ProprietaryShortSell;
+            case OrderExtendedSideId.ProprietaryDayTrade: return StringId.OrderPadSideTitle_ProprietaryDayTrade;
             default: return StringId.UnknownDisplayString;
         }
     }
@@ -646,13 +647,13 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadSideTitle]);
         action.pushCaption(Strings[StringId.OrderPadSideCaption]);
-        const sideIds: SideId[] = [SideId.Buy, SideId.Sell]; // need to fix this
+        const sideIds: OrderExtendedSideId[] = [OrderExtendedSideId.Buy, OrderExtendedSideId.Sell]; // need to fix this
         const elementPropertiesArray = sideIds.map<EnumUiAction.ElementProperties>(
             (sideId) => {
                 const titleStringId = this.getSideTitleStringId(sideId);
                 return {
                     element: sideId,
-                    caption: Side.idToDisplay(sideId),
+                    caption: OrderExtendedSide.idToDisplay(sideId),
                     title: Strings[titleStringId],
                 };
             }
@@ -949,8 +950,8 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this._accountIdInputComponent.initialise(this._accountGroupUiAction);
         this._accountNameLabelComponent.initialise(this._accountGroupUiAction);
         this._sideLabelComponent.initialise(this._sideUiAction);
-        this._buySideRadioComponent.initialiseEnum(this._sideUiAction, SideId.Buy);
-        this._sellSideRadioComponent.initialiseEnum(this._sideUiAction, SideId.Sell);
+        this._buySideRadioComponent.initialiseEnum(this._sideUiAction, OrderExtendedSideId.Buy);
+        this._sellSideRadioComponent.initialiseEnum(this._sideUiAction, OrderExtendedSideId.Sell);
         this._symbolLabelComponent.initialise(this._symbolUiAction);
         this._symbolInputComponent.initialise(this._symbolUiAction);
         this._symbolNameLabelComponent.initialise(this._symbolUiAction);

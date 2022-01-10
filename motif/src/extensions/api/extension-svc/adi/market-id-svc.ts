@@ -11,8 +11,8 @@ import {
     FeedIdHandle,
     MarketId,
     MarketIdHandle,
-    OrderSide,
-    OrderSideHandle,
+    OrderExtendedSide,
+    OrderExtendedSideHandle,
     OrderTimeInForce,
     OrderTimeInForceHandle,
     OrderType,
@@ -34,7 +34,7 @@ export interface MarketIdSvc {
     toBestLitId(id: MarketId): MarketId;
     toAllowedOrderTypes(id: MarketId): OrderType[];
     toAllowedOrderTimeInForces(id: MarketId): OrderTimeInForce[];
-    toAllowedOrderSides(id: MarketId): OrderSide[];
+    toAllowedOrderExtendedSides(id: MarketId): OrderExtendedSide[];
 
     toHandle(id: MarketId): MarketIdHandle;
     fromHandle(handle: MarketIdHandle): MarketId | undefined;
@@ -53,6 +53,6 @@ export interface MarketIdSvc {
     handleToAllowedOrderTimeInForcesForOrderType(marketIdHandle: MarketIdHandle,
         orderTypeHandle: OrderTypeHandle
     ): readonly OrderTimeInForceHandle[];
-    handleToAllowedOrderSides(handle: MarketIdHandle): readonly OrderSideHandle[];
+    handleToAllowedOrderExtendedSides(handle: MarketIdHandle): readonly OrderExtendedSideHandle[];
     handleAreArraysUniquelyEqual(left: readonly MarketIdHandle[], right: readonly MarketIdHandle[]): boolean;
 }

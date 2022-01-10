@@ -14,7 +14,7 @@ import {
     LitIvemIdSvc,
     MarketIdSvc,
     OrderRouteSvc,
-    OrderSideSvc,
+    OrderExtendedSideSvc,
     OrderTimeInForceSvc,
     OrderTypeSvc,
     RoutedIvemIdSvc
@@ -60,7 +60,7 @@ export interface ExtensionSvc {
     readonly litIvemIdSvc: LitIvemIdSvc;
     readonly marketIdSvc: MarketIdSvc;
     readonly orderTypeSvc: OrderTypeSvc;
-    readonly orderSideSvc: OrderSideSvc;
+    readonly orderExtendedSideSvc: OrderExtendedSideSvc;
     readonly orderRouteSvc: OrderRouteSvc;
     readonly orderTimeInForceSvc: OrderTimeInForceSvc;
     readonly routedIvemIdSvc: RoutedIvemIdSvc;

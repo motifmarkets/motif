@@ -7,7 +7,7 @@
 import { Handle } from '../sys/extension-api';
 
 /** @public */
-export const enum OrderSideEnum {
+export const enum OrderExtendedSideEnum {
     Buy = 'Buy',
     Sell = 'Sell',
     IntraDayShortSell = 'IntraDayShortSell',
@@ -17,7 +17,7 @@ export const enum OrderSideEnum {
 }
 
 /** @public */
-export type OrderSide = keyof typeof OrderSideEnum;
+export type OrderExtendedSide = keyof typeof OrderExtendedSideEnum;
 
 /** @public */
-export type OrderSideHandle = Handle;
+export type OrderExtendedSideHandle = Handle;
