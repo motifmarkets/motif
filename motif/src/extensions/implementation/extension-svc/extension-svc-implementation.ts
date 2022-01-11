@@ -17,10 +17,7 @@ import {
     FeedIdSvcImplementation,
     IvemIdSvcImplementation,
     LitIvemIdSvcImplementation,
-    MarketIdSvcImplementation,
-    OrderRouteSvcImplementation,
-    OrderSideSvcImplementation,
-    OrderTimeInForceSvcImplementation,
+    MarketIdSvcImplementation, OrderExtendedSideSvcImplementation, OrderRouteSvcImplementation, OrderTimeInForceSvcImplementation,
     OrderTypeSvcImplementation,
     RoutedIvemIdSvcImplementation
 } from './adi/internal-api';
@@ -63,7 +60,7 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
     private readonly _ivemIdSvcImplementation: IvemIdSvcImplementation;
     private readonly _litIvemIdSvcImplementation: LitIvemIdSvcImplementation;
     private readonly _orderTypeSvcImplementation: OrderTypeSvcImplementation;
-    private readonly _orderSideSvcImplementation: OrderSideSvcImplementation;
+    private readonly _orderExtendedSideSvcImplementation: OrderExtendedSideSvcImplementation;
     private readonly _orderTimeInForceSvcImplementation: OrderTimeInForceSvcImplementation;
     private readonly _orderRouteSvcImplementation: OrderRouteSvcImplementation;
     private readonly _routedIvemIdSvcImplementation: RoutedIvemIdSvcImplementation;
@@ -102,7 +99,7 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
         this._ivemIdSvcImplementation = new IvemIdSvcImplementation();
         this._litIvemIdSvcImplementation = new LitIvemIdSvcImplementation();
         this._orderTypeSvcImplementation = new OrderTypeSvcImplementation();
-        this._orderSideSvcImplementation = new OrderSideSvcImplementation();
+        this._orderExtendedSideSvcImplementation = new OrderExtendedSideSvcImplementation();
         this._orderTimeInForceSvcImplementation = new OrderTimeInForceSvcImplementation();
         this._orderRouteSvcImplementation = new OrderRouteSvcImplementation();
         this._routedIvemIdSvcImplementation = new RoutedIvemIdSvcImplementation();
@@ -132,7 +129,7 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
     get ivemIdSvc() { return this._ivemIdSvcImplementation; }
     get litIvemIdSvc() { return this._litIvemIdSvcImplementation; }
     get orderTypeSvc() { return this._orderTypeSvcImplementation; }
-    get orderSideSvc() { return this._orderSideSvcImplementation; }
+    get orderExtendedSideSvc() { return this._orderExtendedSideSvcImplementation; }
     get orderTimeInForceSvc() { return this._orderTimeInForceSvcImplementation; }
     get orderRouteSvc() { return this._orderRouteSvcImplementation; }
     get routedIvemIdSvc() { return this._routedIvemIdSvcImplementation; }

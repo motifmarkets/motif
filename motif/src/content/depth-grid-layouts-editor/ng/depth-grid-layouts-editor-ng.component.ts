@@ -10,15 +10,12 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
-    BidAskSideId,
-    ButtonUiAction,
+    assert, ButtonUiAction,
     CommandRegisterService,
     delay1Tick,
     IconButtonUiAction,
     InternalCommand,
-    ModifierKey,
-    StringId,
+    ModifierKey, OrderSideId, StringId,
     UiAction,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
@@ -53,7 +50,7 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     private _closeReject: (reason: unknown) => void;
 
     private _layoutsWithHeadings: DepthFrame.GridLayoutsWithHeadersMap;
-    private _sideId: BidAskSideId;
+    private _sideId: OrderSideId;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
         super();
@@ -86,18 +83,18 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         });
     }
 
-    setSideId(value: BidAskSideId) {
+    setSideId(value: OrderSideId) {
 //        this.checkUpdateLayoutFromEditor();
 
         if (value !== this._sideId) {
             switch (value) {
-                case BidAskSideId.Bid:
+                case OrderSideId.Bid:
                     this._editorComponent.setGridLayout(this._layoutsWithHeadings.bid);
                     this._bidDepthUiAction.pushSelected();
                     this._askDepthUiAction.pushUnselected();
                     break;
 
-                case BidAskSideId.Ask:
+                case OrderSideId.Ask:
                     this._editorComponent.setGridLayout(this._layoutsWithHeadings.ask);
                     this._askDepthUiAction.pushSelected();
                     this._bidDepthUiAction.pushUnselected();
@@ -113,11 +110,11 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     }
 
     private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(BidAskSideId.Bid);
+        this.setSideId(OrderSideId.Bid);
     }
 
     private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(BidAskSideId.Ask);
+        this.setSideId(OrderSideId.Ask);
     }
 
     private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
@@ -176,11 +173,11 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     private checkUpdateLayoutFromEditor() {
         if (this._sideId !== undefined) {
             switch (this._sideId) {
-                case BidAskSideId.Bid:
+                case OrderSideId.Bid:
                     this._layoutsWithHeadings.bid.layout = this._editorComponent.getGridLayout();
                     break;
 
-                case BidAskSideId.Ask:
+                case OrderSideId.Ask:
                     this._layoutsWithHeadings.ask.layout = this._editorComponent.getGridLayout();
                     break;
 

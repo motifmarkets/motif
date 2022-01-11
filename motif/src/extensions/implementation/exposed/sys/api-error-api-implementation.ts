@@ -83,9 +83,9 @@ export namespace ApiErrorImplementation {
                 id: ApiErrorApi.CodeEnum.InvalidExchangeEnvironmentId,
                 code: 'InvalidExchangeEnvironmentId',
             },
-            InvalidOrderSide: {
-                id: ApiErrorApi.CodeEnum.InvalidOrderSide,
-                code: 'InvalidOrderSide',
+            InvalidOrderExtendedSide: {
+                id: ApiErrorApi.CodeEnum.InvalidOrderExtendedSide,
+                code: 'InvalidOrderExtendedSide',
             },
             InvalidOrderTimeInForce: {
                 id: ApiErrorApi.CodeEnum.InvalidOrderTimeInForce,

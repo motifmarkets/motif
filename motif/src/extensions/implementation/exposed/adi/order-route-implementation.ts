@@ -6,18 +6,15 @@
 
 import { OrderRoute } from '@motifmarkets/motif-core';
 import {
-    Json as JsonApi,
-    OrderRoute as OrderRouteApi,
-    OrderSide as OrderSideApi,
-    OrderSideHandle as OrderSideHandleApi,
-    OrderTimeInForce as OrderTimeInForceApi,
+    Json as JsonApi, OrderExtendedSide as OrderExtendedSideApi,
+    OrderExtendedSideHandle as OrderExtendedSideHandleApi, OrderRoute as OrderRouteApi, OrderTimeInForce as OrderTimeInForceApi,
     OrderTimeInForceHandle as OrderTimeInForceHandleApi,
     OrderType as OrderTypeApi,
     OrderTypeHandle as OrderTypeHandleApi
 } from '../../../api/extension-api';
 import { MarketIdImplementation } from './market-id-api-implementation';
+import { OrderExtendedSideImplementation } from './order-extended-side-api-implementation';
 import { OrderRouteAlgorithmImplementation } from './order-route-algorithm-implementation';
-import { OrderSideImplementation } from './order-side-api-implementation';
 import { OrderTimeInForceImplementation } from './order-time-in-force-api-implementation';
 import { OrderTypeImplementation } from './order-type-api-implementation';
 
@@ -57,14 +54,14 @@ export class OrderRouteImplementation implements OrderRouteApi {
         return this._actual.isOrderTypeAllowed(orderTypeId);
     }
 
-    getAllowedOrderSides() {
-        const orderSideIds = this._actual.getAllowedSideIds();
-        return OrderSideImplementation.arrayToApi(orderSideIds);
+    getAllowedOrderExtendedSides() {
+        const orderExtendedSideIds = this._actual.getAllowedOrderExtendedSideIds();
+        return OrderExtendedSideImplementation.arrayToApi(orderExtendedSideIds);
     }
 
-    isOrderSideAllowed(orderSide: OrderSideApi) {
-        const orderSideId = OrderSideImplementation.fromApi(orderSide);
-        return this._actual.isSideAllowed(orderSideId);
+    isOrderExtendedSideAllowed(orderExtendedSide: OrderExtendedSideApi) {
+        const orderExtendedSideId = OrderExtendedSideImplementation.fromApi(orderExtendedSide);
+        return this._actual.isSideAllowed(orderExtendedSideId);
     }
 
     isQuantityAllowed(value: number) {
@@ -95,12 +92,12 @@ export class OrderRouteImplementation implements OrderRouteApi {
         return this._actual.isOrderTypeAllowed(orderTypeHandle);
     }
 
-    getAllowedOrderSideHandles() {
-        return this._actual.getAllowedSideIds();
+    getAllowedOrderExtendedSideHandles() {
+        return this._actual.getAllowedOrderExtendedSideIds();
     }
 
-    isOrderSideHandleAllowed(orderSideHandle: OrderSideHandleApi) {
-        return this._actual.isSideAllowed(orderSideHandle);
+    isOrderExtendedSideHandleAllowed(orderExtendedSideHandle: OrderExtendedSideHandleApi) {
+        return this._actual.isSideAllowed(orderExtendedSideHandle);
     }
 
     getAllowedTimeInForcesForOrderTypeHandle(orderTypeHandle: OrderTypeHandleApi) {

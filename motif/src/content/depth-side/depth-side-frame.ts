@@ -5,9 +5,7 @@
  */
 
 import {
-    assigned,
-    BidAskSideId,
-    DataItem,
+    assigned, DataItem,
     DepthDataItem,
     DepthLevelsDataItem,
     DepthRecord,
@@ -21,8 +19,7 @@ import {
     GridLayoutIO,
     GridRecordFieldState,
     Integer,
-    JsonElement,
-    ShortDepthSideGridField,
+    JsonElement, OrderSideId, ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
@@ -36,7 +33,7 @@ export class DepthSideFrame extends ContentFrame {
 
     private _grid: MotifGrid;
     private _gridPrepared = false;
-    private _sideId: BidAskSideId;
+    private _sideId: OrderSideId;
     private _dataItem: DataItem;
     private _activeStore: DepthSideGridRecordStore;
     private _styleCache = new Array<DepthSideFrame.StyleCacheElement>(DepthStyle.idCount);
@@ -58,7 +55,7 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    setBidAskSideId(sideId: BidAskSideId) {
+    setOrderSideId(sideId: OrderSideId) {
         this._sideId = sideId;
         for (let styleId: DepthStyleId = 0; styleId < DepthStyle.idCount; styleId++) {
             this.initialiseStyle(styleId);
@@ -258,7 +255,7 @@ export class DepthSideFrame extends ContentFrame {
             defaultLayout.addField(fields[idx].name, defaultVisibles[idx]);
         }
 
-        if (this._sideId === BidAskSideId.Bid) {
+        if (this._sideId === OrderSideId.Bid) {
             // Reverse the order of columns in the asks grid.
             const lastColumnIdx = defaultLayout.columnCount - 1;
             for (let idx = 0; idx < lastColumnIdx; idx++) {

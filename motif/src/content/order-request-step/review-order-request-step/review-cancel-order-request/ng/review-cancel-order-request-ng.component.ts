@@ -8,14 +8,11 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Inj
 import {
     AssertInternalError,
     ColorScheme,
-    MultiEvent,
-    OrderPad,
+    MultiEvent, OrderExtendedSideId, OrderPad,
     OrderRequestDataDefinition,
-    SettingsService,
-    SideId,
-    StringId,
+    SettingsService, StringId,
     Strings,
-    textFormatter,
+    textFormatter
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
@@ -55,7 +52,7 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
     private _settingsService: SettingsService;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    private readonly _sideId: SideId;
+    private readonly _sideId: OrderExtendedSideId;
 
     constructor(cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
@@ -91,7 +88,7 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
             throw new AssertInternalError('RMIRCCSI9888332312');
         } else {
             this._sideId = sideId;
-            this.side = textFormatter.formatSideId(sideId);
+            this.side = textFormatter.formatOrderExtendedSideId(sideId);
         }
 
         this.symbolCaption = Strings[StringId.OrderPadSymbolCaption];
@@ -184,10 +181,10 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
         this.gridBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_Base);
         this.gridAltBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt);
         switch (this._sideId) {
-            case SideId.Buy:
+            case OrderExtendedSideId.Buy:
                 this.gridOrderSideColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_PriceBuy);
                 break;
-            case SideId.Sell:
+            case OrderExtendedSideId.Sell:
                 this.gridOrderSideColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Grid_PriceSell);
                 break;
         }

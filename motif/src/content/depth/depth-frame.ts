@@ -8,7 +8,7 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
-    BidAskSideId,
+    OrderSideId,
     CommaText,
     Correctness,
     DepthDataDefinition,
@@ -67,8 +67,8 @@ export class DepthFrame extends ContentFrame {
     get filterXrefs() { return this._filterXrefs; }
 
     initialise() {
-        this._bidDepthSideFrame.setBidAskSideId(BidAskSideId.Bid);
-        this._askDepthSideFrame.setBidAskSideId(BidAskSideId.Ask);
+        this._bidDepthSideFrame.setOrderSideId(OrderSideId.Bid);
+        this._askDepthSideFrame.setOrderSideId(OrderSideId.Ask);
     }
 
     bindChildFrames(bidDepthSideFrame: DepthSideFrame, askDepthSideFrame: DepthSideFrame) {

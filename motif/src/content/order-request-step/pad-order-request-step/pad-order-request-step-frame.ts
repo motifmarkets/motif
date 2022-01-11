@@ -9,13 +9,11 @@ import {
     BrokerageAccountGroup,
     BrokerageAccountId,
     ExchangeInfo, Integer, JsonElement, LitIvemId,
-    MovementId, MultiEvent, OrderId, OrderPad, OrderRoute,
+    MovementId, MultiEvent, OrderExtendedSideId, OrderId, OrderPad, OrderRoute,
     OrderTriggerTypeId,
     OrderTypeId,
     PriceOrderTrigger,
-    RoutedIvemId,
-    SideId,
-    SingleBrokerageAccountGroup, StringId, Strings, SymbolsService, TimeInForceId, UiAction, UnreachableCaseError
+    RoutedIvemId, SingleBrokerageAccountGroup, StringId, Strings, SymbolsService, TimeInForceId, UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light/decimal';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -70,7 +68,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
             this._brokerageAccountGroupSetting = false;
         }
     }
-    set sideId(value: SideId | undefined) { this._orderPad.sideId = value; }
+    set sideId(value: OrderExtendedSideId | undefined) { this._orderPad.sideId = value; }
     set routedIvemId(value: RoutedIvemId | undefined) {
         this._orderPad.routedIvemId = value;
         this._litIvemIdSetting = true;
@@ -423,8 +421,8 @@ export namespace PadOrderRequestStepFrame {
         orderPadSet(): void;
         pushAccount(uiActionStateId: UiAction.StateId, title: string | undefined,
             accountId: BrokerageAccountId | undefined): void;
-        pushSide(uiActionStateId: UiAction.StateId, title: string | undefined, side: SideId | undefined,
-            allowedSideIds: readonly SideId[]): void;
+        pushSide(uiActionStateId: UiAction.StateId, title: string | undefined, side: OrderExtendedSideId | undefined,
+            allowedSideIds: readonly OrderExtendedSideId[]): void;
         pushSymbol(uiActionStateId: UiAction.StateId, title: string | undefined, symbol: RoutedIvemId | undefined,
             allowedRoutes: readonly OrderRoute[]): void;
         pushTotalQuantity(uiActionStateId: UiAction.StateId, title: string | undefined, quantity: Integer | undefined): void;

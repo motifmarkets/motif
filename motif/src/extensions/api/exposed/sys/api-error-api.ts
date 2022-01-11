@@ -23,7 +23,7 @@ export namespace ApiError {
         InvalidMarketId = 'InvalidMarketId',
         InvalidExchangeId = 'InvalidExchangeId',
         InvalidExchangeEnvironmentId = 'InvalidExchangeEnvironmentId',
-        InvalidOrderSide = 'InvalidOrderSide',
+        InvalidOrderExtendedSide = 'InvalidOrderExtendedSide',
         InvalidOrderTimeInForce = 'InvalidOrderTimeInForce',
         InvalidOrderType = 'InvalidOrderType',
         InvalidOrderRouteAlgorithm = 'InvalidOrderRouteAlgorithm',
