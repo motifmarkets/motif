@@ -86,6 +86,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     @ViewChild('sideLabel', { static: true }) private _sideLabelComponent: CaptionLabelNgComponent;
     @ViewChild('buySideRadio', { static: true }) private _buySideRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('sellSideRadio', { static: true }) private _sellSideRadioComponent: CaptionedRadioNgComponent;
+    @ViewChild('sideInput', { static: true }) private _sideInputComponent: EnumInputNgComponent;
     @ViewChild('symbolLabel', { static: true }) private _symbolLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolInput', { static: true }) private _symbolInputComponent: RoutedIvemIdSelectNgComponent;
     @ViewChild('symbolNameLabel', { static: true }) private _symbolNameLabelComponent: SymbolNameLabelNgComponent;
@@ -647,7 +648,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadSideTitle]);
         action.pushCaption(Strings[StringId.OrderPadSideCaption]);
-        const sideIds: OrderExtendedSideId[] = [OrderExtendedSideId.Buy, OrderExtendedSideId.Sell]; // need to fix this
+        const sideIds = OrderExtendedSide.all;
         const elementPropertiesArray = sideIds.map<EnumUiAction.ElementProperties>(
             (sideId) => {
                 const titleStringId = this.getSideTitleStringId(sideId);
@@ -952,6 +953,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         this._sideLabelComponent.initialise(this._sideUiAction);
         this._buySideRadioComponent.initialiseEnum(this._sideUiAction, OrderExtendedSideId.Buy);
         this._sellSideRadioComponent.initialiseEnum(this._sideUiAction, OrderExtendedSideId.Sell);
+        this._sideInputComponent.initialise(this._sideUiAction);
         this._symbolLabelComponent.initialise(this._symbolUiAction);
         this._symbolInputComponent.initialise(this._symbolUiAction);
         this._symbolNameLabelComponent.initialise(this._symbolUiAction);
