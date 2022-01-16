@@ -90,7 +90,6 @@
     "appNotifyErrors": true,
     "dataSubscriptionCachingDisabled": false,
     "motifServicesBypass": {
-      "useZenithAuthOwnerAuthentication": false,
       "useLocalStateStorage": false
     }
   },

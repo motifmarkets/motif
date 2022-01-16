@@ -24,6 +24,7 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
     public hideButtonDisplay = HtmlTypes.Display.None;
     public hideCaption = Strings[StringId.Hide];
 
+    private _alerts: UserAlertService.Alert[] = [];
     private _notCancellableCount = 0;
     private _errorCount = 0;
 
@@ -33,6 +34,8 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
 
     pushAlerts(alerts: UserAlertService.Alert[]) {
         alerts.reverse(); // make latest alert the first in array
+
+        this._alerts = alerts;
 
         this.restartReasonsText = '';
         this.restartReasonCount = 0;
@@ -93,6 +96,9 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
     }
 
     public hide() {
+        for (const alert of this._alerts) {
+            alert.hide();
+        }
         this._elRef.nativeElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.None);
     }
 }

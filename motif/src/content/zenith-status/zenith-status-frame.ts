@@ -20,6 +20,7 @@ export class ZenithStatusFrame extends ContentFrame {
     private _extConnectionPublisherStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _extConnectionReconnectSubscriptionId: MultiEvent.SubscriptionId;
     private _extConnectionSessionKickedOffSubscriptionId: MultiEvent.SubscriptionId;
+    private _extConnectionSelectedEndpointChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _extConnectionCounterSubscriptionId: MultiEvent.SubscriptionId;
 
     private _serverInfoDataItem: ZenithServerInfoDataItem;
@@ -27,7 +28,7 @@ export class ZenithStatusFrame extends ContentFrame {
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private _componentAccess: ZenithStatusFrame.ComponentAccess, private _adi: AdiService,
-        public readonly endpoint: string
+        public readonly endpoints: readonly string[]
     ) {
         super();
     }
@@ -49,9 +50,12 @@ export class ZenithStatusFrame extends ContentFrame {
     // SessionKickedOffEvent
     get sessionKickedOff() { return this._extConnectionDataItem.sessionKickedOff ? Strings[StringId.True] : Strings[StringId.False]; }
 
+    // SelectedEndpointChangedEvent
+    get selectedEndpoint() { return this._extConnectionDataItem.selectedEndpoint; }
+
     // CounterEvent
-    get accessTokenExpiryTime() {
-        const time = SysTick.toDate(this._extConnectionDataItem.accessTokenExpiryTime);
+    get authExpiryTime() {
+        const time = SysTick.toDate(this._extConnectionDataItem.authExpiryTime);
         return time.toLocaleTimeString();
     }
     get authFetchSuccessiveFailureCount() { return this._extConnectionDataItem.authFetchSuccessiveFailureCount.toString(10); }
@@ -99,6 +103,7 @@ export class ZenithStatusFrame extends ContentFrame {
         this._componentAccess.notifyPublisherStateChange();
         this._componentAccess.notifyReconnect();
         this._componentAccess.notifySessionKickedOff();
+        this._componentAccess.notifySelectedEndpointChanged();
         this._componentAccess.notifyCounter();
         this._componentAccess.notifyServerInfoChanged();
     }
@@ -126,6 +131,10 @@ export class ZenithStatusFrame extends ContentFrame {
         this._componentAccess.notifySessionKickedOff();
     }
 
+    private handleExtConnectionSelectedEndpointChangedEvent() {
+        this._componentAccess.notifySelectedEndpointChanged();
+    }
+
     private handleExtConnectionCounterEvent() {
         this._componentAccess.notifyCounter();
     }
@@ -142,7 +151,7 @@ export class ZenithStatusFrame extends ContentFrame {
 
     private subscribeZenithExtConnection() {
         const dataDefinition = new ZenithExtConnectionDataDefinition();
-        dataDefinition.zenithWebsocketEndpoint = this.endpoint;
+        dataDefinition.zenithWebsocketEndpoints = this.endpoints;
 
         this._extConnectionDataItem = this._adi.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
         this._extConnectionPublisherOnlineChangeSubscriptionId = this._extConnectionDataItem.subscribePublisherOnlineChangeEvent(
@@ -156,6 +165,9 @@ export class ZenithStatusFrame extends ContentFrame {
         );
         this._extConnectionSessionKickedOffSubscriptionId = this._extConnectionDataItem.subscribeZenithSessionKickedOffEvent(
             () => { this.handleExtConnectionSessionKickedOffEvent(); }
+        );
+        this._extConnectionSelectedEndpointChangedSubscriptionId = this._extConnectionDataItem.subscribeZenithSelectedEndpointChangedEvent(
+            () => { this.handleExtConnectionSelectedEndpointChangedEvent(); }
         );
         this._extConnectionCounterSubscriptionId = this._extConnectionDataItem.subscribeZenithCounterEvent(
             () => { this.handleExtConnectionCounterEvent(); }
@@ -171,6 +183,8 @@ export class ZenithStatusFrame extends ContentFrame {
         this._extConnectionReconnectSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribeZenithSessionKickedOffEvent(this._extConnectionSessionKickedOffSubscriptionId);
         this._extConnectionSessionKickedOffSubscriptionId = undefined;
+        this._extConnectionDataItem.unsubscribeZenithSelectedEndpointChangedEvent(this._extConnectionSelectedEndpointChangedSubscriptionId);
+        this._extConnectionSelectedEndpointChangedSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribeZenithCounterEvent(this._extConnectionCounterSubscriptionId);
         this._extConnectionCounterSubscriptionId = undefined;
         this._adi.unsubscribe(this._extConnectionDataItem);
@@ -231,6 +245,7 @@ export namespace ZenithStatusFrame {
         notifyPublisherStateChange(): void;
         notifyReconnect(): void;
         notifySessionKickedOff(): void;
+        notifySelectedEndpointChanged(): void;
         notifyCounter(): void;
         notifyServerInfoChanged(): void;
 

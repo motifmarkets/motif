@@ -511,26 +511,20 @@ export namespace ConfigNgService {
         export namespace MotifServicesBypass {
             // eslint-disable-next-line @typescript-eslint/no-shadow
             export interface Json {
-                readonly useZenithAuthOwnerAuthentication?: boolean;
                 readonly useLocalStateStorage?: boolean;
             }
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
             export function parseJson(json: Json | undefined) {
-                let useZenithAuthOwnerAuthentication: boolean;
                 let useLocalStateStorage: boolean;
 
                 if (json === undefined) {
-                    useZenithAuthOwnerAuthentication = Config.Diagnostics.MotifServicesBypass.defaultUseZenithAuthOwnerAuthentication;
                     useLocalStateStorage = Config.Diagnostics.MotifServicesBypass.defaultUseLocalStateStorage;
                 } else {
-                    useZenithAuthOwnerAuthentication = json.useZenithAuthOwnerAuthentication ??
-                        Config.Diagnostics.MotifServicesBypass.defaultUseZenithAuthOwnerAuthentication;
                     useLocalStateStorage = json.useLocalStateStorage ?? Config.Diagnostics.MotifServicesBypass.defaultUseLocalStateStorage;
                 }
 
                 const motifServicesBypass: Config.Diagnostics.MotifServicesBypass = {
-                    useZenithAuthOwnerAuthentication,
                     useLocalStateStorage,
                 };
 

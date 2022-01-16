@@ -16,7 +16,7 @@ export class AuthGuardNgService implements CanActivate {
     constructor(private _sessionNgService: SessionNgService) { }
 
     canActivate(): boolean {
-        if (this._sessionNgService.isLoggedIn() || this._sessionNgService.usingZenithOwnerAuthentication()) {
+        if (this._sessionNgService.isLoggedIn()) {
             return true;
         } else {
             this._sessionNgService.startAuthentication();

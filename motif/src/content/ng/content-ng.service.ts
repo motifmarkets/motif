@@ -37,8 +37,8 @@ export class ContentNgService {
             adiNgService.adiService);
     }
 
-    createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, endpoint: string) {
-        return this._content.createZenithStatusFrame(componentAccess, endpoint);
+    createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
+        return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
     createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
