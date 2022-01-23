@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, SessionInfoService, AppStorageService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
+import { AdiService, AppStorageService, SessionInfoService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
@@ -22,8 +22,8 @@ export class ContentService {
         private _appStorageService: AppStorageService,
         private _adiService: AdiService) { }
 
-    createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, endpoint: string) {
-        return new ZenithStatusFrame(componentAccess, this._adiService, endpoint);
+    createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
+        return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
     createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {

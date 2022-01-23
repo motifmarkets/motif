@@ -86,14 +86,10 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     }
 
     ngOnInit() {
-        this._userAlertService.alertQueuedEvent = () => this.handleUserAlertServiceAlertQueuedEvent();
-        const alerts = this._userAlertService.getAndClearAlerts();
+        this._userAlertService.alertQueueChangedEvent = () => this.handleUserAlertServiceAlertQueueChangedEvent();
+        const alerts = this._userAlertService.getVisibleAlerts();
         if (alerts.length > 0) {
             this._userAlertComponent.pushAlerts(alerts);
-        }
-
-        if (this._sessionService.usingZenithOwnerAuthentication() === true) {
-            this._router.navigate(['/startup']);
         }
     }
 
@@ -101,8 +97,8 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         this.finalise();
     }
 
-    private handleUserAlertServiceAlertQueuedEvent() {
-        const alerts = this._userAlertService.getAndClearAlerts();
+    private handleUserAlertServiceAlertQueueChangedEvent() {
+        const alerts = this._userAlertService.getVisibleAlerts();
         this._userAlertComponent.pushAlerts(alerts);
     }
 

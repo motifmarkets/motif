@@ -119,12 +119,10 @@ export namespace Config {
         }
 
         export interface MotifServicesBypass {
-            readonly useZenithAuthOwnerAuthentication: boolean;
             readonly useLocalStateStorage: boolean;
         }
 
         export namespace MotifServicesBypass {
-            export const defaultUseZenithAuthOwnerAuthentication = false;
             export const defaultUseLocalStateStorage = false;
         }
     }

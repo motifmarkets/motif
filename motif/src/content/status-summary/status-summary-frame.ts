@@ -8,16 +8,13 @@ import {
     AdiService,
     Badness,
     CorrectnessId,
-    MultiEvent,
-    StringId,
+    MultiEvent, SessionInfoService, StringId,
     Strings,
     UnreachableCaseError,
-    ZenithExtConnectionDataDefinition,
-    SessionInfoService,
-    ZenithExtConnectionDataItem,
+    ZenithExtConnectionDataDefinition, ZenithExtConnectionDataItem,
     ZenithPublisherState,
     ZenithServerInfoDataDefinition,
-    ZenithServerInfoDataItem,
+    ZenithServerInfoDataItem
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 
@@ -86,7 +83,7 @@ export class StatusSummaryFrame extends ContentFrame {
 
     private subscribeZenithExtConnection() {
         const dataDefinition = new ZenithExtConnectionDataDefinition();
-        dataDefinition.zenithWebsocketEndpoint = this._sessionInfoService.zenithEndpoint;
+        dataDefinition.zenithWebsocketEndpoints = this._sessionInfoService.zenithEndpoints;
 
         this._extConnectionDataItem = this._adi.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
         this._extConnectionPublisherOnlineChangeSubscriptionId = this._extConnectionDataItem.subscribePublisherOnlineChangeEvent(

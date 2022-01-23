@@ -20,6 +20,7 @@ import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { Config } from '../config';
 import { SessionService } from '../session-service';
 import { ConfigNgService } from './config-ng.service';
+import { OpenIdNgService } from './open-id-ng.service';
 import { TelemetryNgService } from './telemetry-ng.service';
 
 @Injectable({
@@ -34,6 +35,7 @@ export class SessionNgService implements OnDestroy {
         telemetryNgService: TelemetryNgService,
         userAlertNgService: UserAlertNgService,
         settingsNgService: SettingsNgService,
+        openIdNgService: OpenIdNgService,
         motifServicesNgService: MotifServicesNgService,
         appStorageNgService: AppStorageNgService,
         extensionNgService: ExtensionsNgService,
@@ -46,6 +48,7 @@ export class SessionNgService implements OnDestroy {
         this._session = new SessionService(telemetryNgService.telemetry,
             userAlertNgService.service,
             settingsNgService.settingsService,
+            openIdNgService.service,
             motifServicesNgService.service,
             appStorageNgService.appStorage,
             extensionNgService.service,
@@ -64,10 +67,6 @@ export class SessionNgService implements OnDestroy {
 
     ngOnDestroy() {
         this._session.finalise();
-    }
-
-    usingZenithOwnerAuthentication() {
-        return false; // this._configService.config.diagnostics.motifServicesBypass.useZenithAuthOwnerAuthentication;
     }
 
     isLoggedIn(): boolean {

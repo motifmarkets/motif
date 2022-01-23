@@ -12,9 +12,7 @@ import {
     ExchangeEnvironment,
     ExchangeEnvironmentId,
     ExchangeInfo,
-    ExternalError,
-    getErrorMessage,
-    IdleDeadline,
+    ExternalError, IdleDeadline,
     IdleRequestOptions,
     Integer,
     JsonElement,
@@ -41,10 +39,10 @@ import {
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
-import { ErrorResponse, Log as OidcLog, User, UserManager, UserManagerSettings } from 'oidc-client-ts';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { Config } from './config';
+import { OpenIdService } from './open-id-service';
 import { TelemetryService } from './telemetry-service';
 
 export class SessionService {
@@ -56,29 +54,14 @@ export class SessionService {
     private _serviceName: string;
     private _serviceDescription: string | undefined;
 
-    private _userManager: UserManager;
-    private _access_token = SessionService.invalidAccessToken;
-    private _token_type = '';
-    private _userId: string;
-    private _username: string;
-    private _userFullName: string;
-    private _userAccessTokenExpiryTime: number | undefined;
-
     private _motifServicesEndpoint: string;
-    private _zenithEndpoint: string;
 
     private _infoService: SessionInfoService = new SessionInfoService();
 
-    private _useZenithAuthOwnerAuthentication: boolean;
     private _useLocalStateStorage: boolean;
     private _exchangeEnvironmentId: ExchangeEnvironmentId;
     private _motifServicesEndpoints: readonly string[];
     private _zenithEndpoints: readonly string[];
-    private _openIdAuthority: string;
-    private _openIdClientId: string;
-    private _openIdRedirectUri: string;
-    private _openIdSilentRedirectUri: string;
-    private _openIdScope: string;
 
     private _sequentialZenithReconnectionWarningCount = 0;
 
@@ -98,71 +81,62 @@ export class SessionService {
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
 
-    private _sessionRenewalAttemptCount = 0;
-    private _sessionRenewalAttemptDelaySetTimeoutId: ReturnType<typeof setInterval> | undefined;
-
     constructor(
-        private _telemetryService: TelemetryService,
-        private _userAlertService: UserAlertService,
-        private _settingsService: SettingsService,
-        private _motifServicesService: MotifServicesService,
-        private _appStorageService: AppStorageService,
-        private _extensionService: ExtensionsService,
-        private _adiService: AdiService,
-        private _symbolsService: SymbolsService,
-        private _signoutService: SignOutService,
+        private readonly _telemetryService: TelemetryService,
+        private readonly _userAlertService: UserAlertService,
+        private readonly _settingsService: SettingsService,
+        private readonly _openIdService: OpenIdService,
+        private readonly _motifServicesService: MotifServicesService,
+        private readonly _appStorageService: AppStorageService,
+        private readonly _extensionService: ExtensionsService,
+        private readonly _adiService: AdiService,
+        private readonly _symbolsService: SymbolsService,
+        private readonly _signoutService: SignOutService,
     ) {
-        OidcLog.logger = console;
-        OidcLog.level = OidcLog.INFO;
-
+        this._openIdService.logErrorEvent = (text) => this.logError(text);
+        this._openIdService.userLoadedEvent = () => this.handleUserLoadedEvent();
         this._signoutService.signOutEvent = () => this.handleSignOut();
     }
 
     get serviceName() { return this._serviceName; }
     get serviceDescription() { return this._serviceDescription; }
-    get userId() { return this._userId; }
-    get username() { return this._username; }
-    get userFullName() { return this._userFullName; }
 
     get infoService() { return this._infoService; }
 
     get stateId() { return this._stateId; }
-    get zenithEndpoint() { return this._zenithEndpoint; }
+    get zenithEndpoints() { return this._zenithEndpoints; }
     get running() { return this._stateId === SessionStateId.Offline || this._stateId === SessionStateId.Online; }
     get final() { return this._stateId === SessionStateId.Finalising || this._stateId === SessionStateId.Finalised; }
+
+    get userId() { return this._openIdService.userId; }
+    get username() { return this._openIdService.username; }
+    get userFullName() { return this._openIdService.userFullName; }
 
     startAuthentication(config: Config) {
         if (config === undefined) {
             throw new AssertInternalError('SSACU89888982232');
         } else {
             this.applyConfig(config);
-            this._userManager = this.createUserManager();
-            this._userManager.signinRedirect();
+            this._openIdService.startAuthentication();
         }
     }
 
     async completeAuthentication(config: Config) {
         this.applyConfig(config);
-
-        this._userManager = this.createUserManager();
-        const user = await this._userManager.signinRedirectCallback();
-        if (user === undefined || user === null) {
-            this.logError(`OIDC UserManager returned null or undefined user`);
-        } else {
+        const authenticated = await this._openIdService.completeAuthentication();
+        if (authenticated) {
             this.authenticatedEvent();
+        } else {
+            this.logError(`Open ID authentication failed. Returned null or undefined user`);
         }
     }
 
     isLoggedIn(): boolean {
-        return this._access_token !== SessionService.invalidAccessToken;
+        return this._openIdService.isLoggedIn();
     }
 
     getAuthorizationHeaderValue(): string {
-        if (this._access_token === SessionService.invalidAccessToken) {
-            throw new AssertInternalError('SMGAHV338834590');
-        } else {
-            return `${this._token_type} ${this._access_token}`;
-        }
+        return this._openIdService.getAuthorizationHeaderValue();
     }
 
     async start(config: Config) {
@@ -174,11 +148,7 @@ export class SessionService {
         this.logInfo(`ProdMode: ${isDevMode() ? 'False' : 'True'}`);
         ExchangeInfo.setDefaultEnvironmentId(this._exchangeEnvironmentId);
         this.logInfo(`Exchange Environment: ${ExchangeEnvironment.idToDisplay(this._exchangeEnvironmentId)}`);
-        this.setZenithEndpoint(this._zenithEndpoints[0]);
-        this.logInfo(`Zenith Endpoint: ${this._zenithEndpoint}`);
-        if (this._useZenithAuthOwnerAuthentication) {
-            this.logInfo('Zenith AuthOwner Authentication: True');
-        }
+        this.logInfo(`Zenith Endpoint: ${this._zenithEndpoints.join(',')}`);
 
         let storageTypeId: AppStorageService.TypeId;
         if (this._useLocalStateStorage) {
@@ -207,12 +177,11 @@ export class SessionService {
 
     signOut() {
         this.finalise();
-
-        this._userManager.signoutRedirect();
+        this._openIdService.signOut();
     }
 
     finalise() {
-        this.checkCancelSessionRenewalAttempt();
+        this._openIdService.finalise();
 
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
@@ -262,29 +231,28 @@ export class SessionService {
         this._infoService.serviceDescription = value;
     }
 
-    private setUserId(value: string) {
-        this._userId = value;
-        this._infoService.userId = value;
+    private setZenithEndpoints(value: readonly string[]) {
+        this._zenithEndpoints = value;
+        this._infoService.zenithEndpoints = value;
     }
 
-    private setUsername(value: string) {
-        this._username = value;
-        this._infoService.username = value;
-    }
+    private handleUserLoadedEvent() {
+        const userId = this._openIdService.userId;
+        const username = this._openIdService.username;
+        const userFullName = this._openIdService.userFullName;
 
-    private setUserFullName(value: string) {
-        this._userFullName = value;
-        this._infoService.userFullName = value;
-    }
+        this._infoService.userId = userId;
+        this._infoService.username = this._openIdService.username;
+        this._infoService.userFullName = this._openIdService.userFullName;
+        this._infoService.userAccessTokenExpiryTime = this._openIdService.userAccessTokenExpiryTime;
 
-    private setUserAccessTokenExpiryTime(value: number | undefined) {
-        this._userAccessTokenExpiryTime = value;
-        this._infoService.userAccessTokenExpiryTime = value;
-    }
+        const telemetryUsername = username ?? userFullName ?? userId;
+        this._telemetryService.setUser(userId, telemetryUsername);
 
-    private setZenithEndpoint(value: string) {
-        this._zenithEndpoint = value;
-        this._infoService.zenithEndpoint = value;
+        const accessToken = this._openIdService.accessToken;
+        if (this._zenithExtConnectionDataItem !== undefined && accessToken !== OpenIdService.invalidAccessToken) {
+            this._zenithExtConnectionDataItem.updateAccessToken(accessToken);
+        }
     }
 
     private handleZenithFeedOnlineChangeEvent(online: boolean): void {
@@ -394,18 +362,13 @@ export class SessionService {
         this._adiService.dataMgr.dataSubscriptionCachingEnabled = !config.diagnostics.dataSubscriptionCachingDisabled;
         ZenithPublisherSubscriptionManager.logLevelId = config.diagnostics.zenithLogLevelId;
 
-        this._useZenithAuthOwnerAuthentication = config.diagnostics.motifServicesBypass.useZenithAuthOwnerAuthentication;
         this._useLocalStateStorage = config.diagnostics.motifServicesBypass.useLocalStateStorage;
         this._exchangeEnvironmentId = config.exchange.environmentId;
         this._infoService.bannerOverrideExchangeEnvironmentId = config.exchange.bannerOverrideEnvironmentId;
         this._motifServicesEndpoints = config.endpoints.motifServices;
-        this._zenithEndpoints = config.endpoints.zenith;
+        this.setZenithEndpoints(config.endpoints.zenith);
 
-        this._openIdAuthority = config.openId.authority;
-        this._openIdClientId = config.openId.clientId;
-        this._openIdRedirectUri = config.openId.redirectUri;
-        this._openIdSilentRedirectUri = config.openId.silentRedirectUri;
-        this._openIdScope = config.openId.scope;
+        this._openIdService.applyConfig(config);
 
         this._infoService.defaultLayout = config.defaultLayout;
         this._extensionService.setBundled(config.bundledExtensions);
@@ -421,159 +384,6 @@ export class SessionService {
             this.notifyStateChange();
 
             this._infoService.stateId = stateId;
-        }
-    }
-
-    private createUserManager() {
-        const settings: UserManagerSettings = {
-            authority: this._openIdAuthority,
-            client_id: this._openIdClientId,
-            redirect_uri: this._openIdRedirectUri,
-            response_type: 'code',
-            scope: this._openIdScope,
-            automaticSilentRenew: true,
-            silent_redirect_uri: this._openIdSilentRedirectUri,
-            filterProtocolClaims: true,
-            loadUserInfo: true
-        };
-
-        const userManager = new UserManager(settings);
-        userManager.events.addUserLoaded((user) => this.processUserLoaded(user));
-        userManager.events.addAccessTokenExpired(() => this.processAccessTokenExpired());
-        userManager.events.addSilentRenewError((error: Error) => this.processSilentRenewError(error));
-
-        return userManager;
-    }
-
-    private processUserLoaded(user: User) {
-        this._sessionRenewalAttemptCount = 0;
-        this.checkCancelSessionRenewalAttempt();
-
-        this._access_token = user.access_token;
-        this._token_type = user.token_type;
-
-        const expiresAt = user.expires_at;
-        const accessTokenExpiryTime = expiresAt === undefined ? undefined : expiresAt * 1000; // convert to JavaScript time
-        this.setUserAccessTokenExpiryTime(accessTokenExpiryTime);
-
-        const profile = user.profile;
-        const preferred_username = profile. preferred_username ?? '';
-        const fullName = profile.name ?? '';
-        this.setUserId(profile.sub ?? '');
-        this.setUsername(preferred_username);
-        this.setUserFullName(fullName);
-
-        const telemetryUsername = preferred_username ?? fullName ?? this._userId;
-        this._telemetryService.setUser(this._userId, telemetryUsername);
-
-        if (this._zenithExtConnectionDataItem !== undefined) {
-            this._zenithExtConnectionDataItem.updateAccessToken(this._access_token);
-        }
-    }
-
-    private async processAccessTokenExpired() {
-        try {
-            await this._userManager.signinSilent();
-        } catch (error) {
-            this._access_token = SessionService.invalidAccessToken;
-
-            // if (this._zenithExtConnectionDataItem !== undefined) {
-            //     this._zenithExtConnectionDataItem.updateAccessToken(SessionService.invalidAccessToken);
-            // }
-
-            const errorMessage = getErrorMessage(error);
-
-            this.logError('Session Renewal failure after expiry: ' + errorMessage);
-            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
-        }
-    }
-
-    private async processSilentRenewError(error: Error) {
-
-        if (error !== undefined && error instanceof ErrorResponse) {
-            // Handle the hopeless.
-            switch (error.error) {
-                case 'interaction_required':
-                case 'login_required':
-                case 'consent_required':
-                case 'account_selection_required':
-                    this.logError('SessionRenewalProblem: ' + error.error);
-                    this._userManager.removeUser();
-                    this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, error.error);
-                    return;
-                default:
-            }
-        }
-
-        const errorMessage = getErrorMessage(error);
-
-        const canAttemptSessionRenewal = await this.canAttemptSessionRenewal(errorMessage);
-        if (canAttemptSessionRenewal) {
-            this.initiateSessionRenewalAttempt(errorMessage);
-        }
-    }
-
-    private async canAttemptSessionRenewal(errorMessage: string): Promise<boolean> {
-        const user = await this._userManager.getUser();
-        if (user === null || user.refresh_token === undefined || user.refresh_token === '') {
-            this._userManager.removeUser();
-            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
-            return Promise.resolve(false);
-        } else {
-            return Promise.resolve(true);
-        }
-    }
-
-    private initiateSessionRenewalAttempt(errorMessage: string) {
-        if (this._sessionRenewalAttemptCount === 0) {
-            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.AttemptingSessionRenewal, errorMessage);
-        }
-
-        const sessionRenewalAttemptDelay = this.calculateSessionRenewalAttemptDelay();
-
-        this._sessionRenewalAttemptDelaySetTimeoutId = setTimeout(
-            () => this.attemptSessionRenewal(errorMessage),
-            sessionRenewalAttemptDelay
-        );
-    }
-
-    private async attemptSessionRenewal(errorMessage: string) {
-        this._sessionRenewalAttemptDelaySetTimeoutId = undefined;
-        const user = await this._userManager.getUser();
-        if (user === null) {
-            this._userManager.removeUser();
-            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.NewSessionRequired, errorMessage);
-        } else {
-            this._userManager.stopSilentRenew();
-            this._userManager.startSilentRenew();
-        }
-    }
-
-    private checkCancelSessionRenewalAttempt() {
-        if (this._sessionRenewalAttemptDelaySetTimeoutId !== undefined) {
-            clearTimeout(this._sessionRenewalAttemptDelaySetTimeoutId);
-            this._sessionRenewalAttemptDelaySetTimeoutId = undefined;
-        }
-    }
-
-    private calculateSessionRenewalAttemptDelay() {
-        // Try a few times quickly to renew ASAP if temporary problem.
-        // Otherwise poll infrequently.
-        // Application may be running in background tab and can eventually start working again when problem fixed.
-        switch (this._sessionRenewalAttemptCount) {
-            case 0:
-                return 1000;
-            case 1:
-            case 2:
-                return 5000;
-            case 3:
-            case 4:
-                return 30000;
-            case 5:
-            case 6:
-                return 60000;
-            default:
-                return 300000;
         }
     }
 
@@ -634,9 +444,8 @@ export class SessionService {
 
     private subscribeZenithExtConnection() {
         const zenithExtConnectionDataDefinition = new ZenithExtConnectionDataDefinition();
-        zenithExtConnectionDataDefinition.initialAuthAccessToken = this._access_token;
-        zenithExtConnectionDataDefinition.zenithWebsocketEndpoint = this._zenithEndpoint;
-        zenithExtConnectionDataDefinition.useAuthOwnerZenithAuthentication = this._useZenithAuthOwnerAuthentication;
+        zenithExtConnectionDataDefinition.initialAuthAccessToken = this._openIdService.accessToken;
+        zenithExtConnectionDataDefinition.zenithWebsocketEndpoints = this._zenithEndpoints;
 
         this._zenithExtConnectionDataItem = this._adiService.subscribe(zenithExtConnectionDataDefinition) as ZenithExtConnectionDataItem;
 
@@ -740,7 +549,6 @@ export namespace SessionService {
 
     export type ExchangeEnvironmentIdAvailableEventHandler = (id: ExchangeEnvironmentId) => void;
 
-    export const invalidAccessToken = '';
     export const motifServicesGetClientConfigurationRetryDelaySpan = 30 * mSecsPerSec;
     export const getSettingsRetryDelaySpan = 30 * mSecsPerSec;
     export const idleCallbackTimeout = 30 * mSecsPerSec;

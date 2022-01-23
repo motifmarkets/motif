@@ -32,7 +32,7 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
-    public endpoint: string;
+    public endpoints: readonly string[];
 
     public publisherOnline: string;
     // public publisherOnlineChangeHistory: ZenithExtConnectionDataItem.PublisherOnlineChange[] = [];
@@ -41,7 +41,9 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
     public lastReconnectReasonId: string;
     public sessionKickedOff: string;
 
-    public accessTokenExpiryTime: string;
+    public selectedEndpoint: string;
+
+    public authExpiryTime: string;
     public authFetchSuccessiveFailureCount: string;
     public socketOpenSuccessiveFailureCount: string;
     public zenithTokenFetchSuccessiveFailureCount: string;
@@ -71,18 +73,19 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
     constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
         super();
 
-        this._frame = contentService.createZenithStatusFrame(this, sessionInfoNgService.service.zenithEndpoint);
+        this._frame = contentService.createZenithStatusFrame(this, sessionInfoNgService.service.zenithEndpoints);
     }
 
     ngOnInit() {
         this._frame.initialise();
 
-        this.endpoint = this._frame.endpoint;
+        this.endpoints = this._frame.endpoints;
 
         this.processPublisherOnlineChange();
         this.processPublisherStateChange();
         this.processReconnect();
         this.processSessionKickedOff();
+        this.processSelectedEndpointChanged();
         this.processCounter();
         this.processServerInfoChange();
     }
@@ -105,6 +108,10 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 
     public notifySessionKickedOff() {
         this.processSessionKickedOff();
+    }
+
+    public notifySelectedEndpointChanged() {
+        this.processSelectedEndpointChanged();
     }
 
     public notifyCounter() {
@@ -148,8 +155,16 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
         this._cdr.markForCheck();
     }
 
+    private processSelectedEndpointChanged() {
+        const selectedEndpoint = this._frame.selectedEndpoint;
+        if (selectedEndpoint !== this.selectedEndpoint) {
+            this.selectedEndpoint = selectedEndpoint;
+            this._cdr.markForCheck();
+        }
+    }
+
     private processCounter() {
-        this.accessTokenExpiryTime = this._frame.accessTokenExpiryTime;
+        this.authExpiryTime = this._frame.authExpiryTime;
         this.authFetchSuccessiveFailureCount = this._frame.authFetchSuccessiveFailureCount;
         this.socketOpenSuccessiveFailureCount = this._frame.socketOpenSuccessiveFailureCount;
         this.zenithTokenFetchSuccessiveFailureCount = this._frame.zenithTokenFetchSuccessiveFailureCount;
