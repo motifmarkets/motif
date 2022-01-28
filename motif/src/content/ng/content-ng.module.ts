@@ -8,6 +8,10 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
+import {
+    AdvertTickerNgComponent, AdvertWebPageNgComponent,
+    BannerAdvertNgComponent
+} from '../advert/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
@@ -110,6 +114,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ExchangesSettingsNgComponent,
         ExchangeSettingsNgComponent,
         SearchSymbolsConditionNgComponent,
+        BannerAdvertNgComponent,
+        AdvertWebPageNgComponent,
+        AdvertTickerNgComponent,
     ],
     imports: [
         CommonModule,
@@ -117,6 +124,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ControlsNgModule,
     ],
     exports: [
+        BannerAdvertNgComponent,
         ContentGridLayoutEditorNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorNgComponent,

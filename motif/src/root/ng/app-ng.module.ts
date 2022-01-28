@@ -9,6 +9,7 @@
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule } from '@angular/platform-browser';
+import { ContentNgModule } from 'content-ng-api';
 import { ControlsNgModule } from 'controls-ng-api';
 import { DesktopNgModule } from 'desktop-ng-api';
 import { ExtensionsNgModule } from 'src/extensions/ng-api';
@@ -27,6 +28,7 @@ import { AuthGuardNgService } from './auth-guard-ng.service';
 import { ConfigNgService } from './config-ng.service';
 import { CurrentVersionGuardNgService } from './current-version-guard-ng.service';
 import { ErrorHandlerNgService } from './error-handler-ng.service';
+import { BottomAdvertStripNgComponent } from '../bottom-advert-strip/ng/bottom-advert-strip-ng.component';
 
 @NgModule({
     declarations: [
@@ -37,6 +39,7 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
         SignedOutNgComponent,
         UserAlertNgComponent,
         NotCurrentVersionNgComponent,
+        BottomAdvertStripNgComponent,
     ],
     imports: [
         BrowserModule,
@@ -44,6 +47,7 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
         FormsModule,
         OverlayNgModule,
         DesktopNgModule,
+        ContentNgModule,
         ControlsNgModule,
         WorkspaceNgModule,
         ExtensionsNgModule,

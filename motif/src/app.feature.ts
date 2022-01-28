@@ -27,6 +27,8 @@ export const enum AppFeatureId {
 export namespace AppFeature {
     // eslint-disable-next-line prefer-const
     export let dev = false;
+    // eslint-disable-next-line prefer-const
+    export let advertising = false;
     export const preview = false;
 
     export function isEnabled(id: AppFeatureId): boolean {

@@ -94,7 +94,8 @@
     }
   },
   "features": {
-    "preview": false
+    "preview": false,
+    "advertising": true
   },
   "branding": {
     "startupSplashWebPageUrl": "https://www.motifmarkets.com",
