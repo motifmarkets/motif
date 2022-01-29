@@ -19,7 +19,7 @@ import {
     InternalCommand, JsonElement, LitIvemIdUiAction, ModifierKey, ModifierKeyId, StringId, Strings
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -44,7 +44,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('etoPriceQuotationTable', { static: true }) private _callPutContentComponent: TableNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
-    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

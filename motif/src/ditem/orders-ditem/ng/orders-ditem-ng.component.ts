@@ -24,7 +24,7 @@ import {
     UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -54,7 +54,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
-    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

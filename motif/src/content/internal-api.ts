@@ -12,7 +12,7 @@ export * from './depth/internal-api';
 export * from './extensions/internal-api';
 export * from './feeds/internal-api';
 export * from './markets/internal-api';
-export * from './motif-grid/internal-api';
+export * from './adapted-revgrid/internal-api';
 export * from './order-request-step/internal-api';
 export { StaticInitialise } from './static-initialise';
 export * from './status-summary/internal-api';

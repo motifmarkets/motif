@@ -30,7 +30,7 @@ import {
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -55,7 +55,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
 
-    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

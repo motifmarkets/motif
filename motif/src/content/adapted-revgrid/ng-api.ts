@@ -4,5 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './motif-grid';
+export * from './record-grid/ng-api';
+export * from './simple-grid/ng-api';
 

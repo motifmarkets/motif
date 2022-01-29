@@ -7,7 +7,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { DepthSideNgComponent } from '../../depth-side/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -27,11 +27,11 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
     @ViewChild('askSide', { static: true }) private _askComponent: DepthSideNgComponent;
 
-    public readonly bidFrameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly bidFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         gridRightAligned: true,
         fixedColumnCount: 0,
     };
-    public readonly askFrameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly askFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         gridRightAligned: false,
         fixedColumnCount: 0,
     };

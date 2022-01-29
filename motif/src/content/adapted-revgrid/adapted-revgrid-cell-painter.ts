@@ -8,37 +8,40 @@ import {
     GridRecordRenderValue,
     HigherLowerId,
     IndexSignatureHack,
-    Integer, OrderSideId, RenderValue,
+    Integer,
+    OrderSideId,
+    RenderValue,
     SettingsService,
     textFormatter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
     CanvasRenderingContext2DEx,
+    CellPaintConfig,
+    CellPainter,
     Halign,
-    RevRecordCellPaintConfig,
-    RevRecordCellPainter,
     RevRecordRecentChangeTypeId,
     RevRecordValueRecentChangeTypeId
 } from 'revgrid';
 
 const WHITESPACE = /\s\s+/g;
 
-export const defaultGridCellRendererName = 'default';
+// export const defaultGridCellRendererName = 'default';
 
-export class MotifGridCellPainter extends RevRecordCellPainter {
+export class AdaptedRevgridCellPainter {
     private _coreSettings: CoreSettings;
     private _colorSettings: ColorSettings;
 
     constructor(settingsService: SettingsService) {
-        super();
         this._coreSettings = settingsService.core;
         this._colorSettings = settingsService.color;
     }
 
     paint(
         gc: CanvasRenderingContext2DEx,
-        config: RevRecordCellPaintConfig
+        config: CellPaintConfig,
+        recordRecentChangeTypeId: RevRecordRecentChangeTypeId | undefined,
+        valueRecentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined,
     ): void {
         const renderValue = config.value as RenderValue;
 
@@ -220,7 +223,6 @@ export class MotifGridCellPainter extends RevRecordCellPainter {
         const foreText = textFormatter.formatRenderValue(renderValue);
         const foreFont = config.font;
         let internalBorderRowOnly: boolean;
-        const valueRecentChangeTypeId = config.valueRecentChangeTypeId;
 
         let internalBorderColor: string | undefined;
         if (valueRecentChangeTypeId !== undefined) {
@@ -239,11 +241,10 @@ export class MotifGridCellPainter extends RevRecordCellPainter {
                     throw new UnreachableCaseError('GCPPRVCTU02775', valueRecentChangeTypeId);
             }
         } else {
-            const rowRecentChangeTypeId = config.recordRecentChangeTypeId;
-            if (rowRecentChangeTypeId !== undefined) {
+            if (recordRecentChangeTypeId !== undefined) {
                 internalBorderRowOnly = true;
 
-                switch (rowRecentChangeTypeId) {
+                switch (recordRecentChangeTypeId) {
                     case RevRecordRecentChangeTypeId.Update:
                         internalBorderColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_RowRecordRecentlyChangedBorder);
                         break;
@@ -254,7 +255,7 @@ export class MotifGridCellPainter extends RevRecordCellPainter {
                         internalBorderColor = undefined;
                         break;
                     default:
-                        throw new UnreachableCaseError('TCPPRRCTU02775', rowRecentChangeTypeId);
+                        throw new UnreachableCaseError('TCPPRRCTU02775', recordRecentChangeTypeId);
                 }
 
             } else {
@@ -467,7 +468,7 @@ interface ProportionBarGraphic {
 
 function renderMultiLineText(
     gc: CanvasRenderingContext2DEx,
-    config: RevRecordCellPaintConfig,
+    config: CellPaintConfig,
     val: string,
     leftPadding: number,
     rightPadding: number,
@@ -535,7 +536,7 @@ function renderMultiLineText(
 
 function renderSingleLineText(
     gc: CanvasRenderingContext2DEx,
-    config: RevRecordCellPaintConfig,
+    config: CellPaintConfig,
     val: string,
     leftPadding: number,
     rightPadding: number,
@@ -614,7 +615,7 @@ function renderSingleLineText(
     return minWidth;
 }
 
-function findLines(gc: CanvasRenderingContext2DEx, config: RevRecordCellPaintConfig, words: string[], width: number) {
+function findLines(gc: CanvasRenderingContext2DEx, config: CellPaintConfig, words: string[], width: number) {
 
     if (words.length <= 1) {
         return words;
@@ -651,7 +652,7 @@ function findLines(gc: CanvasRenderingContext2DEx, config: RevRecordCellPaintCon
 }
 
 function strikeThrough(
-    config: RevRecordCellPaintConfig,
+    config: CellPaintConfig,
     gc: CanvasRenderingContext2DEx,
     text: string,
     x: number,
@@ -677,7 +678,7 @@ function strikeThrough(
 }
 
 function underline(
-    config: RevRecordCellPaintConfig,
+    config: CellPaintConfig,
     gc: CanvasRenderingContext2DEx,
     text: string,
     x: number,

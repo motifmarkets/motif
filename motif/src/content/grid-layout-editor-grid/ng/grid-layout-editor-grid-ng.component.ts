@@ -16,9 +16,9 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecordFieldIndex, RevRecordIndex, RevRecordValueRecentChangeTypeId } from 'revgrid';
-import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -29,13 +29,13 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
-    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
+    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
     recordFocusEventer: GridLayoutEditorGridNgComponent.RecordFocusEventer;
     gridClickEventer: GridLayoutEditorGridNgComponent.GridClickEventer;
 
     private _recordStore: GridLayoutRecordStore;
-    private _grid: MotifGrid;
+    private _grid: RecordGrid;
     private _gridPrepared = false;
     private _layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
 
@@ -257,7 +257,7 @@ export namespace GridLayoutEditorGridNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 
-    export const frameGridProperties: MotifGrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

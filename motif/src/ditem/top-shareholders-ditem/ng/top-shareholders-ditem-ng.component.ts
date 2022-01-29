@@ -37,7 +37,7 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -66,7 +66,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
 
-    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };
