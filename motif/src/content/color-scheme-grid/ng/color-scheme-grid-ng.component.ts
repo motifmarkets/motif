@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
@@ -19,12 +19,12 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements OnInit, AfterViewInit {
+export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: ColorSchemeGridComponent.RecordFocusEventer;
-    gridClickEventer: ColorSchemeGridComponent.GridClickEventer;
-    columnsViewWithsChangedEventer: ColorSchemeGridComponent.ColumnsViewWithsChangedEventer;
+    recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer;
+    gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer;
+    columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer;
 
     private _recordStore: ColorSchemeGridRecordStore;
     private _grid: RecordGrid;
@@ -48,15 +48,12 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this.applyFilter();
     }
 
-    ngOnInit() {
-    }
-
     ngAfterViewInit() {
         this._gridComponent.destroyEventer = () => {
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridComponent.frameGridProperties);
+        this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridNgComponent.frameGridProperties);
         this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         this._grid.columnsViewWidthsChangedEventer =
@@ -175,7 +172,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 }
 
-export namespace ColorSchemeGridComponent {
+export namespace ColorSchemeGridNgComponent {
     export type RenderedEvent = (this: void) => void;
     export type RecordFocusEventer = (recordIndex: RevRecordIndex | undefined) => void;
     export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;

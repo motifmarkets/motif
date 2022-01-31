@@ -17,9 +17,7 @@ import {
 } from '@motifmarkets/motif-core';
 import {
     CanvasRenderingContext2DEx,
-    CellPaintConfig,
-    CellPainter,
-    Halign,
+    CellPaintConfig, Halign,
     RevRecordRecentChangeTypeId,
     RevRecordValueRecentChangeTypeId
 } from 'revgrid';
@@ -40,11 +38,10 @@ export class AdaptedRevgridCellPainter {
     paint(
         gc: CanvasRenderingContext2DEx,
         config: CellPaintConfig,
+        renderValue: RenderValue,
         recordRecentChangeTypeId: RevRecordRecentChangeTypeId | undefined,
         valueRecentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined,
     ): void {
-        const renderValue = config.value as RenderValue;
-
         const rowIndex = config.dataCell.y;
         const altRow = rowIndex % 2 === 1;
 
@@ -207,9 +204,11 @@ export class AdaptedRevgridCellPainter {
 
                 case RenderValue.AttributeId.Canceller:
                 case RenderValue.AttributeId.GreyedOut:
-                    foreColor = this._colorSettings.getFore(
-                        ColorScheme.ItemId.Grid_GreyedOut
-                    );
+                    foreColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_GreyedOut);
+                    break;
+
+                case RenderValue.AttributeId.Advert:
+                    bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Advert);
                     break;
 
                 default:

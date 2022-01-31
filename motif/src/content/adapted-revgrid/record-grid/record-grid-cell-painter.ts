@@ -1,4 +1,4 @@
-import { SettingsService } from '@motifmarkets/motif-core';
+import { RenderValue, SettingsService } from '@motifmarkets/motif-core';
 import { CanvasRenderingContext2DEx, CellPainter, RevRecordCellPaintConfig } from 'revgrid';
 import { AdaptedRevgridCellPainter } from '../adapted-revgrid-cell-painter';
 
@@ -11,6 +11,12 @@ export class RecordGridCellPainter extends CellPainter {
     }
 
     paint(gc: CanvasRenderingContext2DEx, config: RevRecordCellPaintConfig): void {
-        this._adaptedRevgridCellPainter.paint(gc, config, config.recordRecentChangeTypeId, config.valueRecentChangeTypeId);
+        this._adaptedRevgridCellPainter.paint(
+            gc,
+            config,
+            config.value as RenderValue,
+            config.recordRecentChangeTypeId,
+            config.valueRecentChangeTypeId
+        );
     }
 }

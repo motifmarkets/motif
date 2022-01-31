@@ -51,6 +51,7 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
             multipleSelections: false,
             sortOnDoubleClick: false,
             visibleColumnWidthAdjust: true,
+            halign: 'left',
             ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
         };
 

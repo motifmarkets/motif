@@ -1,4 +1,4 @@
-import { SettingsService, UnexpectedUndefinedError } from '@motifmarkets/motif-core';
+import { Integer, SettingsService, UnexpectedUndefinedError } from '@motifmarkets/motif-core';
 import {
     CellEvent,
     GridProperties,
@@ -173,8 +173,8 @@ export class SimpleGrid extends AdaptedRevgrid {
         super.reset(adapterSet, undefined, false);
     }
 
-    setData(data: RevSimpleAdapterSet.DataRow[]) {
-        this._adapterSet.setData(data);
+    setData(data: SimpleGridCellPainter.DataRow[], headerRowCount?: Integer) {
+        this._adapterSet.setData(data, headerRowCount);
     }
 
     protected override applySettings() {

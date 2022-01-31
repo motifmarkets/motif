@@ -145,6 +145,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         TableNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
+        SimpleGridNgComponent,
     ]
 })
 export class ContentNgModule {
