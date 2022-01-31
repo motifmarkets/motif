@@ -5,6 +5,7 @@
  */
 
 import { Type } from '@angular/core';
+import { AlertsDitemNgComponent } from './alerts-ditem/ng-api';
 import { BalancesDitemNgComponent } from './balances-ditem/ng-api';
 import { BrokerageAccountsDitemNgComponent } from './brokerage-accounts-ditem/ng-api';
 import { BuiltinDitemFrame } from './builtin-ditem-frame';
@@ -19,9 +20,9 @@ import { OrderRequestDitemNgComponent } from './order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from './orders-ditem/ng-api';
 import { ParidepthDitemNgComponent } from './paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from './placeholder-ditem/ng-api';
+import { SearchSymbolsDitemNgComponent } from './search-symbols-ditem/ng-api';
 import { SettingsDitemNgComponent } from './settings-ditem/ng-api';
 import { StatusDitemNgComponent } from './status-ditem/ng-api';
-import { SearchSymbolsDitemNgComponent } from './search-symbols-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from './top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from './trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from './watchlist-ditem/ng-api';
@@ -67,6 +68,10 @@ export namespace DitemComponentIdAndType {
         NewsBody: {
             id: BuiltinDitemFrame.BuiltinTypeId.NewsBody,
             type: NewsBodyDitemNgComponent,
+        },
+        Alerts: {
+            id: BuiltinDitemFrame.BuiltinTypeId.Alerts,
+            type: AlertsDitemNgComponent,
         },
         TopShareholders: {
             id: BuiltinDitemFrame.BuiltinTypeId.TopShareholders,

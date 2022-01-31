@@ -43,7 +43,6 @@ import { NewsHeadlinesDitemFrame } from '../news-headlines-ditem-frame';
     selector: 'app-news-headlines-ditem',
     templateUrl: './news-headlines-ditem-ng.component.html',
     styleUrls: ['./news-headlines-ditem-ng.component.scss'],
-
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
@@ -253,7 +252,7 @@ interface Headline {
     time: Date | string  | DateTimeRenderValue;
 }
 
-const demoHeadlines: IndexSignatureHack<Headline[]> = [
+const demoHeadlines: IndexSignatureHack<readonly Headline[]> = [
     {
         code: 'Code',
         name: 'Name',
@@ -401,7 +400,7 @@ const demoHeadlines: IndexSignatureHack<Headline[]> = [
         sensitive: 'sensitive',
         time: new Date(2022, 1, 31, 12, 56),
     },
-];
+] as const;
 
 function createAdvertStringRenderValue(text: string) {
     const result = new StringRenderValue(text);

@@ -52,6 +52,7 @@ export namespace BuiltinDitemFrame {
         Depth,
         NewsHeadlines,
         NewsBody,
+        Alerts,
         TopShareholders,
         Status,
         Trades,
@@ -153,6 +154,16 @@ export namespace BuiltinDitemFrame {
                 newInternalCommandId: InternalCommand.Id.NewNewsBodyDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsBody,
                 menuBarItemPosition: undefined,
+            },
+            Alerts: {
+                id: BuiltinTypeId.Alerts,
+                name: 'Alerts',
+                newInternalCommandId: InternalCommand.Id.NewAlertsDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_Alerts,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 16000,
+                },
             },
             TopShareholders: {
                 id: BuiltinTypeId.TopShareholders,
