@@ -11,7 +11,7 @@
 :host {
     display: block;
     position: absolute;
-    overflow: hidden;
+    overflow: clip;
     height: 100%;
 }
 
