@@ -16,6 +16,7 @@
     [max]="max === undefined ? null : max"
     [min]="min === undefined ? null : min"
     [step]="step === undefined ? null : step"
+    [placeholder]="placeholderText"
     (input)="onInput(numberInput.value)"
     (keydown.enter)="onEnterKeyDown(numberInput.value)"
     (keydown.esc)="onEscKeyDown()"

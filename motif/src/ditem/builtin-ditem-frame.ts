@@ -142,7 +142,10 @@ export namespace BuiltinDitemFrame {
                 name: 'NewsHeadlines',
                 newInternalCommandId: InternalCommand.Id.NewNewsHeadlinesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsHeadlines,
-                menuBarItemPosition: undefined,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 15000,
+                },
             },
             NewsBody: {
                 id: BuiltinTypeId.NewsBody,

@@ -118,6 +118,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newDepthAndTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newWatchlistDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newDepthDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newNewsHeadlinesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newStatusDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBrokerageAccountsDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -728,6 +729,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
+            this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
             this._newStatusDitemMenuItem = this._menuBarService.connectMenuItem(this._newStatusDitemUiAction);
             this._newTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newTradesDitemUiAction);
             this._newBrokerageAccountsDitemMenuItem = this._menuBarService.connectMenuItem(this._newBrokerageAccountsDitemUiAction);
@@ -752,6 +754,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);
+            this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newStatusDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newBrokerageAccountsDitemMenuItem);
