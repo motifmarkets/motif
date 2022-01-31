@@ -71,9 +71,9 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
     // }
 
     protected override finalise() {
-        this.uiAction.unsubscribePushEvents(
-            this._pushCommandEventsSubscriptionId
-        );
+        // this.uiAction.unsubscribePushEvents(
+        //     this._pushCommandEventsSubscriptionId
+        // );
         super.finalise();
     }
 
