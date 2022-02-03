@@ -22,6 +22,9 @@ export const enum AppFeatureId {
 
     Status,
     Settings,
+
+    Preview,
+    Advertising,
 }
 
 export namespace AppFeature {
@@ -29,7 +32,8 @@ export namespace AppFeature {
     export let dev = false;
     // eslint-disable-next-line prefer-const
     export let advertising = false;
-    export const preview = false;
+    // eslint-disable-next-line prefer-const
+    export let preview = false;
 
     export function isEnabled(id: AppFeatureId): boolean {
         if (dev || preview) {
@@ -52,6 +56,11 @@ export namespace AppFeature {
 
                 case AppFeatureId.TopShareholders:
                     return false;
+
+                case AppFeatureId.Preview:
+                    return preview;
+                case AppFeatureId.Advertising:
+                    return advertising;
 
                 default:
                     throw new UnreachableCaseError('APIE23238875', id);

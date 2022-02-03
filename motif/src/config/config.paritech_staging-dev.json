@@ -86,6 +86,9 @@
       "install": false
     }
   ],
+  "features": {
+    "advertising": false
+  },
   "diagnostics": {
     "telemetry": {
       "enabled": false,

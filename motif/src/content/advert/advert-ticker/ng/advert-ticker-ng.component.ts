@@ -1,7 +1,7 @@
-import { Component, OnInit, ChangeDetectionStrategy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
 
 @Component({
-  selector: 'app-advert-ticker-ng',
+  selector: 'app-advert-ticker',
   templateUrl: './advert-ticker-ng.component.html',
   styleUrls: ['./advert-ticker-ng.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush

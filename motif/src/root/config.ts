@@ -129,10 +129,12 @@ export namespace Config {
 
     export interface Features {
         readonly preview: boolean;
+        readonly advertising: boolean;
     }
 
     export namespace Features {
         export const defaultPreview = false;
+        export const defaultAdvertising = false;
     }
 
     export interface Branding {

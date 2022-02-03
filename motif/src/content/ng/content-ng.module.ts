@@ -10,8 +10,7 @@ import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
 import { RecordGridNgComponent, SimpleGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
-    AdvertTickerNgComponent, AdvertWebPageNgComponent,
-    BannerAdvertNgComponent
+    AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
 } from '../advert/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
@@ -125,6 +124,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ControlsNgModule,
     ],
     exports: [
+        AdvertTickerNgComponent,
+        AdvertWebPageNgComponent,
         BannerAdvertNgComponent,
         ContentGridLayoutEditorNgComponent,
         DepthNgComponent,

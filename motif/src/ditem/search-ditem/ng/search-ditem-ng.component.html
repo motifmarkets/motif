@@ -1,1 +1,46 @@
-<p>search-ditem-ng works!</p>
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+<section id="mainSection" [style.display]="isMainMode ? null : 'none'">
+    <section id="mainToolbarSection">
+        <section id="searchSection">
+            <section id="categorySection" class="captionFollowedByInput">
+                <span>Category</span>
+                <app-enum-input #categoryControl id="categoryControl" inputId="categoryInput"></app-enum-input>
+            </section>
+            <app-button-input #searchButtonControl id="searchButtonControl" inputId="searchButtonInput"></app-button-input>
+            <app-button-input #detailsButtonControl></app-button-input>
+        </section>
+
+        <section id="columnButtonsSection">
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </section>
+    </section>
+
+    <section id="categorySection">
+        <section id="locationSection" class="captionFollowedByInput">
+            <span>Location</span>
+            <app-enum-input #locationControl id="locationControl" inputId="locationInput"></app-enum-input>
+        </section>
+        <section id="priceRangeSection" class="captionFollowedByInput">
+            <span>Price Range</span>
+            <app-enum-input #priceRangeControl id="priceRangeControl" inputId="priceRangeInput"></app-enum-input>
+        </section>
+        <app-text-input #keywordsControl id="keywordsControl" inputId="keywordsInput"></app-text-input>
+    </section>
+
+    <section id="resultsSection">
+        <section id="resultsHeading">
+            <span>Results</span>
+            <app-caption-label #searchDescriptionLabel id="searchDescriptionLabel"></app-caption-label>
+            <app-button-input #alertButtonControl id="alertButtonControl" inputId="alertButtonInput"></app-button-input>
+        </section>
+        <app-simple-grid #grid id="grid"></app-simple-grid>
+    </section>
+</section>
+<section id="layoutEditorSection" [style.display]="isLayoutEditorMode ? null : 'none'">
+    <ng-template #layoutEditorContainer></ng-template>
+</section>

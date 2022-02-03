@@ -37,6 +37,7 @@ import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
+import { AppFeature } from 'src/app.feature';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
@@ -51,10 +52,12 @@ import { DesktopFrame } from '../desktop-frame';
 })
 export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
+    @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;
     @ViewChild('layoutHost', { static: true }) private _layoutHostComponent: GoldenLayoutHostNgComponent;
 
+    public advertisingEnabled = AppFeature.advertising;
     public barBkgdColor: string;
     public barForeColor: string;
     public readonly barLeftImageExists: boolean;
@@ -65,6 +68,8 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     private readonly _desktopFrame: DesktopFrame;
+
+    private readonly _aboutAdvertisingUiAction: ButtonUiAction;
     private readonly _signOutUiAction: ButtonUiAction;
     // private _commandBarUiAction: CommandBarUiAction;
 
@@ -120,6 +125,9 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
 
         desktopAccessNgService.setService(this._desktopFrame);
 
+        if (this.advertisingEnabled) {
+            this._aboutAdvertisingUiAction = this.createAboutAdvertisingUiAction();
+        }
         this._signOutUiAction = this.createSignOutUiAction(signOutService);
         this.applyColors();
     }
@@ -139,11 +147,17 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     private initialise() {
         const layoutHostFrame = this._layoutHostComponent.frame;
         this._desktopFrame.initialise(layoutHostFrame);
+        if (this._aboutAdvertisingButtonComponent !== undefined && this._aboutAdvertisingUiAction !== undefined) {
+            this._aboutAdvertisingButtonComponent.initialise(this._aboutAdvertisingUiAction);
+        }
         this._signOutButtonComponent.initialise(this._signOutUiAction);
     }
 
     private finalise() {
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+        if (this._aboutAdvertisingUiAction !== undefined) {
+            this._aboutAdvertisingUiAction.finalise();
+        }
         this._signOutUiAction.finalise();
         this._desktopFrame.finalise();
 
@@ -152,6 +166,15 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     private applyColors() {
         this.barBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.DesktopBar);
         this.barForeColor = this._settingsService.color.getFore(ColorScheme.ItemId.DesktopBar);
+    }
+
+    private createAboutAdvertisingUiAction() {
+        const commandName = InternalCommand.Id.ShowAboutAdvertising;
+        const displayId = StringId.Desktop_AboutAdvertisingCaption;
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new ButtonUiAction(command);
+        // action.signalEvent = () => signOutService.signOut();
+        return action;
     }
 
     private createSignOutUiAction(signOutService: SignOutService) {

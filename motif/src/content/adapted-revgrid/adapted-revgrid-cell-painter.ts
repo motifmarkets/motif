@@ -208,7 +208,9 @@ export class AdaptedRevgridCellPainter {
                     break;
 
                 case RenderValue.AttributeId.Advert:
-                    bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Advert);
+                    if (!rowFocused) {
+                        bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Advert);
+                    }
                     break;
 
                 default:

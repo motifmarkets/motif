@@ -42,6 +42,7 @@ import { MenuBarService } from 'controls-internal-api';
 import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
+import { AppFeature } from 'src/app.feature';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
@@ -96,6 +97,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newNewsHeadlinesDitemUiAction: CommandUiAction;
     private _newNewsBodyDitemUiAction: CommandUiAction;
     private _newAlertsDitemUiAction: CommandUiAction;
+    private _newSearchDitemUiAction: CommandUiAction;
     private _newTopShareholdersDitemUiAction: CommandUiAction;
     private _newStatusDitemUiAction: CommandUiAction;
     private _newTradesDitemUiAction: CommandUiAction;
@@ -121,6 +123,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newDepthDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newNewsHeadlinesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAlertsDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newSearchDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newStatusDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBrokerageAccountsDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -616,6 +619,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newNewsHeadlinesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsHeadlines);
         this._newNewsBodyDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsBody);
         this._newAlertsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Alerts);
+        this._newSearchDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Search);
         this._newTopShareholdersDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.TopShareholders);
         this._newStatusDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Status);
         this._newTradesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Trades);
@@ -679,6 +683,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newNewsHeadlinesDitemUiAction.finalise();
         this._newNewsBodyDitemUiAction.finalise();
         this._newAlertsDitemUiAction.finalise();
+        this._newSearchDitemUiAction.finalise();
         this._newTopShareholdersDitemUiAction.finalise();
         this._newStatusDitemUiAction.finalise();
         this._newTradesDitemUiAction.finalise();
@@ -733,8 +738,11 @@ export class DesktopFrame implements DesktopAccessService {
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
-            this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
-            this._newAlertsDitemMenuItem = this._menuBarService.connectMenuItem(this._newAlertsDitemUiAction);
+            if (AppFeature.advertising) {
+                this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
+                this._newAlertsDitemMenuItem = this._menuBarService.connectMenuItem(this._newAlertsDitemUiAction);
+                this._newSearchDitemMenuItem = this._menuBarService.connectMenuItem(this._newSearchDitemUiAction);
+            }
             this._newStatusDitemMenuItem = this._menuBarService.connectMenuItem(this._newStatusDitemUiAction);
             this._newTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newTradesDitemUiAction);
             this._newBrokerageAccountsDitemMenuItem = this._menuBarService.connectMenuItem(this._newBrokerageAccountsDitemUiAction);
@@ -759,8 +767,11 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);
-            this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
-            this._menuBarService.disconnectMenuItem(this._newAlertsDitemMenuItem);
+            if (AppFeature.advertising) {
+                this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
+                this._menuBarService.disconnectMenuItem(this._newAlertsDitemMenuItem);
+                this._menuBarService.disconnectMenuItem(this._newSearchDitemMenuItem);
+            }
             this._menuBarService.disconnectMenuItem(this._newStatusDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newBrokerageAccountsDitemMenuItem);

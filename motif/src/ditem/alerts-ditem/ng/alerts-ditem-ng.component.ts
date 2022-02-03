@@ -30,7 +30,6 @@ import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-n
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { AlertsDitemFrame } from '../alerts-ditem-frame';
 
-
 @Component({
     selector: 'app-alerts-ditem-ng',
     templateUrl: './alerts-ditem-ng.component.html',
@@ -259,7 +258,7 @@ const demoAlerts: IndexSignatureHack<readonly Alert[]> = [
     {
         code: createAdvertStringRenderValue('SPC.AD'),
         time: createAdvertTimeRenderValue(new Date(2022, 1, 31, 11, 48)),
-        eventText: createAdvertStringRenderValue('New Arizona holiday package under $10000 announced'),
+        eventText: createAdvertStringRenderValue('New Arizona holiday package under $12000 announced'),
     },
     {
         code: 'CBA.AX',

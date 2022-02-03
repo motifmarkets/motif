@@ -536,13 +536,16 @@ export namespace ConfigNgService {
     export namespace Features {
         export interface Json {
             readonly preview?: boolean;
+            readonly advertising?: boolean;
         }
 
         export function parseJson(json: Json | undefined) {
             const preview = json?.preview ?? Config.Features.defaultPreview;
+            const advertising = json?.advertising ?? Config.Features.defaultAdvertising;
 
             const features: Config.Features = {
                 preview,
+                advertising,
             };
 
             return features;

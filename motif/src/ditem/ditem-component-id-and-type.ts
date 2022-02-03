@@ -20,6 +20,7 @@ import { OrderRequestDitemNgComponent } from './order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from './orders-ditem/ng-api';
 import { ParidepthDitemNgComponent } from './paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from './placeholder-ditem/ng-api';
+import { SearchDitemNgComponent } from './search-ditem/ng-api';
 import { SearchSymbolsDitemNgComponent } from './search-symbols-ditem/ng-api';
 import { SettingsDitemNgComponent } from './settings-ditem/ng-api';
 import { StatusDitemNgComponent } from './status-ditem/ng-api';
@@ -72,6 +73,10 @@ export namespace DitemComponentIdAndType {
         Alerts: {
             id: BuiltinDitemFrame.BuiltinTypeId.Alerts,
             type: AlertsDitemNgComponent,
+        },
+        Search: {
+            id: BuiltinDitemFrame.BuiltinTypeId.Search,
+            type: SearchDitemNgComponent,
         },
         TopShareholders: {
             id: BuiltinDitemFrame.BuiltinTypeId.TopShareholders,

@@ -53,6 +53,7 @@ export namespace BuiltinDitemFrame {
         NewsHeadlines,
         NewsBody,
         Alerts,
+        Search,
         TopShareholders,
         Status,
         Trades,
@@ -163,6 +164,16 @@ export namespace BuiltinDitemFrame {
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
                     rank: 16000,
+                },
+            },
+            Search: {
+                id: BuiltinTypeId.Search,
+                name: 'Search',
+                newInternalCommandId: InternalCommand.Id.NewSearchDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_Search,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 17000,
                 },
             },
             TopShareholders: {

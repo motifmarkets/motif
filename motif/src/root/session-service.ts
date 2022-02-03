@@ -39,6 +39,7 @@ import {
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
+import { AppFeature } from 'src/app.feature';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { Config } from './config';
@@ -353,6 +354,9 @@ export class SessionService {
     private applyConfig(config: Config) {
         this.setServiceName(config.service.name);
         this.setServiceDescription(config.service.description);
+
+        AppFeature.preview = config.features.preview;
+        AppFeature.advertising = config.features.advertising;
 
         this._telemetryService.applyConfig(config);
         this._userAlertService.enabled = config.diagnostics.appNotifyErrors;

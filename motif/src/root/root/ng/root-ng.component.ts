@@ -19,6 +19,7 @@ import {
     UserAlertService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
+import { AppFeature } from 'src/app.feature';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ExtensionsService } from 'src/extensions/internal-api';
@@ -41,6 +42,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     @ViewChild('overlayOrigin', { static: true }) private _overlayOriginComponent: OverlayOriginNgComponent;
 
     public starting = true;
+    public advertisingEnabled = AppFeature.advertising;
 
     private _keyboardService: KeyboardService;
     private _commandContext: CommandContext;
