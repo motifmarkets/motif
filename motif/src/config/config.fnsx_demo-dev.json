@@ -58,6 +58,6 @@
     }
   },
   "branding": {
-    "desktopBarLeftImageUrl": "branding/images/desktop-bar-icon.svg"
+    "desktopBarLeftImageUrl": "branding/images/desktop-bar-left-icon.svg"
   }
 }

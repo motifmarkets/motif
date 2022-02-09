@@ -7,4 +7,4 @@
 <app-user-alert #userAlert id="userAlert"></app-user-alert>
 <app-overlay-origin #overlayOrigin id="overlayOrigin"></app-overlay-origin>
 <router-outlet></router-outlet>
-<app-bottom-advert-strip *ngif="advertisingEnabled"></app-bottom-advert-strip>
+<app-bottom-advert-strip *ngIf="advertisingActive" #bottomAdvertStrip></app-bottom-advert-strip>

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { AdvertTickerNgComponent, BannerAdvertNgComponent } from 'src/content/advert/ng-api';
 
 @Component({
     selector: 'app-bottom-advert-strip',
@@ -6,8 +7,9 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./bottom-advert-strip-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BottomAdvertStripNgComponent implements OnInit {
-    constructor() {}
+export class BottomAdvertStripNgComponent {
+    @ViewChild('advertTicker', { static: true }) private _advertTickerComponent: AdvertTickerNgComponent;
+    @ViewChild('bannerAdvert', { static: true }) private _bannerAdvertComponent: BannerAdvertNgComponent;
 
-    ngOnInit(): void {}
+    constructor() {}
 }

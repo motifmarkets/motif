@@ -11,7 +11,7 @@ import { DitemFrame } from '../../ditem-frame';
 
 export class AdvertWebPageDitemFrame extends BuiltinDitemFrame {
     constructor(
-        private readonly _componentAccess: AdverthWebPageDitemFrame.ComponentAccess,
+        private readonly _componentAccess: AdvertWebPageDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
@@ -30,7 +30,7 @@ export class AdvertWebPageDitemFrame extends BuiltinDitemFrame {
     }
 }
 
-export namespace AdverthWebPageDitemFrame {
+export namespace AdvertWebPageDitemFrame {
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
         loadPage(url: string): void;
     }

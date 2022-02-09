@@ -6,7 +6,8 @@
 
 :host {
     height: 100%;
-    display: block;
+    display: flex;
+    flex-direction: column;
 }
 
 // has ViewEncasulation.None

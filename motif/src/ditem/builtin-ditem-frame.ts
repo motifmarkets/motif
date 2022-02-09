@@ -54,6 +54,7 @@ export namespace BuiltinDitemFrame {
         NewsBody,
         Alerts,
         Search,
+        AdvertWebPage,
         TopShareholders,
         Status,
         Trades,
@@ -174,6 +175,16 @@ export namespace BuiltinDitemFrame {
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
                     rank: 17000,
+                },
+            },
+            AdvertWebPage: {
+                id: BuiltinTypeId.AdvertWebPage,
+                name: 'Spectaculix Web Page',
+                newInternalCommandId: InternalCommand.Id.NewAdvertWebPageDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_AdvertWebPage,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 18000,
                 },
             },
             TopShareholders: {

@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { SafeResourceUrl } from '@angular/platform-browser';
 
 @Component({
     selector: 'app-advert-web-page',
@@ -6,8 +7,13 @@ import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
     styleUrls: ['./advert-web-page-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdvertWebPageNgComponent implements OnInit {
-    constructor() {}
+export class AdvertWebPageNgComponent {
+    public safeResourceUrl: SafeResourceUrl;
 
-    ngOnInit(): void {}
+    constructor(private readonly _cdr: ChangeDetectorRef) {}
+
+    loadPage(safeResourceUrl: SafeResourceUrl) {
+        this.safeResourceUrl = safeResourceUrl;
+        this._cdr.markForCheck();
+    }
 }

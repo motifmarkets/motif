@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { SafeResourceUrl } from '@angular/platform-browser';
 import {
     AdiService,
     AppStorageService,
@@ -98,6 +99,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newNewsBodyDitemUiAction: CommandUiAction;
     private _newAlertsDitemUiAction: CommandUiAction;
     private _newSearchDitemUiAction: CommandUiAction;
+    private _newAdvertWebPageDitemUiAction: CommandUiAction;
     private _newTopShareholdersDitemUiAction: CommandUiAction;
     private _newStatusDitemUiAction: CommandUiAction;
     private _newTradesDitemUiAction: CommandUiAction;
@@ -124,6 +126,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newNewsHeadlinesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAlertsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSearchDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newAdvertWebPageDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newStatusDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBrokerageAccountsDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -160,7 +163,7 @@ export class DesktopFrame implements DesktopAccessService {
         private readonly _menuBarService: MenuBarService,
         private readonly _commandRegisterService: CommandRegisterService,
         private readonly _keyboardService: KeyboardService,
-        private readonly _startupSplashWebPageUrl: string | undefined,
+        private readonly _startupSplashWebPageSafeResourceUrl: SafeResourceUrl | undefined,
         private readonly _getBuiltinDitemFrameFromComponent: DesktopFrame.GetBuiltinDitemFrameFromComponent,
     ) {
         this._commandContext = this.createCommandContext(frameHtmlElement);
@@ -620,6 +623,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newNewsBodyDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsBody);
         this._newAlertsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Alerts);
         this._newSearchDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Search);
+        this._newAdvertWebPageDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.AdvertWebPage);
         this._newTopShareholdersDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.TopShareholders);
         this._newStatusDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Status);
         this._newTradesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Trades);
@@ -684,6 +688,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newNewsBodyDitemUiAction.finalise();
         this._newAlertsDitemUiAction.finalise();
         this._newSearchDitemUiAction.finalise();
+        this._newAdvertWebPageDitemUiAction.finalise();
         this._newTopShareholdersDitemUiAction.finalise();
         this._newStatusDitemUiAction.finalise();
         this._newTradesDitemUiAction.finalise();
@@ -742,6 +747,7 @@ export class DesktopFrame implements DesktopAccessService {
                 this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
                 this._newAlertsDitemMenuItem = this._menuBarService.connectMenuItem(this._newAlertsDitemUiAction);
                 this._newSearchDitemMenuItem = this._menuBarService.connectMenuItem(this._newSearchDitemUiAction);
+                this._newAdvertWebPageDitemMenuItem = this._menuBarService.connectMenuItem(this._newAdvertWebPageDitemUiAction);
             }
             this._newStatusDitemMenuItem = this._menuBarService.connectMenuItem(this._newStatusDitemUiAction);
             this._newTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newTradesDitemUiAction);
@@ -771,6 +777,7 @@ export class DesktopFrame implements DesktopAccessService {
                 this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newAlertsDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newSearchDitemMenuItem);
+                this._menuBarService.disconnectMenuItem(this._newAdvertWebPageDitemMenuItem);
             }
             this._menuBarService.disconnectMenuItem(this._newStatusDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newTradesDitemMenuItem);
@@ -936,18 +943,18 @@ export class DesktopFrame implements DesktopAccessService {
     }
 
     private checkLoadBrandingSplashWebPage() {
-        if (this._startupSplashWebPageUrl !== undefined) {
-            this.loadBrandingSplashWebPage(this._startupSplashWebPageUrl);
+        if (this._startupSplashWebPageSafeResourceUrl !== undefined) {
+            this.loadBrandingSplashWebPage(this._startupSplashWebPageSafeResourceUrl);
         }
     }
 
-    private loadBrandingSplashWebPage(url: string) {
+    private loadBrandingSplashWebPage(safeResourceUrl: SafeResourceUrl) {
         const primaryFrame = this.getPrimaryBuiltinFrame(BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage);
         if (primaryFrame !== undefined) {
             if (!(primaryFrame instanceof BrandingSplashWebPageDitemFrame)) {
                 throw new AssertInternalError('DFLBSWPP44468');
             } else {
-                primaryFrame.loadPage(url);
+                primaryFrame.loadPage(safeResourceUrl);
                 primaryFrame.focus();
             }
         } else {
@@ -957,7 +964,7 @@ export class DesktopFrame implements DesktopAccessService {
                 throw new AssertInternalError('DFLBSWPC44468');
             } else {
                 ditemFrame.primary = true;
-                ditemFrame.loadPage(url);
+                ditemFrame.loadPage(safeResourceUrl);
                 ditemFrame.focus();
             }
         }

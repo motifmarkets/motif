@@ -5,6 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
+import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
     ConfigError,
     createRandomUrlSearch,
@@ -29,11 +30,11 @@ export class ConfigNgService {
 }
 
 export namespace ConfigNgService {
-    export function getLoadFtn(configService: ConfigNgService) {
-        return (): Promise<boolean> => load(configService);
+    export function getLoadFtn(domSanitizer: DomSanitizer, configService: ConfigNgService) {
+        return (): Promise<boolean> => load(domSanitizer, configService);
     }
 
-    export async function load(configService: ConfigNgService): Promise<boolean> {
+    export async function load(domSanitizer: DomSanitizer, configService: ConfigNgService): Promise<boolean> {
         const versionFileName = 'version.txt';
 
         const configFolderPath = '_config-do-not-delete';
@@ -56,7 +57,7 @@ export namespace ConfigNgService {
                     `${configResponse.status}: "${configResponse.statusText}" Uri: ${configJsonUri}`);
             } else {
                 const configText = await configResponse.text();
-                return loadText(configService, configText, configFolderPath);
+                return loadText(domSanitizer, configService, configText, configFolderPath);
             }
         }
     }
@@ -558,18 +559,22 @@ export namespace ConfigNgService {
             readonly desktopBarLeftImageUrl?: string;
         }
 
-        export function parseJson(json: Json | undefined, configFolderPath: string): Config.Branding {
+        export function parseJson(sanitizer: DomSanitizer, json: Json | undefined, configFolderPath: string): Config.Branding {
             if (json === undefined) {
                 return {
-                    startupSplashWebPageUrl: undefined,
+                    startupSplashWebPageSafeResourceUrl: undefined,
                     desktopBarLeftImageUrl: undefined,
                 };
             } else {
+                let startupSplashWebPageSafeResourceUrl: SafeResourceUrl | undefined;
                 let startupSplashWebPageUrl = json.startupSplashWebPageUrl;
-                if (startupSplashWebPageUrl !== undefined) {
+                if (startupSplashWebPageUrl === undefined) {
+                    startupSplashWebPageSafeResourceUrl = undefined;
+                } else {
                     if (startupSplashWebPageUrl.indexOf('http://') !== 0 && startupSplashWebPageUrl.indexOf('https://') !== 0) {
                         startupSplashWebPageUrl = '/' + configFolderPath + '/' + startupSplashWebPageUrl;
                     }
+                    startupSplashWebPageSafeResourceUrl = sanitizer.bypassSecurityTrustResourceUrl(startupSplashWebPageUrl);
                 }
 
                 let desktopBarLeftImageUrl = json.desktopBarLeftImageUrl;
@@ -580,7 +585,7 @@ export namespace ConfigNgService {
                 }
 
                 return {
-                    startupSplashWebPageUrl,
+                    startupSplashWebPageSafeResourceUrl,
                     desktopBarLeftImageUrl,
                 };
             }
@@ -591,7 +596,12 @@ export namespace ConfigNgService {
         Logger.logConfigError(code, jsonText, 500);
     }
 
-    function loadText(configService: ConfigNgService, jsonText: string, configFolderPath: string): Promise<boolean> {
+    function loadText(
+        sanitizer: DomSanitizer,
+        configService: ConfigNgService,
+        jsonText: string,
+        configFolderPath: string,
+    ): Promise<boolean> {
         let configJson: ConfigJson;
         try {
             configJson = JSON.parse(jsonText);
@@ -615,7 +625,7 @@ export namespace ConfigNgService {
             );
             const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
             const features = ConfigNgService.Features.parseJson(configJson.features);
-            const branding = ConfigNgService.Branding.parseJson(configJson.branding, configFolderPath);
+            const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
             const config: Config = {
                 service,
                 exchange,

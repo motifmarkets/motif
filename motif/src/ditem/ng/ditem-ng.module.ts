@@ -30,7 +30,7 @@ import { StatusDitemNgComponent } from '../status-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from '../top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from '../trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
-import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
+import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
 
 @NgModule({
     declarations: [
@@ -53,6 +53,7 @@ import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api'
         WatchlistDitemNgComponent,
         ExtensionsDitemNgComponent,
         BrandingSplashWebPageDitemNgComponent,
+        AdvertWebPageDitemNgComponent,
         AlertsDitemNgComponent,
         SearchDitemNgComponent
     ],

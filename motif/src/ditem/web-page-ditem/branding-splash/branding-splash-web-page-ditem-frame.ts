@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { AdiService, CommandRegisterService, SymbolsService } from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
 import { DesktopAccessService } from '../../desktop-access-service';
@@ -25,13 +26,13 @@ export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage; }
     get initialised() { return true; }
 
-    loadPage(url: string) {
-        this._componentAccess.loadPage(url);
+    loadPage(safeResourceUrl: SafeResourceUrl) {
+        this._componentAccess.loadPage(safeResourceUrl);
     }
 }
 
 export namespace BrandingSplashWebPageDitemFrame {
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
-        loadPage(url: string): void;
+        loadPage(safeResourceUrl: SafeResourceUrl): void;
     }
 }

@@ -27,7 +27,7 @@ import { StatusDitemNgComponent } from './status-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from './top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from './trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from './watchlist-ditem/ng-api';
-import { BrandingSplashWebPageDitemNgComponent } from './web-page-ditem/ng-api';
+import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } from './web-page-ditem/ng-api';
 
 export namespace DitemComponentIdAndType {
     interface IdAndType {
@@ -77,6 +77,10 @@ export namespace DitemComponentIdAndType {
         Search: {
             id: BuiltinDitemFrame.BuiltinTypeId.Search,
             type: SearchDitemNgComponent,
+        },
+        AdvertWebPage: {
+            id: BuiltinDitemFrame.BuiltinTypeId.AdvertWebPage,
+            type: AdvertWebPageDitemNgComponent,
         },
         TopShareholders: {
             id: BuiltinDitemFrame.BuiltinTypeId.TopShareholders,

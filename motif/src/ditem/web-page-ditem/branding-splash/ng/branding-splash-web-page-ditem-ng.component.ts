@@ -17,7 +17,7 @@ import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-dit
 export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
     implements OnInit, BrandingSplashWebPageDitemFrame.ComponentAccess {
 
-    public url: SafeResourceUrl;
+    public safeResourceUrl: SafeResourceUrl;
 
     private _frame: BrandingSplashWebPageDitemFrame;
 
@@ -44,8 +44,8 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
 
     ngOnInit(): void {}
 
-    loadPage(url: string) {
-        this.url = this._sanitizer.bypassSecurityTrustResourceUrl(url);
+    loadPage(safeResourceUrl: SafeResourceUrl) {
+        this.safeResourceUrl = safeResourceUrl;
         this.markForCheck();
     }
 

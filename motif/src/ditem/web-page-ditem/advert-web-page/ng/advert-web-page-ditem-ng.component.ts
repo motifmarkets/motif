@@ -1,12 +1,13 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentContainer } from 'golden-layout';
+import { AdvertWebPageNgComponent } from 'src/content/advert/ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'src/ditem/ng/builtin-ditem-ng-component-base.directive';
 import { WebPageDitemNgComponentBaseNgDirective } from '../../ng/web-page-ditem-ng-component-base-ng.directive';
-import { AdverthWebPageDitemFrame, AdvertWebPageDitemFrame } from '../advert-web-page-ditem-frame';
+import { AdvertWebPageDitemFrame } from '../advert-web-page-ditem-frame';
 
 @Component({
     selector: 'app-advert-web-page-ditem',
@@ -15,9 +16,9 @@ import { AdverthWebPageDitemFrame, AdvertWebPageDitemFrame } from '../advert-web
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
-    implements AdverthWebPageDitemFrame.ComponentAccess {
+    implements AfterViewInit, AdvertWebPageDitemFrame.ComponentAccess {
 
-    public url: SafeResourceUrl;
+    @ViewChild('page', { static: true }) private _pageComponent: AdvertWebPageNgComponent;
 
     private _frame: AdvertWebPageDitemFrame;
 
@@ -42,9 +43,13 @@ export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNg
     get ditemFrame() { return this._frame; }
     protected get stateSchemaVersion() { return AdvertWebPageDitemNgComponent.stateSchemaVersion; }
 
-    loadPage(url: string) {
-        this.url = this._sanitizer.bypassSecurityTrustResourceUrl(url);
-        this.markForCheck();
+    ngAfterViewInit(): void {
+        const safeResourceUrl = this._sanitizer.bypassSecurityTrustResourceUrl('https://spectaculix.com');
+        this.loadPage(safeResourceUrl);
+    }
+
+    loadPage(safeResourceUrl: SafeResourceUrl) {
+        this._pageComponent.loadPage(safeResourceUrl);
     }
 
     protected override finalise() {

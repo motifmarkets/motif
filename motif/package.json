@@ -22,7 +22,7 @@
     "file:info:build": "generate-build-info.bat",
     "file:info:version": "type package.json | jq .version --raw-output > src/generated/version.txt",
     "file:info": "npm run file:info:build && npm run file:info:version",
-    "copy:config:paritech_staging-dev": "copy src\\config\\config.paritech_staging-dev.json dev_static\\_config-do-not-delete\\config.json > $null && copy src\\config\\default-branding-desktop-bar-icon.svg dev_static\\_config-do-not-delete\\branding\\images\\desktop-bar-icon.svg > $null",
+    "copy:config:paritech_staging-dev": "copy src\\config\\config.paritech_staging-dev.json dev_static\\_config-do-not-delete\\config.json > $null && copy src\\config\\default-branding-desktop-bar-left-icon.svg dev_static\\_config-do-not-delete\\branding\\images\\desktop-bar-left-icon.svg > $null",
     "copy:config:fnsx_demo-dev": "copy src\\config\\config.fnsx_demo-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
     "copy:config:em2_cte-dev": "copy src\\config\\config.em2_cte-dev.json dev_static\\_config-do-not-delete\\config.json",
     "copy:config:em2_prod-dev": "copy src\\config\\config.em2_production-dev.json dev_static\\_config-do-not-delete\\config.json > $null",

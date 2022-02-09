@@ -8,7 +8,7 @@
 // import { PortalModule } from '@angular/cdk/portal';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
-import { BrowserModule } from '@angular/platform-browser';
+import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
 import { ContentNgModule } from 'content-ng-api';
 import { ControlsNgModule } from 'controls-ng-api';
 import { DesktopNgModule } from 'desktop-ng-api';
@@ -16,6 +16,7 @@ import { ExtensionsNgModule } from 'src/extensions/ng-api';
 import { OverlayNgModule } from 'src/overlay/ng-api';
 import { WorkspaceNgModule } from 'src/workspace/ng-api';
 import { AuthCallbackNgComponent } from '../auth-callback/ng-api';
+import { BottomAdvertStripNgComponent } from '../bottom-advert-strip/ng/bottom-advert-strip-ng.component';
 import { ModalNgComponent } from '../modal/ng-api';
 import { NotCurrentVersionNgComponent } from '../not-current-version/ng-api';
 import { RootNgComponent } from '../root/ng-api';
@@ -28,7 +29,6 @@ import { AuthGuardNgService } from './auth-guard-ng.service';
 import { ConfigNgService } from './config-ng.service';
 import { CurrentVersionGuardNgService } from './current-version-guard-ng.service';
 import { ErrorHandlerNgService } from './error-handler-ng.service';
-import { BottomAdvertStripNgComponent } from '../bottom-advert-strip/ng/bottom-advert-strip-ng.component';
 
 @NgModule({
     declarations: [
@@ -57,6 +57,7 @@ import { BottomAdvertStripNgComponent } from '../bottom-advert-strip/ng/bottom-a
             provide: APP_INITIALIZER,
             useFactory: ConfigNgService.getLoadFtn,
             deps: [
+                DomSanitizer,
                 ConfigNgService,
             ],
             multi: true

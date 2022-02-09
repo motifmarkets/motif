@@ -119,7 +119,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             menuBarNgService.service,
             this._commandRegisterService,
             keyboardNgService.service,
-            configBranding.startupSplashWebPageUrl,
+            configBranding.startupSplashWebPageSafeResourceUrl,
             (component) => this.getBuiltinDitemFrameFromGoldenLayoutComponent(component),
         );
 
