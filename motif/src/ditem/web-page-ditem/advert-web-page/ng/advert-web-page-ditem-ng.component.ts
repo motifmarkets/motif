@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { JsonElement } from '@motifmarkets/motif-core';
+import { delay1Tick, JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -44,12 +44,17 @@ export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNg
     protected get stateSchemaVersion() { return AdvertWebPageDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit(): void {
-        const safeResourceUrl = this._sanitizer.bypassSecurityTrustResourceUrl('https://spectaculix.com');
-        this.loadPage(safeResourceUrl);
+        delay1Tick(() => this.initialise());
     }
 
     loadPage(safeResourceUrl: SafeResourceUrl) {
         this._pageComponent.loadPage(safeResourceUrl);
+    }
+
+    protected override initialise() {
+        super.initialise();
+        const safeResourceUrl = this._sanitizer.bypassSecurityTrustResourceUrl('https://spectaculix.com');
+        this.loadPage(safeResourceUrl);
     }
 
     protected override finalise() {
