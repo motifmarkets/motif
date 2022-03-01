@@ -27,8 +27,8 @@ export class OpenIdService {
     private _attemptingSilentRenewRestartAlert: UserAlertService.Alert | undefined;
 
     constructor(private readonly _userAlertService: UserAlertService) {
-        OidcLog.logger = console;
-        OidcLog.level = OidcLog.INFO;
+        OidcLog.setLogger(console);
+        OidcLog.setLevel(OidcLog.INFO);
     }
 
     get userId() { return this._userId; }
