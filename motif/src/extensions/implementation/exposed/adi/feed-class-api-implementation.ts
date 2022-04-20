@@ -20,6 +20,7 @@ export namespace FeedClassImplementation {
             case FeedClassId.News: return FeedClassEnumApi.News;
             case FeedClassId.Trading: return FeedClassEnumApi.Trading;
             case FeedClassId.Watchlist: return FeedClassEnumApi.Watchlist;
+            case FeedClassId.Scanner: return FeedClassEnumApi.Scanner;
             default: throw new UnreachableCaseError('FCAITAU9000432338', value);
         }
     }
@@ -32,6 +33,7 @@ export namespace FeedClassImplementation {
             case FeedClassEnumApi.News: return FeedClassId.News;
             case FeedClassEnumApi.Trading: return FeedClassId.Trading;
             case FeedClassEnumApi.Watchlist: return FeedClassId.Watchlist;
+            case FeedClassEnumApi.Scanner: return FeedClassId.Scanner;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidFeedClass, enumValue);
         }
     }

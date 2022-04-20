@@ -50,6 +50,8 @@ export namespace FeedIdImplementation {
             case FeedId.News_Myx: return FeedIdEnumApi.News_Myx;
             case FeedId.News_Ptx: return FeedIdEnumApi.News_Ptx;
             case FeedId.News_Fnsx: return FeedIdEnumApi.News_Fnsx;
+            case FeedId.Watchlist: return FeedIdEnumApi.Watchlist;
+            case FeedId.Scanner: return FeedIdEnumApi.Scanner;
             default: throw new UnreachableCaseError('FIAITAU5662349843', value);
         }
     }
@@ -77,6 +79,8 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.News_Myx: return FeedId.News_Myx;
             case FeedIdEnumApi.News_Ptx: return FeedId.News_Ptx;
             case FeedIdEnumApi.News_Fnsx: return FeedId.News_Fnsx;
+            case FeedIdEnumApi.Watchlist: return FeedId.Watchlist;
+            case FeedIdEnumApi.Scanner: return FeedId.Scanner;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidFeedId, enumValue);
         }
     }

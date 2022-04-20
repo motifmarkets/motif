@@ -28,6 +28,8 @@ export const enum FeedIdEnum {
     News_Myx = 'News_Myx',
     News_Ptx = 'News_Ptx',
     News_Fnsx = 'News_Fnsx',
+    Watchlist = 'Watchlist',
+    Scanner = 'Scanner',
 }
 
 /** @public */
