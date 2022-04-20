@@ -3,6 +3,7 @@
 node_modules/
 /motif/.angular/cache
 /motif/releases/
+/motif/deployments/
 /motif/dist/
 /motif/dev_static/
 /motif/debug.log
