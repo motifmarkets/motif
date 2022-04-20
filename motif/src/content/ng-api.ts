@@ -22,7 +22,7 @@ export * from './grid-layout-editor-grid/ng-api';
 export * from './grid-layout-editor/ng-api';
 export * from './ivem-holdings/ng-api';
 export * from './markets/ng-api';
-export * from './motif-grid/ng-api';
+export * from './adapted-revgrid/ng-api';
 export * from './ng/content-component-base-ng.directive';
 export * from './ng/content-ng.module';
 export * from './order-request-step/ng-api';

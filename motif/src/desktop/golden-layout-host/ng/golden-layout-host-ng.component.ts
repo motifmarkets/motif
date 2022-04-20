@@ -11,18 +11,23 @@ import {
     Component,
     ComponentRef,
     ElementRef,
-    HostListener,
     OnDestroy,
     ViewChild,
     ViewContainerRef,
     ViewEncapsulation
 } from '@angular/core';
 import {
-    AssertInternalError, ColorScheme, ColorSettings, ExtensionHandle,
-    getElementDocumentPosition,
+    AssertInternalError,
+    ColorScheme,
+    ColorSettings,
+    ExtensionHandle,
     Json,
     MultiEvent,
-    numberToPixels, SettingsService, StringId, Strings, UnreachableCaseError
+    numberToPixels,
+    SettingsService,
+    StringId,
+    Strings,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ExtensionId } from 'content-internal-api';
@@ -99,6 +104,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             this._unbindComponentEventListener
         );
 
+        this._virtualLayout.resizeWithContainerAutomatically = true;
         this._virtualLayout.beforeVirtualRectingEvent = (count) => this.handleBeforeVirtualRectingEvent(count);
 
         this._frame = new GoldenLayoutHostFrame(this, this._virtualLayout, sessionNgService.service.defaultLayout,
@@ -110,13 +116,6 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     }
 
     get frame() { return this._frame; }
-
-    @HostListener('window:resize', ['$event']) onResize(event: UIEvent) {
-        const { left: layoutLeft, top: layoutTop} = getElementDocumentPosition(this._elRef.nativeElement);
-        const bodyWidth = document.body.offsetWidth;
-        const bodyHeight = document.body.offsetHeight;
-        this._virtualLayout.setSize(bodyWidth - layoutLeft, bodyHeight - layoutTop);
-    }
 
     ngOnDestroy() {
         this._frame.finalise();

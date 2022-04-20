@@ -8,6 +8,10 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
+import { RecordGridNgComponent, SimpleGridNgComponent } from '../adapted-revgrid/ng-api';
+import {
+    AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
+} from '../advert/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
@@ -35,7 +39,6 @@ import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-a
 import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
-import { MotifGridNgComponent } from '../motif-grid/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import {
     PadOrderRequestStepNgComponent,
@@ -105,11 +108,15 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ExtensionDetailNgComponent,
         ExtensionsSearchNgComponent,
         ExtensionListRegisteredItemNgComponent,
-        MotifGridNgComponent,
+        RecordGridNgComponent,
         MultiColorPickerNgComponent,
         ExchangesSettingsNgComponent,
         ExchangeSettingsNgComponent,
         SearchSymbolsConditionNgComponent,
+        BannerAdvertNgComponent,
+        AdvertWebPageNgComponent,
+        AdvertTickerNgComponent,
+        SimpleGridNgComponent,
     ],
     imports: [
         CommonModule,
@@ -117,6 +124,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ControlsNgModule,
     ],
     exports: [
+        AdvertTickerNgComponent,
+        AdvertWebPageNgComponent,
+        BannerAdvertNgComponent,
         ContentGridLayoutEditorNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorNgComponent,
@@ -136,6 +146,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         TableNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
+        SimpleGridNgComponent,
     ]
 })
 export class ContentNgModule {

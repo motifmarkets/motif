@@ -5,7 +5,7 @@
  */
 
 import { cloneDecimal, newDecimal } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light/decimal';
+import { Decimal } from 'decimal.js-light';
 import { Decimal as DecimalApi, DecimalSvc } from '../../../api/extension-api';
 import { DecimalImplementation } from '../../exposed/sys/decimal-implementation';
 

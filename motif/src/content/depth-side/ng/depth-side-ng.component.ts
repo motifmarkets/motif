@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
-import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { DepthSideFrame } from '../depth-side-frame';
@@ -20,8 +20,8 @@ import { DepthSideFrame } from '../depth-side-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepthSideNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthSideFrame.ComponentAccess {
-    @Input() frameGridProperties: MotifGrid.FrameGridProperties;
-    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
+    @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
+    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
     private readonly _frame: DepthSideFrame;
 

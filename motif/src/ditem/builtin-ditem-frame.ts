@@ -52,6 +52,9 @@ export namespace BuiltinDitemFrame {
         Depth,
         NewsHeadlines,
         NewsBody,
+        Alerts,
+        Search,
+        AdvertWebPage,
         TopShareholders,
         Status,
         Trades,
@@ -142,7 +145,10 @@ export namespace BuiltinDitemFrame {
                 name: 'NewsHeadlines',
                 newInternalCommandId: InternalCommand.Id.NewNewsHeadlinesDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsHeadlines,
-                menuBarItemPosition: undefined,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 15000,
+                },
             },
             NewsBody: {
                 id: BuiltinTypeId.NewsBody,
@@ -150,6 +156,36 @@ export namespace BuiltinDitemFrame {
                 newInternalCommandId: InternalCommand.Id.NewNewsBodyDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_NewsBody,
                 menuBarItemPosition: undefined,
+            },
+            Alerts: {
+                id: BuiltinTypeId.Alerts,
+                name: 'Alerts',
+                newInternalCommandId: InternalCommand.Id.NewAlertsDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_Alerts,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 16000,
+                },
+            },
+            Search: {
+                id: BuiltinTypeId.Search,
+                name: 'Search',
+                newInternalCommandId: InternalCommand.Id.NewSearchDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_Search,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 17000,
+                },
+            },
+            AdvertWebPage: {
+                id: BuiltinTypeId.AdvertWebPage,
+                name: 'Spectaculix Web Page',
+                newInternalCommandId: InternalCommand.Id.NewAdvertWebPageDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_AdvertWebPage,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 18000,
+                },
             },
             TopShareholders: {
                 id: BuiltinTypeId.TopShareholders,

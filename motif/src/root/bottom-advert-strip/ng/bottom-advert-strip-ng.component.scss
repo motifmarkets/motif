@@ -1,0 +1,13 @@
+:host {
+    flex: 0 0 20em;
+    display: flex;
+    flex-direction: column;
+}
+
+#ticker {
+    flex: 0 0 auto;
+}
+
+#banner {
+    flex: 1 1 0;
+}

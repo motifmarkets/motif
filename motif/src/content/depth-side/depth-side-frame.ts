@@ -23,7 +23,7 @@ import {
     ShortDepthSideGridRecordStore,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { MotifGrid } from 'content-internal-api';
+import { RecordGrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
@@ -31,7 +31,7 @@ export class DepthSideFrame extends ContentFrame {
     // public columnWidthChangedEvent: DepthSideFrame.ColumnWidthChangedEventHandler;
     // public activeWidthChangedEvent: DepthSideFrame.ActiveWidthChangedEventHandler;
 
-    private _grid: MotifGrid;
+    private _grid: RecordGrid;
     private _gridPrepared = false;
     private _sideId: OrderSideId;
     private _dataItem: DataItem;
@@ -354,7 +354,7 @@ export namespace DepthSideFrame {
 
     export interface ComponentAccess {
         readonly id: string;
-        createGrid(dataStore: RevRecordStore): MotifGrid;
+        createGrid(dataStore: RevRecordStore): RecordGrid;
     }
 
     export namespace JsonName {

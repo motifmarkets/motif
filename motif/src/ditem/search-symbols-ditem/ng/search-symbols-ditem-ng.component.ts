@@ -5,22 +5,44 @@
  */
 
 import {
-    ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, ElementRef, Inject,
-    OnDestroy, OnInit, ViewChild,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ComponentFactoryResolver,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    OnInit,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     AllowedExchangesEnumUiAction,
     AllowedMarketsEnumArrayUiAction,
     ArrayUiAction,
-    BooleanUiAction, delay1Tick, EnumUiAction, ExchangeId, ExchangeInfo, ExplicitElementsEnumArrayUiAction,
+    BooleanUiAction,
+    delay1Tick,
+    EnumUiAction,
+    ExchangeId,
+    ExchangeInfo,
+    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
-    IconButtonUiAction, Integer, IntegerUiAction,
-    InternalCommand, JsonElement, Logger, MarketId, StringId, Strings, StringUiAction, SymbolField, SymbolFieldId, SymbolsService
+    IconButtonUiAction,
+    Integer,
+    IntegerUiAction,
+    InternalCommand,
+    JsonElement,
+    Logger,
+    MarketId,
+    StringId,
+    Strings,
+    StringUiAction,
+    SymbolField,
+    SymbolFieldId,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
@@ -103,7 +125,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
-    public readonly frameGridProperties: MotifGrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

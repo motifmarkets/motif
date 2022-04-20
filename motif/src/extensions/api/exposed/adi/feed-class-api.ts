@@ -10,6 +10,8 @@ export const enum FeedClassEnum {
     Market = 'Market',
     News = 'News',
     Trading = 'Trading',
+    Watchlist = 'Watchlist',
+    Scanner = 'Scanner',
 }
 
 /** @public */

@@ -1,0 +1,56 @@
+$scrollbar-thumb-color: var(--scrollbar-thumb-color, #d3d3d3);
+$scrollbar-thumb-inactive-opacity: var(--scrollbar-thumb-inactive-opacity, 0.4);
+$vertical-scrollbar-left: var(--vertical-scrollbar-left, 0);
+$vertical-scrollbar-right: var(--vertical-scrollbar-right, 0);
+$vertical-scrollbar-width: var(--vertical-scrollbar-width, 11px);
+$vertical-scrollbar-thumb-width: var(--vertical-scrollbar-thumb-width, 7px);
+$horizontal-scrollbar-top: var(--horizontal-scrollbar-top);
+$horizontal-scrollbar-bottom: var(--horizontal-scrollbar-bottom, 0); /* stuck to bottom edge of container */
+$horizontal-scrollbar-width: var(--horizontal-scrollbar-width, 11px);
+$horizontal-scrollbar-thumb-width: var(--horizontal-scrollbar-thumb-width, 7px);
+$scrollbar-margin: var(--scrollbar-margin, 0);
+
+div.finbar-horizontal,
+div.finbar-vertical {
+    margin: $scrollbar-margin;
+}
+div.finbar-horizontal > .thumb,
+div.finbar-vertical > .thumb {
+    background-color: $scrollbar-thumb-color;
+    // -webkit-box-shadow: 0 0 1px $scrollbar-thumb-shadow-color;
+    // -moz-box-shadow: 0 0 1px $scrollbar-thumb-shadow-color;
+    // box-shadow: 0 0 1px $scrollbar-thumb-shadow-color;
+    border-radius: 4px;
+    margin: 2px;
+    opacity: $scrollbar-thumb-inactive-opacity;
+    transition: opacity 0.5s;
+}
+div.finbar-horizontal > .thumb.hover,
+div.finbar-vertical > .thumb.hover {
+    opacity: 1;
+    transition: opacity 0.5s;
+}
+div.finbar-vertical {
+    top: 0; /* stretched from top to bottom edges of container (top, bottom) */
+    bottom: 0;
+    left: $vertical-scrollbar-left;
+    right: $vertical-scrollbar-right;
+    width: $vertical-scrollbar-width;
+}
+div.finbar-vertical > .thumb {
+    top: 0; /* optional: initial position of thumb within vertical scrollbar */
+    right: 0;
+    width: $vertical-scrollbar-thumb-width;
+}
+div.finbar-horizontal {
+    left: 0; /* stretched from left to right edges of container (left, right) */
+    right: 0;
+    bottom: $horizontal-scrollbar-bottom;
+    height: $horizontal-scrollbar-width;
+    // top: $scrollbar-horizontal-top
+}
+div.finbar-horizontal > .thumb {
+    left: 0;  /* optional: initial position of thumb within horizontal scrollbar */
+    bottom: 0;
+    height: $horizontal-scrollbar-thumb-width;
+}

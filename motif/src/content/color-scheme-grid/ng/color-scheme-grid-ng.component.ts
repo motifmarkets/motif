@@ -4,12 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { MotifGridNgComponent } from '../../motif-grid/ng/motif-grid-ng.component';
+import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -19,15 +19,15 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements OnInit, AfterViewInit {
-    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
+export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: ColorSchemeGridComponent.RecordFocusEventer;
-    gridClickEventer: ColorSchemeGridComponent.GridClickEventer;
-    columnsViewWithsChangedEventer: ColorSchemeGridComponent.ColumnsViewWithsChangedEventer;
+    recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer;
+    gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer;
+    columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer;
 
     private _recordStore: ColorSchemeGridRecordStore;
-    private _grid: MotifGrid;
+    private _grid: RecordGrid;
     private _gridPrepared = false;
 
     private _filterActive = false;
@@ -48,15 +48,12 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this.applyFilter();
     }
 
-    ngOnInit() {
-    }
-
     ngAfterViewInit() {
         this._gridComponent.destroyEventer = () => {
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridComponent.frameGridProperties);
+        this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridNgComponent.frameGridProperties);
         this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         this._grid.columnsViewWidthsChangedEventer =
@@ -175,13 +172,13 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 }
 
-export namespace ColorSchemeGridComponent {
+export namespace ColorSchemeGridNgComponent {
     export type RenderedEvent = (this: void) => void;
     export type RecordFocusEventer = (recordIndex: RevRecordIndex | undefined) => void;
     export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ColumnsViewWithsChangedEventer = (this: void) => void;
 
-    export const frameGridProperties: MotifGrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 1,
         gridRightAligned: false,
     };

@@ -7,7 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { DecimalUiAction, Integer, newDecimal, StringId, Strings, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { Decimal } from 'decimal.js-light/decimal';
+import { Decimal } from 'decimal.js-light';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { DecimalComponentBaseNgDirective } from '../../ng/decimal-component-base-ng.directive';
 

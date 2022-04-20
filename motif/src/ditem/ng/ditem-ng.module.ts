@@ -9,6 +9,7 @@ import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ContentNgModule } from 'content-ng-api';
 import { ControlsNgModule } from 'controls-ng-api';
+import { AlertsDitemNgComponent } from '../alerts-ditem/ng-api';
 import { BalancesDitemNgComponent } from '../balances-ditem/ng-api';
 import { BrokerageAccountsDitemNgComponent } from '../brokerage-accounts-ditem/ng-api';
 import { DepthDitemNgComponent } from '../depth-ditem/ng-api';
@@ -21,6 +22,7 @@ import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
 import { ParidepthDitemNgComponent } from '../paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
+import { SearchDitemNgComponent } from '../search-ditem/ng-api';
 import { SearchSymbolsDitemNgComponent } from '../search-symbols-ditem/ng-api';
 import { SettingsDitemNgComponent } from '../settings-ditem/ng-api';
 import { StaticInitialise } from '../static-initialise';
@@ -28,7 +30,7 @@ import { StatusDitemNgComponent } from '../status-ditem/ng-api';
 import { TopShareholdersDitemNgComponent } from '../top-shareholders-ditem/ng-api';
 import { TradesDitemNgComponent } from '../trades-ditem/ng-api';
 import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
-import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
+import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
 
 @NgModule({
     declarations: [
@@ -50,7 +52,10 @@ import { BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api'
         TradesDitemNgComponent,
         WatchlistDitemNgComponent,
         ExtensionsDitemNgComponent,
-        BrandingSplashWebPageDitemNgComponent
+        BrandingSplashWebPageDitemNgComponent,
+        AdvertWebPageDitemNgComponent,
+        AlertsDitemNgComponent,
+        SearchDitemNgComponent
     ],
     imports: [
         CommonModule,

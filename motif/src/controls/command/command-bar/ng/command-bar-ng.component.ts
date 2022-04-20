@@ -17,7 +17,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 // import { CommandParametersComponentRegister } from '../../command-parameters-component-register';
-import { CommandSelectNgComponent } from '../../command-select/ng-api';
+// import { CommandSelectNgComponent } from '../../command-select/ng-api';
 // import { CommandParametersComponentNgDirective } from '../../ng/ng-api';
 
 @Component({
@@ -27,10 +27,8 @@ import { CommandSelectNgComponent } from '../../command-select/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CommandBarNgComponent implements OnDestroy, AfterViewInit {
-    @ViewChild('commandSelect', { static: true })
-    private _commandSelectComponent: CommandSelectNgComponent;
-    @ViewChild('parametersContainer', { read: ViewContainerRef, static: true })
-    private _parametersContainer: ViewContainerRef;
+    // @ViewChild('commandSelect', { static: true }) private _commandSelectComponent: CommandSelectNgComponent;
+    @ViewChild('parametersContainer', { read: ViewContainerRef, static: true }) private _parametersContainer: ViewContainerRef;
 
     private _commandUiAction: CommandUiAction;
 
@@ -60,7 +58,7 @@ export class CommandBarNgComponent implements OnDestroy, AfterViewInit {
     // }
 
     protected finalise() {
-        this._commandUiAction.finalise();
+        // this._commandUiAction.finalise();
     }
 
     private handleCommandCommitEvent() {

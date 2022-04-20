@@ -13,6 +13,7 @@
     [readonly]="readonly === true ? true : null"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     [value]="symbol"
+    [placeholder]="placeholderText"
     (input)="onInput(litivemidInput.value)"
     (keydown.enter)="onEnterKeyDown(litivemidInput.value)"
     (blur)="onBlur(litivemidInput.value)"

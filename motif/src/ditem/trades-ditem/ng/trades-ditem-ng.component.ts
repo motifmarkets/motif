@@ -138,7 +138,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         super.initialise();
     }
 
-    protected finaliseoverride() {
+    protected override finalise() {
         this._symbolEditUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();

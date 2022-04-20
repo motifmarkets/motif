@@ -19,11 +19,13 @@ import {
     UserAlertService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
+import { AppFeature } from 'src/app.feature';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { OverlayOriginNgComponent } from 'src/overlay/ng-api';
+import { BottomAdvertStripNgComponent } from 'src/root/bottom-advert-strip/ng/bottom-advert-strip-ng.component';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
 import { UserAlertNgComponent } from '../../user-alert/ng-api';
@@ -39,6 +41,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
     @ViewChild('userAlert', { static: true }) private _userAlertComponent: UserAlertNgComponent;
     @ViewChild('overlayOrigin', { static: true }) private _overlayOriginComponent: OverlayOriginNgComponent;
+    @ViewChild('bottomAdvertStrip') private _bottomAdvertStripComponent: BottomAdvertStripNgComponent;
 
     public starting = true;
 
@@ -84,6 +87,8 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         this._keyboardService.registerCommandContext(this._commandContext, true);
         this._userAlertService = userAlertNgService.service;
     }
+
+    public get advertisingActive() { return AppFeature.advertising && !this.starting; };
 
     ngOnInit() {
         this._userAlertService.alertQueueChangedEvent = () => this.handleUserAlertServiceAlertQueueChangedEvent();

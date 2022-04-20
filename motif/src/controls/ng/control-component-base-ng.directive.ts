@@ -15,7 +15,7 @@ import {
     MultiEvent,
     SettingsService,
     UiAction,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
@@ -112,7 +112,10 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     protected finalise() {
-        this._uiAction.unsubscribePushEvents(this._pushEventsSubscriptionId);
+        const action = this._uiAction;
+        if (action !== undefined) {
+            this._uiAction.unsubscribePushEvents(this._pushEventsSubscriptionId);
+        }
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
         this._settingsChangedSubscriptionId = undefined;
     }

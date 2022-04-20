@@ -34,7 +34,7 @@ import {
     UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -124,7 +124,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
 
     get ditemFrame() { return this._frame; }
-    public get frameGridProperties(): MotifGrid.FrameGridProperties {
+    public get frameGridProperties(): AdaptedRevgrid.FrameGridProperties {
         return {
             fixedColumnCount: 1,
             gridRightAligned: false,

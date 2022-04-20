@@ -1,0 +1,78 @@
+:host {
+    display: flex;
+    overflow: clip;
+
+    border: 2px;
+    margin: 1em;
+
+    .sideButtons {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+        align-items: stretch;
+        justify-content: center;
+        gap: 1em;
+    }
+
+    #advertSection {
+        flex: 1 1 0;
+
+        display: flex;
+        justify-content: space-evenly;
+
+        #leftAdWords {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+
+            #spectaculus {
+                color: green;
+            }
+            #arizona {
+                color: yellow;
+            }
+        }
+
+        #advertImg {
+            height: 100%;
+            // width: 100%;
+            border: none;
+            object-fit: contain;
+        }
+
+        #rightWordsSection {
+            display: flex;
+            flex-direction: column;
+
+            #rightAdWords {
+                flex: 1 1 0;
+
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+
+                #findOutMore {
+                    color: white;
+                }
+                #href {
+                    color: yellow;
+                }
+                #phoneNumber {
+                    color: white;
+                }
+            }
+
+            #attributionSection {
+                flex: 0 0 auto;
+                font-size: smaller;
+                font-weight: 100;
+                color: gray;
+            }
+        }
+    }
+
+    .nowrap {
+        white-space: nowrap;
+    }
+}

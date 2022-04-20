@@ -30,7 +30,7 @@ import {
     tableRecordDefinitionListDirectory,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
-import { MotifGrid } from 'content-internal-api';
+import { RecordGrid } from 'content-internal-api';
 import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
@@ -48,7 +48,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     tableOpenEvent: TableFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
 
-    private _grid: MotifGrid;
+    private _grid: RecordGrid;
     private _gridPrepared = false;
 
     private _table: Table | undefined;
@@ -109,7 +109,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     // grid functions used by Component
 
-    setGrid(value: MotifGrid) {
+    setGrid(value: RecordGrid) {
         this._grid = value;
         this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
         this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);

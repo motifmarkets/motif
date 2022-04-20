@@ -14,6 +14,7 @@
     [size]="size"
     [ngStyle]="{'background-color': bkgdColor, 'color': foreColor}"
     [value]="symbol"
+    [placeholder]="placeholderText"
     (input)="onInput(routedIvemIdInput.value)"
     (keydown.enter)="onEnterKeyDown(routedIvemIdInput.value)"
     (change)="onChange(routedIvemIdInput.value)"

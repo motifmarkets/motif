@@ -15,9 +15,9 @@ import {
     ViewChild
 } from '@angular/core';
 import { Badness, numberToPixels } from '@motifmarkets/motif-core';
-import { MotifGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
+import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
-import { MotifGridNgComponent } from '../../motif-grid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { TableFrame } from '../table-frame';
@@ -32,10 +32,10 @@ import { TableFrame } from '../table-frame';
 export class TableNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, TableFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
-    @Input() frameGridProperties: MotifGrid.FrameGridProperties;
+    @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
-    @ViewChild(MotifGridNgComponent, { static: true }) private _gridComponent: MotifGridNgComponent;
+    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
     private readonly _frame: TableFrame;
 

@@ -23,13 +23,13 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
-import { MotifGrid } from 'content-internal-api';
+import { RecordGrid } from 'content-internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
     // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
 
-    private _grid: MotifGrid;
+    private _grid: RecordGrid;
     private _gridPrepared = false;
     private _recordStore: DayTradesGridRecordStore;
 
@@ -61,7 +61,7 @@ export class TradesFrame extends ContentFrame {
 
     // grid functions used by Component
 
-    setGrid(value: MotifGrid) {
+    setGrid(value: RecordGrid) {
         this._grid = value;
         this._grid.rowOrderReversed = true;
         this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);

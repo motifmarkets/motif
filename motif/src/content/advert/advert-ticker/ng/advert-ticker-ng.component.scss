@@ -1,0 +1,24 @@
+:host {
+    display: flex;
+    border-top: solid thin gray;
+    border-bottom: solid thin gray;
+
+    #leftInterestedButton {
+        flex: 0 0 auto;
+    }
+
+    #scroller {
+        flex: 100000 100000 0;
+        display: flex;
+        align-items: center;
+
+        #advert {
+            position: relative;
+            left: 15%;
+        }
+    }
+
+    #rightInterestedButton {
+        flex: 1 1 auto;
+    }
+}

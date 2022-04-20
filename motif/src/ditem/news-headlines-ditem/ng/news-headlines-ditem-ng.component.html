@@ -3,7 +3,27 @@
     (c) 2021 Paritech Wealth Technology
     License: motionite.trade/license/motif
 -->
+<section id="mainSection" [style.display]="isMainMode ? null : 'none'">
+    <section id="mainToolbarSection">
+        <app-lit-ivem-id-select #symbolInput id="symbolInput"></app-lit-ivem-id-select>
+        <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
 
-<p>
-  news-headlines-input works!
-</p>
+        <section id="filterSection">
+            <app-text-input #filterInput></app-text-input>
+        </section>
+
+        <section id="columnButtonsSection">
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </section>
+
+        <section id="linkButtonsSection">
+            <app-svg-button #symbolLinkButton></app-svg-button>
+        </section>
+    </section>
+
+    <app-simple-grid #grid id="grid"></app-simple-grid>
+</section>
+<section id="layoutEditorSection" [style.display]="isLayoutEditorMode ? null : 'none'">
+    <ng-template #layoutEditorContainer></ng-template>
+</section>

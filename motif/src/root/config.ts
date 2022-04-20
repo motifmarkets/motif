@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { SafeResourceUrl } from '@angular/platform-browser';
 import { ExchangeEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
 import { ExtensionsService } from 'src/extensions/internal-api';
 
@@ -129,14 +130,16 @@ export namespace Config {
 
     export interface Features {
         readonly preview: boolean;
+        readonly advertising: boolean;
     }
 
     export namespace Features {
         export const defaultPreview = false;
+        export const defaultAdvertising = false;
     }
 
     export interface Branding {
-        readonly startupSplashWebPageUrl: string | undefined;
+        readonly startupSplashWebPageSafeResourceUrl: SafeResourceUrl | undefined;
         readonly desktopBarLeftImageUrl: string | undefined;
     }
 

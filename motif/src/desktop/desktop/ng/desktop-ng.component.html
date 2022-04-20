@@ -12,6 +12,7 @@
         </svg> -->
         <img *ngIf="barLeftImageExists" [src]="barLeftImageUrl" style="height: 1.7em; width: auto">
         <app-menu-bar-root-menu #menuBarRootMenu id="menuBarRootMenu"></app-menu-bar-root-menu>
+        <app-button-input *ngIf="advertisingEnabled" #aboutAdvertisingButton></app-button-input>
         <app-command-bar #commandBar id="commandBar"></app-command-bar>
     </section>
     <section id="rightControls">
