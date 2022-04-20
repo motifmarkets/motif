@@ -1,0 +1,109 @@
+{
+  "configFormatVersion": "2",
+  "configComment": "",
+  "service": {
+    "name": "Trading Retailer",
+    "description": "Trading Retailer (Generic)"
+  },
+  "exchange": {
+    "environment": "production",
+    "defaultDefault": "Asx"
+  },
+  "endpoints": {
+    "motifServices": [
+      "https://motif-services.paritech.com"
+    ],
+    "zenith": [
+      "wss://websocket.paritech.com:443/Zenith?version=2.0"
+    ]
+  },
+  "openId": {
+    "authority": "https://passport.paritech.com",
+    "clientId": "MotifTradingRetailer$Web",
+    "redirectUri": "http://localhost:4200/auth-callback",
+    "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+    "scope": "openid profile roles Zenith/Trading Zenith/Market Zenith/News Zenith/OrderPad MotifSvc/RestAPI"
+  },
+  "defaultLayout": {
+    "instanceName": "Default",
+    "linkedSymbol": {
+      "code": "BHP",
+      "market": "AsxTradeMatch"
+    },
+    "watchlist": [{ "code": "BHP", "market": "AsxTradeMatch" },
+      { "code": "QAN", "market": "AsxTradeMatch" },
+      { "code": "NAB", "market": "AsxTradeMatch" }
+    ]
+  },
+  "bundledExtensions": [
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
+        "name": "Highcharts",
+        "version": "0.0.2",
+        "apiVersion": "1",
+        "shortDescription": "Highcharts Charting",
+        "longDescription": "Highcharts Charting",
+        "urlPath": "/_extensions/highcharts/highcharts.js"
+      },
+      "install": true
+    },
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
+        "name": "Website Embed",
+        "version": "0.0.1",
+        "apiVersion": "1",
+        "shortDescription": "Website embed sample extension",
+        "longDescription": "Example extension demonstrating how website content can be integrated into Motif",
+        "urlPath": "/_extensions/website-embed/website-embed.js"
+      },
+      "install": false
+    },
+    {
+      "info": {
+        "publisherType": "Organisation",
+        "publisherName": "Paritech",
+        "name": "TsDemo",
+        "version": "0.0.1",
+        "apiVersion": "1",
+        "shortDescription": "TypeScript Demo",
+        "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
+        "urlPath": "/_extensions/tstest/tsdemo.js"
+      },
+      "install": false
+    }
+  ],
+  "features": {
+    "advertising": true
+  },
+  "diagnostics": {
+    "telemetry": {
+      "enabled": true,
+      "itemIgnores": [
+        {
+            "typeId": "Message",
+            "message": "^Error TRDLLFJI33858"
+        },
+        {
+            "typeId": "Message",
+            "message": "^ResizeObserver loop limit exceeded"
+        },
+        {
+            "typeId": "Message",
+            "message": "^Zenith Publisher: Abnormal closure (1006)"
+        },
+        {
+            "typeId": "Message",
+            "message": "^Zenith Reconnection: "
+        }
+      ]
+    }
+  },
+  "branding": {
+    "desktopBarLeftImageUrl": "branding/images/desktop-bar-left-icon.svg"
+  }
+}
+
