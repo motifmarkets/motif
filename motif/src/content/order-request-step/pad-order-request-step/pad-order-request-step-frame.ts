@@ -8,12 +8,27 @@ import {
     Account,
     BrokerageAccountGroup,
     BrokerageAccountId,
-    ExchangeInfo, Integer, JsonElement, LitIvemId,
-    MovementId, MultiEvent, OrderExtendedSideId, OrderId, OrderPad, OrderRoute,
+    Integer,
+    JsonElement,
+    LitIvemId,
+    MovementId,
+    MultiEvent,
+    OrderExtendedSideId,
+    OrderId,
+    OrderPad,
+    OrderRoute,
     OrderTriggerTypeId,
     OrderTypeId,
     PriceOrderTrigger,
-    RoutedIvemId, SingleBrokerageAccountGroup, StringId, Strings, SymbolsService, TimeInForceId, UiAction, UnreachableCaseError
+    RoutedIvemId,
+    SingleBrokerageAccountGroup,
+    StringId,
+    Strings,
+    SymbolsService,
+    TimeInForceId,
+    TradingEnvironment,
+    UiAction,
+    UnreachableCaseError,
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -60,7 +75,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
             if (value === undefined) {
                 group = undefined;
             } else {
-                const key = new Account.Key(value, ExchangeInfo.getDefaultEnvironmentId());
+                const key = new Account.Key(value);
                 group = new SingleBrokerageAccountGroup(key);
             }
             this.brokerageAccountGroupSetEvent(group);

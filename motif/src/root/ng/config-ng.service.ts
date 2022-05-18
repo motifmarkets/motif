@@ -9,7 +9,8 @@ import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
     ConfigError,
     createRandomUrlSearch,
-    ExchangeEnvironmentId,
+    DataEnvironment,
+    DataEnvironmentId,
     ExchangeInfo,
     ExternalError,
     LitIvemId,
@@ -67,6 +68,7 @@ export namespace ConfigNgService {
     export interface ConfigJson {
         readonly configFormatVersion: string;
         readonly configComment?: string;
+        readonly environment: Environment.Json;
         readonly service: Service.Json;
         readonly exchange: Exchange.Json;
         readonly endpoints: Endpoints.Json;
@@ -78,6 +80,63 @@ export namespace ConfigNgService {
         readonly branding?: Branding.Json;
     }
 
+    export namespace Environment {
+        export interface Json {
+            readonly defaultDataEnvironment: DataEnvironmentEnum;
+            readonly bannerOverrideDataEnvironment: DataEnvironmentEnum | '' | undefined;
+        }
+
+        export const enum DataEnvironmentEnum {
+            Production = 'production',
+            DelayedProduction = 'delayedProduction',
+            Demo = 'demo',
+            Sample = 'sample',
+        }
+
+        export function tryDataEnvironmentToId(value: DataEnvironmentEnum): DataEnvironmentId | undefined {
+            switch (value) {
+                case DataEnvironmentEnum.Production: return DataEnvironmentId.Production;
+                case DataEnvironmentEnum.DelayedProduction: return DataEnvironmentId.DelayedProduction;
+                case DataEnvironmentEnum.Demo: return DataEnvironmentId.Demo;
+                case DataEnvironmentEnum.Sample: return DataEnvironmentId.Sample;
+                default: return undefined;
+            }
+        }
+
+        export function parseJson(json: Json, serviceName: string) {
+            if (json === undefined) {
+                throw new ConfigError(ExternalError.Code.ConfigMissingEnvironment, serviceName, '');
+            } else {
+                const defaultDataEnvironment = json.defaultDataEnvironment;
+                if (defaultDataEnvironment === undefined) {
+                    throw new ConfigError(ExternalError.Code.ConfigEnvironmentMissingDefaultData, serviceName, '');
+                } else {
+                    const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
+                    if (defaultDataEnvironmentId === undefined) {
+                        throw new ConfigError(ExternalError.Code.CSEPJET9072322185564, serviceName, defaultDataEnvironment);
+                    } else {
+                        let bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
+                        const bannerOverrideDataEnvironment = json.bannerOverrideDataEnvironment;
+                        if (bannerOverrideDataEnvironment === undefined || bannerOverrideDataEnvironment === '') {
+                            bannerOverrideDataEnvironmentId = undefined;
+                        } else {
+                            bannerOverrideDataEnvironmentId = tryDataEnvironmentToId(bannerOverrideDataEnvironment);
+
+                            if (bannerOverrideDataEnvironmentId === undefined) {
+                                throw new ConfigError(ExternalError.Code.CSEPJOE9072322185564, serviceName, defaultDataEnvironment);
+                            }
+                        }
+                        const environment: Config.Environment = {
+                            defaultDataEnvironmentId,
+                            bannerOverrideDataEnvironmentId,
+                        };
+                        return environment;
+                    }
+                }
+            }
+        }
+    }
+
     export namespace Service {
         export interface Json {
             readonly name: string;
@@ -85,80 +144,97 @@ export namespace ConfigNgService {
         }
 
         export function parseJson(json: Json, jsonText: string) {
-            const name = json.name;
-            if (name === undefined) {
-                throw new ConfigError(ExternalError.Code.CSSPJN14499232322, '?', jsonText);
+            if (json === undefined) {
+                throw new ConfigError(ExternalError.Code.ConfigMissingService, '?', jsonText);
             } else {
-                const description = json.description;
+                const name = json.name;
+                if (name === undefined) {
+                    throw new ConfigError(ExternalError.Code.CSSPJN14499232322, '?', jsonText);
+                } else {
+                    const description = json.description;
 
-                const service: Config.Service = {
-                    name,
-                    description,
-                };
+                    const service: Config.Service = {
+                        name,
+                        description,
+                    };
 
-                return service;
+                    return service;
+                }
             }
         }
     }
 
     export namespace Exchange {
         export interface Json {
-            readonly environment: Environment;
-            readonly bannerOverrideEnvironment: Environment | '' | undefined;
             readonly defaultDefault: string;
+            readonly options?: Json.Option[];
         }
 
-        export const enum Environment {
-            Production = 'production',
-            DelayedProduction = 'delayedProduction',
-            Demo = 'demo',
-        }
-
-        export function tryEnvironmentToId(value: Environment): ExchangeEnvironmentId | undefined {
-            switch (value) {
-                case Environment.Production: return ExchangeEnvironmentId.Production;
-                case Environment.DelayedProduction: return ExchangeEnvironmentId.DelayedProduction;
-                case Environment.Demo: return ExchangeEnvironmentId.Demo;
+        export namespace Json {
+            export interface Option {
+                readonly exchange: string;
+                readonly overriddenDefaultDataEnvironment?: Environment.DataEnvironmentEnum;
             }
         }
 
         export function parseJson(json: Json, serviceName: string) {
-            const defaultDefault = json.defaultDefault;
-            if (defaultDefault === undefined) {
-                throw new ConfigError(ExternalError.Code.CSEPJDDU97222185554, serviceName, '');
+            if (json === undefined) {
+                throw new ConfigError(ExternalError.Code.ConfigMissingExchange, serviceName, '');
             } else {
-                const defaultDefaultExchangeId = ExchangeInfo.tryJsonValueToId(defaultDefault);
-                if (defaultDefaultExchangeId === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSLEPJDDEIU2248883843, serviceName, defaultDefault);
+                const defaultDefault = json.defaultDefault;
+                if (defaultDefault === undefined) {
+                    throw new ConfigError(ExternalError.Code.CSEPJDDU97222185554, serviceName, '');
                 } else {
-                    const environment = json.environment;
-                    if (environment === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSEPJEU907222185554, serviceName, '');
+                    const defaultDefaultExchangeId = ExchangeInfo.tryJsonValueToId(defaultDefault);
+                    if (defaultDefaultExchangeId === undefined) {
+                        throw new ConfigError(ExternalError.Code.CSLEPJDDEIU2248883843, serviceName, defaultDefault);
                     } else {
-                        const environmentId = tryEnvironmentToId(environment);
-                        if (environmentId === undefined) {
-                            throw new ConfigError(ExternalError.Code.CSEPJET9072322185564, serviceName, environment);
-                        } else {
-                            let bannerOverrideEnvironmentId: ExchangeEnvironmentId | undefined;
-                            const bannerOverrideEnvironment = json.bannerOverrideEnvironment;
-                            if (bannerOverrideEnvironment === undefined || bannerOverrideEnvironment === '') {
-                                bannerOverrideEnvironmentId = undefined;
+                        const optionsJson = json.options;
+                        let options: Config.Exchange.Option[] | undefined;
+                        if (optionsJson !== undefined) {
+                            if (!Array.isArray(optionsJson)) {
+                                Logger.logConfigError('CNSEPJA24988', serviceName);
                             } else {
-                                bannerOverrideEnvironmentId = tryEnvironmentToId(bannerOverrideEnvironment);
-
-                                if (bannerOverrideEnvironmentId === undefined) {
-                                    throw new ConfigError(ExternalError.Code.CSEPJOE9072322185564, serviceName, environment);
+                                const count = optionsJson.length;
+                                options = new Array<Config.Exchange.Option>(count);
+                                for (let i = 0; i < count; i++) {
+                                    const optionJson = optionsJson[i];
+                                    const option = parseOptionJson(optionJson, serviceName);
+                                    options[i] = option;
                                 }
                             }
-                            const exchange: Config.Exchange = {
-                                defaultDefaultExchangeId,
-                                environmentId,
-                                bannerOverrideEnvironmentId,
-                            };
-                            return exchange;
                         }
+                        const exchange: Config.Exchange = {
+                            defaultDefaultExchangeId,
+                            options,
+                        };
+                        return exchange;
                     }
                 }
+            }
+        }
+
+        function parseOptionJson(optionJson: Json.Option, serviceName: string): Config.Exchange.Option {
+            const exchangeJson = optionJson.exchange;
+            const exchangeId = ExchangeInfo.tryJsonValueToId(exchangeJson);
+            if (exchangeId === undefined) {
+                throw new ConfigError(ExternalError.Code.CSLEPJDDEIU2248883844, serviceName, exchangeJson);
+            } else {
+                const overriddenDefaultDataEnvironmentJson = optionJson.overriddenDefaultDataEnvironment;
+                let overriddenDefaultDataEnvironmentId: DataEnvironmentId | undefined;
+                if (overriddenDefaultDataEnvironmentJson !== undefined) {
+                    overriddenDefaultDataEnvironmentId = DataEnvironment.tryJsonToId(overriddenDefaultDataEnvironmentJson);
+                    if (overriddenDefaultDataEnvironmentId === undefined) {
+                        throw new ConfigError(ExternalError.Code.CSLEPOJDDEIU2248883845, serviceName, overriddenDefaultDataEnvironmentJson);
+                    }
+                }
+
+                const result: Config.Exchange.Option = {
+                    exchangeId,
+                    overriddenDefaultDataEnvironmentId,
+                };
+
+                return result;
             }
         }
     }
@@ -170,32 +246,36 @@ export namespace ConfigNgService {
         }
 
         export function parseJson(json: Json, serviceName: string) {
-            const motifServices = json.motifServices;
-            if (motifServices === undefined) {
-                throw new ConfigError(ExternalError.Code.CSEPPMSU00831852399, serviceName, '');
+            if (json === undefined) {
+                throw new ConfigError(ExternalError.Code.ConfigMissingEndpoints, serviceName, '');
             } else {
-                if (motifServices.length === 0) {
-                    throw new ConfigError(ExternalError.Code.CSEPPMSL00831852399, serviceName, '');
+                const motifServices = json.motifServices;
+                if (motifServices === undefined) {
+                    throw new ConfigError(ExternalError.Code.CSEPPMSU00831852399, serviceName, '');
                 } else {
-                    if (motifServices[0].length === 0) {
-                        throw new ConfigError(ExternalError.Code.CSEPPMSE00831852399, serviceName, '');
+                    if (motifServices.length === 0) {
+                        throw new ConfigError(ExternalError.Code.CSEPPMSL00831852399, serviceName, '');
                     } else {
-                        const zenith = json.zenith;
-                        if (zenith === undefined) {
-                            throw new ConfigError(ExternalError.Code.CSEPPZU00831852399, serviceName, '');
+                        if (motifServices[0].length === 0) {
+                            throw new ConfigError(ExternalError.Code.CSEPPMSE00831852399, serviceName, '');
                         } else {
-                            if (zenith.length === 0) {
-                                throw new ConfigError(ExternalError.Code.CSEPPZL00831852399, serviceName, '');
+                            const zenith = json.zenith;
+                            if (zenith === undefined) {
+                                throw new ConfigError(ExternalError.Code.CSEPPZU00831852399, serviceName, '');
                             } else {
-                                if (zenith[0].length === 0) {
-                                    throw new ConfigError(ExternalError.Code.CSEPPZE00831852399, serviceName, '');
+                                if (zenith.length === 0) {
+                                    throw new ConfigError(ExternalError.Code.CSEPPZL00831852399, serviceName, '');
                                 } else {
-                                    const endpoints: Config.Endpoints = {
-                                        motifServices,
-                                        zenith,
-                                    };
+                                    if (zenith[0].length === 0) {
+                                        throw new ConfigError(ExternalError.Code.CSEPPZE00831852399, serviceName, '');
+                                    } else {
+                                        const endpoints: Config.Endpoints = {
+                                            motifServices,
+                                            zenith,
+                                        };
 
-                                    return endpoints;
+                                        return endpoints;
+                                    }
                                 }
                             }
                         }
@@ -215,35 +295,39 @@ export namespace ConfigNgService {
         }
 
         export function parseJson(json: Json, serviceName: string) {
-            const authority = json.authority;
-            if (authority === undefined) {
-                throw new ConfigError(ExternalError.Code.CSOIPJA0831852399, serviceName, '');
+            if (json === undefined) {
+                throw new ConfigError(ExternalError.Code.ConfigMissingOpenId, serviceName, '');
             } else {
-                const clientId = json.clientId;
-                if (clientId === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSOIPJCI100194724, serviceName, '');
+                const authority = json.authority;
+                if (authority === undefined) {
+                    throw new ConfigError(ExternalError.Code.CSOIPJA0831852399, serviceName, '');
                 } else {
-                    const redirectUri = json.redirectUri;
-                    if (redirectUri === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSOIPJRU33448829, serviceName, '');
+                    const clientId = json.clientId;
+                    if (clientId === undefined) {
+                        throw new ConfigError(ExternalError.Code.CSOIPJCI100194724, serviceName, '');
                     } else {
-                        const silentRedirectUri = json.silentRedirectUri;
-                        if (silentRedirectUri === undefined) {
-                            throw new ConfigError(ExternalError.Code.CSOIPJSR12120987, serviceName, '');
+                        const redirectUri = json.redirectUri;
+                        if (redirectUri === undefined) {
+                            throw new ConfigError(ExternalError.Code.CSOIPJRU33448829, serviceName, '');
                         } else {
-                            const scope = json.scope;
-                            if (scope === undefined) {
-                                throw new ConfigError(ExternalError.Code.CSOIPJSC67773223, serviceName, '');
+                            const silentRedirectUri = json.silentRedirectUri;
+                            if (silentRedirectUri === undefined) {
+                                throw new ConfigError(ExternalError.Code.CSOIPJSR12120987, serviceName, '');
                             } else {
-                                const openId: Config.OpenId = {
-                                    authority,
-                                    clientId,
-                                    redirectUri,
-                                    silentRedirectUri,
-                                    scope,
-                                };
+                                const scope = json.scope;
+                                if (scope === undefined) {
+                                    throw new ConfigError(ExternalError.Code.CSOIPJSC67773223, serviceName, '');
+                                } else {
+                                    const openId: Config.OpenId = {
+                                        authority,
+                                        clientId,
+                                        redirectUri,
+                                        silentRedirectUri,
+                                        scope,
+                                    };
 
-                                return openId;
+                                    return openId;
+                                }
                             }
                         }
                     }
@@ -260,53 +344,24 @@ export namespace ConfigNgService {
             readonly watchlist: LitIvemId.Json[] | undefined;
         }
 
-        export function parseJson(json: Json | undefined, serviceName: string, exchangeEnvironmentId: ExchangeEnvironmentId) {
+        export function parseJson(json: Json | undefined) {
+            let defaultLayout: Config.DefaultLayout;
             if (json === undefined) {
-                const defaultLayout: Config.DefaultLayout = {
+                defaultLayout = {
                     internalName: undefined,
                     instanceName: undefined,
-                    linkedSymbol: undefined,
-                    watchlist: undefined,
+                    linkedSymbolJson: undefined,
+                    watchlistJson: undefined,
                 };
-                return defaultLayout;
             } else {
-                // Since ExchangeEnvironment is not yet set up with defaultEnvironmentId, make sure all LitIvemId JSON have
-                // a defined environment
-                const linkedSymbolJson = json.linkedSymbol;
-                let linkedSymbol: LitIvemId | undefined;
-                if (linkedSymbolJson === undefined) {
-                    linkedSymbol = undefined;
-                } else {
-                    const environmentedLinkedSymbolJson = LitIvemId.Json.ensureEnvironmented(linkedSymbolJson, exchangeEnvironmentId);
-                    linkedSymbol = LitIvemId.tryCreateFromJson(environmentedLinkedSymbolJson);
-                    if (linkedSymbol === undefined) {
-                        Logger.logConfigError('CNSDLPJL3555588', JSON.stringify(linkedSymbolJson), 200);
-                    }
-                }
-                const watchlistJson = json.watchlist;
-                let watchlist: LitIvemId[] | undefined;
-                if (watchlistJson === undefined) {
-                    watchlist = undefined;
-                } else {
-                    const count = watchlistJson.length;
-                    const environmentedWatchlistJson = new Array<LitIvemId.EnvironmentedJson>(count);
-                    for (let i = 0; i < count; i++) {
-                        const symbolJson = watchlistJson[i];
-                        environmentedWatchlistJson[i] = LitIvemId.Json.ensureEnvironmented(symbolJson, exchangeEnvironmentId);
-                    }
-                    watchlist = LitIvemId.tryCreateArrayFromJson(environmentedWatchlistJson);
-                    if (watchlist === undefined) {
-                        Logger.logConfigError('CNSDLPJW3555588', JSON.stringify(watchlistJson), 400);
-                    }
-                }
-                const defaultLayout: Config.DefaultLayout = {
+                defaultLayout = {
                     internalName: json.internalName,
                     instanceName: json.instanceName,
-                    linkedSymbol,
-                    watchlist,
+                    linkedSymbolJson: json.linkedSymbol,
+                    watchlistJson: json.watchlist,
                 };
-                return defaultLayout;
             }
+            return defaultLayout;
         }
     }
 
@@ -614,19 +669,17 @@ export namespace ConfigNgService {
             throw new ConfigError(ExternalError.Code.CSLTF1988871038839, '?', jsonText);
         } else {
             const service = ConfigNgService.Service.parseJson(configJson.service, jsonText);
+            const environment = ConfigNgService.Environment.parseJson(configJson.environment, service.name);
             const exchange = ConfigNgService.Exchange.parseJson(configJson.exchange, service.name);
             const endpoints = ConfigNgService.Endpoints.parseJson(configJson.endpoints, service.name);
             const openId = ConfigNgService.OpenId.parseJson(configJson.openId, service.name);
-            const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout, service.name,
-                exchange.environmentId
-            );
-            const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions,
-                service.name
-            );
+            const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout);
+            const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions, service.name);
             const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
             const features = ConfigNgService.Features.parseJson(configJson.features);
             const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
             const config: Config = {
+                environment,
                 service,
                 exchange,
                 endpoints,

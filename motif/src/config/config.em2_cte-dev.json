@@ -5,8 +5,10 @@
     "name": "EM2 Customer Test (Development)",
     "description": "Empower Hub Customer Test (Development)"
   },
+  "environment": {
+    "defaultDataEnvironment": "demo"
+  },
   "exchange": {
-    "environment": "demo",
     "defaultDefault": "Myx"
   },
   "endpoints": {

@@ -348,7 +348,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushTitle(Strings[StringId.SettingTitle_Master_SettingsProfile]);
         const selectorIds: MasterSettings.ApplicationEnvironmentSelector.SelectorId[] = [
             MasterSettings.ApplicationEnvironmentSelector.SelectorId.Default,
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.ExchangeEnvironment,
+            MasterSettings.ApplicationEnvironmentSelector.SelectorId.DataEnvironment,
             MasterSettings.ApplicationEnvironmentSelector.SelectorId.Test,
         ];
         const elementPropertiesArray = selectorIds.map<EnumUiAction.ElementProperties>(

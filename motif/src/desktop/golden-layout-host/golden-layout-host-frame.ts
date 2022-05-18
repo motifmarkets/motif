@@ -4,7 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, SessionInfoService, ExtensionHandle, TUID, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ExtensionHandle,
+    LitIvemId,
+    Logger,
+    SessionInfoService,
+    TUID,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
 import {
     BalancesDitemFrame,
@@ -201,23 +209,23 @@ export class GoldenLayoutHostFrame {
                 content: [
                     {
                         type: 'column',
-                        width: 100,
+                        size: '100%',
                         content: [
                             {
                                 type: 'row',
-                                height: 60,
+                                size: '60%',
                                 content: [watchlistItemConfig, orderRequestItemConfig],
                             },
                             {
                                 type: 'row',
-                                height: 40,
+                                size: '40%',
                                 content: [brokerageAccountsItemConfig, holdingsItemConfig],
                             },
                         ],
                     },
                     {
                         type: 'column',
-                        width: 100,
+                        size: '100%',
                         content: [
                             depthAndTradesItemConfig,
                             {
@@ -252,9 +260,18 @@ export class GoldenLayoutHostFrame {
         this.prepareDefaultLayoutDepthAndTrades(componentIds.depthAndTrades);
         this.prepareDefaultLayoutOrders(componentIds.orders);
         this.prepareDefaultLayoutBalances(componentIds.balances);
-        const linkedSymbol = this._defaultLayoutConfig.linkedSymbol;
-        if (linkedSymbol !== undefined) {
-            this._desktopAccessService.initialiseLitIvemId(linkedSymbol);
+        this.prepareDefaultLayoutLinkedSymbol();
+    }
+
+    private prepareDefaultLayoutLinkedSymbol() {
+        const linkedSymbolJson = this._defaultLayoutConfig.linkedSymbolJson;
+        if (linkedSymbolJson !== undefined) {
+            const linkedSymbol = LitIvemId.tryCreateFromJson(linkedSymbolJson);
+            if (linkedSymbol === undefined) {
+                Logger.logConfigError('GLHFPDLLS38220', JSON.stringify(linkedSymbolJson), 200);
+            } else {
+                this._desktopAccessService.initialiseLitIvemId(linkedSymbol);
+            }
         }
     }
 
@@ -267,7 +284,16 @@ export class GoldenLayoutHostFrame {
                 if (frame.litIvemIdLinkable) {
                     frame.litIvemIdLinked = true;
                 }
-                frame.defaultLitIvemIds = this._defaultLayoutConfig.watchlist;
+
+                const watchlistJson = this._defaultLayoutConfig.watchlistJson;
+                if (watchlistJson !== undefined) {
+                    const watchlist = LitIvemId.tryCreateArrayFromJson(watchlistJson);
+                    if (watchlist === undefined) {
+                        Logger.logConfigError('GLHFPDLW1444813', JSON.stringify(watchlistJson), 400);
+                    } else {
+                        frame.defaultLitIvemIds = watchlist;
+                    }
+                }
             }
         }
     }

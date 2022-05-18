@@ -5,10 +5,13 @@
     "name": "Paritech Staging",
     "description": "Paritech Staging"
   },
+  "environment": {
+    "defaultDataEnvironment": "demo",
+    "bannerOverrideDataEnvironment": ""
+  },
   "exchange": {
-    "environment": "demo",
-    "bannerOverrideEnvironment": "",
-    "defaultDefault": "Ptx"
+    "defaultDefault": "Ptx",
+    "options": []
   },
   "endpoints": {
     "motifServices": [

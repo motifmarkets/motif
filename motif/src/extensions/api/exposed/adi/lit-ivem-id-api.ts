@@ -5,15 +5,15 @@
  */
 
 import { Json } from '../sys/extension-api';
-import { ExchangeEnvironmentId } from './exchange-environment-id-api';
+import { DataEnvironmentId } from './data-environment-id-api';
 import { MarketId } from './market-id-api';
 
 /** @public */
 export interface LitIvemId {
     readonly code: string;
     readonly litId: MarketId;
-    readonly environmentId: ExchangeEnvironmentId;
-    readonly explicitEnvironmentId: ExchangeEnvironmentId | undefined;
+    readonly environmentId: DataEnvironmentId;
+    readonly explicitEnvironmentId: DataEnvironmentId | undefined;
 
     readonly name: string;
 

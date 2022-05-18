@@ -6,16 +6,13 @@
 
 import {
     BrokerageAccountGroupSvc,
-    ExchangeEnvironmentIdSvc,
+    DataEnvironmentIdSvc,
     ExchangeIdSvc,
     FeedClassSvc,
     FeedIdSvc,
     IvemIdSvc,
     LitIvemIdSvc,
-    MarketIdSvc,
-    OrderRouteSvc,
-    OrderExtendedSideSvc,
-    OrderTimeInForceSvc,
+    MarketIdSvc, OrderExtendedSideSvc, OrderRouteSvc, OrderTimeInForceSvc,
     OrderTypeSvc,
     RoutedIvemIdSvc
 } from './adi/extension-api';
@@ -52,7 +49,7 @@ export interface ExtensionSvc {
 
     // Adi
     readonly brokerageAccountGroupSvc: BrokerageAccountGroupSvc;
-    readonly exchangeEnvironmentIdSvc: ExchangeEnvironmentIdSvc;
+    readonly dataEnvironmentIdSvc: DataEnvironmentIdSvc;
     readonly exchangeIdSvc: ExchangeIdSvc;
     readonly feedClassSvc: FeedClassSvc;
     readonly feedIdSvc: FeedIdSvc;

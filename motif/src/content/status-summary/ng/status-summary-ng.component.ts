@@ -15,7 +15,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness, ExchangeEnvironment, ExchangeInfo, SessionInfoService } from '@motifmarkets/motif-core';
+import { AssertInternalError, Badness, DataEnvironment, SessionInfoService, TradingEnvironment } from '@motifmarkets/motif-core';
 import { SessionInfoNgService } from 'component-services-ng-api';
 import { Version } from 'generated-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
@@ -38,7 +38,8 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     public serviceDescription: string;
     public clientVersion: string;
     public codeCommit: string;
-    public exchangeEnvironment: string;
+    public dataEnvironment: string;
+    public tradingEnvironment: string;
     public userId: string;
     public username: string;
     public userFullName: string;
@@ -65,7 +66,8 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
         this.serviceDescription = this._sessionInfoService.serviceDescription ?? '';
         this.clientVersion = `${Version.app} (${isDevMode() ? 'DevMode' : 'ProdMode'})`;
         this.codeCommit = `${Version.commit}`;
-        this.exchangeEnvironment = `${ExchangeEnvironment.idToDisplay(ExchangeInfo.getDefaultEnvironmentId())}`;
+        this.dataEnvironment = `${DataEnvironment.idToDisplay(DataEnvironment.getDefaultId())}`;
+        this.tradingEnvironment = `${TradingEnvironment.idToDisplay(TradingEnvironment.getDefaultId())}`;
         this.userId = this._sessionInfoService.userId;
         this.username = this._sessionInfoService.username;
         this.userFullName = this._sessionInfoService.userFullName;

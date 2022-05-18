@@ -11,7 +11,7 @@ import { WorkspaceService } from 'src/workspace/internal-api';
 import { ExtensionSvc } from '../../api/extension-api';
 import {
     BrokerageAccountGroupSvcImplementation,
-    ExchangeEnvironmentIdSvcImplementation,
+    DataEnvironmentIdSvcImplementation,
     ExchangeIdSvcImplementation,
     FeedClassSvcImplementation,
     FeedIdSvcImplementation,
@@ -21,6 +21,7 @@ import {
     OrderTypeSvcImplementation,
     RoutedIvemIdSvcImplementation
 } from './adi/internal-api';
+import { TradingEnvironmentIdSvcImplementation } from './adi/trading-environment-id-svc-implementation';
 import {
     CommandSvcImplementation,
     HistorySequencerSvcImplementation,
@@ -54,7 +55,8 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
     private readonly _brokerageAccountGroupSvcImplementation: BrokerageAccountGroupSvcImplementation;
     private readonly _marketIdSvcImplementation: MarketIdSvcImplementation;
     private readonly _exchangeIdSvcImplementation: ExchangeIdSvcImplementation;
-    private readonly _exchangeEnvironmentIdSvcImplementation: ExchangeEnvironmentIdSvcImplementation;
+    private readonly _dataEnvironmentIdSvcImplementation: DataEnvironmentIdSvcImplementation;
+    private readonly _tradingEnvironmentIdSvcImplementation: TradingEnvironmentIdSvcImplementation;
     private readonly _feedIdSvcImplementation: FeedIdSvcImplementation;
     private readonly _feedClassSvcImplementation: FeedClassSvcImplementation;
     private readonly _ivemIdSvcImplementation: IvemIdSvcImplementation;
@@ -93,7 +95,8 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
         this._brokerageAccountGroupSvcImplementation = new BrokerageAccountGroupSvcImplementation();
         this._marketIdSvcImplementation = new MarketIdSvcImplementation();
         this._exchangeIdSvcImplementation = new ExchangeIdSvcImplementation();
-        this._exchangeEnvironmentIdSvcImplementation = new ExchangeEnvironmentIdSvcImplementation();
+        this._dataEnvironmentIdSvcImplementation = new DataEnvironmentIdSvcImplementation();
+        this._tradingEnvironmentIdSvcImplementation = new TradingEnvironmentIdSvcImplementation();
         this._feedIdSvcImplementation = new FeedIdSvcImplementation();
         this._feedClassSvcImplementation = new FeedClassSvcImplementation();
         this._ivemIdSvcImplementation = new IvemIdSvcImplementation();
@@ -123,7 +126,8 @@ export class ExtensionSvcImplementation implements ExtensionSvc {
     get brokerageAccountGroupSvc() { return this._brokerageAccountGroupSvcImplementation; }
     get marketIdSvc() { return this._marketIdSvcImplementation; }
     get exchangeIdSvc() { return this._exchangeIdSvcImplementation; }
-    get exchangeEnvironmentIdSvc() { return this._exchangeEnvironmentIdSvcImplementation; }
+    get dataEnvironmentIdSvc() { return this._dataEnvironmentIdSvcImplementation; }
+    get tradingEnvironmentIdSvc() { return this._tradingEnvironmentIdSvcImplementation; }
     get feedIdSvc() { return this._feedIdSvcImplementation; }
     get feedClassSvc() { return this._feedClassSvcImplementation; }
     get ivemIdSvc() { return this._ivemIdSvcImplementation; }

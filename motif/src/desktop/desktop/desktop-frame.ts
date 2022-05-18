@@ -499,7 +499,14 @@ export class DesktopFrame implements DesktopAccessService {
 
     async saveLayout(name: string) {
         const layoutElement = new JsonElement();
-        const goldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
+        let goldenLayoutConfig: LayoutConfig;
+        const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
+        // In version 3 of GoldenLayout GoldenLayout.saveLayout() will return a LayoutConfig instead of a ResolvedLayoutConfig
+        if ('resolved' in savedGoldenLayoutConfig) {
+            goldenLayoutConfig = LayoutConfig.fromResolved(savedGoldenLayoutConfig);
+        } else {
+            goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
+        }
         if (this._activeLayoutName !== undefined) {
             layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
         }
@@ -917,8 +924,7 @@ export class DesktopFrame implements DesktopAccessService {
                         Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();
                     } else {
-                        const layoutConfig = golden as unknown as LayoutConfig;
-                        this._goldenLayoutHostFrame.loadLayout(layoutConfig);
+                        this._goldenLayoutHostFrame.loadLayout(golden as LayoutConfig);
                     }
                 }
             }

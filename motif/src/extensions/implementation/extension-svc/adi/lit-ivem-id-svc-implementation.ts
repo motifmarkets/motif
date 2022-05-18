@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeEnvironmentId, ExchangeInfo, LitIvemId } from '@motifmarkets/motif-core';
+import { DataEnvironmentId, LitIvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
-    ExchangeEnvironmentId as ExchangeEnvironmentIdApi,
+    DataEnvironmentId as ExchangeEnvironmentIdApi,
     Json as JsonApi,
     LitIvemId as LitIvemIdApi,
     LitIvemIdSvc,
@@ -15,7 +15,7 @@ import {
 } from '../../../api/extension-api';
 import {
     ComparisonResultImplementation,
-    ExchangeEnvironmentIdImplementation,
+    DataEnvironmentIdImplementation,
     LitIvemIdImplementation,
     MarketIdImplementation
 } from '../../exposed/internal-api';
@@ -23,13 +23,14 @@ import {
 export class LitIvemIdSvcImplementation implements LitIvemIdSvc {
     create(code: string, litIdApi: MarketIdApi, environmentIdApi?: ExchangeEnvironmentIdApi): LitIvemIdApi {
         const litId = MarketIdImplementation.fromApi(litIdApi);
-        let environmentId: ExchangeEnvironmentId;
+        let environmentId: DataEnvironmentId;
+        let litIvemId: LitIvemId;
         if (environmentIdApi === undefined) {
-            environmentId = ExchangeInfo.getDefaultEnvironmentId();
+            litIvemId = new LitIvemId(code, litId);
         } else {
-            environmentId = ExchangeEnvironmentIdImplementation.fromApi(environmentIdApi);
+            environmentId = DataEnvironmentIdImplementation.fromApi(environmentIdApi);
+            litIvemId = new LitIvemId(code, litId, environmentId);
         }
-        const litIvemId = new LitIvemId(code, litId, environmentId);
         return LitIvemIdImplementation.toApi(litIvemId);
     }
 

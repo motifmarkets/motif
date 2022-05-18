@@ -5,7 +5,7 @@
  */
 
 export { BrokerageAccountGroupSvcImplementation } from './brokerage-account-group-svc-implementation';
-export { ExchangeEnvironmentIdSvcImplementation } from './exchange-environment-id-svc-implementation';
+export { DataEnvironmentIdSvcImplementation } from './data-environment-id-svc-implementation';
 export { ExchangeIdSvcImplementation } from './exchange-id-svc-implementation';
 export { FeedClassSvcImplementation } from './feed-class-svc-implementation';
 export { FeedIdSvcImplementation } from './feed-id-svc-implementation';

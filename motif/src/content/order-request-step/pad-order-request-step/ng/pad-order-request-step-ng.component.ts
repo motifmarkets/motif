@@ -16,7 +16,6 @@ import {
     DecimalUiAction,
     delay1Tick,
     EnumUiAction,
-    ExchangeInfo,
     ExplicitElementsEnumUiAction,
     Integer,
     IntegerUiAction,
@@ -25,8 +24,10 @@ import {
     MultiEvent,
     newUndefinableDate,
     newUndefinableDecimal,
-    Order, OrderExtendedSide,
-    OrderExtendedSideId, OrderPad,
+    Order,
+    OrderExtendedSide,
+    OrderExtendedSideId,
+    OrderPad,
     OrderRequestTypeId,
     OrderRoute,
     OrderRouteUiAction,
@@ -37,13 +38,13 @@ import {
     PriceOrderTrigger,
     RoutedIvemId,
     RoutedIvemIdUiAction,
-    SettingsService, SingleBrokerageAccountGroup,
+    SettingsService,
+    SingleBrokerageAccountGroup,
     StringId,
     Strings,
     StringUiAction,
     TimeInForce,
-    TimeInForceId,
-    UiAction,
+    TimeInForceId, UiAction,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
@@ -260,7 +261,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         if (accountId === undefined) {
             group = undefined;
         } else {
-            const key = new Account.Key(accountId, ExchangeInfo.getDefaultEnvironmentId());
+            const key = new Account.Key(accountId);
             group = BrokerageAccountGroup.createSingle(key);
         }
         this._accountGroupUiAction.pushValue(group);
@@ -365,7 +366,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
         if (destinationAccountId === undefined) {
             group = undefined;
         } else {
-            const key = new Account.Key(destinationAccountId, ExchangeInfo.getDefaultEnvironmentId());
+            const key = new Account.Key(destinationAccountId);
             group = BrokerageAccountGroup.createSingle(key);
         }
         this._destinationAccountGroupUiAction.pushValue(group);
