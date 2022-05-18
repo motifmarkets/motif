@@ -5,9 +5,17 @@
     "name": "Paritech Staging (Development)",
     "description": "Paritech Staging (Development)"
   },
+  "environment": {
+    "defaultDataEnvironment": "demo"
+  },
   "exchange": {
-    "environment": "demo",
-    "defaultDefault": "Asx"
+    "defaultDefault": "Asx",
+    "options": [
+      {
+        "exchange": "Asx",
+        "overriddenDefaultDataEnvironment": "sample"
+      }
+    ]
   },
   "endpoints": {
     "motifServices": [
@@ -87,7 +95,7 @@
     }
   ],
   "features": {
-    "advertising": true
+    "advertising": false
   },
   "diagnostics": {
     "telemetry": {

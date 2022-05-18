@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
 import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';

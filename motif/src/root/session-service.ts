@@ -9,10 +9,9 @@ import {
     AdiService,
     AppStorageService,
     AssertInternalError,
-    ExchangeEnvironment,
-    ExchangeEnvironmentId,
-    ExchangeInfo,
-    ExternalError, IdleDeadline,
+    DataEnvironment,
+    DataEnvironmentId, ExchangeInfo, ExternalError,
+    IdleDeadline,
     IdleRequestOptions,
     Integer,
     JsonElement,
@@ -29,7 +28,7 @@ import {
     Strings,
     SymbolsService,
     SysTick,
-    UserAlertService,
+    TradingEnvironment, UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
@@ -60,7 +59,6 @@ export class SessionService {
     private _infoService: SessionInfoService = new SessionInfoService();
 
     private _useLocalStateStorage: boolean;
-    private _exchangeEnvironmentId: ExchangeEnvironmentId;
     private _motifServicesEndpoints: readonly string[];
     private _zenithEndpoints: readonly string[];
 
@@ -147,8 +145,8 @@ export class SessionService {
         this.logInfo(`${Strings[StringId.Version]}: ${Version.app}`);
         this.logInfo(`${Strings[StringId.Service]}: ${config.service.name}`);
         this.logInfo(`ProdMode: ${isDevMode() ? 'False' : 'True'}`);
-        ExchangeInfo.setDefaultEnvironmentId(this._exchangeEnvironmentId);
-        this.logInfo(`Exchange Environment: ${ExchangeEnvironment.idToDisplay(this._exchangeEnvironmentId)}`);
+        this.logInfo(`Data Environment: ${DataEnvironment.idToDisplay(DataEnvironment.getDefaultId())}`);
+        this.logInfo(`Trading Environment: ${TradingEnvironment.idToDisplay(TradingEnvironment.getDefaultId())}`);
         this.logInfo(`Zenith Endpoint: ${this._zenithEndpoints.join(',')}`);
 
         let storageTypeId: AppStorageService.TypeId;
@@ -163,7 +161,7 @@ export class SessionService {
                 this._motifServicesEndpoint = this._motifServicesEndpoints[0];
                 this.logInfo(`MotifServices Endpoint: ${this._motifServicesEndpoint}`);
                 await this._motifServicesService.initialise(this._motifServicesEndpoint,
-                    this._exchangeEnvironmentId,
+                    DataEnvironment.getDefaultId(),
                     () => this.getAuthorizationHeaderValue()
                 );
                 storageTypeId = AppStorageService.TypeId.MotifServices;
@@ -363,12 +361,25 @@ export class SessionService {
 
         this._symbolsService.setDefaultDefaultExchangeId(config.exchange.defaultDefaultExchangeId);
 
+        const exchangeOptions = config.exchange.options;
+        if (exchangeOptions !== undefined) {
+            for (const option of exchangeOptions) {
+                const overriddenDefaultDataEnvironmentId = option.overriddenDefaultDataEnvironmentId;
+                if (overriddenDefaultDataEnvironmentId !== undefined) {
+                    ExchangeInfo.setOverrideDefaultDataEnvironmentId(option.exchangeId, overriddenDefaultDataEnvironmentId);
+                }
+            }
+        }
+
         this._adiService.dataMgr.dataSubscriptionCachingEnabled = !config.diagnostics.dataSubscriptionCachingDisabled;
         ZenithPublisherSubscriptionManager.logLevelId = config.diagnostics.zenithLogLevelId;
 
         this._useLocalStateStorage = config.diagnostics.motifServicesBypass.useLocalStateStorage;
-        this._exchangeEnvironmentId = config.exchange.environmentId;
-        this._infoService.bannerOverrideExchangeEnvironmentId = config.exchange.bannerOverrideEnvironmentId;
+        const defaultDataEnvironmentId = config.environment.defaultDataEnvironmentId;
+        DataEnvironment.setDefaultId(defaultDataEnvironmentId);
+        const tradingEnvironmentId = DataEnvironment.idToCorrespondingTradingEnvironmentId(defaultDataEnvironmentId);
+        TradingEnvironment.setDefaultId(tradingEnvironmentId);
+        this._infoService.bannerOverrideDataEnvironmentId = config.environment.bannerOverrideDataEnvironmentId;
         this._motifServicesEndpoints = config.endpoints.motifServices;
         this.setZenithEndpoints(config.endpoints.zenith);
 
@@ -551,7 +562,7 @@ export namespace SessionService {
     export type KickedOffEventHandler = (this: void) => void;
     export type ConsolidatedLogEventHandler = (time: Date, logLevelId: Logger.LevelId, text: string) => void;
 
-    export type ExchangeEnvironmentIdAvailableEventHandler = (id: ExchangeEnvironmentId) => void;
+    export type ExchangeEnvironmentIdAvailableEventHandler = (id: DataEnvironmentId) => void;
 
     export const motifServicesGetClientConfigurationRetryDelaySpan = 30 * mSecsPerSec;
     export const getSettingsRetryDelaySpan = 30 * mSecsPerSec;

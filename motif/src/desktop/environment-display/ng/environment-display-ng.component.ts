@@ -14,17 +14,15 @@ import {
 import {
     ColorScheme,
     ColorSettings,
-    ExchangeEnvironment,
-    ExchangeEnvironmentId,
-    ExchangeInfo,
-    MultiEvent,
+    DataEnvironment,
+    DataEnvironmentId, MultiEvent,
     SessionInfoService,
     SessionState,
     SessionStateId,
     StringId,
     Strings,
     UnexpectedCaseError,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
@@ -110,22 +108,26 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
                     colorItemId = ColorScheme.ItemId.Caution_Error;
                 } else {
                     this.environmentText =
-                        ExchangeEnvironment.idToDisplay(bannerEnvironmentId) +
+                        DataEnvironment.idToDisplay(bannerEnvironmentId) +
                         ' ' +
                         upperStateText +
                         ' !!!!';
 
                     switch (bannerEnvironmentId) {
-                        case ExchangeEnvironmentId.Production:
+                        case DataEnvironmentId.Production:
                             colorItemId = ColorScheme.ItemId.Environment_Production_Offline;
                             break;
 
-                        case ExchangeEnvironmentId.DelayedProduction:
+                        case DataEnvironmentId.DelayedProduction:
                             colorItemId = ColorScheme.ItemId.Environment_DelayedProduction_Offline;
                             break;
 
-                        case ExchangeEnvironmentId.Demo:
+                        case DataEnvironmentId.Demo:
                             colorItemId = ColorScheme.ItemId.Environment_Demo_Offline;
+                            break;
+
+                        case DataEnvironmentId.Sample:
+                            colorItemId = ColorScheme.ItemId.Environment_Sample_Offline;
                             break;
 
                         default:
@@ -136,23 +138,28 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
             }
             case SessionStateId.Online: {
                 const bannerEnvironmentId = this.calculateBannerExchangeEnvironmentId();
-                this.environmentText = ExchangeEnvironment.idToDisplay(bannerEnvironmentId);
+                this.environmentText = DataEnvironment.idToDisplay(bannerEnvironmentId);
 
                 switch (bannerEnvironmentId) {
-                    case ExchangeEnvironmentId.Production:
+                    case DataEnvironmentId.Production:
                         this.showEnvironmentText = true;
                         colorItemId = ColorScheme.ItemId.Environment_Production;
                         break;
 
-                    case ExchangeEnvironmentId.DelayedProduction:
+                    case DataEnvironmentId.DelayedProduction:
                         this.showEnvironmentText = true;
                         colorItemId =
                             ColorScheme.ItemId.Environment_DelayedProduction;
                         break;
 
-                    case ExchangeEnvironmentId.Demo:
+                    case DataEnvironmentId.Demo:
                         this.showEnvironmentText = true;
                         colorItemId = ColorScheme.ItemId.Environment_Demo;
+                        break;
+
+                    case DataEnvironmentId.Sample:
+                        this.showEnvironmentText = true;
+                        colorItemId = ColorScheme.ItemId.Environment_Sample;
                         break;
 
                     default:
@@ -185,11 +192,12 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     }
 
     private calculateBannerExchangeEnvironmentIdIfDefined() {
-        if (this._sessionInfoService.bannerOverrideExchangeEnvironmentId !== undefined) {
-            return this._sessionInfoService.bannerOverrideExchangeEnvironmentId;
+        if (this._sessionInfoService.bannerOverrideDataEnvironmentId !== undefined) {
+            return this._sessionInfoService.bannerOverrideDataEnvironmentId;
         } else {
-            if (ExchangeInfo.getDefaultEnvironmentIdDefined()) {
-                return ExchangeInfo.getDefaultEnvironmentId();
+            const defaultId = DataEnvironment.getDefaultId();
+            if (defaultId !== undefined) {
+                return defaultId;
             } else {
                 return undefined;
             }
@@ -197,10 +205,10 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     }
 
     private calculateBannerExchangeEnvironmentId() {
-        if (this._sessionInfoService.bannerOverrideExchangeEnvironmentId !== undefined) {
-            return this._sessionInfoService.bannerOverrideExchangeEnvironmentId;
+        if (this._sessionInfoService.bannerOverrideDataEnvironmentId !== undefined) {
+            return this._sessionInfoService.bannerOverrideDataEnvironmentId;
         } else {
-            return ExchangeInfo.getDefaultEnvironmentId();
+            return DataEnvironment.getDefaultId();
         }
     }
 }

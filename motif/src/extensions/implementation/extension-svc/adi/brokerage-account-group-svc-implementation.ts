@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Account, BrokerageAccountGroup, ExchangeInfo } from '@motifmarkets/motif-core';
+import { Account, BrokerageAccountGroup } from '@motifmarkets/motif-core';
 import {
     AllBrokerageAccountGroup as AllBrokerageAccountGroupApi,
     BrokerageAccountGroup as BrokerageAccountGroupApi,
@@ -31,7 +31,7 @@ export class BrokerageAccountGroupSvcImplementation extends SvcImplementation im
     }
 
     createSingle(accountId: BrokerageAccountIdApi) {
-        const key = new Account.Key(accountId, ExchangeInfo.getDefaultEnvironmentId());
+        const key = new Account.Key(accountId);
         const group = BrokerageAccountGroup.createSingle(key);
         return new SingleBrokerageAccountGroupImplementation(group);
     }

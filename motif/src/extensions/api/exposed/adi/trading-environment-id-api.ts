@@ -5,11 +5,10 @@
  */
 
 /** @public */
-export const enum ExchangeEnvironmentIdEnum {
+export const enum TradingEnvironmentIdEnum {
     Production = 'Production',
-    DelayedProduction = 'DelayedProduction',
     Demo = 'Demo',
 }
 
 /** @public */
-export type ExchangeEnvironmentId = keyof typeof ExchangeEnvironmentIdEnum;
+export type TradingEnvironmentId = keyof typeof TradingEnvironmentIdEnum;

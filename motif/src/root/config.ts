@@ -5,10 +5,11 @@
  */
 
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { ExchangeEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
+import { DataEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
 import { ExtensionsService } from 'src/extensions/internal-api';
 
 export interface Config {
+    readonly environment: Config.Environment;
     readonly service: Config.Service;
     readonly exchange: Config.Exchange;
     readonly endpoints: Config.Endpoints;
@@ -21,15 +22,26 @@ export interface Config {
 }
 
 export namespace Config {
+    export interface Environment {
+        readonly defaultDataEnvironmentId: DataEnvironmentId;
+        readonly bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
+    }
+
     export interface Service {
         readonly name: string;
         readonly description: string | undefined;
     }
 
     export interface Exchange {
-        readonly environmentId: ExchangeEnvironmentId;
-        readonly bannerOverrideEnvironmentId: ExchangeEnvironmentId | undefined;
         readonly defaultDefaultExchangeId: ExchangeId;
+        readonly options: Exchange.Option[] | undefined;
+    }
+
+    export namespace Exchange {
+        export interface Option {
+            exchangeId: ExchangeId;
+            overriddenDefaultDataEnvironmentId?: DataEnvironmentId;
+        }
     }
 
     export interface Endpoints {
@@ -48,8 +60,8 @@ export namespace Config {
     export interface DefaultLayout {
         readonly internalName: string | undefined;
         readonly instanceName: string | undefined;
-        readonly linkedSymbol: LitIvemId | undefined;
-        readonly watchlist: LitIvemId[] | undefined;
+        readonly linkedSymbolJson: LitIvemId.Json | undefined;
+        readonly watchlistJson: LitIvemId.Json[] | undefined;
     }
 
     export type BundledExtensions = readonly ExtensionsService.BundledExtension[];

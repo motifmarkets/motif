@@ -5,8 +5,10 @@
     "name": "FNSX Demo",
     "description": "First National Stock Exchange Demo (Development impersonating production)"
   },
+  "environment": {
+    "defaultDataEnvironment": "demo"
+  },
   "exchange": {
-    "environment": "demo",
     "defaultDefault": "Fnsx"
   },
   "endpoints": {

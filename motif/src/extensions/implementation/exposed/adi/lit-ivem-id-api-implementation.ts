@@ -6,7 +6,7 @@
 
 import { LitIvemId } from '@motifmarkets/motif-core';
 import { Json as JsonApi, LitIvemId as LitIvemIdApi } from '../../../api/extension-api';
-import { ExchangeEnvironmentIdImplementation } from './exchange-environment-id-api-implementation';
+import { DataEnvironmentIdImplementation } from './data-environment-id-api-implementation';
 import { MarketIdImplementation } from './market-id-api-implementation';
 
 export class LitIvemIdImplementation implements LitIvemIdApi {
@@ -16,13 +16,13 @@ export class LitIvemIdImplementation implements LitIvemIdApi {
 
     get code() { return this._actual.code; }
     get litId() { return MarketIdImplementation.toApi(this._actual.litId); }
-    get environmentId() { return ExchangeEnvironmentIdImplementation.toApi(this._actual.environmentId); }
+    get environmentId() { return DataEnvironmentIdImplementation.toApi(this._actual.environmentId); }
     get explicitEnvironmentId() {
         const id = this._actual.explicitEnvironmentId;
         if (id === undefined) {
             return undefined;
         } else {
-            return ExchangeEnvironmentIdImplementation.toApi(id);
+            return DataEnvironmentIdImplementation.toApi(id);
         }
     }
     get name() { return this._actual.name; }

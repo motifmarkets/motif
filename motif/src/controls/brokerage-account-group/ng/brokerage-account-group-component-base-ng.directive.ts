@@ -9,7 +9,7 @@ import {
     Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountsDataDefinition,
     BrokerageAccountsDataItem,
     DataItemIncubator,
-    ExchangeInfo, MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
+    MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { CoreNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
@@ -136,7 +136,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private createErrorNamedGroup(errorText: string) {
         const errorId = `<<${Strings[StringId.Error]}>>`;
         const name = `${Strings[StringId.Error]}: ${errorText}`;
-        const key = new Account.Key(errorId, ExchangeInfo.getDefaultEnvironmentId());
+        const key = new Account.Key(errorId);
         const group = BrokerageAccountGroup.createSingle(key);
         const namedGroup: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup = {
             id: group.id,

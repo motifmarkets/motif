@@ -75,6 +75,7 @@
             position: relative;
             min-height: 0;
             display: block;
+            overflow-y: clip;
         }
     }
 }
