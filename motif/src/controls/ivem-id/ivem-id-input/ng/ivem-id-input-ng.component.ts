@@ -78,11 +78,11 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: IvemIdUiAction.PushEventHandlersInterface = {
-            value: (value, selectAll) => this.handleValuePushEvent(value, selectAll),
+            value: (value, edited, selectAll) => this.handleValuePushEvent(value, edited, selectAll),
         };
         this._pushIvemidEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -90,12 +90,12 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         super.finalise();
     }
 
-    private handleValuePushEvent(value: IvemId | undefined, selectAll: boolean) {
-        this.applyValue(value, selectAll);
+    private handleValuePushEvent(value: IvemId | undefined, edited: boolean, selectAll: boolean) {
+        this.applyValue(value, edited, selectAll);
     }
 
-    private applyValue(value: IvemId | undefined, selectAll: boolean = true) {
-        if (!this.uiAction.edited) {
+    private applyValue(value: IvemId | undefined, edited: boolean, selectAll: boolean = true) {
+        if (!edited) {
             let symbol: string;
             if (value === undefined) {
                 symbol = IvemIdInputNgComponent.emptySymbol;

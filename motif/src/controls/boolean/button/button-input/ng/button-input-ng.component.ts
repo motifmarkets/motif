@@ -68,11 +68,11 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BooleanUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
         };
         this._pushButtonEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -80,11 +80,11 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
         super.finalise();
     }
 
-    private handleValuePushEvent(value: boolean | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: boolean | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
-    private applyValue(value: boolean | undefined) {
+    private applyValue(value: boolean | undefined, _edited: boolean) {
         if (value === undefined) {
             this._value = false;
         } else {

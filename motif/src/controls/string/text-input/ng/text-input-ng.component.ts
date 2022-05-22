@@ -65,11 +65,11 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: StringUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value)
+            value: (value, edited) => this.handleValuePushEvent(value, edited)
         };
         this._pushTextEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -77,13 +77,12 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
         super.finalise();
     }
 
-    private handleValuePushEvent(value: string | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: string | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
-    private applyValue(value: string | undefined) {
-        if (!this.uiAction.edited) {
-
+    private applyValue(value: string | undefined, edited: boolean) {
+        if (!edited) {
             let displayValue: string;
             if (value === undefined) {
                 displayValue = '';
@@ -91,15 +90,19 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
                 displayValue = value;
             }
 
-            // hack to get around value attribute change detection not working
-            if (displayValue === this.displayValue) {
-                this._textInput.nativeElement.value = displayValue;
-                // this._renderer.setProperty(this._dateInput, 'value', dateAsStr);
-            }
-
-            this.displayValue = displayValue;
-            this.markForCheck();
+            this.applyValueAsString(displayValue);
         }
+    }
+
+    private applyValueAsString(displayValue: string) {
+        // hack to get around value attribute change detection not working
+        if (displayValue === this.displayValue) {
+            this._textInput.nativeElement.value = displayValue;
+            // this._renderer.setProperty(this._dateInput, 'value', dateAsStr);
+        }
+
+        this.displayValue = displayValue;
+        this.markForCheck();
     }
 
     private input(text: string) {

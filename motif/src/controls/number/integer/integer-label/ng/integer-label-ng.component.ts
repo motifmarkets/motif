@@ -24,7 +24,16 @@ export class IntegerLabelNgComponent extends IntegerUiActionComponentBaseNgDirec
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
-    protected applyValue(value: number | undefined) {
+    protected override applyValue(_value: number | undefined, _edited: boolean) {
+        // not relevant
+    }
+
+    protected override testInputValue(_text?: string): boolean {
+        // not relevant
+        return true;
+    }
+
+    protected override updateTestRegex() {
         // not relevant
     }
 }

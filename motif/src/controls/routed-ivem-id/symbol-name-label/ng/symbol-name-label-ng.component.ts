@@ -34,8 +34,8 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         this.finalise();
     }
 
-    protected override applyValue(value: RoutedIvemId | undefined, selectAll: boolean) {
-        super.applyValue(value, selectAll);
+    protected override applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean) {
+        super.applyValue(value, edited, selectAll);
 
         if (value === undefined) {
             this.checkApplyCaption('');

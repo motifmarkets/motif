@@ -25,7 +25,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
 
     public override get uiAction() { return super.uiAction as DecimalUiAction; }
 
-    protected applyValue(value: Decimal | undefined) {
+    protected applyValue(_value: Decimal | undefined, _edited: boolean) {
         this.markForCheck();
     }
 
@@ -37,7 +37,7 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
 
     protected override pushSettings() {
         this.applyOptions(this.uiAction.options);
-        this.applyValue(this.uiAction.value);
+        this.applyValue(this.uiAction.value, this.uiAction.edited);
         super.pushSettings();
     }
 
@@ -49,13 +49,13 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
         super.setUiAction(action);
 
         const pushEventHandlersInterface: DecimalUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             options: (options) => this.handleOptionsPushEvent(options),
         };
         this._pushDecimalEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
         this.applyOptions(action.options);
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -63,14 +63,14 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
         super.finalise();
     }
 
-    private handleValuePushEvent(value: Decimal | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: Decimal | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleOptionsPushEvent(options: DecimalUiAction.Options) {
         if (options !== this.uiAction.options) {
             this.applyOptions(options);
-            this.applyValue(this.uiAction.value);
+            this.applyValue(this.uiAction.value, this.uiAction.edited);
         }
     }
 }

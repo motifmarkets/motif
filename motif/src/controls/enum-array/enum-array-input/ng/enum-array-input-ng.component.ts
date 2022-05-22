@@ -98,9 +98,9 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected override applyValue(value: Integer[] | undefined) {
-        if (!this.uiAction.edited) {
-            super.applyValue(value);
+    protected override applyValue(value: Integer[] | undefined, edited: boolean) {
+        if (!edited) {
+            super.applyValue(value, edited);
             this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = [];

@@ -29,7 +29,7 @@ export class EnumElementCaptionNgComponent extends EnumElementComponentBaseNgDir
         this.finalise();
     }
 
-    protected applyValue(value: Integer | undefined) {
+    protected override applyValue(_value: Integer | undefined, _edited: boolean) {
         this.markForCheck();
     }
 }

@@ -68,13 +68,13 @@ export class CaptionedCheckboxNgComponent
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BooleanUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
         };
         this._pushCheckboxEventsSubscriptionId = this.uiAction.subscribePushEvents(
             pushEventHandlersInterface
         );
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -84,11 +84,11 @@ export class CaptionedCheckboxNgComponent
         super.finalise();
     }
 
-    private handleValuePushEvent(value: boolean | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: boolean | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
-    private applyValue(value: boolean | undefined) {
+    private applyValue(value: boolean | undefined, _edited: boolean) {
         if (value === undefined) {
             this._checkboxInput.nativeElement.indeterminate = true;
         } else {

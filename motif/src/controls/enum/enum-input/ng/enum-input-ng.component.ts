@@ -85,8 +85,8 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected override applyValue(value: Integer | undefined) {
-        if (!this.uiAction.edited) {
+    protected override applyValue(value: Integer | undefined, edited: boolean) {
+        if (!edited) {
             this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             // if (value === undefined) {

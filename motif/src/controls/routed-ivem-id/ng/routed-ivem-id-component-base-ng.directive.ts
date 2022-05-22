@@ -42,10 +42,10 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
 
     protected override pushSettings() {
         super.pushSettings();
-        this.applyValue(this.uiAction.value, false);
+        this.applyValue(this.uiAction.value, this.uiAction.edited, false);
     }
 
-    protected applyValue(value: RoutedIvemId | undefined, selectAll: boolean) {
+    protected applyValue(value: RoutedIvemId | undefined, _edited: boolean, _selectAll: boolean) {
         let symbol: string;
         if (value === undefined) {
             symbol = RoutedIvemIdComponentBaseNgDirective.emptySymbol;
@@ -101,11 +101,11 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         super.setUiAction(action);
 
         const pushEventHandlersInterface: RoutedIvemIdUiAction.PushEventHandlersInterface = {
-            value: (value, selectAll) => this.handleValuePushEvent(value, selectAll)
+            value: (value, edited, selectAll) => this.handleValuePushEvent(value, edited, selectAll)
         };
         this._pushRoutedIvemIdEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value, false);
+        this.applyValue(action.value, action.edited, false);
     }
 
     protected override finalise() {
@@ -117,8 +117,8 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         return this._symbolsManager.parseRoutedIvemId(value);
     }
 
-    private handleValuePushEvent(value: RoutedIvemId | undefined, selectAll: boolean) {
-        this.applyValue(value, selectAll);
+    private handleValuePushEvent(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean) {
+        this.applyValue(value, edited, selectAll);
     }
 }
 

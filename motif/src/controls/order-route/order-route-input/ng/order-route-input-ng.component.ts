@@ -118,12 +118,12 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         super.setUiAction(action);
 
         const pushEventHandlersInterface: OrderRouteUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             allowedValues: (allowedValues) => this.handleAllowedValuesPushEvent(allowedValues),
         };
         this._pushOrderRouteEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
         this.applyAllowedValues(action.allowedValues);
     }
 
@@ -132,8 +132,8 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         super.finalise();
     }
 
-    private handleValuePushEvent(value: OrderRoute | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: OrderRoute | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleAllowedValuesPushEvent(allowedValues: readonly OrderRoute[]) {
@@ -143,8 +143,8 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         }
     }
 
-    private applyValue(value: OrderRoute | undefined) {
-        if (!this.uiAction.edited) {
+    private applyValue(value: OrderRoute | undefined, edited: boolean) {
+        if (!edited) {
             this._ngSelectComponent.searchTerm = '';
             if (value === undefined) {
                 this.selected = undefined;

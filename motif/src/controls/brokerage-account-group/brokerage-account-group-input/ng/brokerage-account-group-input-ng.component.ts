@@ -125,8 +125,11 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         this._ngSelectOverlayNgService.setFirstColumnWidth(this._ngSelectWidths.firstColumn, false);
     }
 
-    protected applyValueAsNamedGroup(value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined) {
-        if (!this.uiAction.edited) {
+    protected override applyValueAsNamedGroup(
+        value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined,
+        edited: boolean
+    ) {
+        if (!edited) {
             this._ngSelectComponent.searchTerm = '';
             this.selected = value;
             this.markForCheck();

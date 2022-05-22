@@ -58,14 +58,14 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         super.setUiAction(action);
 
         const pushEventHandlersInterface: EnumUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             filter: (filter) => this.handleFilterPushEvent(filter),
             element: (element, caption, title) => this.handleElementPushEvent(element, caption, title),
             elements: () => this.handleElementsPushEvent(),
         };
         this._pushEnumEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
         this.applyFilter(action.filter);
     }
 
@@ -74,8 +74,8 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         super.finalise();
     }
 
-    private handleValuePushEvent(value: Integer | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: Integer | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleFilterPushEvent(filter: readonly Integer[] | undefined) {
@@ -93,5 +93,5 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         this.applyElements();
     }
 
-    protected abstract applyValue(value: Integer | undefined): void;
+    protected abstract applyValue(value: Integer | undefined, edited: boolean): void;
 }

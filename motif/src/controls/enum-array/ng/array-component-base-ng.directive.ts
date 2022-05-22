@@ -26,7 +26,7 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
 
     protected override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
 
-    protected applyValue(value: readonly T[] | undefined) {
+    protected applyValue(_value: readonly T[] | undefined, _edited: boolean) {
         this.markForCheck();
     }
 
@@ -62,14 +62,14 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
         super.setUiAction(action);
 
         const pushEventHandlersInterface: ArrayUiAction.PushEventHandlersInterface<T> = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             filter: (filter) => this.handleFilterPushEvent(filter),
             element: (element, caption, title) => this.handleElementPushEvent(element, caption, title),
             elements: () => this.handleElementsPushEvent(),
         };
         this._pushEnumEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
         this.applyFilter(action.filter);
     }
 
@@ -78,8 +78,8 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
         super.finalise();
     }
 
-    private handleValuePushEvent(value: readonly T[] | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: readonly T[] | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleFilterPushEvent(filter: readonly T[] | undefined) {
