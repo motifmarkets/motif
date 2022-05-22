@@ -5,7 +5,18 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { DecimalUiAction, Integer, newDecimal, StringId, Strings, UiAction, UnreachableCaseError } from '@motifmarkets/motif-core';
+import {
+    calculateIntlNumberFormatCharParts,
+    createNumberGroupCharRemoveRegex,
+    DecimalUiAction,
+    Integer,
+    IntlNumberFormatCharParts, isPartialIntlFormattedNumber,
+    newDecimal,
+    StringId,
+    Strings,
+    UiAction,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { Decimal } from 'decimal.js-light';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -27,6 +38,8 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     public valueAsString = DecimalInputNgComponent.emptyNumberStr;
 
     private _numberFormat: Intl.NumberFormat = new Intl.NumberFormat(undefined, { useGrouping: false });
+    private _numberFormatCharParts: IntlNumberFormatCharParts;
+    private _numberGroupCharRemoveRegex: RegExp | undefined;
 
     private _decimalInputElement: HTMLInputElement;
     private _oldText: string;
@@ -44,19 +57,19 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     }
 
     onInput(value: string): void {
-        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly && this.testInputValue(value)) {
             this.input(value);
         }
     }
 
     onEnterKeyDown(text: string): void {
-        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly && this.testInputValue(text)) {
             this.tryCommitText(text, UiAction.CommitTypeId.Explicit);
         }
     }
 
     onBlur(text: string): void {
-        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly && this.testInputValue(text)) {
             this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
         }
     }
@@ -65,9 +78,9 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
         this.uiAction.cancelEdit();
     }
 
-    protected override applyValue(value: Decimal | undefined) {
-        if (!this.uiAction.edited) {
-            super.applyValue(value);
+    protected override applyValue(value: Decimal | undefined, edited: boolean) {
+        if (!edited) {
+            super.applyValue(value, edited);
 
             let valueAsString: string;
             if (value === undefined) {
@@ -77,23 +90,27 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
                 valueAsString = this._numberFormat.format(valueAsNumber);
             }
 
-            // hack to get around value attribute change detection not working
-            if (valueAsString === this.valueAsString && this._decimalInputElement !== undefined) {
-                this._decimalInputElement.value = valueAsString;
-                // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);
-            }
-
-            this.valueAsString = valueAsString;
-            this.markForCheck();
+            this.applyValueAsString(valueAsString);
         }
     }
 
     protected override applyOptions(options: DecimalUiAction.Options) {
         super.applyOptions(options);
-        this._numberFormat = this.calculateNumberFormat();
+        this.updateNumberFormat();
     }
 
-    private calculateNumberFormat() {
+    private applyValueAsString(valueAsString: string) {
+        // hack to get around value attribute change detection not working
+        if (valueAsString === this.valueAsString && this._decimalInputElement !== undefined) {
+            this._decimalInputElement.value = valueAsString;
+            // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);
+        }
+
+        this.valueAsString = valueAsString;
+        this.markForCheck();
+    }
+
+    private updateNumberFormat() {
         let useGrouping: boolean;
         switch (this.uiAction.options.useGrouping) {
             case true:
@@ -108,27 +125,33 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
             default:
                 throw new UnreachableCaseError('DICCNF232388', this.uiAction.options.useGrouping);
         }
-        return new Intl.NumberFormat(undefined, { useGrouping });
+
+        this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
+        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
+        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
     }
 
-    private testInputValue() {
-        const text = this._decimalInputElement.value;
+    private testInputValue(text?: string): boolean {
+        text = (text === undefined) ? this._decimalInputElement.value : text;
         if (this.isTextOk(text)) {
             this._oldText = text;
             this._oldSelectionStart = this._decimalInputElement.selectionStart;
             this._oldSelectionEnd = this._decimalInputElement.selectionEnd;
+            return true;
         } else {
-            if (this._oldText !== undefined) {
-                this._decimalInputElement.value = this._oldText;
-                if (this._oldSelectionStart !== null && this._oldSelectionEnd !== null) {
-                    this._decimalInputElement.setSelectionRange(this._oldSelectionStart, this._oldSelectionEnd);
-                }
-                this.markForCheck();
+            const valueAsText = this._oldText === undefined ? '' : this._oldText;
+            this.applyValueAsString(valueAsText);
+            if (this._oldSelectionStart !== null && this._oldSelectionEnd !== null) {
+                this._decimalInputElement.setSelectionRange(this._oldSelectionStart, this._oldSelectionEnd);
             }
+            return false;
         }
     }
 
     private parseString(value: string): DecimalInputNgComponent.ParseStringResult {
+        if (this._numberGroupCharRemoveRegex !== undefined) {
+            value = value.replace(this._numberGroupCharRemoveRegex, '');
+        }
         try {
             const parsedDecimal = newDecimal(value);
             return { parsedDecimal };
@@ -138,13 +161,13 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
         }
     }
 
-    private isTextOk(text: string): boolean {
-        return /^\d*\.?\d*$/.test(text);
+    private isTextOk(value: string) {
+        return isPartialIntlFormattedNumber(value, this._numberFormatCharParts);
     }
 
     private setDecimalInputElement(value: HTMLInputElement) {
         this._decimalInputElement = value;
-        ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach((event: string) => {
+        ['keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach((event: string) => {
             this._decimalInputElement.addEventListener(event, () => this.testInputValue());
         });
     }

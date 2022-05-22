@@ -173,8 +173,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         super.finalise();
     }
 
-    protected override async applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
-        if (!this.uiAction.edited) {
+    protected override async applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+        if (!edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: RoutedIvemIdSelectNgComponent.Item | null;
             if (value === undefined) {

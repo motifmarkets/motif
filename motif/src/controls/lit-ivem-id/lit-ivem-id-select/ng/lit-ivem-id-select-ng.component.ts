@@ -204,21 +204,21 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
     protected override pushSettings() {
         super.pushSettings();
-        this.applyValue(this.uiAction.value, false);
+        this.applyValue(this.uiAction.value, this.uiAction.edited, false);
     }
 
     protected override setUiAction(action: LitIvemIdUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: LitIvemIdUiAction.PushEventHandlersInterface = {
-            value: (value, selectAll) =>
-                this.handleValuePushEvent(value, selectAll),
+            value: (value, edited, selectAll) =>
+                this.handleValuePushEvent(value, edited, selectAll),
         };
         this._pushLitivemidEventsSubscriptionId = this.uiAction.subscribePushEvents(
             pushEventHandlersInterface
         );
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -280,8 +280,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         return ngSelectWidths;
     }
 
-    private handleValuePushEvent(value: LitIvemId | undefined, selectAll: boolean) {
-        this.applyValue(value, selectAll);
+    private handleValuePushEvent(value: LitIvemId | undefined, edited: boolean, selectAll: boolean) {
+        this.applyValue(value, edited, selectAll);
     }
 
     private handleSearchTermNotExchangedMarketProcessedToggleUiActionSignal() {
@@ -401,8 +401,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         this._ngSelectOverlayNgService.setFirstColumnWidth(widths.firstColumn, widenOnly);
     }
 
-    private async applyValue(value: LitIvemId | undefined, selectAll: boolean = true) {
-        if (!this.uiAction.edited) {
+    private async applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+        if (!edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: LitIvemIdSelectNgComponent.Item | null;
             if (value === undefined) {

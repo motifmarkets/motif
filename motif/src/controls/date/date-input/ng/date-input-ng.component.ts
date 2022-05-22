@@ -57,18 +57,18 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
 
     protected override pushSettings() {
         super.pushSettings();
-        this.applyValue(this.uiAction.value);
+        this.applyValue(this.uiAction.value, this.uiAction.edited);
     }
 
     protected override setUiAction(action: DateUiAction) {
         super.setUiAction(action);
 
         const pushEventHandlersInterface: DateUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value)
+            value: (value, edited) => this.handleValuePushEvent(value, edited)
         };
         this._pushDateEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -76,12 +76,12 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
         super.finalise();
     }
 
-    private handleValuePushEvent(value: Date | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: Date | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
-    private applyValue(value: Date | undefined) {
-        if (!this.uiAction.edited) {
+    private applyValue(value: Date | undefined, edited: boolean) {
+        if (!edited) {
             let dateAsStr: string;
             if (value === undefined) {
                 dateAsStr = DateInputNgComponent.emptyDateStr;
@@ -89,6 +89,11 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
                 dateAsStr = DateText.toStr(value);
             }
 
+            this.applyValueAsString(dateAsStr);
+        }
+    }
+
+    private applyValueAsString(dateAsStr: string) {
             // hack to get around value attribute change detection not working
             if (dateAsStr === this.dateAsStr) {
                 this._dateInput.nativeElement.value = dateAsStr;
@@ -97,7 +102,6 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
 
             this.dateAsStr = dateAsStr;
             this.markForCheck();
-        }
     }
 
     private parseString(value: string): DateInputNgComponent.ParseStringResult {

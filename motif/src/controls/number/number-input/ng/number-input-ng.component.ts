@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Integer, isNumberRegex, StringId, Strings } from '@motifmarkets/motif-core';
+import { Integer, isPartialIntlFormattedNumber, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
@@ -39,11 +39,11 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
         this.setInitialiseReady();
     }
 
-    protected isTextOk(value: string) {
-        return isNumberRegex.test(value);
-    }
-
-    protected parseString(value: string): NumberUiActionComponentBaseNgDirective.ParseStringResult {
+    protected override parseString(value: string): NumberUiActionComponentBaseNgDirective.ParseStringResult {
+        const numberGroupCharRemoveRegex = this.numberGroupCharRemoveRegex;
+        if (numberGroupCharRemoveRegex !== undefined) {
+            value = value.replace(numberGroupCharRemoveRegex, '');
+        }
         const parsedNumber = Number(value);
         if (isNaN(parsedNumber)) {
             return { errorText: Strings[StringId.InvalidNumber] };
@@ -52,8 +52,8 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
         }
     }
 
-    protected applyValue(value: number | undefined) {
-        if (!this.uiAction.edited) {
+    protected override applyValue(value: number | undefined, edited: boolean) {
+        if (!edited) {
             let numberAsStr: string;
             if (value === undefined) {
                 numberAsStr = NumberUiActionComponentBaseNgDirective.emptyNumberStr;
@@ -62,38 +62,46 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
                 this.numberAsStr = numberAsStr;
             }
 
-            // hack to get around value attribute change detection not working
-            if (numberAsStr === this.numberAsStr && this._numberInputElement !== undefined) {
-                this._numberInputElement.value = numberAsStr;
-                // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);
-            }
-
-            this.numberAsStr = numberAsStr;
-            this.markForCheck();
+            this.applyValueAsString(numberAsStr);
         }
     }
 
-    private setNumberInputElement(value: HTMLInputElement) {
-        this._numberInputElement = value;
-        ['input', 'keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach((event: string) => {
-            this._numberInputElement.addEventListener(event, () => this.testInputValue());
-        });
-    }
-
-    private testInputValue() {
-        const text = this._numberInputElement.value;
+    protected testInputValue(text?: string): boolean {
+        text = (text === undefined) ? this._numberInputElement.value : text;
         if (this.isTextOk(text) || text.length === 0) {
             this._oldText = text;
             this._oldSelectionStart = this._numberInputElement.selectionStart;
             this._oldSelectionEnd = this._numberInputElement.selectionEnd;
+            return true;
         } else {
-            if (this._oldText !== undefined) {
-                this._numberInputElement.value = this._oldText;
-                if (this._oldSelectionStart !== null && this._oldSelectionEnd !== null) {
-                    this._numberInputElement.setSelectionRange(this._oldSelectionStart, this._oldSelectionEnd);
-                }
-                this.markForCheck();
+            const valueAsText = this._oldText === undefined ? '' : this._oldText;
+            this.applyValueAsString(valueAsText);
+            if (this._oldSelectionStart !== null && this._oldSelectionEnd !== null) {
+                this._numberInputElement.setSelectionRange(this._oldSelectionStart, this._oldSelectionEnd);
             }
+            return false;
         }
+    }
+
+    private applyValueAsString(numberAsStr: string) {
+        // hack to get around value attribute change detection not working
+        if (numberAsStr === this.numberAsStr && this._numberInputElement !== undefined) {
+            this._numberInputElement.value = numberAsStr;
+            // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);
+        }
+
+        this.numberAsStr = numberAsStr;
+        this.markForCheck();
+    }
+
+    private setNumberInputElement(value: HTMLInputElement) {
+        this._numberInputElement = value;
+        ['keydown', 'keyup', 'mousedown', 'mouseup', 'select', 'contextmenu', 'drop'].forEach((event: string) => {
+            this._numberInputElement.addEventListener(event, () => this.testInputValue());
+        });
+    }
+
+    private isTextOk(value: string) {
+        return isPartialIntlFormattedNumber(value, this.numberFormatCharParts);
     }
 }

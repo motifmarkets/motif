@@ -29,7 +29,7 @@ export class EnumCaptionNgComponent extends EnumComponentBaseNgDirective impleme
         this.finalise();
     }
 
-    protected applyValue(value: Integer | undefined) {
+    protected override applyValue(_value: Integer | undefined, _edited: boolean) {
         this.markForCheck();
     }
 }

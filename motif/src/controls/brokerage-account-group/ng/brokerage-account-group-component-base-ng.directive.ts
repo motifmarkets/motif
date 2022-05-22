@@ -41,7 +41,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     }
 
     protected processNamedGroupsChanged() {
-        this.applyValue(this.uiAction.value);
+        this.applyValue(this.uiAction.value, this.uiAction.edited);
     }
 
     protected input(text: string, valid: boolean, missing: boolean, errorText: string | undefined) {
@@ -56,7 +56,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         super.setUiAction(action);
 
         const pushEventHandlersInterface: BrokerageAccountGroupUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             options: (options) => this.handleOptionsPushEvent(options),
         };
         this._pushBrokerageAccountIdEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
@@ -66,7 +66,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         if (this._dataItemIncubator.isDataItem(dataItemOrPromise)) {
             this.processDataItemIncubated(dataItemOrPromise);
         } else {
-            this.applyValue(action.value);
+            this.applyValue(action.value, action.edited);
 
             dataItemOrPromise.then(
                 (dataItem) => this.processDataItemIncubated(dataItem),
@@ -83,8 +83,8 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         super.finalise();
     }
 
-    private handleValuePushEvent(value: BrokerageAccountGroup | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: BrokerageAccountGroup | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleOptionsPushEvent(options: BrokerageAccountGroupUiAction.Options) {
@@ -178,22 +178,22 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         }
     }
 
-    private applyValue(value: BrokerageAccountGroup | undefined) {
+    private applyValue(value: BrokerageAccountGroup | undefined, edited: boolean) {
         if (value === undefined) {
-            this.applyValueAsNamedGroup(undefined);
+            this.applyValueAsNamedGroup(undefined, edited);
         } else {
             switch (value.typeId) {
                 case BrokerageAccountGroup.TypeId.Single:
                     const singleGroup = value as SingleBrokerageAccountGroup;
                     const keyNamedGroup = this.createKeyNamedGroup(singleGroup.accountKey);
-                    this.applyValueAsNamedGroup(keyNamedGroup);
+                    this.applyValueAsNamedGroup(keyNamedGroup, edited);
                     break;
                 case BrokerageAccountGroup.TypeId.All:
                     if (this.uiAction.options.allAllowed) {
                         const allNamedGroup = this.createAllNamedGroup();
-                        this.applyValueAsNamedGroup(allNamedGroup);
+                        this.applyValueAsNamedGroup(allNamedGroup, edited);
                     } else {
-                        this.applyValueAsNamedGroup(undefined);
+                        this.applyValueAsNamedGroup(undefined, edited);
                     }
                     break;
                 default:
@@ -206,7 +206,10 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         this.processDataItemIncubated(this._dataItem);
     }
 
-    protected abstract applyValueAsNamedGroup(value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined): void;
+    protected abstract applyValueAsNamedGroup(
+        value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined,
+        edited: boolean
+    ): void;
 }
 
 export namespace BrokerageAccountGroupComponentBaseNgDirective {

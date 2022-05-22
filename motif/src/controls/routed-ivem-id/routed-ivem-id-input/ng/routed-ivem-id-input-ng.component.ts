@@ -51,9 +51,9 @@ export class RoutedIvemIdInputNgComponent extends RoutedIvemIdComponentBaseNgDir
         this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
     }
 
-    protected override applyValue(value: RoutedIvemId | undefined, selectAll: boolean = true) {
-        if (!this.uiAction.edited) {
-            super.applyValue(value, selectAll);
+    protected override applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+        if (!edited) {
+            super.applyValue(value, edited, selectAll);
             if (selectAll) {
                 // delay1Tick(() => this.selectAllText() );
             }

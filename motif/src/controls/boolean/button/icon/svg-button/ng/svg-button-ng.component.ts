@@ -150,12 +150,12 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         super.setUiAction(action);
 
         const pushEventHandlersInterface: IconButtonUiAction.PushEventHandlersInterface = {
-            value: (value) => this.handleValuePushEvent(value),
+            value: (value, edited) => this.handleValuePushEvent(value, edited),
             icon: (definition) => this.handleIconPushEvent(definition)
         };
         this._pushFaButtonEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
 
-        this.applyValue(action.value);
+        this.applyValue(action.value, action.edited);
         if (action.iconId !== undefined) {
             this.applyIcon(action.iconId);
         }
@@ -166,15 +166,15 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         super.finalise();
     }
 
-    private handleValuePushEvent(value: boolean | undefined) {
-        this.applyValue(value);
+    private handleValuePushEvent(value: boolean | undefined, edited: boolean) {
+        this.applyValue(value, edited);
     }
 
     private handleIconPushEvent(iconId: IconButtonUiAction.IconId) {
         this.applyIcon(iconId);
     }
 
-    private applyValue(value: boolean | undefined) {
+    private applyValue(value: boolean | undefined, _edited: boolean) {
         this._value = value;
         this.updateButtonClass();
     }

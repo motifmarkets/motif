@@ -29,7 +29,10 @@ export class BrokerageAccountGroupNameLabelNgComponent extends BrokerageAccountG
         this.finalise();
     }
 
-    protected applyValueAsNamedGroup(value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined) {
+    protected override applyValueAsNamedGroup(
+        value: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup | undefined,
+        _edited: boolean
+    ) {
         if (value === undefined) {
             this.caption = '';
         } else {

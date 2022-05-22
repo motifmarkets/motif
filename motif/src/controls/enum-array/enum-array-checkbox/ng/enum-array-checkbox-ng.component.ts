@@ -51,8 +51,8 @@ export class EnumArrayCheckboxNgComponent extends EnumArrayElementComponentBaseN
         this.commitValue(newValue);
     }
 
-    protected override applyValue(value: Integer[] | undefined) {
-        super.applyValue(value);
+    protected override applyValue(value: Integer[] | undefined, edited: boolean) {
+        super.applyValue(value, edited);
         const newChecked = value === undefined ? false : value.includes(this.element);
 
         if (newChecked !== this.checked) {

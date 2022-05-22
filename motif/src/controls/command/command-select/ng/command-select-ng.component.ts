@@ -83,8 +83,8 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    // protected override applyValue(value: ProcessorCommandUiAction.Item | undefined) {
-    //     if (!this.uiAction.edited) {
+    // protected override applyValue(value: ProcessorCommandUiAction.Item | undefined, edited: boolean) {
+    //     if (!edited) {
     //         super.applyValue(value);
     //         this._ngSelectComponent.searchTerm = '';
     //         this.selected = value;
