@@ -6,12 +6,11 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
-    calculateNumberFormatCharParts,
-    createIsGroupableIntlNumberRegex,
-    createIsIntlNumberRegex,
+    calculateIntlNumberFormatCharParts,
     createNumberGroupCharRemoveRegex,
     DecimalUiAction,
     Integer,
+    IntlNumberFormatCharParts, isPartialIntlFormattedNumber,
     newDecimal,
     StringId,
     Strings,
@@ -39,15 +38,13 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     public valueAsString = DecimalInputNgComponent.emptyNumberStr;
 
     private _numberFormat: Intl.NumberFormat = new Intl.NumberFormat(undefined, { useGrouping: false });
-    private _numberFormatGroupChar: string | undefined; // character used to separate thousands in numbers
-    private _numberFormatDecimalChar: string; // character used as decimal point
+    private _numberFormatCharParts: IntlNumberFormatCharParts;
+    private _numberGroupCharRemoveRegex: RegExp | undefined;
 
     private _decimalInputElement: HTMLInputElement;
     private _oldText: string;
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
-    private _isNumberRegex: RegExp;
-    private _numberGroupCharRemoveRegex: RegExp | undefined;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -129,22 +126,9 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
                 throw new UnreachableCaseError('DICCNF232388', this.uiAction.options.useGrouping);
         }
 
-        const numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormat = numberFormat;
-
-        const parts = calculateNumberFormatCharParts(numberFormat);
-        this._numberFormatDecimalChar = parts.decimal;
-        this._numberFormatGroupChar = parts.group;
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatGroupChar);
-        this.updateTestRegex();
-    }
-
-    private updateTestRegex() {
-        if (this._numberFormatGroupChar === undefined) {
-            this._isNumberRegex = createIsIntlNumberRegex(this._numberFormatDecimalChar);
-        } else {
-            this._isNumberRegex = createIsGroupableIntlNumberRegex(this._numberFormatGroupChar, this._numberFormatDecimalChar);
-        }
+        this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
+        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
+        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
     }
 
     private testInputValue(text?: string): boolean {
@@ -178,7 +162,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     }
 
     private isTextOk(value: string) {
-        return this._isNumberRegex.test(value);
+        return isPartialIntlFormattedNumber(value, this._numberFormatCharParts);
     }
 
     private setDecimalInputElement(value: HTMLInputElement) {

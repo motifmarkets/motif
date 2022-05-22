@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { createIsGroupableIntlNumberRegex, createIsIntlNumberRegex, Integer, StringId, Strings } from '@motifmarkets/motif-core';
+import { Integer, isPartialIntlFormattedNumber, StringId, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
@@ -28,7 +28,6 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
     private _oldText: string;
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
-    private _isNumberRegex: RegExp;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
@@ -38,14 +37,6 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
     ngOnInit() {
         this.setNumberInputElement(this._numberInput.nativeElement);
         this.setInitialiseReady();
-    }
-
-    protected override updateTestRegex() {
-        if (this.numberFormatGroupChar === undefined) {
-            this._isNumberRegex = createIsIntlNumberRegex(this.numberFormatDecimalChar);
-        } else {
-            this._isNumberRegex = createIsGroupableIntlNumberRegex(this.numberFormatGroupChar, this.numberFormatDecimalChar);
-        }
     }
 
     protected override parseString(value: string): NumberUiActionComponentBaseNgDirective.ParseStringResult {
@@ -111,6 +102,6 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
     }
 
     private isTextOk(value: string) {
-        return this._isNumberRegex.test(value);
+        return isPartialIntlFormattedNumber(value, this.numberFormatCharParts);
     }
 }

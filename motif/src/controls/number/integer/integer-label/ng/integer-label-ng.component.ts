@@ -32,8 +32,4 @@ export class IntegerLabelNgComponent extends IntegerUiActionComponentBaseNgDirec
         // not relevant
         return true;
     }
-
-    protected override updateTestRegex() {
-        // not relevant
-    }
 }

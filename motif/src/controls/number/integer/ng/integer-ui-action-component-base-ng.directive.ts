@@ -5,23 +5,13 @@
  */
 
 import { Directive } from '@angular/core';
-import { createIsGroupableIntegerRegex, isIntegerRegex, parseIntStrict, StringId, Strings } from '@motifmarkets/motif-core';
+import { isPartialIntlFormattedInteger, parseIntStrict, StringId, Strings } from '@motifmarkets/motif-core';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
 
 @Directive()
 export abstract class IntegerUiActionComponentBaseNgDirective extends NumberUiActionComponentBaseNgDirective {
-    private _isIntegerRegex: RegExp;
-
-    protected override updateTestRegex() {
-        if (this.numberFormatGroupChar === undefined) {
-            this._isIntegerRegex = isIntegerRegex;
-        } else {
-            this._isIntegerRegex = createIsGroupableIntegerRegex(this.numberFormatGroupChar);
-        }
-    }
-
     protected isTextOk(value: string) {
-        return this._isIntegerRegex.test(value);
+        return isPartialIntlFormattedInteger(value, this.numberFormatCharParts);
     }
 
     protected override parseString(value: string): NumberUiActionComponentBaseNgDirective.ParseStringResult {

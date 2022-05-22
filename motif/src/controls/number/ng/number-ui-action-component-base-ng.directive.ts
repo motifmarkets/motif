@@ -6,8 +6,9 @@
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
 import {
-    calculateNumberFormatCharParts,
+    calculateIntlNumberFormatCharParts,
     createNumberGroupCharRemoveRegex,
+    IntlNumberFormatCharParts,
     MultiEvent,
     NumberUiAction,
     SettingsService,
@@ -26,8 +27,7 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
     public step?: number;
 
     private _numberFormat: Intl.NumberFormat = new Intl.NumberFormat(undefined, { useGrouping: false });
-    private _numberFormatGroupChar: string | undefined; // character used to separate thousands in numbers
-    private _numberFormatDecimalChar: string; // character used as decimal point
+    private _numberFormatCharParts: IntlNumberFormatCharParts;
     private _numberGroupCharRemoveRegex: RegExp | undefined;
     private _pushNumberEventsSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -39,8 +39,7 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
     public override get uiAction() { return super.uiAction as NumberUiAction; }
 
     protected get numberFormat() { return this._numberFormat; }
-    protected get numberFormatGroupChar() { return this._numberFormatGroupChar; }
-    protected get numberFormatDecimalChar() { return this._numberFormatDecimalChar; }
+    protected get numberFormatCharParts() { return this._numberFormatCharParts; }
     protected get numberGroupCharRemoveRegex() { return this._numberGroupCharRemoveRegex; }
 
     onInput(value: string): void {
@@ -159,41 +158,9 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
             default:
                 throw new UnreachableCaseError('NUAICCNF43439', this.uiAction.options.useGrouping);
         }
-        const numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormat = numberFormat;
-
-        const parts = calculateNumberFormatCharParts(numberFormat);
-        this._numberFormatDecimalChar = parts.decimal;
-        this._numberFormatGroupChar = parts.group;
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatGroupChar);
-        this.updateTestRegex();
-/*        const formattedDecimalNumber = numberFormat.format(2.3);
-        const decimalCharCount = formattedDecimalNumber.length;
-        for (let i = decimalCharCount - 1; i >= 0; i--) {
-            const charCode = formattedDecimalNumber.charCodeAt(i);
-            if (!isDigit(charCode)) {
-                this._numberFormatDecimalChar = formattedDecimalNumber[i];
-                break;
-            }
-        }
-
-        if (this._numberFormatDecimalChar === undefined) {
-            throw new AssertInternalError('NUACBNDUNF98332', formattedDecimalNumber);
-        } else {
-            this._numberFormatUseGroupingChar = undefined;
-            if (useGrouping) {
-                const formattedGroupableNumber = numberFormat.format(123456);
-                const groupingCharCount = formattedGroupableNumber.length;
-                for (let i = 0; i < groupingCharCount; i++) {
-                    const charCode = formattedGroupableNumber.charCodeAt(i);
-                    if (!isDigit(charCode)) {
-                        this._numberFormatUseGroupingChar = formattedGroupableNumber[i];
-                        break;
-                    }
-                }
-            }
-
-        }*/
+        this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
+        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
+        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
     }
 
     private applyOptions(options: NumberUiAction.Options) {
@@ -209,7 +176,6 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
 
     protected abstract parseString(value: string): NumberUiActionComponentBaseNgDirective.ParseStringResult;
     protected abstract testInputValue(text?: string): boolean;
-    protected abstract updateTestRegex(): void;
     protected abstract applyValue(value: number | undefined, edited: boolean): void;
 }
 
