@@ -12,12 +12,11 @@ import {
     Integer,
     JsonElement,
     LitIvemId,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { Frame } from 'component-internal-api';
 import { ComponentContainer } from 'golden-layout';
 import { DesktopAccessService } from './desktop-access-service';
-import { DitemCommandContext } from './ditem-command-context';
 import { DitemCommandProcessor } from './ditem-command-processor';
 
 export abstract class DitemFrame extends Frame {
@@ -211,7 +210,7 @@ export abstract class DitemFrame extends Frame {
     }
 
     blur() {
-        this._ditemComponentAccess.focus();
+        this._ditemComponentAccess.blur();
     }
 
     setLitIvemIdFromDesktop(litIvemId: LitIvemId | undefined, initiatingFrame: DitemFrame | undefined): void {

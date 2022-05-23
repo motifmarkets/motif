@@ -216,6 +216,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             containedDitemComponent = {
                 builtinComponentRef,
                 extensionComponent: undefined,
+                focusClosure: undefined,
             };
             component = builtinComponentRef.instance;
         } else {
@@ -228,22 +229,24 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                     containedDitemComponent = {
                         builtinComponentRef,
                         extensionComponent: undefined,
+                        focusClosure: undefined,
                     };
                     component = builtinComponentRef.instance;
                     break;
                 }
                 case DitemComponent.ConstructionMethodId.Extension1: {
-                    const getComponentResult = this.attachExtensionComponent(componentContainer, componentDefinition);
-                    const extensionComponent = getComponentResult.component;
+                    const attachExtensionComponentResult = this.attachExtensionComponent(componentContainer, componentDefinition);
+                    const extensionComponent = attachExtensionComponentResult.component;
                     if (extensionComponent !== undefined) {
                         containedDitemComponent = {
                             builtinComponentRef: undefined,
                             extensionComponent,
+                            focusClosure: attachExtensionComponentResult.focusClosure,
                         };
                         component = extensionComponent;
                     } else {
                         // Need to create a placeholder
-                        const errorText = getComponentResult.errorText;
+                        const errorText = attachExtensionComponentResult.errorText;
                         const reason = errorText === undefined ? Strings[StringId.Unknown] : errorText;
 
                         const placeheld: PlaceholderDitemFrame.Placeheld = {
@@ -259,6 +262,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                         containedDitemComponent = {
                             builtinComponentRef,
                             extensionComponent: undefined,
+                            focusClosure: undefined,
                         };
                         component = builtinComponentRef.instance;
                     }
@@ -288,8 +292,9 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 this.detachBuiltinComponent(componentRef);
             } else {
                 const extensionDitemComponent = containedDitemComponent.extensionComponent;
-                if (extensionDitemComponent !== undefined) {
-                    this.detachExtensionComponent(extensionDitemComponent);
+                const focusClosure = containedDitemComponent.focusClosure;
+                if (extensionDitemComponent !== undefined && focusClosure !== undefined) {
+                    this.detachExtensionComponent(extensionDitemComponent, focusClosure);
                 } else {
                     const componentTypeAsStr = this._frame.componentTypeToString(container.componentType);
                     throw new AssertInternalError('GLHCHRCEE313122', componentTypeAsStr);
@@ -498,22 +503,38 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         componentRef.destroy();
     }
 
-    private attachExtensionComponent(container: ComponentContainer, componentDefinition: DitemComponent.Definition) {
+    private attachExtensionComponent(
+        container: ComponentContainer,
+        componentDefinition: DitemComponent.Definition
+    ): GoldenLayoutHostNgComponent.AttachExtensionComponentResult {
         const getComponentResult = this._extensionsAccessService.getFrame(container,
             componentDefinition.extensionId, componentDefinition.componentTypeName
         );
 
+        let focusClosure: GoldenLayoutHostNgComponent.FocusClosure | undefined;
         const extensionDitemComponent = getComponentResult.component;
         if (extensionDitemComponent !== undefined) {
             const frameRootHtmlElement = extensionDitemComponent.rootHtmlElement;
             this._componentsParentHtmlElement.appendChild(frameRootHtmlElement);
+
+            focusClosure = () => this.focusExtensionFrame(container);
+            frameRootHtmlElement.addEventListener('click', focusClosure, { capture: true });
+            frameRootHtmlElement.addEventListener('focusin', focusClosure, { capture: true });
         }
 
-        return getComponentResult;
+        return {
+            ...getComponentResult,
+            focusClosure,
+        };
     }
 
-    private detachExtensionComponent(extensionDitemComponent: ExtensionDitemComponent) {
+    private detachExtensionComponent(
+        extensionDitemComponent: ExtensionDitemComponent,
+        focusClosure: GoldenLayoutHostNgComponent.FocusClosure
+    ) {
         const frameRootHtmlElement = extensionDitemComponent.rootHtmlElement;
+        frameRootHtmlElement.removeEventListener('click', focusClosure);
+        frameRootHtmlElement.removeEventListener('focusin', focusClosure);
         this._componentsParentHtmlElement.removeChild(frameRootHtmlElement);
 
         this._extensionsAccessService.releaseFrame(extensionDitemComponent);
@@ -528,12 +549,22 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
 
         return builtinComponentRef;
     }
+
+    private focusExtensionFrame(container: ComponentContainer) {
+        container.focus();
+    }
 }
 
 export namespace GoldenLayoutHostNgComponent {
+    export type FocusClosure = (this: void) => void;
+    export interface AttachExtensionComponentResult extends ExtensionDitemComponent.GetResult {
+        focusClosure: FocusClosure | undefined;
+    }
+
     export interface ContainedDitemComponent {
         builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective> | undefined;
         extensionComponent: ExtensionDitemComponent | undefined;
+        focusClosure: FocusClosure | undefined; // only used for extensions
     }
 
     export const viewContainerRefActive = false;

@@ -12,7 +12,7 @@ import {
     JsonElement,
     JsonValue,
     LitIvemId,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { DesktopAccessService, DitemFrame, ExtensionDitemFrame } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
@@ -70,8 +70,6 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
         this._container.addEventListener('focus', this._containerFocusEventListener);
         this._container.addEventListener('blur', this._containerBlurEventListener);
         this._container.addEventListener('resize', this._containerResizeEventListener);
-
-        this.initialiseFocusDetectionHandling();
 
         this._controlsSvc = new ControlsSvcImplementation(apiControlComponentFactory);
         this._contentSvc = new ContentSvcImplementation(apiContentComponentFactory);
@@ -156,8 +154,6 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
         this._container.removeEventListener('focus', this._containerFocusEventListener);
         this._container.removeEventListener('blur', this._containerBlurEventListener);
         this._container.removeEventListener('resize', this._containerResizeEventListener);
-
-        this.finaliseFocusDetectionHandling();
 
         this.destroyAllComponents();
     }
@@ -270,16 +266,6 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
         if (this.resizedEventer !== undefined) {
             this.resizedEventer();
         }
-    }
-
-    private initialiseFocusDetectionHandling() {
-        this._container.element.addEventListener('click', this._containerElementClickListener, { capture: true });
-        this._container.element.addEventListener('focusin', this._containerElementFocusinListener, { capture: true });
-    }
-
-    private finaliseFocusDetectionHandling() {
-        this._container.element.removeEventListener('click', this._containerElementClickListener);
-        this._container.element.removeEventListener('focusin', this._containerElementFocusinListener);
     }
 
     private loadInitialPersistState(value: JsonValue | undefined) {

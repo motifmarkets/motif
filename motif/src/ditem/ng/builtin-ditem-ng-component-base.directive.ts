@@ -58,7 +58,7 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     }
 
     blur() {
-        this._container.focus();
+        this._container.blur();
     }
 
     public processSymbolLinkedChanged() {
@@ -99,13 +99,13 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     }
 
     protected initialiseFocusDetectionHandling() {
-        this._container.element.addEventListener('click', this._containerElementClickListener, { capture: true });
-        this._container.element.addEventListener('focusin', this._containerElementFocusinListener, { capture: true });
+        this._rootHtmlElement.addEventListener('click', this._containerElementClickListener, { capture: true });
+        this._rootHtmlElement.addEventListener('focusin', this._containerElementFocusinListener, { capture: true });
     }
 
     protected finaliseFocusDetectionHandling() {
-        this._container.element.removeEventListener('click', this._containerElementClickListener);
-        this._container.element.removeEventListener('focusin', this._containerElementFocusinListener);
+        this._rootHtmlElement.removeEventListener('click', this._containerElementClickListener);
+        this._rootHtmlElement.removeEventListener('focusin', this._containerElementFocusinListener);
     }
 
     protected getInitialComponentStateJsonElement() {
