@@ -95,11 +95,11 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 
     invalidateAll(): void {
-        this._recordStore.recordsEventers.invalidateAll();
+        this._recordStore.invalidateAll();
     }
 
     invalidateRecord(recordIndex: Integer): void {
-        this._recordStore.recordsEventers.invalidateRecord(recordIndex);
+        this._recordStore.invalidateRecord(recordIndex);
     }
 
     private filterItems(record: RevRecord) {
@@ -139,7 +139,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             const readabilityField = this._recordStore.createReadabilityField();
             const isReadableField = this._recordStore.createIsReadableField();
 
-            this._recordStore.fieldsEventers.addFields([
+            this._recordStore.addFields([
                 displayField,
                 resolvedBkgdColorTextField,
                 resolvedBkgdColorField,
@@ -163,7 +163,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             this.setFieldState(readabilityField, ColorSchemeGridRecordStore.ReadabilityField.fieldStateDefinition);
             this.setFieldState(isReadableField, ColorSchemeGridRecordStore.IsReadableField.fieldStateDefinition);
 
-            this._recordStore.recordsEventers.recordsInserted(0, this._recordStore.recordCount);
+            this._recordStore.recordsInserted(0, this._recordStore.recordCount);
 
             this._gridPrepared = true;
 

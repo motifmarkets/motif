@@ -35,9 +35,6 @@ import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgr
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
-    fieldsEventers: RevRecordStore.FieldsEventers;
-    _recordsEventers: RevRecordStore.RecordsEventers;
-
     dragDropAllowed: boolean;
 
     settingsApplyEvent: TableFrame.SettingsApplyEvent;
@@ -47,6 +44,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     requireDefaultTableDefinitionEvent: TableFrame.RequireDefaultTableDefinitionEvent;
     tableOpenEvent: TableFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
+
+    private _fieldsEventers: RevRecordStore.FieldsEventers;
+    private _recordsEventers: RevRecordStore.RecordsEventers;
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
@@ -92,7 +92,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
-        this.fieldsEventers = fieldsEventers;
+        this._fieldsEventers = fieldsEventers;
     }
 
     setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
@@ -849,7 +849,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             }
 
             const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            this.fieldsEventers.addFields(fieldsAndInitialStates.fields);
+            this._fieldsEventers.addFields(fieldsAndInitialStates.fields);
 
             const states = fieldsAndInitialStates.states;
             const fieldCount = states.length; // one state for each field

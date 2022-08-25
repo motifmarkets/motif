@@ -92,7 +92,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
 
     invalidateVisibleValue(rowIndex: Integer): void {
         const fieldIndex = this._grid.getFieldIndex(this._visibleField);
-        this._recordStore.recordsEventers.invalidateValue(fieldIndex, rowIndex, RevRecordValueRecentChangeTypeId.Update);
+        this._recordStore.invalidateValue(fieldIndex, rowIndex, RevRecordValueRecentChangeTypeId.Update);
     }
 
     /** @return New focused record index or undefined if no move occurred */
@@ -101,7 +101,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
         const moveColumn = (currentIndex: number, newIndex: number): boolean => {
             const result = this._layoutWithHeadings.layout.moveColumn(currentIndex, newIndex);
             if (result) {
-                this._recordStore.recordsEventers.recordsLoaded();
+                this._recordStore.recordsLoaded();
             }
             return result;
         };
@@ -231,7 +231,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
                 const widthField = this._recordStore.createWidthField();
                 this._visibleField = this._recordStore.createVisibleField();
 
-                this._recordStore.fieldsEventers.addFields([
+                this._recordStore.addFields([
                     positionField,
                     headingField,
                     this._visibleField,
@@ -243,7 +243,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
                 this._grid.setFieldState(this._visibleField, GridLayoutRecordStore.StringGridFieldState);
                 this._grid.setFieldState(widthField, GridLayoutRecordStore.IntegerGridFieldState);
 
-                this._recordStore.recordsEventers.recordsInserted(0, this._recordStore.recordCount);
+                this._recordStore.recordsInserted(0, this._recordStore.recordCount);
 
                 this.applyColumnFilter();
             }

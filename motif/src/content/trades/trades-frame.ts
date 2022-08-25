@@ -44,10 +44,6 @@ export class TradesFrame extends ContentFrame {
     ) {
         super();
         this._recordStore = new DayTradesGridRecordStore();
-        this._recordStore.listChangeEvent =
-            (listChangeTypeId, index, count) => this.handleDataStoreListChangeEvent(listChangeTypeId, index, count);
-        this._recordStore.recordChangeEvent = (index) => this.handleDataStoreRecordChangeEvent(index);
-        this._recordStore.allRecordsChangeEvent = () => this.handleDataStoreAllRecordsChangeEvent();
     }
 
     get recordStore() { return this._recordStore; }
@@ -125,7 +121,7 @@ export class TradesFrame extends ContentFrame {
             const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
             fields[id] = gridField;
         }
-        this._recordStore.fieldsEventers.addFields(fields);
+        this._recordStore.addFields(fields);
 
         this._grid.sortable = false;
 
@@ -146,7 +142,7 @@ export class TradesFrame extends ContentFrame {
         // }
 
         // this._componentAccess.gridLoadLayout(this._table.layout);
-        this._recordStore.recordsEventers.recordsLoaded();
+        this._recordStore.recordsLoaded();
 
         this._gridPrepared = true;
     }
@@ -181,49 +177,6 @@ export class TradesFrame extends ContentFrame {
     // getRenderedActiveWidth() {
     //     return this._componentAccess.gridGetRenderedActiveWidth();
     // }
-
-    private handleDataStoreListChangeEvent(listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer): void {
-        switch (listChangeTypeId) {
-            case UsableListChangeTypeId.Unusable:
-                // handled through badness change
-                break;
-
-            case UsableListChangeTypeId.PreUsableClear:
-                this._recordStore.recordsEventers.allRecordsDeleted();
-                break;
-
-            case UsableListChangeTypeId.PreUsableAdd:
-                this._recordStore.recordsEventers.recordsInserted(idx, count);
-                break;
-
-            case UsableListChangeTypeId.Usable:
-                // handled through badness change
-                break;
-
-            case UsableListChangeTypeId.Insert:
-                this._recordStore.recordsEventers.recordsInserted(idx, count);
-                break;
-
-            case UsableListChangeTypeId.Remove:
-                this._recordStore.recordsEventers.recordsDeleted(idx, count);
-                break;
-
-            case UsableListChangeTypeId.Clear:
-                this._recordStore.recordsEventers.allRecordsDeleted();
-                break;
-
-            default:
-                throw new UnreachableCaseError('TFHDSLC23333232', listChangeTypeId);
-        }
-    }
-
-    private handleDataStoreRecordChangeEvent(index: Integer) {
-        this._recordStore.recordsEventers.invalidateRecord(index);
-    }
-
-    private handleDataStoreAllRecordsChangeEvent() {
-        this._recordStore.recordsEventers.recordsLoaded();
-    }
 
     private handleDataItemDataCorrectnessChangeEvent() {
         if (this._dataItem === undefined) {
