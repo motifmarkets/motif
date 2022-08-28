@@ -31,7 +31,7 @@ import {
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
-import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter, RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
@@ -82,6 +82,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     get table(): Table | undefined { return this._table; }
     get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
     get tableOpened(): boolean { return this._table !== undefined; }
+
+    get isFiltered(): boolean { return this._grid.isFiltered; }
 
     override finalise() {
         if (!this.finalised) {
@@ -799,6 +801,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 name: nameText
             };
         }
+    }
+
+    clearFilter(): void {
+        this._grid.applyFilter(undefined);
+    }
+
+    applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {
+        this._grid.applyFilter(filter);
     }
 
     private handleSettingChangedEvent() {

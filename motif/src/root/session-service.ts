@@ -20,6 +20,7 @@ import {
     MotifServicesService,
     mSecsPerSec,
     MultiEvent,
+    ScansService,
     SessionInfoService,
     SessionState,
     SessionStateId,
@@ -90,6 +91,7 @@ export class SessionService {
         private readonly _extensionService: ExtensionsService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
+        private readonly _scansService: ScansService,
         private readonly _signoutService: SignOutService,
     ) {
         this._openIdService.logErrorEvent = (text) => this.logError(text);
@@ -454,6 +456,7 @@ export class SessionService {
         this._adiService.start();
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
+        this._scansService.start();
         this.startIdleProcessing();
     }
 

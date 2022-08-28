@@ -7,9 +7,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
+import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
+import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

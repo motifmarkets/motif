@@ -12,8 +12,9 @@ import {
     CoreService,
     KeyboardService,
     MotifServicesService,
+    ScansService,
     SettingsService,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -32,6 +33,7 @@ export class CoreNgService implements OnDestroy {
     get appStorageService(): AppStorageService { return this._service.applicationStateStorage; }
     get adi(): AdiService { return this._service.adi; }
     get symbolsManager(): SymbolsService { return this._service.symbolsManager; }
+    get scansService(): ScansService { return this._service.scansService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 

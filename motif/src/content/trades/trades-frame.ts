@@ -19,11 +19,9 @@ import {
     Integer,
     JsonElement,
     LitIvemId,
-    MultiEvent,
-    UnreachableCaseError,
-    UsableListChangeTypeId
+    MultiEvent
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from 'content-internal-api';
+import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
