@@ -154,7 +154,14 @@ export class ScansFrame extends ContentFrame {
     handleRecordFocusEvent(
         newRecordIndex: Integer | undefined,
         oldRecordIndex: Integer | undefined
-    ) {}
+    ) {
+        if (newRecordIndex === undefined) {
+            this._componentAccess.setFocusedScan(undefined);
+        } else {
+            const scan = this._scansService.getScan(newRecordIndex);
+            this._componentAccess.setFocusedScan(scan);
+        }
+    }
 
     handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {}
 
@@ -230,6 +237,7 @@ export namespace ScansFrame {
     // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export interface ComponentAccess {
+        setFocusedScan(value: Scan | undefined): void;
         // readonly id: string;
 
         // setBadness(value: Badness): void;

@@ -1,10 +1,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { Scan } from '@motifmarkets/motif-core';
 import { ScansNgService } from 'component-services-ng-api';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { AdaptedRevgrid } from '../../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../../ng/content-ng.service';
+import { ScanPropertiesNgComponent } from '../../scan-properties/ng-api';
 import { ScansFrame } from '../scans-frame';
 
 @Component({
@@ -17,6 +19,7 @@ import { ScansFrame } from '../scans-frame';
 export class ScansNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, ScansFrame.ComponentAccess {
     @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
+    @ViewChild(ScanPropertiesNgComponent, { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
 
     recordFocusEventer: ScansNgComponent.RecordFocusEventer;
     gridClickEventer: ScansNgComponent.GridClickEventer;
@@ -35,7 +38,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
         this.frame = contentService.createScansFrame(this, scansNgService.service);
     }
 
-    get gridSize() { return 100; }
+    get gridSize() { return 540; }
     get gridMinSize() { return 50; }
     get splitterGutterSize() { return 3; }
 
@@ -55,6 +58,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
 
         const grid = this._gridComponent.createGrid(this.frame.recordStore, ScansNgComponent.frameGridProperties);
         this.frame.setGrid(grid);
+        // this.frame.bindPropertiesComponent(this._propertiesComponent);
         // this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         // this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         // this._grid.columnsViewWidthsChangedEventer =
@@ -77,28 +81,37 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     //     return this._grid.waitModelRendered();
     // }
 
-    handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
-        if (this.recordFocusEventer !== undefined) {
-            this.recordFocusEventer(recordIndex);
-        }
-    }
+    // handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
+    //     if (recordIndex === undefined) {
+    //         this._propertiesComponent.setScan(undefined);
+    //     } else {
+    //         const scan = this._
+    //         this._propertiesComponent.setScan();
+    //     }
+    //     if (this.recordFocusEventer !== undefined) {
+    //         this.recordFocusEventer(recordIndex);
+    //     }
+    // }
 
-    handleGridClickEvent(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex): void {
-        if (this.gridClickEventer !== undefined) {
-            this.gridClickEventer(fieldIndex, recordIndex);
-        }
-    }
+    // handleGridClickEvent(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex): void {
+    //     if (this.gridClickEventer !== undefined) {
+    //         this.gridClickEventer(fieldIndex, recordIndex);
+    //     }
+    // }
 
-    handleColumnsViewWidthsChangedEvent(fixedChanged: boolean, nonFixedChanged: boolean, allChanged: boolean) {
-        if ((fixedChanged || allChanged) && this.columnsViewWithsChangedEventer !== undefined) {
-            this.columnsViewWithsChangedEventer();
-        }
-    }
+    // handleColumnsViewWidthsChangedEvent(fixedChanged: boolean, nonFixedChanged: boolean, allChanged: boolean) {
+    //     if ((fixedChanged || allChanged) && this.columnsViewWithsChangedEventer !== undefined) {
+    //         this.columnsViewWithsChangedEventer();
+    //     }
+    // }
 
     handleSplitterDragEnd() {
 
     }
 
+    setFocusedScan(value: Scan | undefined) {
+        this._propertiesComponent.setScan(value);
+    }
     // invalidateAll(): void {
     //     this._recordStore.invalidateAll();
     // }
