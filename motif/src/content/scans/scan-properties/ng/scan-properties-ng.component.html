@@ -1,0 +1,18 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<section id="idSection">
+    <app-caption-label #nameLabel for="nameInput"></app-caption-label>
+    <app-text-input #nameControl id="nameControl" inputId="nameInput" spellCheck="false"></app-text-input>
+    <app-caption-label #descriptionLabel for="descriptionInput"></app-caption-label>
+    <app-text-input #descriptionControl id="descriptionControl" inputId="descriptionInput" spellCheck="false"></app-text-input>
+    <app-caption-label #typeLabel for="typeInput"></app-caption-label>
+    <app-enum-input #typeControl id="typeControl" inputId="typeInput"></app-enum-input>
+</section>
+
+<app-scan-criteria></app-scan-criteria>
+<app-scan-targets id="targets"></app-scan-targets>
+<app-scan-notifiers></app-scan-notifiers>

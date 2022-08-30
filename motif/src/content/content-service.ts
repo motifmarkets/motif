@@ -4,13 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, AppStorageService, SessionInfoService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
+import { AdiService, AppStorageService, ScansService, SessionInfoService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
+import { ScansFrame } from './scans/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TableFrame } from './table/internal-api';
 import { TradesFrame } from './trades/internal-api';
@@ -48,6 +49,10 @@ export class ContentService {
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return new DepthFrame(componentAccess, this._adiService);
+    }
+
+    createScansFrame(componentAccess: ScansFrame.ComponentAccess, scansService: ScansService) {
+        return new ScansFrame(componentAccess, scansService, this._adiService);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {

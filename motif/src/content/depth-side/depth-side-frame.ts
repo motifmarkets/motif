@@ -318,7 +318,7 @@ export class DepthSideFrame extends ContentFrame {
             this._grid.reset();
         }
 
-        this._activeStore.eventifyAddFields(element.gridFields);
+        this._activeStore.addFields(element.gridFields);
 
         for (let id = 0; id < element.defaultGridFieldStates.length; id++) {
             this._grid.setFieldState(element.gridFields[id], element.defaultGridFieldStates[id]);
@@ -345,9 +345,9 @@ export namespace DepthSideFrame {
     // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export class StyleCacheElement {
-        gridFields: DepthSideGridField[];
-        defaultGridFieldStates: GridRecordFieldState[];
-        defaultGridFieldVisibles: boolean[];
+        gridFields: readonly DepthSideGridField[];
+        defaultGridFieldStates: readonly GridRecordFieldState[];
+        defaultGridFieldVisibles: readonly boolean[];
         lastLayout: GridLayout;
         store: DepthSideGridRecordStore;
     }

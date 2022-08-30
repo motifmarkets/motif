@@ -9,7 +9,7 @@ import { LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
-  providedIn: 'root'
+    providedIn: 'root'
 })
 export class SymbolsNgService {
     private _symbolsManager: SymbolsService;

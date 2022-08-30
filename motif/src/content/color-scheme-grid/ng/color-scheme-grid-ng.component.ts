@@ -7,9 +7,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
+import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
+import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -95,11 +95,11 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 
     invalidateAll(): void {
-        this._recordStore.recordsEventers.invalidateAll();
+        this._recordStore.invalidateAll();
     }
 
     invalidateRecord(recordIndex: Integer): void {
-        this._recordStore.recordsEventers.invalidateRecord(recordIndex);
+        this._recordStore.invalidateRecord(recordIndex);
     }
 
     private filterItems(record: RevRecord) {
@@ -139,7 +139,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             const readabilityField = this._recordStore.createReadabilityField();
             const isReadableField = this._recordStore.createIsReadableField();
 
-            this._recordStore.fieldsEventers.addFields([
+            this._recordStore.addFields([
                 displayField,
                 resolvedBkgdColorTextField,
                 resolvedBkgdColorField,
@@ -163,7 +163,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             this.setFieldState(readabilityField, ColorSchemeGridRecordStore.ReadabilityField.fieldStateDefinition);
             this.setFieldState(isReadableField, ColorSchemeGridRecordStore.IsReadableField.fieldStateDefinition);
 
-            this._recordStore.recordsEventers.recordsInserted(0, this._recordStore.recordCount);
+            this._recordStore.recordsInserted(0, this._recordStore.recordCount);
 
             this._gridPrepared = true;
 

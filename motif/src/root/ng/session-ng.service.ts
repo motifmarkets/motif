@@ -10,6 +10,7 @@ import {
     AdiNgService,
     AppStorageNgService,
     MotifServicesNgService,
+    ScansNgService,
     SessionInfoNgService,
     SettingsNgService,
     SignOutNgService,
@@ -41,6 +42,7 @@ export class SessionNgService implements OnDestroy {
         extensionNgService: ExtensionsNgService,
         adiNgService: AdiNgService,
         symbolsManagerNgService: SymbolsNgService,
+        scansNgService: ScansNgService,
         sessionInfoNgService: SessionInfoNgService,
         signOutNgService: SignOutNgService,
     ) {
@@ -54,6 +56,7 @@ export class SessionNgService implements OnDestroy {
             extensionNgService.service,
             adiNgService.adiService,
             symbolsManagerNgService.symbolsManager,
+            scansNgService.service,
             signOutNgService.service,
         );
 

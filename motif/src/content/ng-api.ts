@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+export * from './adapted-revgrid/ng-api';
 export * from './cash-holdings/ng-api';
 export * from './color-controls/ng-api';
 export * from './color-scheme-grid/ng-api';
@@ -22,11 +23,11 @@ export * from './grid-layout-editor-grid/ng-api';
 export * from './grid-layout-editor/ng-api';
 export * from './ivem-holdings/ng-api';
 export * from './markets/ng-api';
-export * from './adapted-revgrid/ng-api';
 export * from './ng/content-component-base-ng.directive';
 export * from './ng/content-ng.module';
 export * from './order-request-step/ng-api';
 export * from './paridepth-grid-layouts-editor/ng-api';
+export * from './scans/ng-api';
 export * from './settings/ng-api';
 export * from './status-summary/ng-api';
 export * from './table/ng-api';

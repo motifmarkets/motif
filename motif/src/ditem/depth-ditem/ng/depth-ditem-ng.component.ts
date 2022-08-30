@@ -27,7 +27,7 @@ import {
     StringUiAction,
     UiAction
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -79,12 +79,13 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         commandRegisterNgService: CommandRegisterNgService,
         private _resolver: ComponentFactoryResolver,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        adiNgService: AdiNgService,
+        symbolsNgService: SymbolsNgService
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new DepthDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();

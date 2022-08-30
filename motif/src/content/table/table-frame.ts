@@ -31,13 +31,10 @@ import {
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
-import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordStore } from 'revgrid';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter, RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
-    fieldsEventers: RevRecordStore.FieldsEventers;
-    _recordsEventers: RevRecordStore.RecordsEventers;
-
     dragDropAllowed: boolean;
 
     settingsApplyEvent: TableFrame.SettingsApplyEvent;
@@ -47,6 +44,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     requireDefaultTableDefinitionEvent: TableFrame.RequireDefaultTableDefinitionEvent;
     tableOpenEvent: TableFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
+
+    private _fieldsEventers: RevRecordStore.FieldsEventers;
+    private _recordsEventers: RevRecordStore.RecordsEventers;
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
@@ -83,6 +83,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
     get tableOpened(): boolean { return this._table !== undefined; }
 
+    get isFiltered(): boolean { return this._grid.isFiltered; }
+
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
@@ -92,7 +94,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
-        this.fieldsEventers = fieldsEventers;
+        this._fieldsEventers = fieldsEventers;
     }
 
     setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
@@ -801,6 +803,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         }
     }
 
+    clearFilter(): void {
+        this._grid.applyFilter(undefined);
+    }
+
+    applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {
+        this._grid.applyFilter(filter);
+    }
+
     private handleSettingChangedEvent() {
         this.applySettings();
     }
@@ -849,7 +859,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             }
 
             const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            this.fieldsEventers.addFields(fieldsAndInitialStates.fields);
+            this._fieldsEventers.addFields(fieldsAndInitialStates.fields);
 
             const states = fieldsAndInitialStates.states;
             const fieldCount = states.length; // one state for each field

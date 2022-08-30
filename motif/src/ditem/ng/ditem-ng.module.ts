@@ -22,6 +22,7 @@ import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
 import { ParidepthDitemNgComponent } from '../paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
+import { ScansDitemNgComponent } from '../scans-ditem/ng/scans-ditem-ng.component';
 import { SearchDitemNgComponent } from '../search-ditem/ng-api';
 import { SearchSymbolsDitemNgComponent } from '../search-symbols-ditem/ng-api';
 import { SettingsDitemNgComponent } from '../settings-ditem/ng-api';
@@ -55,7 +56,8 @@ import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } 
         BrandingSplashWebPageDitemNgComponent,
         AdvertWebPageDitemNgComponent,
         AlertsDitemNgComponent,
-        SearchDitemNgComponent
+        SearchDitemNgComponent,
+        ScansDitemNgComponent
     ],
     imports: [
         CommonModule,

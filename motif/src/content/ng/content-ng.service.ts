@@ -5,20 +5,19 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SessionInfoService } from '@motifmarkets/motif-core';
+import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
 import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
-import { DepthSideFrame } from '../depth-side/depth-side-frame';
-import { DepthFrame } from '../depth/depth-frame';
-import { FeedsFrame } from '../feeds/feeds-frame';
-import { MarketsFrame } from '../markets/markets-frame';
-import { PadOrderRequestStepFrame } from '../order-request-step/pad-order-request-step/pad-order-request-step-frame';
-import { ResultOrderRequestStepFrame } from '../order-request-step/result-order-request-step/result-order-request-step-frame';
-import { ReviewOrderRequestStepFrame } from '../order-request-step/review-order-request-step/review-order-request-step-frame';
+import { DepthSideFrame } from '../depth-side/internal-api';
+import { DepthFrame } from '../depth/internal-api';
+import { FeedsFrame } from '../feeds/internal-api';
+import { MarketsFrame } from '../markets/internal-api';
+import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
+import { ScansFrame } from '../scans/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
-import { TableFrame } from '../table/table-frame';
-import { TradesFrame } from '../trades/trades-frame';
-import { ZenithStatusFrame } from '../zenith-status/zenith-status-frame';
+import { TableFrame } from '../table/internal-api';
+import { TradesFrame } from '../trades/internal-api';
+import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
 @Injectable({
     providedIn: 'root'
@@ -63,6 +62,10 @@ export class ContentNgService {
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return this._content.createDepthFrame(componentAccess);
+    }
+
+    createScansFrame(componentAccess: ScansFrame.ComponentAccess, scansService: ScansService) {
+        return this._content.createScansFrame(componentAccess, scansService);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
