@@ -51,8 +51,11 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { ParidepthGridLayoutsEditorNgComponent } from '../paridepth-grid-layouts-editor/ng-api';
-import { ScanNewNgComponent } from '../scans/scan-new/ng/scan-new-ng.component';
-import { ScanPropertiesNgComponent } from '../scans/scan-properties/ng/scan-properties-ng.component';
+import { ScanCriteriaNgComponent } from '../scans/scan-criteria/ng-api';
+import { ScanNewNgComponent } from '../scans/scan-new/ng-api';
+import { ScanNotifiersNgComponent } from '../scans/scan-notifiers/ng-api';
+import { ScanPropertiesNgComponent } from '../scans/scan-properties/ng-api';
+import { ScanTargetsNgComponent } from '../scans/scan-targets/ng-api';
 import { ScanTypeDescriptionNgComponent } from '../scans/scan-type-description/ng/scan-type-description-ng.component';
 import { ScanTypesControlsNgComponent } from '../scans/scan-types-controls/ng/scan-types-controls-ng.component';
 import { ScanTypesGridNgComponent } from '../scans/scan-types-grid/ng/scan-types-grid-ng.component';
@@ -129,6 +132,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanTypesGridNgComponent,
         ScanTypesControlsNgComponent,
         ScanTypeDescriptionNgComponent,
+        ScanTargetsNgComponent,
+        ScanNotifiersNgComponent,
+        ScanCriteriaNgComponent,
     ],
     imports: [
         CommonModule,
