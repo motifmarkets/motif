@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, ViewChild } from '@angular/core';
-import { Scan } from '@motifmarkets/motif-core';
+import { EditableScan } from '@motifmarkets/motif-core';
 import { ScansNgService } from 'component-services-ng-api';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { AdaptedRevgrid } from '../../../adapted-revgrid/internal-api';
@@ -109,7 +109,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
 
     }
 
-    setFocusedScan(value: Scan | undefined) {
+    setFocusedScan(value: EditableScan | undefined) {
         this._propertiesComponent.setScan(value);
     }
     // invalidateAll(): void {

@@ -2,13 +2,13 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, O
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
+    EditableScan,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
     LitIvemIdUiAction,
     MarketId,
-    Scan,
     StringId,
     Strings,
     SymbolsService
@@ -48,7 +48,7 @@ export class ScanTargetsNgComponent extends ContentComponentBaseNgDirective impl
     private readonly _singleMarketUiAction: AllowedMarketsEnumUiAction;
     private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
 
-    private _scan: Scan | undefined;
+    private _scan: EditableScan | undefined;
     private _targetSubTypeId: ScanTargetsNgComponent.TargetSubTypeId;
 
     constructor(private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
@@ -94,7 +94,7 @@ export class ScanTargetsNgComponent extends ContentComponentBaseNgDirective impl
         return this._targetSubTypeId === ScanTargetsNgComponent.TargetSubTypeId.MultiMarket;
     }
 
-    setScan(value: Scan) {
+    setScan(value: EditableScan) {
         this._scan = value;
         this.pushValues();
     }
@@ -224,11 +224,11 @@ export class ScanTargetsNgComponent extends ContentComponentBaseNgDirective impl
             }
 
             switch (this._scan.targetTypeId) {
-                case Scan.TargetTypeId.Symbols: {
+                case EditableScan.TargetTypeId.Symbols: {
                     this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
                     break;
                 }
-                case Scan.TargetTypeId.Markets: {
+                case EditableScan.TargetTypeId.Markets: {
                     this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
                     break;
                 }

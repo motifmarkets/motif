@@ -1,11 +1,11 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
+    EditableScan,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
-    Scan,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
@@ -28,7 +28,7 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
     public criteriaHeading = Strings[StringId.Criteria];
     public readonly viewTypeRadioName: string;
 
-    private _scan: Scan | undefined;
+    private _scan: EditableScan | undefined;
 
     private readonly _defaultViewUiAction: BooleanUiAction;
     private readonly _viewTypeUiAction: ExplicitElementsEnumUiAction;
@@ -54,7 +54,7 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
         this.initialiseComponents();
     }
 
-    setScan(value: Scan) {
+    setScan(value: EditableScan) {
         this._scan = value;
         this.pushValues();
     }
@@ -108,7 +108,7 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
             this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Predefined);
         } else {
             this._defaultViewUiAction.pushValue(true);
-            if (this._scan.criteriaTypeId === Scan.CriteriaTypeId.Custom) {
+            if (this._scan.criteriaTypeId === EditableScan.CriteriaTypeId.Custom) {
                 this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Formula);
             } else {
                 this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Predefined);
