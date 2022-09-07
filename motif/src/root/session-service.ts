@@ -20,6 +20,7 @@ import {
     MotifServicesService,
     mSecsPerSec,
     MultiEvent,
+    PublisherSessionTerminatedReasonId,
     ScansService,
     SessionInfoService,
     SessionState,
@@ -66,7 +67,7 @@ export class SessionService {
     private _sequentialZenithReconnectionWarningCount = 0;
 
     private _stateChangeMultiEvent = new MultiEvent<SessionService.StateChangeEventHandler>();
-    private _kickedOffMultiEvent = new MultiEvent<SessionService.KickedOffEventHandler>();
+    private _publisherSessionTerminatedMultiEvent = new MultiEvent<SessionService.PublisherSessionTerminatedEventHandler>();
     private _consolidatedLogMultiEvent = new MultiEvent<SessionService.ConsolidatedLogEventHandler>();
 
     private _zenithExtConnectionDataItem: ZenithExtConnectionDataItem | undefined;
@@ -75,7 +76,7 @@ export class SessionService {
     private _zenithReconnectSubscriptionId: MultiEvent.SubscriptionId;
     private _zenithCounterSubscriptionId: MultiEvent.SubscriptionId;
     private _zenithLogSubscriptionId: MultiEvent.SubscriptionId;
-    private _zenithKickedOffSubscriptionId: MultiEvent.SubscriptionId;
+    private _publisherSessionTerminatedSubscriptionId: MultiEvent.SubscriptionId;
 
     private _requestIdleCallbackHandle: number | undefined;
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
@@ -206,12 +207,12 @@ export class SessionService {
         this._stateChangeMultiEvent.unsubscribe(subscriptionId);
     }
 
-    subscribeKickedOffEvent(handler: SessionService.KickedOffEventHandler) {
-        return this._kickedOffMultiEvent.subscribe(handler);
+    subscribePublisherSessionTerminatedEvent(handler: SessionService.PublisherSessionTerminatedEventHandler) {
+        return this._publisherSessionTerminatedMultiEvent.subscribe(handler);
     }
 
-    unsubscribeKickedOffEvent(subscriptionId: MultiEvent.SubscriptionId): void {
-        this._kickedOffMultiEvent.unsubscribe(subscriptionId);
+    unsubscribePublisherSessionTerminatedEvent(subscriptionId: MultiEvent.SubscriptionId): void {
+        this._publisherSessionTerminatedMultiEvent.unsubscribe(subscriptionId);
     }
 
     subscribeConsolidatedLogEvent(handler: SessionService.ConsolidatedLogEventHandler) {
@@ -305,8 +306,12 @@ export class SessionService {
         this.notifyConsolidatedLog(time, logLevelId, text);
     }
 
-    private handleZenithKickedOffEvent() {
-        this.notifyKickedOff();
+    private handlePublisherSessionTerminatedEvent(
+        reasonId: PublisherSessionTerminatedReasonId,
+        reasonCode: Integer,
+        defaultReasonText: string
+    ) {
+        this.notifyPublisherSessionTerminated(reasonId, reasonCode, defaultReasonText);
     }
 
     private handleSignOut() {
@@ -320,10 +325,14 @@ export class SessionService {
         }
     }
 
-    private notifyKickedOff() {
-        const handlers = this._kickedOffMultiEvent.copyHandlers();
+    private notifyPublisherSessionTerminated(
+        reasonId: PublisherSessionTerminatedReasonId,
+        reasonCode: Integer,
+        defaultReasonText: string
+    ) {
+        const handlers = this._publisherSessionTerminatedMultiEvent.copyHandlers();
         for (let i = 0; i < handlers.length; i++) {
-            handlers[i]();
+            handlers[i](reasonId, reasonCode, defaultReasonText);
         }
     }
 
@@ -487,8 +496,10 @@ export class SessionService {
             (time, logLevelId, text) => { this.handleZenithLogEvent(time, logLevelId, text); }
         );
 
-        this._zenithKickedOffSubscriptionId = this._zenithExtConnectionDataItem.subscribeZenithSessionKickedOffEvent(
-            () => { this.handleZenithKickedOffEvent(); }
+        this._publisherSessionTerminatedSubscriptionId = this._zenithExtConnectionDataItem.subscribeZenithSessionTerminatedEvent(
+            (reasonId, reasonCode, defaultReasonText) => {
+                this.handlePublisherSessionTerminatedEvent(reasonId, reasonCode, defaultReasonText);
+            }
         );
     }
 
@@ -509,8 +520,8 @@ export class SessionService {
             this._zenithExtConnectionDataItem.unsubscribeZenithLogEvent(this._zenithLogSubscriptionId);
             this._zenithLogSubscriptionId = undefined;
 
-            this._zenithExtConnectionDataItem.unsubscribeZenithSessionKickedOffEvent(this._zenithKickedOffSubscriptionId);
-            this._zenithKickedOffSubscriptionId = undefined;
+            this._zenithExtConnectionDataItem.unsubscribeZenithSessionTerminatedEvent(this._publisherSessionTerminatedSubscriptionId);
+            this._publisherSessionTerminatedSubscriptionId = undefined;
 
             this._adiService.unsubscribe(this._zenithExtConnectionDataItem);
             this._zenithExtConnectionDataItem = undefined;
@@ -562,7 +573,9 @@ export namespace SessionService {
     export type OnlineEvent = (this: void) => void;
     export type TNotifyEventHandler = (this: void) => void;
     export type StateChangeEventHandler = (stateId: SessionStateId) => void;
-    export type KickedOffEventHandler = (this: void) => void;
+    export type PublisherSessionTerminatedEventHandler = (
+        this: void, reasonId: PublisherSessionTerminatedReasonId, reasonCode: Integer, defaultReasonText: string
+    ) => void;
     export type ConsolidatedLogEventHandler = (time: Date, logLevelId: Logger.LevelId, text: string) => void;
 
     export type ExchangeEnvironmentIdAvailableEventHandler = (id: DataEnvironmentId) => void;

@@ -16,6 +16,7 @@ import {
     ColorSettings,
     DataEnvironment,
     DataEnvironmentId, MultiEvent,
+    PublisherSessionTerminatedReasonId,
     SessionInfoService,
     SessionState,
     SessionStateId,
@@ -25,6 +26,7 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
+import { Integer } from 'public-api';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
@@ -42,7 +44,7 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     private _sessionInfoService: SessionInfoService;
     private _colorSettings: ColorSettings;
     private _sessionStateChangeSubscriptionId: MultiEvent.SubscriptionId;
-    private _sessionKickedOffEventSubscriptionId: MultiEvent.SubscriptionId;
+    private _publisherSessionTerminatedEventSubscriptionId: MultiEvent.SubscriptionId;
     private _kickedOff = false;
 
     constructor(
@@ -55,8 +57,8 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
         this._colorSettings = settingsNgService.settingsService.color;
 
         this._sessionInfoService = sessionInfoNgService.service;
-        this._sessionKickedOffEventSubscriptionId = this._sessionInfoService.subscribeKickedOffChangedEvent(
-            () => this.handleSessionKickedOffEvent()
+        this._publisherSessionTerminatedEventSubscriptionId = this._sessionInfoService.subscribePublisherSessionTerminatedChangedEvent(
+            (reasonId, reasonCode, defaultReasonText) => this.handlePublisherSessionTerminatedEvent(reasonId, reasonCode, defaultReasonText)
         );
         this._sessionStateChangeSubscriptionId = this._sessionInfoService.subscribeStateChangedEvent(
             () => this.handleSessionStateChangeEvent()
@@ -64,13 +66,9 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     }
 
     ngOnDestroy() {
-        this._sessionInfoService.unsubscribeKickedOffChangedEvent(
-            this._sessionKickedOffEventSubscriptionId
-        );
-        this._sessionKickedOffEventSubscriptionId = undefined;
-        this._sessionInfoService.unsubscribeStateChangedEvent(
-            this._sessionStateChangeSubscriptionId
-        );
+        this._sessionInfoService.unsubscribePublisherSessionTerminatedChangedEvent(this._publisherSessionTerminatedEventSubscriptionId);
+        this._publisherSessionTerminatedEventSubscriptionId = undefined;
+        this._sessionInfoService.unsubscribeStateChangedEvent(this._sessionStateChangeSubscriptionId);
         this._sessionStateChangeSubscriptionId = undefined;
     }
 
@@ -78,7 +76,11 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
         this.updateEnvironmentDisplay();
     }
 
-    private handleSessionKickedOffEvent() {
+    private handlePublisherSessionTerminatedEvent(
+        _reasonId: PublisherSessionTerminatedReasonId,
+        _reasonCode: Integer,
+        _defaultReasonText: string
+    ) {
         this._kickedOff = true;
         this.updateEnvironmentDisplay();
     }
