@@ -9,6 +9,7 @@ import {
     Integer,
     LitIvemIdUiAction,
     MarketId,
+    ScanTargetTypeId,
     StringId,
     Strings,
     SymbolsService
@@ -224,11 +225,11 @@ export class ScanTargetsNgComponent extends ContentComponentBaseNgDirective impl
             }
 
             switch (this._scan.targetTypeId) {
-                case EditableScan.TargetTypeId.Symbols: {
+                case ScanTargetTypeId.Symbols: {
                     this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
                     break;
                 }
-                case EditableScan.TargetTypeId.Markets: {
+                case ScanTargetTypeId.Markets: {
                     this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
                     break;
                 }
