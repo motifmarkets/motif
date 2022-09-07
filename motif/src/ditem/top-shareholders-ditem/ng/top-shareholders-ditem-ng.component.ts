@@ -292,7 +292,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             this._symbolUiAction.pushInvalid(Strings[StringId.TopShareholdersOnlySupportNzx]);
         } else {
             this._symbolUiAction.pushValid();
-            const litIvemId = LitIvemId.createFromCodeMarket(ivemId.code, MarketId.Nzx); // need to create LitIvemId to pass into DitemFrame
+            const litIvemId = new LitIvemId(ivemId.code, MarketId.Nzx); // need to create LitIvemId to pass into DitemFrame
             this._frame.setLitIvemIdFromDitem(litIvemId, this._forceNextSymbolCommit);
             this._forceNextSymbolCommit = false;
         }
