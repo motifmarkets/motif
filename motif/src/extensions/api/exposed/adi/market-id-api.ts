@@ -15,6 +15,7 @@ export const enum MarketIdEnum {
     MyxIndex = 'MyxIndex',
     MyxOddLot = 'MyxOddLot',
     MyxBuyIn = 'MyxBuyIn',
+    Nzx = 'Nzx',
     Ptx = 'Ptx',
     Fnsx = 'Fnsx',
 }
