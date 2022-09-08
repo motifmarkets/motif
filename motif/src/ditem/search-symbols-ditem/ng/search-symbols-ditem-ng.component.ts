@@ -365,6 +365,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private handleExchangeCommitEvent() {
         const id = this._exchangeUiAction.definedValue as ExchangeId;
         this._frame.queryExchangeId = id;
+        this._marketsUiAction.pushValue(this._frame.queryMarketIds);
     }
 
     private handleMarketsCommitEvent() {
