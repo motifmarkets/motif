@@ -738,13 +738,14 @@ export namespace LitIvemIdSelectNgComponent {
                     items[i] = item;
                 }
 
+                const priorityExchangeId = this._term.exchangeId ?? this._symbolsService.defaultExchangeId;
+
                 items.sort((left, right) => {
                     const leftRoutedIvemId = left.litIvemId;
                     const leftIvemId = leftRoutedIvemId.ivemId;
                     const rightRoutedIvemId = right.litIvemId;
                     const rightIvemId = rightRoutedIvemId.ivemId;
-                    let result = ExchangeInfo.priorityCompareId(leftIvemId.exchangeId, rightIvemId.exchangeId,
-                        this._symbolsService.defaultExchangeId);
+                    let result = ExchangeInfo.priorityCompareId(leftIvemId.exchangeId, rightIvemId.exchangeId, priorityExchangeId);
                     if (result === ComparisonResult.LeftEqualsRight) {
                         result = compareString(leftIvemId.code, rightIvemId.code);
                         if (result === ComparisonResult.LeftEqualsRight) {
