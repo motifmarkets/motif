@@ -120,9 +120,9 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
     set queryIsPartial(value: boolean | undefined) {
         if (value === true) {
-            this._uiConditions[0].matchIds = [SearchSymbolsDataDefinition.Condition.MatchId.exact];
-        } else {
             this._uiConditions[0].matchIds = undefined;
+        } else {
+            this._uiConditions[0].matchIds = [SearchSymbolsDataDefinition.Condition.MatchId.exact];
         }
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering
