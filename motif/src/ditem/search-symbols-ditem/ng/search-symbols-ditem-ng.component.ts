@@ -264,7 +264,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     protected override initialise() {
-        const defaultExchangeId = this._symbolsService.defaultDefaultExchangeId;
+        const defaultExchangeId = this._symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
