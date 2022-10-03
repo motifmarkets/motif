@@ -58,7 +58,7 @@
     "angular-split": "^13.0.1",
     "decimal.js-light": "^2.5.1",
     "file-saver": "^2.0.5",
-    "golden-layout": "^2.2.0",
+    "golden-layout": "^2.6.0",
     "nanoid": "^3.1.30",
     "oidc-client-ts": "^2.0.0-rc.2",
     "revgrid": "^0.1.12",
