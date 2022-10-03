@@ -53,7 +53,7 @@
     "@angular/router": "^14.2.4",
     "@ctrl/tinycolor": "^3.4.0",
     "@jaames/iro": "^5.5.1",
-    "@motifmarkets/motif-core": "^0.0.19",
+    "@motifmarkets/motif-core": "^0.0.20",
     "@ng-select/ng-select": "^9.0.2",
     "angular-split": "^14.1.0",
     "decimal.js-light": "^2.5.1",
