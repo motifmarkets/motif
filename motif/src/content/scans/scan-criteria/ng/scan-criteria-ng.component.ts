@@ -21,7 +21,7 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
 export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective implements  OnInit, OnDestroy, AfterViewInit {
     @ViewChild('defaultViewControl', { static: true }) private _defaultViewControlComponent: CaptionedCheckboxNgComponent;
 
-    @ViewChild('predefinedViewTypeControl', { static: true }) private _predefinedViewTypeControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('filterViewTypeControl', { static: true }) private _filterViewTypeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('formulaViewTypeControl', { static: true }) private _formulaViewTypeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('zenithViewTypeControl', { static: true }) private _zenithViewTypeControlComponent: CaptionedRadioNgComponent;
 
@@ -67,7 +67,7 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
     private initialiseComponents() {
         this._defaultViewControlComponent.initialise(this._defaultViewUiAction);
 
-        this._predefinedViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Predefined);
+        this._filterViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Filter);
         this._formulaViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Formula);
         this._zenithViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Zenith);
     }
@@ -105,13 +105,13 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
     private pushValues() {
         if (this._scan === undefined) {
             this._defaultViewUiAction.pushValue(true);
-            this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Predefined);
+            this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Filter);
         } else {
             this._defaultViewUiAction.pushValue(true);
             if (this._scan.criteriaTypeId === EditableScan.CriteriaTypeId.Custom) {
                 this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Formula);
             } else {
-                this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Predefined);
+                this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Filter);
             }
         }
     }
@@ -120,7 +120,7 @@ export class ScanCriteriaNgComponent extends ContentComponentBaseNgDirective imp
 export namespace ScanCriteriaNgComponent {
     export const enum ViewTypeId {
         // Default,
-        Predefined,
+        Filter,
         Formula,
         Zenith,
     }
@@ -144,11 +144,11 @@ export namespace ScanCriteriaNgComponent {
             //     displayId: StringId.ScanCriteriaViewTypeDisplay_Default,
             //     descriptionId: StringId.ScanCriteriaViewTypeDescription_Default,
             // },
-            Predefined: {
-                id: ViewTypeId.Predefined,
-                name: 'Predefined',
-                displayId: StringId.ScanCriteriaViewTypeDisplay_Predefined,
-                descriptionId: StringId.ScanCriteriaViewTypeDescription_Predefined,
+            Filter: {
+                id: ViewTypeId.Filter,
+                name: 'Filter',
+                displayId: StringId.ScanCriteriaViewTypeDisplay_Filter,
+                descriptionId: StringId.ScanCriteriaViewTypeDescription_Filter,
             },
             Formula: {
                 id: ViewTypeId.Formula,
