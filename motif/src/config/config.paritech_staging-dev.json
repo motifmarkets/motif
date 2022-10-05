@@ -26,7 +26,7 @@
       "https://motif-services.paritech.com"
     ],
     "zenith": [
-      "wss://wsapistaging.paritech.com:443/Zenith?version=2.0"
+      "wss://websocket-staging.paritech.com/"
     ]
   },
   "openId": {

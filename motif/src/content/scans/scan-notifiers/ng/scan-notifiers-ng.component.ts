@@ -1,9 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
+    EditableScan,
     ExplicitElementsEnumArrayUiAction,
     IntegerUiAction,
-    Scan,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
@@ -35,7 +35,7 @@ export class ScanNotifiersNgComponent extends ContentComponentBaseNgDirective im
 
     public notifiersHeading = Strings[StringId.Notifiers];
 
-    private _scan: Scan | undefined;
+    private _scan: EditableScan | undefined;
 
     private readonly _mobileNotifierUiAction: BooleanUiAction;
     private readonly _smsNotifierUiAction: BooleanUiAction;
@@ -69,7 +69,7 @@ export class ScanNotifiersNgComponent extends ContentComponentBaseNgDirective im
         this.initialiseComponents();
     }
 
-    setScan(value: Scan) {
+    setScan(value: EditableScan) {
         this._scan = value;
         this.pushValues();
     }

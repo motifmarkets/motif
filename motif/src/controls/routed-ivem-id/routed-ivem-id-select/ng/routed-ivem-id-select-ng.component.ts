@@ -683,13 +683,14 @@ export namespace RoutedIvemIdSelectNgComponent {
                         activeIvemId, activeIvemName, tradingMarketIds, tradingMarketIdCount);
                     items.length = itemCount;
 
+                    const priorityExchangeId = this._term.exchangeId ?? this._symbolsService.defaultExchangeId;
+
                     items.sort((left, right) => {
                         const leftRoutedIvemId = left.routedIvemId;
                         const leftIvemId = leftRoutedIvemId.ivemId;
                         const rightRoutedIvemId = right.routedIvemId;
                         const rightIvemId = rightRoutedIvemId.ivemId;
-                        let result = ExchangeInfo.priorityCompareId(leftIvemId.exchangeId, rightIvemId.exchangeId,
-                            this._symbolsService.defaultExchangeId);
+                        let result = ExchangeInfo.priorityCompareId(leftIvemId.exchangeId, rightIvemId.exchangeId, priorityExchangeId);
                         if (result === ComparisonResult.LeftEqualsRight) {
                             result = OrderRoute.compareByDisplayPriority(leftRoutedIvemId.route, rightRoutedIvemId.route);
                             if (result === ComparisonResult.LeftEqualsRight) {

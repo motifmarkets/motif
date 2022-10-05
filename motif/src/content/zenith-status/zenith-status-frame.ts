@@ -48,7 +48,7 @@ export class ZenithStatusFrame extends ContentFrame {
     }
 
     // SessionKickedOffEvent
-    get sessionKickedOff() { return this._extConnectionDataItem.sessionKickedOff ? Strings[StringId.True] : Strings[StringId.False]; }
+    get sessionKickedOff() { return this._extConnectionDataItem.sessionTerminated? Strings[StringId.True] : Strings[StringId.False]; }
 
     // SelectedEndpointChangedEvent
     get selectedEndpoint() { return this._extConnectionDataItem.selectedEndpoint; }
@@ -163,7 +163,7 @@ export class ZenithStatusFrame extends ContentFrame {
         this._extConnectionReconnectSubscriptionId = this._extConnectionDataItem.subscribeZenithReconnectEvent(
             () => { this.handleExtConnectionZenithReconnectEvent(); }
         );
-        this._extConnectionSessionKickedOffSubscriptionId = this._extConnectionDataItem.subscribeZenithSessionKickedOffEvent(
+        this._extConnectionSessionKickedOffSubscriptionId = this._extConnectionDataItem.subscribeZenithSessionTerminatedEvent(
             () => { this.handleExtConnectionSessionKickedOffEvent(); }
         );
         this._extConnectionSelectedEndpointChangedSubscriptionId = this._extConnectionDataItem.subscribeZenithSelectedEndpointChangedEvent(
@@ -181,7 +181,7 @@ export class ZenithStatusFrame extends ContentFrame {
         this._extConnectionPublisherStateChangeSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribeZenithReconnectEvent(this._extConnectionReconnectSubscriptionId);
         this._extConnectionReconnectSubscriptionId = undefined;
-        this._extConnectionDataItem.unsubscribeZenithSessionKickedOffEvent(this._extConnectionSessionKickedOffSubscriptionId);
+        this._extConnectionDataItem.unsubscribeZenithSessionTerminatedEvent(this._extConnectionSessionKickedOffSubscriptionId);
         this._extConnectionSessionKickedOffSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribeZenithSelectedEndpointChangedEvent(this._extConnectionSelectedEndpointChangedSubscriptionId);
         this._extConnectionSelectedEndpointChangedSubscriptionId = undefined;

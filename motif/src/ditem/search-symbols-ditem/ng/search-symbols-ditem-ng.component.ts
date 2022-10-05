@@ -264,7 +264,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     protected override initialise() {
-        const defaultExchangeId = this._symbolsService.defaultDefaultExchangeId;
+        const defaultExchangeId = this._symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
@@ -365,6 +365,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private handleExchangeCommitEvent() {
         const id = this._exchangeUiAction.definedValue as ExchangeId;
         this._frame.queryExchangeId = id;
+        this._marketsUiAction.pushValue(this._frame.queryMarketIds);
     }
 
     private handleMarketsCommitEvent() {

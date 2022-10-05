@@ -72,7 +72,26 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     set queryShowFull(value: boolean) { this._uiDataDefinition.fullSymbol = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryExchangeId() { return this._uiDataDefinition.exchangeId; }
-    set queryExchangeId(value: ExchangeId | undefined) { this._uiDataDefinition.exchangeId = value; }
+    set queryExchangeId(value: ExchangeId | undefined) {
+        this._uiDataDefinition.exchangeId = value;
+        if (value !== undefined) {
+            const oldMarketIds = this._uiDataDefinition.marketIds;
+            if (oldMarketIds !== undefined) {
+                let oldMarketIdsIncludeNewExchange = false;
+                for (const oldMarketId of oldMarketIds) {
+                    const oldMarketExchangeId = MarketInfo.idToExchangeId(oldMarketId);
+                    if (oldMarketExchangeId === value) {
+                        oldMarketIdsIncludeNewExchange = true;
+                        break;
+                    }
+                }
+
+                if (!oldMarketIdsIncludeNewExchange) {
+                    this._uiDataDefinition.marketIds = [];
+                }
+            }
+        }
+    }
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get queryMarketIds() { return this._uiDataDefinition.marketIds; }
     set queryMarketIds(value: readonly MarketId[] | undefined) { this._uiDataDefinition.marketIds = value?.slice(); }
@@ -120,9 +139,9 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
     set queryIsPartial(value: boolean | undefined) {
         if (value === true) {
-            this._uiConditions[0].matchIds = [SearchSymbolsDataDefinition.Condition.MatchId.exact];
-        } else {
             this._uiConditions[0].matchIds = undefined;
+        } else {
+            this._uiConditions[0].matchIds = [SearchSymbolsDataDefinition.Condition.MatchId.exact];
         }
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering

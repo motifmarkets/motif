@@ -5,7 +5,18 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
-import { delay1Tick, Logger, MultiEvent, SessionState, SessionStateId, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    delay1Tick,
+    Integer,
+    Logger,
+    MultiEvent,
+    PublisherSessionTerminatedReasonId,
+    SessionState,
+    SessionStateId,
+    StringId,
+    Strings,
+    UnreachableCaseError
+} from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { SessionNgService } from '../../ng/session-ng.service';
@@ -24,7 +35,7 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
 
     private _session: SessionService;
     private _sessionLogSubscriptionId: MultiEvent.SubscriptionId;
-    private _sessionKickedOffSubscriptionId: MultiEvent.SubscriptionId;
+    private _publisherSessionTerminatedSubscriptionId: MultiEvent.SubscriptionId;
 
     private _logTextAreaDisplayedSetTimeoutId: ReturnType<typeof setInterval> | undefined;
 
@@ -39,8 +50,9 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
 
         const config = configNgService.config;
 
-        this._sessionKickedOffSubscriptionId =
-            this._session.subscribeKickedOffEvent(() => this.handleSessionManagerKickedOffEvent() );
+        this._publisherSessionTerminatedSubscriptionId = this._session.subscribePublisherSessionTerminatedEvent(
+            (reasonId, reasonCode, defaultReasonText) => this.handlePublisherSessionTerminatedEvent(reasonId, reasonCode, defaultReasonText)
+        );
         this._sessionLogSubscriptionId =
             this._session.subscribeConsolidatedLogEvent(
                 (time, logLevelId, text) => this.handleSessionManagerLogEvent(time, logLevelId, text)
@@ -59,9 +71,23 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
         this.finalise();
     }
 
-    private handleSessionManagerKickedOffEvent() {
-        const kickedOffText = Strings[StringId.SessionEndedAsLoggedInElsewhere];
-        this.addLogEntry(new Date(), Logger.LevelId.Info, kickedOffText);
+    private handlePublisherSessionTerminatedEvent(
+        reasonId: PublisherSessionTerminatedReasonId,
+        reasonCode: Integer,
+        defaultReasonText: string
+    ) {
+        let sessionFinishedReason: string;
+        switch (reasonId) {
+            case PublisherSessionTerminatedReasonId.KickedOff:
+                sessionFinishedReason = Strings[StringId.SessionEndedAsLoggedInElsewhere];
+                break;
+            case PublisherSessionTerminatedReasonId.Other:
+                sessionFinishedReason = `${defaultReasonText} [${reasonCode}]`;
+                break;
+            default:
+                throw new UnreachableCaseError('SNCHPSTE10665', reasonId);
+        }
+        this.addLogEntry(new Date(), Logger.LevelId.Info, sessionFinishedReason);
         this._cdr.markForCheck();
     }
 
@@ -80,8 +106,8 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
     }
 
     private finalise() {
-        this._session.unsubscribeKickedOffEvent(this._sessionKickedOffSubscriptionId);
-        this._sessionKickedOffSubscriptionId = undefined;
+        this._session.unsubscribePublisherSessionTerminatedEvent(this._publisherSessionTerminatedSubscriptionId);
+        this._publisherSessionTerminatedSubscriptionId = undefined;
         this._session.unsubscribeConsolidatedLogEvent(this._sessionLogSubscriptionId);
         this._sessionLogSubscriptionId = undefined;
     }

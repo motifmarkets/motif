@@ -11,6 +11,7 @@ export const enum ExchangeIdEnum {
     Asx = 'Asx',
     Cxa = 'Cxa',
     Myx = 'Myx',
+    Nzx = 'Nzx',
     Ptx = 'Ptx',
     Fnsx = 'Fnsx',
 }

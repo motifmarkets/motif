@@ -1,8 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
+    EditableScan,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
-    Scan,
     StringId,
     Strings,
     StringUiAction
@@ -26,7 +26,7 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective i
     @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
 
-    private _scan: Scan | undefined;
+    private _scan: EditableScan | undefined;
 
     private readonly _nameUiAction: StringUiAction;
     private readonly _descriptionUiAction: StringUiAction;
@@ -52,7 +52,7 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective i
         this.initialiseComponents();
     }
 
-    setScan(value: Scan | undefined) {
+    setScan(value: EditableScan | undefined) {
         this._scan = value;
         this.pushValues();
     }
@@ -100,13 +100,13 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective i
         const action = new ExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Type]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Type]);
-        const ids = Scan.CriteriaType.getAllIds();
+        const ids = EditableScan.CriteriaType.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => (
                 {
                     element: id,
-                    caption: Scan.CriteriaType.idToDisplay(id),
-                    title: Scan.CriteriaType.idToDisplay(id),
+                    caption: EditableScan.CriteriaType.idToDisplay(id),
+                    title: EditableScan.CriteriaType.idToDisplay(id),
                 }
             )
         );
