@@ -199,7 +199,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     protected save(element: JsonElement) {
         if (this._explicitBalancesHeight) {
-            const [balancesHeight, holdingsHeight] = this.getBalancesHoldingsHeights();
+            const balancesHeight = this.getBalancesHeight();
             element.setInteger(HoldingsDitemNgComponent.JsonName.balancesHeight, balancesHeight);
         }
 
@@ -299,21 +299,16 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         }
     }
 
-    private getBalancesHoldingsHeights() {
+    private getBalancesHeight() {
         const sizes = this._balancesHoldingsSplitComponent.getVisibleAreaSizes();
         if (sizes.length !== 2) {
-            throw new AssertInternalError('HDCGDTW2323998L', sizes.length.toString(10));
+            throw new AssertInternalError('HDNCGBHHL23239', sizes.length.toString(10));
         } else {
             const balancesHeight = sizes[0];
             if (balancesHeight === '*') {
-                throw new AssertInternalError('HDCGDTW2323998D');
+                throw new AssertInternalError('HDNCGBHH023239');
             } else {
-                const holdingsHeight = sizes[1];
-                if (holdingsHeight === '*') {
-                    throw new AssertInternalError('HDCGDTW2323998D');
-                } else {
-                    return [balancesHeight, holdingsHeight];
-                }
+                return balancesHeight;
             }
         }
     }
