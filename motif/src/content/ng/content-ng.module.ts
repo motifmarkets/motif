@@ -23,6 +23,7 @@ import { DepthGridLayoutsEditorNgComponent } from '../depth-grid-layouts-editor/
 import { DepthSideNgComponent } from '../depth-side/ng-api';
 import { DepthNgComponent } from '../depth/ng-api';
 import { ExchangeSettingsNgComponent } from '../exchange-settings/ng-api';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../expandable-collapsible-lined-heading/ng-api';
 import {
     AvailableExtensionListNgComponent,
     ExtensionDetailNgComponent,
@@ -51,15 +52,16 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { ParidepthGridLayoutsEditorNgComponent } from '../paridepth-grid-layouts-editor/ng-api';
-import { ScanCriteriaNgComponent } from '../scans/scan-criteria/ng-api';
-import { ScanNewNgComponent } from '../scans/scan-new/ng-api';
-import { ScanNotifiersNgComponent } from '../scans/scan-notifiers/ng-api';
-import { ScanPropertiesNgComponent } from '../scans/scan-properties/ng-api';
-import { ScanTargetsNgComponent } from '../scans/scan-targets/ng-api';
-import { ScanTypeDescriptionNgComponent } from '../scans/scan-type-description/ng/scan-type-description-ng.component';
-import { ScanTypesControlsNgComponent } from '../scans/scan-types-controls/ng/scan-types-controls-ng.component';
-import { ScanTypesGridNgComponent } from '../scans/scan-types-grid/ng/scan-types-grid-ng.component';
-import { ScansNgComponent } from '../scans/scans/ng/scans-ng.component';
+import {
+    GeneralScanPropertiesSectionNgComponent,
+    NotifiersScanPropertiesSectionNgComponent,
+    ScanCriteriaNgComponent,
+    ScanNewNgComponent, ScanPropertiesNgComponent, ScansNgComponent,
+    ScanTargetsNgComponent,
+    ScanTypeDescriptionNgComponent,
+    ScanTypesControlsNgComponent,
+    ScanTypesGridNgComponent
+} from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
 import { ExchangesSettingsNgComponent } from '../settings/exchanges-settings/ng-api';
 import {
@@ -128,13 +130,15 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SimpleGridNgComponent,
         ScansNgComponent,
         ScanPropertiesNgComponent,
+        GeneralScanPropertiesSectionNgComponent,
         ScanNewNgComponent,
         ScanTypesGridNgComponent,
         ScanTypesControlsNgComponent,
         ScanTypeDescriptionNgComponent,
         ScanTargetsNgComponent,
-        ScanNotifiersNgComponent,
+        NotifiersScanPropertiesSectionNgComponent,
         ScanCriteriaNgComponent,
+        ExpandableCollapsibleLinedHeadingNgComponent,
     ],
     imports: [
         CommonModule,

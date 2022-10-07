@@ -27,10 +27,11 @@ export * from './ng/content-component-base-ng.directive';
 export * from './ng/content-ng.module';
 export * from './order-request-step/ng-api';
 export * from './paridepth-grid-layouts-editor/ng-api';
-export * from './scans/ng-api';
+export * from './scan/ng-api';
 export * from './settings/ng-api';
 export * from './status-summary/ng-api';
 export * from './table/ng-api';
 export * from './trades/ng-api';
 export * from './zenith-status/ng-api';
+export * from './expandable-collapsible-lined-heading/ng-api';
 

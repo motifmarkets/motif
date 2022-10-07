@@ -17,6 +17,9 @@ import {
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
+import './svg/noun-collapse-vertical-2439339.svg';
+import './svg/noun-expand-vertical-2439362.svg';
+import './svg/noun-minimize-4143571.svg';
 import './svg/noun_blank_1667007.svg';
 import './svg/noun_bolt_3396896.svg';
 import './svg/noun_Brightness-Full_218687.svg';
@@ -60,7 +63,6 @@ import './svg/noun_Tint-Hollow_120409.svg';
 import './svg/noun_up-chevron_3529491.svg';
 import './svg/noun_world_2593665.svg';
 import './svg/noun_Write-File_1669429.svg';
-
 
 @Component({
     selector: 'app-svg-button',
@@ -313,7 +315,13 @@ export namespace SvgButtonNgComponent {
                 spriteId: 'noun_details_251351' }, // falInfo
             ToggleSearchTermNotExchangedMarketProcessed: { id: IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed,
                 spriteId: 'noun_world_2593665' },
-            };
+            ExpandVertically: { id: IconButtonUiAction.IconId.ExpandVertically,
+                spriteId: 'noun-expand-vertical-2439362' },
+            RestoreVertically: { id: IconButtonUiAction.IconId.RestoreVertically,
+                spriteId: 'noun-minimize-4143571' },
+            CollapseVertically: { id: IconButtonUiAction.IconId.CollapseVertically,
+                spriteId: 'noun-collapse-vertical-2439339' },
+        };
 
         export const idCount = Object.keys(infosObject).length;
         const infos = Object.values(infosObject);

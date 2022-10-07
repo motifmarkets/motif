@@ -13,7 +13,7 @@ import { DepthFrame } from '../depth/internal-api';
 import { FeedsFrame } from '../feeds/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
-import { ScansFrame } from '../scans/internal-api';
+import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TableFrame } from '../table/internal-api';
 import { TradesFrame } from '../trades/internal-api';

@@ -1,0 +1,16 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-expandable-collapsible-lined-heading-ng></app-expandable-collapsible-lined-heading-ng>
+
+<section id="viewTypeSelector">
+    <app-captioned-checkbox #defaultViewControl id="defaultViewControl" inputId="defaultViewCheckbox"></app-captioned-checkbox>
+    <app-captioned-radio #filterViewTypeControl id="filterViewTypeControl" inputId="filterViewTypeRadio" [name]="viewTypeRadioName"></app-captioned-radio>
+    <app-captioned-radio #formulaViewTypeControl id="formulaViewTypeControl" inputId="formulaViewTypeRadio" [name]="viewTypeRadioName"></app-captioned-radio>
+    <app-captioned-radio #zenithViewTypeControl id="zenithViewTypeControl" inputId="zenithViewTypeRadio" [name]="viewTypeRadioName"></app-captioned-radio>
+</section>
+
+<ng-template #typeContainer></ng-template>

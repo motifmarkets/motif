@@ -72,6 +72,10 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.Details: return BuiltinIconButtonUiActionApi.IconIdEnum.Details;
                 case IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed:
                     return BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed;
+                case IconButtonUiAction.IconId.ExpandVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.ExpandVertically;
+                case IconButtonUiAction.IconId.RestoreVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.RestoreVertically;
+                case IconButtonUiAction.IconId.CollapseVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.CollapseVertically;
+
                 default: throw new UnreachableCaseError('BIBUAITAU09992223', value);
             }
         }
@@ -123,6 +127,10 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Details: return IconButtonUiAction.IconId.Details;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed:
                     return IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.ExpandVertically: return IconButtonUiAction.IconId.ExpandVertically;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.RestoreVertically: return IconButtonUiAction.IconId.RestoreVertically;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.CollapseVertically: return IconButtonUiAction.IconId.CollapseVertically;
+
                 default:
                     throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidBuiltinIconButtonUiActionIconId, enumValue);
             }

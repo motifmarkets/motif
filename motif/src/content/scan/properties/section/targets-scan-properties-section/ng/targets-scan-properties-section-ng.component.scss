@@ -1,0 +1,23 @@
+@import './partials/top-bordered-fieldset-mixin';
+@import './partials/top-bordered-fieldset-legend-mixin';
+
+:host {
+    display: flex;
+    flex-direction: column;
+}
+
+#targets {
+    display: flex;
+    gap: 2em;
+
+    #targetSubTypeSelector {
+        display: flex;
+        flex-direction: column;
+    }
+
+    #targetSubTypes {
+        .subTargetTypeHeading {
+            margin-top: 0;
+        }
+    }
+}

@@ -62,17 +62,17 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     public readonly showLegend: string;
     public fieldName: string | undefined = undefined;
 
-    private _commandRegisterService: CommandRegisterService;
+    private readonly _commandRegisterService: CommandRegisterService;
 
-    private _cancelSearchUiAction: IconButtonUiAction;
-    private _searchNextUiAction: IconButtonUiAction;
-    private _searchEditUiAction: StringUiAction;
-    private _moveUpUiAction: IconButtonUiAction;
-    private _moveTopUiAction: IconButtonUiAction;
-    private _moveDownUiAction: IconButtonUiAction;
-    private _moveBottomUiAction: IconButtonUiAction;
-    private _filterUiAction: ExplicitElementsEnumUiAction;
-    private _fieldVisibleUiAction: BooleanUiAction;
+    private readonly _cancelSearchUiAction: IconButtonUiAction;
+    private readonly _searchNextUiAction: IconButtonUiAction;
+    private readonly _searchEditUiAction: StringUiAction;
+    private readonly _moveUpUiAction: IconButtonUiAction;
+    private readonly _moveTopUiAction: IconButtonUiAction;
+    private readonly _moveDownUiAction: IconButtonUiAction;
+    private readonly _moveBottomUiAction: IconButtonUiAction;
+    private readonly _filterUiAction: ExplicitElementsEnumUiAction;
+    private readonly _fieldVisibleUiAction: BooleanUiAction;
 
     private _currentRecordIndex: Integer | undefined = undefined;
     // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;

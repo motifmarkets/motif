@@ -59,6 +59,9 @@ export namespace BuiltinIconButtonUiAction {
         HistoricalCompare = 'HistoricalCompare',
         Details = 'Details',
         ToggleSearchTermNotExchangedMarketProcessed = 'ToggleSearchTermNotExchangedMarketProcessed',
+        ExpandVertically = 'ExpandVertically',
+        RestoreVertically = 'RestoreVertically',
+        CollapseVertically ='CollapseVertically',
     }
 
     export type IconId = keyof typeof IconIdEnum;
