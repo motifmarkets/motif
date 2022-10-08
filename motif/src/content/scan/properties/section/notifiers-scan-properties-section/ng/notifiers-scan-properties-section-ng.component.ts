@@ -35,7 +35,7 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
     @ViewChild('minimumElapsedTimeLabel', { static: true }) private _minimumElapsedTimeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('minimumElapsedTimeControl', { static: true }) private _minimumElapsedTimeControlComponent: IntegerTextInputNgComponent;
 
-    public notifiersHeading = Strings[StringId.Notifiers];
+    public sectionHeadingText = Strings[StringId.Notifiers];
 
     private _scan: EditableScan | undefined;
 

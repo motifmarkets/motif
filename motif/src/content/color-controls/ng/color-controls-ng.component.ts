@@ -77,7 +77,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     itemChangedEventer: ColorControlsNgComponent.ItemChangedEventer;
     colorInternallyChangedEventer: ColorControlsNgComponent.ColorInternallyChangedEventer;
     requestActiveInPickerEventer: ColorControlsNgComponent.RequestActiveInPickerEventer;
-    hideInPickerChangedEventer: ColorControlsNgComponent.HideInPickerChangedEventer;
+    colorHiddenInPickerChangedEventer: ColorControlsNgComponent.ColorHiddenInPickerChangedEventer;
 
     public activeInPickerIndicatorFontWeight: string;
     public heading: string;
@@ -620,7 +620,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         action.pushValue(false);
         action.pushAccepted(true);
         action.commitEvent = () => {
-            this.hideInPickerChangedEventer(this._hideInPickerUiAction.definedValue);
+            this.colorHiddenInPickerChangedEventer(this._hideInPickerUiAction.definedValue);
         };
         return action;
     }
@@ -870,7 +870,7 @@ export namespace ColorControlsNgComponent {
     export type ItemChangedEventer = (itemId: ColorScheme.ItemId) => void;
     export type ColorInternallyChangedEventer = (rgb: RGB | undefined) => void;
     export type RequestActiveInPickerEventer = (this: void) => void;
-    export type HideInPickerChangedEventer = (this: void, hide: boolean) => void;
+    export type ColorHiddenInPickerChangedEventer = (this: void, hide: boolean) => void;
 
     export interface CalculatedColor {
         typeId: ItemColorTypeId;

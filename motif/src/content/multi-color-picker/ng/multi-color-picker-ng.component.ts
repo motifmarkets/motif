@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, HostBinding } from '@angular/core';
 import { IroColor } from '@irojs/iro-core';
 import iro from '@jaames/iro';
 import { ColorPickerProps, ColorPickerState, IroColorPicker } from '@jaames/iro/dist/ColorPicker';
@@ -12,12 +12,14 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective {
+    @HostBinding('class.hidden') public hidden = true;
+
     activeChangedEventer: MultiColorPickerNgComponent.ActiveChangedEventer;
     inputChangeEventer: MultiColorPickerNgComponent.InputChangeEventer;
 
-    private _hostElement: HTMLElement;
+    private readonly _hostElement: HTMLElement;
+    private readonly _colorPicker: IroColorPicker;
     private _pickerType = MultiColorPickerNgComponent.PickerTypeId.HueSaturation;
-    private _colorPicker: IroColorPicker;
 
     private _entries: BkgdFore.Entries = [
         {
@@ -61,9 +63,9 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
         }
     }
 
-    setHide(bkgdForeId: ColorScheme.BkgdForeId, hide: boolean) {
+    setColorHidden(bkgdForeId: ColorScheme.BkgdForeId, hidden: boolean) {
         const entry = this._entries[bkgdForeId];
-        if (hide) {
+        if (hidden) {
             if (!entry.hidden) {
                 entry.hidden = true;
                 this.checkRemoveColor(bkgdForeId);
@@ -167,9 +169,11 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
                 const colorsCount = this._colorPicker.colors.length;
                 if (colorsCount === 1 && this.getOtherEntry(bkgdForeId).index < 0) {
                     // Color Picker cannot have 0 colors. So if we already have 1 color but the other entry is unused, the existing
-                    // color is not a real one.  Overwrite.
+                    // color is not a real one. To handle this, this component is hidden when there are 0 colors.
+                    // Overwrite the existing color and make this component visible again.
                     entry.index = 0;
                     this._colorPicker.colors[0].rgb = entry.rgb;
+                    this.hidden = false;
                 } else {
                     entry.index = colorsCount;
                     this._colorPicker.addColor(entry.rgb);
@@ -190,8 +194,10 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
             }
 
             if (this._colorPicker.colors.length > 1) {
-                // Color picker cannot have 0 colors
                 this._colorPicker.removeColor(index);
+            } else {
+                // Color picker cannot have 0 colors.  So hide this component when neither background or foreground have a color.
+                this.hidden = true;
             }
         }
     }

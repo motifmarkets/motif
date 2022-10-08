@@ -24,28 +24,30 @@ import { ScanPropertiesSectionNgDirective } from '../../../scan-properties-secti
     styleUrls: ['./criteria-scan-properties-section-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScanCriteriaNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
+    implements OnInit, OnDestroy, AfterViewInit {
+
     @ViewChild('defaultViewControl', { static: true }) private _defaultViewControlComponent: CaptionedCheckboxNgComponent;
 
-    @ViewChild('filterViewTypeControl', { static: true }) private _filterViewTypeControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('formulaViewTypeControl', { static: true }) private _formulaViewTypeControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('zenithViewTypeControl', { static: true }) private _zenithViewTypeControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('listViewControl', { static: true }) private _listViewControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('formulaViewControl', { static: true }) private _formulaViewControlComponent: CaptionedRadioNgComponent;
+    @ViewChild('zenithViewControl', { static: true }) private _zenithViewControlComponent: CaptionedRadioNgComponent;
 
-    public criteriaHeading = Strings[StringId.Criteria];
-    public readonly viewTypeRadioName: string;
+    public sectionHeadingText = Strings[StringId.Criteria];
+    public readonly viewRadioName: string;
 
     private _scan: EditableScan | undefined;
 
     private readonly _defaultViewUiAction: BooleanUiAction;
-    private readonly _viewTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     constructor(private readonly _cdr: ChangeDetectorRef) {
         super();
 
-        this.viewTypeRadioName = this.generateInstancedRadioName('viewType');
+        this.viewRadioName = this.generateInstancedRadioName('view');
 
         this._defaultViewUiAction = this.createDefaultViewUiAction();
-        this._viewTypeUiAction = this.createViewUiAction();
+        this._viewUiAction = this.createViewUiAction();
     }
 
     ngOnInit() {
@@ -67,15 +69,15 @@ export class ScanCriteriaNgComponent extends ScanPropertiesSectionNgDirective im
 
     protected finalise() {
         this._defaultViewUiAction.finalise();
-        this._viewTypeUiAction.finalise();
+        this._viewUiAction.finalise();
     }
 
     private initialiseComponents() {
         this._defaultViewControlComponent.initialise(this._defaultViewUiAction);
 
-        this._filterViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Filter);
-        this._formulaViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Formula);
-        this._zenithViewTypeControlComponent.initialiseEnum(this._viewTypeUiAction, ScanCriteriaNgComponent.ViewTypeId.Zenith);
+        this._listViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.List);
+        this._formulaViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Formula);
+        this._zenithViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Zenith);
     }
 
     private createDefaultViewUiAction() {
@@ -90,14 +92,14 @@ export class ScanCriteriaNgComponent extends ScanPropertiesSectionNgDirective im
 
     private createViewUiAction() {
         const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.ScanCriteriaCaption_ViewType]);
-        action.pushTitle(Strings[StringId.ScanCriteriaDescription_ViewType]);
-        const ids = ScanCriteriaNgComponent.ViewType.getAllIds();
+        action.pushCaption(Strings[StringId.ScanCriteriaCaption_View]);
+        action.pushTitle(Strings[StringId.ScanCriteriaDescription_View]);
+        const ids = CriteriaScanPropertiesSectionNgComponent.View.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ScanCriteriaNgComponent.ViewType.idToDisplay(id),
-                    title: ScanCriteriaNgComponent.ViewType.idToDescription(id),
+                    caption: CriteriaScanPropertiesSectionNgComponent.View.idToDisplay(id),
+                    title: CriteriaScanPropertiesSectionNgComponent.View.idToDescription(id),
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
@@ -111,28 +113,28 @@ export class ScanCriteriaNgComponent extends ScanPropertiesSectionNgDirective im
     private pushValues() {
         if (this._scan === undefined) {
             this._defaultViewUiAction.pushValue(true);
-            this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Filter);
+            this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.List);
         } else {
             this._defaultViewUiAction.pushValue(true);
             if (this._scan.criteriaTypeId === EditableScan.CriteriaTypeId.Custom) {
-                this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Formula);
+                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Formula);
             } else {
-                this._viewTypeUiAction.pushValue(ScanCriteriaNgComponent.ViewTypeId.Filter);
+                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.List);
             }
         }
     }
 }
 
-export namespace ScanCriteriaNgComponent {
-    export const enum ViewTypeId {
+export namespace CriteriaScanPropertiesSectionNgComponent {
+    export const enum ViewId {
         // Default,
-        Filter,
+        List,
         Formula,
         Zenith,
     }
 
-    export namespace ViewType {
-        export type Id = ViewTypeId;
+    export namespace View {
+        export type Id = ViewId;
 
         interface Info {
             readonly id: Id;
@@ -141,32 +143,32 @@ export namespace ScanCriteriaNgComponent {
             readonly descriptionId: StringId;
         }
 
-        type InfosObject = { [id in keyof typeof ViewTypeId]: Info };
+        type InfosObject = { [id in keyof typeof ViewId]: Info };
 
         const infosObject: InfosObject = {
             // Default: {
-            //     id: CriteriaViewTypeId.Default,
+            //     id: CriteriaViewId.Default,
             //     name: 'Default',
-            //     displayId: StringId.ScanCriteriaViewTypeDisplay_Default,
-            //     descriptionId: StringId.ScanCriteriaViewTypeDescription_Default,
+            //     displayId: StringId.ScanCriteriaViewDisplay_Default,
+            //     descriptionId: StringId.ScanCriteriaViewDescription_Default,
             // },
-            Filter: {
-                id: ViewTypeId.Filter,
-                name: 'Filter',
-                displayId: StringId.ScanCriteriaViewTypeDisplay_Filter,
-                descriptionId: StringId.ScanCriteriaViewTypeDescription_Filter,
+            List: {
+                id: ViewId.List,
+                name: 'List',
+                displayId: StringId.ScanCriteriaViewDisplay_List,
+                descriptionId: StringId.ScanCriteriaViewDescription_List,
             },
             Formula: {
-                id: ViewTypeId.Formula,
+                id: ViewId.Formula,
                 name: 'Formula',
-                displayId: StringId.ScanCriteriaViewTypeDisplay_Formula,
-                descriptionId: StringId.ScanCriteriaViewTypeDescription_Formula,
+                displayId: StringId.ScanCriteriaViewDisplay_Formula,
+                descriptionId: StringId.ScanCriteriaViewDescription_Formula,
             },
             Zenith: {
-                id: ViewTypeId.Zenith,
+                id: ViewId.Zenith,
                 name: 'Zenith',
-                displayId: StringId.ScanCriteriaViewTypeDisplay_Zenith,
-                descriptionId: StringId.ScanCriteriaViewTypeDescription_Zenith,
+                displayId: StringId.ScanCriteriaViewDisplay_Zenith,
+                descriptionId: StringId.ScanCriteriaViewDescription_Zenith,
             },
         } as const;
 
@@ -176,7 +178,9 @@ export namespace ScanCriteriaNgComponent {
         export function initialise() {
             const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
             if (outOfOrderIdx >= 0) {
-                throw new EnumInfoOutOfOrderError('ScanCriteriaNgComponent.ViewTypeId', outOfOrderIdx, infos[outOfOrderIdx].name);
+                throw new EnumInfoOutOfOrderError(
+                    'CriteriaScanPropertiesSectionNgComponent.ViewId', outOfOrderIdx, infos[outOfOrderIdx].name
+                );
             }
         }
 
@@ -202,8 +206,8 @@ export namespace ScanCriteriaNgComponent {
     }
 }
 
-export namespace ScanCriteriaNgComponentModule {
+export namespace CriteriaScanPropertiesSectionNgComponentModule {
     export function initialiseStatic() {
-        ScanCriteriaNgComponent.ViewType.initialise();
+        CriteriaScanPropertiesSectionNgComponent.View.initialise();
     }
 }

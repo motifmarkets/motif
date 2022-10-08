@@ -4,8 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-:host {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-}
+export * from './zenith/ng-api';
+

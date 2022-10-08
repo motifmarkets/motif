@@ -5,4 +5,5 @@
  */
 
 export * from './criteria-scan-properties-section/ng-api';
+export * from './view/ng-api';
 

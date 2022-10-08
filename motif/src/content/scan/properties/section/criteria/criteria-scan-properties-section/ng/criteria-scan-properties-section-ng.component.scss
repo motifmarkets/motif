@@ -12,11 +12,11 @@
     flex-direction: column;
 }
 
-#viewTypeSelector {
+#viewSelector {
     display: flex;
     gap: 1em;
 
-    #predefinedViewTypeControl {
+    #defaultViewControl {
         margin-left: 1em;
     }
 }

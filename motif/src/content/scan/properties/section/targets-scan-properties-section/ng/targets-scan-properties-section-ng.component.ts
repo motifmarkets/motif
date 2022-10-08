@@ -39,7 +39,7 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: EnumInputNgComponent;
     @ViewChild('multiMarketControl', { static: true }) private _multiMarketControlComponent: EnumArrayInputNgComponent;
 
-    public targetsHeading = Strings[StringId.Targets];
+    public sectionHeadingText = Strings[StringId.Targets];
     public readonly targetSubTypeRadioName: string;
 
     private readonly _symbolsService: SymbolsService;

@@ -26,6 +26,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
 
+    public sectionHeadingText = Strings[StringId.General];
+
     private _scan: EditableScan | undefined;
 
     private readonly _nameUiAction: StringUiAction;

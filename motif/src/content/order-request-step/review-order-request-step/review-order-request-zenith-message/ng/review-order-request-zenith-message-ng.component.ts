@@ -22,14 +22,14 @@ export class ReviewOrderRequestZenithMessageNgComponent extends ContentComponent
     public bkgdColor: string;
     public foreColor: string;
 
-    private _settingsService: SettingsService;
-    private _colorSettings: ColorSettings;
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private readonly _settingsNgService: SettingsNgService) {
+    constructor(settingsNgService: SettingsNgService) {
         super();
 
-        this._settingsService = this._settingsNgService.settingsService;
+        this._settingsService = settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.updateColors());

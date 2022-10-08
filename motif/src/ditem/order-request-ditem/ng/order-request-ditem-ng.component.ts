@@ -68,7 +68,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     public reviewBackSectionWidth: string = HtmlTypes.Width.MaxContent;
     public reviewButtonInitDisplayed: boolean;
 
-    public newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Hidden;
+    public newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Hidden;
     public newAmendRequestPossibleFlagChar = Strings[StringId.OrderRequest_NewAmendPossibleFlagChar];
 
     private readonly _primaryUiAction: IconButtonUiAction;
@@ -201,9 +201,9 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
 
     public pushNewAmendRequestPossible(value: boolean) {
         if (value) {
-            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Visible;
+            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Visible;
         } else {
-            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Hidden;
+            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Hidden;
         }
         this.markForCheck();
     }

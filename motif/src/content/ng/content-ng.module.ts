@@ -53,14 +53,17 @@ import {
 } from '../order-request-step/ng-api';
 import { ParidepthGridLayoutsEditorNgComponent } from '../paridepth-grid-layouts-editor/ng-api';
 import {
+    CriteriaScanPropertiesSectionNgComponent,
     GeneralScanPropertiesSectionNgComponent,
     NotifiersScanPropertiesSectionNgComponent,
-    ScanCriteriaNgComponent,
-    ScanNewNgComponent, ScanPropertiesNgComponent, ScansNgComponent,
+    ScanNewNgComponent,
+    ScanPropertiesNgComponent,
+    ScansNgComponent,
     ScanTargetsNgComponent,
     ScanTypeDescriptionNgComponent,
     ScanTypesControlsNgComponent,
-    ScanTypesGridNgComponent
+    ScanTypesGridNgComponent,
+    ZenithScanCriteriaViewNgComponent
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
 import { ExchangesSettingsNgComponent } from '../settings/exchanges-settings/ng-api';
@@ -137,8 +140,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanTypeDescriptionNgComponent,
         ScanTargetsNgComponent,
         NotifiersScanPropertiesSectionNgComponent,
-        ScanCriteriaNgComponent,
+        CriteriaScanPropertiesSectionNgComponent,
         ExpandableCollapsibleLinedHeadingNgComponent,
+        ZenithScanCriteriaViewNgComponent,
     ],
     imports: [
         CommonModule,

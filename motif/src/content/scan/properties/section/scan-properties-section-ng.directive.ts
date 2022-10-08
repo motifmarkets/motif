@@ -9,4 +9,5 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
 
 @Directive()
 export abstract class ScanPropertiesSectionNgDirective extends ContentComponentBaseNgDirective {
+    public abstract sectionHeadingText: string;
 }

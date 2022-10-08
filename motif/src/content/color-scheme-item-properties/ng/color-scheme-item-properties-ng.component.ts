@@ -17,7 +17,7 @@ import {
     NumberUiAction,
     StringId,
     Strings,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'controls-ng-api';
@@ -104,14 +104,16 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
         this._bkgdControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
         this._bkgdControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Bkgd, rgb);
         this._bkgdControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Bkgd);
-        this._bkgdControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Bkgd, hide);
+        this._bkgdControls.colorHiddenInPickerChangedEventer =
+            (hidden) => this._multiPicker.setColorHidden(ColorScheme.BkgdForeId.Bkgd, hidden);
 
         this._foreControls.bkdgFore = ColorScheme.BkgdForeId.Fore;
         this._foreControls.position = ColorControlsNgComponent.Position.Bottom;
         this._foreControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
         this._foreControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Fore, rgb);
         this._foreControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Fore);
-        this._foreControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Fore, hide);
+        this._foreControls.colorHiddenInPickerChangedEventer =
+            (hidden) => this._multiPicker.setColorHidden(ColorScheme.BkgdForeId.Fore, hidden);
 
         this._multiPicker.inputChangeEventer = (backForeId, rgb) => {
             switch (backForeId) {

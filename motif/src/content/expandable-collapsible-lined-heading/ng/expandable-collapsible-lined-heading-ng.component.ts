@@ -6,14 +6,18 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
 import {
+    ColorScheme,
+    ColorSettings,
     CommandRegisterService,
     IconButtonUiAction,
     InternalCommand,
+    MultiEvent,
+    SettingsService,
     StringId,
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -29,11 +33,17 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
     @ViewChild('restoreButton', { static: true }) private _restoreButtonComponent: SvgButtonNgComponent;
     @ViewChild('collapseButton', { static: true }) private _collapseButtonComponent: SvgButtonNgComponent;
 
+    public lineColor: string;
+
     expandEventer: ExpandableCollapsibleLinedHeadingNgComponent.ExpandEventer;
     restoreEventer: ExpandableCollapsibleLinedHeadingNgComponent.RestoreEventer;
     collapseEventer: ExpandableCollapsibleLinedHeadingNgComponent.CollapseEventer;
 
     private readonly _commandRegisterService: CommandRegisterService;
+
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
+    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     private readonly _expandUiAction: IconButtonUiAction;
     private readonly _restoreUiAction: IconButtonUiAction;
@@ -41,7 +51,7 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
 
     private _stateId: ExpandableCollapsibleLinedHeadingNgComponent.StateId;
 
-    constructor(commandRegisterNgService: CommandRegisterNgService) {
+    constructor(settingsNgService: SettingsNgService, commandRegisterNgService: CommandRegisterNgService) {
         super();
 
         this._commandRegisterService = commandRegisterNgService.service;
@@ -49,6 +59,12 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
         this._expandUiAction = this.createExpandUiAction();
         this._restoreUiAction = this.createRestoreUiAction();
         this._collapseUiAction = this.createCollapseUiAction();
+
+        this._settingsService = settingsNgService.settingsService;
+        this._colorSettings = this._settingsService.color;
+
+        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.updateColors());
+        this.updateColors();
     }
 
     get stateId() { return this._stateId; }
@@ -129,9 +145,15 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
     }
 
     private finalise() {
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+
         this._expandUiAction.finalise();
         this._restoreUiAction.finalise();
         this._collapseUiAction.finalise();
+    }
+
+    private updateColors() {
+        this.lineColor = this._colorSettings.getFore(ColorScheme.ItemId.SectionDividerLine);
     }
 }
 

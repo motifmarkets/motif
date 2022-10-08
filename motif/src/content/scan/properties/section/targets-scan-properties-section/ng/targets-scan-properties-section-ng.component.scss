@@ -4,20 +4,21 @@
 :host {
     display: flex;
     flex-direction: column;
-}
 
-#targets {
-    display: flex;
-    gap: 2em;
-
-    #targetSubTypeSelector {
+    #targets {
         display: flex;
-        flex-direction: column;
-    }
+        gap: 2em;
+        margin-left: var(--section-content-margin-left);
 
-    #targetSubTypes {
-        .subTargetTypeHeading {
-            margin-top: 0;
+        #targetSubTypeSelector {
+            display: flex;
+            flex-direction: column;
+        }
+
+        #targetSubTypes {
+            .subTargetTypeHeading {
+                margin-top: 0;
+            }
         }
     }
 }
