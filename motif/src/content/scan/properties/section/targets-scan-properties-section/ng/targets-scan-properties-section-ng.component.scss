@@ -1,14 +1,20 @@
-@import './partials/top-bordered-fieldset-mixin';
-@import './partials/top-bordered-fieldset-legend-mixin';
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './partials/section-content-left-margin-mixin';
 
 :host {
     display: flex;
     flex-direction: column;
 
-    #targets {
+    #content {
+        @include sectionContentLeftMarginMixin;
+
         display: flex;
         gap: 2em;
-        margin-left: var(--section-content-margin-left);
 
         #targetSubTypeSelector {
             display: flex;

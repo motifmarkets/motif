@@ -17,6 +17,7 @@ import {
 import { SymbolsNgService } from 'component-services-ng-api';
 import { CaptionedRadioNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent, LitIvemIdSelectNgComponent } from 'controls-ng-api';
 import { UnreachableCaseError } from 'revgrid';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
 
 @Component({
@@ -26,6 +27,7 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('singleSymbolTargetSubTypeControl', { static: true })
         private _singleSymbolTargetSubTypeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('multiSymbolTargetSubTypeControl', { static: true })
@@ -108,6 +110,8 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     }
 
     private initialiseComponents() {
+        super.initialiseSectionHeadingComponent();
+
         this._singleSymbolTargetSubTypeControlComponent.initialiseEnum(
             this._targetSubTypeUiAction, ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol
         );

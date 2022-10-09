@@ -1,6 +1,12 @@
-<app-expandable-collapsible-lined-heading-ng [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
 
-<section id="targets">
+<app-expandable-collapsible-lined-heading-ng #sectionHeading [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
+
+<section id="content">
     <section id="targetSubTypeSelector">
         <app-captioned-radio #singleSymbolTargetSubTypeControl id="singleSymbolTargetSubTypeControl" inputId="singleSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
         <app-captioned-radio #multiSymbolTargetSubTypeControl id="multiSymbolTargetSubTypeControl" inputId="multiSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>

@@ -12,6 +12,7 @@ import {
     CaptionLabelNgComponent,
     EnumArrayInputNgComponent, IntegerTextInputNgComponent
 } from 'controls-ng-api';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
 
 @Component({
@@ -23,6 +24,7 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
 export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
     implements  OnInit, OnDestroy, AfterViewInit {
 
+    @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('mobileNotifierControl', { static: true }) private _mobileNotifierControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('smsNotifierControl', { static: true }) private _smsNotifierControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('emailNotifierControl', { static: true }) private _emailNotifierControlComponent: CaptionedCheckboxNgComponent;
@@ -87,6 +89,8 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
     }
 
     private initialiseComponents() {
+        super.initialiseSectionHeadingComponent();
+
         this._mobileNotifierControlComponent.initialise(this._mobileNotifierUiAction);
         this._smsNotifierControlComponent.initialise(this._smsNotifierUiAction);
         this._emailNotifierControlComponent.initialise(this._emailNotifierUiAction);

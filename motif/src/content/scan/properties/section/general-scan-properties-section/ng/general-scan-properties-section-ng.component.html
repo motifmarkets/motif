@@ -4,13 +4,19 @@
     License: motionite.trade/license/motif
 -->
 
-<app-expandable-collapsible-lined-heading-ng [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
+<app-expandable-collapsible-lined-heading-ng #sectionHeading [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
 
-<section id="propertyControls">
-    <app-caption-label #nameLabel for="nameInput"></app-caption-label>
-    <app-text-input #nameControl id="nameControl" inputId="nameInput" spellCheck="false"></app-text-input>
-    <app-caption-label #descriptionLabel for="descriptionInput"></app-caption-label>
-    <app-text-input #descriptionControl id="descriptionControl" inputId="descriptionInput" spellCheck="false"></app-text-input>
-    <app-caption-label #typeLabel for="typeInput"></app-caption-label>
-    <app-enum-input #typeControl id="typeControl" inputId="typeInput"></app-enum-input>
+<section id="content">
+    <section id="propertyControls">
+        <app-caption-label #nameLabel for="nameInput"></app-caption-label>
+        <app-text-input #nameControl id="nameControl" inputId="nameInput" spellCheck="false"></app-text-input>
+        <app-caption-label #descriptionLabel for="descriptionInput"></app-caption-label>
+        <app-text-input #descriptionControl id="descriptionControl" inputId="descriptionInput" spellCheck="false"></app-text-input>
+        <app-caption-label #typeLabel for="typeInput"></app-caption-label>
+        <app-enum-input #typeControl id="typeControl" inputId="typeInput"></app-enum-input>
+        <app-caption-label #symbolListLabel for="symbolListCheckbox"></app-caption-label>
+        <app-checkbox-input #symbolListControl id="symbolListControl" inputId="symbolListCheckbox"></app-checkbox-input>
+        <app-caption-label #symbolListMaxCountLabel id="symbolListMaxCountLabel" for="symbolListMaxCountInput"></app-caption-label>
+        <app-integer-text-input #symbolListMaxCountControl id="symbolListMaxCountControl" inputId="symbolListMaxCountInput"></app-integer-text-input>
+    </section>
 </section>

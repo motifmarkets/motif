@@ -16,6 +16,7 @@ import {
     Strings
 } from '@motifmarkets/motif-core';
 import { CaptionedCheckboxNgComponent, CaptionedRadioNgComponent } from 'controls-ng-api';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../../scan-properties-section-ng.directive';
 
 @Component({
@@ -26,9 +27,8 @@ import { ScanPropertiesSectionNgDirective } from '../../../scan-properties-secti
 })
 export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
     implements OnInit, OnDestroy, AfterViewInit {
-
+    @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('defaultViewControl', { static: true }) private _defaultViewControlComponent: CaptionedCheckboxNgComponent;
-
     @ViewChild('listViewControl', { static: true }) private _listViewControlComponent: CaptionedRadioNgComponent;
     @ViewChild('formulaViewControl', { static: true }) private _formulaViewControlComponent: CaptionedRadioNgComponent;
     @ViewChild('zenithViewControl', { static: true }) private _zenithViewControlComponent: CaptionedRadioNgComponent;
@@ -73,8 +73,9 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
     }
 
     private initialiseComponents() {
-        this._defaultViewControlComponent.initialise(this._defaultViewUiAction);
+        super.initialiseSectionHeadingComponent();
 
+        this._defaultViewControlComponent.initialise(this._defaultViewUiAction);
         this._listViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.List);
         this._formulaViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Formula);
         this._zenithViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Zenith);

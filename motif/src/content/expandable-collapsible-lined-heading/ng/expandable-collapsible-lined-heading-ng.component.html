@@ -1,8 +1,9 @@
-<div id="beforeLine" class="line" [style.color]="lineColor"></div>
+<div id="preLine" class="line" [style.background-color]="lineColor"></div>
+<span id="headingText">{{headingText}}</span>
+<div id="midLine" class="line" [style.background-color]="lineColor"></div>
 <div id="buttons">
     <app-svg-button #expandButton id="expandButton"></app-svg-button>
     <app-svg-button #restoreButton id="restoreButton"></app-svg-button>
     <app-svg-button #collapseButton id="collapseButton"></app-svg-button>
 </div>
-<span id="headingText">{{headingText}}</span>
-<div id="afterLine" class="line" [style.color]="lineColor"></div>
+<div id="postLine" class="line" [style.background-color]="lineColor"></div>

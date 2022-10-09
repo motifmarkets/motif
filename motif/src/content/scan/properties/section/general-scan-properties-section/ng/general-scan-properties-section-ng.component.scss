@@ -4,27 +4,43 @@
  * License: motionite.trade/license/motif
  */
 
+@import './partials/section-content-left-margin-mixin';
+@import './partials/sub-property-control-left-margin-mixin';
+
 :host {
     display: flex;
     flex-direction: column;
+
+    #content {
+        @include sectionContentLeftMarginMixin;
+
+        #propertyControls {
+            display: grid;
+            grid-template-columns: max-content max-content;
+            column-gap: 2rem;
+            row-gap: 0.5rem;
+            align-items: center;
+
+            app-caption-label {
+                grid-column: 1;
+            }
+
+            #nameControl {
+                width: 20em;
+            }
+
+            #descriptionControl {
+                width: 30em;
+            }
+
+            #symbolListMaxCountLabel {
+                @include subPropertyControlLeftMarginMixin;
+            }
+
+            #symbolListMaxCountControl {
+                width: 6em;
+            }
+        }
+    }
 }
 
-#propertyControls {
-    display: grid;
-    grid-template-columns: max-content max-content;
-    column-gap: 2rem;
-    row-gap: 0.5rem;
-    align-items: center;
-
-    app-caption-label {
-        grid-column: 1;
-    }
-
-    #nameControl {
-        width: 20em;
-    }
-
-    #descriptionControl {
-        width: 30em;
-    }
-}

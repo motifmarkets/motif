@@ -1,42 +1,49 @@
-@import './partials/top-bordered-fieldset-mixin';
-@import './partials/top-bordered-fieldset-legend-mixin';
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './partials/section-content-left-margin-mixin';
 
 :host {
     display: flex;
     flex-direction: column;
-}
 
-#notifiers {
-    display: flex;
-    flex-direction: column;
-    gap: 1em;
-    margin-top: 1em;
+    #content {
+        @include sectionContentLeftMarginMixin;
 
-    #predefinedNotifiers {
         display: flex;
-        gap: .7em;
-    }
+        flex-direction: column;
+        gap: 1em;
+        margin-top: 1em;
 
-    #allNotifiersControl {
-        width: 35em;
-    }
-
-    #notifyParams {
-        display: grid;
-        grid-template-columns: max-content max-content;
-        column-gap: 2rem;
-        row-gap: 0.5rem;
-        align-items: center;
-
-        app-caption-label {
-            grid-column: 1;
+        #predefinedNotifiers {
+            display: flex;
+            gap: .7em;
         }
 
-        #minimumStableTimeControl {
-            width: 6em;
+        #allNotifiersControl {
+            width: 35em;
         }
-        #minimumElapsedTimeControl {
-            width: 6em;
+
+        #notifyParams {
+            display: grid;
+            grid-template-columns: max-content max-content;
+            column-gap: 2rem;
+            row-gap: 0.5rem;
+            align-items: center;
+
+            app-caption-label {
+                grid-column: 1;
+            }
+
+            #minimumStableTimeControl {
+                width: 6em;
+            }
+            #minimumElapsedTimeControl {
+                width: 6em;
+            }
         }
     }
 }

@@ -1,15 +1,18 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
+    BooleanUiAction,
     EditableScan,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
+    IntegerUiAction,
     StringId,
     Strings,
     StringUiAction
 } from '@motifmarkets/motif-core';
 import {
-    CaptionLabelNgComponent, EnumInputNgComponent, TextInputNgComponent
+    CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent, IntegerTextInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
 
 @Component({
@@ -19,12 +22,17 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+    @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('nameLabel', { static: true }) private _nameLabelComponent: CaptionLabelNgComponent;
     @ViewChild('nameControl', { static: true }) private _nameControlComponent: TextInputNgComponent;
     @ViewChild('descriptionLabel', { static: true }) private _descriptionLabelComponent: CaptionLabelNgComponent;
     @ViewChild('descriptionControl', { static: true }) private _descriptionControlComponent: TextInputNgComponent;
     @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
+    @ViewChild('symbolListLabel', { static: true }) private _symbolListLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('symbolListControl', { static: true }) private _symbolListControlComponent: CheckboxInputNgComponent;
+    @ViewChild('symbolListMaxCountLabel', { static: true }) private _symbolListMaxCountLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('symbolListMaxCountControl', { static: true }) private _symbolListMaxCountControlComponent: IntegerTextInputNgComponent;
 
     public sectionHeadingText = Strings[StringId.General];
 
@@ -33,6 +41,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     private readonly _nameUiAction: StringUiAction;
     private readonly _descriptionUiAction: StringUiAction;
     private readonly _typeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _symbolListUiAction: BooleanUiAction;
+    private readonly _symbolListMaxCountUiAction: IntegerUiAction;
 
     constructor() {
         super();
@@ -40,6 +50,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._nameUiAction = this.createNameUiAction();
         this._descriptionUiAction = this.createDescriptionUiAction();
         this._typeUiAction = this.createTypeUiAction();
+        this._symbolListUiAction = this.createSymbolListUiAction();
+        this._symbolListMaxCountUiAction = this.createSymbolListMaxCountUiAction();
     }
 
     ngOnInit() {
@@ -63,15 +75,23 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._nameUiAction.finalise();
         this._descriptionUiAction.finalise();
         this._typeUiAction.finalise();
+        this._symbolListUiAction.finalise();
+        this._symbolListMaxCountUiAction.finalise();
     }
 
     private initialiseComponents() {
+        super.initialiseSectionHeadingComponent();
+
         this._nameLabelComponent.initialise(this._nameUiAction);
         this._nameControlComponent.initialise(this._nameUiAction);
         this._descriptionLabelComponent.initialise(this._descriptionUiAction);
         this._descriptionControlComponent.initialise(this._descriptionUiAction);
         this._typeLabelComponent.initialise(this._typeUiAction);
         this._typeControlComponent.initialise(this._typeUiAction);
+        this._symbolListLabelComponent.initialise(this._symbolListUiAction);
+        this._symbolListControlComponent.initialise(this._symbolListUiAction);
+        this._symbolListMaxCountLabelComponent.initialise(this._symbolListMaxCountUiAction);
+        this._symbolListMaxCountControlComponent.initialise(this._symbolListMaxCountUiAction);
     }
 
     private createNameUiAction() {
@@ -121,15 +141,43 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         return action;
     }
 
+    private createSymbolListUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolList]);
+        action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolList]);
+        action.commitEvent = () => {
+            if (this._scan !== undefined) {
+                this._scan.symbolListEnabled = this._symbolListUiAction.definedValue;
+            }
+        };
+        return action;
+    }
+
+    private createSymbolListMaxCountUiAction() {
+        const action = new IntegerUiAction();
+        action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolListMaxCount]);
+        action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolListMaxCount]);
+        action.commitEvent = () => {
+            if (this._scan !== undefined) {
+                this._scan.symbolListMaxCount = this._symbolListMaxCountUiAction.definedValue;
+            }
+        };
+        return action;
+    }
+
     private pushValues() {
         if (this._scan === undefined) {
             this._nameUiAction.pushValue(undefined);
             this._descriptionUiAction.pushValue(undefined);
             this._typeUiAction.pushValue(undefined);
+            this._symbolListUiAction.pushValue(undefined);
+            this._symbolListMaxCountUiAction.pushValue(undefined);
         } else {
             this._nameUiAction.pushValue(this._scan.name);
             this._descriptionUiAction.pushValue(this._scan.description);
             this._typeUiAction.pushValue(this._scan.criteriaTypeId);
+            this._symbolListUiAction.pushValue(this._scan.symbolListEnabled);
+            this._symbolListMaxCountUiAction.pushValue(this._scan.symbolListMaxCount);
         }
     }
 }
