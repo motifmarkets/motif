@@ -37,7 +37,7 @@ import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
-import { AppFeature } from 'src/app.feature';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
@@ -57,11 +57,11 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;
     @ViewChild('layoutHost', { static: true }) private _layoutHostComponent: GoldenLayoutHostNgComponent;
 
-    public advertisingEnabled = AppFeature.advertising;
-    public barBkgdColor: string;
-    public barForeColor: string;
+    public readonly advertisingEnabled: boolean;
     public readonly barLeftImageExists: boolean;
     public readonly barLeftImageUrl: string;
+    public barBkgdColor: string;
+    public barForeColor: string;
 
     private readonly _commandRegisterService: CommandRegisterService;
     private readonly _settingsService: SettingsService;
@@ -79,6 +79,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,
         userAlertNgService: UserAlertNgService,
+        capabilitiesNgService: CapabilitiesNgService,
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
@@ -107,11 +108,15 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             this.barLeftImageUrl = barLeftImageUrl;
         }
 
+        const capabilitiesService = capabilitiesNgService.service;
+        this.advertisingEnabled = capabilitiesService.advertisingEnabled;
+
         this._desktopFrame = new DesktopFrame(
             elRef.nativeElement,
             this._settingsService,
             appStorageNgService.appStorage,
             userAlertNgService.service,
+            capabilitiesService,
             extensionsAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,

@@ -17,7 +17,7 @@ export interface Config {
     readonly defaultLayout: Config.DefaultLayout;
     readonly bundledExtensions: Config.BundledExtensions;
     readonly diagnostics: Config.Diagnostics;
-    readonly features: Config.Features;
+    readonly capabilities: Config.Capabilities;
     readonly branding: Config.Branding;
 }
 
@@ -140,14 +140,14 @@ export namespace Config {
         }
     }
 
-    export interface Features {
-        readonly preview: boolean;
+    export interface Capabilities {
         readonly advertising: boolean;
+        readonly dtr: boolean;
     }
 
-    export namespace Features {
-        export const defaultPreview = false;
+    export namespace Capabilities {
         export const defaultAdvertising = false;
+        export const defaultDtr = false;
     }
 
     export interface Branding {

@@ -98,8 +98,9 @@
       "install": false
     }
   ],
-  "features": {
-    "advertising": false
+  "capabilities": {
+    "advertising": false,
+    "dtr": true
   },
   "diagnostics": {
     "telemetry": {

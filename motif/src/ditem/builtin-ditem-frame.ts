@@ -62,6 +62,7 @@ export namespace BuiltinDitemFrame {
         OrderRequest,
         BrokerageAccounts,
         Orders,
+        OrderAuthorise,
         Holdings,
         Balances,
         Settings,
@@ -239,7 +240,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_BrokerageAccounts,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
-                    rank: 60000,
+                    rank: 100000,
                 },
             },
             Orders: {
@@ -250,6 +251,16 @@ export namespace BuiltinDitemFrame {
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
                     rank: 30000,
+                },
+            },
+            OrderAuthorise: {
+                id: BuiltinTypeId.OrderAuthorise,
+                name: 'OrderAuthorise',
+                newInternalCommandId: InternalCommand.Id.NewOrderAuthoriseDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_OrderAuthorise,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.trading],
+                    rank: 60000,
                 },
             },
             Holdings: {

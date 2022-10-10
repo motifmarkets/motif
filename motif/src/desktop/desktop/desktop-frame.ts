@@ -10,6 +10,7 @@ import {
     AppStorageService,
     AssertInternalError,
     BrokerageAccountGroup,
+    CapabilitiesService,
     Command,
     CommandContext,
     CommandRegisterService,
@@ -43,7 +44,6 @@ import { MenuBarService } from 'controls-internal-api';
 import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
-import { AppFeature } from 'src/app.feature';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
@@ -107,6 +107,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newOrderRequestDitemUiAction: CommandUiAction;
     private _newBrokerageAccountsDitemUiAction: CommandUiAction;
     private _newOrdersDitemUiAction: CommandUiAction;
+    private _newOrderAuthoriseDitemUiAction: CommandUiAction;
     private _newHoldingsDitemUiAction: CommandUiAction;
     private _newBalancesDitemUiAction: CommandUiAction;
     private _newSettingsDitemUiAction: CommandUiAction;
@@ -133,6 +134,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBrokerageAccountsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newOrdersDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newOrderAuthoriseDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newHoldingsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBalancesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSettingsDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -158,6 +160,7 @@ export class DesktopFrame implements DesktopAccessService {
         private readonly _settingsService: SettingsService,
         private readonly _storage: AppStorageService,
         private readonly _userAlertService: UserAlertService,
+        private readonly _capabilitiesService: CapabilitiesService,
         private readonly _extensionsAccessService: ExtensionsAccessService,
         private readonly _symbolsService: SymbolsService,
         private readonly _adiService: AdiService,
@@ -640,6 +643,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newOrderRequestDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.OrderRequest);
         this._newBrokerageAccountsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts);
         this._newOrdersDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Orders);
+        this._newOrderAuthoriseDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise);
         this._newHoldingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Holdings);
         this._newBalancesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Balances);
         this._newSettingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Settings);
@@ -706,6 +710,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newOrderRequestDitemUiAction.finalise();
         this._newBrokerageAccountsDitemUiAction.finalise();
         this._newOrdersDitemUiAction.finalise();
+        this._newOrderAuthoriseDitemUiAction.finalise();
         this._newHoldingsDitemUiAction.finalise();
         this._newBalancesDitemUiAction.finalise();
         this._newSettingsDitemUiAction.finalise();
@@ -755,7 +760,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
-            if (AppFeature.advertising) {
+            if (this._capabilitiesService.advertisingEnabled) {
                 this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
                 this._newAlertsDitemMenuItem = this._menuBarService.connectMenuItem(this._newAlertsDitemUiAction);
                 this._newSearchDitemMenuItem = this._menuBarService.connectMenuItem(this._newSearchDitemUiAction);
@@ -772,6 +777,9 @@ export class DesktopFrame implements DesktopAccessService {
             this._newSellOrderRequestDitemMenuItem = this._menuBarService.connectMenuItem(this._newSellOrderRequestDitemUiAction);
             this._saveLayoutMenuItem = this._menuBarService.connectMenuItem(this._saveLayoutUiAction);
             this._resetLayoutMenuItem = this._menuBarService.connectMenuItem(this._resetLayoutUiAction);
+            if (this._capabilitiesService.dtrEnabled) {
+                this._newOrderAuthoriseDitemMenuItem = this._menuBarService.connectMenuItem(this._newOrderAuthoriseDitemUiAction);
+            }
         } finally {
             this._menuBarService.endChanges();
         }
@@ -786,7 +794,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);
-            if (AppFeature.advertising) {
+            if (this._capabilitiesService.advertisingEnabled) {
                 this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newAlertsDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newSearchDitemMenuItem);
@@ -803,6 +811,9 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newSellOrderRequestDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._saveLayoutMenuItem);
             this._menuBarService.disconnectMenuItem(this._resetLayoutMenuItem);
+            if (this._capabilitiesService.dtrEnabled) {
+                this._menuBarService.disconnectMenuItem(this._newOrderAuthoriseDitemMenuItem);
+            }
         } finally {
             this._menuBarService.endChanges();
         }

@@ -8,6 +8,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import {
     AdiService,
     AppStorageService,
+    CapabilitiesService,
     CommandRegisterService,
     CoreService,
     KeyboardService,
@@ -32,6 +33,7 @@ export class CoreNgService implements OnDestroy {
     get motifServicesService(): MotifServicesService { return this._service.motifServicesService; }
     get appStorageService(): AppStorageService { return this._service.appStorageService; }
     get adiService(): AdiService { return this._service.adiService; }
+    get capabilitiesService(): CapabilitiesService { return this._service.capabilitiesService; }
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get scansService(): ScansService { return this._service.scansService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }

@@ -202,6 +202,7 @@ export class GoldenLayoutHostFrame {
         const depthAndTradesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, undefined);
         const ordersItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Orders, undefined);
         const balancesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Balances, undefined);
+        const orderAuthoriseItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise, undefined);
 
         const config: GoldenLayoutHostFrame.DefaultLayoutConfig = {
             root: {

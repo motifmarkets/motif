@@ -21,6 +21,7 @@ export * from './eto-price-quotation-ditem/internal-api';
 export * from './extension-ditem-component';
 export * from './extension-ditem-frame';
 export * from './holdings-ditem/internal-api';
+export * from './order-authorise-ditem/internal-api';
 // export * from './news-body-ditem/internal-api';
 // export * from './news-headlines-ditem/internal-api';
 export * from './order-request-ditem/internal-api';

@@ -9,6 +9,7 @@ import {
     AdiService,
     AppStorageService,
     AssertInternalError,
+    CapabilitiesService,
     DataEnvironment,
     DataEnvironmentId, ExchangeInfo, ExternalError,
     IdleDeadline,
@@ -40,7 +41,6 @@ import {
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
-import { AppFeature } from 'src/app.feature';
 import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { Config } from './config';
@@ -87,6 +87,7 @@ export class SessionService {
         private readonly _userAlertService: UserAlertService,
         private readonly _settingsService: SettingsService,
         private readonly _openIdService: OpenIdService,
+        private readonly _capabilitiesService: CapabilitiesService,
         private readonly _motifServicesService: MotifServicesService,
         private readonly _appStorageService: AppStorageService,
         private readonly _extensionService: ExtensionsService,
@@ -364,8 +365,8 @@ export class SessionService {
         this.setServiceName(config.service.name);
         this.setServiceDescription(config.service.description);
 
-        AppFeature.preview = config.features.preview;
-        AppFeature.advertising = config.features.advertising;
+        this._capabilitiesService.setAdvertisingEnabled(config.capabilities.advertising);
+        this._capabilitiesService.setDtrEnabled(config.capabilities.dtr);
 
         this._telemetryService.applyConfig(config);
         this._userAlertService.enabled = config.diagnostics.appNotifyErrors;

@@ -18,6 +18,7 @@ export {
 export { DesktopAccessNgService } from './ng/desktop-access-ng.service';
 export { DitemComponentFactoryNgService } from './ng/ditem-component-factory-ng.service';
 export * from './ng/ditem-ng.module';
+export * from './order-authorise-ditem/ng-api';
 export * from './order-request-ditem/ng-api';
 export * from './orders-ditem/ng-api';
 export * from './paridepth-ditem/ng-api';

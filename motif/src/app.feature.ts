@@ -25,6 +25,7 @@ export const enum AppFeatureId {
 
     Preview,
     Advertising,
+    Dtr,
 }
 
 export namespace AppFeature {
@@ -32,6 +33,8 @@ export namespace AppFeature {
     export let dev = false;
     // eslint-disable-next-line prefer-const
     export let advertising = false;
+    // eslint-disable-next-line prefer-const
+    export let dtr = false;
     // eslint-disable-next-line prefer-const
     export let preview = false;
 
@@ -61,6 +64,8 @@ export namespace AppFeature {
                     return preview;
                 case AppFeatureId.Advertising:
                     return advertising;
+                case AppFeatureId.Dtr:
+                    return dtr;
 
                 default:
                     throw new UnreachableCaseError('APIE23238875', id);

@@ -16,6 +16,7 @@ import { HoldingsDitemNgComponent } from './holdings-ditem/ng-api';
 import { NewsBodyDitemNgComponent } from './news-body-ditem/ng-api';
 import { NewsHeadlinesDitemNgComponent } from './news-headlines-ditem/ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from './ng/builtin-ditem-ng-component-base.directive';
+import { OrderAuthoriseDitemNgComponent } from './order-authorise-ditem/ng-api';
 import { OrderRequestDitemNgComponent } from './order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from './orders-ditem/ng-api';
 import { ParidepthDitemNgComponent } from './paridepth-ditem/ng-api';
@@ -110,6 +111,10 @@ export namespace DitemComponentIdAndType {
         Orders: {
             id: BuiltinDitemFrame.BuiltinTypeId.Orders,
             type: OrdersDitemNgComponent,
+        },
+        OrderAuthorise: {
+            id: BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise,
+            type: OrderAuthoriseDitemNgComponent,
         },
         Holdings: {
             id: BuiltinDitemFrame.BuiltinTypeId.Holdings,

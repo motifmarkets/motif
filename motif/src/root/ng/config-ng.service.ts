@@ -76,7 +76,8 @@ export namespace ConfigNgService {
         readonly defaultLayout?: DefaultLayout.Json;
         readonly bundledExtensions?: BundledExtensions.Json;
         readonly diagnostics?: Diagnostics.Json;
-        readonly features?: Features.Json;
+        readonly features?: Capabilities.Json; // backwards compatibility - remove when all configs have been updated
+        readonly capabilities?: Capabilities.Json;
         readonly branding?: Branding.Json;
     }
 
@@ -589,22 +590,22 @@ export namespace ConfigNgService {
         }
     }
 
-    export namespace Features {
+    export namespace Capabilities {
         export interface Json {
-            readonly preview?: boolean;
             readonly advertising?: boolean;
+            readonly dtr?: boolean;
         }
 
         export function parseJson(json: Json | undefined) {
-            const preview = json?.preview ?? Config.Features.defaultPreview;
-            const advertising = json?.advertising ?? Config.Features.defaultAdvertising;
+            const advertising = json?.advertising ?? Config.Capabilities.defaultAdvertising;
+            const dtr = json?.dtr ?? Config.Capabilities.defaultDtr;
 
-            const features: Config.Features = {
-                preview,
+            const capabilities: Config.Capabilities = {
                 advertising,
+                dtr
             };
 
-            return features;
+            return capabilities;
         }
     }
 
@@ -676,7 +677,7 @@ export namespace ConfigNgService {
             const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout);
             const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions, service.name);
             const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
-            const features = ConfigNgService.Features.parseJson(configJson.features);
+            const capabilities = ConfigNgService.Capabilities.parseJson(configJson.capabilities ?? configJson.features);
             const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
             const config: Config = {
                 environment,
@@ -687,7 +688,7 @@ export namespace ConfigNgService {
                 defaultLayout,
                 bundledExtensions,
                 diagnostics,
-                features,
+                capabilities,
                 branding,
             };
 

@@ -17,6 +17,7 @@ import {
     SymbolsNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { Config } from '../config';
 import { SessionService } from '../session-service';
@@ -37,6 +38,7 @@ export class SessionNgService implements OnDestroy {
         userAlertNgService: UserAlertNgService,
         settingsNgService: SettingsNgService,
         openIdNgService: OpenIdNgService,
+        capabilitiesNgService: CapabilitiesNgService,
         motifServicesNgService: MotifServicesNgService,
         appStorageNgService: AppStorageNgService,
         extensionNgService: ExtensionsNgService,
@@ -51,6 +53,7 @@ export class SessionNgService implements OnDestroy {
             userAlertNgService.service,
             settingsNgService.settingsService,
             openIdNgService.service,
+            capabilitiesNgService.service,
             motifServicesNgService.service,
             appStorageNgService.appStorage,
             extensionNgService.service,
