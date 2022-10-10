@@ -27,10 +27,10 @@ export class RoutedIvemIdInputNgComponent extends RoutedIvemIdComponentBaseNgDir
         private _renderer: Renderer2,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
-            symbolsManagerService);
+            symbolsNgService);
     }
 
     focus() {

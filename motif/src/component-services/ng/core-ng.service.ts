@@ -30,9 +30,9 @@ export class CoreNgService implements OnDestroy {
     get service() { return this._service; }
     get settingsService(): SettingsService { return this._service.settingsService; }
     get motifServicesService(): MotifServicesService { return this._service.motifServicesService; }
-    get appStorageService(): AppStorageService { return this._service.applicationStateStorage; }
-    get adi(): AdiService { return this._service.adi; }
-    get symbolsManager(): SymbolsService { return this._service.symbolsManager; }
+    get appStorageService(): AppStorageService { return this._service.appStorageService; }
+    get adiService(): AdiService { return this._service.adiService; }
+    get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get scansService(): ScansService { return this._service.scansService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }

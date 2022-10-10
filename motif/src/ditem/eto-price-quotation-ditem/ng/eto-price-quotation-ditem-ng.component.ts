@@ -69,7 +69,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new EtoPriceQuotationDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._applySymbolUiAction = this.createApplySymbolUiAction();

@@ -30,16 +30,16 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
 
     public symbol = LitIvemIdInputNgComponent.emptySymbol;
 
-    private _symbolsManager: SymbolsService;
+    private _symbolsService: SymbolsService;
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        _symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this._symbolsManager = _symbolsManagerService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
         this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
     }
 
@@ -100,7 +100,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
             if (value === undefined) {
                 symbol = LitIvemIdInputNgComponent.emptySymbol;
             } else {
-                symbol = this._symbolsManager.litIvemIdToDisplay(value);
+                symbol = this._symbolsService.litIvemIdToDisplay(value);
             }
 
             if (symbol !== this.symbol) {
@@ -115,7 +115,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     private parseSymbol(value: string): SymbolsService.LitIvemIdParseDetails {
-        return this._symbolsManager.parseLitIvemId(value);
+        return this._symbolsService.parseLitIvemId(value);
     }
 
     private input(text: string) {

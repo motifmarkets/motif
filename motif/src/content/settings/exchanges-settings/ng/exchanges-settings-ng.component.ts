@@ -39,7 +39,7 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
         this._exchangesSettings = this.settingsService.exchanges;
         this.exchanges = this._exchangesSettings.exchanges;
 
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
         this._allowedExchangeIdsChangedSubscriptionId = this._symbolsService.subscribeAllowedExchangeIdsChangedEvent(
             () => this.handleAllowedExchangeIdsChangedEvent()
         );

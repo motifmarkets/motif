@@ -75,7 +75,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
             symbolsNgService,
         );
-        this._adiService = adiNgService.adiService;
+        this._adiService = adiNgService.service;
         this.inputId = 'RoutedIvemIdInput' + this.componentInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
@@ -184,7 +184,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 if (cachedIvemIdDetail === undefined) {
                     selected = null;
                 } else {
-                    selected = RoutedIvemIdSelectNgComponent.createItemFromCacheDetail(value, cachedIvemIdDetail, this.symbolsManager);
+                    selected = RoutedIvemIdSelectNgComponent.createItemFromCacheDetail(value, cachedIvemIdDetail, this.symbolsService);
                 }
             }
 
@@ -819,7 +819,7 @@ export namespace RoutedIvemIdSelectNgComponent {
         errorEvent: Typeahead.ErrorEvent;
 
         constructor(private _adiService: PariAdi,
-            private _symbolsService: SymbolsManager,
+            private _symbolsService: SymbolsNgService,
             private _term: ParsedSearchTerm,
             private _minCodeLength: Integer,
             private _exchangeMarketParsingActive: boolean,

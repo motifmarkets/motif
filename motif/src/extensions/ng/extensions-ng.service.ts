@@ -36,10 +36,10 @@ export class ExtensionsNgService implements OnDestroy {
         apiContentComponentNgFactoryService: ApiContentComponentFactoryNgService,
     ) {
         this._service = new ExtensionsService(
-            adiNgService.adiService,
+            adiNgService.service,
             commandRegisterNgService.service,
             storageNgService.appStorage,
-            symbolsNgService.symbolsManager,
+            symbolsNgService.service,
             menuBarNgService.service,
             workspaceNgService.service,
             apiControlComponentNgFactoryService, // only passes interface

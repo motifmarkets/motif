@@ -25,10 +25,8 @@ import {
     StringId,
     Strings,
     SymbolsService,
-    TimeInForceId,
-    TradingEnvironment,
-    UiAction,
-    UnreachableCaseError,
+    TimeInForceId, UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -46,7 +44,10 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     private _litIvemIdSetting = false;
     private _brokerageAccountGroupSetting = false;
 
-    constructor(private _componentAccess: PadOrderRequestStepFrame.ComponentAccess, private _symbolsManager: SymbolsService) {
+    constructor(
+        private readonly _componentAccess: PadOrderRequestStepFrame.ComponentAccess,
+        private readonly _symbolsService: SymbolsService
+    ) {
         super(OrderRequestStepFrame.StepId.Pad);
 
         for (let id = 0; id < OrderPad.Field.idCount; id++) {
@@ -88,7 +89,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
         this._orderPad.routedIvemId = value;
         this._litIvemIdSetting = true;
         try {
-            const litIvemId = value === undefined ? undefined : this._symbolsManager.getBestLitIvemIdFromRoutedIvemId(value);
+            const litIvemId = value === undefined ? undefined : this._symbolsService.getBestLitIvemIdFromRoutedIvemId(value);
             this.litIvemIdSetEvent(litIvemId);
         } finally {
             this._litIvemIdSetting = false;

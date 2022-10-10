@@ -59,7 +59,7 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
 
         this.targetSubTypeRadioName = this.generateInstancedRadioName('targetSubType');
 
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
 
         this._targetSubTypeUiAction = this.createTargetSubTypeUiAction();
         this._singleSymbolUiAction = this.createSingleSymbolUiAction();

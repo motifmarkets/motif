@@ -25,9 +25,9 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsManagerService);
+        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsNgService);
     }
 
     override ngOnDestroy() {
@@ -52,7 +52,7 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
 
     private async applyRoutedIvemId(value: RoutedIvemId) {
         this.checkApplyCaption('');
-        const litIvemId = this.symbolsManager.getBestLitIvemIdFromRoutedIvemId(value);
+        const litIvemId = this.symbolsService.getBestLitIvemIdFromRoutedIvemId(value);
         const promiseId = ++this.activePromiseId;
         const detail = await symbolDetailCache.getLitIvemId(litIvemId);
         if (detail !== undefined && promiseId === this.activePromiseId) {

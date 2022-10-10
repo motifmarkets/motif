@@ -29,7 +29,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
         pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
-        this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adi);
+        this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adiService);
     }
 
     protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }

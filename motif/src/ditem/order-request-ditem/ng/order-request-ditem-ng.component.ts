@@ -97,7 +97,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new OrderRequestDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._primaryUiAction = this.createPrimaryUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();

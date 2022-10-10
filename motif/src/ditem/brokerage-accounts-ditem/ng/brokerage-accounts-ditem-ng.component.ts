@@ -66,7 +66,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BrokerageAccountsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();
 

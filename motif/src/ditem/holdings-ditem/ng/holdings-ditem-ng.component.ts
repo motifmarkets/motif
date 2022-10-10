@@ -84,7 +84,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new HoldingsDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
         this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);
         this._frame.groupOpenedEvent = (group) => this.handleGroupOpenedEvent(group);
 

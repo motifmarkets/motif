@@ -181,13 +181,13 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
 
         this.exchangeRadioName = this.generateInstancedRadioName('exchange');
         this.indicesRadioName = this.generateInstancedRadioName('indices');
 
         this._frame = new SearchSymbolsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._columnsUiAction = this.createColumnsUiAction();

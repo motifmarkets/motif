@@ -83,8 +83,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             settingsNgService.settingsService,
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray
         );
-        this._adiService = adiNgService.adiService;
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._adiService = adiNgService.service;
+        this._symbolsService = symbolsNgService.service;
         this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);

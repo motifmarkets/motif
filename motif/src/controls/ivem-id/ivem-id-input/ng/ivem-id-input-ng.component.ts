@@ -30,16 +30,16 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
 
     public symbol = IvemIdInputNgComponent.emptySymbol;
 
-    private _symbolsManager: SymbolsService;
+    private _symbolsService: SymbolsService;
     private _pushIvemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        _symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this._symbolsManager = _symbolsManagerService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
         this.inputId = 'IvemIdInput' + this.componentInstanceId;
     }
 
@@ -100,7 +100,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
             if (value === undefined) {
                 symbol = IvemIdInputNgComponent.emptySymbol;
             } else {
-                symbol = this._symbolsManager.ivemIdToDisplay(value);
+                symbol = this._symbolsService.ivemIdToDisplay(value);
             }
 
             if (symbol !== this.symbol) {
@@ -115,7 +115,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     private parseSymbol(value: string): SymbolsService.IvemIdParseDetails {
-        return this._symbolsManager.parseIvemId(value);
+        return this._symbolsService.parseIvemId(value);
     }
 
     private input(text: string) {

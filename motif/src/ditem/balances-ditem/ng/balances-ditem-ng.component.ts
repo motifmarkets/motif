@@ -71,7 +71,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BalancesDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
         this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
         this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
 

@@ -56,7 +56,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
         this._frame = new StatusDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
     }
 
     get ditemFrame() { return this._frame; }

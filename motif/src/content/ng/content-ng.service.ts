@@ -26,14 +26,14 @@ export class ContentNgService {
     private _content: ContentService;
 
     constructor(settingsNgService: SettingsNgService,
-        symbolsManagerNgService: SymbolsNgService,
+        symbolsNgService: SymbolsNgService,
         appStorageNgService: AppStorageNgService,
         adiNgService: AdiNgService
     ) {
         this._content = new ContentService(settingsNgService.settingsService,
-            symbolsManagerNgService.symbolsManager,
+            symbolsNgService.service,
             appStorageNgService.appStorage,
-            adiNgService.adiService);
+            adiNgService.service);
     }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {

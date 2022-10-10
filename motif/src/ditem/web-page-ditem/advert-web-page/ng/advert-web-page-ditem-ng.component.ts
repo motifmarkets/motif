@@ -35,7 +35,7 @@ export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNg
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
         this._frame = new AdvertWebPageDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }

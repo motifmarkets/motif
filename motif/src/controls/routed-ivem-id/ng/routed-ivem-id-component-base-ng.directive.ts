@@ -13,7 +13,7 @@ import {
     StringId,
     Strings,
     SymbolsService,
-    UiAction,
+    UiAction
 } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
@@ -22,23 +22,23 @@ import { ControlComponentBaseNgDirective } from '../../ng/control-component-base
 export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlComponentBaseNgDirective {
     public symbol = RoutedIvemIdComponentBaseNgDirective.emptySymbol;
 
-    private _symbolsManager: SymbolsService;
+    private readonly _symbolsService: SymbolsService;
     private _pushRoutedIvemIdEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
-        _symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
         super(cdr, settingsService, stateColorItemIdArray);
-        this._symbolsManager = _symbolsManagerService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
     }
 
     public override get uiAction() { return super.uiAction as RoutedIvemIdUiAction; }
-    get symbolsManager() { return this._symbolsManager; }
+    // get symbolsService() { return this._symbolsService; }
 
-    protected get symbolsService() { return this._symbolsManager; }
+    protected get symbolsService() { return this._symbolsService; }
 
     protected override pushSettings() {
         super.pushSettings();
@@ -50,7 +50,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         if (value === undefined) {
             symbol = RoutedIvemIdComponentBaseNgDirective.emptySymbol;
         } else {
-            symbol = this._symbolsManager.routedIvemIdToDisplay(value);
+            symbol = this._symbolsService.routedIvemIdToDisplay(value);
         }
 
         if (symbol !== this.symbol) {
@@ -114,7 +114,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
     }
 
     private parseSymbol(value: string): SymbolsService.RoutedIvemIdParseDetails {
-        return this._symbolsManager.parseRoutedIvemId(value);
+        return this._symbolsService.parseRoutedIvemId(value);
     }
 
     private handleValuePushEvent(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean) {

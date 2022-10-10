@@ -108,12 +108,12 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _symbolsManager: SymbolsNgService,
+        private readonly _symbolsNgService: SymbolsNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new TopShareholdersDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._toggleSymbolLinkingButtonUiAction = this.createToggleSymbolLinkingButtonUiAction();
         this._todayModeUiAction = this.createTodayModeUiAction();
@@ -190,7 +190,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
 
         this.caption = this.calculateCaption(params.litIvemId, params.historicalDate, params.compareDate);
 
-        this.details.symbolText = this._symbolsManager.litIvemIdToDisplay(params.litIvemId);
+        this.details.symbolText = this._symbolsNgService.litIvemIdToDisplay(params.litIvemId);
     }
 
     public canNewTableOnLitIvemIdApply() {
@@ -608,7 +608,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private calculateCaption(symbol: LitIvemId, historicalDate: Date | undefined, compareDate: Date | undefined): string {
-        const symbolText = this._symbolsManager.litIvemIdToDisplay(symbol);
+        const symbolText = this._symbolsNgService.litIvemIdToDisplay(symbol);
         const top100ShareholdersText = Strings[StringId.Top100Shareholders];
         const forText = Strings[StringId.For];
 

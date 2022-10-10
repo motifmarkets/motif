@@ -105,7 +105,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
         super(cdr, settingsNgService.settingsService);
         this._masterSettings = settingsNgService.settingsService.master;
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
 
         this.dateTimeTimezoneModeRadioName = this.generateInstancedRadioName('dateTimeTimezoneMode');
 
