@@ -17,7 +17,7 @@ import {
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';

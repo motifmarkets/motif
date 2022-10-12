@@ -29,6 +29,7 @@ import {
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { ExtensionId } from 'content-internal-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
@@ -53,7 +54,6 @@ import {
     ResolvedComponentItemConfig,
     VirtualLayout
 } from 'golden-layout';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { FrameExtensionsAccessService } from '../frame-extension-access-service';
 import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
 

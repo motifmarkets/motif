@@ -5,4 +5,5 @@
  */
 
 export * from './ng/general-scan-properties-section-ng.component';
+export * from './targets-scan-properties/ng-api';
 

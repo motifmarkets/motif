@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ModalNgService } from '../../ng/modal-ng.service';
 
 

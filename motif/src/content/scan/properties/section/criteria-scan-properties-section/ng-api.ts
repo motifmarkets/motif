@@ -4,5 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/targets-scan-properties-section-ng.component';
+export * from './ng/criteria-scan-properties-section-ng.component';
+export * from './view/ng-api';
 

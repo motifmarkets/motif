@@ -25,9 +25,9 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { Integer } from 'public-api';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
     selector: 'app-environment-display',

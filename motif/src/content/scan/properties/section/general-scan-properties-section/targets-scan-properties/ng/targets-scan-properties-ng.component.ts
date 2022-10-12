@@ -7,27 +7,32 @@ import {
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
+    IntegerUiAction,
     LitIvemIdUiAction,
     MarketId,
     ScanTargetTypeId,
     StringId,
     Strings,
-    SymbolsService
+    SymbolsService,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
-import { CaptionedRadioNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent, LitIvemIdSelectNgComponent } from 'controls-ng-api';
-import { UnreachableCaseError } from 'revgrid';
-import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
-import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
+import {
+    CaptionedRadioNgComponent,
+    CaptionLabelNgComponent,
+    EnumArrayInputNgComponent,
+    EnumInputNgComponent, IntegerTextInputNgComponent,
+    LitIvemIdSelectNgComponent
+} from 'controls-ng-api';
+import { ContentComponentBaseNgDirective } from '../../../../../../ng/content-component-base-ng.directive';
 
 @Component({
-    selector: 'app-targets-scan-properties-section',
-    templateUrl: './targets-scan-properties-section-ng.component.html',
-    styleUrls: ['./targets-scan-properties-section-ng.component.scss'],
+    selector: 'app-targets-scan-properties',
+    templateUrl: './targets-scan-properties-ng.component.html',
+    styleUrls: ['./targets-scan-properties-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
-    @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
+export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDirective implements  OnInit, OnDestroy, AfterViewInit {
     @ViewChild('singleSymbolTargetSubTypeControl', { static: true })
         private _singleSymbolTargetSubTypeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('multiSymbolTargetSubTypeControl', { static: true })
@@ -37,11 +42,21 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     @ViewChild('multiMarketTargetSubTypeControl', { static: true })
         private _multiMarketTargetSubTypeControlComponent: CaptionedRadioNgComponent;
 
-    @ViewChild('singleSymbolControl', { static: true }) private _singleSymbolControlComponent: LitIvemIdSelectNgComponent;
-    @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: EnumInputNgComponent;
-    @ViewChild('multiMarketControl', { static: true }) private _multiMarketControlComponent: EnumArrayInputNgComponent;
+    @ViewChild('singleSymbolControl', { static: true })
+        private _singleSymbolControlComponent: LitIvemIdSelectNgComponent;
+    @ViewChild('singleMarketControl', { static: true })
+        private _singleMarketControlComponent: EnumInputNgComponent;
+    @ViewChild('singleMarketMaxMatchCountLabel', { static: true })
+        private _singleMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('singleMarketMaxMatchCountControl', { static: true })
+        private _singleMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
+    @ViewChild('multiMarketControl', { static: true })
+        private _multiMarketControlComponent: EnumArrayInputNgComponent;
+    @ViewChild('multiMarketMaxMatchCountLabel', { static: true })
+        private _multiMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('multiMarketMaxMatchCountControl', { static: true })
+        private _multiMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
 
-    public sectionHeadingText = Strings[StringId.Targets];
     public readonly targetSubTypeRadioName: string;
 
     private readonly _symbolsService: SymbolsService;
@@ -50,9 +65,10 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     private readonly _singleSymbolUiAction: LitIvemIdUiAction;
     private readonly _singleMarketUiAction: AllowedMarketsEnumUiAction;
     private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _maxMatchCountUiAction: IntegerUiAction;
 
     private _scan: EditableScan | undefined;
-    private _targetSubTypeId: ScanTargetsNgComponent.TargetSubTypeId;
+    private _targetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
 
     constructor(private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
         super();
@@ -65,8 +81,9 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
         this._singleSymbolUiAction = this.createSingleSymbolUiAction();
         this._singleMarketUiAction = this.createSingleMarketUiAction();
         this._multiMarketUiAction = this.createMultiMarketUiAction();
+        this._maxMatchCountUiAction = this.createMaxMatchCountUiAction();
 
-        this._targetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+        this._targetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
     }
 
     ngOnInit() {
@@ -82,22 +99,22 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     }
 
     public isSingleSymbolSubTargetType() {
-        return this._targetSubTypeId === ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
     }
 
     public isMultiSymbolSubTargetType() {
-        return this._targetSubTypeId === ScanTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol;
     }
 
     public isSingleMarketSubTargetType() {
-        return this._targetSubTypeId === ScanTargetsNgComponent.TargetSubTypeId.SingleMarket;
+        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
     }
 
     public isMultiMarketSubTargetType() {
-        return this._targetSubTypeId === ScanTargetsNgComponent.TargetSubTypeId.MultiMarket;
+        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket;
     }
 
-    setScan(value: EditableScan) {
+    setScan(value: EditableScan | undefined) {
         this._scan = value;
         this.pushValues();
     }
@@ -107,38 +124,41 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
         this._singleSymbolUiAction.finalise();
         this._singleMarketUiAction.finalise();
         this._multiMarketUiAction.finalise();
+        this._maxMatchCountUiAction.finalise();
     }
 
     private initialiseComponents() {
-        super.initialiseSectionHeadingComponent();
-
         this._singleSymbolTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol
+            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol
         );
         this._multiSymbolTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, ScanTargetsNgComponent.TargetSubTypeId.MultiSymbol
+            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol
         );
         this._singleMarketTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, ScanTargetsNgComponent.TargetSubTypeId.SingleMarket
+            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket
         );
         this._multiMarketTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, ScanTargetsNgComponent.TargetSubTypeId.MultiMarket
+            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket
         );
         this._singleSymbolControlComponent.initialise(this._singleSymbolUiAction);
         this._singleMarketControlComponent.initialise(this._singleMarketUiAction);
+        this._singleMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
+        this._singleMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
         this._multiMarketControlComponent.initialise(this._multiMarketUiAction);
+        this._multiMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
+        this._multiMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
     }
 
     private createTargetSubTypeUiAction() {
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanTargetsCaption_TargetType]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_TargetType]);
-        const ids = ScanTargetsNgComponent.TargetSubType.getAllIds();
+        const ids = TargetsScanPropertiesNgComponent.TargetSubType.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ScanTargetsNgComponent.TargetSubType.idToDisplay(id),
-                    title: ScanTargetsNgComponent.TargetSubType.idToDescription(id),
+                    caption: TargetsScanPropertiesNgComponent.TargetSubType.idToDisplay(id),
+                    title: TargetsScanPropertiesNgComponent.TargetSubType.idToDescription(id),
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
@@ -188,45 +208,61 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
         return action;
     }
 
+    private createMaxMatchCountUiAction() {
+        const action = new IntegerUiAction();
+        action.pushTitle(Strings[StringId.ScanTargetsDescription_MaxMatchCount]);
+        action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);
+        action.commitEvent = () => {
+            if (this._scan !== undefined) {
+                const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
+                this._scan.targetMarketIds = ids;
+            }
+        };
+        return action;
+    }
+
     private pushValues() {
         if (this._scan === undefined) {
-            this._targetSubTypeUiAction.pushValue(ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol);
+            this._targetSubTypeUiAction.pushValue(TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol);
             this._singleSymbolUiAction.pushValue(undefined);
             this._singleMarketUiAction.pushValue(undefined);
             this._multiMarketUiAction.pushValue([]);
+            this._maxMatchCountUiAction.pushValue(undefined);
         } else {
             const litIvemIds = this._scan.targetLitIvemIds;
-            let symbolTargetSubTypeId: ScanTargetsNgComponent.TargetSubTypeId;
+            let symbolTargetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
             if (litIvemIds === undefined || litIvemIds.length === 0) {
-                symbolTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+                symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
                 this._singleSymbolUiAction.pushValue(undefined);
             } else {
                 if (litIvemIds.length === 1) {
-                    symbolTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+                    symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
                     this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                 } else {
-                    symbolTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+                    symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol;
                     this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                 }
             }
 
             const marketIds = this._scan.targetMarketIds;
-            let marketTargetSubTypeId: ScanTargetsNgComponent.TargetSubTypeId;
+            let marketTargetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
             if (marketIds === undefined || marketIds.length === 0) {
-                marketTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.SingleMarket;
+                marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
                 this._singleMarketUiAction.pushValue(undefined);
                 this._multiMarketUiAction.pushValue([]);
             } else {
                 if (marketIds.length === 1) {
-                    marketTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.SingleMarket;
+                    marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
                     this._singleMarketUiAction.pushValue(marketIds[0]);
                     this._multiMarketUiAction.pushValue(marketIds);
                 } else {
-                    marketTargetSubTypeId = ScanTargetsNgComponent.TargetSubTypeId.MultiMarket;
+                    marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket;
                     this._singleMarketUiAction.pushValue(marketIds[0]);
                     this._multiMarketUiAction.pushValue(marketIds);
                 }
             }
+
+            this._maxMatchCountUiAction.pushValue(this._scan.maxMatchCount);
 
             switch (this._scan.targetTypeId) {
                 case ScanTargetTypeId.Symbols: {
@@ -245,7 +281,7 @@ export class ScanTargetsNgComponent extends ScanPropertiesSectionNgDirective imp
     }
 }
 
-export namespace ScanTargetsNgComponent {
+export namespace TargetsScanPropertiesNgComponent {
     export const enum TargetSubTypeId {
         SingleSymbol,
         MultiSymbol,
@@ -327,6 +363,6 @@ export namespace ScanTargetsNgComponent {
 
 export namespace ScanTargetsNgComponentModule {
     export function initialiseStatic() {
-        ScanTargetsNgComponent.TargetSubType.initialise();
+        TargetsScanPropertiesNgComponent.TargetSubType.initialise();
     }
 }

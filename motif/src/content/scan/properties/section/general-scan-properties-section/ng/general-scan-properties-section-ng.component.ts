@@ -3,17 +3,16 @@ import {
     BooleanUiAction,
     EditableScan,
     EnumUiAction,
-    ExplicitElementsEnumUiAction,
-    IntegerUiAction,
-    StringId,
+    ExplicitElementsEnumUiAction, StringId,
     Strings,
     StringUiAction
 } from '@motifmarkets/motif-core';
 import {
-    CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent, IntegerTextInputNgComponent, TextInputNgComponent
+    CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
+import { TargetsScanPropertiesNgComponent } from '../targets-scan-properties/ng-api';
 
 @Component({
     selector: 'app-general-scan-properties-section',
@@ -29,12 +28,12 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     @ViewChild('descriptionControl', { static: true }) private _descriptionControlComponent: TextInputNgComponent;
     @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
+    @ViewChild('targetsScanProperties', { static: true }) private _targetsScanPropertiesComponent: TargetsScanPropertiesNgComponent;
     @ViewChild('symbolListLabel', { static: true }) private _symbolListLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolListControl', { static: true }) private _symbolListControlComponent: CheckboxInputNgComponent;
-    @ViewChild('symbolListMaxCountLabel', { static: true }) private _symbolListMaxCountLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('symbolListMaxCountControl', { static: true }) private _symbolListMaxCountControlComponent: IntegerTextInputNgComponent;
 
     public sectionHeadingText = Strings[StringId.General];
+    public targetsRowHeading = Strings[StringId.Targets];
 
     private _scan: EditableScan | undefined;
 
@@ -42,7 +41,6 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     private readonly _descriptionUiAction: StringUiAction;
     private readonly _typeUiAction: ExplicitElementsEnumUiAction;
     private readonly _symbolListUiAction: BooleanUiAction;
-    private readonly _symbolListMaxCountUiAction: IntegerUiAction;
 
     constructor() {
         super();
@@ -51,7 +49,6 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._descriptionUiAction = this.createDescriptionUiAction();
         this._typeUiAction = this.createTypeUiAction();
         this._symbolListUiAction = this.createSymbolListUiAction();
-        this._symbolListMaxCountUiAction = this.createSymbolListMaxCountUiAction();
     }
 
     ngOnInit() {
@@ -69,6 +66,7 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     setScan(value: EditableScan | undefined) {
         this._scan = value;
         this.pushValues();
+        this._targetsScanPropertiesComponent.setScan(value);
     }
 
     protected finalise() {
@@ -76,7 +74,6 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._descriptionUiAction.finalise();
         this._typeUiAction.finalise();
         this._symbolListUiAction.finalise();
-        this._symbolListMaxCountUiAction.finalise();
     }
 
     private initialiseComponents() {
@@ -90,8 +87,6 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._typeControlComponent.initialise(this._typeUiAction);
         this._symbolListLabelComponent.initialise(this._symbolListUiAction);
         this._symbolListControlComponent.initialise(this._symbolListUiAction);
-        this._symbolListMaxCountLabelComponent.initialise(this._symbolListMaxCountUiAction);
-        this._symbolListMaxCountControlComponent.initialise(this._symbolListMaxCountUiAction);
     }
 
     private createNameUiAction() {
@@ -153,31 +148,17 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         return action;
     }
 
-    private createSymbolListMaxCountUiAction() {
-        const action = new IntegerUiAction();
-        action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolListMaxCount]);
-        action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolListMaxCount]);
-        action.commitEvent = () => {
-            if (this._scan !== undefined) {
-                this._scan.symbolListMaxCount = this._symbolListMaxCountUiAction.definedValue;
-            }
-        };
-        return action;
-    }
-
     private pushValues() {
         if (this._scan === undefined) {
             this._nameUiAction.pushValue(undefined);
             this._descriptionUiAction.pushValue(undefined);
             this._typeUiAction.pushValue(undefined);
             this._symbolListUiAction.pushValue(undefined);
-            this._symbolListMaxCountUiAction.pushValue(undefined);
         } else {
             this._nameUiAction.pushValue(this._scan.name);
             this._descriptionUiAction.pushValue(this._scan.description);
             this._typeUiAction.pushValue(this._scan.criteriaTypeId);
             this._symbolListUiAction.pushValue(this._scan.symbolListEnabled);
-            this._symbolListMaxCountUiAction.pushValue(this._scan.symbolListMaxCount);
         }
     }
 }

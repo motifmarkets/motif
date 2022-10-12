@@ -6,9 +6,9 @@
 
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { StringId, Strings } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { Version } from 'generated-internal-api';
 import { nanoid } from 'nanoid';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from '../../ng/config-ng.service';
 
 @Component({

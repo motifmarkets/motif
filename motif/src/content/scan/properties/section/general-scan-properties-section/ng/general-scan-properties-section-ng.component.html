@@ -14,9 +14,9 @@
         <app-text-input #descriptionControl id="descriptionControl" inputId="descriptionInput" spellCheck="false"></app-text-input>
         <app-caption-label #typeLabel for="typeInput"></app-caption-label>
         <app-enum-input #typeControl id="typeControl" inputId="typeInput"></app-enum-input>
+        <span>{{targetsRowHeading}}</span>
+        <app-targets-scan-properties #targetsScanProperties id="targetsScanProperties"></app-targets-scan-properties>
         <app-caption-label #symbolListLabel for="symbolListCheckbox"></app-caption-label>
         <app-checkbox-input #symbolListControl id="symbolListControl" inputId="symbolListCheckbox"></app-checkbox-input>
-        <app-caption-label #symbolListMaxCountLabel id="symbolListMaxCountLabel" for="symbolListMaxCountInput"></app-caption-label>
-        <app-integer-text-input #symbolListMaxCountControl id="symbolListMaxCountControl" inputId="symbolListMaxCountInput"></app-integer-text-input>
     </section>
 </section>

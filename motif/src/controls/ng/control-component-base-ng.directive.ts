@@ -17,7 +17,7 @@ import {
     UiAction,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {

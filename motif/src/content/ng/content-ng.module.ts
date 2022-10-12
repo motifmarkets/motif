@@ -59,10 +59,10 @@ import {
     ScanNewNgComponent,
     ScanPropertiesNgComponent,
     ScansNgComponent,
-    ScanTargetsNgComponent,
     ScanTypeDescriptionNgComponent,
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
+    TargetsScanPropertiesNgComponent,
     ZenithScanCriteriaViewNgComponent
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
@@ -138,7 +138,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanTypesGridNgComponent,
         ScanTypesControlsNgComponent,
         ScanTypeDescriptionNgComponent,
-        ScanTargetsNgComponent,
+        TargetsScanPropertiesNgComponent,
         NotifiersScanPropertiesSectionNgComponent,
         CriteriaScanPropertiesSectionNgComponent,
         ExpandableCollapsibleLinedHeadingNgComponent,

@@ -16,8 +16,8 @@ import {
     Strings
 } from '@motifmarkets/motif-core';
 import { CaptionedCheckboxNgComponent, CaptionedRadioNgComponent } from 'controls-ng-api';
-import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../../expandable-collapsible-lined-heading/ng-api';
-import { ScanPropertiesSectionNgDirective } from '../../../scan-properties-section-ng.directive';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
+import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
 
 @Component({
     selector: 'app-criteria-scan-properties-section',

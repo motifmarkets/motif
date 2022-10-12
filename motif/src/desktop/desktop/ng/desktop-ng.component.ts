@@ -23,6 +23,7 @@ import {
     SettingsService,
     StringId
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SignOutService } from 'component-services-internal-api';
 import {
     AdiNgService,
@@ -39,7 +40,6 @@ import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'di
 import { ComponentItem } from 'golden-layout';
 import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';
 import { DesktopFrame } from '../desktop-frame';
