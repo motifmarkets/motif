@@ -18,7 +18,7 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
-import { SvgButtonNgComponent } from 'controls-ng-api';
+import { EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -29,6 +29,10 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 })
 export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @Input() public headingText: string;
+    @Input() public genericSelectorWidth: string;
+    @Input() public genericSelectorCaption: string;
+
+    @ViewChild('genericSelector') genericSelectorComponent: EnumInputNgComponent;
     @ViewChild('expandButton', { static: true }) private _expandButtonComponent: SvgButtonNgComponent;
     @ViewChild('restoreButton', { static: true }) private _restoreButtonComponent: SvgButtonNgComponent;
     @ViewChild('collapseButton', { static: true }) private _collapseButtonComponent: SvgButtonNgComponent;

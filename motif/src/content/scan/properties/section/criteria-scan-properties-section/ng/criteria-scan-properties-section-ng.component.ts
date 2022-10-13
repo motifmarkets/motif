@@ -6,7 +6,6 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    BooleanUiAction,
     EditableScan,
     EnumInfoOutOfOrderError,
     EnumUiAction,
@@ -15,7 +14,6 @@ import {
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
-import { CaptionedCheckboxNgComponent, CaptionedRadioNgComponent } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
 
@@ -28,25 +26,15 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
 export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
     implements OnInit, OnDestroy, AfterViewInit {
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    @ViewChild('defaultViewControl', { static: true }) private _defaultViewControlComponent: CaptionedCheckboxNgComponent;
-    @ViewChild('listViewControl', { static: true }) private _listViewControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('formulaViewControl', { static: true }) private _formulaViewControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('zenithViewControl', { static: true }) private _zenithViewControlComponent: CaptionedRadioNgComponent;
 
-    public sectionHeadingText = Strings[StringId.Criteria];
-    public readonly viewRadioName: string;
+    public readonly sectionHeadingText = Strings[StringId.Criteria];
+    public readonly genericSelectorCaption = Strings[StringId.View] + ':';
 
-    private _scan: EditableScan | undefined;
-
-    private readonly _defaultViewUiAction: BooleanUiAction;
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     constructor(private readonly _cdr: ChangeDetectorRef) {
         super();
 
-        this.viewRadioName = this.generateInstancedRadioName('view');
-
-        this._defaultViewUiAction = this.createDefaultViewUiAction();
         this._viewUiAction = this.createViewUiAction();
     }
 
@@ -62,33 +50,27 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this.initialiseComponents();
     }
 
-    setScan(value: EditableScan) {
-        this._scan = value;
+    override setScan(value: EditableScan | undefined) {
+        super.setScan(value);
         this.pushValues();
     }
 
     protected finalise() {
-        this._defaultViewUiAction.finalise();
         this._viewUiAction.finalise();
+    }
+
+    protected override processChangedProperties(changedFieldIds: EditableScan.FieldId[]) {
+        for (const fieldId of changedFieldIds) {
+            switch (fieldId) {
+                case EditableScan.FieldId.
+            }
+        }
     }
 
     private initialiseComponents() {
         super.initialiseSectionHeadingComponent();
 
-        this._defaultViewControlComponent.initialise(this._defaultViewUiAction);
-        this._listViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.List);
-        this._formulaViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Formula);
-        this._zenithViewControlComponent.initialiseEnum(this._viewUiAction, CriteriaScanPropertiesSectionNgComponent.ViewId.Zenith);
-    }
-
-    private createDefaultViewUiAction() {
-        const action = new BooleanUiAction(false);
-        action.pushCaption(Strings[StringId.ScanCriteriaCaption_DefaultView]);
-        action.pushTitle(Strings[StringId.ScanCriteriaDescription_DefaultView]);
-        action.commitEvent = () => {
-
-        };
-        return action;
+        this._sectionHeadingComponent.genericSelectorComponent.initialise(this._viewUiAction);
     }
 
     private createViewUiAction() {
@@ -113,14 +95,12 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
 
     private pushValues() {
         if (this._scan === undefined) {
-            this._defaultViewUiAction.pushValue(true);
-            this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.List);
+            this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
         } else {
-            this._defaultViewUiAction.pushValue(true);
             if (this._scan.criteriaTypeId === EditableScan.CriteriaTypeId.Custom) {
-                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Formula);
+                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
             } else {
-                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.List);
+                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
             }
         }
     }
@@ -128,7 +108,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
 
 export namespace CriteriaScanPropertiesSectionNgComponent {
     export const enum ViewId {
-        // Default,
+        Default,
         List,
         Formula,
         Zenith,
@@ -147,12 +127,12 @@ export namespace CriteriaScanPropertiesSectionNgComponent {
         type InfosObject = { [id in keyof typeof ViewId]: Info };
 
         const infosObject: InfosObject = {
-            // Default: {
-            //     id: CriteriaViewId.Default,
-            //     name: 'Default',
-            //     displayId: StringId.ScanCriteriaViewDisplay_Default,
-            //     descriptionId: StringId.ScanCriteriaViewDescription_Default,
-            // },
+            Default: {
+                id: ViewId.Default,
+                name: 'Default',
+                displayId: StringId.ScanCriteriaViewDisplay_Default,
+                descriptionId: StringId.ScanCriteriaViewDescription_Default,
+            },
             List: {
                 id: ViewId.List,
                 name: 'List',

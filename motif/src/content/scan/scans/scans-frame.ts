@@ -74,7 +74,7 @@ export class ScansFrame extends ContentFrame {
 
     loadLayoutConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
-            const context = 'ScanFrame';
+            const context = 'ScansFrame';
             const layoutElement = element.tryGetElement(
                 ScansFrame.JsonName.layout,
                 context
@@ -90,8 +90,8 @@ export class ScansFrame extends ContentFrame {
 
     saveLayoutConfig(element: JsonElement) {
         const layoutElement = element.newElement(ScansFrame.JsonName.layout);
-        // const columns = this._grid.saveLayout().serialise();
-        // GridLayoutIO.saveLayout(columns, layoutElement);
+        const columns = this._grid.saveLayout().serialise();
+        GridLayoutIO.saveLayout(columns, layoutElement);
     }
 
     // close() {
@@ -121,6 +121,8 @@ export class ScansFrame extends ContentFrame {
         if (this._gridPrepared) {
             this._grid.reset();
         }
+
+        this._grid.sortable = true;
 
         const fields = ScansGridField.allIds.map((id) => ScansGridField.createField(id));
         this.recordStore.addFields(fields);

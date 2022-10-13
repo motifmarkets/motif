@@ -4,16 +4,14 @@
     License: motionite.trade/license/motif
 -->
 
-<app-expandable-collapsible-lined-heading-ng #sectionHeading [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
+<app-expandable-collapsible-lined-heading-ng
+    #sectionHeading
+    [headingText]="sectionHeadingText"
+    [genericSelectorWidth]="'10em'"
+    [genericSelectorCaption]="genericSelectorCaption">
+</app-expandable-collapsible-lined-heading-ng>
 
 <section id="content">
-    <section id="viewSelector">
-        <app-captioned-checkbox #defaultViewControl id="defaultViewControl" inputId="defaultViewCheckbox"></app-captioned-checkbox>
-        <app-captioned-radio #listViewControl id="listViewControl" inputId="listViewRadio" [name]="viewRadioName"></app-captioned-radio>
-        <app-captioned-radio #formulaViewControl id="formulaViewControl" inputId="formulaViewRadio" [name]="viewRadioName"></app-captioned-radio>
-        <app-captioned-radio #zenithViewControl id="zenithViewControl" inputId="zenithViewRadio" [name]="viewRadioName"></app-captioned-radio>
-    </section>
-
     <section id="view">
         <app-zenith-scan-criteria-view-ng></app-zenith-scan-criteria-view-ng>
     </section>

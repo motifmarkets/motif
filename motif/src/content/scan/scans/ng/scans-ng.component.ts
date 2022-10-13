@@ -6,7 +6,7 @@ import { AdaptedRevgrid } from '../../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../../ng/content-ng.service';
-import { GeneralScanPropertiesSectionNgComponent } from '../../properties/ng-api';
+import { ScanPropertiesNgComponent } from '../../properties/ng-api';
 import { ScansFrame } from '../scans-frame';
 
 @Component({
@@ -18,8 +18,8 @@ import { ScansFrame } from '../scans-frame';
 })
 export class ScansNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, ScansFrame.ComponentAccess {
     @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
-    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
-    @ViewChild(GeneralScanPropertiesSectionNgComponent, { static: true }) private _propertiesComponent: GeneralScanPropertiesSectionNgComponent;
+    @ViewChild('grid', { static: true }) private _gridComponent: RecordGridNgComponent;
+    @ViewChild('scanProperties', { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
 
     recordFocusEventer: ScansNgComponent.RecordFocusEventer;
     gridClickEventer: ScansNgComponent.GridClickEventer;
@@ -30,7 +30,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     // private _grid: RecordGrid;
 
     constructor(
-        private _cdr: ChangeDetectorRef,
+        private readonly _cdr: ChangeDetectorRef,
         contentService: ContentNgService,
         scansNgService: ScansNgService
     ) {
@@ -58,7 +58,6 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
 
         const grid = this._gridComponent.createGrid(this.frame.recordStore, ScansNgComponent.frameGridProperties);
         this.frame.setGrid(grid);
-        // this.frame.bindPropertiesComponent(this._propertiesComponent);
         // this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         // this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         // this._grid.columnsViewWidthsChangedEventer =

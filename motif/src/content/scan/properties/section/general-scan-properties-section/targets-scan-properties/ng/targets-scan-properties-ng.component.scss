@@ -15,6 +15,12 @@
     }
 
     #targetSubTypes {
+        #singleSymbolControl {
+            width: 12em;
+        }
+        #singleSymbolSubTargetType {
+            display: flex;
+        }
         .marketSubTargetType {
             display: flex;
             flex-direction: column;

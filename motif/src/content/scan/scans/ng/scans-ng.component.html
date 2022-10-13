@@ -8,7 +8,7 @@
 <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
     <as-split-area id="gridArea" [size]="gridSize" [minSize]="gridMinSize">
         <div id="gridDiv">
-            <app-record-grid id="grid"></app-record-grid>
+            <app-record-grid #grid id="grid"></app-record-grid>
         </div>
     </as-split-area>
     <as-split-area id="propertiesArea" [size]="null"> <!-- was size="*"-->

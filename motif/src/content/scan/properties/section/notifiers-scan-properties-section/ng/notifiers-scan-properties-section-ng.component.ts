@@ -39,8 +39,6 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
 
     public sectionHeadingText = Strings[StringId.Notifiers];
 
-    private _scan: EditableScan | undefined;
-
     private readonly _mobileNotifierUiAction: BooleanUiAction;
     private readonly _smsNotifierUiAction: BooleanUiAction;
     private readonly _emailNotifierUiAction: BooleanUiAction;
@@ -73,8 +71,8 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
         this.initialiseComponents();
     }
 
-    setScan(value: EditableScan) {
-        this._scan = value;
+    override setScan(value: EditableScan | undefined) {
+        super.setScan(value);
         this.pushValues();
     }
 

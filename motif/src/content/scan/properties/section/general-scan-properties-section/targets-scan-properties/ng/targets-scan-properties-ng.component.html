@@ -11,7 +11,7 @@
     <app-captioned-radio #multiMarketTargetSubTypeControl id="multiMarketTargetSubTypeControl" inputId="multiMarketTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
 </section>
 <section id="targetSubTypes">
-    <div [style.display]="isSingleSymbolSubTargetType() ? null : 'none'">
+    <div id="singleSymbolSubTargetType" [style.display]="isSingleSymbolSubTargetType() ? null : 'none'">
         <app-lit-ivem-id-select #singleSymbolControl id="singleSymbolControl"></app-lit-ivem-id-select>
     </div>
     <div [style.display]="isMultiSymbolSubTargetType() ? null : 'none'">

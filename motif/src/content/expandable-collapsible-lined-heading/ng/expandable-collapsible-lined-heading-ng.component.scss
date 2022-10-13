@@ -18,8 +18,22 @@
         margin: 0em 0.4em 0em 0.4em;
     }
 
-    #preLine {
+    #preHeadingTextLine {
         flex: 0 0 1em;
+    }
+
+    #genericSelectorSection {
+        display: flex;
+        align-items: center;
+        margin-right: 0.4em;
+
+        #preGenericSelectorLine {
+            flex: 0 0 1em;
+        }
+
+        #genericSelectorCaption {
+            margin: 0em 0.4em 0em 0.4em;
+        }
     }
 
     #midLine {
