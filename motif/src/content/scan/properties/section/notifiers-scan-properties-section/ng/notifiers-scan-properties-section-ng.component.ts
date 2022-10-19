@@ -1,9 +1,9 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
-    EditableScan,
     ExplicitElementsEnumArrayUiAction,
     IntegerUiAction,
+    Scan,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
@@ -71,7 +71,7 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
         this.initialiseComponents();
     }
 
-    override setScan(value: EditableScan | undefined) {
+    override setScan(value: Scan | undefined) {
         super.setScan(value);
         this.pushValues();
     }

@@ -1,12 +1,12 @@
 import {
     AdiService,
-    EditableScan,
     GridLayout,
     GridLayoutIO,
     GridLayoutRecordStore,
     GridRecordFieldState,
     Integer,
     JsonElement,
+    Scan,
     ScansGridField,
     ScansGridRecordStore,
     ScansService,
@@ -219,7 +219,7 @@ export class ScansFrame extends ContentFrame {
         this._grid.setFieldState(field, state);
     }
 
-    private filterItems(scan: EditableScan) {
+    private filterItems(scan: Scan) {
         if (this._uppercaseFilterText.length === 0) {
             return true;
         } else {
@@ -231,7 +231,7 @@ export class ScansFrame extends ContentFrame {
         this._grid.clearFilter();
 
         if (this._uppercaseFilterText.length > 0) {
-            this._grid.applyFilter((record) => this.filterItems(record as EditableScan));
+            this._grid.applyFilter((record) => this.filterItems(record as Scan));
         }
     }
 }
@@ -240,7 +240,7 @@ export namespace ScansFrame {
     // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export interface ComponentAccess {
-        setFocusedScan(value: EditableScan | undefined): void;
+        setFocusedScan(value: Scan | undefined): void;
         // readonly id: string;
 
         // setBadness(value: Badness): void;

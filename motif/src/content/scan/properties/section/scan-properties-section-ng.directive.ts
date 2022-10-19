@@ -5,14 +5,14 @@
  */
 
 import { Directive } from '@angular/core';
-import { EditableScan, MultiEvent } from '@motifmarkets/motif-core';
+import { MultiEvent, Scan } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../expandable-collapsible-lined-heading/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()
 export abstract class ScanPropertiesSectionNgDirective extends ContentComponentBaseNgDirective {
     protected _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    protected _scan: EditableScan | undefined;
+    protected _scan: Scan | undefined;
 
     private _scanPropertiesChangedSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
@@ -24,7 +24,7 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
         this._sectionHeadingComponent.collapseEventer = () => this.handleCollapseEvent();
     }
 
-    setScan(value: EditableScan | undefined) {
+    setScan(value: Scan | undefined) {
         if (this._scan !== undefined) {
             this._scan.unsubscribeChangedEvent(this._scanPropertiesChangedSubscriptionId);
             this._scanPropertiesChangedSubscriptionId = undefined;
@@ -49,5 +49,5 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
 
     }
 
-    protected abstract processChangedProperties(changedFieldIds: EditableScan.FieldId[]): void;
+    protected abstract processChangedProperties(changedFieldIds: Scan.FieldId[]): void;
 }

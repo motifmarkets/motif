@@ -6,7 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
 import {
-    EditableScan
+    Scan
 } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 import {
@@ -27,7 +27,7 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective {
     // @ViewChild('rankSection', { static: true }) private _rankSectionComponent: RankScanPropertiesSectionNgComponent;
     @ViewChild('notifiersSection', { static: true }) private _notifiersSectionComponent: NotifiersScanPropertiesSectionNgComponent;
 
-    private _scan: EditableScan | undefined;
+    private _scan: Scan | undefined;
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
@@ -36,7 +36,7 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective {
     }
 
 
-    setScan(value: EditableScan | undefined) {
+    setScan(value: Scan | undefined) {
         this._scan = value;
 
         this._generalSectionComponent.setScan(value);

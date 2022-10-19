@@ -6,11 +6,11 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    EditableScan,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
+    Scan,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
@@ -50,7 +50,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this.initialiseComponents();
     }
 
-    override setScan(value: EditableScan | undefined) {
+    override setScan(value: Scan | undefined) {
         super.setScan(value);
         this.pushValues();
     }
@@ -59,12 +59,19 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this._viewUiAction.finalise();
     }
 
-    protected override processChangedProperties(changedFieldIds: EditableScan.FieldId[]) {
-        for (const fieldId of changedFieldIds) {
-            switch (fieldId) {
-                case EditableScan.FieldId.
-            }
-        }
+    protected override processChangedProperties(changedFieldIds: Scan.FieldId[]) {
+        // let criteriaChanged = false;
+        // let criteriaChanged = false;
+        // for (const fieldId of changedFieldIds) {
+        //     switch (fieldId) {
+        //         case Scan.FieldId.Criteria:
+        //             criteriaChanged = true;
+        //             break;
+        //         case Scan.FieldId.CriteriaAsZenithText:
+        //             criteriaChanged = true;
+        //             break;
+        //     }
+        // }
     }
 
     private initialiseComponents() {
@@ -97,7 +104,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         if (this._scan === undefined) {
             this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
         } else {
-            if (this._scan.criteriaTypeId === EditableScan.CriteriaTypeId.Custom) {
+            if (this._scan.criteriaTypeId === Scan.CriteriaTypeId.Custom) {
                 this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
             } else {
                 this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);

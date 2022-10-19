@@ -2,7 +2,6 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, O
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
-    EditableScan,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -10,6 +9,7 @@ import {
     IntegerUiAction,
     LitIvemIdUiAction,
     MarketId,
+    Scan,
     ScanTargetTypeId,
     StringId,
     Strings,
@@ -67,7 +67,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
     private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
-    private _scan: EditableScan | undefined;
+    private _scan: Scan | undefined;
     private _targetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
 
     constructor(private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
@@ -114,7 +114,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket;
     }
 
-    setScan(value: EditableScan | undefined) {
+    setScan(value: Scan | undefined) {
         this._scan = value;
         this.pushValues();
     }

@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
-    EditableScan, StringId,
+    Scan,
+    StringId,
     Strings,
     StringUiAction
 } from '@motifmarkets/motif-core';
@@ -63,7 +64,7 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this.initialiseComponents();
     }
 
-    override setScan(value: EditableScan | undefined) {
+    override setScan(value: Scan | undefined) {
         super.setScan(value);
         this.pushValues();
         this._targetsScanPropertiesComponent.setScan(value);
@@ -75,6 +76,28 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._descriptionUiAction.finalise();
         // this._typeUiAction.finalise();
         this._symbolListUiAction.finalise();
+    }
+
+    protected override processChangedProperties(changedFieldIds: Scan.FieldId[]) {
+        const scan = this._scan;
+        if (scan !== undefined) {
+            for (const fieldId of changedFieldIds) {
+                switch (fieldId) {
+                    case Scan.FieldId.Name:
+                        this._nameUiAction.pushValue(scan.name);
+                        break;
+                    case Scan.FieldId.Description:
+                        this._descriptionUiAction.pushValue(scan.description);
+                        break;
+                    case Scan.FieldId.Enabled:
+                        this._enabledUiAction.pushValue(scan.enabled);
+                        break;
+                    case Scan.FieldId.symbolListEnabled:
+                        this._symbolListUiAction.pushValue(scan.symbolListEnabled);
+                        break;
+                }
+            }
+        }
     }
 
     private initialiseComponents() {
@@ -132,13 +155,13 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     //     const action = new ExplicitElementsEnumUiAction(false);
     //     action.pushCaption(Strings[StringId.ScanPropertiesCaption_Type]);
     //     action.pushTitle(Strings[StringId.ScanPropertiesTitle_Type]);
-    //     const ids = EditableScan.CriteriaType.getAllIds();
+    //     const ids = Scan.CriteriaType.getAllIds();
     //     const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
     //         (id) => (
     //             {
     //                 element: id,
-    //                 caption: EditableScan.CriteriaType.idToDisplay(id),
-    //                 title: EditableScan.CriteriaType.idToDisplay(id),
+    //                 caption: Scan.CriteriaType.idToDisplay(id),
+    //                 title: Scan.CriteriaType.idToDisplay(id),
     //             }
     //         )
     //     );
