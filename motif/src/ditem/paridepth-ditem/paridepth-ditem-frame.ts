@@ -16,7 +16,8 @@ import {
     PortfolioTableDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
-    TableRecordDefinitionList
+    TableRecordDefinitionList,
+    TableRecordDefinitionListsService
 } from '@motifmarkets/motif-core';
 import { DepthFrame, TableFrame, TradesFrame } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
@@ -39,7 +40,8 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
-        adiService: AdiService
+        adiService: AdiService,
+        private readonly _tableRecordDefinitionsListService: TableRecordDefinitionListsService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -107,7 +109,10 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             // watchlist
             const definition = new LitIvemIdTableRecordDefinition(litIvemId);
             if (!this._watchlistFrame.tableOpened) {
-                const tableDefinition = new PortfolioTableDefinition(this.adi, new PortfolioTableRecordDefinitionList());
+                const tableDefinition = new PortfolioTableDefinition(
+                    this.adi,
+                    this._tableRecordDefinitionsListService,
+                    new PortfolioTableRecordDefinitionList());
                 this._watchlistFrame.newPrivateTable(tableDefinition, true);
                 this._watchlistFrame.addRecordDefinition(definition);
                 this._watchlistFrame.focusItem(0);
@@ -201,7 +206,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     }
 
     private handleWatchlistRequireDefaultTableDefinitionEvent() {
-        return new PortfolioTableDefinition(this.adi, new PortfolioTableRecordDefinitionList());
+        return new PortfolioTableDefinition(
+            this.adi,
+            this._tableRecordDefinitionsListService,
+            new PortfolioTableRecordDefinitionList()
+        );
     }
 
     private handleWatchlistTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {

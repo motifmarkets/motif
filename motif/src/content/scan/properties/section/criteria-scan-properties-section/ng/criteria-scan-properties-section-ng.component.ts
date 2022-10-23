@@ -103,12 +103,12 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
     private pushValues() {
         if (this._scan === undefined) {
             this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
-        } else {
-            if (this._scan.criteriaTypeId === Scan.CriteriaTypeId.Custom) {
-                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
-            } else {
-                this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
-            }
+        // } else {
+        //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {
+        //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
+        //     } else {
+        //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
+        //     }
         }
     }
 }

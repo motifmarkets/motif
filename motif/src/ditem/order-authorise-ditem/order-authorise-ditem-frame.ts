@@ -21,8 +21,8 @@ import {
     OrderTableRecordDefinitionList,
     SettingsService,
     SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList
+    TableRecordDefinitionList,
+    TablesService
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -49,6 +49,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -212,12 +213,12 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
     }
 
     private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createOrder(OrderAuthoriseDitemFrame.defaultActiveAccountGroup);
+        return this._tablesService.definitionFactory.createOrder(OrderAuthoriseDitemFrame.defaultActiveAccountGroup);
     }
 
     private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
         const orderRecordDefinitionList = recordDefinitionList as OrderTableRecordDefinitionList;
-        this._orderList = orderRecordDefinitionList.dataRecordList;
+        this._orderList = orderRecordDefinitionList.recordList;
         const group = orderRecordDefinitionList.brokerageAccountGroup;
         this.tableOpenEvent(group);
     }
@@ -245,7 +246,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
     }
 
     private newTable(group: BrokerageAccountGroup, keepCurrentLayout: boolean) {
-        const tableDefinition = tableDefinitionFactory.createOrder(group);
+        const tableDefinition = this._tablesService.definitionFactory.createOrder(group);
         this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
     }
 

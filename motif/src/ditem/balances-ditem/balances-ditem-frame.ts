@@ -16,8 +16,8 @@ import {
     Integer,
     JsonElement,
     SymbolsService,
-    tableDefinitionFactory,
     TableRecordDefinitionList,
+    TablesService
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -43,6 +43,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Balances,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -119,12 +120,12 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createBalances(BalancesDitemFrame.default.activeAccountGroup);
+        return this._tablesService.definitionFactory.createBalances(BalancesDitemFrame.default.activeAccountGroup);
     }
 
     private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
         const balancesRecordDefinitionList = recordDefinitionList as BalancesTableRecordDefinitionList;
-        this._balancesList = balancesRecordDefinitionList.dataRecordList;
+        this._balancesList = balancesRecordDefinitionList.recordList;
         const group = balancesRecordDefinitionList.brokerageAccountGroup;
         this.tableOpenEvent(group);
     }
@@ -143,7 +144,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     private newTable(group: BrokerageAccountGroup, keepCurrentLayout: boolean) {
-        const tableDefinition = tableDefinitionFactory.createBalances(group);
+        const tableDefinition = this._tablesService.definitionFactory.createBalances(group);
         this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
     }
 

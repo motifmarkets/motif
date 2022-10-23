@@ -5,9 +5,15 @@
  */
 
 import {
-    AdiService, CommandRegisterService, JsonElement, LitIvemId, SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList, TopShareholdersDataItem, TopShareholderTableRecordDefinitionList
+    AdiService,
+    CommandRegisterService,
+    JsonElement,
+    LitIvemId,
+    SymbolsService,
+    TableRecordDefinitionList,
+    TablesService,
+    TopShareholdersDataItem,
+    TopShareholderTableRecordDefinitionList
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -26,11 +32,12 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         private readonly _componentAccess: TopShareholdersDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
-        mySymbolsMgr: SymbolsService,
-        myAdi: AdiService
+        symbolsService: SymbolsService,
+        adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.TopShareholders, _componentAccess,
-            commandRegisterService, desktopAccessService, mySymbolsMgr, myAdi
+            commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
@@ -72,7 +79,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         if (!this.getParamsFromGui() || this.litIvemId === undefined) {
             return false;
         } else {
-            const tableDefinition = tableDefinitionFactory.createTopShareholder(this.litIvemId,
+            const tableDefinition = this._tablesService.definitionFactory.createTopShareholder(this.litIvemId,
                 this._historicalDate, this._compareDate);
             this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
             this._componentAccess.notifyNewTable({

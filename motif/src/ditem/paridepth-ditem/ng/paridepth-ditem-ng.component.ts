@@ -17,13 +17,33 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    AssertInternalError, CommaText, DateUiAction, defined, delay1Tick, IconButtonUiAction,
-    InternalCommand, JsonElement, LitIvemId, LitIvemIdUiAction, Logger, ModifierKey, ModifierKeyId, StringId, Strings, StringUiAction,
+    AssertInternalError,
+    CommaText,
+    DateUiAction,
+    defined,
+    delay1Tick,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    LitIvemId,
+    LitIvemIdUiAction,
+    Logger,
+    ModifierKey,
+    ModifierKeyId,
+    StringId,
+    Strings,
+    StringUiAction,
     UiAction
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordDefinitionListsNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -105,12 +125,19 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new ParidepthDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new ParidepthDitemFrame(
+            this,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            tableRecordDefinitionListsNgService.service,
+        );
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();

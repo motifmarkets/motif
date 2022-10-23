@@ -27,7 +27,7 @@ import {
     Strings,
     UiAction
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -66,12 +66,20 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        symbolsNgService: SymbolsNgService,
+        adiNgService: AdiNgService,
+        tablesNgService: TablesNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new BalancesDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
+        this._frame = new BalancesDitemFrame(
+            this,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            tablesNgService.service,
+        );
         this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
         this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
 

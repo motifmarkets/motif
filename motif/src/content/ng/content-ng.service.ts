@@ -6,7 +6,14 @@
 
 import { Injectable } from '@angular/core';
 import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
-import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    AppStorageNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordDefinitionListsNgService,
+    TablesNgService
+} from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/internal-api';
 import { DepthFrame } from '../depth/internal-api';
@@ -28,12 +35,18 @@ export class ContentNgService {
     constructor(settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         appStorageNgService: AppStorageNgService,
-        adiNgService: AdiNgService
+        adiNgService: AdiNgService,
+        tablesNgService: TablesNgService,
+        tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
     ) {
-        this._content = new ContentService(settingsNgService.settingsService,
+        this._content = new ContentService(
+            settingsNgService.settingsService,
             symbolsNgService.service,
             appStorageNgService.appStorage,
-            adiNgService.service);
+            adiNgService.service,
+            tableRecordDefinitionListsNgService.service,
+            tablesNgService.service,
+        );
     }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {

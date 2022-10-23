@@ -41,7 +41,7 @@ import {
     SymbolFieldId,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import {
@@ -177,6 +177,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        tablesNgService: TablesNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
@@ -186,8 +187,14 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         this.exchangeRadioName = this.generateInstancedRadioName('exchange');
         this.indicesRadioName = this.generateInstancedRadioName('indices');
 
-        this._frame = new SearchSymbolsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new SearchSymbolsDitemFrame(
+            this,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            tablesNgService.service,
+        );
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._columnsUiAction = this.createColumnsUiAction();

@@ -29,7 +29,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -79,12 +79,21 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        symbolsNgService: SymbolsNgService,
+        adiNgService: AdiNgService,
+        tablesNgService: TablesNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new HoldingsDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
+        this._frame = new HoldingsDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            tablesNgService.service
+        );
         this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);
         this._frame.groupOpenedEvent = (group) => this.handleGroupOpenedEvent(group);
 

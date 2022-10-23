@@ -22,19 +22,17 @@ import {
     Strings,
     Table,
     TableDefinition,
-    tableDefinitionFactory,
-    TableDirectory,
-    tableDirectory,
     TableRecordDefinition,
     TableRecordDefinitionList,
-    tableRecordDefinitionListDirectory,
+    TableRecordDefinitionListsService,
+    TablesService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
 import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter, RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
-export class TableFrame extends ContentFrame implements RevRecordStore, TableDirectory.Locker, TableDirectory.Opener {
+export class TableFrame extends ContentFrame implements RevRecordStore, Table.Locker, Table.Opener {
     dragDropAllowed: boolean;
 
     settingsApplyEvent: TableFrame.SettingsApplyEvent;
@@ -60,7 +58,12 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private readonly _componentAccess: TableFrame.ComponentAccess, private readonly _settingsService: SettingsService) {
+    constructor(
+        private readonly _componentAccess: TableFrame.ComponentAccess,
+        private readonly _settingsService: SettingsService,
+        private readonly _tableRecordDefinitionListsService: TableRecordDefinitionListsService,
+        private readonly _tablesService: TablesService,
+    ) {
         super();
     }
 
@@ -69,7 +72,15 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     // ILocker members
 
-    get lockerName(): string {
+    get name(): string {
+        if (this._table === undefined) {
+            throw new AssertInternalError('TFGLNT20095');
+        } else {
+            return this._componentAccess.id + ':' + this._table.name;
+        }
+    }
+
+    get lockOpenListItemSubscriberName(): string {
         if (this._table === undefined) {
             throw new AssertInternalError('TFGLNT20095');
         } else {
@@ -141,12 +152,6 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         }
     }
 
-    // BaseDirectory.Entry.ISubscriber members
-
-    subscriberInterfaceDescriminator() {
-        // no code
-    }
-
     // IOpener members
     isTableGrid(): boolean {
         return true;
@@ -181,11 +186,11 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                     if (loadedTableId === undefined) {
                         this.tryNewDefaultPrivateTable();
                     } else {
-                        const tableDirIdx = tableDirectory.indexOfId(loadedTableId);
+                        const tableDirIdx = this._tablesService.indexOfId(loadedTableId);
                         if (tableDirIdx < 0) {
                             this.tryNewDefaultPrivateTable();
                         } else {
-                            this._table = tableDirectory.lock(tableDirIdx, this);
+                            this._table = this._tablesService.lock(tableDirIdx, this);
                             this.activate(-1);
                         }
                     }
@@ -468,7 +473,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             if (this.table !== undefined) {
                 this.table.setDefinition(tableDefinition);
                 const { name, suffixId } = this.calculateNewPrivateName();
-                this.table.name = name;
+                this.table.setName(name);
                 this._privateNameSuffixId = suffixId;
 
                 if (this._keptLayout !== undefined) {
@@ -490,7 +495,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     openTableById(id: Guid): boolean {
-        const idx = tableDirectory.indexOfId(id);
+        const idx = this._tablesService.indexOfId(id);
 
         if (idx < 0) {
             return false;
@@ -504,7 +509,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         this._recordsEventers.beginChange();
         try {
             this.closeTable(false);
-            this._table = tableDirectory.lock(idx, this);
+            this._table = this._tablesService.lock(idx, this);
             this.activate(idx);
         } finally {
             this._recordsEventers.endChange();
@@ -523,8 +528,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 this._privateTable.close();
                 this._privateTable = undefined;
             } else {
-                tableDirectory.closeTable(this._table, this);
-                tableDirectory.unlockTable(this._table, this);
+                this._tablesService.closeTable(this._table, this);
+                this._tablesService.unlockTable(this._table, this);
             }
 
             this._privateNameSuffixId = undefined;
@@ -555,7 +560,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 this.closeTable(false);
 
                 this.createPrivateTable();
-                const tableDefinition = tableDefinitionFactory.createFromTableRecordDefinitionListDirectoryId(id, this._table);
+                const tableDefinition = this._tablesService.definitionFactory.createFromTableRecordDefinitionListDirectoryId(
+                    id, this._table
+                );
                 this._table.setDefinition(tableDefinition);
 
                 if (layout !== undefined) {
@@ -580,7 +587,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
     }
 
     openNullItemDefinitionList(keepCurrentLayout: boolean) {
-        const id = tableRecordDefinitionListDirectory.nullListId;
+        const id = this._tableRecordDefinitionListsService.nullListId;
         this.openRecordDefinitionList(id, keepCurrentLayout);
     }
 
@@ -593,11 +600,11 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
             if (saveAsExistingIdx !== undefined && saveAsExistingIdx >= 0) {
                 result = saveAsExistingIdx;
-                targetTable = tableDirectory.getTable(result);
+                targetTable = this._tablesService.getTable(result);
             } else {
                 if (saveAsName !== undefined && saveAsName !== '') {
-                    result = tableDirectory.add();
-                    targetTable = tableDirectory.getTable(result);
+                    result = this._tablesService.add();
+                    targetTable = this._tablesService.getTable(result);
                     targetTable.loadFromDefault(this._standardFieldListId);
                     targetTable.name = saveAsName;
                 } else {
@@ -630,7 +637,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 if (saveAsName === undefined || saveAsName === '') {
                     throw new PulseError('WatchlistFrame.saveAsPortfolioWatchItemDefinitionList: Index or name not specified');
                 } else {
-                    result = tableRecordDefinitionListDirectory.addNoIdUserList(saveAsName, TableRecordDefinitionList.ListTypeId.Portfolio);
+                    result = this._tableRecordDefinitionListsService.addNoIdUserList(
+                        saveAsName, TableRecordDefinitionList.ListTypeId.Portfolio
+                    );
                     if (result < 0) {
                         throw new PulseError('WatchlistFrame.saveAsPortfolioWatchItemDefinitionList: User list not created');
                     }
@@ -639,7 +648,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
             if (result >= 0) {
                 const userDefinitions = PortfolioTableRecordDefinitionList.createFromRecordDefinitionList(this._table.recordDefinitionList);
-                const targetSymbolList = tableRecordDefinitionListDirectory.getList(result) as PortfolioTableRecordDefinitionList;
+                const targetSymbolList = this._tableRecordDefinitionListsService.getList(result) as PortfolioTableRecordDefinitionList;
                 targetSymbolList.clear();
                 targetSymbolList.addArray(userDefinitions.AsArray);
                 targetSymbolList.missing = true;
@@ -663,7 +672,9 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                 if (saveAsName === undefined || saveAsName === '') {
                     throw new PulseError('WatchlistFrame.saveAsGroupWatchItemDefinitionList: Index or name not specified');
                 } else {
-                    result = tableRecordDefinitionListDirectory.addNoIdUserList(saveAsName, TableRecordDefinitionList.ListTypeId.Group);
+                    result = this._tableRecordDefinitionListsService.addNoIdUserList(
+                        saveAsName, TableRecordDefinitionList.ListTypeId.Group
+                    );
                     if (result < 0) {
                         throw new PulseError('WatchlistFrame.saveAsGroupWatchItemDefinitionList: User list not created');
                     }
@@ -672,7 +683,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
             if (result >= 0) {
                 const userDefinitions = GroupTableRecordDefinitionList.createFromRecordDefinitionList(this._table.recordDefinitionList);
-                const targetSymbolList = tableRecordDefinitionListDirectory.getList(result) as GroupTableRecordDefinitionList;
+                const targetSymbolList = this._tableRecordDefinitionListsService.getList(result) as GroupTableRecordDefinitionList;
                 targetSymbolList.clear();
                 targetSymbolList.addArray(userDefinitions.AsArray);
                 targetSymbolList.missing = true;
@@ -837,7 +848,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
 
     private createPrivateTable() {
         assert(this._privateTable === undefined && this.table === undefined);
-        this._privateTable = new OpenedTable(this);
+        this._privateTable = new OpenedTable(this._tablesService.definitionFactory, this);
         this._table = this._privateTable;
     }
 
@@ -885,7 +896,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                     this._table.open();
                 } else {
                     assert(tableDirIdx >= 0);
-                    tableDirectory.open(tableDirIdx, this);
+                    this._tablesService.open(tableDirIdx, this);
                 }
 
                 // this.prepareDeleteListAction();
@@ -920,7 +931,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
         } else {
             if (!this.isPrivate()) {
                 const listName = this._table.name;
-                const deletable = tableDirectory.isTableLocked(this._table, this);
+                const deletable = this._tablesService.isTableLocked(this._table, this);
                 let actionHint: string;
                 if (deletable) {
                     actionHint = Strings[StringId.DeleteWatchlist] + ' "' + listName + '"';
@@ -950,7 +961,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
                         deletable = false;
                         actionHint = Strings[StringId.CannotDeleteBuiltinList];
                     } else {
-                        deletable = !tableRecordDefinitionListDirectory.isListLocked(recordDefinitionList, this._table);
+                        deletable = !this._tableRecordDefinitionListsService.isLocked(recordDefinitionList, this._table);
                         if (deletable) {
                             actionHint = Strings[StringId.DeleteList] + ' :' + listName;
                         } else {
@@ -974,27 +985,27 @@ export class TableFrame extends ContentFrame implements RevRecordStore, TableDir
             const canDeleteListResult = this.canDeleteList();
             if (canDeleteListResult.deletable) {
                 if (!canDeleteListResult.isRecordDefinitionList) {
-                    const idx = tableDirectory.indexOfList(this._table);
+                    const idx = this._table.index;
                     if (idx < 0) {
                         throw new AssertInternalError('TFDLNID259', `${this._table.name}`);
                     } else {
                         this.closeTable(false);
-                        if (tableDirectory.isLocked(idx, undefined)) {
+                        if (this._tablesService.isEntryLocked(idx, undefined)) {
                             throw new AssertInternalError('TFDLDIS288', `${idx}`);
                         } else {
-                            tableDirectory.delete(idx);
+                            this._tablesService.delete(idx);
                         }
                     }
                 } else {
-                    const idx = tableRecordDefinitionListDirectory.indexOfList(this._table.recordDefinitionList);
+                    const idx = this._table.recordDefinitionList.index;
                     if (idx < 0) {
                         throw new AssertInternalError('TFDLRNID897', `${this._table.recordDefinitionList.name}`);
                     } else {
                         this.closeTable(false);
-                        if (tableRecordDefinitionListDirectory.isEntryLocked(idx, undefined)) {
+                        if (this._tableRecordDefinitionListsService.isEntryLocked(idx, undefined)) {
                             throw new AssertInternalError('TFDLDISR211', `${idx}`);
                         } else {
-                            tableRecordDefinitionListDirectory.deleteList(idx);
+                            this._tableRecordDefinitionListsService.deleteItemByIndex(idx);
                         }
                     }
                 }

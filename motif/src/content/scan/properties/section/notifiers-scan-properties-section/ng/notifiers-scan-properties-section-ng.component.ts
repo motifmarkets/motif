@@ -86,6 +86,9 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
         this._minimumElapsedTimeUiAction.finalise();
     }
 
+    protected override processChangedProperties(changedFieldIds: Scan.FieldId[]) {
+    }
+
     private initialiseComponents() {
         super.initialiseSectionHeadingComponent();
 

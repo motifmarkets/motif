@@ -25,8 +25,8 @@ import {
     SymbolsDataItem,
     SymbolsDataItemTableRecordDefinitionList,
     SymbolsService,
-    tableDefinitionFactory,
     TableRecordDefinitionList,
+    TablesService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
@@ -50,10 +50,11 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsMgr: SymbolsService,
-        adi: AdiService
+        adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adi
+            commandRegisterService, desktopAccessService, symbolsMgr, adiService
         );
 
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
@@ -290,7 +291,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         const dataDefinition = this._uiDataDefinition.createCopy();
         const keepCurrentLayout = dataDefinition.fullSymbol === this._queryShowFull;
         this._queryShowFull = dataDefinition.fullSymbol;
-        const tableDefinition = tableDefinitionFactory.createSymbolsDataItem(dataDefinition);
+        const tableDefinition = this._tablesService.definitionFactory.createSymbolsDataItem(dataDefinition);
         this._queryTableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
     }
 

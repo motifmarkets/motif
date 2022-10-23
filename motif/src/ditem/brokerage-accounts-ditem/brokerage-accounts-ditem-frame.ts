@@ -5,11 +5,16 @@
  */
 
 import {
-    Account, AdiService, BrokerageAccountGroup, BrokerageAccountTableRecordDefinition,
+    Account,
+    AdiService,
+    BrokerageAccountGroup,
+    BrokerageAccountTableRecordDefinition,
     BrokerageAccountTableRecordDefinitionList,
-    CommandRegisterService, DataRecordList, Integer, JsonElement, SingleBrokerageAccountGroup, SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList
+    CommandRegisterService, Integer,
+    JsonElement, KeyedCorrectnessRecordList, SingleBrokerageAccountGroup,
+    SymbolsService,
+    TableRecordDefinitionList,
+    TablesService
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -18,7 +23,7 @@ import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
     private _tableFrame: TableFrame;
-    private _accountsDataItem: DataRecordList<Account>;
+    private _accountsDataItem: KeyedCorrectnessRecordList<Account>;
 
     private _accountGroupApplying = false;
     private _currentFocusedAccountIdSetting = false;
@@ -29,6 +34,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -94,12 +100,12 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
     }
 
     private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createBrokerageAccount();
+        return this._tablesService.definitionFactory.createBrokerageAccount();
     }
 
     private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
         const accountRecordDefinitionList = recordDefinitionList as BrokerageAccountTableRecordDefinitionList;
-        this._accountsDataItem = accountRecordDefinitionList.dataRecordList;
+        this._accountsDataItem = accountRecordDefinitionList.recordList;
     }
 
     private processAccountFocusChange(newFocusedAccount: Account) {

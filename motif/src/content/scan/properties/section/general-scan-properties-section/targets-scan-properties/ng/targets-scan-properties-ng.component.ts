@@ -176,7 +176,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.commitEvent = () => {
             if (this._scan !== undefined) {
                 const litItemId = this._singleSymbolUiAction.definedValue;
-                this._scan.targetLitIvemIds = [litItemId];
+                this._scan.setTargetLitIvemIds([litItemId]);
             }
         };
         return action;
@@ -189,7 +189,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.commitEvent = () => {
             if (this._scan !== undefined) {
                 const id = this._singleMarketUiAction.definedValue as MarketId;
-                this._scan.targetMarketIds = [id];
+                this._scan.setTargetMarketIds([id]);
             }
         };
         return action;
@@ -202,7 +202,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.commitEvent = () => {
             if (this._scan !== undefined) {
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scan.targetMarketIds = ids;
+                this._scan.setTargetMarketIds(ids);
             }
         };
         return action;
@@ -215,7 +215,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.commitEvent = () => {
             if (this._scan !== undefined) {
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scan.targetMarketIds = ids;
+                this._scan.setTargetMarketIds(ids);
             }
         };
         return action;
@@ -265,6 +265,10 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
             this._maxMatchCountUiAction.pushValue(this._scan.maxMatchCount);
 
             switch (this._scan.targetTypeId) {
+                case undefined: {
+                    this._targetSubTypeUiAction.pushDisabled();
+                    break;
+                }
                 case ScanTargetTypeId.Symbols: {
                     this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
                     break;

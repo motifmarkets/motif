@@ -92,7 +92,7 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
                     case Scan.FieldId.Enabled:
                         this._enabledUiAction.pushValue(scan.enabled);
                         break;
-                    case Scan.FieldId.symbolListEnabled:
+                    case Scan.FieldId.SymbolListEnabled:
                         this._symbolListUiAction.pushValue(scan.symbolListEnabled);
                         break;
                 }

@@ -33,7 +33,7 @@ import {
     Strings,
     UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -91,12 +91,18 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        tablesNgService: TablesNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new WatchlistDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service
+        this._frame = new WatchlistDitemFrame(
+            this,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            tablesNgService.service,
         );
         this._frame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._frame.newTableEvent = (description) => this.handleNewTableEvent(description);

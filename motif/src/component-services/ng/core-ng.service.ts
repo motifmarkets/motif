@@ -15,7 +15,9 @@ import {
     MotifServicesService,
     ScansService,
     SettingsService,
-    SymbolsService
+    SymbolsService,
+    TableRecordDefinitionListsService,
+    TablesService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -36,6 +38,8 @@ export class CoreNgService implements OnDestroy {
     get capabilitiesService(): CapabilitiesService { return this._service.capabilitiesService; }
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get scansService(): ScansService { return this._service.scansService; }
+    get tableRecordDefinitionListsService(): TableRecordDefinitionListsService { return this._service.tableRecordDefinitionListsService; }
+    get tablesService(): TablesService { return this._service.tablesService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 

@@ -5,24 +5,21 @@
  */
 
 import {
-    Badness,
-    DataRecordList,
-    Feed,
+    Badness, Feed,
     FeedTableRecordDefinitionList,
-    Integer,
-    MultiEvent,
-    tableDefinitionFactory,
+    Integer, KeyedCorrectnessRecordList, MultiEvent,
     TableRecordDefinitionList,
+    TablesService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 import { TableFrame } from '../table/table-frame';
 
 export class FeedsFrame extends ContentFrame {
     private _tableFrame: TableFrame;
-    private _recordList: DataRecordList<Feed>;
+    private _recordList: KeyedCorrectnessRecordList<Feed>;
     private _recordListBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _componentAccess: FeedsFrame.ComponentAccess) {
+    constructor(private _componentAccess: FeedsFrame.ComponentAccess, private readonly _tablesService: TablesService) {
         super();
     }
 
@@ -53,13 +50,13 @@ export class FeedsFrame extends ContentFrame {
     }
 
     private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createBrokerageAccount();
+        return this._tablesService.definitionFactory.createBrokerageAccount();
     }
 
     private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
         this.checkUnsubscribeRecordListBadnessChangeEvent();
         const feedRecordDefinitionList = recordDefinitionList as FeedTableRecordDefinitionList;
-        this._recordList = feedRecordDefinitionList.dataRecordList;
+        this._recordList = feedRecordDefinitionList.recordList;
         this._recordListBadnessChangeSubscriptionId = this._recordList.subscribeBadnessChangeEvent(
             () => this.handleRecordListBadnessChangeEvent
         );
@@ -78,7 +75,7 @@ export class FeedsFrame extends ContentFrame {
 
     private newTable(keepCurrentLayout: boolean) {
         this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const tableDefinition = tableDefinitionFactory.createFeed();
+        const tableDefinition = this._tablesService.definitionFactory.createFeed();
         this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
         this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);
     }

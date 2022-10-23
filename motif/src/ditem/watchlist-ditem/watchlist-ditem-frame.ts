@@ -16,8 +16,8 @@ import {
     LitIvemIdTableRecordDefinition,
     PortfolioTableRecordDefinitionList,
     SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList
+    TableRecordDefinitionList,
+    TablesService
 } from '@motifmarkets/motif-core';
 import { TableFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -41,11 +41,12 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         componentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
-        symbolsMgr: SymbolsService,
-        adi: AdiService
+        symbolsService: SymbolsService,
+        adiService: AdiService,
+        private readonly _tablesService: TablesService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Watchlist, componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adi
+            commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
@@ -170,11 +171,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     private handleRequireDefaultTableDefinitionEvent() {
         if (this.defaultLitIvemIds === undefined) {
-            return tableDefinitionFactory.createPortfolio();
+            return this._tablesService.definitionFactory.createPortfolio();
         } else {
             const count = this.defaultLitIvemIds.length;
             if (count === 0) {
-                return tableDefinitionFactory.createPortfolio();
+                return this._tablesService.definitionFactory.createPortfolio();
             } else {
                 const definitions = new Array<LitIvemIdTableRecordDefinition>(count);
                 for (let i = 0; i < count; i++) {
@@ -184,7 +185,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
                 }
                 const list = new PortfolioTableRecordDefinitionList();
                 list.addArray(definitions);
-                return tableDefinitionFactory.createPortfolioFromRecordDefinitionList(list);
+                return this._tablesService.definitionFactory.createPortfolioFromRecordDefinitionList(list);
             }
         }
     }
@@ -271,13 +272,13 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     private newPrivateTable(keepCurrentLayout: boolean) {
-        const portfolioTableDefinition = tableDefinitionFactory.createPortfolio();
+        const portfolioTableDefinition = this._tablesService.definitionFactory.createPortfolio();
         this._tableFrame.newPrivateTable(portfolioTableDefinition, keepCurrentLayout);
         this.updateWatchlistDescription();
     }
 
     private openRecordDefinitionList(listId: Guid, keepCurrentLayout: boolean) {
-        const portfolioTableDefinition = tableDefinitionFactory.createPortfolioFromId(listId);
+        const portfolioTableDefinition = this._tablesService.definitionFactory.createPortfolioFromId(listId);
         this._tableFrame.newPrivateTable(portfolioTableDefinition, keepCurrentLayout);
         this.updateWatchlistDescription();
     }

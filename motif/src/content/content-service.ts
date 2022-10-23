@@ -4,7 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, AppStorageService, ScansService, SessionInfoService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
+import {
+    AdiService,
+    AppStorageService,
+    ScansService,
+    SessionInfoService,
+    SettingsService,
+    SymbolsService,
+    TableRecordDefinitionListsService,
+    TablesService
+} from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
@@ -18,17 +27,21 @@ import { TradesFrame } from './trades/internal-api';
 import { ZenithStatusFrame } from './zenith-status/internal-api';
 
 export class ContentService {
-    constructor(private _settingsService: SettingsService,
-        private _symbolsService: SymbolsService,
-        private _appStorageService: AppStorageService,
-        private _adiService: AdiService) { }
+    constructor(
+        private _settingsService: SettingsService,
+        private readonly _symbolsService: SymbolsService,
+        private readonly _appStorageService: AppStorageService,
+        private readonly _adiService: AdiService,
+        private readonly _tableRecordDefinitionListsService: TableRecordDefinitionListsService,
+        private readonly _tablesService: TablesService,
+    ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
     createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
-        return new FeedsFrame(componentAccess);
+        return new FeedsFrame(componentAccess, this._tablesService);
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -36,7 +49,7 @@ export class ContentService {
     }
 
     createTableFrame(componentAccess: TableFrame.ComponentAccess) {
-        return new TableFrame(componentAccess, this._settingsService);
+        return new TableFrame(componentAccess, this._settingsService, this._tableRecordDefinitionListsService, this._tablesService);
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {

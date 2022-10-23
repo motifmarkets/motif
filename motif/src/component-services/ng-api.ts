@@ -14,5 +14,7 @@ export * from './ng/session-info-ng-service';
 export * from './ng/settings-ng-service';
 export * from './ng/sign-out-ng.service';
 export * from './ng/symbols-ng.service';
+export * from './ng/table-record-definition-lists-ng.service';
+export * from './ng/tables-ng.service';
 export * from './ng/user-alert-ng.service';
 

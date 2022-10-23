@@ -161,7 +161,7 @@ export class ScansFrame extends ContentFrame {
         if (newRecordIndex === undefined) {
             this._componentAccess.setFocusedScan(undefined);
         } else {
-            const scan = this._scansService.getScan(newRecordIndex);
+            const scan = this._scansService.getItemByIndex(newRecordIndex);
             this._componentAccess.setFocusedScan(scan);
         }
     }
@@ -223,7 +223,7 @@ export class ScansFrame extends ContentFrame {
         if (this._uppercaseFilterText.length === 0) {
             return true;
         } else {
-            return scan.uppercaseName.includes(this._uppercaseFilterText) || scan.uppercaseDescription.includes(this._uppercaseFilterText);
+            return scan.upperCaseName.includes(this._uppercaseFilterText) || scan.upperCaseDescription.includes(this._uppercaseFilterText);
         }
     }
 
