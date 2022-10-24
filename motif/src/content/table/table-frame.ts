@@ -961,7 +961,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                         deletable = false;
                         actionHint = Strings[StringId.CannotDeleteBuiltinList];
                     } else {
-                        deletable = !this._tableRecordDefinitionListsService.isLocked(recordDefinitionList, this._table);
+                        deletable = !this._tableRecordDefinitionListsService.isItemLocked(recordDefinitionList, this._table);
                         if (deletable) {
                             actionHint = Strings[StringId.DeleteList] + ' :' + listName;
                         } else {
@@ -990,7 +990,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                         throw new AssertInternalError('TFDLNID259', `${this._table.name}`);
                     } else {
                         this.closeTable(false);
-                        if (this._tablesService.isEntryLocked(idx, undefined)) {
+                        if (this._tablesService.isItemAtIndexLocked(idx, undefined)) {
                             throw new AssertInternalError('TFDLDIS288', `${idx}`);
                         } else {
                             this._tablesService.delete(idx);
@@ -1002,10 +1002,10 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                         throw new AssertInternalError('TFDLRNID897', `${this._table.recordDefinitionList.name}`);
                     } else {
                         this.closeTable(false);
-                        if (this._tableRecordDefinitionListsService.isEntryLocked(idx, undefined)) {
+                        if (this._tableRecordDefinitionListsService.isItemAtIndexLocked(idx, undefined)) {
                             throw new AssertInternalError('TFDLDISR211', `${idx}`);
                         } else {
-                            this._tableRecordDefinitionListsService.deleteItemByIndex(idx);
+                            this._tableRecordDefinitionListsService.deleteItemAtIndex(idx);
                         }
                     }
                 }

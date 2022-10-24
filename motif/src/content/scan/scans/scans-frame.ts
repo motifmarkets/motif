@@ -161,7 +161,7 @@ export class ScansFrame extends ContentFrame {
         if (newRecordIndex === undefined) {
             this._componentAccess.setFocusedScan(undefined);
         } else {
-            const scan = this._scansService.getItemByIndex(newRecordIndex);
+            const scan = this._scansService.getItemAtIndex(newRecordIndex);
             this._componentAccess.setFocusedScan(scan);
         }
     }
