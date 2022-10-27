@@ -34,7 +34,7 @@ import {
     Strings,
     SuccessOrErrorText,
     SuccessOrErrorText_Success,
-    SymbolsService,
+    SymbolDetailCacheService,
     UiAction,
     UserAlertService
 } from '@motifmarkets/motif-core';
@@ -162,7 +162,7 @@ export class DesktopFrame implements DesktopAccessService {
         private readonly _userAlertService: UserAlertService,
         private readonly _capabilitiesService: CapabilitiesService,
         private readonly _extensionsAccessService: ExtensionsAccessService,
-        private readonly _symbolsService: SymbolsService,
+        private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _adiService: AdiService,
         private readonly _signOutService: SignOutService,
         private readonly _menuBarService: MenuBarService,
@@ -585,7 +585,7 @@ export class DesktopFrame implements DesktopAccessService {
 
     private handleNewBuyOrderRequestDitemUiActionSignal() {
         const component = this.createOrderRequestBuiltinComponent();
-        const pad = new OrderPad(this._symbolsService, this._adiService);
+        const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadBuy();
         pad.applySettingsDefaults(this._settingsService.core);
         component.setOrderPad(pad);
@@ -593,7 +593,7 @@ export class DesktopFrame implements DesktopAccessService {
 
     private handleNewSellOrderRequestDitemUiActionSignal() {
         const component = this.createOrderRequestBuiltinComponent();
-        const pad = new OrderPad(this._symbolsService, this._adiService);
+        const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadSell();
         pad.applySettingsDefaults(this._settingsService.core);
         component.setOrderPad(pad);

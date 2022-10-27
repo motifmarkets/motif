@@ -18,10 +18,28 @@ import {
 import {
     BooleanUiAction,
     ButtonUiAction,
-    ColorScheme, delay1Tick, HtmlTypes, IconButtonUiAction,
-    InternalCommand, JsonElement, ModifierKey, ModifierKeyId, numberToPixels, OrderPad, OrderRequestType, StringId, Strings, UiAction
+    ColorScheme,
+    delay1Tick,
+    HtmlTypes,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    ModifierKey,
+    ModifierKeyId,
+    numberToPixels,
+    OrderPad,
+    OrderRequestType,
+    StringId,
+    Strings,
+    UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
 import {
     OrderRequestStepComponentNgDirective
 } from 'content-ng-api';
@@ -93,11 +111,19 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
-        this._frame = new OrderRequestDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new OrderRequestDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            symbolDetailCacheNgService.service,
+        );
 
         this._primaryUiAction = this.createPrimaryUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();

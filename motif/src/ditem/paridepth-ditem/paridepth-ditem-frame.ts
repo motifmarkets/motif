@@ -17,7 +17,8 @@ import {
     PortfolioTableRecordDefinitionList,
     SymbolsService,
     TableRecordDefinitionList,
-    TableRecordDefinitionListsService
+    TableRecordDefinitionListsService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 import { DepthFrame, TableFrame, TradesFrame } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
@@ -26,7 +27,6 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
-
     private _watchlistFrame: TableFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
@@ -41,6 +41,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
         private readonly _tableRecordDefinitionsListService: TableRecordDefinitionListsService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
@@ -111,6 +112,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             if (!this._watchlistFrame.tableOpened) {
                 const tableDefinition = new PortfolioTableDefinition(
                     this.adi,
+                    this._textFormatterService,
                     this._tableRecordDefinitionsListService,
                     new PortfolioTableRecordDefinitionList());
                 this._watchlistFrame.newPrivateTable(tableDefinition, true);
@@ -208,6 +210,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     private handleWatchlistRequireDefaultTableDefinitionEvent() {
         return new PortfolioTableDefinition(
             this.adi,
+            this._textFormatterService,
             this._tableRecordDefinitionsListService,
             new PortfolioTableRecordDefinitionList()
         );

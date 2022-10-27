@@ -31,7 +31,7 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SignOutNgService,
-    SymbolsNgService,
+    SymbolDetailCacheNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
@@ -82,7 +82,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         capabilitiesNgService: CapabilitiesNgService,
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
         adiNgService: AdiNgService,
         signOutNgService: SignOutNgService,
         menuBarNgService: MenuBarNgService,
@@ -118,7 +118,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             userAlertNgService.service,
             capabilitiesService,
             extensionsAccessNgService.service,
-            symbolsNgService.service,
+            symbolDetailCacheNgService.service,
             adiNgService.service,
             signOutService,
             menuBarNgService.service,

@@ -11,10 +11,9 @@ import {
     MultiEvent, OrderExtendedSideId, OrderPad,
     OrderRequestDataDefinition,
     SettingsService, StringId,
-    Strings,
-    textFormatter
+    Strings
 } from '@motifmarkets/motif-core';
-import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
 
 @Component({
@@ -64,6 +63,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
     constructor(cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
+        textFormatterNgService: TextFormatterNgService,
         @Inject(ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken) orderPad: OrderPad,
         @Inject(ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
@@ -73,6 +73,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         const symbolsService = symbolsNgService.service;
+        const textFormatterService = textFormatterNgService.service;
 
         this.orderIdCaption = Strings[StringId.OrderPadExistingOrderIdCaption];
         const orderId = orderPad.existingOrderId;
@@ -106,7 +107,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
             throw new AssertInternalError('RAIRCCSI9888332312');
         } else {
             this._sideId = sideId;
-            this.side = textFormatter.formatOrderExtendedSideId(sideId);
+            this.side = textFormatterService.formatOrderExtendedSideId(sideId);
         }
 
         this.symbolCaption = Strings[StringId.OrderPadSymbolCaption];
@@ -137,7 +138,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (orderTypeId === undefined) {
             throw new AssertInternalError('RAIRCCOT9888332312');
         } else {
-            this.orderType = textFormatter.formatOrderTypeId(orderTypeId);
+            this.orderType = textFormatterService.formatOrderTypeId(orderTypeId);
         }
 
         this.timeInForceCaption = Strings[StringId.OrderPadTimeInForceCaption];
@@ -148,7 +149,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (timeInForceId === undefined) {
             throw new AssertInternalError('RAIRCCTF9888332312');
         } else {
-            this.timeInForce = textFormatter.formatTimeInForceId(timeInForceId);
+            this.timeInForce = textFormatterService.formatTimeInForceId(timeInForceId);
 
             if (!orderPad.isFieldValid(OrderPad.FieldId.ExpiryDate)) {
                 throw new AssertInternalError('RAIRCCED9888332312');
@@ -157,7 +158,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
                 if (expiryDate === undefined) {
                     this.expiryDate = '';
                 } else {
-                    this.expiryDate = textFormatter.formatDate(expiryDate);
+                    this.expiryDate = textFormatterService.formatDate(expiryDate);
                 }
             }
         }
@@ -169,7 +170,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (totalQuantity === undefined) {
             throw new AssertInternalError('RAIRCCTC9888332312');
         } else {
-            this.quantity = textFormatter.formatQuantity(totalQuantity);
+            this.quantity = textFormatterService.formatQuantity(totalQuantity);
         }
 
         this.priceCaption = Strings[StringId.OrderPadLimitValueCaption];
@@ -182,7 +183,7 @@ export class ReviewAmendOrderRequestNgComponent extends ReviewOrderRequestCompon
             if (price === undefined) {
                 this.price = '';
             } else {
-                this.price = textFormatter.formatPrice(price);
+                this.price = textFormatterService.formatPrice(price);
             }
         }
 

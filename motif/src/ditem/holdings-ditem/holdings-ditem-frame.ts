@@ -19,6 +19,7 @@ import {
     OrderPad,
     SettingsService,
     SingleBrokerageAccountGroup,
+    SymbolDetailCacheService,
     SymbolsService,
     TableRecordDefinitionList,
     TablesService
@@ -54,6 +55,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _tablesService: TablesService,
     ) {
         super(
@@ -119,7 +121,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
 
     sellFocused() {
         const focusedIndex = this._holdingsTableFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this.symbolsService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
         if (focusedIndex !== undefined) {
             const holding = this._holdingList.records[focusedIndex];
             orderPad.loadSellFromHolding(holding);

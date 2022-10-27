@@ -42,7 +42,8 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordDefinitionListsNgService
+    TableRecordDefinitionListsNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'content-ng-api';
@@ -125,6 +126,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
@@ -136,6 +138,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            textFormatterNgService.service,
             tableRecordDefinitionListsNgService.service,
         );
 

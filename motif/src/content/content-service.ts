@@ -12,7 +12,8 @@ import {
     SettingsService,
     SymbolsService,
     TableRecordDefinitionListsService,
-    TablesService
+    TablesService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
@@ -32,6 +33,7 @@ export class ContentService {
         private readonly _symbolsService: SymbolsService,
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
         private readonly _tableRecordDefinitionListsService: TableRecordDefinitionListsService,
         private readonly _tablesService: TablesService,
     ) { }
@@ -45,7 +47,7 @@ export class ContentService {
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
-        return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService);
+        return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
     }
 
     createTableFrame(componentAccess: TableFrame.ComponentAccess) {

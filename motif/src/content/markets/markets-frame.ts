@@ -5,14 +5,24 @@
  */
 
 import {
-    AdiService, Badness, CoreSettings, Correctness, FeedStatus, Integer, Market,
+    AdiService,
+    Badness,
+    CoreSettings,
+    Correctness,
+    FeedStatus,
+    Integer,
+    Market,
     MarketBoard,
     MarketInfo,
     MarketsDataDefinition,
-    MarketsDataItem, MultiEvent,
+    MarketsDataItem,
+    MultiEvent,
     SourceTzOffsetDate,
-    SourceTzOffsetDateTime, textFormatter, TradingMarketBoard,
-    TradingState, UnreachableCaseError,
+    SourceTzOffsetDateTime,
+    TextFormatterService,
+    TradingMarketBoard,
+    TradingState,
+    UnreachableCaseError,
     UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
@@ -32,7 +42,12 @@ export class MarketsFrame extends ContentFrame {
     private _offlineMarketCount = 0;
     private _tradingMarketBoardCount = 0;
 
-    constructor(private _componentAccess: MarketsFrame.ComponentAccess, private _coreSettings: CoreSettings, private _adi: AdiService) {
+    constructor(
+        private readonly _componentAccess: MarketsFrame.ComponentAccess,
+        private readonly _coreSettings: CoreSettings,
+        private readonly _adi: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
+    ) {
         super();
     }
 
@@ -242,7 +257,7 @@ export class MarketsFrame extends ContentFrame {
             tradingDateStr = '';
         } else {
             const utcTimezonedTradingDate = SourceTzOffsetDate.getUtcTimezonedDate(tradingDate);
-            tradingDateStr = textFormatter.formatDate(utcTimezonedTradingDate); // utcTimezonedTradingDate.toLocaleString();
+            tradingDateStr = this._textFormatterService.formatDate(utcTimezonedTradingDate); // utcTimezonedTradingDate.toLocaleString();
         }
 
         let marketTimeStr: string;
@@ -252,7 +267,7 @@ export class MarketsFrame extends ContentFrame {
         } else {
             const utcTimezonedMarketTime =
                 SourceTzOffsetDateTime.getTimezonedDate(marketTime, this._coreSettings.format_DateTimeTimezoneModeId);
-            marketTimeStr = textFormatter.formatDateTime(utcTimezonedMarketTime); // utcTimezonedMarketTime.toLocaleString();
+            marketTimeStr = this._textFormatterService.formatDateTime(utcTimezonedMarketTime); // utcTimezonedMarketTime.toLocaleString();
         }
 
         const record: MarketsFrame.DisplayRecord = {

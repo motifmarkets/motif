@@ -5,6 +5,7 @@ import {
     RenderValue,
     SettingsService,
     StringRenderValue,
+    TextFormatterService,
     TrueFalseRenderValue
 } from '@motifmarkets/motif-core';
 import {
@@ -19,10 +20,11 @@ import { AdaptedRevgridCellPainter } from '../adapted-revgrid-cell-painter';
 export class SimpleGridCellPainter extends CellPainter {
     private readonly _adaptedRevgridCellPainter: AdaptedRevgridCellPainter;
 
-    constructor(settingsService: SettingsService) {
+    constructor(settingsService: SettingsService, textFormatterService: TextFormatterService) {
         super();
         this._adaptedRevgridCellPainter = new AdaptedRevgridCellPainter(
-            settingsService
+            settingsService,
+            textFormatterService,
         );
     }
 

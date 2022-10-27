@@ -14,17 +14,41 @@ import {
     ViewEncapsulation
 } from '@angular/core';
 import {
-    AdiService, AssertInternalError, AurcChangeTypeId, BooleanUiAction,
-    CommandRegisterService, compareString, ComparisonResult, ExchangeId,
-    ExchangeInfo, IconButtonUiAction, Integer, InternalCommand, LitIvemDetail,
-    LitIvemId, LitIvemIdUiAction, MarketId,
-    MarketInfo, MultiEvent, SearchSymbolsDataDefinition, StringId, Strings, SymbolDetailCache,
-    symbolDetailCache, SymbolsDataItem,
-    SymbolsDataMessage, SymbolsService,
+    AdiService,
+    AssertInternalError,
+    AurcChangeTypeId,
+    BooleanUiAction,
+    CommandRegisterService,
+    compareString,
+    ComparisonResult,
+    ExchangeId,
+    ExchangeInfo,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    LitIvemDetail,
+    LitIvemId,
+    LitIvemIdUiAction,
+    MarketId,
+    MarketInfo,
+    MultiEvent,
+    SearchSymbolsDataDefinition,
+    StringId,
+    Strings,
+    SymbolDetailCacheService,
+    SymbolsDataItem,
+    SymbolsDataMessage,
+    SymbolsService,
     UiAction
 } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
 import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
@@ -55,9 +79,11 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     public selected: LitIvemIdSelectNgComponent.Item | null;
     public minCodeLength = 2;
 
-    private _adiService: AdiService;
-    private _symbolsService: SymbolsService;
-    private _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
+    private readonly _adiService: AdiService;
+    private readonly _symbolsService: SymbolsService;
+    private readonly _symbolDetailCacheService: SymbolDetailCacheService;
+    private readonly _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
+
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     private _applyValueTransactionId = 0;
@@ -76,7 +102,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService,
         adiNgService: AdiNgService,
-        symbolsNgService: SymbolsNgService
+        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(
             cdr,
@@ -85,6 +112,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         );
         this._adiService = adiNgService.service;
         this._symbolsService = symbolsNgService.service;
+        this._symbolDetailCacheService = symbolDetailCacheNgService.service;
         this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
@@ -174,7 +202,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
             const detail = changeEvent.detail;
             if (detail !== undefined) {
-                symbolDetailCache.setLitIvemId(detail);
+                this._symbolDetailCacheService.setLitIvemId(detail);
             }
             this.commitValue(parseDetails, UiAction.CommitTypeId.Explicit);
         } else {
@@ -305,6 +333,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
                 (parsedTerm) => new LitIvemIdSelectNgComponent.ItemArrayObservable(
                     this._adiService,
                     this._symbolsService,
+                    this._symbolDetailCacheService,
                     parsedTerm,
                     800,
                     (start) => this.handleQueryStartFinishEvent(start),
@@ -408,7 +437,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             if (value === undefined) {
                 selected = null;
             } else {
-                const cachedDetail = await symbolDetailCache.getLitIvemId(value);
+                const cachedDetail = await this._symbolDetailCacheService.getLitIvemId(value);
                 if (cachedDetail === undefined) {
                     selected = null;
                 } else {
@@ -510,7 +539,7 @@ export namespace LitIvemIdSelectNgComponent {
 
     export function createLitIvemDetailFromCacheDetail(
         litIvemId: LitIvemId,
-        cacheDetail: SymbolDetailCache.LitIvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.LitIvemIdDetail,
         symbolsService: SymbolsService,
     ) {
         const exists = cacheDetail.exists;
@@ -553,7 +582,7 @@ export namespace LitIvemIdSelectNgComponent {
     }
 
     export function createItemFromCacheDetail(litIvemId: LitIvemId,
-        cacheDetail: SymbolDetailCache.LitIvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.LitIvemIdDetail,
         symbolsService: SymbolsService
     ) {
         const litIvemDetail = createLitIvemDetailFromCacheDetail(litIvemId, cacheDetail, symbolsService);
@@ -579,6 +608,7 @@ export namespace LitIvemIdSelectNgComponent {
         constructor(
             private readonly _adiService: AdiService,
             private readonly _symbolsService: SymbolsService,
+            private readonly _symbolDetailCacheService: SymbolDetailCacheService,
             private readonly _term: ParsedSearchTerm,
             private readonly _searchDelay: Integer,
             private readonly _queryStartFinishEventHandler: (this: void, start: boolean) => void,
@@ -610,7 +640,7 @@ export namespace LitIvemIdSelectNgComponent {
             if (termLitIvemId === undefined) {
                 this.emitItems();
             } else {
-                const cachedDetail = symbolDetailCache.getLitIvemIdFromCache(termLitIvemId);
+                const cachedDetail = this._symbolDetailCacheService.getLitIvemIdFromCache(termLitIvemId);
                 let exists: boolean | undefined;
                 let detail: LitIvemDetail | undefined;
                 if (cachedDetail === undefined) {
@@ -657,7 +687,7 @@ export namespace LitIvemIdSelectNgComponent {
 
         private async fetchTermDetailAndEmit(litIvemId: LitIvemId) {
             this._termLitIvemIdFetching = true;
-            const cachedDetail = await symbolDetailCache.getLitIvemId(litIvemId);
+            const cachedDetail = await this._symbolDetailCacheService.getLitIvemId(litIvemId);
             if (this._termLitIvemIdFetching) {
                 this._termLitIvemIdFetching = false;
                 if (cachedDetail !== undefined) {

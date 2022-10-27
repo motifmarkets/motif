@@ -23,7 +23,14 @@ import {
     Strings,
     UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService,
+    TablesNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -82,6 +89,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tablesNgService: TablesNgService,
         private _resolver: ComponentFactoryResolver,
     ) {
@@ -94,6 +102,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            symbolDetailCacheNgService.service,
             tablesNgService.service,
         );
         this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);

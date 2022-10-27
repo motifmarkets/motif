@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { SettingsNgService } from 'component-services-ng-api';
+import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { GridProperties, RevRecordStore } from 'revgrid';
 import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
@@ -18,12 +18,12 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     private _grid: RecordGrid;
 
-    constructor(elRef: ElementRef, settingsNgService: SettingsNgService) {
+    constructor(elRef: ElementRef, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
         super(elRef.nativeElement, settingsService);
 
         if (recordGridCellPainter === undefined) {
-            recordGridCellPainter = new RecordGridCellPainter(settingsService);
+            recordGridCellPainter = new RecordGridCellPainter(settingsService, textFormatterNgService.service);
         }
         this._cellPainter = recordGridCellPainter;
 

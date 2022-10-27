@@ -29,7 +29,14 @@ import {
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService,
+    TablesNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { TableNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -81,6 +88,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tablesNgService: TablesNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
@@ -92,6 +100,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            symbolDetailCacheNgService.service,
             tablesNgService.service
         );
         this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);

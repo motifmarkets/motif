@@ -14,10 +14,9 @@ import {
     OrderTriggerTypeId,
     SettingsService, StringId,
     Strings,
-    textFormatter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
 
 @Component({
@@ -60,6 +59,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
     constructor(cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
+        textFormatterNgService: TextFormatterNgService,
         @Inject(ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken) orderPad: OrderPad,
         @Inject(ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
@@ -69,6 +69,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         const symbolsService = symbolsNgService.service;
+        const textFormatterService = textFormatterNgService.service;
 
         this.accountCaption = Strings[StringId.OrderPadAccountCaption];
 
@@ -92,7 +93,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
             throw new AssertInternalError('RPIRCCSI9888332312');
         } else {
             this._sideId = sideId;
-            this.side = textFormatter.formatOrderExtendedSideId(sideId);
+            this.side = textFormatterService.formatOrderExtendedSideId(sideId);
         }
 
         this.symbolCaption = Strings[StringId.OrderPadSymbolCaption];
@@ -121,7 +122,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (orderTypeId === undefined) {
             throw new AssertInternalError('RPIRCCOT9888332312');
         } else {
-            this.orderType = textFormatter.formatOrderTypeId(orderTypeId);
+            this.orderType = textFormatterService.formatOrderTypeId(orderTypeId);
         }
 
         this.timeInForceCaption = Strings[StringId.OrderPadTimeInForceCaption];
@@ -130,7 +131,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (timeInForceId === undefined) {
             throw new AssertInternalError('RPIRCCTF9888332312');
         } else {
-            this.timeInForce = textFormatter.formatTimeInForceId(timeInForceId);
+            this.timeInForce = textFormatterService.formatTimeInForceId(timeInForceId);
 
             if (!orderPad.isFieldValid(OrderPad.FieldId.ExpiryDate)) {
                 throw new AssertInternalError('RPIRCCED9888332312');
@@ -139,7 +140,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
                 if (expiryDate === undefined) {
                     this.expiryDate = '';
                 } else {
-                    this.expiryDate = textFormatter.formatDate(expiryDate);
+                    this.expiryDate = textFormatterService.formatDate(expiryDate);
                 }
             }
         }
@@ -151,7 +152,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
             throw new AssertInternalError('RPORNGCTTIU44320002993');
         } else {
             const orderTrigger = orderPad.createOrderTrigger();
-            const triggerTypeText = textFormatter.formatOrderTriggerTypeId(triggerTypeId);
+            const triggerTypeText = textFormatterService.formatOrderTriggerTypeId(triggerTypeId);
             switch (triggerTypeId) {
                 case OrderTriggerTypeId.Immediate: {
                     this.trigger = triggerTypeText;
@@ -159,7 +160,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
                 }
                 case OrderTriggerTypeId.Price: {
                     const triggerValue = orderTrigger.value;
-                    const triggerValueText = triggerValue === undefined ? '' : textFormatter.formatPrice(triggerValue);
+                    const triggerValueText = triggerValue === undefined ? '' : textFormatterService.formatPrice(triggerValue);
                     const triggerExtraParamsText = orderTrigger.extraParamsText;
                     let trigger = triggerTypeText;
                     if (triggerValueText !== undefined && triggerValueText !== '') {
@@ -188,7 +189,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
                 if (expiryDate === undefined) {
                     this.expiryDate = '';
                 } else {
-                    this.expiryDate = textFormatter.formatDate(expiryDate);
+                    this.expiryDate = textFormatterService.formatDate(expiryDate);
                 }
             }
         }
@@ -199,7 +200,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
         if (totalQuantity === undefined) {
             throw new AssertInternalError('RPIRCCTC9888332312');
         } else {
-            this.quantity = textFormatter.formatQuantity(totalQuantity);
+            this.quantity = textFormatterService.formatQuantity(totalQuantity);
         }
 
         this.priceCaption = Strings[StringId.OrderPadLimitValueCaption];
@@ -211,7 +212,7 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
             if (price === undefined) {
                 this.price = '';
             } else {
-                this.price = textFormatter.formatPrice(price);
+                this.price = textFormatterService.formatPrice(price);
             }
         }
 

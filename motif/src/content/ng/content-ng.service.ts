@@ -12,7 +12,8 @@ import {
     SettingsNgService,
     SymbolsNgService,
     TableRecordDefinitionListsNgService,
-    TablesNgService
+    TablesNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/internal-api';
@@ -36,6 +37,7 @@ export class ContentNgService {
         symbolsNgService: SymbolsNgService,
         appStorageNgService: AppStorageNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         tablesNgService: TablesNgService,
         tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
     ) {
@@ -44,6 +46,7 @@ export class ContentNgService {
             symbolsNgService.service,
             appStorageNgService.appStorage,
             adiNgService.service,
+            textFormatterNgService.service,
             tableRecordDefinitionListsNgService.service,
             tablesNgService.service,
         );

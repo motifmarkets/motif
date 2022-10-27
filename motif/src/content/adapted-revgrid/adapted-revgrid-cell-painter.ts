@@ -12,7 +12,7 @@ import {
     OrderSideId,
     RenderValue,
     SettingsService,
-    textFormatter,
+    TextFormatterService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
@@ -30,7 +30,7 @@ export class AdaptedRevgridCellPainter {
     private _coreSettings: CoreSettings;
     private _colorSettings: ColorSettings;
 
-    constructor(settingsService: SettingsService) {
+    constructor(settingsService: SettingsService, private readonly _textFormatterService: TextFormatterService) {
         this._coreSettings = settingsService.core;
         this._colorSettings = settingsService.color;
     }
@@ -221,7 +221,7 @@ export class AdaptedRevgridCellPainter {
             }
         }
 
-        const foreText = textFormatter.formatRenderValue(renderValue);
+        const foreText = this._textFormatterService.formatRenderValue(renderValue);
         const foreFont = config.font;
         let internalBorderRowOnly: boolean;
 

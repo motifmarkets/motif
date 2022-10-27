@@ -20,6 +20,7 @@ import {
     OrderRequestDataDefinition,
     OrderRequestTypeId,
     SettingsService,
+    SymbolDetailCacheService,
     SymbolsService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
@@ -62,7 +63,8 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
-        adiService: AdiService
+        adiService: AdiService,
+        private readonly _symbolDetailCacheService: SymbolDetailCacheService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.OrderRequest, _componentAccess, commandRegisterService, desktopAccessService,
             symbolsService, adiService
@@ -117,7 +119,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
     }
 
     newOrderPad() {
-        const orderPad = new OrderPad(this.symbolsService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
         orderPad.loadPlace();
         orderPad.applySettingsDefaults(this._settingsService.core);
         if (this.brokerageAccountGroupLinked) {
@@ -144,7 +146,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         if (this._orderPad === undefined) {
             throw new AssertInternalError('ORDFNPOIPFP583288822');
         } else {
-            const orderPad = new OrderPad(this.symbolsService, this.adi);
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
             orderPad.beginChanges();
             try {
                 orderPad.loadPlace(this._orderPad.accountId);
@@ -179,7 +181,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
                     try {
                         const order = ordersDataItem.getRecordByMapKey(mapKey);
                         if (order !== undefined && order.canAmend()) {
-                            const orderPad = new OrderPad(this.symbolsService, this.adi);
+                            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
                             orderPad.loadAmendFromOrder(order);
                             this.applyOrderPad(orderPad, false);
                         }

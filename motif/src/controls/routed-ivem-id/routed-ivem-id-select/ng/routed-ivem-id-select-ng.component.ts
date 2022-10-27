@@ -6,19 +6,41 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
-    addToGrow15ArrayUniquely, AdiService, AssertInternalError, BooleanUiAction,
-    CommandRegisterService, compareString,
-    ComparisonResult, ExchangeId,
-    ExchangeInfo, IconButtonUiAction, Integer, InternalCommand, IvemId,
+    addToGrow15ArrayUniquely,
+    AdiService,
+    AssertInternalError,
+    BooleanUiAction,
+    CommandRegisterService,
+    compareString,
+    ComparisonResult,
+    ExchangeId,
+    ExchangeInfo,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    IvemId,
     MarketId,
-    MarketOrderRoute, MultiEvent, OrderRoute,
+    MarketOrderRoute,
+    MultiEvent,
+    OrderRoute,
     RoutedIvemId,
-    SearchSymbolsDataDefinition, StringId, Strings, SymbolDetailCache,
-    symbolDetailCache, SymbolsDataItem, SymbolsService,
-    UiAction, UnreachableCaseError
+    SearchSymbolsDataDefinition,
+    StringId,
+    Strings,
+    symbolDetailCache,
+    SymbolDetailCacheService,
+    SymbolsDataItem,
+    SymbolsService,
+    UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
 import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
@@ -48,8 +70,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     public selected: RoutedIvemIdSelectNgComponent.Item | null;
     public minCodeLength = 2;
 
-    private _adiService: AdiService;
-    private _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
+    private readonly _adiService: AdiService;
+    private readonly _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
 
     private _applyValueTransactionId = 0;
     private _nextSearchNumber = 1;
@@ -64,10 +86,10 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     constructor(
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        private _ngSelectOverlayNgService: NgSelectOverlayNgService,
+        private readonly _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService,
         adiNgService: AdiNgService,
-        symbolsNgService: SymbolsNgService
+        symbolsNgService: SymbolsNgService,
     ) {
         super(
             cdr,
@@ -442,7 +464,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
     export function createItemNameFromCacheDetail(
         routedIvemId: RoutedIvemId,
-        cacheDetail: SymbolDetailCache.IvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.IvemIdDetail,
         symbolsService: SymbolsService
     ) {
         if (cacheDetail.exists) {
@@ -460,7 +482,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
     export function createItemFromCacheDetail(
         routedIvemId: RoutedIvemId,
-        cacheDetail: SymbolDetailCache.IvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.IvemIdDetail,
         symbolsService: SymbolsService
     ) {
         const item: Item = {

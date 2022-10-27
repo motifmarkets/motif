@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { SettingsNgService } from 'component-services-ng-api';
+import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { GridProperties } from 'revgrid';
 import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
@@ -18,12 +18,12 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     private _grid: SimpleGrid;
 
-    constructor(elRef: ElementRef, settingsNgService: SettingsNgService) {
+    constructor(elRef: ElementRef, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
         super(elRef.nativeElement, settingsService);
 
         if (simpleGridCellPainter === undefined) {
-            simpleGridCellPainter = new SimpleGridCellPainter(settingsService);
+            simpleGridCellPainter = new SimpleGridCellPainter(settingsService, textFormatterNgService.service);
         }
         this._cellPainter = simpleGridCellPainter;
 
