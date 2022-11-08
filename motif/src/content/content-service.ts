@@ -23,7 +23,7 @@ import { MarketsFrame } from './markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { ScansFrame } from './scan/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
-import { TableFrame } from './table/internal-api';
+import { GridFrame } from './table/internal-api';
 import { TradesFrame } from './trades/internal-api';
 import { ZenithStatusFrame } from './zenith-status/internal-api';
 
@@ -50,8 +50,8 @@ export class ContentService {
         return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
     }
 
-    createTableFrame(componentAccess: TableFrame.ComponentAccess) {
-        return new TableFrame(componentAccess, this._settingsService, this._tableRecordDefinitionListsService, this._tablesService);
+    createTableFrame(componentAccess: GridFrame.ComponentAccess) {
+        return new GridFrame(componentAccess, this._settingsService, this._tableRecordDefinitionListsService, this._tablesService);
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {

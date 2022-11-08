@@ -16,13 +16,13 @@ import {
     TableRecordDefinitionList,
     TablesService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { GridFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
-    private _tableFrame: TableFrame;
+    private _tableFrame: GridFrame;
     private _accountsDataItem: KeyedCorrectnessRecordList<Account>;
 
     private _accountGroupApplying = false;
@@ -43,7 +43,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
     get initialised() { return this._tableFrame !== undefined; }
 
-    initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined) {
+    initialise(tableFrame: GridFrame, frameElement: JsonElement | undefined) {
         this._tableFrame = tableFrame;
         this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();

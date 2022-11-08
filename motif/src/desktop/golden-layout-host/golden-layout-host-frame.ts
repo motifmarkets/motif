@@ -288,11 +288,13 @@ export class GoldenLayoutHostFrame {
 
                 const watchlistJson = this._defaultLayoutConfig.watchlistJson;
                 if (watchlistJson !== undefined) {
-                    const watchlist = LitIvemId.tryCreateArrayFromJson(watchlistJson);
-                    if (watchlist === undefined) {
+                    const litIvemIdArray = LitIvemId.tryCreateArrayFromJson(watchlistJson);
+                    if (litIvemIdArray === undefined) {
                         Logger.logConfigError('GLHFPDLW1444813', JSON.stringify(watchlistJson), 400);
                     } else {
-                        frame.defaultLitIvemIds = watchlist;
+                        const litIvemIdList = new UserLitIvemIdList();
+                        litIvemIdList.addArray(litIvemIdArray);
+                        frame.defaultLitIvemIdList = litIvemIdList;
                     }
                 }
             }

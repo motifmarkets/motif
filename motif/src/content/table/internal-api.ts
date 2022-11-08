@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './table-frame';
+export * from './grid-frame';
 

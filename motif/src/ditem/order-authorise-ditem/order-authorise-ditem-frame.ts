@@ -25,7 +25,7 @@ import {
     TableRecordDefinitionList,
     TablesService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { GridFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -38,7 +38,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
 
     private readonly _coreSettings: CoreSettings;
 
-    private _tableFrame: TableFrame;
+    private _tableFrame: GridFrame;
     private _orderList: BrokerageAccountGroupOrderList;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
@@ -64,7 +64,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
     get initialised() { return this._tableFrame !== undefined; }
     get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
 
-    initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
+    initialise(tableFrame: GridFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = tableFrame;
         this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();

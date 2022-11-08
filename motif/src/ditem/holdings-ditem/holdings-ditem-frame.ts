@@ -24,7 +24,7 @@ import {
     TableRecordDefinitionList,
     TablesService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { GridFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -39,10 +39,10 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
 
     private readonly _coreSettings: CoreSettings;
 
-    private _holdingsTableFrame: TableFrame;
+    private _holdingsTableFrame: GridFrame;
     private _holdingList: BrokerageAccountGroupHoldingList;
 
-    private _balancesTableFrame: TableFrame;
+    private _balancesTableFrame: GridFrame;
     private _balancesSingleGroup: BrokerageAccountGroup | undefined;
 
     private _currentFocusedAccountIdSetting: boolean;
@@ -78,8 +78,8 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     }
 
     initialise(
-        holdingsTableFrame: TableFrame,
-        balancesTableFrame: TableFrame,
+        holdingsTableFrame: GridFrame,
+        balancesTableFrame: GridFrame,
         frameElement: JsonElement | undefined
     ) {
         this._holdingsTableFrame = holdingsTableFrame;

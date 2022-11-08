@@ -10,16 +10,16 @@ import {
     Integer,
     JsonElement,
     SymbolsService,
-    TableRecordDefinitionList,
+    TableRecordDefinitionList
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { GridFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
-    private _watchContentFrame: TableFrame;
-    private _callPutContentFrame: TableFrame;
+    private _watchContentFrame: GridFrame;
+    private _callPutContentFrame: GridFrame;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -35,7 +35,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
 
     get initialised() { return this._callPutContentFrame !== undefined; }
 
-    initialise(watchContentFrame: TableFrame, callPutContentFrame: TableFrame, frameElement: JsonElement | undefined): void {
+    initialise(watchContentFrame: GridFrame, callPutContentFrame: GridFrame, frameElement: JsonElement | undefined): void {
         this._watchContentFrame = watchContentFrame;
         this._callPutContentFrame = callPutContentFrame;
 

@@ -102,6 +102,11 @@ export class RecordGrid extends AdaptedRevgrid {
         this.addEventListener('rev-column-sort', this._columnSortListener);
     }
 
+    get recordFocused() {
+        const selections = this.selections;
+        return selections !== null && selections.length > 0;
+    }
+
     get sortable(): boolean {
         return this.properties.sortable;
     }

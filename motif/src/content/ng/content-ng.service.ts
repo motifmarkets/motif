@@ -23,7 +23,7 @@ import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
 import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
-import { TableFrame } from '../table/internal-api';
+import { GridFrame } from '../table/internal-api';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
@@ -64,7 +64,7 @@ export class ContentNgService {
         return this._content.createMarketsFrame(componentAccess);
     }
 
-    createTableFrame(componentAccess: TableFrame.ComponentAccess) {
+    createTableFrame(componentAccess: GridFrame.ComponentAccess) {
         return this._content.createTableFrame(componentAccess);
     }
 

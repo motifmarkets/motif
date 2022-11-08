@@ -6,20 +6,15 @@
 
 import {
     AdiService,
-    CommandRegisterService,
-    GridLayout,
-    GridLayoutRecordStore,
-    Guid,
+    AssertInternalError,
+    CommandRegisterService, ExplicitLitIvemIdListDefinition, GridLayoutRecordStore, GridSourceDefinition, Guid,
     Integer,
     JsonElement,
-    LitIvemId,
-    LitIvemIdTableRecordDefinition,
-    PortfolioTableRecordDefinitionList,
-    SymbolsService,
-    TableRecordDefinitionList,
-    TablesService
+    LitIvemId, LitIvemIdFromListTableRecordSourceDefinition, LitIvemIdList,
+    LitIvemIdListDefinition,
+    LitIvemIdTableRecordDefinition, SymbolsService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { GridFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -31,7 +26,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     litIvemIdAcceptedEvent: WatchlistDitemFrame.LitIvemIdAcceptedEvent;
     recordFocusEvent: WatchlistDitemFrame.RecordFocusEvent;
 
-    private _tableFrame: TableFrame;
+    private _litIvemIdList: LitIvemIdList;
+    private _tableFrame: GridFrame;
     private _recordDefinitionList: PortfolioTableRecordDefinitionList;
 
     private _litIvemIdApplying = false;
@@ -43,7 +39,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _tablesService: TablesService,
+        private readonly _consolidatedLitIvemIdListsFactoryService: ConsolidatedLitIvemIdListsFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Watchlist, componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -51,8 +47,9 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     get initialised() { return this._tableFrame !== undefined; }
+    get recordFocused() { return this._tableFrame.recordFocused; }
 
-    initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
+    initialise(tableFrame: GridFrame, frameElement: JsonElement | undefined): void {
         this._tableFrame = tableFrame;
         this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
@@ -75,30 +72,74 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._tableFrame.saveLayoutConfig(contentElement);
     }
 
-    getFocusedRecordIndex() {
-        return this._tableFrame.getFocusedRecordIndex();
-    }
-
-    setGridLayout(value: GridLayout) {
-        this._tableFrame.setGridLayout(value);
-    }
-
     getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
         return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 
     canDeleteFocusedRecord() {
-        return this._tableFrame !== undefined && this._tableFrame.canDeleteFocusedRecord();
+        return this._litIvemIdList.publicCanModify;
+        // return this._tableFrame !== undefined && this._tableFrame.canDeleteFocusedRecord();
     }
 
     deleteFocusedSymbol() {
-        this._tableFrame.deleteFocusedRecord();
+        const index = this._tableFrame.getFocusedRecordIndex();
+        if (index === undefined) {
+            throw new AssertInternalError('WDFDFS01023');
+        } else {
+            this._litIvemIdList.delete(index);
+        }
+        // this._tableFrame.deleteFocusedRecord();
     }
 
-    newPrivate(keepCurrentLayout: boolean) {
-        if (this.checkConfirmPrivateWatchListCanBeDiscarded()) {
-            this.newPrivateTable(keepCurrentLayout);
+    // newPrivate(keepCurrentLayout: boolean) {
+    //     if (this.checkConfirmPrivateWatchListCanBeDiscarded()) {
+    //         this.newPrivateTable(keepCurrentLayout);
+    //     }
+    // }
+
+    newPrivate() {
+        const listDefinition = new ExplicitLitIvemIdListDefinition();
+        // const gridLayout = this._namedGridLayoutsService.createPrivate();
+        const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(listDefinition);
+        this._tableFrame.newPrivate(recordSourceDefinition, NamedGridLayoutsService.CategoryId.Watchlist);
+    }
+
+    saveAsPrivate() {
+        const recordSourceDefinition = this._tableFrame.recordSourceDefinition;
+        if (LitIvemIdFromListTableRecordSourceDefinition.is(recordSourceDefinition)) {
+            const list = recordSourceDefinition.litIvemIdList;
+            const explicitList = new ExplicitLitIvemIdListDefinition(list.litIvemIds[]);
+            const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(explicitList.createDefinition());
+            this._tableFrame.saveAsPrivate(recordSourceDefinition);
+        } else {
+            throw new AssertInternalError('WDISAPI13008');
         }
+    }
+
+    loadLitIvemIdList(listDefinition: LitIvemIdListDefinition) {
+        const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(listDefinition);
+        this._tableFrame.loadRecordSourceDefinition(recordSourceDefinition);
+    }
+
+    saveAsLitIvemIdList(listDefinition: LitIvemIdListDefinition) {
+        const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(listDefinition);
+        this._tableFrame.saveAsRecordSourceDefinition(recordSourceDefinition);
+    }
+
+    loadGridSource(definition: GridSourceDefinition) {
+        this._tableFrame.loadGridSource(GridSourceDefinition);
+    }
+
+    saveAsGridSource(name: string) {
+        this._tableFrame.saveAsGridSource(GridSourceDefinition);
+    }
+
+    setGridLayout(definition: NamedGridLayoutDefinition) {
+        this._tableFrame.setGridLayout(definition);
+    }
+
+    setGridLayoutFavourites(definitions: NamedGridLayoutDefinition[]) {
+        this._tableFrame.setGridLayoutFavourites(definitions);
     }
 
     autoSizeAllColumnWidths() {
@@ -292,7 +333,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 }
 
 export namespace WatchlistDitemFrame {
-    export type TableDescription = TableFrame.Description;
+    export type TableDescription = GridFrame.Description;
 
     export namespace JsonName {
         export const content = 'content';

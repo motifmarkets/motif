@@ -14,6 +14,7 @@ import {
     CommandRegisterService,
     delay1Tick,
     GridLayout,
+    GridLayoutItem,
     GridLayoutRecordStore,
     IconButtonUiAction,
     InternalCommand,
@@ -118,6 +119,9 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
 }
 
 export namespace ContentGridLayoutEditorNgComponent {
+    export interface CloseResult {
+        newLayout: GridLayoutItem | GridLayoutItem.Id | undefined;
+    }
     export type ClosePromise = Promise<GridLayout | undefined>;
 
     export function open(

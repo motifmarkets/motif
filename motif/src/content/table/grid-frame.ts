@@ -13,45 +13,43 @@ import {
     Guid,
     Integer,
     JsonElement,
+    LockOpenListItem,
     Logger,
     MultiEvent,
-    OpenedTable,
+    NamedGridSourceDefinitionsService,
     SettingsService,
+    SharedGridSourcesService,
     StringBuilder,
     StringId,
     Strings,
     Table,
-    TableDefinition,
     TableRecordDefinition,
-    TableRecordDefinitionList,
-    TableRecordDefinitionListsService,
-    TablesService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
-import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter, RevRecordStore } from 'revgrid';
+import { nanoid } from 'nanoid';
+import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter } from 'revgrid';
 import { ContentFrame } from '../content-frame';
+import { TableGridRecordStore } from './table-grid-record-store';
 
-export class TableFrame extends ContentFrame implements RevRecordStore, Table.Locker, Table.Opener {
+export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, LockOpenListItem.Opener {
     dragDropAllowed: boolean;
 
-    settingsApplyEvent: TableFrame.SettingsApplyEvent;
-    recordFocusEvent: TableFrame.RecordFocusEvent;
-    gridClickEvent: TableFrame.GridClickEvent;
-    gridDblClickEvent: TableFrame.GridDblClickEvent;
-    requireDefaultTableDefinitionEvent: TableFrame.RequireDefaultTableDefinitionEvent;
-    tableOpenEvent: TableFrame.TableOpenEvent;
+    settingsApplyEvent: GridFrame.SettingsApplyEvent;
+    recordFocusEvent: GridFrame.RecordFocusEvent;
+    gridClickEvent: GridFrame.GridClickEvent;
+    gridDblClickEvent: GridFrame.GridDblClickEvent;
+    requireDefaultTableDefinitionEvent: GridFrame.RequireDefaultTableDefinitionEvent;
+    tableOpenEvent: GridFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
 
-    private _fieldsEventers: RevRecordStore.FieldsEventers;
-    private _recordsEventers: RevRecordStore.RecordsEventers;
+    private readonly _tableGridRecordStore = new TableGridRecordStore();
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
 
     private _table: Table | undefined;
-    private _privateTable: OpenedTable | undefined;
-    private _privateNameSuffixId: TableFrame.PrivateNameSuffixId | undefined;
+    private _privateNameSuffixId: GridFrame.PrivateNameSuffixId | undefined;
     private _keptLayout: GridLayout | undefined;
 
     private _autoSizeAllColumnWidthsOnFirstUsable: boolean;
@@ -59,14 +57,15 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
-        private readonly _componentAccess: TableFrame.ComponentAccess,
+        private readonly _componentAccess: GridFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
-        private readonly _tableRecordDefinitionListsService: TableRecordDefinitionListsService,
-        private readonly _tablesService: TablesService,
+        private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
+        private readonly _sharedGridSourcesService: SharedGridSourcesService,
     ) {
         super();
     }
 
+    get recordStore() { return this._tableGridRecordStore; }
     get gridRowHeight() { return this._grid.rowHeight; }
     get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
 
@@ -80,7 +79,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         }
     }
 
-    get lockOpenListItemSubscriberName(): string {
+    get lockerName(): string {
         if (this._table === undefined) {
             throw new AssertInternalError('TFGLNT20095');
         } else {
@@ -95,6 +94,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     get tableOpened(): boolean { return this._table !== undefined; }
 
     get isFiltered(): boolean { return this._grid.isFiltered; }
+    get recordFocused() {return this._grid.recordFocused; }
+
 
     override finalise() {
         if (!this.finalised) {
@@ -102,14 +103,6 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
             this.closeTable(false);
             super.finalise();
         }
-    }
-
-    setFieldEventers(fieldsEventers: RevRecordStore.FieldsEventers): void {
-        this._fieldsEventers = fieldsEventers;
-    }
-
-    setRecordEventers(recordsEventers: RevRecordStore.RecordsEventers): void {
-        this._recordsEventers = recordsEventers;
     }
 
     setFlexBasis(value: number) {
@@ -158,15 +151,24 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     }
 
     loadLayoutConfig(element: JsonElement | undefined) {
-        this._recordsEventers.beginChange();
+        this._tableGridRecordStore.beginChange();
         try {
             this.closeTable(false);
 
             if (element === undefined) {
                 this.tryNewDefaultPrivateTable();
             } else {
-                const privateElement = element.tryGetElement(TableFrame.JsonName.privateTable);
+                const tableElement = element.tryGetElement(GridFrame.JsonName.table);
+                if (tableElement === undefined) {
+                    this.tryNewDefaultPrivateTable();
+                } else {
+                    const definition = TableDefinition.createFr
+                }
+
+                const privateElement = element.tryGetElement(GridFrame.JsonName.privateTable);
                 if (privateElement !== undefined) {
+                    const id = nanoid(); // not sure if needed
+                    this._table = this._tablesService.newTable(id, undefined, );
                     this.createPrivateTable();
                     if (this._table !== undefined) {
                         const success = this._table.loadFromJson(privateElement);
@@ -174,15 +176,15 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                             this.closeTable(false);
                             this.tryNewDefaultPrivateTable();
                         } else {
-                            this._privateNameSuffixId = privateElement.tryGetInteger(TableFrame.JsonName.privateNameSuffixId);
+                            this._privateNameSuffixId = privateElement.tryGetInteger(GridFrame.JsonName.privateNameSuffixId);
                             if (this._privateNameSuffixId !== undefined) {
-                                TableFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
+                                GridFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
                             }
                             this.activate(-1);
                         }
                     }
                 } else {
-                    const loadedTableId = element.tryGetGuid(TableFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
+                    const loadedTableId = element.tryGetGuid(GridFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
                     if (loadedTableId === undefined) {
                         this.tryNewDefaultPrivateTable();
                     } else {
@@ -198,20 +200,20 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
             }
 
         } finally {
-            this._recordsEventers.endChange();
+            this._tableGridRecordStore.endChange();
         }
     }
 
     saveLayoutConfig(element: JsonElement) {
         if (this._table !== undefined) {
             if (!this.isPrivate()) {
-                element.setGuid(TableFrame.JsonName.tableId, this._table.id);
+                element.setGuid(GridFrame.JsonName.tableId, this._table.id);
             } else {
                 const layout = this._grid.saveLayout();
                 this._table.layout = layout;
-                const privateTableElement = element.newElement(TableFrame.JsonName.privateTable);
+                const privateTableElement = element.newElement(GridFrame.JsonName.privateTable);
                 this._table.saveToJson(privateTableElement);
-                element.setInteger(TableFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
+                element.setInteger(GridFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
             }
         }
     }
@@ -260,19 +262,19 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     }
 
     notifyTableRecordsLoaded() {
-        this._recordsEventers.recordsLoaded();
+        this._tableGridRecordStore.recordsLoaded();
     }
 
     notifyTableRecordsInserted(index: Integer, count: Integer) {
-        this._recordsEventers.recordsInserted(index, count);
+        this._tableGridRecordStore.recordsInserted(index, count);
     }
 
     notifyTableRecordsDeleted(index: Integer, count: Integer) {
-        this._recordsEventers.recordsDeleted(index, count);
+        this._tableGridRecordStore.recordsDeleted(index, count);
     }
 
     notifyTableAllRecordsDeleted() {
-        this._recordsEventers.allRecordsDeleted();
+        this._tableGridRecordStore.allRecordsDeleted();
     }
 
     // notifyTableRecordListChange(listChangeTypeId: UsableListChangeTypeId, itemIdx: Integer, changeCount: Integer) {
@@ -281,14 +283,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     //             // handled through badness change
     //             break;
     //         case UsableListChangeTypeId.PreUsableClear:
-    //             this._recordsEventers.allRecordsDeleted();
+    //             this._tableGridRecordStore.allRecordsDeleted();
     //             break;
     //         case UsableListChangeTypeId.PreUsableAdd:
     //             if (this._table === undefined) {
     //                 throw new AssertInternalError('TFNTRLCA388590');
     //             } else {
     //                 // if (this._table.changeRecordDefinitionOrderAllowed) {
-    //                     this._recordsEventers.recordsInserted(itemIdx, changeCount);
+    //                     this._tableGridRecordStore.recordsInserted(itemIdx, changeCount);
     //                 // } else {
     //                 //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
     //                 // }
@@ -302,17 +304,17 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     //                 throw new AssertInternalError('TFNTRLCI388590');
     //             } else {
     //                 // if (this._table.changeRecordDefinitionOrderAllowed) {
-    //                     this._recordsEventers.recordsInserted(itemIdx, changeCount);
+    //                     this._tableGridRecordStore.recordsInserted(itemIdx, changeCount);
     //                 // } else {
     //                 //     this._componentAccess.gridInsertRecordsInSameRowPosition(itemIdx, changeCount); // probably not required
     //                 // }
     //             }
     //             break;
     //         case UsableListChangeTypeId.Remove:
-    //             this._recordsEventers.recordsDeleted(itemIdx, changeCount);
+    //             this._tableGridRecordStore.recordsDeleted(itemIdx, changeCount);
     //             break;
     //         case UsableListChangeTypeId.Clear:
-    //             this._recordsEventers.allRecordsDeleted();
+    //             this._tableGridRecordStore.allRecordsDeleted();
     //             break;
     //         default:
     //             throw new UnreachableCaseError('TFNTRLC2323597', listChangeTypeId);
@@ -324,19 +326,19 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (recordIdx < this.recordCount) {
-            this._recordsEventers.invalidateRecordValues(recordIdx, invalidatedValues);
+            this._tableGridRecordStore.invalidateRecordValues(recordIdx, invalidatedValues);
         } else {
             throw new AssertInternalError('TFTFNTVC22944',
                 `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
         }
     }
 
-    notifyTableRecordFieldsChanged(recordIdx: Integer, fieldIndex: number, fieldCount: number) {
+    notifyTableRecordSequentialFieldValuesChanged(recordIdx: Integer, fieldIndex: number, fieldCount: number) {
         // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const tableFieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (fieldIndex + fieldCount <= tableFieldCount && recordIdx < this.recordCount) {
-            this._recordsEventers.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
+            this._tableGridRecordStore.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
         } else {
             throw new AssertInternalError('TFTFNTVC22944',
                 `Field: ${fieldIndex}, Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
@@ -348,7 +350,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
         const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
         if (recordIdx < this.recordCount) {
-            this._recordsEventers.invalidateRecord(recordIdx);
+            this._tableGridRecordStore.invalidateRecord(recordIdx);
         } else {
             throw new AssertInternalError('TFTFNTRC4422944',
                 `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
@@ -445,11 +447,11 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     deleteFocusedRecord() {
         const itemIdx = this._grid.focusedRecordIndex;
         if (itemIdx !== undefined && itemIdx >= 0 && this._table !== undefined) {
-            this._recordsEventers.beginChange();
+            this._tableGridRecordStore.beginChange();
             try {
-                this._table.deleteRecord(itemIdx);
+                this._table.userRemoveAt(itemIdx, 1);
             } finally {
-                this._recordsEventers.endChange();
+                this._tableGridRecordStore.endChange();
             }
         }
     }
@@ -462,7 +464,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
 
     newPrivateTable(tableDefinition: TableDefinition, keepCurrentLayout: boolean) {
 
-        this._recordsEventers.beginChange();
+        this._tableGridRecordStore.beginChange();
         try {
             if (this.table !== undefined) {
                 this.closeTable(keepCurrentLayout);
@@ -490,7 +492,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                 }
             }
         } finally {
-            this._recordsEventers.endChange();
+            this._tableGridRecordStore.endChange();
         }
     }
 
@@ -506,13 +508,13 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     }
 
     openTable(idx: Integer) {
-        this._recordsEventers.beginChange();
+        this._tableGridRecordStore.beginChange();
         try {
             this.closeTable(false);
             this._table = this._tablesService.lock(idx, this);
             this.activate(idx);
         } finally {
-            this._recordsEventers.endChange();
+            this._tableGridRecordStore.endChange();
         }
     }
 
@@ -524,18 +526,12 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                 this._keptLayout = undefined;
             }
 
-            if (this._privateTable !== undefined) {
-                this._privateTable.close();
-                this._privateTable = undefined;
-            } else {
-                this._tablesService.closeTable(this._table, this);
-                this._tablesService.unlockTable(this._table, this);
-            }
+            this._tablesService.closeItem(this._table, this);
 
             this._privateNameSuffixId = undefined;
             this._table = undefined;
 
-            this._recordsEventers.allRecordsDeleted(); // should already all be gone
+            this._tableGridRecordStore.allRecordsDeleted(); // should already all be gone
         }
     }
 
@@ -555,7 +551,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         if (this._table === undefined) {
             throw new UnexpectedUndefinedError('TFORDLWL031195');
         } else {
-            this._recordsEventers.beginChange();
+            this._tableGridRecordStore.beginChange();
             try {
                 this.closeTable(false);
 
@@ -581,7 +577,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                 }
 
             } finally {
-                this._recordsEventers.endChange();
+                this._tableGridRecordStore.endChange();
             }
         }
     }
@@ -739,7 +735,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         }
     }
 
-    setGridLayout(layout: GridLayout) {
+    setGridLayout(layout: GridLayout, changeAllowed: boolean) {
         this._grid.loadLayout(layout);
     }
 
@@ -763,7 +759,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
     }
 
-    calculateDescription(): TableFrame.Description {
+    calculateDescription(): GridFrame.Description {
         if (this._table === undefined) {
             return {
                 abbreviate: '<' + Strings[StringId.NotInitialised] + '>',
@@ -852,8 +848,8 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         this._table = this._privateTable;
     }
 
-    private calculateNewPrivateName(): TableFrame.NewPrivateName {
-        const suffixId = TableFrame.getNextNewPrivateNameSuffixId();
+    private calculateNewPrivateName(): GridFrame.NewPrivateName {
+        const suffixId = GridFrame.getNextNewPrivateNameSuffixId();
         const name = Strings[StringId.New] + suffixId.toString(10);
         return {
             name,
@@ -870,7 +866,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
             }
 
             const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            this._fieldsEventers.addFields(fieldsAndInitialStates.fields);
+            this._tableGridRecordStore.addFields(fieldsAndInitialStates.fields);
 
             const states = fieldsAndInitialStates.states;
             const fieldCount = states.length; // one state for each field
@@ -879,7 +875,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
             }
             this._grid.loadLayout(this._table.layout);
             this.updateGridSettingsFromTable();
-            this._recordsEventers.recordsLoaded();
+            this._tableGridRecordStore.recordsLoaded();
 
             this._gridPrepared = true;
         }
@@ -889,7 +885,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         if (this._table === undefined) {
             throw new UnexpectedUndefinedError('TFA5592245');
         } else {
-            this._recordsEventers.beginChange();
+            this._tableGridRecordStore.beginChange();
             try {
                 this.prepareGrid();
                 if (this.isPrivate()) {
@@ -902,7 +898,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
                 // this.prepareDeleteListAction();
 
             } finally {
-                this._recordsEventers.endChange();
+                this._tableGridRecordStore.endChange();
             }
         }
     }
@@ -920,7 +916,7 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
     //     this.notifyDeleteListActionPrepared(canDeleteListResult.deletable, canDeleteListResult.actionHint);
     // }
 
-    private canDeleteList(): TableFrame.CanDeleteListResult {
+    private canDeleteList(): GridFrame.CanDeleteListResult {
         if (this._table === undefined) {
             return {
                 deletable: false,
@@ -1021,13 +1017,14 @@ export class TableFrame extends ContentFrame implements RevRecordStore, Table.Lo
         } else {
             const tableDefinition = this.requireDefaultTableDefinitionEvent();
             if (tableDefinition !== undefined) {
-                this.newPrivateTable(tableDefinition, false);
+
+                this.newPrivateTable( tableDefinition, false);
             }
         }
     }
 }
 
-export namespace TableFrame {
+export namespace GridFrame {
     export type SettingsApplyEvent = (this: void) => void;
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
     export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
@@ -1046,6 +1043,7 @@ export namespace TableFrame {
     export type DeleteListActionPreparedEvent = (this: void, deletable: boolean, actionHint: string) => void;
 
     export namespace JsonName {
+        export const table = 'table';
         export const tableId = 'tableId';
         export const privateTable = 'privateTable';
         export const privateNameSuffixId = 'privateNameSuffixId';

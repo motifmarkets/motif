@@ -20,7 +20,7 @@ import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
-import { TableFrame } from '../table-frame';
+import { GridFrame } from '../grid-frame';
 
 @Component({
     selector: 'app-table',
@@ -29,7 +29,7 @@ import { TableFrame } from '../table-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, TableFrame.ComponentAccess {
+export class TableNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
     @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
@@ -37,7 +37,7 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    private readonly _frame: TableFrame;
+    private readonly _frame: GridFrame;
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
@@ -49,7 +49,7 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
         // this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
     }
 
-    get frame(): TableFrame { return this._frame; }
+    get frame(): GridFrame { return this._frame; }
     get gridRowHeight() { return this._frame.gridRowHeight; }
 
     // Component Access members
@@ -73,7 +73,7 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
             this._gridComponent.destroyGrid();
         };
 
-        const grid = this._gridComponent.createGrid(this._frame, this.frameGridProperties);
+        const grid = this._gridComponent.createGrid(this._frame.recordStore, this.frameGridProperties);
         this._frame.setGrid(grid);
     }
 

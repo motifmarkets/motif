@@ -12,10 +12,10 @@ import {
     TablesService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
-import { TableFrame } from '../table/table-frame';
+import { GridFrame } from '../table/grid-frame';
 
 export class FeedsFrame extends ContentFrame {
-    private _tableFrame: TableFrame;
+    private _tableFrame: GridFrame;
     private _recordList: KeyedCorrectnessRecordList<Feed>;
     private _recordListBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -23,7 +23,7 @@ export class FeedsFrame extends ContentFrame {
         super();
     }
 
-    initialise(tableFrame: TableFrame) {
+    initialise(tableFrame: GridFrame) {
         this._tableFrame = tableFrame;
         this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();

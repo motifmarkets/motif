@@ -182,7 +182,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
         this._symbolEditComponent.focus();
 
-        this.pushDeleteButtonState(this._frame.getFocusedRecordIndex());
+        this.pushDeleteButtonState(this._frame.recordFocused);
 
         this.initialiseComponents();
 
@@ -215,7 +215,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleRecordFocusEvent(currentRecordIndex: Integer | undefined) {
-        this.pushDeleteButtonState(currentRecordIndex);
+        this.pushDeleteButtonState(currentRecordIndex !== undefined);
     }
 
     private handleSymbolCommitEvent(typeId: UiAction.CommitTypeId) {
@@ -412,8 +412,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.markForCheck();
     }
 
-    private pushDeleteButtonState(newRecordIndex: Integer | undefined) {
-        if (newRecordIndex === undefined) {
+    private pushDeleteButtonState(isRecordFocused: boolean) {
+        if (!isRecordFocused) {
             this._deleteSymbolUiAction.pushDisabled();
         } else {
             if (this._frame.canDeleteFocusedRecord()) {
