@@ -7,12 +7,12 @@
 import {
     AdiService,
     AppStorageService,
+    LitIvemIdListsService,
+    NamedGridSourceDefinitionsService,
     ScansService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
-    TableRecordDefinitionListsService,
-    TablesService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
@@ -34,8 +34,8 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _tableRecordDefinitionListsService: TableRecordDefinitionListsService,
-        private readonly _tablesService: TablesService,
+        private readonly _litIvemIdListsService: LitIvemIdListsService,
+        private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
     ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -43,7 +43,7 @@ export class ContentService {
     }
 
     createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
-        return new FeedsFrame(componentAccess, this._tablesService);
+        return new FeedsFrame(componentAccess, this._namedGridSourceDefinitionsService);
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -51,7 +51,12 @@ export class ContentService {
     }
 
     createTableFrame(componentAccess: GridFrame.ComponentAccess) {
-        return new GridFrame(componentAccess, this._settingsService, this._tableRecordDefinitionListsService, this._tablesService);
+        return new GridFrame(
+            componentAccess,
+            this._settingsService,
+            this._litIvemIdListsService,
+            this._namedGridSourceDefinitionsService
+        );
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {

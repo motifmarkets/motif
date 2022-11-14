@@ -101,7 +101,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         const listDefinition = new ExplicitLitIvemIdListDefinition();
         // const gridLayout = this._namedGridLayoutsService.createPrivate();
         const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(listDefinition);
-        this._tableFrame.newPrivate(recordSourceDefinition, NamedGridLayoutsService.CategoryId.Watchlist);
+        this._tableFrame.newPrivate(recordSourceDefinition, NamedGridLayout.CategoryId.Watchlist);
     }
 
     saveAsPrivate() {
@@ -127,11 +127,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     loadGridSource(definition: GridSourceDefinition) {
-        this._tableFrame.loadGridSource(GridSourceDefinition);
+        this._tableFrame.loadGridSource(definition);
     }
 
-    saveAsGridSource(name: string) {
-        this._tableFrame.saveAsGridSource(GridSourceDefinition);
+    saveAsGridSource(definition: GridSourceDefinition) {
+        this._tableFrame.saveAsGridSource(definition);
     }
 
     setGridLayout(definition: NamedGridLayoutDefinition) {

@@ -12,17 +12,17 @@ import {
     CommaText,
     ExtensionHandle,
     MultiEvent,
-    SymbolsService,
+    PublisherId,
+    RegisteredExtension,
+    SymbolsService
 } from '@motifmarkets/motif-core';
-import { ExtensionId, RegisteredExtension } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
 import { WorkspaceService } from 'src/workspace/internal-api';
 import { Extension as ExtensionApi, ExtensionRegistrar as ExtensionRegistrarApi } from './api/extension-api';
 import { ExtensionSvcImplementation, PublisherTypeImplementation } from './implementation/internal-api';
 
 export class ExtensionRegistration implements RegisteredExtension {
-    private readonly _publisherTypeId: ExtensionId.PublisherTypeId;
-    private readonly _publisherName: string;
+    private readonly _publisherId: PublisherId;
     private readonly _name: string;
     private readonly _version: string;
     private readonly _apiVersion: string;
@@ -47,8 +47,12 @@ export class ExtensionRegistration implements RegisteredExtension {
         private readonly _longDescription: string,
         private readonly _urlPath: string,
     ) {
-        this._publisherTypeId = PublisherTypeImplementation.fromApi(request.publisherType);
-        this._publisherName = request.publisherName;
+        const publisherTypeId = PublisherTypeImplementation.fromApi(request.publisherType);
+        const publisherName = request.publisherName;
+        this._publisherId = {
+            typeId: publisherTypeId,
+            name: publisherName,
+        };
         this._name = request.name;
         this._version = request.version;
         this._apiVersion = request.apiVersion;
@@ -59,8 +63,7 @@ export class ExtensionRegistration implements RegisteredExtension {
 
     get handle() { return this._handle; }
     get name() { return this._name; }
-    get publisherTypeId() { return this._publisherTypeId; }
-    get publisherName() { return this._publisherName; }
+    get publisherId() { return this._publisherId; }
     get version() { return this._version; }
     get apiVersion() { return this._apiVersion; }
     get shortDescription() { return this._shortDescription; }
@@ -125,7 +128,7 @@ export class ExtensionRegistration implements RegisteredExtension {
     }
 
     private generatePersistKey() {
-        const publisherTypePersistKey = ExtensionId.PublisherType.idToPersistKey(this._publisherTypeId);
-        return CommaText.from3Values(publisherTypePersistKey, this._publisherName, this._name);
+        const publisherTypePersistKey = PublisherId.Type.idToPersistKey(this._publisherId.typeId);
+        return CommaText.from3Values(publisherTypePersistKey, this._publisherId.name, this._name);
     }
 }

@@ -15,11 +15,18 @@ import {
     OnDestroy,
     Output
 } from '@angular/core';
-import { AssertInternalError, ColorScheme, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ColorScheme, ExtensionInfo,
+    MultiEvent,
+    PublisherId,
+    RegisteredExtension,
+    SettingsService,
+    StringId,
+    Strings
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionInfo } from '../../extension/extension-info';
-import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';
 
 @Component({
     selector: 'app-extension-list-info-item',
@@ -58,12 +65,10 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     }
 
     public get abbreviatedPublisherTypeDisplay() {
-        return ExtensionId.PublisherType.idToAbbreviatedDisplay(
-            this._info.publisherTypeId
-        );
+        return PublisherId.Type.idToAbbreviatedDisplay(this._info.publisherId.typeId);
     }
     public get publisherName() {
-        return this._info.publisherName;
+        return this._info.publisherId.name;
     }
     public get name() {
         return this._info.name;
@@ -89,9 +94,7 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     }
 
     ngOnDestroy() {
-        this._settingsService.unsubscribeSettingsChangedEvent(
-            this._settingsChangedSubscriptionId
-        );
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
         this.checkClearInstalledExtension();
     }
 
@@ -141,19 +144,13 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
         if (this._installedExtension === undefined) {
             throw new AssertInternalError('EDCCIE566583333');
         } else {
-            this._installedExtension.unsubscribeLoadedChangedEvent(
-                this._installedExtensionLoadedChangedSubscriptionId
-            );
+            this._installedExtension.unsubscribeLoadedChangedEvent(this._installedExtensionLoadedChangedSubscriptionId);
             this._installedExtensionLoadedChangedSubscriptionId = undefined;
         }
     }
 
     private updateEnabledDisabled(loaded: boolean) {
-        this.color = loaded
-            ? ''
-            : this._settingsService.color.getFore(
-                  ColorScheme.ItemId.Text_GreyedOut
-              );
+        this.color = loaded ? '' : this._settingsService.color.getFore(ColorScheme.ItemId.Text_GreyedOut);
     }
 
     private applySettings() {

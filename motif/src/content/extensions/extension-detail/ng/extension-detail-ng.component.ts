@@ -5,10 +5,19 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, OnDestroy } from '@angular/core';
-import { AssertInternalError, ColorScheme, HtmlTypes, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ColorScheme, ExtensionInfo,
+    HtmlTypes,
+    MultiEvent,
+    PublisherId,
+    RegisteredExtension,
+    SettingsService,
+    StringId,
+    Strings
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionId, ExtensionInfo, RegisteredExtension } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';
 import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service';
 
@@ -63,8 +72,8 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
     }
 
     public get name() { return this._info.name; }
-    public get publisherTypeDisplay() { return ExtensionId.PublisherType.idToDisplay(this._info.publisherTypeId); }
-    public get publisherName() { return this._info.publisherName; }
+    public get publisherTypeDisplay() { return PublisherId.Type.idToDisplay(this._info.publisherId.typeId); }
+    public get publisherName() { return this._info.publisherId.name; }
     public get version() { return this._info.version; }
     public get shortDescription() { return this._info.shortDescription; }
     public get longDescription() { return this._info.longDescription; }
@@ -178,8 +187,10 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
 
 export namespace ExtensionDetailNgComponent {
     export const invalidExtensionInfo: ExtensionInfo = {
-        publisherTypeId: ExtensionId.PublisherTypeId.Invalid,
-        publisherName: '',
+        publisherId: {
+            typeId: PublisherId.TypeId.Invalid,
+            name: '',
+        },
         name: '',
         version: '',
         apiVersion: '',

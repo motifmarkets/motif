@@ -4,15 +4,26 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, CommandRegisterService, Json, JsonElement, StringId, Strings, SymbolsService } from '@motifmarkets/motif-core';
-import { ExtensionId } from 'content-internal-api';
+import {
+    AdiService,
+    CommandRegisterService,
+    ErrorCode,
+    Json,
+    JsonElement,
+    Ok,
+    PublisherId,
+    Result,
+    StringId,
+    Strings,
+    SymbolsService
+} from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';
 
 export class PlaceholderDitemFrame extends BuiltinDitemFrame {
-    private _placeheld: PlaceholderDitemFrame.Placeheld;
+    private _placeheldDefinition: PlaceholderDitemFrame.Placeheld;
     private _invalidReason: string | undefined;
 
     constructor(
@@ -30,53 +41,47 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Placeholder; }
     get initialised() { return true; }
 
-    get placeheld() { return this._placeheld; }
+    get placeheld() { return this._placeheldDefinition; }
 
     public get placeheldExtensionPublisherType() {
-        return ExtensionId.PublisherType.idToDisplay(this._placeheld.definition.extensionId.publisherTypeId);
+        return PublisherId.Type.idToDisplay(this._placeheldDefinition.definition.extensionId.publisherId.typeId);
     }
-    public get placeheldExtensionPublisher() { return this._placeheld.definition.extensionId.publisherName; }
-    public get placeheldExtensionName() { return this._placeheld.definition.extensionId.name; }
+    public get placeheldExtensionPublisher() { return this._placeheldDefinition.definition.extensionId.publisherId.name; }
+    public get placeheldExtensionName() { return this._placeheldDefinition.definition.extensionId.name; }
     public get placeheldConstructionMethod() {
-        return DitemComponent.ConstructionMethod.idToName(this._placeheld.definition.constructionMethodId);
+        return DitemComponent.ConstructionMethod.idToName(this._placeheldDefinition.definition.constructionMethodId);
     }
-    public get placeheldComponentTypeName() { return this._placeheld.definition.componentTypeName; }
-    public get placeheldComponentState() { return this._placeheld.state; }
-    public get placeheldReason() { return this._placeheld.reason; }
+    public get placeheldComponentTypeName() { return this._placeheldDefinition.definition.componentTypeName; }
+    public get placeheldComponentState() { return this._placeheldDefinition.state; }
+    public get placeheldReason() { return this._placeheldDefinition.reason; }
 
     public get invalid() { return this._invalidReason !== undefined; }
     public get invalidReason() { return this._invalidReason; }
 
     setPlaceheld(value: PlaceholderDitemFrame.Placeheld) {
-        this._placeheld = value;
+        this._placeheldDefinition = value;
     }
 
     override constructLoad(element: JsonElement | undefined) {
         if (element === undefined) {
-            this._placeheld = this.createInvalidPlacehold(Strings[StringId.PlaceholderDitem_ComponentStateNotSpecified]);
+            this._placeheldDefinition = this.createInvalidPlacehold(Strings[StringId.PlaceholderDitem_ComponentStateNotSpecified]);
         } else {
-            const json = element.json;
-            // eslint-disable-next-line @typescript-eslint/ban-types
-            const persistablePlaceheld = json as object as PlaceholderDitemFrame.PersistablePlaceheld;
-            this._placeheld = PlaceholderDitemFrame.Placeheld.fromPersistable(persistablePlaceheld);
-            // const persistablePlaceheldJson = element.tryGetJsonObject(PlaceholderDitemFrame.JsonName.placeheld);
-
-            // if (persistablePlaceheldJson === undefined) {
-            //     this._placeheld = this.createInvalidPlacehold(Strings[StringId.PlaceholderDitem_ComponentStateIsInvalid]);
-            // } else {
-            //     const persistablePlaceheld = persistablePlaceheldJson as Object as PlaceholderDitemFrame.PersistablePlaceheld;
-            //     this._placeheld = PlaceholderDitemFrame.Placeheld.fromPersistable(persistablePlaceheld);
-            // }
+            const createResult = PlaceholderDitemFrame.PlaceHeld.createFromJson(element);
+            if (createResult.isErr()) {
+                this._placeheldDefinition = this.createInvalidPlacehold(createResult.error);
+            } else {
+                this._placeheldDefinition = createResult.value;
+            }
         }
 
         // do not call super.constructLoad() as no LitIvemId or BrokerageAccountGroup
     }
 
     override save(element: JsonElement) {
-        // eslint-disable-next-line @typescript-eslint/ban-types
-        const persistablePlaceheld = PlaceholderDitemFrame.Placeheld.toPersistable(this._placeheld) as object;
-        element.deepExtend(persistablePlaceheld as Json);
-        // element.setJson(PlaceholderDitemFrame.JsonName.placeheld, persistablePlaceheld as Json);
+        // // eslint-disable-next-line @typescript-eslint/ban-types
+        // const persistablePlaceheld = PlaceholderDitemFrame.Definition.toPersistable(this._placeheldDefinition) as object;
+        // element.deepExtend(persistablePlaceheld as Json);
+        PlaceholderDitemFrame.PlaceHeld.saveToJson(this._placeheldDefinition, element);
 
         // do not call super.save() as no LitIvemId or BrokerageAccountGroup
     }
@@ -84,8 +89,7 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
     private createInvalidPlacehold(invalidReason: string): PlaceholderDitemFrame.Placeheld {
         const definition: DitemComponent.Definition = {
             extensionId: {
-                publisherTypeId: ExtensionId.PublisherTypeId.Invalid,
-                publisherName: '',
+                publisherId: PublisherId.invalid,
                 name: '',
             },
             constructionMethodId: DitemComponent.ConstructionMethodId.Invalid,
@@ -115,51 +119,65 @@ export namespace PlaceholderDitemFrame {
         readonly invalidReason: string | undefined;
     }
 
-    export namespace Placeheld {
-        export function fromPersistable(value: PersistablePlaceheld) {
-            const fromDefinitionPersistableResult = DitemComponent.Definition.fromPersistable(value.definition);
-            const definition = fromDefinitionPersistableResult.definition;
-
-            let tabText = value.tabText;
-            if (tabText === undefined || typeof tabText !== 'string') {
-                tabText = definition.componentTypeName;
-            }
-            let reason = value.reason;
-            if (reason === undefined || typeof reason !== 'string') {
-                reason = Strings[StringId.Unknown];
-            }
-            let invalidReason = value.invalidReason;
-            if (invalidReason !== undefined && typeof invalidReason !== 'string') {
-                invalidReason = Strings[StringId.Unknown];
-            }
-            const placeheld: Placeheld = {
-                definition,
-                state: value.state,
-                tabText,
-                reason,
-                invalidReason,
-            };
-
-            return placeheld;
+    export namespace PlaceHeld {
+        // eslint-disable-next-line @typescript-eslint/no-shadow
+        export namespace JsonName {
+            export const definition = 'definition';
+            export const state = 'state';
+            export const tabText = 'tabText';
+            export const reason = 'reason';
+            export const invalidReason = 'invalidReason';
         }
 
-        export function toPersistable(value: Placeheld): PersistablePlaceheld {
-            return {
-                definition: DitemComponent.Definition.toPersistable(value.definition),
-                state: value.state,
-                tabText: value.tabText,
-                reason: value.reason,
-                invalidReason: value.invalidReason,
-            };
-        }
-    }
+        export function createFromJson(value: JsonElement): Result<Placeheld> {
+            const ditemComponentDefinitionElementResult = value.tryGetElementType(JsonName.definition);
+            if (ditemComponentDefinitionElementResult.isErr()) {
+                const errorCode = ErrorCode.PlaceholderDitemFrameDefinition_DitemComponentIsNotSpecified;
+                return ditemComponentDefinitionElementResult.createOuter(errorCode);
+            } else {
+                const ditemComponentDefinitionElement = ditemComponentDefinitionElementResult.value;
+                const tryCreateDitemComponentResult = DitemComponent.Definition.tryCreateFromJson(ditemComponentDefinitionElement);
+                if (tryCreateDitemComponentResult.isErr()) {
+                    const invalidErrorCode = ErrorCode.PlaceholderDitemFrameDefinition_DitemComponentIsInvalid;
+                    return tryCreateDitemComponentResult.createOuter(invalidErrorCode);
+                } else {
+                    const ditemCode = tryCreateDitemComponentResult.value;
 
-    export interface PersistablePlaceheld {
-        readonly definition: DitemComponent.PersistableDefinition;
-        readonly state: Json | undefined;
-        readonly tabText: string;
-        readonly reason: string;
-        readonly invalidReason: string | undefined;
+                    const state = value.tryGetJsonObject(JsonName.state, 'PDFDCFJS11190');
+
+                    let tabText = value.tryGetString(JsonName.tabText, 'PDFDCFJTT11190');
+                    if (tabText === undefined || typeof tabText !== 'string') {
+                        tabText = ditemCode.componentTypeName;
+                    }
+                    let reason = value.tryGetString(JsonName.reason, 'PDFDCFJR11190');
+                    if (reason === undefined || typeof reason !== 'string') {
+                        reason = Strings[StringId.Unknown];
+                    }
+                    let invalidReason = value.tryGetString(JsonName.invalidReason, 'PDFDCFJIR11190');;
+                    if (invalidReason !== undefined && typeof invalidReason !== 'string') {
+                        invalidReason = Strings[StringId.Unknown];
+                    }
+                    const placeheld: Placeheld = {
+                        definition: ditemCode,
+                        state,
+                        tabText,
+                        reason,
+                        invalidReason,
+                    };
+
+                    return new Ok(placeheld);
+                }
+            }
+        }
+
+        export function saveToJson(value: Placeheld, element: JsonElement) {
+            const definitionElement = element.newElement(JsonName.definition);
+            DitemComponent.Definition.saveToJson(value.definition, definitionElement);
+            element.setJson(JsonName.state, value.state);
+            element.setString(JsonName.tabText, value.tabText);
+            element.setString(JsonName.reason, value.reason);
+            element.setString(JsonName.invalidReason, value.invalidReason);
+        }
     }
 
     export function is(builtinDitemFrame: BuiltinDitemFrame): builtinDitemFrame is PlaceholderDitemFrame {

@@ -21,9 +21,12 @@ import {
     ColorScheme,
     ColorSettings,
     ExtensionHandle,
+    ExtensionId,
     Json,
+    JsonElement,
     MultiEvent,
     numberToPixels,
+    Result,
     SettingsService,
     StringId,
     Strings,
@@ -31,7 +34,6 @@ import {
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
-import { ExtensionId } from 'content-internal-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
 import {
     BuiltinDitemFrame,
@@ -152,8 +154,8 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 const ditemFrame = builtinComponent.ditemFrame;
                 if (PlaceholderDitemFrame.is(ditemFrame)) {
                     const placeheld = ditemFrame.placeheld;
-                    const definition = placeheld.definition;
-                    if (ExtensionId.isEqual(definition.extensionId, extensionInfo)) {
+                    const ditemCodedefinition = placeheld.definition;
+                    if (ExtensionId.isEqual(ditemCodedefinition.extensionId, extensionInfo)) {
                         const containedPlaceheld: GoldenLayoutHostFrame.ContainedPlaceheld = {
                             container,
                             placeheld,
@@ -187,7 +189,6 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 this.handleContainerVirtualZIndexChangeRequiredEvent(container, logicalZIndex, defaultZIndex);
 
         const parseResult = this.parseGoldenLayoutComponentType(itemConfig.componentType);
-        const componentDefinition = parseResult.definition;
 
         const componentState = itemConfig.componentState;
         let state: Json | undefined;
@@ -204,12 +205,12 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         let containedDitemComponent: GoldenLayoutHostNgComponent.ContainedDitemComponent;
         let component: ComponentContainer.Component;
 
-        if (parseResult.errorText !== undefined) {
+        if (parseResult.isErr()) {
             const placeheld: PlaceholderDitemFrame.Placeheld = {
-                definition: componentDefinition,
+                definition: DitemComponent.Definition.invalid,
                 state,
                 tabText: itemConfig.title,
-                reason: parseResult.errorText,
+                reason: parseResult.error,
                 invalidReason: undefined,
             };
             const builtinComponentRef = this.attachPlaceholderComponent(componentContainer, placeheld);
@@ -220,6 +221,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             };
             component = builtinComponentRef.instance;
         } else {
+            const componentDefinition = parseResult.value;
             switch (componentDefinition.constructionMethodId) {
                 case DitemComponent.ConstructionMethodId.Invalid: {
                     throw new AssertInternalError('GLHCHGCE78533009');
@@ -432,19 +434,20 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         this._cdr.markForCheck();
     }
 
-    private parseGoldenLayoutComponentType(value: JsonValue): DitemComponent.Definition.FromPersistableResult {
+    private parseGoldenLayoutComponentType(value: JsonValue): Result<DitemComponent.Definition> {
         if (value === undefined) {
             throw new AssertInternalError('GLHCPGLCTU98983333');
         } else {
-            if (!JsonValue.isJsonObject(value)) {
+            if (!JsonValue.isJson(value)) {
                 if (value === null) {
                     throw new AssertInternalError('GLHCPGLCTN98983333');
                 } else {
                     throw new AssertInternalError('GLHCPGLCTJ98983333', value.toString());
                 }
             } else {
-                const persistableDefinition = value as DitemComponent.PersistableDefinition;
-                return DitemComponent.Definition.fromPersistable(persistableDefinition);
+                const jsonElement = new JsonElement(value);
+                const definitionResult = DitemComponent.Definition.tryCreateFromJson(jsonElement);
+                return definitionResult;
             }
         }
     }
@@ -454,8 +457,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
 
         const result: DitemComponent.Definition = {
             extensionId: {
-                publisherTypeId: extensionInfo.publisherTypeId,
-                publisherName: extensionInfo.publisherName,
+                publisherId: extensionInfo.publisherId,
                 name: extensionInfo.name,
             },
             constructionMethodId: DitemComponent.ConstructionMethodId.Builtin1,

@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AppStorageService } from '@motifmarkets/motif-core';
-import { RegisteredExtension } from 'content-internal-api';
+import { AppStorageService, RegisteredExtension } from '@motifmarkets/motif-core';
 import { StorageSvc } from '../../../api/extension-api';
 
 export class StorageSvcImplementation implements StorageSvc {

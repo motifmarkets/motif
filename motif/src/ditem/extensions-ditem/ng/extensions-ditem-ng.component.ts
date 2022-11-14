@@ -16,10 +16,9 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { AssertInternalError, ColorScheme, delay1Tick, JsonElement } from '@motifmarkets/motif-core';
+import { AssertInternalError, ColorScheme, delay1Tick, ExtensionId, ExtensionInfo, JsonElement } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ExtensionId, ExtensionInfo } from 'content-internal-api';
 import { ExtensionsSidebarNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ComponentContainer } from 'golden-layout';

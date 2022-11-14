@@ -8,7 +8,6 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
-    OrderSideId,
     CommaText,
     Correctness,
     DepthDataDefinition,
@@ -23,6 +22,7 @@ import {
     LitIvemId,
     Logger,
     MultiEvent,
+    OrderSideId,
     SecurityDataDefinition,
     SecurityDataItem,
     uniqueElementArraysOverlap,
@@ -88,13 +88,11 @@ export class DepthFrame extends ContentFrame {
             this._bidDepthSideFrame.loadLayoutConfig(undefined);
             this._askDepthSideFrame.loadLayoutConfig(undefined);
         } else {
-            const context = 'DepthFrame';
-
-            this.openExpand = element.getBoolean(DepthFrame.JsonName.openExpand, DepthFrame.JsonDefault.openExpand, context);
+            this.openExpand = element.getBoolean(DepthFrame.JsonName.openExpand, DepthFrame.JsonDefault.openExpand);
 
             this._filterActive =
-                element.getBoolean(DepthFrame.JsonName.filterActive, DepthFrame.JsonDefault.filterActive, context);
-            const asStr = element.tryGetString(DepthFrame.JsonName.filterXrefs, context);
+                element.getBoolean(DepthFrame.JsonName.filterActive, DepthFrame.JsonDefault.filterActive);
+            const asStr = element.tryGetString(DepthFrame.JsonName.filterXrefs);
             if (asStr === undefined) {
                 this._filterActive = false;
                 this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
@@ -113,9 +111,9 @@ export class DepthFrame extends ContentFrame {
                 this.activateBidAskFilter();
             }
 
-            const bidElement = element.tryGetElement(DepthFrame.JsonName.bid, context);
+            const bidElement = element.tryGetElement(DepthFrame.JsonName.bid);
             this._bidDepthSideFrame.loadLayoutConfig(bidElement);
-            const askElement = element.tryGetElement(DepthFrame.JsonName.ask, context);
+            const askElement = element.tryGetElement(DepthFrame.JsonName.ask);
             this._askDepthSideFrame.loadLayoutConfig(askElement);
         }
     }

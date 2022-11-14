@@ -10,6 +10,7 @@ import {
     Badness,
     GridLayout,
     GridLayoutRecordStore,
+    GridSourceDefinition,
     Guid,
     Integer,
     JsonElement,
@@ -23,7 +24,8 @@ import {
     StringId,
     Strings,
     Table,
-    TableRecordDefinition,
+    TableRecordDefinition, TableRecordSourceDefinition,
+    TableRecordSourceFactoryService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
@@ -32,7 +34,7 @@ import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter } from 
 import { ContentFrame } from '../content-frame';
 import { TableGridRecordStore } from './table-grid-record-store';
 
-export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, LockOpenListItem.Opener {
+export class GridFrame extends ContentFrame {
     dragDropAllowed: boolean;
 
     settingsApplyEvent: GridFrame.SettingsApplyEvent;
@@ -59,8 +61,10 @@ export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, 
     constructor(
         private readonly _componentAccess: GridFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
+        private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
         private readonly _sharedGridSourcesService: SharedGridSourcesService,
+        private readonly _opener: LockOpenListItem.Opener,
     ) {
         super();
     }
@@ -126,6 +130,42 @@ export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, 
 
         this.applySettings();
     }
+
+    newPrivate(
+        recordSourceDefinition: TableRecordSourceDefinition,
+        namedGridLayoutDefinitionOrCategoryId: NamedGridLayoutDefinition | NamedGridLayoutDefinition.CategoryId
+    ) {
+        const gridSource: GridSourceDefinition = new GridSourceDefinition() {
+
+        }
+        this.openTable(recordSourceDefinition);
+
+        this._gridLayout = this.createNamedGridLayoutFromDefinitionOrCategoryId(namedGridLayoutDefinitionOrCategoryId, recordSource);
+    }
+
+    saveAsPrivate(recordSourceDefinition: TableRecordSourceDefinition) {
+    }
+
+    loadRecordSourceDefinition(recordSourceDefinition: TableRecordSourceDefinition) {
+        this.openTable(recordSourceDefinition);
+    }
+
+    saveAsRecordSourceDefinition(recordSourceDefinition: TableRecordSourceDefinition) {
+    }
+
+    loadGridSource(definition: GridSourceDefinition) {
+        this.closeGridSource();
+    }
+
+    saveAsGridSource(definition: GridSourceDefinition) {
+    }
+
+    setGridLayout(definition: NamedGridLayoutDefinition) {
+    }
+
+    setGridLayoutFavourites(definitions: NamedGridLayoutDefinition[]) {
+    }
+
 
     // GridDataStore members
 
@@ -507,31 +547,19 @@ export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, 
         }
     }
 
-    openTable(idx: Integer) {
+    openTable(recordSourceDefinition: TableRecordSourceDefinition) {
         this._tableGridRecordStore.beginChange();
         try {
-            this.closeTable(false);
-            this._table = this._tablesService.lock(idx, this);
-            this.activate(idx);
+            // this.closeTable(false);
+            this.closeTable();
+            const recordSource = this._tableRecordSourceFactoryService.createFromDefinition(recordSourceDefinition);
+            const table = new Table(recordSource);
+            this._tableGridRecordStore.setTable(table);
+            table.open(this._opener);
+            //     this._table = this._tablesService.lock(idx, this);
+            // this.activate(idx);
         } finally {
             this._tableGridRecordStore.endChange();
-        }
-    }
-
-    closeTable(keepCurrentLayout: boolean) {
-        if (this._table !== undefined) {
-            if (keepCurrentLayout) {
-                this._keptLayout = this.getGridLayout();
-            } else {
-                this._keptLayout = undefined;
-            }
-
-            this._tablesService.closeItem(this._table, this);
-
-            this._privateNameSuffixId = undefined;
-            this._table = undefined;
-
-            this._tableGridRecordStore.allRecordsDeleted(); // should already all be gone
         }
     }
 
@@ -735,9 +763,9 @@ export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, 
         }
     }
 
-    setGridLayout(layout: GridLayout, changeAllowed: boolean) {
-        this._grid.loadLayout(layout);
-    }
+    // setGridLayout(layout: GridLayout, changeAllowed: boolean) {
+    //     this._grid.loadLayout(layout);
+    // }
 
     getGridLayout(): GridLayout {
         return this._grid.saveLayout();
@@ -828,6 +856,25 @@ export class GridFrame extends ContentFrame implements LockOpenListItem.Locker, 
         if (this.settingsApplyEvent !== undefined) {
             this.settingsApplyEvent();
         }
+    }
+
+    private closeTable() {
+        if (this._table !== undefined) {
+            if (keepCurrentLayout) {
+                this._keptLayout = this.getGridLayout();
+            } else {
+                this._keptLayout = undefined;
+            }
+
+            this._tablesService.closeItem(this._table, this);
+
+            this._privateNameSuffixId = undefined;
+            this._table = undefined;
+        }
+    }
+
+    private createTable() {
+
     }
 
     private checkAutoSizeAllColumnWidthsOnFirstUsable() {

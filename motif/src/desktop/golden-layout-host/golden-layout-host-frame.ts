@@ -7,6 +7,7 @@
 import {
     AssertInternalError,
     ExtensionHandle,
+    JsonElement,
     LitIvemId,
     Logger,
     SessionInfoService,
@@ -172,22 +173,21 @@ export class GoldenLayoutHostFrame {
         }
     }
 
-    private createComponentPersistableDefinition(extensionHandle: ExtensionHandle,
+    private createComponentDefinition(extensionHandle: ExtensionHandle,
         constructionMethodId: DitemComponent.ConstructionMethodId, componentTypeName: string,
-    ) {
+    ): DitemComponent.Definition {
         const extensionInfo = this._extensionsAccessService.getRegisteredExtensionInfo(extensionHandle);
 
         const definition: DitemComponent.Definition = {
             extensionId: {
-                publisherTypeId: extensionInfo.publisherTypeId,
-                publisherName: extensionInfo.publisherName,
+                publisherId: extensionInfo.publisherId,
                 name: extensionInfo.name,
             },
             constructionMethodId,
             componentTypeName,
         };
 
-        return DitemComponent.Definition.toPersistable(definition);
+        return definition;
     }
 
     private generateComponentId(): string {
@@ -292,9 +292,7 @@ export class GoldenLayoutHostFrame {
                     if (litIvemIdArray === undefined) {
                         Logger.logConfigError('GLHFPDLW1444813', JSON.stringify(watchlistJson), 400);
                     } else {
-                        const litIvemIdList = new UserLitIvemIdList();
-                        litIvemIdList.addArray(litIvemIdArray);
-                        frame.defaultLitIvemIdList = litIvemIdList;
+                        frame.defaultLitIvemIds = litIvemIdArray;
                     }
                 }
             }
@@ -402,14 +400,17 @@ export class GoldenLayoutHostFrame {
         initialState: JsonValue | undefined,
         tabText: string | undefined,
     ) {
-        const definition = this.createComponentPersistableDefinition(extensionHandle, constructionMethodId, componentTypeName);
+        const definition = this.createComponentDefinition(extensionHandle, constructionMethodId, componentTypeName);
+
+        const definitionJsonElement = new JsonElement();
+        DitemComponent.Definition.saveToJson(definition, definitionJsonElement);
 
         if (tabText === undefined) {
             tabText = componentTypeName;
         }
 
         const config: ComponentItemConfig = {
-            componentType: definition,
+            componentType: definitionJsonElement.json,
             title: tabText,
             type: 'component',
             id: this.generateComponentId(),
@@ -444,8 +445,9 @@ export class GoldenLayoutHostFrame {
         tabText: string,
         reason: string
     ) {
-        const definition = this.createComponentPersistableDefinition(extensionHandle, constructionMethodId, componentTypeName);
-        const placeheld: PlaceholderDitemFrame.PersistablePlaceheld = {
+        const definition = this.createComponentDefinition(extensionHandle, constructionMethodId, componentTypeName);
+
+        const placeheld: PlaceholderDitemFrame.Placeheld = {
             definition,
             state: componentState,
             tabText,
@@ -453,7 +455,10 @@ export class GoldenLayoutHostFrame {
             invalidReason: undefined,
         };
 
-        const config = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Placeholder, placeheld, tabText);
+        const definitionJsonElement = new JsonElement();
+        PlaceholderDitemFrame.PlaceHeld.saveToJson(placeheld, definitionJsonElement);
+
+        const config = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Placeholder, definitionJsonElement.json, tabText);
         container.replaceComponent(config);
     }
 

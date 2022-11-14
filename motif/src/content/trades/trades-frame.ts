@@ -14,7 +14,7 @@ import {
     DayTradesGridField,
     DayTradesGridRecordStore,
     GridLayout,
-    GridLayoutIO,
+    GridLayoutDefinition,
     GridLayoutRecordStore,
     Integer,
     JsonElement,
@@ -69,19 +69,19 @@ export class TradesFrame extends ContentFrame {
         if (element !== undefined) {
             const context = 'TradesFrame';
             const layoutElement = element.tryGetElement(TradesFrame.JsonName.layout, context);
-            const serialisedColumns = GridLayoutIO.loadLayout(layoutElement);
-            if (serialisedColumns) {
-                const layout = this._grid.saveLayout();
-                layout.deserialise(serialisedColumns);
-                this._grid.loadLayout(layout);
+            if (layoutElement !== undefined) {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElement);
+                if (definitionResult.isOk()) {
+                    this._grid.loadLayoutDefinition(definitionResult.value);
+                }
             }
         }
     }
 
     saveLayoutConfig(element: JsonElement) {
         const layoutElement = element.newElement(TradesFrame.JsonName.layout);
-        const columns = this._grid.saveLayout().serialise();
-        GridLayoutIO.saveLayout(columns, layoutElement);
+        const definition = this._grid.saveLayoutDefinition();
+        definition.saveToJson(layoutElement);
     }
 
     close() {

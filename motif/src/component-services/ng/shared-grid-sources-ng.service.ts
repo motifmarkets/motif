@@ -5,17 +5,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { TableRecordDefinitionListsService } from '@motifmarkets/motif-core';
+import { SharedGridSourcesService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class TableRecordDefinitionListsNgService {
-    private _service: TableRecordDefinitionListsService;
+export class SharedGridSourcesNgService {
+    private _service: SharedGridSourcesService;
 
     constructor(coreNgService: CoreNgService) {
-        this._service = coreNgService.tableRecordDefinitionListsService;
+        this._service = coreNgService.sharedGridSourcesService;
     }
 
     get service() { return this._service; }

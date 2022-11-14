@@ -5,7 +5,8 @@
  */
 
 import {
-    assigned, DataItem,
+    assigned,
+    DataItem,
     DepthDataItem,
     DepthLevelsDataItem,
     DepthRecord,
@@ -16,10 +17,12 @@ import {
     FullDepthSideGridField,
     FullDepthSideGridRecordStore,
     GridLayout,
-    GridLayoutIO,
+    GridLayoutDefinition,
     GridRecordFieldState,
     Integer,
-    JsonElement, OrderSideId, ShortDepthSideGridField,
+    JsonElement,
+    OrderSideId,
+    ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
@@ -83,22 +86,30 @@ export class DepthSideFrame extends ContentFrame {
         if (element !== undefined) {
             const context = 'DepthSideFrame';
 
-            const fullStyleCacheElement = this._styleCache[DepthStyleId.Full];
             const fullLayoutElement = element.tryGetElement(DepthSideFrame.JsonName.fullLayout, context + '_full');
-            const fullSerialisedColumns = GridLayoutIO.loadLayout(fullLayoutElement);
-            if (fullSerialisedColumns) {
-                const layout = new GridLayout();
-                layout.deserialise(fullSerialisedColumns);
-                fullStyleCacheElement.lastLayout = layout;
+            if (fullLayoutElement !== undefined) {
+                const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(fullLayoutElement);
+                if (layoutDefinitionResult.isOk()) {
+                    const layoutDefinition = layoutDefinitionResult.value;
+                    const styleCacheElement = this._styleCache[DepthStyleId.Full];
+                    const fieldNames = styleCacheElement.gridFields.map((field) => field.name);
+                    const layout = new GridLayout(fieldNames);
+                    layout.applyDefinition(layoutDefinition);
+                    styleCacheElement.lastLayout = layout;
+                }
             }
 
-            const shortStyleCacheElement = this._styleCache[DepthStyleId.Short];
             const shortLayoutElement = element.tryGetElement(DepthSideFrame.JsonName.shortLayout, context + '_short');
-            const shortSerialisedColumns = GridLayoutIO.loadLayout(shortLayoutElement);
-            if (shortSerialisedColumns) {
-                const layout = new GridLayout();
-                layout.deserialise(shortSerialisedColumns);
-                shortStyleCacheElement.lastLayout = layout;
+            if (shortLayoutElement !== undefined) {
+                const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(shortLayoutElement);
+                if (layoutDefinitionResult.isOk()) {
+                    const layoutDefinition = layoutDefinitionResult.value;
+                    const styleCacheElement = this._styleCache[DepthStyleId.Short];
+                    const fieldNames = styleCacheElement.gridFields.map((field) => field.name);
+                    const layout = new GridLayout(fieldNames);
+                    layout.applyDefinition(layoutDefinition);
+                    styleCacheElement.lastLayout = layout;
+                }
             }
         }
     }
@@ -112,15 +123,15 @@ export class DepthSideFrame extends ContentFrame {
         const fullGridLayout = this._styleCache[DepthStyleId.Full].lastLayout;
         if (fullGridLayout !== undefined) {
             const fullGridLayoutElement = element.newElement(DepthSideFrame.JsonName.fullLayout);
-            const serialisedColumns = fullGridLayout.serialise();
-            GridLayoutIO.saveLayout(serialisedColumns, fullGridLayoutElement);
+            const fullGridLayoutDefinition = fullGridLayout.createDefinition();
+            fullGridLayoutDefinition.saveToJson(fullGridLayoutElement);
         }
 
         const shortGridLayout = this._styleCache[DepthStyleId.Short].lastLayout;
         if (shortGridLayout !== undefined) {
             const shortGridLayoutElement = element.newElement(DepthSideFrame.JsonName.shortLayout);
-            const serialisedColumns = shortGridLayout.serialise();
-            GridLayoutIO.saveLayout(serialisedColumns, shortGridLayoutElement);
+            const shortGridLayoutDefinition = shortGridLayout.createDefinition();
+            shortGridLayoutDefinition.saveToJson(shortGridLayoutElement);
         }
     }
 

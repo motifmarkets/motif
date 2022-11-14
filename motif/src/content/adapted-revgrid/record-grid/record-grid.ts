@@ -1,7 +1,10 @@
 import {
-    AssertInternalError, GridLayout,
+    AssertInternalError,
+    GridLayout,
+    GridLayoutDefinition,
     GridLayoutRecordStore,
-    GridRecordFieldState, SettingsService,
+    GridRecordFieldState,
+    SettingsService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
 import {
@@ -101,6 +104,8 @@ export class RecordGrid extends AdaptedRevgrid {
 
         this.addEventListener('rev-column-sort', this._columnSortListener);
     }
+
+    get fieldNames() { return this._fieldAdapter.getFieldNames(); }
 
     get recordFocused() {
         const selections = this.selections;
@@ -334,58 +339,38 @@ export class RecordGrid extends AdaptedRevgrid {
         return this._fieldAdapter.fields;
     }
 
-    getFieldSortPriority(
-        field: RevRecordFieldIndex | RevRecordField
-    ): number | undefined {
+    getFieldSortPriority(field: RevRecordFieldIndex | RevRecordField): number | undefined {
         return this._mainRecordAdapter.getFieldSortPriority(field);
     }
 
-    getFieldSortAscending(
-        field: RevRecordFieldIndex | RevRecordField
-    ): boolean | undefined {
+    getFieldSortAscending(field: RevRecordFieldIndex | RevRecordField): boolean | undefined {
         return this._mainRecordAdapter.getFieldSortAscending(field);
     }
 
-    getFieldState(
-        field: RevRecordFieldIndex | RevRecordField
-    ): GridRecordFieldState {
-        const fieldIndex =
-            typeof field === 'number' ? field : this.getFieldIndex(field);
+    getFieldState(field: RevRecordFieldIndex | RevRecordField): GridRecordFieldState {
+        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const column = this.getAllColumn(fieldIndex);
         const columnProperties = column.properties;
 
         return {
-            width: !columnProperties.columnAutosized
-                ? columnProperties.width
-                : undefined,
+            width: !columnProperties.columnAutosized ? columnProperties.width : undefined,
             header: (column.schemaColumn as RevRecordField.SchemaColumn).header,
             alignment: columnProperties.halign,
         };
     }
 
-    getFieldWidth(
-        field: RevRecordFieldIndex | RevRecordField
-    ): number | undefined {
-        const fieldIndex =
-            typeof field === 'number' ? field : this.getFieldIndex(field);
+    getFieldWidth(field: RevRecordFieldIndex | RevRecordField): number | undefined {
+        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const columnProperties = this.getAllColumn(fieldIndex).properties;
 
-        return !columnProperties.columnAutosized
-            ? columnProperties.width
-            : undefined;
+        return !columnProperties.columnAutosized ? columnProperties.width : undefined;
     }
 
     getFieldVisible(field: RevRecordFieldIndex | RevRecordField): boolean {
-        const fieldIndex =
-            typeof field === 'number' ? field : this.getFieldIndex(field);
+        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const activeColumns = this.getActiveColumns();
-        return (
-            activeColumns.findIndex(
-                (column) =>
-                    (column.schemaColumn as RevRecordField.SchemaColumn)
-                        .index === fieldIndex
-            ) !== -1
-        );
+        const index = activeColumns.findIndex((column) => (column.schemaColumn as RevRecordField.SchemaColumn).index === fieldIndex);
+        return index !== -1;
     }
 
     getLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
@@ -401,13 +386,18 @@ export class RecordGrid extends AdaptedRevgrid {
 
     getVisibleFields(): RevRecordFieldIndex[] {
         return this.getActiveColumns().map(
-            (column) =>
-                (column.schemaColumn as RevRecordField.SchemaColumn).index
+            (column) => (column.schemaColumn as RevRecordField.SchemaColumn).index
         );
     }
 
     isHeaderRow(rowIndex: number): boolean {
         return rowIndex > this.headerRowCount;
+    }
+
+    loadLayoutDefinition(definition: GridLayoutDefinition) {
+        const layout = new GridLayout(this._fieldAdapter.getFieldNames());
+        layout.applyDefinition(definition);
+        this.loadLayout(layout);
     }
 
     loadLayout(layout: GridLayout): void {
@@ -541,6 +531,11 @@ export class RecordGrid extends AdaptedRevgrid {
         }
     }
 
+    saveLayoutDefinition() {
+        const layout = this.saveLayout();
+        return layout.createDefinition();
+    }
+
     saveLayout(): GridLayout {
         const layout = new GridLayout(this._fieldAdapter.getFieldNames());
 
@@ -569,10 +564,7 @@ export class RecordGrid extends AdaptedRevgrid {
             );
             const columnProperties = column.properties;
 
-            if (
-                columnProperties.columnAutosizing &&
-                columnProperties.columnAutosized
-            ) {
+            if (columnProperties.columnAutosizing && columnProperties.columnAutosized) {
                 layout.setFieldWidthByFieldName(field.name);
             } else {
                 layout.setFieldWidthByFieldName(

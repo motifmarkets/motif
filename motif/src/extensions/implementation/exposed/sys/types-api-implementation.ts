@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ComparisonResult, UnreachableCaseError } from '@motifmarkets/motif-core';
-import { ExtensionId } from 'content-internal-api';
+import { AssertInternalError, ComparisonResult, PublisherId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ComparisonResult as ComparisonResultApi, PublisherType as PublisherTypeApi } from '../../../api/extension-api';
 
 export namespace ComparisonResultImplementation {
@@ -29,21 +28,21 @@ export namespace ComparisonResultImplementation {
 }
 
 export namespace PublisherTypeImplementation {
-    export function toApi(value: ExtensionId.PublisherTypeId) {
+    export function toApi(value: PublisherId.TypeId) {
         switch (value) {
-            case ExtensionId.PublisherTypeId.Invalid: throw new AssertInternalError('TAIPTITAI87773231');
-            case ExtensionId.PublisherTypeId.Builtin: return PublisherTypeApi.builtin;
-            case ExtensionId.PublisherTypeId.User: return PublisherTypeApi.user;
-            case ExtensionId.PublisherTypeId.Organisation: return PublisherTypeApi.organisation;
+            case PublisherId.TypeId.Invalid: throw new AssertInternalError('TAIPTITAI87773231');
+            case PublisherId.TypeId.Builtin: return PublisherTypeApi.builtin;
+            case PublisherId.TypeId.User: return PublisherTypeApi.user;
+            case PublisherId.TypeId.Organisation: return PublisherTypeApi.organisation;
             default: throw new UnreachableCaseError('TAIPTITAU87773231', value);
         }
     }
 
     export function tryFromApi(value: PublisherTypeApi) {
         switch (value) {
-            case PublisherTypeApi.builtin: return ExtensionId.PublisherTypeId.Builtin;
-            case PublisherTypeApi.user: return ExtensionId.PublisherTypeId.User;
-            case PublisherTypeApi.organisation: return ExtensionId.PublisherTypeId.Organisation;
+            case PublisherTypeApi.builtin: return PublisherId.TypeId.Builtin;
+            case PublisherTypeApi.user: return PublisherId.TypeId.User;
+            case PublisherTypeApi.organisation: return PublisherId.TypeId.Organisation;
             default: return undefined;
         }
     }
@@ -51,7 +50,7 @@ export namespace PublisherTypeImplementation {
     export function fromApi(value: PublisherTypeApi) {
         const publisherTypeId = tryFromApi(value);
         if (publisherTypeId === undefined) {
-            return ExtensionId.PublisherTypeId.Invalid;
+            return PublisherId.TypeId.Invalid;
         } else {
             return publisherTypeId;
         }

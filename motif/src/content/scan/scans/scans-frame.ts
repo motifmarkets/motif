@@ -1,7 +1,7 @@
 import {
     AdiService,
     GridLayout,
-    GridLayoutIO,
+    GridLayoutDefinition,
     GridLayoutRecordStore,
     GridRecordFieldState,
     Integer,
@@ -62,12 +62,9 @@ export class ScansFrame extends ContentFrame {
 
     setGrid(value: RecordGrid) {
         this._grid = value;
-        this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) =>
-            this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        this._grid.mainClickEventer = (fieldIdx, recIdx) =>
-            this.handleGridClickEvent(fieldIdx, recIdx);
-        this._grid.mainDblClickEventer = (fieldIdx, recIdx) =>
-            this.handleGridDblClickEvent(fieldIdx, recIdx);
+        this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
+        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
+        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
 
         this.prepareGrid();
     }
@@ -75,23 +72,20 @@ export class ScansFrame extends ContentFrame {
     loadLayoutConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
             const context = 'ScansFrame';
-            const layoutElement = element.tryGetElement(
-                ScansFrame.JsonName.layout,
-                context
-            );
-            const serialisedColumns = GridLayoutIO.loadLayout(layoutElement);
-            if (serialisedColumns) {
-                const layout = this._grid.saveLayout();
-                layout.deserialise(serialisedColumns);
-                this._grid.loadLayout(layout);
+            const layoutElement = element.tryGetElement(ScansFrame.JsonName.layout, context);
+            if (layoutElement !== undefined) {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElement);
+                if (definitionResult.isOk()) {
+                    this._grid.loadLayoutDefinition(definitionResult.value);
+                }
             }
         }
     }
 
     saveLayoutConfig(element: JsonElement) {
         const layoutElement = element.newElement(ScansFrame.JsonName.layout);
-        const columns = this._grid.saveLayout().serialise();
-        GridLayoutIO.saveLayout(columns, layoutElement);
+        const definition = this._grid.saveLayoutDefinition();
+        definition.saveToJson(layoutElement);
     }
 
     // close() {
