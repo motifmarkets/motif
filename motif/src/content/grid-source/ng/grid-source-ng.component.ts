@@ -20,16 +20,18 @@ import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
-import { GridFrame } from '../grid-frame';
+import { GridSourceFrame } from '../grid-source-frame';
 
 @Component({
-    selector: 'app-table',
-    templateUrl: './table-ng.component.html',
-    styleUrls: ['./table-ng.component.scss'],
+    selector: 'app-grid-source',
+    templateUrl: './grid-source-ng.component.html',
+    styleUrls: ['./grid-source-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class TableNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridFrame.ComponentAccess {
+export class GridSourceNgComponent
+    extends ContentComponentBaseNgDirective
+    implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
     @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
@@ -37,7 +39,7 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    private readonly _frame: GridFrame;
+    private readonly _frame: GridSourceFrame;
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
@@ -45,11 +47,11 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
     ) {
         super();
 
-        this._frame = contentService.createTableFrame(this);
+        this._frame = contentService.createGridSourceFrame(this);
         // this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
     }
 
-    get frame(): GridFrame { return this._frame; }
+    get frame(): GridSourceFrame { return this._frame; }
     get gridRowHeight() { return this._frame.gridRowHeight; }
 
     // Component Access members
@@ -104,7 +106,7 @@ export class TableNgComponent extends ContentComponentBaseNgDirective implements
     // }
 }
 
-export namespace TableNgComponent {
+export namespace GridSourceNgComponent {
     export namespace JsonName {
         export const frame = 'frame';
     }

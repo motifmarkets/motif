@@ -8,8 +8,8 @@ import {
     assert,
     AssertInternalError,
     Badness,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayout, GridLayoutRecordStore,
+    GridSource,
     GridSourceDefinition,
     Guid,
     Integer,
@@ -17,6 +17,8 @@ import {
     LockOpenListItem,
     Logger,
     MultiEvent,
+    NamedGridLayoutDefinitionsService,
+    NamedGridSourceDefinition,
     NamedGridSourceDefinitionsService,
     SettingsService,
     SharedGridSourcesService,
@@ -24,7 +26,9 @@ import {
     StringId,
     Strings,
     Table,
-    TableRecordDefinition, TableRecordSourceDefinition,
+    TableGridRecordStore,
+    TableRecordDefinition,
+    TableRecordSourceDefinition,
     TableRecordSourceFactoryService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
@@ -32,39 +36,41 @@ import { RecordGrid } from 'content-internal-api';
 import { nanoid } from 'nanoid';
 import { RevRecordIndex, RevRecordInvalidatedValue, RevRecordMainAdapter } from 'revgrid';
 import { ContentFrame } from '../content-frame';
-import { TableGridRecordStore } from './table-grid-record-store';
 
-export class GridFrame extends ContentFrame {
+export class GridSourceFrame extends ContentFrame {
     dragDropAllowed: boolean;
 
-    settingsApplyEvent: GridFrame.SettingsApplyEvent;
-    recordFocusEvent: GridFrame.RecordFocusEvent;
-    gridClickEvent: GridFrame.GridClickEvent;
-    gridDblClickEvent: GridFrame.GridDblClickEvent;
-    requireDefaultTableDefinitionEvent: GridFrame.RequireDefaultTableDefinitionEvent;
-    tableOpenEvent: GridFrame.TableOpenEvent;
+    settingsApplyEvent: GridSourceFrame.SettingsApplyEvent;
+    recordFocusEvent: GridSourceFrame.RecordFocusEvent;
+    gridClickEvent: GridSourceFrame.GridClickEvent;
+    gridDblClickEvent: GridSourceFrame.GridDblClickEvent;
+    requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
+    tableOpenEvent: GridSourceFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
 
     private readonly _tableGridRecordStore = new TableGridRecordStore();
+    private readonly _opener: LockOpenListItem.Opener;
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
 
     private _table: Table | undefined;
-    private _privateNameSuffixId: GridFrame.PrivateNameSuffixId | undefined;
+    private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
     private _keptLayout: GridLayout | undefined;
+    private _keepPreviousLayoutAllowed = false;
 
     private _autoSizeAllColumnWidthsOnFirstUsable: boolean;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
-        private readonly _componentAccess: GridFrame.ComponentAccess,
+        private readonly _componentAccess: GridSourceFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
+        private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutDefinitionsService,
         private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
         private readonly _sharedGridSourcesService: SharedGridSourcesService,
-        private readonly _opener: LockOpenListItem.Opener,
+        private readonly _requireDefaultGridSourceDefinitionEventer: GridSourceFrame.RequireDefaultGridSourceDefinitionEventer,
     ) {
         super();
     }
@@ -131,33 +137,47 @@ export class GridFrame extends ContentFrame {
         this.applySettings();
     }
 
-    newPrivate(
-        recordSourceDefinition: TableRecordSourceDefinition,
-        namedGridLayoutDefinitionOrCategoryId: NamedGridLayoutDefinition | NamedGridLayoutDefinition.CategoryId
-    ) {
-        const gridSource: GridSourceDefinition = new GridSourceDefinition() {
-
-        }
-        this.openTable(recordSourceDefinition);
-
-        this._gridLayout = this.createNamedGridLayoutFromDefinitionOrCategoryId(namedGridLayoutDefinitionOrCategoryId, recordSource);
-    }
-
-    saveAsPrivate(recordSourceDefinition: TableRecordSourceDefinition) {
-    }
-
     loadRecordSourceDefinition(recordSourceDefinition: TableRecordSourceDefinition) {
         this.openTable(recordSourceDefinition);
     }
 
-    saveAsRecordSourceDefinition(recordSourceDefinition: TableRecordSourceDefinition) {
+    openGridSource(definition: GridSourceDefinition | undefined) {
+        this.closeTableRecordSource();
+
+        if (definition === undefined) {
+            definition = this._requireDefaultGridSourceDefinitionEventer();
+        }
+
+        let keepPreviousLayoutAllowed: boolean;
+        let source: GridSource;
+        if (NamedGridSourceDefinition.is(definition)) {
+            this.closeGridLayout();
+            const openSharedSourceResult = this._sharedGridSourcesService.tryLockItemByKey(definition.id, this.locker);
+            if (openSharedSourceResult.isErr()) {
+                // set badness
+            } else {
+                const sourceIfFound = openSharedSourceResult.value;
+                if (sourceIfFound !== undefined) {
+                    source = sourceIfFound;
+                } else {
+                    const newSharedSourceResult = this._sharedGridSourcesService.newWithLock(definition, this.locker);
+                }
+            }
+        } else {
+            const tableRecordSource = this._tableRecordSourceFactoryService.createFromDefinition(definition.tableRecordSourceDefinition);
+            const namedLayoutId = definition.namedGridLayoutId;
+            if (namedLayoutId !== undefined) {
+
+            } else {
+                if (this._keepPreviousLayoutAllowed && this._currentLayout !== undefined) {
+                }
+
+            }
+            keepPreviousLayoutAllowed = true;
+        }
     }
 
-    loadGridSource(definition: GridSourceDefinition) {
-        this.closeGridSource();
-    }
-
-    saveAsGridSource(definition: GridSourceDefinition) {
+    createGridSourceDefinition(asPrivate: boolean): GridSourceDefinition {
     }
 
     setGridLayout(definition: NamedGridLayoutDefinition) {
@@ -198,14 +218,14 @@ export class GridFrame extends ContentFrame {
             if (element === undefined) {
                 this.tryNewDefaultPrivateTable();
             } else {
-                const tableElement = element.tryGetElement(GridFrame.JsonName.table);
+                const tableElement = element.tryGetElement(GridSourceFrame.JsonName.table);
                 if (tableElement === undefined) {
                     this.tryNewDefaultPrivateTable();
                 } else {
                     const definition = TableDefinition.createFr
                 }
 
-                const privateElement = element.tryGetElement(GridFrame.JsonName.privateTable);
+                const privateElement = element.tryGetElement(GridSourceFrame.JsonName.privateTable);
                 if (privateElement !== undefined) {
                     const id = nanoid(); // not sure if needed
                     this._table = this._tablesService.newTable(id, undefined, );
@@ -216,15 +236,15 @@ export class GridFrame extends ContentFrame {
                             this.closeTable(false);
                             this.tryNewDefaultPrivateTable();
                         } else {
-                            this._privateNameSuffixId = privateElement.tryGetInteger(GridFrame.JsonName.privateNameSuffixId);
+                            this._privateNameSuffixId = privateElement.tryGetInteger(GridSourceFrame.JsonName.privateNameSuffixId);
                             if (this._privateNameSuffixId !== undefined) {
-                                GridFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
+                                GridSourceFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
                             }
                             this.activate(-1);
                         }
                     }
                 } else {
-                    const loadedTableId = element.tryGetGuid(GridFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
+                    const loadedTableId = element.tryGetGuid(GridSourceFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
                     if (loadedTableId === undefined) {
                         this.tryNewDefaultPrivateTable();
                     } else {
@@ -247,13 +267,13 @@ export class GridFrame extends ContentFrame {
     saveLayoutConfig(element: JsonElement) {
         if (this._table !== undefined) {
             if (!this.isPrivate()) {
-                element.setGuid(GridFrame.JsonName.tableId, this._table.id);
+                element.setGuid(GridSourceFrame.JsonName.tableId, this._table.id);
             } else {
                 const layout = this._grid.saveLayout();
                 this._table.layout = layout;
-                const privateTableElement = element.newElement(GridFrame.JsonName.privateTable);
+                const privateTableElement = element.newElement(GridSourceFrame.JsonName.privateTable);
                 this._table.saveToJson(privateTableElement);
-                element.setInteger(GridFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
+                element.setInteger(GridSourceFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
             }
         }
     }
@@ -787,7 +807,7 @@ export class GridFrame extends ContentFrame {
         return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
     }
 
-    calculateDescription(): GridFrame.Description {
+    calculateDescription(): GridSourceFrame.Description {
         if (this._table === undefined) {
             return {
                 abbreviate: '<' + Strings[StringId.NotInitialised] + '>',
@@ -895,8 +915,8 @@ export class GridFrame extends ContentFrame {
         this._table = this._privateTable;
     }
 
-    private calculateNewPrivateName(): GridFrame.NewPrivateName {
-        const suffixId = GridFrame.getNextNewPrivateNameSuffixId();
+    private calculateNewPrivateName(): GridSourceFrame.NewPrivateName {
+        const suffixId = GridSourceFrame.getNextNewPrivateNameSuffixId();
         const name = Strings[StringId.New] + suffixId.toString(10);
         return {
             name,
@@ -963,7 +983,7 @@ export class GridFrame extends ContentFrame {
     //     this.notifyDeleteListActionPrepared(canDeleteListResult.deletable, canDeleteListResult.actionHint);
     // }
 
-    private canDeleteList(): GridFrame.CanDeleteListResult {
+    private canDeleteList(): GridSourceFrame.CanDeleteListResult {
         if (this._table === undefined) {
             return {
                 deletable: false,
@@ -1071,7 +1091,7 @@ export class GridFrame extends ContentFrame {
     }
 }
 
-export namespace GridFrame {
+export namespace GridSourceFrame {
     export type SettingsApplyEvent = (this: void) => void;
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
     export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
@@ -1088,6 +1108,8 @@ export namespace GridFrame {
     export type GridEnterEvent = (this: void) => void;
     export type GridExitEvent = (this: void) => void;
     export type DeleteListActionPreparedEvent = (this: void, deletable: boolean, actionHint: string) => void;
+
+    export type RequireDefaultGridSourceDefinitionEventer = (this: void) => GridSourceDefinition;
 
     export namespace JsonName {
         export const table = 'table';

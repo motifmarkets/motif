@@ -29,7 +29,7 @@
         <app-command-bar #commandBar id="commandBar"></app-command-bar>
     </div>
 
-    <app-table #watchlist id="watchlist" [frameGridProperties]="watchListFrameGridProperties"></app-table>
+    <app-grid-source #watchlist id="watchlist" [frameGridProperties]="watchListFrameGridProperties"></app-grid-source>
 
     <div #depthTradesDiv id="depthTradesDiv">
         <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">

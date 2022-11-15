@@ -33,7 +33,7 @@
             <div>
                 <p>{{ caption }}</p>
             </div>
-            <app-table id="topShareholdersTable" #topShareholdersTableContent [frameGridProperties]="frameGridProperties "></app-table>
+            <app-grid-source id="topShareholdersTable" #topShareholdersTableContent [frameGridProperties]="frameGridProperties "></app-grid-source>
         </div>
 
         <div id="detailsDiv" [style.display]="detailsModeActive ? null : 'none'">

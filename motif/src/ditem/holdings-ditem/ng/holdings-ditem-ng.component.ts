@@ -38,7 +38,7 @@ import {
     TablesNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import { GridSourceNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -54,8 +54,8 @@ import { HoldingsDitemFrame } from '../holdings-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
-    @ViewChild('balancesTable', { static: true }) private _balancesTableComponent: TableNgComponent;
-    @ViewChild('holdingsTable', { static: true }) private _holdingsTableComponent: TableNgComponent;
+    @ViewChild('balancesTable', { static: true }) private _balancesTableComponent: GridSourceNgComponent;
+    @ViewChild('holdingsTable', { static: true }) private _holdingsTableComponent: GridSourceNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;

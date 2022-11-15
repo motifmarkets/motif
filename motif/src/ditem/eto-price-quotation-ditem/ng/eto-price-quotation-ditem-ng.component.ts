@@ -20,7 +20,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import { GridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -40,8 +40,8 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('watchTable', { static: true }) private _watchContentComponent: TableNgComponent;
-    @ViewChild('etoPriceQuotationTable', { static: true }) private _callPutContentComponent: TableNgComponent;
+    @ViewChild('watchTable', { static: true }) private _watchContentComponent: GridSourceNgComponent;
+    @ViewChild('etoPriceQuotationTable', { static: true }) private _callPutContentComponent: GridSourceNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
     public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {

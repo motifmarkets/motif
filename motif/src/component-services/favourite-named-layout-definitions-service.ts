@@ -4,5 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './grid-frame';
+export class FavouriteNamedLayoutDefinitionsService {
 
+}

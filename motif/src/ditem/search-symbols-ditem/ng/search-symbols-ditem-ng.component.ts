@@ -43,7 +43,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import { ContentGridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionedCheckboxNgComponent,
@@ -114,7 +114,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     @ViewChild('topNextButton', { static: true }) private _topNextButtonComponent: ButtonInputNgComponent;
 
     // Query Search results
-    @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+    @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
 
     // Bottom Query page indicator
     @ViewChild('bottomPageLabel', { static: true }) private _bottomPageLabel: CaptionLabelNgComponent;
@@ -427,7 +427,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         const layoutWithHeadings = this._frame.getActiveGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
+            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {

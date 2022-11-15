@@ -9,21 +9,23 @@ import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
+    NamedGridLayoutDefinitionsNgService,
+    NamedGridSourceDefinitionsNgService,
     SettingsNgService,
+    SharedGridSourcesNgService,
     SymbolsNgService,
-    TableRecordDefinitionListsNgService,
-    TablesNgService,
+    TableRecordSourceFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthSideFrame } from '../depth-side/internal-api';
 import { DepthFrame } from '../depth/internal-api';
 import { FeedsFrame } from '../feeds/internal-api';
+import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
 import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
-import { GridFrame } from '../table/internal-api';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
@@ -33,13 +35,16 @@ import { ZenithStatusFrame } from '../zenith-status/internal-api';
 export class ContentNgService {
     private _content: ContentService;
 
-    constructor(settingsNgService: SettingsNgService,
+    constructor(
+        settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         appStorageNgService: AppStorageNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
-        tablesNgService: TablesNgService,
-        tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
+        tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
+        namedGridLayoutDefinitionsNgService: NamedGridLayoutDefinitionsNgService,
+        namedGridSourceDefinitionsNgService: NamedGridSourceDefinitionsNgService,
+        sharedGridSourcesNgService: SharedGridSourcesNgService,
     ) {
         this._content = new ContentService(
             settingsNgService.settingsService,
@@ -47,8 +52,10 @@ export class ContentNgService {
             appStorageNgService.appStorage,
             adiNgService.service,
             textFormatterNgService.service,
-            tableRecordDefinitionListsNgService.service,
-            tablesNgService.service,
+            tableRecordSourceFactoryNgService.service,
+            namedGridLayoutDefinitionsNgService.service,
+            namedGridSourceDefinitionsNgService.service,
+            sharedGridSourcesNgService.service,
         );
     }
 
@@ -64,8 +71,8 @@ export class ContentNgService {
         return this._content.createMarketsFrame(componentAccess);
     }
 
-    createTableFrame(componentAccess: GridFrame.ComponentAccess) {
-        return this._content.createTableFrame(componentAccess);
+    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createGridSourceFrame(componentAccess);
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {

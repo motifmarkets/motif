@@ -46,7 +46,7 @@ import {
     TextFormatterNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { DepthNgComponent, ParidepthGridLayoutsEditorNgComponent, TableNgComponent, TradesNgComponent } from 'content-ng-api';
+import { DepthNgComponent, GridSourceNgComponent, ParidepthGridLayoutsEditorNgComponent, TradesNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import {
     CommandBarNgComponent,
@@ -83,7 +83,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('depthTradesDiv', { static: true }) private _depthTradesDiv: ElementRef;
     @ViewChild('depth', { static: true }) private _depthComponent: DepthNgComponent;
     @ViewChild('trades', { static: true }) private _tradesComponent: TradesNgComponent;
-    @ViewChild('watchlist', { static: true }) private _watchlistComponent: TableNgComponent;
+    @ViewChild('watchlist', { static: true }) private _watchlistComponent: GridSourceNgComponent;
     @ViewChild(SplitComponent) private _depthTradesSplitComponent: SplitComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;

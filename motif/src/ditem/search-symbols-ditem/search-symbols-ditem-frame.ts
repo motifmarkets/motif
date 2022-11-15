@@ -29,7 +29,7 @@ import {
     TablesService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { GridFrame } from 'content-internal-api';
+import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -38,7 +38,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
     private _querySymbolsDataItem: SymbolsDataItem;
-    private _queryTableFrame: GridFrame;
+    private _queryTableFrame: GridSourceFrame;
 
     private _currentFocusedSymbolSetting: boolean;
     private _symbolApplying: boolean;
@@ -158,7 +158,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     get queryCount() { return this._uiDataDefinition.count; }
     set queryCount(value: Integer | undefined) { this._uiDataDefinition.count = value; }
 
-    initialise(queryTableFrame: GridFrame, frameElement: JsonElement | undefined): void {
+    initialise(queryTableFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._queryTableFrame = queryTableFrame;
         this._queryTableFrame.recordFocusEvent = (newRecordIndex) => this.handleQueryRecordFocusEvent(newRecordIndex);
         this._queryTableFrame.tableOpenEvent = (recordDefinitionList) => this.handleQueryTableOpenEvent(recordDefinitionList);

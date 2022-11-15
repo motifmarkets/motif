@@ -5,8 +5,12 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, ViewChild,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
@@ -126,12 +130,10 @@ export namespace ContentGridLayoutEditorNgComponent {
 
     export function open(
         container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
         layoutWithHeadersMap: GridLayoutRecordStore.LayoutWithHeadersMap,
     ): ClosePromise {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ContentGridLayoutEditorNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ContentGridLayoutEditorNgComponent);
         assert(componentRef.instance instanceof ContentGridLayoutEditorNgComponent, 'ID:157271511202');
 
         const component = componentRef.instance as ContentGridLayoutEditorNgComponent;

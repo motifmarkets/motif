@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ElementRef,
     Inject,
     OnDestroy,
@@ -20,6 +19,7 @@ import {
     assert,
     assigned,
     delay1Tick,
+    ExplicitElementsArrayUiAction,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -29,15 +29,17 @@ import {
     Logger,
     ModifierKey,
     ModifierKeyId,
+    NamedGridLayoutDefinition,
     StringId,
     Strings,
     UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
+import { FavouriteNamedLayoutDefinitionsNgService } from '../../../component-services/ng/favourite-named-layout-definitions-ng.service';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
@@ -60,8 +62,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('table', { static: true }) private _contentComponent: TableNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
+    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public watchlistCaption: string;
     public watchlistAbbreviatedDescription: string;
@@ -75,6 +77,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _newUiAction: IconButtonUiAction;
     private _openUiAction: IconButtonUiAction;
     private _saveUiAction: IconButtonUiAction;
+    private _favouriteLayoutsUiAction: ExplicitElementsArrayUiAction<NamedGridLayoutDefinition>;
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
@@ -91,8 +94,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tablesNgService: TablesNgService,
-        private _resolver: ComponentFactoryResolver,
+        favouriteLayoutsNgService: FavouriteNamedLayoutDefinitionsNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -102,10 +104,11 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tablesNgService.service,
+            favouriteLayoutsNgService.service,
         );
         this._frame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._frame.newTableEvent = (description) => this.handleNewTableEvent(description);
+        this._frame.loadGridSourceEvent = (description) => this.handleLoadGridSourceEvent(description);
+        this._frame.differentLayoutAppliedEvent = (layout) => this.handleDifferentLayoutAppliedEvent(layout);
         this._frame.litIvemIdAcceptedEvent = (litIvemId) => this.handleLitIvemIdAcceptedEvent(litIvemId);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
@@ -252,7 +255,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleOpenUiActionSignalEvent() {
-        // TODO
+        this.showOpenDialog();
     }
 
     private handleSaveUiActionEvent() {
@@ -271,7 +274,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleNewTableEvent(description: WatchlistDitemFrame.TableDescription) {
+    private handleLoadGridSourceEvent(description: WatchlistDitemFrame.TableDescription) {
         this.updateWatchlistDescription(description);
     }
 
@@ -383,12 +386,33 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         return action;
     }
 
+    private async showOpenDialog() {
+        this._modeId = WatchlistDitemNgComponent.ModeId.OpenDialog;
+
+        try {
+            const gridSource = await WatchlistOpenDialog.open();
+            if (gridSource !== undefined) {
+                this._frame.openGridSource(gridSource);
+            }
+        } finally {
+            this.closeOpenDialog();
+        }
+
+        this.markForCheck();
+    }
+
+    private closeOpenDialog() {
+        this._dialogContainer.clear();
+        this._modeId = WatchlistDitemNgComponent.ModeId.Input;
+        this.markForCheck();
+    }
+
     private showLayoutEditor() {
         this._modeId = WatchlistDitemNgComponent.ModeId.LayoutEditor;
         const layoutWithHeadings = this._frame.getGridLayoutWithHeadersMap();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
+            const closePromise = ContentGridLayoutEditorNgComponent.open(this._dialogContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {
@@ -407,7 +431,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
+        this._dialogContainer.clear();
         this._modeId = WatchlistDitemNgComponent.ModeId.Input;
         this.markForCheck();
     }

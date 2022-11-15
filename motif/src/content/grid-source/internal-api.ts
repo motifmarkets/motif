@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/table-ng.component';
+export * from './grid-source-frame';
 

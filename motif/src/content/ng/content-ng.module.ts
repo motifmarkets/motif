@@ -38,6 +38,7 @@ import { FeedsNgComponent } from '../feeds/ng-api';
 import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
 import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-api';
 import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
+import { GridSourceNgComponent } from '../grid-source/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
@@ -75,7 +76,6 @@ import {
 } from '../settings/ng-api';
 import { StaticInitialise } from '../static-initialise';
 import { StatusSummaryNgComponent } from '../status-summary/ng-api';
-import { TableNgComponent } from '../table/ng-api';
 import { TradesNgComponent } from '../trades/ng-api';
 import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
 
@@ -104,7 +104,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        TableNgComponent,
+        GridSourceNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
         OrderPadSettingsNgComponent,
@@ -169,7 +169,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        TableNgComponent,
+        GridSourceNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
         SimpleGridNgComponent,

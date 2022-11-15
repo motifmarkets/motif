@@ -32,7 +32,7 @@ import {
     TablesNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import { ContentGridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -48,7 +48,7 @@ import { OrdersDitemFrame } from '../orders-ditem-frame';
 })
 export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
 
-    @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+    @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('buyButton', { static: true }) private _buyButtonComponent: SvgButtonNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
@@ -259,7 +259,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
+            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {

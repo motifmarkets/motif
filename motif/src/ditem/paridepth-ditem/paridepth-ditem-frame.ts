@@ -20,14 +20,14 @@ import {
     TableRecordDefinitionListsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
-import { DepthFrame, GridFrame, TradesFrame } from 'content-internal-api';
+import { DepthFrame, GridSourceFrame, TradesFrame } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
-    private _watchlistFrame: GridFrame;
+    private _watchlistFrame: GridSourceFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
 
@@ -54,7 +54,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     get filterActive() { return this._depthFrame.filterActive; }
     get filterXrefs() { return this._depthFrame.filterXrefs; }
 
-    initialise(tableContentFrame: GridFrame, depthContentFrame: DepthFrame, tradesContentFrame: TradesFrame,
+    initialise(tableContentFrame: GridSourceFrame, depthContentFrame: DepthFrame, tradesContentFrame: TradesFrame,
         frameElement: JsonElement | undefined
     ): void {
         this._watchlistFrame = tableContentFrame;

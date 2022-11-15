@@ -28,7 +28,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import { GridSourceNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -43,7 +43,7 @@ import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('table', { static: true }) private _contentComponent: TableNgComponent;
+    @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
     public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {

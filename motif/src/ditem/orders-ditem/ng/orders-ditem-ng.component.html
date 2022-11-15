@@ -24,7 +24,7 @@
             <app-svg-button #symbolLinkButton></app-svg-button>
         </div>
     </div>
-    <app-table #table id="table" [frameGridProperties]="frameGridProperties "></app-table>
+    <app-grid-source #table id="table" [frameGridProperties]="frameGridProperties "></app-grid-source>
 </div>
 <div id="layoutEditorDiv" [style.display]="isLayoutEditorMode() ? null : 'none'">
     <ng-template #layoutEditorContainer></ng-template>

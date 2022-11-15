@@ -311,7 +311,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
+            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {

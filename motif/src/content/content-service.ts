@@ -7,23 +7,26 @@
 import {
     AdiService,
     AppStorageService,
-    LitIvemIdListsService,
+    LockOpenListItem,
+    NamedGridLayoutDefinitionsService,
     NamedGridSourceDefinitionsService,
     ScansService,
     SessionInfoService,
     SettingsService,
+    SharedGridSourcesService,
     SymbolsService,
+    TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from './content-frame';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
+import { GridSourceFrame } from './grid-source/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { ScansFrame } from './scan/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
-import { GridFrame } from './table/internal-api';
 import { TradesFrame } from './trades/internal-api';
 import { ZenithStatusFrame } from './zenith-status/internal-api';
 
@@ -34,9 +37,11 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _litIvemIdListsService: LitIvemIdListsService,
+        private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
+        private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutDefinitionsService,
         private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
-    ) { }
+        private readonly _sharedGridSourcesService: SharedGridSourcesService,
+) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
@@ -50,12 +55,14 @@ export class ContentService {
         return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
     }
 
-    createTableFrame(componentAccess: GridFrame.ComponentAccess) {
-        return new GridFrame(
+    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
+        return new GridSourceFrame(
             componentAccess,
             this._settingsService,
-            this._litIvemIdListsService,
-            this._namedGridSourceDefinitionsService
+            this._tableRecordSourceFactoryService,
+            this._namedGridLayoutDefinitionsService,
+            this._namedGridSourceDefinitionsService,
+            this._sharedGridSourcesService,
         );
     }
 
