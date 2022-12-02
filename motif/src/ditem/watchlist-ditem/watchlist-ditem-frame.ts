@@ -12,7 +12,7 @@ import {
     JsonElement,
     LitIvemId, LitIvemIdFromListTableRecordSourceDefinition, LitIvemIdList,
     LitIvemIdListDefinition,
-    LitIvemIdTableRecordDefinition, SymbolsService
+    LitIvemIdTableRecordDefinition, LockOpenListItem, StringId, Strings, SymbolsService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { FavouriteNamedLayoutDefinitionsService } from '../../component-services/favourite-named-layout-definitions-service';
@@ -26,6 +26,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     loadGridSourceEvent: WatchlistDitemFrame.LoadGridSourceEvent;
     litIvemIdAcceptedEvent: WatchlistDitemFrame.LitIvemIdAcceptedEvent;
     recordFocusEvent: WatchlistDitemFrame.RecordFocusEvent;
+
+    private readonly _opener: LockOpenListItem.Opener;
 
     private _litIvemIdList: LitIvemIdList;
     private _gridSourceFrame: GridSourceFrame;
@@ -44,6 +46,10 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         super(BuiltinDitemFrame.BuiltinTypeId.Watchlist, componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
+
+        this._opener = {
+            lockerName: `${Strings[StringId.Watchlist]}: ${this.frameId}`
+        }
     }
 
     get initialised() { return this._gridSourceFrame !== undefined; }
@@ -51,6 +57,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._gridSourceFrame = gridSourceFrame;
+        this._gridSourceFrame.opener = this._opener;
         this._gridSourceFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._gridSourceFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
         this._gridSourceFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);

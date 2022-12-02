@@ -8,9 +8,7 @@ import {
     AdiService,
     BrokerageAccountGroup,
     CommandRegisterService,
-    ExtensionHandle,
-    Integer,
-    JsonElement,
+    ExtensionHandle, JsonElement,
     LitIvemId,
     SymbolsService
 } from '@motifmarkets/motif-core';
@@ -30,7 +28,6 @@ export abstract class DitemFrame extends Frame {
     protected layoutConfigLoading = false;
     protected layoutConfigLoaded = false;
 
-    private _frameId: Integer;
     private _primary: boolean;
 
     private _litIvemId: LitIvemId | undefined;
@@ -63,7 +60,6 @@ export abstract class DitemFrame extends Frame {
     ) {
         super();
 
-        this._frameId = DitemFrame.getNextFrameId();
         this._desktopAccessService.registerFrame(this);
         this._ditemCommandProcessor = new DitemCommandProcessor(this._commandRegisterService);
     }
@@ -129,9 +125,6 @@ export abstract class DitemFrame extends Frame {
     protected get selectAllWhenFrameSymbolAndSourceApplied(): boolean { return this._selectAllWhenFrameSymbolAndSourceApplied; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
     protected set selectAllWhenFrameSymbolAndSourceApplied(value: boolean) { this._selectAllWhenFrameSymbolAndSourceApplied = value; }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    private get frameId(): Integer { return this._frameId; }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     abstract get initialised(): boolean;
@@ -466,12 +459,6 @@ export namespace DitemFrame {
         export const litIvemId = undefined;
         export const brokerageAccountGroup = undefined;
         export const primary = false;
-    }
-
-    let nextFrameId: Integer = 1;
-
-    export function getNextFrameId() {
-        return nextFrameId++;
     }
 
     export interface ComponentAccess {

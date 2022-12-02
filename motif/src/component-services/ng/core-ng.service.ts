@@ -17,7 +17,6 @@ import {
     NamedGridSourceDefinitionsService,
     ScansService,
     SettingsService,
-    SharedGridSourcesService,
     SymbolDetailCacheService,
     SymbolsService,
     TableRecordSourceFactoryService,
@@ -48,7 +47,6 @@ export class CoreNgService implements OnDestroy {
     get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
     get namedGridLayoutDefinitionsService(): NamedGridLayoutDefinitionsService { return this._service.namedGridLayoutDefinitionsService; }
     get namedGridSourceDefinitionsService(): NamedGridSourceDefinitionsService { return this._service.namedGridSourceDefinitionsService; }
-    get sharedGridSourcesService(): SharedGridSourcesService { return this._service.sharedGridSourcesService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 

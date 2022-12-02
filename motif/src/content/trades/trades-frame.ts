@@ -84,6 +84,10 @@ export class TradesFrame extends ContentFrame {
         definition.saveToJson(layoutElement);
     }
 
+    setNamedLayout(layout: GridLayout) {
+        this._grid.setTableAndLayout(layout);
+    }
+
     close() {
         this.checkClose();
     }
@@ -131,15 +135,6 @@ export class TradesFrame extends ContentFrame {
             this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
         }
 
-        // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-        // this._componentAccess.gridAddFields(fieldsAndInitialStates.fields);
-        // const states = fieldsAndInitialStates.states;
-        // const fieldCount = states.length; // one state for each field
-        // for (let i = 0; i < fieldCount; i++) {
-        //     this._componentAccess.gridSetFieldState(i, states[i]);
-        // }
-
-        // this._componentAccess.gridLoadLayout(this._table.layout);
         this._recordStore.recordsLoaded();
 
         this._gridPrepared = true;
@@ -198,7 +193,7 @@ export class TradesFrame extends ContentFrame {
 
     private checkClose() {
         if (this._dataItem !== undefined) {
-            this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
+            this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
             this._recordStore.clearDataItem();
             this.adi.unsubscribe(this._dataItem);

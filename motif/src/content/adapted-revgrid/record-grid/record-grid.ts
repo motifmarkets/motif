@@ -1,9 +1,7 @@
 import {
-    AssertInternalError,
-    GridLayout,
+    AssertInternalError, GridField, GridLayout,
     GridLayoutDefinition,
-    GridLayoutRecordStore,
-    GridRecordFieldState,
+    GridLayoutRecordStore, MultiEvent,
     SettingsService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
@@ -32,7 +30,7 @@ import { RecordGridCellPainter } from './record-grid-cell-painter';
  *
  * @public
  */
-export class RecordGrid extends AdaptedRevgrid {
+export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeInitiator {
     fieldSortedEventer: RecordGrid.FieldSortedEventer | undefined;
 
     private readonly _componentAccess: RecordGrid.ComponentAccess;
@@ -41,7 +39,12 @@ export class RecordGrid extends AdaptedRevgrid {
     private readonly _headerRecordAdapter: RevRecordHeaderAdapter;
     private readonly _mainRecordAdapter: RevRecordMainAdapter;
 
+    private _layout: GridLayout;
+    private _allowedFields: readonly GridField[];
+
     private _lastNotifiedFocusedRecordIndex: number | undefined;
+
+    private _layoutChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     private _recordFocusEventer: RecordGrid.RecordFocusEventer | undefined;
     private _mainClickEventer: RecordGrid.MainClickEventer | undefined;
@@ -277,6 +280,33 @@ export class RecordGrid extends AdaptedRevgrid {
     override destroy(): void {
         super.destroy();
         this._mainRecordAdapter.destroy();
+    }
+
+    setAllowedFields(value: readonly GridField[]) {
+        this._allowedFields = value;
+        if (this._layout !== undefined) {
+            this.updateGridSchema();
+        }
+    }
+
+    setLayout(value: GridLayout) {
+        if (this._layout !== undefined) {
+            this._layout.unsubscribeChangedEvent(this._layoutChangeSubscriptionId);
+            this._layoutChangeSubscriptionId = undefined;
+        }
+
+        this._layout = value;
+        this._layoutChangeSubscriptionId = this._layout.subscribeChangedEvent((initiator) => this.processLayoutChangedEvent(initiator));
+
+        this.processLayoutChangedEvent(GridLayout.forceChangeInitiator);
+    }
+
+    setLayoutDefinition(value: GridLayoutDefinition) {
+        if (this._layout === undefined) {
+            throw new AssertInternalError('RGSLD34488');
+        } else {
+            this._layout.applyDefinition(GridLayout.forceChangeInitiator, value);
+        }
     }
 
     applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {
@@ -798,6 +828,20 @@ export class RecordGrid extends AdaptedRevgrid {
                 }
             }
         }
+    }
+
+    private processLayoutChangedEvent(initiator: GridLayout.ChangeInitiator) {
+        if (initiator !== this) {
+
+        }
+    }
+
+    private updateGridSchema() {
+        const maxCount = this._allowedFields.length;
+        const schemaFields = new Array<GridRecordField>(maxCount);
+        const layoutColumns = this._layout.getColumns;
+        for (let i = 0; i < layoutColumnCount; i++) {
+        this._fieldAdapter.setFields(schemaFields);
     }
 
     // /** @internal */

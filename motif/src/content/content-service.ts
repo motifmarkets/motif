@@ -13,7 +13,6 @@ import {
     ScansService,
     SessionInfoService,
     SettingsService,
-    SharedGridSourcesService,
     SymbolsService,
     TableRecordSourceFactoryService,
     TextFormatterService
@@ -40,7 +39,6 @@ export class ContentService {
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutDefinitionsService,
         private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
-        private readonly _sharedGridSourcesService: SharedGridSourcesService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -62,7 +60,6 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._namedGridLayoutDefinitionsService,
             this._namedGridSourceDefinitionsService,
-            this._sharedGridSourcesService,
         );
     }
 

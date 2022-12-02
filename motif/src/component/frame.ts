@@ -4,7 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
+import { Integer } from '@motifmarkets/motif-core';
+
 export abstract class Frame {
+
+    readonly frameId: Integer;
+
+    constructor() {
+        this.frameId = Frame.getNextFrameId();
+    }
 
     // private _name: string;
     // private _layoutConfigLoading = false;
@@ -80,4 +88,9 @@ export namespace Frame {
 
     }
 
+    let nextFrameId: Integer = 1;
+
+    export function getNextFrameId() {
+        return nextFrameId++;
+    }
 }

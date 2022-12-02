@@ -11,16 +11,13 @@ import { Integer } from '@motifmarkets/motif-core';
 export abstract class ComponentBaseNgDirective {
     private static _componentInstanceConstructCount = 0;
 
-    private _componentInstanceNumber: Integer;
-    private _componentInstanceId: string;
+    protected readonly componentInstanceNumber: Integer;
+    protected readonly componentInstanceId: string;
 
     constructor() {
-        this._componentInstanceNumber = ++ComponentBaseNgDirective._componentInstanceConstructCount;
-        this._componentInstanceId = this._componentInstanceNumber.toString();
+        this.componentInstanceNumber = ++ComponentBaseNgDirective._componentInstanceConstructCount;
+        this.componentInstanceId = this.componentInstanceNumber.toString();
     }
-
-    protected get componentInstanceNumber() { return this._componentInstanceNumber; }
-    protected get componentInstanceId() { return this._componentInstanceId; }
 
     protected generateInstancedRadioName(name: string) {
         return this.componentInstanceId + name;
