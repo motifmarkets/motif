@@ -111,4 +111,3 @@ export namespace GridSourceNgComponent {
         export const frame = 'frame';
     }
 }
-

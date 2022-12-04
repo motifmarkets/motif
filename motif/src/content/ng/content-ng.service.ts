@@ -9,8 +9,8 @@ import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
-    NamedGridLayoutDefinitionsNgService,
-    NamedGridSourceDefinitionsNgService,
+    NamedGridLayoutsNgService,
+    NamedGridSourcesNgService,
     SettingsNgService,
     SharedGridSourcesNgService,
     SymbolsNgService,
@@ -42,8 +42,8 @@ export class ContentNgService {
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
-        namedGridLayoutDefinitionsNgService: NamedGridLayoutDefinitionsNgService,
-        namedGridSourceDefinitionsNgService: NamedGridSourceDefinitionsNgService,
+        namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
+        namedGridSourceDefinitionsNgService: NamedGridSourcesNgService,
         sharedGridSourcesNgService: SharedGridSourcesNgService,
     ) {
         this._content = new ContentService(

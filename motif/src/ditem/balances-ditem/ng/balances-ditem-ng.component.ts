@@ -24,10 +24,15 @@ import {
     InternalCommand,
     JsonElement,
     StringId,
-    Strings,
-    UiAction
+    Strings, UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -45,7 +50,7 @@ import { BalancesDitemFrame } from '../balances-ditem-frame';
 })
 export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
 
-    @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
+    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
@@ -68,8 +73,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tablesNgService: TablesNgService,
-    ) {
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BalancesDitemFrame(
@@ -78,10 +83,10 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tablesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            (group) => this.handleTableOpenEvent(group),
+            (recordIndex) => this.handleRecordFocusEvent(recordIndex),
         );
-        this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
-        this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._toggleAccountGroupLinkingUiAction = this.createToggleAccountGroupLinkingUiAction();
@@ -97,7 +102,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
-        assert(this._tableComponent !== undefined, 'BDCNAVI22953');
+        assert(this._gridSourceComponent !== undefined, 'BDCNAVI22953');
 
         delay1Tick(() => this.initialise());
     }
@@ -116,7 +121,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._tableComponent.frame, frameElement);
+        this._frame.initialise(this._gridSourceComponent.frame, frameElement);
 
         super.initialise();
     }

@@ -5,12 +5,9 @@
  */
 
 import {
-    assert,
     AssertInternalError,
     Badness, GridLayout, GridLayoutOrNamedReferenceDefinition, GridLayoutRecordStore,
-    GridSource,
-    GridSourceDefinition,
-    GridSourceOrNamedReference,
+    GridSource, GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Guid,
     Integer,
@@ -19,17 +16,13 @@ import {
     Logger,
     MultiEvent,
     NamedGridLayoutDefinition,
-    NamedGridLayoutsService, NamedGridSourcesService,
-    Ok,
-    Result,
-    SettingsService,
+    NamedGridLayoutsService, NamedGridSourcesService, SettingsService,
     StringBuilder,
     StringId,
     Strings,
     Table,
     TableGridRecordStore,
-    TableRecordDefinition,
-    TableRecordSourceDefinition,
+    TableRecordDefinition, TableRecordSourceDefinition,
     TableRecordSourceFactoryService,
     UnexpectedUndefinedError
 } from '@motifmarkets/motif-core';
@@ -46,8 +39,8 @@ export class GridSourceFrame extends ContentFrame {
     recordFocusEvent: GridSourceFrame.RecordFocusEvent;
     gridClickEvent: GridSourceFrame.GridClickEvent;
     gridDblClickEvent: GridSourceFrame.GridDblClickEvent;
-    requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
-    tableOpenEvent: GridSourceFrame.TableOpenEvent;
+    // requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
+    // tableOpenEvent: GridSourceFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
 
     private readonly _recordStore = new TableGridRecordStore();
@@ -55,6 +48,7 @@ export class GridSourceFrame extends ContentFrame {
 
     private _lockedGridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
     private _openedGridSource: GridSource;
+    private _openedTable: Table;
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
@@ -68,6 +62,7 @@ export class GridSourceFrame extends ContentFrame {
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _tableFieldsChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private _tableFirstUsableSubscriptionId: MultiEvent.SubscriptionId;
 
 
     constructor(
@@ -76,7 +71,6 @@ export class GridSourceFrame extends ContentFrame {
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
-        private readonly _requireDefaultGridSourceDefinitionEventer: GridSourceFrame.RequireDefaultGridSourceDefinitionEventer,
     ) {
         super();
     }
@@ -98,7 +92,7 @@ export class GridSourceFrame extends ContentFrame {
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-            this.closeGridSource();
+            this.close();
             super.finalise();
         }
     }
@@ -125,12 +119,8 @@ export class GridSourceFrame extends ContentFrame {
         this.applySettings();
     }
 
-    loadRecordSourceDefinition(recordSourceDefinition: TableRecordSourceDefinition) {
-        this.openTable(recordSourceDefinition);
-    }
-
-    openGridSource(definition: GridSourceOrNamedReferenceDefinition): Result<void> {
-        this.closeGridSource();
+    open(definition: GridSourceOrNamedReferenceDefinition): Table | undefined {
+        this.close();
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
             this._keepPreviousLayoutIfPossible &&
@@ -147,7 +137,12 @@ export class GridSourceFrame extends ContentFrame {
 
         const lockResult = gridSourceOrNamedReference.tryLock(this.opener);
         if (lockResult.isErr()) {
-            return lockResult.createOuter(`${Strings[StringId.LockGridSourceIssue]}: ${lockResult.error}`);
+            const badness: Badness = {
+                reasonId: Badness.ReasonId.LockError,
+                reasonExtra: lockResult.error,
+            };
+            this._componentAccess.setBadness(badness);
+            return undefined;
         } else {
             const gridSource = gridSourceOrNamedReference.lockedGridSource;
             if (gridSource === undefined) {
@@ -164,36 +159,62 @@ export class GridSourceFrame extends ContentFrame {
                     } else {
                         this._lockedGridSourceOrNamedReference = gridSourceOrNamedReference;
                         this._openedGridSource = gridSource;
+                        this._openedTable = table;
 
                         this._recordStore.setTable(table);
                         this._tableFieldsChangedSubscriptionId = table.subscribeFieldsChangedEvent(
                             () => this._grid.setAllowedFields(table.fields)
                         );
+                        // if (table.beenUsable) {
+                        //     this.processFirstUsable();
+                        // } else {
+                        //     this._tableFirstUsableSubscriptionId = table.subscribeFirstUsableEvent(() => {
+                        //         table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId);
+                        //         this.processFirstUsable();
+                        //     });
+                        // }
 
                         this._grid.setAllowedFields(table.fields);
                         this._grid.setLayout(layout);
                         this._keptLayout = gridSource.createGridLayoutOrNamedReferenceDefinition();
-                        return new Ok(undefined);
+                        return table;
                     }
                 }
             }
         }
     }
 
-    closeGridSource() {
+    close() {
         if (this._lockedGridSourceOrNamedReference !== undefined) {
-            this._openedGridSource.closeLocked(this._opener);
-            this._lockedGridSourceOrNamedReference.unlock(this._opener);
-            this._lockedGridSourceOrNamedReference = undefined;
-            this._keptLayout = undefined;
+            if (this._table === undefined) {
+                throw new AssertInternalError('GSF22209');
+            } else {
+                this._table.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
+                this._tableFieldsChangedSubscriptionId = undefined;
+                this._table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
+                this._tableFirstUsableSubscriptionId = undefined;
+                this._tableFieldsChangedSubscriptionId = undefined;
+                this._openedGridSource.closeLocked(this._opener);
+                this._lockedGridSourceOrNamedReference.unlock(this._opener);
+                this._lockedGridSourceOrNamedReference = undefined;
+                this._keptLayout = undefined;
+            }
         }
     }
 
-    createGridSourceOrNamedReferenceDefinition(asPrivate: boolean): GridSourceOrNamedReferenceDefinition {
+    createGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition {
         if (this._lockedGridSourceOrNamedReference === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
             return this._lockedGridSourceOrNamedReference.createDefinition(undefined);
+        }
+    }
+
+    createTableRecordSourceDefinition(): TableRecordSourceDefinition {
+        if (this._openedGridSource === undefined) {
+            throw new AssertInternalError('GSFCGSONRD22209');
+        } else {
+            return this._openedGridSource.createTableRecordSourceDefinition();
         }
     }
 
@@ -206,8 +227,10 @@ export class GridSourceFrame extends ContentFrame {
 
 
     loadLayoutConfig(element: JsonElement | undefined) {
+
         this._recordStore.beginChange();
         try {
+
             this.closeTable(false);
 
             if (element === undefined) {
@@ -273,6 +296,10 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
+    createRecordDefinition(index: Integer) {
+        return this._openedTable.createRecordDefinition(index);
+    }
+
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
         if (this.recordFocusEvent !== undefined) {
             this.recordFocusEvent(newRecordIndex, oldRecordIndex);
@@ -291,22 +318,22 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    notifyTableOpen(recordDefinitionList: TableRecordDefinitionList) {
-        if (this._table === undefined) {
-            throw new AssertInternalError('TFNTO533955482');
-        } else {
-            this._componentAccess.hideBadnessWithVisibleDelay(this._table.badness);
-        }
-        if (this.tableOpenEvent !== undefined) {
-            this.tableOpenEvent(recordDefinitionList);
-        }
-    }
-
-    notifyTableOpenChange(opened: boolean) {
-    //     if (this.tableOpenChangeEvent !== undefined) {
-    //         this.tableOpenChangeEvent(opened);
+    // notifyTableOpen(recordDefinitionList: TableRecordDefinitionList) {
+    //     if (this._table === undefined) {
+    //         throw new AssertInternalError('TFNTO533955482');
+    //     } else {
+    //         this._componentAccess.hideBadnessWithVisibleDelay(this._table.badness);
     //     }
-    }
+    //     if (this.tableOpenEvent !== undefined) {
+    //         this.tableOpenEvent(recordDefinitionList);
+    //     }
+    // }
+
+    // notifyTableOpenChange(opened: boolean) {
+    // //     if (this.tableOpenChangeEvent !== undefined) {
+    // //         this.tableOpenChangeEvent(opened);
+    // //     }
+    // }
 
     notifyTableBadnessChange() {
         if (this._table === undefined) {
@@ -794,9 +821,9 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.loadLayout(layout);
     }
 
-    isPrivate(): boolean {
-        return this._privateTable !== undefined;
-    }
+    // isPrivate(): boolean {
+    //     return this._privateTable !== undefined;
+    // }
 
     hasPrivateRecordDefinitionList(): boolean {
         return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
@@ -873,28 +900,29 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private closeTable() {
+    // private closeTable() {
+    //     if (this._table !== undefined) {
+    //         if (keepCurrentLayout) {
+    //             this._keptLayout = this.getGridLayout();
+    //         } else {
+    //             this._keptLayout = undefined;
+    //         }
+
+    //         this._tablesService.closeItem(this._table, this);
+
+    //         this._privateNameSuffixId = undefined;
+    //         this._table = undefined;
+    //     }
+    // }
+
+    // private createTable() {
+
+    // }
+
+    private processFirstUsable() {
+        this._grid.setValuesBeenUsable(true);
         if (this._table !== undefined) {
-            if (keepCurrentLayout) {
-                this._keptLayout = this.getGridLayout();
-            } else {
-                this._keptLayout = undefined;
-            }
-
-            this._tablesService.closeItem(this._table, this);
-
-            this._privateNameSuffixId = undefined;
-            this._table = undefined;
-        }
-    }
-
-    private createTable() {
-
-    }
-
-    private checkAutoSizeAllColumnWidthsOnFirstUsable() {
-        if (this._table !== undefined) {
-            if (!this._table.firstUsable) {
+            if (!this._table.beenUsable) {
                 this._autoSizeAllColumnWidthsOnFirstUsable = true;
             } else {
                 this._autoSizeAllColumnWidthsOnFirstUsable = false;
@@ -904,20 +932,20 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private createPrivateTable() {
-        assert(this._privateTable === undefined && this.table === undefined);
-        this._privateTable = new OpenedTable(this._tablesService.definitionFactory, this);
-        this._table = this._privateTable;
-    }
+    // private createPrivateTable() {
+    //     assert(this._privateTable === undefined && this.table === undefined);
+    //     this._privateTable = new OpenedTable(this._tablesService.definitionFactory, this);
+    //     this._table = this._privateTable;
+    // }
 
-    private calculateNewPrivateName(): GridSourceFrame.NewPrivateName {
-        const suffixId = GridSourceFrame.getNextNewPrivateNameSuffixId();
-        const name = Strings[StringId.New] + suffixId.toString(10);
-        return {
-            name,
-            suffixId,
-        };
-    }
+    // private calculateNewPrivateName(): GridSourceFrame.NewPrivateName {
+    //     const suffixId = GridSourceFrame.getNextNewPrivateNameSuffixId();
+    //     const name = Strings[StringId.New] + suffixId.toString(10);
+    //     return {
+    //         name,
+    //         suffixId,
+    //     };
+    // }
 
     private prepareGrid() {
         if (this._table === undefined) {
@@ -943,27 +971,27 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private activate(tableDirIdx: Integer) {
-        if (this._table === undefined) {
-            throw new UnexpectedUndefinedError('TFA5592245');
-        } else {
-            this._recordStore.beginChange();
-            try {
-                this.prepareGrid();
-                if (this.isPrivate()) {
-                    this._table.open();
-                } else {
-                    assert(tableDirIdx >= 0);
-                    this._tablesService.open(tableDirIdx, this);
-                }
+    // private activate(tableDirIdx: Integer) {
+    //     if (this._table === undefined) {
+    //         throw new UnexpectedUndefinedError('TFA5592245');
+    //     } else {
+    //         this._recordStore.beginChange();
+    //         try {
+    //             this.prepareGrid();
+    //             if (this.isPrivate()) {
+    //                 this._table.open();
+    //             } else {
+    //                 assert(tableDirIdx >= 0);
+    //                 this._tablesService.open(tableDirIdx, this);
+    //             }
 
-                // this.prepareDeleteListAction();
+    //             // this.prepareDeleteListAction();
 
-            } finally {
-                this._recordStore.endChange();
-            }
-        }
-    }
+    //         } finally {
+    //             this._recordStore.endChange();
+    //         }
+    //     }
+    // }
 
     private updateGridSettingsFromTable() {
         if (this._table === undefined || !this._table.changeRecordDefinitionOrderAllowed) {
@@ -1073,17 +1101,17 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private tryNewDefaultPrivateTable() {
-        if (this.requireDefaultTableDefinitionEvent === undefined) {
-            // do nothing - will remain closed
-        } else {
-            const tableDefinition = this.requireDefaultTableDefinitionEvent();
-            if (tableDefinition !== undefined) {
+    // private tryNewDefaultPrivateTable() {
+    //     if (this.requireDefaultTableDefinitionEvent === undefined) {
+    //         // do nothing - will remain closed
+    //     } else {
+    //         const tableDefinition = this.requireDefaultTableDefinitionEvent();
+    //         if (tableDefinition !== undefined) {
 
-                this.newPrivateTable( tableDefinition, false);
-            }
-        }
-    }
+    //             this.newPrivateTable( tableDefinition, false);
+    //         }
+    //     }
+    // }
 }
 
 export namespace GridSourceFrame {
@@ -1091,8 +1119,8 @@ export namespace GridSourceFrame {
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
     export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
     export type GridDblClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
-    export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
-    export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
+    // export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
+    // export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
     // export type TableOpenChangeEvent = (this: void, opened: boolean) => void;
 
     export type ListChangedEvent = (this: void) => void;
@@ -1104,7 +1132,7 @@ export namespace GridSourceFrame {
     export type GridExitEvent = (this: void) => void;
     export type DeleteListActionPreparedEvent = (this: void, deletable: boolean, actionHint: string) => void;
 
-    export type RequireDefaultGridSourceDefinitionEventer = (this: void) => GridSourceDefinition;
+    export type FirstUsableEventer = (this: void) => void;
 
     export namespace JsonName {
         export const table = 'table';

@@ -5,17 +5,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { NamedGridLayoutDefinitionsService } from '@motifmarkets/motif-core';
+import { TableRecordSourceDefinitionFactoryService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class NamedGridLayoutDefinitionsNgService {
-    private _service: NamedGridLayoutDefinitionsService;
+export class TableRecordSourceDefinitionFactoryNgService {
+    private _service: TableRecordSourceDefinitionFactoryService;
 
     constructor(coreNgService: CoreNgService) {
-        this._service = coreNgService.namedGridLayoutDefinitionsService;
+        this._service = coreNgService.tableRecordSourceDefinitionFactoryService;
     }
 
     get service() { return this._service; }

@@ -13,12 +13,13 @@ import {
     CoreService,
     KeyboardService,
     MotifServicesService,
-    NamedGridLayoutDefinitionsService,
-    NamedGridSourceDefinitionsService,
+    NamedGridLayoutsService,
+    NamedGridSourcesService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
+    TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
@@ -44,9 +45,12 @@ export class CoreNgService implements OnDestroy {
     get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
     get scansService(): ScansService { return this._service.scansService; }
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
+    get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
+        return this._service.tableRecordSourceDefinitionFactoryService;
+    }
     get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
-    get namedGridLayoutDefinitionsService(): NamedGridLayoutDefinitionsService { return this._service.namedGridLayoutDefinitionsService; }
-    get namedGridSourceDefinitionsService(): NamedGridSourceDefinitionsService { return this._service.namedGridSourceDefinitionsService; }
+    get namedGridLayoutsService(): NamedGridLayoutsService { return this._service.namedGridLayoutsService; }
+    get namedGridSourcesService(): NamedGridSourcesService { return this._service.namedGridSourcesService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 

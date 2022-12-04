@@ -9,15 +9,16 @@ import {
     AdiService,
     AssertInternalError,
     Balances,
-    BalancesTableRecordDefinitionList,
+    BalancesTableRecordSource,
+    BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
-    BrokerageAccountGroupBalancesList,
     CommandRegisterService,
+    GridSourceDefinition,
+    GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     SymbolsService,
-    TableRecordDefinitionList,
-    TablesService
+    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -29,11 +30,8 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         activeAccountGroup: BrokerageAccountGroup.createAll(),
     };
 
-    recordFocusEvent: BalancesDitemFrame.RecordFocusEvent;
-    tableOpenEvent: BalancesDitemFrame.TableOpenEvent;
-
-    private _tableFrame: GridSourceFrame;
-    private _balancesList: BrokerageAccountGroupBalancesList;
+    private _gridSourceFrame: GridSourceFrame;
+    private _recordSource: BalancesTableRecordSource;
     private _currentFocusedAccountIdSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
@@ -43,34 +41,43 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _tablesService: TablesService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _openEventer: BalancesDitemFrame.OpenEventer,
+        private readonly _recordFocusEventer: BalancesDitemFrame.RecordFocusEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Balances,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
-    get initialised() { return this._tableFrame !== undefined; }
-    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
+    get initialised() { return this._gridSourceFrame !== undefined; }
+    get focusedRecordIndex() { return this._gridSourceFrame.getFocusedRecordIndex(); }
 
-    initialise(tableFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
+        this._gridSourceFrame = gridSourceFrame;
+        this._gridSourceFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
 
+        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
-            this._tableFrame.loadLayoutConfig(undefined);
+            gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const contentElement = frameElement.tryGetElement(BalancesDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+            const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+                this._tableRecordSourceDefinitionFactoryService, frameElement,
+            );
+            if (definitionResult.isOk()) {
+                gridSourceOrNamedReferenceDefinition = definitionResult.value;
+            } else {
+                gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
+                // Temporary error toast
+            }
         }
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition);
 
         this.applyLinked();
     }
 
     override finalise(): void {
-        this._tableFrame.closeTable(false);
+        this._gridSourceFrame.close();
         super.finalise();
     }
 
@@ -78,7 +85,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(BalancesDitemFrame.JsonName.content);
-        this._tableFrame.saveLayoutConfig(contentElement);
+        this._gridSourceFrame.saveLayoutConfig(contentElement);
     }
 
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
@@ -86,26 +93,26 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             return false;
         } else {
             if (selfInitiated) {
-                return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
+                return this.applyBrokerageAccountGroupWithOpen(group, selfInitiated);
             } else {
                 if (group === undefined) {
                     return false;
                 } else {
-                    const table = this._tableFrame.table;
-                    if (table === undefined) {
-                        return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
-                    } else {
-                        const recordDefinitionList = table.recordDefinitionList;
-                        if (!(recordDefinitionList instanceof BalancesTableRecordDefinitionList)) {
+                    // const table = this._gridSourceFrame.table;
+                    // if (table === undefined) {
+                    //     return this.applyBrokerageAccountGroupWithOpen(group, selfInitiated);
+                    // } else {
+                        const tableRecordSourceDefinition = this._gridSourceFrame.createTableRecordSourceDefinition();
+                        if (!(tableRecordSourceDefinition instanceof BalancesTableRecordSourceDefinition)) {
                             throw new AssertInternalError('BDFABAGT1212009887');
                         } else {
-                            if (group.isEqualTo(recordDefinitionList.brokerageAccountGroup)) {
+                            if (group.isEqualTo(tableRecordSourceDefinition.brokerageAccountGroup)) {
                                 return false;
                             } else {
-                                return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
+                                return this.applyBrokerageAccountGroupWithOpen(group, selfInitiated);
                             }
                         }
-                    }
+                    // }
                 }
             }
         }
@@ -113,21 +120,21 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
 
     private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const record = this._balancesList.records[newRecordIndex];
+            const recordDefinition = this._gridSourceFrame.createRecordDefinition(newRecordIndex);
+            const record = this._recordSource.recordList.getAt(newRecordIndex);
             this.processRecordFocusChange(record);
         }
-        this.recordFocusEvent(newRecordIndex);
+        this._recordFocusEventer(newRecordIndex);
     }
 
-    private handleRequireDefaultTableDefinitionEvent() {
-        return this._tablesService.definitionFactory.createBalances(BalancesDitemFrame.default.activeAccountGroup);
+    private createGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
+        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createBalances(brokerageAccountGroup);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const balancesRecordDefinitionList = recordDefinitionList as BalancesTableRecordDefinitionList;
-        this._balancesList = balancesRecordDefinitionList.recordList;
-        const group = balancesRecordDefinitionList.brokerageAccountGroup;
-        this.tableOpenEvent(group);
+    private createDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createGridSourceOrNamedReferenceDefinition(BrokerageAccountGroup.createAll());
     }
 
     private processRecordFocusChange(newFocusedRecord: Balances) {
@@ -143,19 +150,23 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private newTable(group: BrokerageAccountGroup, keepCurrentLayout: boolean) {
-        const tableDefinition = this._tablesService.definitionFactory.createBalances(group);
-        this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
+    private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
+        const table = this._gridSourceFrame.open(definition);
+        if (table !== undefined) {
+            this._recordSource = table.recordSource as BalancesTableRecordSource;
+            this._openEventer(this._recordSource.brokerageAccountGroup);
+        }
     }
 
-    private applyBrokerageAccountGroupWithNewTable(group: BrokerageAccountGroup | undefined, SelfInitiated: boolean) {
+    private applyBrokerageAccountGroupWithOpen(group: BrokerageAccountGroup | undefined, selfInitiated: boolean) {
         let result: boolean;
         this._brokerageAccountGroupApplying = true;
         try {
-            result = super.applyBrokerageAccountGroup(group, SelfInitiated);
+            result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
                 // TODO add support for clearTable
-                this.newTable(group, true);
+                const definition = this.createGridSourceOrNamedReferenceDefinition(group);
+                this.tryOpenGridSource(definition);
             }
         } finally {
             this._brokerageAccountGroupApplying = false;
@@ -169,6 +180,6 @@ export namespace BalancesDitemFrame {
         export const content = 'content';
     }
 
-    export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined) => void;
-    export type TableOpenEvent = (this: void, group: BrokerageAccountGroup) => void;
+    export type RecordFocusEventer = (this: void, newRecordIndex: Integer | undefined) => void;
+    export type OpenEventer = (this: void, group: BrokerageAccountGroup) => void;
 }

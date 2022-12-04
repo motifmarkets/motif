@@ -12,8 +12,8 @@ export abstract class AdaptedRevgrid extends Revgrid {
     private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
     private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
 
-    private _resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
-    private _renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
+    // private _resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
+    // private _renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
     private _columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
@@ -37,43 +37,43 @@ export abstract class AdaptedRevgrid extends Revgrid {
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get columnCount(): number {
-        return this.getActiveColumnCount();
-    }
+    // // eslint-disable-next-line @typescript-eslint/member-ordering
+    // get columnCount(): number {
+    //     return this.getActiveColumnCount();
+    // }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get resizedEventer() {
-        return this._resizedEventer;
-    }
-    set resizedEventer(value: AdaptedRevgrid.ResizedEventer | undefined) {
-        if (this._resizedEventer !== undefined) {
-            this.removeEventListener('rev-grid-resized', this._resizedListener);
-        }
-        this._resizedEventer = value;
+    // // eslint-disable-next-line @typescript-eslint/member-ordering
+    // get resizedEventer() {
+    //     return this._resizedEventer;
+    // }
+    // set resizedEventer(value: AdaptedRevgrid.ResizedEventer | undefined) {
+    //     if (this._resizedEventer !== undefined) {
+    //         this.removeEventListener('rev-grid-resized', this._resizedListener);
+    //     }
+    //     this._resizedEventer = value;
 
-        if (this._resizedEventer !== undefined) {
-            this.addEventListener('rev-grid-resized', this._resizedListener);
-        }
-    }
+    //     if (this._resizedEventer !== undefined) {
+    //         this.addEventListener('rev-grid-resized', this._resizedListener);
+    //     }
+    // }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get renderedEventer() {
-        return this._renderedEventer;
-    }
-    set renderedEventer(value: AdaptedRevgrid.RenderedEventer | undefined) {
-        if (this._renderedEventer !== undefined) {
-            this.removeEventListener(
-                'rev-grid-rendered',
-                this._renderedListener
-            );
-        }
-        this._renderedEventer = value;
+    // // eslint-disable-next-line @typescript-eslint/member-ordering
+    // get renderedEventer() {
+    //     return this._renderedEventer;
+    // }
+    // set renderedEventer(value: AdaptedRevgrid.RenderedEventer | undefined) {
+    //     if (this._renderedEventer !== undefined) {
+    //         this.removeEventListener(
+    //             'rev-grid-rendered',
+    //             this._renderedListener
+    //         );
+    //     }
+    //     this._renderedEventer = value;
 
-        if (this._renderedEventer !== undefined) {
-            this.addEventListener('rev-grid-rendered', this._renderedListener);
-        }
-    }
+    //     if (this._renderedEventer !== undefined) {
+    //         this.addEventListener('rev-grid-rendered', this._renderedListener);
+    //     }
+    // }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get columnsViewWidthsChangedEventer() {
@@ -107,9 +107,9 @@ export abstract class AdaptedRevgrid extends Revgrid {
         super.destroy();
     }
 
-    autoSizeColumnWidth(columnIndex: number): void {
-        this.autosizeColumn(columnIndex);
-    }
+    // autoSizeColumnWidth(columnIndex: number): void {
+    //     this.autosizeColumn(columnIndex);
+    // }
 
     autoSizeAllColumnWidths(): void {
         this.autosizeAllColumns();

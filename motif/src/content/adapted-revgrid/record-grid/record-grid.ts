@@ -964,8 +964,6 @@ export namespace RecordGrid {
     //     headersMap: FieldNameToHeaderMap;
     // }
 
-    // export type RenderedCallback = (this: void) => void;
-
     export interface ComponentAccess {
         applySettings(): void;
     }
