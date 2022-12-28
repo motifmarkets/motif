@@ -1,15 +1,18 @@
 import {
-    AssertInternalError, GridField, GridLayout,
-    GridLayoutDefinition,
-    GridLayoutRecordStore, MultiEvent,
+    AssertInternalError,
+    GridField,
+    GridLayout,
+    GridLayoutDefinition, GridRowOrderDefinition, GridSortColumnDefinition,
+    Integer,
+    MultiEvent,
     SettingsService,
-    UnexpectedUndefinedError
+    UnexpectedUndefinedError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
-    CellEvent,
-    Column,
-    EventDetail,
+    CellEvent, Column, ColumnNameWidth, EventDetail,
     GridProperties,
+    ListChangedTypeId,
     Revgrid,
     RevRecordCellAdapter,
     RevRecordField,
@@ -31,7 +34,10 @@ import { RecordGridCellPainter } from './record-grid-cell-painter';
  * @public
  */
 export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeInitiator {
-    fieldSortedEventer: RecordGrid.FieldSortedEventer | undefined;
+    recordFocusEventer: RecordGrid.RecordFocusEventer | undefined;
+    mainClickEventer: RecordGrid.MainClickEventer | undefined;
+    mainDblClickEventer: RecordGrid.MainDblClickEventer | undefined;
+    // fieldSortedEventer: RecordGrid.FieldSortedEventer | undefined;
 
     private readonly _componentAccess: RecordGrid.ComponentAccess;
 
@@ -39,21 +45,18 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     private readonly _headerRecordAdapter: RevRecordHeaderAdapter;
     private readonly _mainRecordAdapter: RevRecordMainAdapter;
 
-    private _layout: GridLayout;
+    private _columnLayout: GridLayout;
     private _allowedFields: readonly GridField[];
+
+    private _beenUsable = false;
+    private _usableRendered = false;
+    private _firstUsableRenderKeptViewport: RecordGrid.KeptView | undefined;
+    private _firstUsableKeptSortColumns: GridSortColumnDefinition[] | undefined;
 
     private _lastNotifiedFocusedRecordIndex: number | undefined;
 
-    private _layoutChangeSubscriptionId: MultiEvent.SubscriptionId;
-
-    private _recordFocusEventer: RecordGrid.RecordFocusEventer | undefined;
-    private _mainClickEventer: RecordGrid.MainClickEventer | undefined;
-    private _mainDblClickEventer: RecordGrid.MainDblClickEventer | undefined;
-
-    private readonly _selectionChangedListener: (event: CustomEvent<SelectionDetail>) => void;
-    private readonly _clickListener: (event: CustomEvent<CellEvent>) => void;
-    private readonly _dblClickListener: (event: CustomEvent<CellEvent>) => void;
-    private readonly _columnSortListener: (event: CustomEvent<EventDetail.ColumnSort>) => void;
+    private _columnLayoutChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private _columnLayoutWidthsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         componentAccess: RecordGrid.ComponentAccess,
@@ -95,17 +98,10 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._headerRecordAdapter = headerRecordAdapter;
         this._mainRecordAdapter = mainRecordAdapter;
 
-        this._selectionChangedListener = (event) => this.handleHypegridSelectionChanged(event);
-        this._clickListener = (event) => this.handleHypegridClickEvent(event);
-        this._dblClickListener = (event) => this.handleHypegridDblClickEvent(event);
-        this._columnSortListener = (event) => this.handleHypegridColumnSortEvent(event.detail.column);
-
         this.applySettings();
         // this.applySettingsToMainRecordAdapter();
 
         this.allowEvents(true);
-
-        this.addEventListener('rev-column-sort', this._columnSortListener);
     }
 
     get fieldNames() { return this._fieldAdapter.getFieldNames(); }
@@ -224,54 +220,6 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get recordFocusEventer() {
-        return this._recordFocusEventer;
-    }
-    set recordFocusEventer(value: RecordGrid.RecordFocusEventer | undefined) {
-        if (this._recordFocusEventer !== undefined) {
-            this.removeEventListener('rev-selection-changed', this._selectionChangedListener);
-        }
-        this._recordFocusEventer = value;
-
-        if (this._recordFocusEventer !== undefined) {
-            this.addEventListener('rev-selection-changed', this._selectionChangedListener);
-        }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get mainClickEventer() {
-        return this._mainClickEventer;
-    }
-    set mainClickEventer(value: RecordGrid.MainClickEventer | undefined) {
-        if (this._mainClickEventer !== undefined) {
-            this.removeEventListener('rev-click', this._clickListener);
-        }
-        this._mainClickEventer = value;
-
-        if (this._mainClickEventer !== undefined) {
-            this.addEventListener('rev-click', this._clickListener);
-        }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get mainDblClickEventer() {
-        return this._mainDblClickEventer;
-    }
-    set mainDblClickEventer(value: RecordGrid.MainDblClickEventer | undefined) {
-        if (this._mainDblClickEventer !== undefined) {
-            this.removeEventListener(
-                'rev-double-click',
-                this._dblClickListener
-            );
-        }
-        this._mainDblClickEventer = value;
-
-        if (this._mainDblClickEventer !== undefined) {
-            this.addEventListener('rev-double-click', this._dblClickListener);
-        }
-    }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get rowRecIndices(): number[] {
         return [];
         // todo
@@ -282,30 +230,186 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._mainRecordAdapter.destroy();
     }
 
-    setAllowedFields(value: readonly GridField[]) {
+    override fireSyntheticColumnSortEvent(eventDetail: EventDetail.ColumnSort): boolean {
+        const fieldIndex = eventDetail.column.schemaColumn.index;
+        this.sortBy(fieldIndex);
+
+        return super.fireSyntheticColumnSortEvent(eventDetail);
+    }
+
+    override fireSyntheticClickEvent(cellEvent: CellEvent): boolean {
+        const gridY = cellEvent.gridCell.y;
+        if (gridY !== 0) {
+            // Skip clicks to the column headers
+            if (this.mainClickEventer !== undefined) {
+                const rowIndex = cellEvent.dataCell.y;
+                const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
+                if (recordIndex === undefined) {
+                    throw new UnexpectedUndefinedError('MGHC89877');
+                } else {
+                    const fieldIndex = cellEvent.dataCell.x;
+                    this.mainClickEventer(fieldIndex, recordIndex);
+                }
+            }
+        }
+        return super.fireSyntheticClickEvent(cellEvent);
+    }
+
+    override fireSyntheticDoubleClickEvent(cellEvent: CellEvent): boolean {
+        if (cellEvent.gridCell.y !== 0) {
+            // Skip clicks to the column headers
+            if (this.mainDblClickEventer !== undefined) {
+                const rowIndex = cellEvent.dataCell.y;
+                const recordIndex =this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
+                if (recordIndex === undefined) {
+                    throw new UnexpectedUndefinedError('MGHDC87877');
+                } else {
+                    this.mainDblClickEventer(
+                        cellEvent.dataCell.x,
+                        recordIndex
+                    );
+                }
+            }
+        }
+        return super.fireSyntheticDoubleClickEvent(cellEvent);
+    }
+
+    override fireSyntheticSelectionChangedEvent(selectionDetail: SelectionDetail): boolean {
+        const selections = selectionDetail.selections;
+
+        if (selections.length === 0) {
+            if (this._lastNotifiedFocusedRecordIndex !== undefined) {
+                const oldSelectedRecordIndex = this._lastNotifiedFocusedRecordIndex;
+                this._lastNotifiedFocusedRecordIndex = undefined;
+                const recordFocusEventer = this.recordFocusEventer;
+                if (recordFocusEventer !== undefined) {
+                    recordFocusEventer(undefined, oldSelectedRecordIndex);
+                }
+            }
+        } else {
+            const selection = selections[0];
+            const newFocusedRecordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(selection.firstSelectedCell.y);
+            if (newFocusedRecordIndex !== this._lastNotifiedFocusedRecordIndex) {
+                const oldFocusedRecordIndex = this._lastNotifiedFocusedRecordIndex;
+                this._lastNotifiedFocusedRecordIndex = newFocusedRecordIndex;
+                const recordFocusEventer = this.recordFocusEventer;
+                if (recordFocusEventer !== undefined) {
+                    recordFocusEventer(newFocusedRecordIndex, oldFocusedRecordIndex);
+                }
+            }
+        }
+
+        return super.fireSyntheticSelectionChangedEvent(selectionDetail);
+    }
+
+    override fireSyntheticGridRenderedEvent(): boolean {
+        if (!this._usableRendered && this._beenUsable) {
+            this._usableRendered = true;
+
+            if (this._firstUsableRenderKeptViewport !== undefined) {
+                this.setViewport(
+                    this._firstUsableRenderKeptViewport.columnScrollAnchorIndex,
+                    this._firstUsableRenderKeptViewport.columnScrollAnchorOffset,
+                    this._firstUsableRenderKeptViewport.rowScrollAnchorIndex,
+                    0
+                );
+                this._firstUsableRenderKeptViewport = undefined;
+            }
+        }
+
+        return super.fireSyntheticGridRenderedEvent();
+    }
+
+    sourceReset(fields: readonly GridField[], columnLayout: GridLayout, keepView: boolean) {
+        if (keepView && this._usableRendered) {
+            this._firstUsableRenderKeptViewport = {
+                rowScrollAnchorIndex: this.rowScrollAnchorIndex,
+                columnScrollAnchorIndex: this.columnScrollAnchorIndex,
+                columnScrollAnchorOffset: this.columnScrollAnchorOffset,
+            };
+            this._firstUsableKeptSortColumns = this.getSortColumns();
+        } else {
+            this._firstUsableKeptSortColumns = undefined;
+            this._firstUsableRenderKeptViewport = undefined;
+        }
+        this._usableRendered = false;
+        this._beenUsable = false;
+        this._allowedFields = fields;
+        this.updateColumnLayout(columnLayout);
+    }
+
+    applyFirstUsable(sortColumns: GridSortColumnDefinition[] | undefined) {
+        this._beenUsable = true;
+        if (sortColumns !== undefined) {
+            this.applySortColumns(sortColumns);
+            this._firstUsableKeptSortColumns = undefined;
+        } else {
+            if (this._firstUsableKeptSortColumns !== undefined) {
+                this.applySortColumns(this._firstUsableKeptSortColumns);
+                this._firstUsableKeptSortColumns = undefined;
+            } else {
+                this._mainRecordAdapter.invalidateAll();
+            }
+        }
+    }
+
+    updateAllowedFields(value: readonly GridField[]) {
         this._allowedFields = value;
-        if (this._layout !== undefined) {
+        if (this._columnLayout !== undefined) {
             this.updateGridSchema();
         }
     }
 
-    setLayout(value: GridLayout) {
-        if (this._layout !== undefined) {
-            this._layout.unsubscribeChangedEvent(this._layoutChangeSubscriptionId);
-            this._layoutChangeSubscriptionId = undefined;
+    updateColumnLayout(value: GridLayout) {
+        if (this._columnLayout !== undefined) {
+            this._columnLayout.unsubscribeChangedEvent(this._columnLayoutChangedSubscriptionId);
+            this._columnLayoutChangedSubscriptionId = undefined;
+            this._columnLayout.unsubscribeWidthsChangedEvent(this._columnLayoutWidthsChangedSubscriptionId);
+            this._columnLayoutChangedSubscriptionId = undefined;
         }
 
-        this._layout = value;
-        this._layoutChangeSubscriptionId = this._layout.subscribeChangedEvent((initiator) => this.processLayoutChangedEvent(initiator));
+        this._columnLayout = value;
+        this._columnLayoutChangedSubscriptionId = this._columnLayout.subscribeChangedEvent(
+            (initiator) => this.processColumnLayoutChangedEvent(initiator)
+        );
+        this._columnLayoutWidthsChangedSubscriptionId = this._columnLayout.subscribeWidthsChangedEvent(
+            (initiator) => this.processColumnLayoutWidthsChangedEvent(initiator)
+        );
 
-        this.processLayoutChangedEvent(GridLayout.forceChangeInitiator);
+        this.processColumnLayoutChangedEvent(GridLayout.forceChangeInitiator);
     }
 
-    setLayoutDefinition(value: GridLayoutDefinition) {
-        if (this._layout === undefined) {
+    setColumnLayoutDefinition(value: GridLayoutDefinition) {
+        if (this._columnLayout === undefined) {
             throw new AssertInternalError('RGSLD34488');
         } else {
-            this._layout.applyDefinition(GridLayout.forceChangeInitiator, value);
+            this._columnLayout.applyDefinition(GridLayout.forceChangeInitiator, value);
+        }
+    }
+
+    getSortColumns(): GridSortColumnDefinition[] | undefined {
+        const specifiers = this._mainRecordAdapter.sortFieldSpecifiers;
+        const count = specifiers.length;
+        if (count === 0) {
+            return undefined;
+        } else {
+            const columnDefinitions = new Array(count);
+            const fieldCount = this.fieldCount;
+            for (let i = 0; i < count; i++) {
+                const specifier = specifiers[i];
+                const fieldIndex = specifier.fieldIndex;
+                if (fieldIndex > fieldCount) {
+                    throw new AssertInternalError('RCGSC81899');
+                } else {
+                    const field = this.getField(fieldIndex);
+                    const columnDefinition: GridSortColumnDefinition = {
+                        fieldName: field.name,
+                        ascending: specifier.ascending,
+                    };
+                    columnDefinitions[i] = columnDefinition;
+                }
+            }
+            return columnDefinitions;
         }
     }
 
@@ -342,6 +446,11 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._mainRecordAdapter.clearSort();
     }
 
+    getRowOrderDefinition(): GridRowOrderDefinition {
+        const sortColumns = this.getSortColumns();
+        return new GridRowOrderDefinition(sortColumns, undefined);
+    }
+
     getFieldByName(fieldName: string): RevRecordField {
         return this._fieldAdapter.getFieldByName(fieldName);
     }
@@ -350,16 +459,16 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return this._fieldAdapter.getFieldIndex(field);
     }
 
-    getFieldNameToHeaderMap(): GridLayoutRecordStore.FieldNameToHeaderMap {
-        const result = new Map<string, string | undefined>();
-        const fields = this._fieldAdapter.fields;
-        for (let i = 0; i < fields.length; i++) {
-            const state = this.getFieldState(i);
-            const field = fields[i];
-            result.set(field.name, state.header);
-        }
-        return result;
-    }
+    // getFieldNameToHeaderMap(): GridLayoutRecordStore.FieldNameToHeaderMap {
+    //     const result = new Map<string, string | undefined>();
+    //     const fields = this._fieldAdapter.fields;
+    //     for (let i = 0; i < fields.length; i++) {
+    //         const state = this.getFieldState(i);
+    //         const field = fields[i];
+    //         result.set(field.name, state.header);
+    //     }
+    //     return result;
+    // }
 
     getField(fieldIndex: RevRecordFieldIndex): RevRecordField {
         return this._fieldAdapter.getField(fieldIndex);
@@ -377,17 +486,17 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return this._mainRecordAdapter.getFieldSortAscending(field);
     }
 
-    getFieldState(field: RevRecordFieldIndex | RevRecordField): GridRecordFieldState {
-        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
-        const column = this.getAllColumn(fieldIndex);
-        const columnProperties = column.properties;
+    // getFieldState(field: RevRecordFieldIndex | RevRecordField): GridRecordFieldState {
+    //     const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+    //     const column = this.getAllColumn(fieldIndex);
+    //     const columnProperties = column.properties;
 
-        return {
-            width: !columnProperties.columnAutosized ? columnProperties.width : undefined,
-            header: (column.schemaColumn as RevRecordField.SchemaColumn).header,
-            alignment: columnProperties.halign,
-        };
-    }
+    //     return {
+    //         width: !columnProperties.columnAutosized ? columnProperties.width : undefined,
+    //         header: (column.schemaColumn as RevRecordField.SchemaColumn).header,
+    //         alignment: columnProperties.halign,
+    //     };
+    // }
 
     getFieldWidth(field: RevRecordFieldIndex | RevRecordField): number | undefined {
         const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
@@ -403,12 +512,12 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return index !== -1;
     }
 
-    getLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return {
-            layout: this.saveLayout(),
-            headersMap: this.getFieldNameToHeaderMap(),
-        };
-    }
+    // getLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
+    //     return {
+    //         layout: this.saveLayout(),
+    //         headersMap: this.getFieldNameToHeaderMap(),
+    //     };
+    // }
 
     getSortSpecifier(index: number): RevRecordMainAdapter.SortFieldSpecifier {
         return this._mainRecordAdapter.getSortSpecifier(index);
@@ -424,85 +533,85 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return rowIndex > this.headerRowCount;
     }
 
-    loadLayoutDefinition(definition: GridLayoutDefinition) {
-        const layout = new GridLayout(this._fieldAdapter.getFieldNames());
-        layout.applyDefinition(definition);
-        this.loadLayout(layout);
-    }
+    // loadLayoutDefinition(definition: GridLayoutDefinition) {
+    //     const layout = new GridLayout(this._fieldAdapter.getFieldNames());
+    //     layout.applyDefinition(definition);
+    //     this.loadLayout(layout);
+    // }
 
-    loadLayout(layout: GridLayout): void {
-        const columns = layout
-            .getColumns()
-            .filter((column) => this._fieldAdapter.hasField(column.field.name));
+    // loadLayout(layout: GridLayout): void {
+    //     const columns = layout
+    //         .getColumns()
+    //         .filter((column) => this._fieldAdapter.hasField(column.field.name));
 
-        // Show all visible columns. Also sets their positions
-        // TODO: Should we care about the position of hidden columns?
-        this.showColumns(
-            false,
-            columns
-                .filter((column) => column.visible)
-                .map((column) =>
-                    this._fieldAdapter.getFieldIndexByName(column.field.name)
-                )
-        );
-        this.showColumns(
-            false,
-            columns
-                .filter((column) => !column.visible)
-                .map((column) =>
-                    this._fieldAdapter.getFieldIndexByName(column.field.name)
-                ),
-            -1
-        );
+    //     // Show all visible columns. Also sets their positions
+    //     // TODO: Should we care about the position of hidden columns?
+    //     this.showColumns(
+    //         false,
+    //         columns
+    //             .filter((column) => column.visible)
+    //             .map((column) =>
+    //                 this._fieldAdapter.getFieldIndexByName(column.field.name)
+    //             )
+    //     );
+    //     this.showColumns(
+    //         false,
+    //         columns
+    //             .filter((column) => !column.visible)
+    //             .map((column) =>
+    //                 this._fieldAdapter.getFieldIndexByName(column.field.name)
+    //             ),
+    //         -1
+    //     );
 
-        const gridColumns = this.getAllColumns();
+    //     const gridColumns = this.getAllColumns();
 
-        // Apply width settings
-        for (const column of columns) {
-            const fieldIndex = this._fieldAdapter.getFieldIndexByName(
-                column.field.name
-            );
-            const gridColumn = gridColumns[fieldIndex];
+    //     // Apply width settings
+    //     for (const column of columns) {
+    //         const fieldIndex = this._fieldAdapter.getFieldIndexByName(
+    //             column.field.name
+    //         );
+    //         const gridColumn = gridColumns[fieldIndex];
 
-            if (column.width === undefined) {
-                gridColumn.checkColumnAutosizing(true);
-            } else {
-                gridColumn.setWidth(column.width);
-            }
-        }
+    //         if (column.width === undefined) {
+    //             gridColumn.checkColumnAutosizing(true);
+    //         } else {
+    //             gridColumn.setWidth(column.width);
+    //         }
+    //     }
 
-        // Apply sorting
-        const sortedColumns = columns.filter(
-            (column) => column.sortPriority !== undefined
-        ) as GridLayout.SortPrioritizedColumn[];
+    //     // Apply sorting
+    //     const sortedColumns = columns.filter(
+    //         (column) => column.sortPriority !== undefined
+    //     ) as GridLayout.SortPrioritizedColumn[];
 
-        if (sortedColumns.length === 0) {
-            this.clearSort();
-        } else {
-            sortedColumns.sort(
-                (left, right) => right.sortPriority - left.sortPriority
-            );
+    //     if (sortedColumns.length === 0) {
+    //         this.clearSort();
+    //     } else {
+    //         sortedColumns.sort(
+    //             (left, right) => right.sortPriority - left.sortPriority
+    //         );
 
-            const sortSpecifiers =
-                sortedColumns.map<RevRecordMainAdapter.SortFieldSpecifier>(
-                    (column) => {
-                        const fieldIndex =
-                            this._fieldAdapter.getFieldIndexByName(
-                                column.field.name
-                            );
-                        return {
-                            fieldIndex,
-                            ascending: column.sortAscending === true,
-                        };
-                    }
-                );
+    //         const sortSpecifiers =
+    //             sortedColumns.map<RevRecordMainAdapter.SortFieldSpecifier>(
+    //                 (column) => {
+    //                     const fieldIndex =
+    //                         this._fieldAdapter.getFieldIndexByName(
+    //                             column.field.name
+    //                         );
+    //                     return {
+    //                         fieldIndex,
+    //                         ascending: column.sortAscending === true,
+    //                     };
+    //                 }
+    //             );
 
-            this.sortByMany(sortSpecifiers);
-        }
+    //         this.sortByMany(sortSpecifiers);
+    //     }
 
-        // this._hypegrid.renderer.resetAllCellPropertiesCaches();
-        this._mainRecordAdapter.recordsLoaded();
-    }
+    //     // this._hypegrid.renderer.resetAllCellPropertiesCaches();
+    //     this._mainRecordAdapter.recordsLoaded();
+    // }
 
     moveFieldColumn(
         field: RevRecordFieldIndex | RevRecordField,
@@ -561,54 +670,54 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         }
     }
 
-    saveLayoutDefinition() {
-        const layout = this.saveLayout();
-        return layout.createDefinition();
-    }
+    // saveLayoutDefinition() {
+    //     const layout = this.saveLayout();
+    //     return layout.createDefinition();
+    // }
 
-    saveLayout(): GridLayout {
-        const layout = new GridLayout(this._fieldAdapter.getFieldNames());
+    // saveLayout(): GridLayout {
+    //     const layout = new GridLayout(this._fieldAdapter.getFieldNames());
 
-        // Apply the order of the visible columns
-        const visibleColumnFields = this.getActiveColumns().map((column) =>
-            this._fieldAdapter.getFieldByName(column.schemaColumn.name)
-        );
-        layout.setFieldColumnsByFieldNames(
-            visibleColumnFields.map<string>((field) => field.name)
-        );
+    //     // Apply the order of the visible columns
+    //     const visibleColumnFields = this.getActiveColumns().map((column) =>
+    //         this._fieldAdapter.getFieldByName(column.schemaColumn.name)
+    //     );
+    //     layout.setFieldColumnsByFieldNames(
+    //         visibleColumnFields.map<string>((field) => field.name)
+    //     );
 
-        // Hide all hidden fields
-        const visibleSet = new Set(visibleColumnFields);
-        const hiddenColumnFields = this._fieldAdapter.getFilteredFields(
-            (field) => !visibleSet.has(field)
-        );
-        layout.setFieldsVisible(
-            hiddenColumnFields.map((field) => field.name),
-            false
-        );
+    //     // Hide all hidden fields
+    //     const visibleSet = new Set(visibleColumnFields);
+    //     const hiddenColumnFields = this._fieldAdapter.getFilteredFields(
+    //         (field) => !visibleSet.has(field)
+    //     );
+    //     layout.setFieldsVisible(
+    //         hiddenColumnFields.map((field) => field.name),
+    //         false
+    //     );
 
-        // Apply width settings
-        for (const column of this.getAllColumns()) {
-            const field = this._fieldAdapter.getFieldByName(
-                column.schemaColumn.name
-            );
-            const columnProperties = column.properties;
+    //     // Apply width settings
+    //     for (const column of this.getAllColumns()) {
+    //         const field = this._fieldAdapter.getFieldByName(
+    //             column.schemaColumn.name
+    //         );
+    //         const columnProperties = column.properties;
 
-            if (columnProperties.columnAutosizing && columnProperties.columnAutosized) {
-                layout.setFieldWidthByFieldName(field.name);
-            } else {
-                layout.setFieldWidthByFieldName(
-                    field.name,
-                    columnProperties.width
-                );
-            }
-        }
+    //         if (columnProperties.columnAutosizing && columnProperties.columnAutosized) {
+    //             layout.setFieldWidthByFieldName(field.name);
+    //         } else {
+    //             layout.setFieldWidthByFieldName(
+    //                 field.name,
+    //                 columnProperties.width
+    //             );
+    //         }
+    //     }
 
-        // Apply the sorting
-        layout.setFieldSorting(this._mainRecordAdapter.sortFieldSpecifiers);
+    //     // Apply the sorting
+    //     layout.setFieldSorting(this._mainRecordAdapter.sortFieldSpecifiers);
 
-        return layout;
-    }
+    //     return layout;
+    // }
 
     // setColumnWidth(indexOrColumn: number | Column, width: number): void {
     //     const widthChangedColumn = this._hypegrid.setActiveColumnWidth(indexOrColumn, width);
@@ -626,42 +735,42 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._headerRecordAdapter.invalidateCell(fieldIndex);
     }
 
-    setFieldState(field: RevRecordField, state: GridRecordFieldState): void {
-        // const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
-        const fieldIndex = this.getFieldIndex(field);
+    // setFieldState(field: RevRecordField, state: GridRecordFieldState): void {
+    //     // const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+    //     const fieldIndex = this.getFieldIndex(field);
 
-        if (state === undefined) {
-            state = {};
-        }
+    //     if (state === undefined) {
+    //         state = {};
+    //     }
 
-        const columnIndex = this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
+    //     const columnIndex = this.getActiveColumnIndexUsingFieldIndex(fieldIndex);
 
-        if (columnIndex < 0) {
-            return;
-        }
+    //     if (columnIndex < 0) {
+    //         return;
+    //     }
 
-        const column = this.getAllColumn(columnIndex);
+    //     const column = this.getAllColumn(columnIndex);
 
-        // Update the schema
-        const header = state.header ?? field.name;
-        this.setFieldHeader(fieldIndex, header);
+    //     // Update the schema
+    //     const header = state.header ?? field.name;
+    //     this.setFieldHeader(fieldIndex, header);
 
-        // Update any properties
-        if (state.alignment !== undefined) {
-            column.properties.halign = state.alignment;
-        }
+    //     // Update any properties
+    //     if (state.alignment !== undefined) {
+    //         column.properties.halign = state.alignment;
+    //     }
 
-        // Update the width
-        if (state.width === undefined) {
-            column.checkColumnAutosizing(true);
-        } else {
-            column.setWidth(state.width);
-        }
+    //     // Update the width
+    //     if (state.width === undefined) {
+    //         column.checkColumnAutosizing(true);
+    //     } else {
+    //         column.setWidth(state.width);
+    //     }
 
-        // Update Hypergrid schema
-        // if (this.updateCounter == 0 && this.dispatchEvent !== undefined)
-        // 	this.dispatchEvent('fin-hypergrid-schema-loaded');
-    }
+    //     // Update Hypergrid schema
+    //     // if (this.updateCounter == 0 && this.dispatchEvent !== undefined)
+    //     // 	this.dispatchEvent('fin-hypergrid-schema-loaded');
+    // }
 
     setFieldsVisible(fields: (RevRecordFieldIndex | RevRecordField)[], visible: boolean): void {
         const fieldIndexes = fields.map((field) =>
@@ -676,8 +785,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     setFieldWidth(field: RevRecordFieldIndex | RevRecordField, width?: number): void {
-        const fieldIndex =
-            typeof field === 'number' ? field : this.getFieldIndex(field);
+        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
         const column = this.getAllColumn(fieldIndex);
 
         if (width === undefined) {
@@ -685,18 +793,11 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         } else {
             column.setWidth(width);
         }
-
-        // Update Hypergrid schema
-        // if (this.updateCounter == 0 && this.dispatchEvent !== undefined)
-        // 	this.dispatchEvent('fin-hypergrid-schema-loaded');
     }
 
     setFieldVisible(field: RevRecordFieldIndex | RevRecordField, visible: boolean): void {
-        const fieldIndex =
-            typeof field === 'number' ? field : this.getFieldIndex(field);
-        const column = this.getActiveColumns().find(
-            (activeColumn) => activeColumn.index === fieldIndex
-        );
+        const fieldIndex = typeof field === 'number' ? field : this.getFieldIndex(field);
+        const column = this.getActiveColumns().find((activeColumn) => activeColumn.index === fieldIndex);
 
         if ((column !== undefined) === visible) {
             return;
@@ -721,6 +822,92 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return this._mainRecordAdapter.sortByMany(specifiers);
     }
 
+    protected override processAllColumnListChanged(
+        typeId: ListChangedTypeId,
+        index: number,
+        count: number,
+        targetIndex: number | undefined
+    ) {
+        switch (typeId) {
+            case ListChangedTypeId.Move:
+            case ListChangedTypeId.Clear:
+            case ListChangedTypeId.Insert:
+            case ListChangedTypeId.Remove: {
+                throw new AssertInternalError('RGPALCLCNI44430');
+            }
+            case ListChangedTypeId.Set: {
+                const columnNameWidths = this.createColumnNameWidths();
+                this.setActiveColumnsAndWidthsByName(columnNameWidths);
+                break;
+            }
+            default:
+                throw new UnreachableCaseError('RGPALCLCU44430', typeId);
+        }
+
+        super.processAllColumnListChanged(typeId, index, count, targetIndex);
+    }
+
+    protected override processActiveColumnListChanged(
+        typeId: ListChangedTypeId,
+        index: number,
+        count: number,
+        targetIndex: number | undefined,
+        ui: boolean,
+    ) {
+        if (ui) {
+            switch (typeId) {
+                case ListChangedTypeId.Move: {
+                    if (targetIndex === undefined) {
+                        throw new AssertInternalError('RGPACCLCM44430');
+                    } else {
+                        this._columnLayout.moveColumns(this, index, count, targetIndex);
+                        break;
+                    }
+                }
+                case ListChangedTypeId.Clear: {
+                    this._columnLayout.clearColumns(this);
+                    break;
+                }
+                case ListChangedTypeId.Insert:
+                case ListChangedTypeId.Remove:
+                case ListChangedTypeId.Set: {
+                    const activeColumns = this.activeColumns;
+                    const activeCount = activeColumns.length;
+                    const definitionColumns = new Array<GridLayoutDefinition.Column>(activeCount);
+
+                    for (let i = 0; i < activeCount; i++) {
+                        const activeColumn = activeColumns[i];
+                        const definitionColumn: GridLayoutDefinition.Column = {
+                            fieldName: activeColumn.name,
+                            visible: true,
+                            width: activeColumn.getWidth(),
+                        };
+                        definitionColumns[i] = definitionColumn;
+                    }
+                    const definition = new GridLayoutDefinition(definitionColumns);
+                    this._columnLayout.applyDefinition(this, definition);
+                    break;
+                }
+                default:
+                    throw new UnreachableCaseError('RGPACCLCU44430', typeId);
+            }
+        }
+
+        super.processActiveColumnListChanged(typeId, index, count, targetIndex, ui);
+    }
+
+    protected override processColumnsWidthChanged(columns: Column[], ui: boolean) {
+        if (ui) {
+            this._columnLayout.beginChange(this);
+            for (const column of columns) {
+                this._columnLayout.setColumnWidth(this, column.name, column.getWidth());
+            }
+            this._columnLayout.endChange();
+        }
+
+        return super.processColumnsWidthChanged(columns, ui);
+    }
+
     protected override applySettings() {
         const result = super.applySettings();
 
@@ -739,108 +926,88 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._mainRecordAdapter.invalidateAll();
     }
 
-    private handleHypegridColumnSortEvent(column: Column): void {
-        const fieldIndex = column.schemaColumn.index;
-
-        this.sortBy(fieldIndex);
-    }
-
-    private handleHypegridClickEvent(event: CustomEvent<CellEvent>): void {
-        const gridY = event.detail.gridCell.y;
-        if (gridY !== 0) {
-            // Skip clicks to the column headers
-            if (this._mainClickEventer !== undefined) {
-                const rowIndex = event.detail.dataCell.y;
-                const recordIndex =
-                    this._mainRecordAdapter.getRecordIndexFromRowIndex(
-                        rowIndex
-                    );
-                if (recordIndex === undefined) {
-                    throw new UnexpectedUndefinedError('MGHC89877');
-                } else {
-                    const fieldIndex = event.detail.dataCell.x;
-                    this._mainClickEventer(fieldIndex, recordIndex);
-                }
-            }
-        }
-    }
-
-    /** @internal */
-    private handleMouseDown(/*rowIndex: number, fieldIndex: number, gridY: number*/): void {
-        /*if (gridY === 0) {
-            return;
-        } // Skip clicks to the column headers
-
-        const recordIndex = this.rowLookup.getLeftIndex(rowIndex)!;
-
-        this.recordFocusEventer!(recordIndex, fieldIndex);*/
-    }
-
-    /** @internal */
-    private handleHypegridDblClickEvent(event: CustomEvent<CellEvent>): void {
-        if (event.detail.gridCell.y !== 0) {
-            // Skip clicks to the column headers
-            if (this._mainDblClickEventer !== undefined) {
-                const rowIndex = event.detail.dataCell.y;
-                const recordIndex =
-                    this._mainRecordAdapter.getRecordIndexFromRowIndex(
-                        rowIndex
-                    );
-                if (recordIndex === undefined) {
-                    throw new UnexpectedUndefinedError('MGHDC87877');
-                } else {
-                    this._mainDblClickEventer(
-                        event.detail.dataCell.x,
-                        recordIndex
-                    );
-                }
-            }
-        }
-    }
-
-    /** @internal */
-    private handleHypegridSelectionChanged(event: CustomEvent<SelectionDetail>) {
-        const selections = event.detail.selections;
-
-        if (selections.length === 0) {
-            if (this._lastNotifiedFocusedRecordIndex !== undefined) {
-                const oldSelectedRecordIndex = this._lastNotifiedFocusedRecordIndex;
-                this._lastNotifiedFocusedRecordIndex = undefined;
-                const recordFocusEventer = this.recordFocusEventer;
-                if (recordFocusEventer !== undefined) {
-                    recordFocusEventer(undefined, oldSelectedRecordIndex);
-                }
-            }
+    private applySortColumns(sortColumns: GridSortColumnDefinition[] | undefined) {
+        if (sortColumns === undefined) {
+            this._mainRecordAdapter.clearSort();
         } else {
-            const selection = selections[0];
-            const newFocusedRecordIndex =
-                this._mainRecordAdapter.getRecordIndexFromRowIndex(
-                    selection.firstSelectedCell.y
-                );
-            if (
-                newFocusedRecordIndex !== this._lastNotifiedFocusedRecordIndex
-            ) {
-                const oldFocusedRecordIndex = this._lastNotifiedFocusedRecordIndex;
-                this._lastNotifiedFocusedRecordIndex = newFocusedRecordIndex;
-                const recordFocusEventer = this.recordFocusEventer;
-                if (recordFocusEventer !== undefined) {
-                    recordFocusEventer(newFocusedRecordIndex, oldFocusedRecordIndex);
+            const maxCount = sortColumns.length;
+            if (maxCount === 0) {
+                this._mainRecordAdapter.clearSort();
+            } else {
+                const specifiers = new Array<RevRecordMainAdapter.SortFieldSpecifier>(maxCount);
+                let count = 0;
+                for (let i = 0; i < maxCount; i++) {
+                    const column = sortColumns[i];
+                    const fieldIndex = this._fieldAdapter.getFieldIndexByName(column.fieldName);
+                    if (fieldIndex >= 0) {
+                        specifiers[count++] = {
+                            fieldIndex,
+                            ascending: column.ascending,
+                        };
+                    }
+                }
+                if (count === 0) {
+                    this._mainRecordAdapter.clearSort();
+                } else {
+                    specifiers.length = count;
+                    this._mainRecordAdapter.sortByMany(specifiers);
                 }
             }
         }
     }
 
-    private processLayoutChangedEvent(initiator: GridLayout.ChangeInitiator) {
-        if (initiator !== this) {
 
+    private processColumnLayoutChangedEvent(initiator: GridLayout.ChangeInitiator) {
+        if (initiator !== this) {
+            if (this._allowedFields !== undefined) {
+                this.updateGridSchema();
+            }
         }
+    }
+
+    private processColumnLayoutWidthsChangedEvent(initiator: GridLayout.ChangeInitiator) {
+        if (initiator !== this) {
+            const columnNameWidths = this.createColumnNameWidths();
+            this.setColumnWidthsByName(columnNameWidths);
+        }
+    }
+
+    private createColumnNameWidths() {
+        const schemaFieldNames = this._fieldAdapter.getFieldNames();
+        const columns = this._columnLayout.columns;
+        const maxCount = columns.length;
+        const columnNameWidths = new Array<ColumnNameWidth>(maxCount);
+        let count = 0;
+        for (let i = 0; i < maxCount; i++) {
+            const column = columns[i];
+            const fieldName = column.fieldName;
+            if (schemaFieldNames.includes(fieldName)) {
+                const columnNameWidth: ColumnNameWidth = {
+                    name: fieldName,
+                    width: column.width,
+                };
+                columnNameWidths[count++] = columnNameWidth;
+            }
+        }
+        columnNameWidths.length = count;
+        return columnNameWidths;
     }
 
     private updateGridSchema() {
-        const maxCount = this._allowedFields.length;
-        const schemaFields = new Array<GridRecordField>(maxCount);
-        const layoutColumns = this._layout.getColumns;
+        const allowedFields = this._allowedFields;
+        const layoutColumnCount = this._columnLayout.columnCount;
+        const layoutColumns = this._columnLayout.columns;
+        const schemaFields = new Array<GridField>(layoutColumnCount);
+        let count = 0;
         for (let i = 0; i < layoutColumnCount; i++) {
+            const column = layoutColumns[i];
+            const fieldName = column.fieldName;
+            const foundField = allowedFields.find((field) => field.name === fieldName);
+            if (foundField !== undefined) {
+                schemaFields[count++] = foundField;
+            }
+        }
+        schemaFields.length = count;
         this._fieldAdapter.setFields(schemaFields);
     }
 
@@ -940,7 +1107,11 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
 /** @public */
 export namespace RecordGrid {
-    // export type FieldNameToHeaderMap = Map<string, string | undefined>;
+    export interface KeptView {
+        readonly columnScrollAnchorIndex: Integer;
+        readonly columnScrollAnchorOffset: Integer;
+        readonly rowScrollAnchorIndex: Integer;
+    }
 
     export type RecordFocusEventer = (
         this: void,

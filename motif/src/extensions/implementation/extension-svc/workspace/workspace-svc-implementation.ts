@@ -40,7 +40,7 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
             this._localDesktop.destroy();
         }
 
-        this.resolveGetLoadedLocalDesktop(this._localDesktop);
+        this.resolveGetLoadedLocalDesktop(undefined);
     }
 
     getLoadedLocalDesktop(): Promise<LocalDesktopApi | undefined> {

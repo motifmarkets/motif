@@ -105,9 +105,9 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             symbolsNgService.service,
             adiNgService.service,
             favouriteLayoutsNgService.service,
+            (description) => this.handleLoadGridSourceEvent(description),
+            (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex),
         );
-        this._frame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._frame.loadGridSourceEvent = (description) => this.handleLoadGridSourceEvent(description);
         this._frame.differentLayoutAppliedEvent = (layout) => this.handleDifferentLayoutAppliedEvent(layout);
         this._frame.litIvemIdAcceptedEvent = (litIvemId) => this.handleLitIvemIdAcceptedEvent(litIvemId);
 
@@ -392,7 +392,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         try {
             const gridSource = await WatchlistOpenDialog.open();
             if (gridSource !== undefined) {
-                this._frame.openGridSource(gridSource);
+                this._frame.tryOpenGridSource(gridSource);
             }
         } finally {
             this.closeOpenDialog();

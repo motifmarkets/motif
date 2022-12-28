@@ -2,19 +2,16 @@ import { ColorScheme, MultiEvent, SettingsService } from '@motifmarkets/motif-co
 import { EventDetail, GridProperties, Revgrid } from 'revgrid';
 
 export abstract class AdaptedRevgrid extends Revgrid {
+    resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
+    renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
     ctrlKeyMouseMoveEventer: AdaptedRevgrid.CtrlKeyMouseMoveEventer | undefined;
     // columnWidthChangedEventer: AdaptedRevgrid.ColumnWidthChangedEventer | undefined;
 
     protected readonly _settingsService: SettingsService;
 
-    private readonly _resizedListener: (event: CustomEvent<EventDetail.Resize>) => void;
-    private readonly _renderedListener: () => void;
     private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
-    private readonly _columnsViewWidthsChangedListener: (event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) => void;
 
-    // private _resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
-    // private _renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
-    private _columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
+    private columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -27,75 +24,11 @@ export abstract class AdaptedRevgrid extends Revgrid {
 
         this._settingsService = settingsService;
 
-        this._resizedListener = (event) => this.handleHypegridResizedEvent(event);
-        this._renderedListener = () => this.handleHypegridRenderedEvent();
         this._ctrlKeyMousemoveListener = (event) => this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
-        this._columnsViewWidthsChangedListener = (event) => this.handleHypegridColumnsViewWidthsChangedEvent(event);
 
         this.canvas.canvas.addEventListener('mousemove', this._ctrlKeyMousemoveListener);
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
-    }
-
-    // // eslint-disable-next-line @typescript-eslint/member-ordering
-    // get columnCount(): number {
-    //     return this.getActiveColumnCount();
-    // }
-
-    // // eslint-disable-next-line @typescript-eslint/member-ordering
-    // get resizedEventer() {
-    //     return this._resizedEventer;
-    // }
-    // set resizedEventer(value: AdaptedRevgrid.ResizedEventer | undefined) {
-    //     if (this._resizedEventer !== undefined) {
-    //         this.removeEventListener('rev-grid-resized', this._resizedListener);
-    //     }
-    //     this._resizedEventer = value;
-
-    //     if (this._resizedEventer !== undefined) {
-    //         this.addEventListener('rev-grid-resized', this._resizedListener);
-    //     }
-    // }
-
-    // // eslint-disable-next-line @typescript-eslint/member-ordering
-    // get renderedEventer() {
-    //     return this._renderedEventer;
-    // }
-    // set renderedEventer(value: AdaptedRevgrid.RenderedEventer | undefined) {
-    //     if (this._renderedEventer !== undefined) {
-    //         this.removeEventListener(
-    //             'rev-grid-rendered',
-    //             this._renderedListener
-    //         );
-    //     }
-    //     this._renderedEventer = value;
-
-    //     if (this._renderedEventer !== undefined) {
-    //         this.addEventListener('rev-grid-rendered', this._renderedListener);
-    //     }
-    // }
-
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    get columnsViewWidthsChangedEventer() {
-        return this._columnsViewWidthsChangedEventer;
-    }
-    set columnsViewWidthsChangedEventer(
-        value: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined
-    ) {
-        if (this._columnsViewWidthsChangedEventer !== undefined) {
-            this.removeEventListener(
-                'rev-columns-view-widths-changed',
-                this._columnsViewWidthsChangedListener
-            );
-        }
-        this._columnsViewWidthsChangedEventer = value;
-
-        if (this._columnsViewWidthsChangedEventer !== undefined) {
-            this.addEventListener(
-                'rev-columns-view-widths-changed',
-                this._columnsViewWidthsChangedListener
-            );
-        }
     }
 
     override destroy(): void {
@@ -105,6 +38,31 @@ export abstract class AdaptedRevgrid extends Revgrid {
         );
         this._settingsChangedSubscriptionId = undefined;
         super.destroy();
+    }
+
+    override fireSyntheticColumnsViewWidthsChangedEvent(eventDetail: EventDetail.ColumnsViewWidthsChanged): boolean {
+        if (this.columnsViewWidthsChangedEventer !== undefined) {
+            this.columnsViewWidthsChangedEventer(
+                eventDetail.fixedChanged,
+                eventDetail.nonFixedChanged,
+                eventDetail.activeChanged
+            );
+        }
+        return super.fireSyntheticColumnsViewWidthsChangedEvent(eventDetail);
+    }
+
+    override fireSyntheticGridResizedEvent(detail: EventDetail.Resize): boolean {
+        if (this.resizedEventer !== undefined) {
+            this.resizedEventer(detail);
+        }
+        return super.fireSyntheticGridResizedEvent(detail);
+    }
+
+    override fireSyntheticGridRenderedEvent(): boolean {
+        if (this.renderedEventer !== undefined) {
+            this.renderedEventer();
+        }
+        return super.fireSyntheticGridRenderedEvent();
     }
 
     // autoSizeColumnWidth(columnIndex: number): void {
@@ -156,32 +114,9 @@ export abstract class AdaptedRevgrid extends Revgrid {
         }
     }
 
-    private handleHypegridResizedEvent(event: CustomEvent<EventDetail.Resize>) {
-        if (this._resizedEventer !== undefined) {
-            this._resizedEventer(event.detail);
-        }
-    }
-
-    private handleHypegridRenderedEvent() {
-        if (this._renderedEventer !== undefined) {
-            this._renderedEventer();
-        }
-    }
-
     private handleHypegridCtrlKeyMousemoveEvent(ctrlKey: boolean) {
         if (ctrlKey && this.ctrlKeyMouseMoveEventer !== undefined) {
             this.ctrlKeyMouseMoveEventer();
-        }
-    }
-
-    private handleHypegridColumnsViewWidthsChangedEvent(event: CustomEvent<EventDetail.ColumnsViewWidthsChanged>) {
-        if (this._columnsViewWidthsChangedEventer !== undefined) {
-            const detail = event.detail;
-            this._columnsViewWidthsChangedEventer(
-                detail.fixedChanged,
-                detail.nonFixedChanged,
-                detail.activeChanged
-            );
         }
     }
 
@@ -189,13 +124,10 @@ export abstract class AdaptedRevgrid extends Revgrid {
 }
 
 export namespace AdaptedRevgrid {
-    export type ResizedEventDetail = EventDetail.Resize;
-
     export type SettingsChangedEventer = (this: void) => void;
     export type CtrlKeyMouseMoveEventer = (this: void) => void;
-    export type ResizedEventer = (this: void, detail: ResizedEventDetail) => void;
+    export type ResizedEventer = (this: void, detail: EventDetail.Resize) => void;
     export type RenderedEventer = (this: void /*, detail: Hypergrid.GridEventDetail*/) => void;
-    // export type ColumnWidthChangedEventer = (this: void, columnIndex: number) => void;
     export type ColumnsViewWidthsChangedEventer = (
         this: void,
         fixedChanged: boolean,

@@ -6,11 +6,7 @@
 
 import { Frame } from 'component-internal-api';
 export class ContentFrame extends Frame {
-    protected _layoutConfigLoading = false;
-
     private _finalised = false;
-
-    get layoutConfigLoading() { return this._layoutConfigLoading; }
 
     protected get finalised() { return this._finalised; }
 

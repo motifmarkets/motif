@@ -12,8 +12,10 @@ import {
     BalancesTableRecordSource,
     BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
+    BrokerageAccountGroupRecordList,
     CommandRegisterService,
     GridSourceDefinition,
+    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
@@ -31,7 +33,9 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     };
 
     private _gridSourceFrame: GridSourceFrame;
+    private _gridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
     private _recordSource: BalancesTableRecordSource;
+    private _recordList: BrokerageAccountGroupRecordList<Balances>;
     private _currentFocusedAccountIdSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
@@ -61,14 +65,19 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                this._tableRecordSourceDefinitionFactoryService, frameElement,
-            );
-            if (definitionResult.isOk()) {
-                gridSourceOrNamedReferenceDefinition = definitionResult.value;
-            } else {
+            const contentElement = frameElement.tryGetElement(BalancesDitemFrame.JsonName.content);
+            if (contentElement === undefined) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-                // Temporary error toast
+            } else {
+                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+                    this._tableRecordSourceDefinitionFactoryService, frameElement,
+                );
+                if (definitionResult.isOk()) {
+                    gridSourceOrNamedReferenceDefinition = definitionResult.value;
+                } else {
+                    gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
+                    // Temporary error toast
+                }
             }
         }
         this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition);
@@ -85,7 +94,8 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(BalancesDitemFrame.JsonName.content);
-        this._gridSourceFrame.saveLayoutConfig(contentElement);
+        const definition = this._gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
+        definition.saveToJson(contentElement);
     }
 
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
@@ -120,8 +130,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
 
     private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const recordDefinition = this._gridSourceFrame.createRecordDefinition(newRecordIndex);
-            const record = this._recordSource.recordList.getAt(newRecordIndex);
+            const record = this._recordList.getAt(newRecordIndex);
             this.processRecordFocusChange(record);
         }
         this._recordFocusEventer(newRecordIndex);
@@ -151,9 +160,11 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        const table = this._gridSourceFrame.open(definition);
-        if (table !== undefined) {
+        this._gridSourceOrNamedReference = this._gridSourceFrame.open(definition);
+        if (this._gridSourceOrNamedReference !== undefined) {
+            const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as BalancesTableRecordSource;
+            this._recordList = this._recordSource.recordList;
             this._openEventer(this._recordSource.brokerageAccountGroup);
         }
     }

@@ -16,9 +16,7 @@ import {
     Logger,
     MultiEvent,
     NamedGridLayoutDefinition,
-    NamedGridLayoutsService, NamedGridSourcesService, SettingsService,
-    StringBuilder,
-    StringId,
+    NamedGridLayoutsService, NamedGridSourcesService, SettingsService, StringId,
     Strings,
     Table,
     TableGridRecordStore,
@@ -75,7 +73,13 @@ export class GridSourceFrame extends ContentFrame {
         super();
     }
 
+    get isNamed() {
+        const gridSourceOrNamedReference = this._lockedGridSourceOrNamedReference;
+        return gridSourceOrNamedReference !== undefined && gridSourceOrNamedReference.lockedNamedGridSource !== undefined;
+    }
+
     get recordStore() { return this._recordStore; }
+    get openedTable() { return this._openedTable; }
     get gridRowHeight() { return this._grid.rowHeight; }
     get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
 
@@ -119,7 +123,7 @@ export class GridSourceFrame extends ContentFrame {
         this.applySettings();
     }
 
-    open(definition: GridSourceOrNamedReferenceDefinition): Table | undefined {
+    open(definition: GridSourceOrNamedReferenceDefinition): GridSourceOrNamedReference | undefined {
         this.close();
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
@@ -163,21 +167,25 @@ export class GridSourceFrame extends ContentFrame {
 
                         this._recordStore.setTable(table);
                         this._tableFieldsChangedSubscriptionId = table.subscribeFieldsChangedEvent(
-                            () => this._grid.setAllowedFields(table.fields)
+                            () => this._grid.updateAllowedFields(table.fields)
                         );
-                        // if (table.beenUsable) {
-                        //     this.processFirstUsable();
-                        // } else {
-                        //     this._tableFirstUsableSubscriptionId = table.subscribeFirstUsableEvent(() => {
-                        //         table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId);
-                        //         this.processFirstUsable();
-                        //     });
-                        // }
 
-                        this._grid.setAllowedFields(table.fields);
-                        this._grid.setLayout(layout);
+                        this._grid.sourceReset(table.fields, layout, false);
+                        this._grid.updateAllowedFields(table.fields);
+                        this._grid.updateColumnLayout(layout);
+
+                        if (table.beenUsable) {
+                            this._grid.applyFirstUsable(gridSource.initialRowOrderDefinition?.sortColumns);
+                        } else {
+                            this._tableFirstUsableSubscriptionId = table.subscribeFirstUsableEvent(() => {
+                                table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId);
+                                const sortColumns = gridSource.initialRowOrderDefinition?.sortColumns;
+                                this._grid.applyFirstUsable(sortColumns);
+                            });
+                        }
+
                         this._keptLayout = gridSource.createGridLayoutOrNamedReferenceDefinition();
-                        return table;
+                        return gridSourceOrNamedReference;
                     }
                 }
             }
@@ -206,7 +214,8 @@ export class GridSourceFrame extends ContentFrame {
         if (this._lockedGridSourceOrNamedReference === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
-            return this._lockedGridSourceOrNamedReference.createDefinition(undefined);
+            const rowOrderDefinition = this._grid.getRowOrderDefinition();
+            return this._lockedGridSourceOrNamedReference.createDefinition(rowOrderDefinition);
         }
     }
 
@@ -475,14 +484,6 @@ export class GridSourceFrame extends ContentFrame {
     //         return this._table.getGridFieldsAndInitialStates();
     //     }
     // }
-
-    findRecordDefinition(definition: TableRecordDefinition): Integer | undefined {
-        if (this._table === undefined) {
-            return undefined;
-        } else {
-            return this._table.findRecord(definition);
-        }
-    }
 
     focusItem(itemIdx: Integer) {
         this._grid.focusedRecordIndex = itemIdx;
@@ -827,57 +828,6 @@ export class GridSourceFrame extends ContentFrame {
 
     hasPrivateRecordDefinitionList(): boolean {
         return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
-    }
-
-    calculateDescription(): GridSourceFrame.Description {
-        if (this._table === undefined) {
-            return {
-                abbreviate: '<' + Strings[StringId.NotInitialised] + '>',
-                full: '<' + Strings[StringId.NotInitialised] + '>',
-                name: Strings[StringId.QuestionMark]
-            };
-        } else {
-            const itemDefinitionListMissing = this._table.recordDefinitionListMissing;
-
-            let abbrDescription = this._table.recordDefinitionListTypeAbbr + ': ' + this._table.recordDefinitionListName;
-            if (itemDefinitionListMissing) {
-                abbrDescription += ' (' + Strings[StringId.Missing] + ')';
-            }
-
-            const fullDescriptionBldr = new StringBuilder();
-            fullDescriptionBldr.append(Strings[StringId.Watchlist] + ': ');
-            const tableName = this._table.name;
-            fullDescriptionBldr.append(tableName);
-            let nameText: string;
-            if (this.isPrivate()) {
-                nameText = '[' + tableName + ']';
-                fullDescriptionBldr.append(' (' + Strings[StringId.Private] + ')');
-            } else {
-                nameText = '<' + tableName + '>';
-                fullDescriptionBldr.append(' (' + Strings[StringId.Shared] + ')');
-            }
-
-            fullDescriptionBldr.append('\n');
-
-            fullDescriptionBldr.append(this._table.recordDefinitionListTypeDisplay);
-            fullDescriptionBldr.append(' ' + Strings[StringId.List] + ': ');
-            fullDescriptionBldr.append(this._table.recordDefinitionListName);
-            if (this._table.hasPrivateRecordDefinitionList()) {
-                fullDescriptionBldr.append(' (' + Strings[StringId.Private] + ')');
-            } else {
-                fullDescriptionBldr.append(' (' + Strings[StringId.Shared] + ')');
-            }
-
-            if (itemDefinitionListMissing) {
-                fullDescriptionBldr.append(' (' + Strings[StringId.Missing] + ')');
-            }
-
-            return {
-                abbreviate: abbrDescription,
-                full: fullDescriptionBldr.toString(),
-                name: nameText
-            };
-        }
     }
 
     clearFilter(): void {
