@@ -725,7 +725,7 @@ export namespace LitIvemIdSelectNgComponent {
             if (this._dataItem.incubated) {
                 this.processDataItemIncubated(this._dataItem);
             } else {
-                this._dataItemCorrectnessChangeSubcriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+                this._dataItemCorrectnessChangeSubcriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
                     () => this.handleDataItemCorrectnessChange()
                 );
             }
@@ -743,7 +743,7 @@ export namespace LitIvemIdSelectNgComponent {
 
         private checkUnsubscribeDataItem() {
             if (this._dataItem !== undefined) {
-                this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemCorrectnessChangeSubcriptionId);
+                this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemCorrectnessChangeSubcriptionId);
                 this._dataItemCorrectnessChangeSubcriptionId = undefined;
                 this._adiService.unsubscribe(this._dataItem);
                 this._dataItem = undefined;

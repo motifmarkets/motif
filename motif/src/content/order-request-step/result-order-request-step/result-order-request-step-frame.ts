@@ -82,7 +82,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
             this._dataItemBadnessChangeSubscriptionId = this._dataItem.subscribeBadnessChangeEvent(
                 () => this.handleDataItemBadnessChangeEvent()
             );
-            this._dataItemCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+            this._dataItemCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
                 () => this.handleDataItemCorrectnessChangeEvent()
             );
 
@@ -113,7 +113,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeSubscriptionId);
             this._dataItemBadnessChangeSubscriptionId = undefined;
-            this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemCorrectnessChangeSubscriptionId);
+            this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemCorrectnessChangeSubscriptionId);
             this._dataItemCorrectnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._dataItem);
             this._dataItem = undefined;

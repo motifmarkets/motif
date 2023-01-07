@@ -6,12 +6,16 @@
 
 import { OrderRoute } from '@motifmarkets/motif-core';
 import {
-    Json as JsonApi, OrderExtendedSide as OrderExtendedSideApi,
-    OrderExtendedSideHandle as OrderExtendedSideHandleApi, OrderRoute as OrderRouteApi, OrderTimeInForce as OrderTimeInForceApi,
+    JsonElement as JsonElementApi,
+    OrderExtendedSide as OrderExtendedSideApi,
+    OrderExtendedSideHandle as OrderExtendedSideHandleApi,
+    OrderRoute as OrderRouteApi,
+    OrderTimeInForce as OrderTimeInForceApi,
     OrderTimeInForceHandle as OrderTimeInForceHandleApi,
     OrderType as OrderTypeApi,
     OrderTypeHandle as OrderTypeHandleApi
 } from '../../../api/extension-api';
+import { JsonElementImplementation } from '../sys/internal-api';
 import { MarketIdImplementation } from './market-id-api-implementation';
 import { OrderExtendedSideImplementation } from './order-extended-side-api-implementation';
 import { OrderRouteAlgorithmImplementation } from './order-route-algorithm-implementation';
@@ -35,8 +39,9 @@ export class OrderRouteImplementation implements OrderRouteApi {
         return OrderRouteImplementation.toApi(orderRoute);
     }
 
-    toJson(): JsonApi {
-        return this._actual.toJson();
+    saveToJson(elementApi: JsonElementApi): void {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        this._actual.saveToJson(element);
     }
 
     getBestLitMarketId() {

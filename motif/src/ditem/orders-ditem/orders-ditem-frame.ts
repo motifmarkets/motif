@@ -165,8 +165,8 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    setGridLayout(value: GridLayout) {
-        this._tableFrame.setGridLayout(value);
+    openGridLayoutOrNamedReferenceDefinition(value: GridLayout) {
+        this._tableFrame.openGridLayoutOrNamedReferenceDefinition(value);
     }
 
     getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {

@@ -267,11 +267,12 @@ export class GoldenLayoutHostFrame {
     private prepareDefaultLayoutLinkedSymbol() {
         const linkedSymbolJson = this._defaultLayoutConfig.linkedSymbolJson;
         if (linkedSymbolJson !== undefined) {
-            const linkedSymbol = LitIvemId.tryCreateFromJson(linkedSymbolJson);
-            if (linkedSymbol === undefined) {
-                Logger.logConfigError('GLHFPDLLS38220', JSON.stringify(linkedSymbolJson), 200);
+            const jsonElement = new JsonElement(linkedSymbolJson);
+            const tryCreateResult = LitIvemId.tryCreateFromJson(jsonElement);
+            if (tryCreateResult.isErr()) {
+                Logger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
             } else {
-                this._desktopAccessService.initialiseLitIvemId(linkedSymbol);
+                this._desktopAccessService.initialiseLitIvemId(tryCreateResult.value);
             }
         }
     }
@@ -288,11 +289,12 @@ export class GoldenLayoutHostFrame {
 
                 const watchlistJson = this._defaultLayoutConfig.watchlistJson;
                 if (watchlistJson !== undefined) {
-                    const litIvemIdArray = LitIvemId.tryCreateArrayFromJson(watchlistJson);
-                    if (litIvemIdArray === undefined) {
-                        Logger.logConfigError('GLHFPDLW1444813', JSON.stringify(watchlistJson), 400);
+                    const jsonElements = watchlistJson.map((json) => new JsonElement(json));
+                    const tryCreateResult = LitIvemId.tryCreateArrayFromJsonElementArray(jsonElements);
+                    if (tryCreateResult.isErr()) {
+                        Logger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
                     } else {
-                        frame.defaultLitIvemIds = litIvemIdArray;
+                        frame.defaultLitIvemIds = tryCreateResult.value;
                     }
                 }
             }

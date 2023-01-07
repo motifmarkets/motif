@@ -15,7 +15,7 @@ import {
     ExplicitElementsEnumUiAction,
     GridLayout,
     GridLayoutChange,
-    GridLayoutRecordStore,
+    GridLayoutDefinition,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -32,6 +32,7 @@ import {
     TextInputNgComponent
 } from 'controls-ng-api';
 import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
+import { RecordGrid } from '../../internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -111,12 +112,12 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._fieldVisibleUiAction.commitEvent = () => this.handleFieldVisibleCommitEvent();
     }
 
-    getGridLayout(): GridLayout {
-        return this._gridComponent.gridLayout;
+    getGridLayoutDefinition(): GridLayoutDefinition {
+        return this._gridComponent.gridLayoutDefinition;
     }
 
-    setGridLayout(layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap) {
-        this._gridComponent.setLayoutWithHeadersMap(layoutWithHeadings);
+    setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition) {
+        this._gridComponent.setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition);
     }
 
     ngAfterViewInit() {

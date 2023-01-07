@@ -10,10 +10,7 @@ import {
     JsonElement,
     LitIvemId,
     SymbolsService,
-    TableRecordDefinitionList,
-    TablesService,
-    TopShareholdersDataItem,
-    TopShareholderTableRecordDefinitionList
+    TopShareholdersDataItem
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

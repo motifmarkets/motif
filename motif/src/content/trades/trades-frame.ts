@@ -13,9 +13,7 @@ import {
     DayTradesDataItem,
     DayTradesGridField,
     DayTradesGridRecordStore,
-    GridLayout,
     GridLayoutDefinition,
-    GridLayoutRecordStore,
     Integer,
     JsonElement,
     LitIvemId,
@@ -65,42 +63,34 @@ export class TradesFrame extends ContentFrame {
         this.prepareGrid();
     }
 
-    loadLayoutConfig(element: JsonElement | undefined) {
+    loadConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
-            const context = 'TradesFrame';
-            const layoutElement = element.tryGetElement(TradesFrame.JsonName.layout, context);
-            if (layoutElement !== undefined) {
-                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElement);
+            const tryGetElementResult = element.tryGetElementType(TradesFrame.JsonName.layout);
+            if (tryGetElementResult.isOk()) {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetElementResult.value);
                 if (definitionResult.isOk()) {
-                    this._grid.loadLayoutDefinition(definitionResult.value);
+                    this._grid.applyGridLayoutDefinition(definitionResult.value);
                 }
             }
         }
     }
 
-    saveLayoutConfig(element: JsonElement) {
+    saveLayoutToConfig(element: JsonElement) {
         const layoutElement = element.newElement(TradesFrame.JsonName.layout);
-        const definition = this._grid.saveLayoutDefinition();
+        const definition = this._grid.createGridLayoutDefinition();
         definition.saveToJson(layoutElement);
-    }
-
-    setNamedLayout(layout: GridLayout) {
-        this._grid.setTableAndLayout(layout);
-    }
-
-    close() {
-        this.checkClose();
     }
 
     open(litIvemId: LitIvemId, historicalDate: Date | undefined): void {
         this.checkClose();
+        this._grid.dataReset();
         const definition = new DayTradesDataDefinition();
         definition.litIvemId = litIvemId;
         definition.date = historicalDate;
         this._dataItem = this.adi.subscribe(definition) as DayTradesDataItem;
         this._recordStore.setDataItem(this._dataItem);
 
-        this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+        this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
             () => this.handleDataItemDataCorrectnessChangeEvent()
         );
         this._dataItemDataCorrectnessId = this._dataItem.correctnessId;
@@ -111,33 +101,16 @@ export class TradesFrame extends ContentFrame {
         this._componentAccess.hideBadnessWithVisibleDelay(this._dataItem.badness);
     }
 
-    prepareGrid() {
-        if (this._gridPrepared) {
-            this._grid.reset();
-        }
+    close() {
+        this.checkClose();
+    }
 
-        const fieldCount = DayTradesGridField.idCount;
-        const fields = new Array<DayTradesGridField>(fieldCount);
+    createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition {
+        return this._grid.createAllowedFieldsAndLayoutDefinition();
+    }
 
-        for (let id = 0; id < fieldCount; id++) {
-            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
-            fields[id] = gridField;
-        }
-        this._recordStore.addFields(fields);
-
-        this._grid.sortable = false;
-
-        for (let id = 0; id < fieldCount; id++) {
-            this._grid.setFieldState(fields[id], fields[id].fieldStateDefinition);
-        }
-
-        for (let id = 0; id < fieldCount; id++) {
-            this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
-        }
-
-        this._recordStore.recordsLoaded();
-
-        this._gridPrepared = true;
+    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition) {
+        this._grid.applyGridLayoutDefinition(layoutDefinition);
     }
 
     autoSizeAllColumnWidths() {
@@ -158,14 +131,6 @@ export class TradesFrame extends ContentFrame {
     //         this.activeWidthChangedEvent(); // advise PariDepth frame
     //     }
     // }
-
-    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._grid.getLayoutWithHeadersMap();
-    }
-
-    setGridLayout(layout: GridLayout): void {
-        this._grid.loadLayout(layout);
-    }
 
     // getRenderedActiveWidth() {
     //     return this._componentAccess.gridGetRenderedActiveWidth();
@@ -201,6 +166,27 @@ export class TradesFrame extends ContentFrame {
             this._dataItemDataCorrectnessId = CorrectnessId.Suspect;
         }
     }
+
+    private prepareGrid() {
+        if (this._gridPrepared) {
+            this._grid.reset();
+        }
+
+        const fieldCount = DayTradesGridField.idCount;
+        const fields = new Array<DayTradesGridField>(fieldCount);
+
+        for (let id = 0; id < fieldCount; id++) {
+            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
+            fields[id] = gridField;
+        }
+        this._grid.updateAllowedFields(fields);
+        this._grid.sortable = false;
+
+        this._recordStore.recordsLoaded();
+
+        this._gridPrepared = true;
+    }
+
 }
 
 export namespace TradesFrame {

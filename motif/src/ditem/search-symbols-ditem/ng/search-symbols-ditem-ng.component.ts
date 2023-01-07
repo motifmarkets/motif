@@ -43,7 +43,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import { GridLayoutEditorDialogNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionedCheckboxNgComponent,
@@ -427,7 +427,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         const layoutWithHeadings = this._frame.getActiveGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {

@@ -5,7 +5,8 @@
  */
 
 import { LitIvemId } from '@motifmarkets/motif-core';
-import { Json as JsonApi, LitIvemId as LitIvemIdApi } from '../../../api/extension-api';
+import { JsonElement as JsonElementApi, LitIvemId as LitIvemIdApi } from '../../../api/extension-api';
+import { JsonElementImplementation } from '../sys/internal-api';
 import { DataEnvironmentIdImplementation } from './data-environment-id-api-implementation';
 import { MarketIdImplementation } from './market-id-api-implementation';
 
@@ -26,10 +27,11 @@ export class LitIvemIdImplementation implements LitIvemIdApi {
         }
     }
     get name() { return this._actual.name; }
-    get persistKey() { return this._actual.persistKey; }
+    get mapKey() { return this._actual.mapKey; }
 
-    toJson(): JsonApi {
-        return this._actual.toJson();
+    saveToJson(elementApi: JsonElementApi): void {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        this._actual.saveToJson(element);
     }
 }
 

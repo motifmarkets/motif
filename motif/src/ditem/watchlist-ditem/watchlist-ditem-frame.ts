@@ -7,12 +7,28 @@
 import {
     AdiService,
     AssertInternalError,
-    CommandRegisterService, compareInteger, GridLayoutOrNamedReferenceDefinition, GridLayoutRecordStore, GridRowOrderDefinition, GridSourceDefinition, GridSourceOrNamedReference, GridSourceOrNamedReferenceDefinition, Guid,
+    CommandRegisterService,
+    compareInteger,
+    GridLayoutOrNamedReferenceDefinition,
+    GridRowOrderDefinition,
+    GridSourceDefinition,
+    GridSourceOrNamedReference,
+    GridSourceOrNamedReferenceDefinition,
+    Guid,
     Integer,
     JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
-    LockOpenListItem, RankedLitIvemId, RankedLitIvemIdList, RankedLitIvemIdListDefinition, RankedLitIvemIdListOrNamedReferenceDefinition, RankedLitIvemIdListTableRecordSource, StringId, Strings, SymbolsService, TableRecordSourceDefinitionFactoryService
+    LockOpenListItem,
+    RankedLitIvemId,
+    RankedLitIvemIdList,
+    RankedLitIvemIdListDefinition,
+    RankedLitIvemIdListOrNamedReferenceDefinition,
+    RankedLitIvemIdListTableRecordSource,
+    StringId,
+    Strings,
+    SymbolsService,
+    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -50,7 +66,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
         this._opener = {
             lockerName: `${Strings[StringId.Watchlist]}: ${this.frameId}`
-        }
+        };
     }
 
     get initialised() { return this._gridSourceFrame !== undefined; }
@@ -81,7 +97,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition);
 
         this.applyLinked();
     }
@@ -100,12 +116,15 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
             this._litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
-            this._openEventer(this._gridSourceOrNamedReference);
         }
     }
 
-    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._gridSourceFrame.getGridLayoutWithHeadersMap();
+    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+        this._gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+    }
+
+    createAllowedFieldsAndLayoutDefinition() {
+        return this._gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
     }
 
     canDeleteFocusedRecord() {
@@ -121,9 +140,9 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    newPrivate() {
+    newEmpty() {
         const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
-        this.tryOpenGridSource(definition, false);
+        this.tryOpenGridSource(definition);
     }
 
     saveAsPrivate() {
@@ -148,9 +167,9 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this.flagSaveRequired();
     }
 
-    loadLitIvemIdList(listDefinition: LitIvemIdListDefinition) {
-        const recordSourceDefinition = new LitIvemIdFromListTableRecordSourceDefinition(listDefinition);
-        this._gridSourceFrame.loadRecordSourceDefinition(recordSourceDefinition);
+    loadLitIvemIdList(listDefinition: RankedLitIvemIdListDefinition) {
+        const recordSourceDefinition = new RankedLitIvemIdFromListTableRecordSourceDefinition(listDefinition);
+        this._gridSourceFrame.openRecordSourceDefinition(recordSourceDefinition);
     }
 
     saveAsLitIvemIdList(listDefinition: LitIvemIdListDefinition) {
@@ -160,14 +179,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     saveAsGridSource(definition: GridSourceDefinition) {
         this._gridSourceFrame.saveAsGridSource(definition);
-    }
-
-    setGridLayout(definition: NamedGridLayoutDefinition) {
-        this._gridSourceFrame.setGridLayout(definition);
-    }
-
-    setGridLayoutFavourites(definitions: NamedGridLayoutDefinition[]) {
-        this._gridSourceFrame.setGridLayoutFavourites(definitions);
     }
 
     autoSizeAllColumnWidths() {

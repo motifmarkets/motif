@@ -5,7 +5,15 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
-import { ColorScheme, ColorSchemeGridRecordStore, GridRecordFieldState, Integer, Strings } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    ColorSchemeGridField,
+    ColorSchemeGridRecordStore,
+    GridLayout,
+    GridLayoutDefinition,
+    Integer,
+    PickEnum
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
@@ -28,7 +36,6 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
 
     private _recordStore: ColorSchemeGridRecordStore;
     private _grid: RecordGrid;
-    private _gridPrepared = false;
 
     private _filterActive = false;
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
@@ -61,7 +68,10 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
                 fixedChanged, nonFixedChanged, allChanged
             );
 
-        this.prepareGrid();
+        this.dataResetGrid();
+
+        this._recordStore.recordsInserted(0, this._recordStore.recordCount);
+        this.applyFilter();
     }
 
     calculateActiveColumnsWidth() {
@@ -120,55 +130,23 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         }
     }
 
-    private setFieldState(field: ColorSchemeGridRecordStore.Field, fieldStateDefinition: ColorSchemeGridRecordStore.FieldStateDefinition) {
-        const state: GridRecordFieldState = {
-            header: Strings[fieldStateDefinition.HeaderId],
-            width: undefined,
-            alignment: fieldStateDefinition.Alignment
-        };
-        this._grid.setFieldState(field, state);
-    }
-
-    private prepareGrid() {
-        if (this._grid && !this._gridPrepared) {
-            const displayField = this._recordStore.createDisplayField();
-            const resolvedBkgdColorTextField = this._recordStore.createResolvedBkgdColorTextField();
-            const resolvedBkgdColorField = this._recordStore.createResolvedBkgdColorField();
-            const resolvedForeColorTextField = this._recordStore.createResolvedForeColorTextField();
-            const resolvedForeColorField = this._recordStore.createResolvedForeColorField();
-            const readabilityField = this._recordStore.createReadabilityField();
-            const isReadableField = this._recordStore.createIsReadableField();
-
-            this._recordStore.addFields([
-                displayField,
-                resolvedBkgdColorTextField,
-                resolvedBkgdColorField,
-                resolvedForeColorTextField,
-                resolvedForeColorField,
-                readabilityField,
-                isReadableField,
-            ]);
-
-            this.setFieldState(displayField, ColorSchemeGridRecordStore.DisplayField.fieldStateDefinition);
-            // this.setFieldState(bkgdItemStateField, ColorSchemeGridDataStore.BkgdItemStateField.fieldStateDefinition);
-            // this.setFieldState(itemBkgdColorTextField, ColorSchemeGridDataStore.ItemBkgdColorTextField.fieldStateDefinition);
-            // this.setFieldState(itemBkgdColorField, ColorSchemeGridDataStore.ItemBkgdColorField.fieldStateDefinition);
-            // this.setFieldState(foreItemStateField, ColorSchemeGridDataStore.ForeItemStateField.fieldStateDefinition);
-            // this.setFieldState(itemForeColorTextField, ColorSchemeGridDataStore.ItemForeColorTextField.fieldStateDefinition);
-            // this.setFieldState(itemForeColorField, ColorSchemeGridDataStore.ItemForeColorField.fieldStateDefinition);
-            this.setFieldState(resolvedBkgdColorTextField, ColorSchemeGridRecordStore.ResolvedBkgdColorTextField.fieldStateDefinition);
-            this.setFieldState(resolvedBkgdColorField, ColorSchemeGridRecordStore.ResolvedBkgdColorField.fieldStateDefinition);
-            this.setFieldState(resolvedForeColorTextField, ColorSchemeGridRecordStore.ResolvedForeColorTextField.fieldStateDefinition);
-            this.setFieldState(resolvedForeColorField, ColorSchemeGridRecordStore.ResolvedForeColorField.fieldStateDefinition);
-            this.setFieldState(readabilityField, ColorSchemeGridRecordStore.ReadabilityField.fieldStateDefinition);
-            this.setFieldState(isReadableField, ColorSchemeGridRecordStore.IsReadableField.fieldStateDefinition);
-
-            this._recordStore.recordsInserted(0, this._recordStore.recordCount);
-
-            this._gridPrepared = true;
-
-            this.applyFilter();
+    private dataResetGrid() {
+        const colorSettings = this._recordStore.colorSettings;
+        const fieldNames = ColorSchemeGridNgComponent.fieldNames;
+        const fieldCount = fieldNames.length;
+        const fields = new Array<ColorSchemeGridField>(fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+            fields[i] = ColorSchemeGridField.createField(fieldNames[i], colorSettings);
         }
+        const columns = new Array<GridLayoutDefinition.Column>(fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+            columns[i] = {
+                fieldName: fieldNames[i],
+            };
+        }
+        const gridLayoutDefinition = new GridLayoutDefinition(columns);
+        const gridLayout = new GridLayout(gridLayoutDefinition);
+        this._grid.fieldsLayoutReset(fields, gridLayout, false);
     }
 }
 
@@ -182,4 +160,24 @@ export namespace ColorSchemeGridNgComponent {
         fixedColumnCount: 1,
         gridRightAligned: false,
     };
+
+    export type FieldName = PickEnum<ColorSchemeGridField.FieldName,
+        ColorSchemeGridField.FieldName.Display |
+        ColorSchemeGridField.FieldName.ResolvedBkgdColorText |
+        ColorSchemeGridField.FieldName.ResolvedBkgdColor |
+        ColorSchemeGridField.FieldName.ResolvedForeColorText |
+        ColorSchemeGridField.FieldName.ResolvedForeColor |
+        ColorSchemeGridField.FieldName.Readability |
+        ColorSchemeGridField.FieldName.IsReadable
+    >;
+
+    export const fieldNames: FieldName[] = [
+        ColorSchemeGridField.FieldName.Display,
+        ColorSchemeGridField.FieldName.ResolvedBkgdColorText,
+        ColorSchemeGridField.FieldName.ResolvedBkgdColor,
+        ColorSchemeGridField.FieldName.ResolvedForeColorText,
+        ColorSchemeGridField.FieldName.ResolvedForeColor,
+        ColorSchemeGridField.FieldName.Readability,
+        ColorSchemeGridField.FieldName.IsReadable
+    ];
 }

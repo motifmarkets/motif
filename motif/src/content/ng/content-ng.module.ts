@@ -17,7 +17,6 @@ import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../color-scheme-preset-code/ng-api';
-import { ContentGridLayoutEditorNgComponent } from '../content-grid-layout-editor/ng-api';
 import { DelayedBadnessNgComponent } from '../delayed-badness/ng-api';
 import { DepthGridLayoutsEditorNgComponent } from '../depth-grid-layouts-editor/ng-api';
 import { DepthSideNgComponent } from '../depth-side/ng-api';
@@ -36,12 +35,14 @@ import {
 } from '../extensions/ng-api';
 import { FeedsNgComponent } from '../feeds/ng-api';
 import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
+import { GridLayoutEditorDialogNgComponent } from '../grid-layout-editor-dialog/ng-api';
 import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-api';
 import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
 import { GridSourceNgComponent } from '../grid-source/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
+import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
 import {
     PadOrderRequestStepNgComponent,
     ResultOrderRequestStepNgComponent,
@@ -77,6 +78,10 @@ import {
 import { StaticInitialise } from '../static-initialise';
 import { StatusSummaryNgComponent } from '../status-summary/ng-api';
 import { TradesNgComponent } from '../trades/ng-api';
+import {
+    OpenWatchlistDialogNgComponent,
+    SaveWatchlistDialogNgComponent
+} from '../watchlist-dialog/ng-api';
 import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
 
 @NgModule({
@@ -86,7 +91,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSchemeItemPropertiesNgComponent,
         ColorSchemePresetCodeNgComponent,
         ColorControlsNgComponent,
-        ContentGridLayoutEditorNgComponent,
+        GridLayoutEditorNgComponent,
+        GridLayoutEditorDialogNgComponent,
+        NameableGridLayoutEditorDialogNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorNgComponent,
@@ -143,6 +150,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         CriteriaScanPropertiesSectionNgComponent,
         ExpandableCollapsibleLinedHeadingNgComponent,
         ZenithScanCriteriaViewNgComponent,
+        OpenWatchlistDialogNgComponent,
+        SaveWatchlistDialogNgComponent,
     ],
     imports: [
         CommonModule,
@@ -153,13 +162,15 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         AdvertTickerNgComponent,
         AdvertWebPageNgComponent,
         BannerAdvertNgComponent,
-        ContentGridLayoutEditorNgComponent,
+        GridLayoutEditorNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorNgComponent,
         ExtensionsSidebarNgComponent,
         ExtensionDetailNgComponent,
         FeedsNgComponent,
         GridLayoutEditorNgComponent,
+        GridLayoutEditorDialogNgComponent,
+        NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
         PadOrderRequestStepNgComponent,
         ReviewOrderRequestStepNgComponent,
@@ -174,6 +185,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ZenithStatusNgComponent,
         SimpleGridNgComponent,
         ScansNgComponent,
+        OpenWatchlistDialogNgComponent,
+        SaveWatchlistDialogNgComponent,
     ]
 })
 export class ContentNgModule {

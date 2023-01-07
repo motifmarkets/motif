@@ -7,13 +7,12 @@
 import {
     AdiService,
     CommandRegisterService,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { TradesFrame } from 'content-internal-api';
+import { RecordGrid, TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -39,10 +38,10 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this._contentFrame = tradesContentFrame;
 
         if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
+            this._contentFrame.loadConfig(undefined);
         } else {
             const contentElement = frameElement.tryGetElement(TradesDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+            this._contentFrame.loadConfig(contentElement);
         }
 
         this.applyLinked();
@@ -52,7 +51,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(TradesDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutConfig(contentElement);
+        this._contentFrame.saveLayoutToConfig(contentElement);
     }
 
     open() {
@@ -78,15 +77,15 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap | undefined {
-        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadersMap();
+    createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition | undefined {
+        return this._contentFrame?.createAllowedFieldsAndLayoutDefinition();
     }
 
-    setGridLayout(layout: GridLayout): void {
+    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
         if (!this._contentFrame) {
             throw new Error('Condition not handled [ID:5326171853]');
         }
-        this._contentFrame.setGridLayout(layout);
+        this._contentFrame.applyGridLayoutDefinition(layoutDefinition);
     }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {

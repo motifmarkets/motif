@@ -11,7 +11,9 @@ import {
     AssertInternalError,
     CapabilitiesService,
     DataEnvironment,
-    DataEnvironmentId, ExchangeInfo, ExternalError,
+    DataEnvironmentId,
+    ErrorCode,
+    ExchangeInfo,
     IdleDeadline,
     IdleRequestOptions,
     Integer,
@@ -31,7 +33,8 @@ import {
     Strings,
     SymbolsService,
     SysTick,
-    TradingEnvironment, UserAlertService,
+    TradingEnvironment,
+    UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
@@ -159,7 +162,7 @@ export class SessionService {
             storageTypeId = AppStorageService.TypeId.Local;
         } else {
             if (this._motifServicesEndpoints.length === 0) {
-                throw new MotifServicesError(ExternalError.Code.SSSMSE19774);
+                throw new MotifServicesError(ErrorCode.SSSMSE19774);
             } else {
                 this.logInfo('State Storage: MotifServices');
                 this._motifServicesEndpoint = this._motifServicesEndpoints[0];

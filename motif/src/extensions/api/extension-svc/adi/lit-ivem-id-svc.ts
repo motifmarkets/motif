@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ComparisonResult, DataEnvironmentId, Json, LitIvemId, MarketId } from '../../exposed/extension-api';
+import { ComparisonResult, DataEnvironmentId, JsonElement, LitIvemId, MarketId, Result } from '../../exposed/extension-api';
 
 /** @public */
 export interface LitIvemIdSvc {
@@ -12,6 +12,6 @@ export interface LitIvemIdSvc {
     isEqual(left: LitIvemId, right: LitIvemId): boolean;
     isUndefinableEqual(left: LitIvemId | undefined, right: LitIvemId | undefined): boolean;
     compare(left: LitIvemId, right: LitIvemId): ComparisonResult;
-    tryCreateFromJson(json: Json): LitIvemId | undefined;
-    tryCreateArrayFromJson(jsonArray: Json[]): LitIvemId[] | undefined;
+    tryCreateFromJson(element: JsonElement): Result<LitIvemId>;
+    tryCreateArrayFromJson(elements: JsonElement[]): Result<LitIvemId[]>;
 }

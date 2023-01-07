@@ -6,27 +6,24 @@
 
 import {
     AssertInternalError,
-    Badness, GridLayout, GridLayoutOrNamedReferenceDefinition, GridLayoutRecordStore,
-    GridSource, GridSourceOrNamedReference,
+    Badness,
+    GridLayoutOrNamedReferenceDefinition,
+    GridSource,
+    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
-    Guid,
     Integer,
-    JsonElement,
     LockOpenListItem,
-    Logger,
     MultiEvent,
-    NamedGridLayoutDefinition,
-    NamedGridLayoutsService, NamedGridSourcesService, SettingsService, StringId,
-    Strings,
+    NamedGridLayoutsService,
+    NamedGridSourcesService,
+    SettingsService,
     Table,
     TableGridRecordStore,
-    TableRecordDefinition, TableRecordSourceDefinition,
-    TableRecordSourceFactoryService,
-    UnexpectedUndefinedError
+    TableRecordSourceDefinition,
+    TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from 'content-internal-api';
-import { nanoid } from 'nanoid';
-import { RevRecordInvalidatedValue, RevRecordMainAdapter } from 'revgrid';
+import { RevRecordMainAdapter } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export class GridSourceFrame extends ContentFrame {
@@ -61,6 +58,7 @@ export class GridSourceFrame extends ContentFrame {
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _tableFieldsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _tableFirstUsableSubscriptionId: MultiEvent.SubscriptionId;
+    private _gridSourceGridLayoutChangedSubscriptionId: MultiEvent.SubscriptionId;
 
 
     constructor(
@@ -118,7 +116,7 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
 
         this._settingsChangedSubscriptionId =
-            this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingChangedEvent());
+            this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         this.applySettings();
     }
@@ -165,14 +163,16 @@ export class GridSourceFrame extends ContentFrame {
                         this._openedGridSource = gridSource;
                         this._openedTable = table;
 
+                        this._gridSourceGridLayoutChangedSubscriptionId = this._openedGridSource.subscribeGridLayoutChangedEvent(
+                            () => this.handleGridSourceGridLayoutChangedEvent()
+                        );
+
                         this._recordStore.setTable(table);
                         this._tableFieldsChangedSubscriptionId = table.subscribeFieldsChangedEvent(
                             () => this._grid.updateAllowedFields(table.fields)
                         );
 
-                        this._grid.sourceReset(table.fields, layout, false);
-                        this._grid.updateAllowedFields(table.fields);
-                        this._grid.updateColumnLayout(layout);
+                        this._grid.fieldsLayoutReset(table.fields, layout, false);
 
                         if (table.beenUsable) {
                             this._grid.applyFirstUsable(gridSource.initialRowOrderDefinition?.sortColumns);
@@ -202,6 +202,8 @@ export class GridSourceFrame extends ContentFrame {
                 this._table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
                 this._tableFirstUsableSubscriptionId = undefined;
                 this._tableFieldsChangedSubscriptionId = undefined;
+                this._openedGridSource.unsubscribeGridLayoutChangedEvent(this._gridSourceGridLayoutChangedSubscriptionId);
+                this._gridSourceGridLayoutChangedSubscriptionId = undefined;
                 this._openedGridSource.closeLocked(this._opener);
                 this._lockedGridSourceOrNamedReference.unlock(this._opener);
                 this._lockedGridSourceOrNamedReference = undefined;
@@ -227,83 +229,84 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
+    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+        this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
+    }
+
     setGridLayout(definition: GridLayoutOrNamedReferenceDefinition) {
-        this._openedGridSource.openGridLayoutDefinition(definition, this._opener);
-    }
-
-    setGridLayoutFavourites(definitions: NamedGridLayoutDefinition[]) {
+        this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
     }
 
 
-    loadLayoutConfig(element: JsonElement | undefined) {
+    // loadLayoutConfig(element: JsonElement | undefined) {
 
-        this._recordStore.beginChange();
-        try {
+    //     this._recordStore.beginChange();
+    //     try {
 
-            this.closeTable(false);
+    //         this.closeTable(false);
 
-            if (element === undefined) {
-                this.tryNewDefaultPrivateTable();
-            } else {
-                const tableElement = element.tryGetElement(GridSourceFrame.JsonName.table);
-                if (tableElement === undefined) {
-                    this.tryNewDefaultPrivateTable();
-                } else {
-                    const definition = TableDefinition.createFr
-                }
+    //         if (element === undefined) {
+    //             this.tryNewDefaultPrivateTable();
+    //         } else {
+    //             const tableElement = element.tryGetElement(GridSourceFrame.JsonName.table);
+    //             if (tableElement === undefined) {
+    //                 this.tryNewDefaultPrivateTable();
+    //             } else {
+    //                 const definition = TableDefinition.createFr
+    //             }
 
-                const privateElement = element.tryGetElement(GridSourceFrame.JsonName.privateTable);
-                if (privateElement !== undefined) {
-                    const id = nanoid(); // not sure if needed
-                    this._table = this._tablesService.newTable(id, undefined, );
-                    this.createPrivateTable();
-                    if (this._table !== undefined) {
-                        const success = this._table.loadFromJson(privateElement);
-                        if (!success) {
-                            this.closeTable(false);
-                            this.tryNewDefaultPrivateTable();
-                        } else {
-                            this._privateNameSuffixId = privateElement.tryGetInteger(GridSourceFrame.JsonName.privateNameSuffixId);
-                            if (this._privateNameSuffixId !== undefined) {
-                                GridSourceFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
-                            }
-                            this.activate(-1);
-                        }
-                    }
-                } else {
-                    const loadedTableId = element.tryGetGuid(GridSourceFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
-                    if (loadedTableId === undefined) {
-                        this.tryNewDefaultPrivateTable();
-                    } else {
-                        const tableDirIdx = this._tablesService.indexOfId(loadedTableId);
-                        if (tableDirIdx < 0) {
-                            this.tryNewDefaultPrivateTable();
-                        } else {
-                            this._table = this._tablesService.lock(tableDirIdx, this);
-                            this.activate(-1);
-                        }
-                    }
-                }
-            }
+    //             const privateElement = element.tryGetElement(GridSourceFrame.JsonName.privateTable);
+    //             if (privateElement !== undefined) {
+    //                 const id = nanoid(); // not sure if needed
+    //                 this._table = this._tablesService.newTable(id, undefined, );
+    //                 this.createPrivateTable();
+    //                 if (this._table !== undefined) {
+    //                     const success = this._table.loadFromJson(privateElement);
+    //                     if (!success) {
+    //                         this.closeTable(false);
+    //                         this.tryNewDefaultPrivateTable();
+    //                     } else {
+    //                         this._privateNameSuffixId = privateElement.tryGetInteger(GridSourceFrame.JsonName.privateNameSuffixId);
+    //                         if (this._privateNameSuffixId !== undefined) {
+    //                             GridSourceFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
+    //                         }
+    //                         this.activate(-1);
+    //                     }
+    //                 }
+    //             } else {
+    //                 const loadedTableId = element.tryGetGuid(GridSourceFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
+    //                 if (loadedTableId === undefined) {
+    //                     this.tryNewDefaultPrivateTable();
+    //                 } else {
+    //                     const tableDirIdx = this._tablesService.indexOfId(loadedTableId);
+    //                     if (tableDirIdx < 0) {
+    //                         this.tryNewDefaultPrivateTable();
+    //                     } else {
+    //                         this._table = this._tablesService.lock(tableDirIdx, this);
+    //                         this.activate(-1);
+    //                     }
+    //                 }
+    //             }
+    //         }
 
-        } finally {
-            this._recordStore.endChange();
-        }
-    }
+    //     } finally {
+    //         this._recordStore.endChange();
+    //     }
+    // }
 
-    saveLayoutConfig(element: JsonElement) {
-        if (this._table !== undefined) {
-            if (!this.isPrivate()) {
-                element.setGuid(GridSourceFrame.JsonName.tableId, this._table.id);
-            } else {
-                const layout = this._grid.saveLayout();
-                this._table.layout = layout;
-                const privateTableElement = element.newElement(GridSourceFrame.JsonName.privateTable);
-                this._table.saveToJson(privateTableElement);
-                element.setInteger(GridSourceFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
-            }
-        }
-    }
+    // saveLayoutConfig(element: JsonElement) {
+    //     if (this._table !== undefined) {
+    //         if (!this.isPrivate()) {
+    //             element.setGuid(GridSourceFrame.JsonName.tableId, this._table.id);
+    //         } else {
+    //             const layout = this._grid.saveLayout();
+    //             this._table.layout = layout;
+    //             const privateTableElement = element.newElement(GridSourceFrame.JsonName.privateTable);
+    //             this._table.saveToJson(privateTableElement);
+    //             element.setInteger(GridSourceFrame.JsonName.privateNameSuffixId, this._privateNameSuffixId);
+    //         }
+    //     }
+    // }
 
     createRecordDefinition(index: Integer) {
         return this._openedTable.createRecordDefinition(index);
@@ -412,60 +415,60 @@ export class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
-    notifyTableRecordValuesChanged(recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) {
-        // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
-        // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
-        const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
-        if (recordIdx < this.recordCount) {
-            this._recordStore.invalidateRecordValues(recordIdx, invalidatedValues);
-        } else {
-            throw new AssertInternalError('TFTFNTVC22944',
-                `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
-        }
-    }
+    // notifyTableRecordValuesChanged(recordIdx: Integer, invalidatedValues: RevRecordInvalidatedValue[]) {
+    //     // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
+    //     // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
+    //     const fieldCount = this._table !== undefined ? this._grid.fieldCount : -1;
+    //     if (recordIdx < this.recordCount) {
+    //         this._recordStore.invalidateRecordValues(recordIdx, invalidatedValues);
+    //     } else {
+    //         throw new AssertInternalError('TFTFNTVC22944',
+    //             `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
+    //     }
+    // }
 
-    notifyTableRecordSequentialFieldValuesChanged(recordIdx: Integer, fieldIndex: number, fieldCount: number) {
-        // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
-        // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
-        const tableFieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
-        if (fieldIndex + fieldCount <= tableFieldCount && recordIdx < this.recordCount) {
-            this._recordStore.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
-        } else {
-            throw new AssertInternalError('TFTFNTVC22944',
-                `Field: ${fieldIndex}, Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
-        }
-    }
+    // notifyTableRecordSequentialFieldValuesChanged(recordIdx: Integer, fieldIndex: number, fieldCount: number) {
+    //     // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
+    //     // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
+    //     const tableFieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
+    //     if (fieldIndex + fieldCount <= tableFieldCount && recordIdx < this.recordCount) {
+    //         this._recordStore.invalidateRecordFields(recordIdx, fieldIndex, fieldCount);
+    //     } else {
+    //         throw new AssertInternalError('TFTFNTVC22944',
+    //             `Field: ${fieldIndex}, Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
+    //     }
+    // }
 
-    notifyTableRecordChanged(recordIdx: Integer) {
-        // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
-        // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
-        const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
-        if (recordIdx < this.recordCount) {
-            this._recordStore.invalidateRecord(recordIdx);
-        } else {
-            throw new AssertInternalError('TFTFNTRC4422944',
-                `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
-        }
-    }
+    // notifyTableRecordChanged(recordIdx: Integer) {
+    //     // TODO:MED There is a possible bug somewhere. This method is being called with a fieldIdx value greater
+    //     // then the number of fields. The problem manifests when the table-frame is used via the PariDepth component.
+    //     const fieldCount = this._table !== undefined ? this._table.fieldList.fieldCount : -1;
+    //     if (recordIdx < this.recordCount) {
+    //         this._recordStore.invalidateRecord(recordIdx);
+    //     } else {
+    //         throw new AssertInternalError('TFTFNTRC4422944',
+    //             `Record: "${recordIdx}", FieldCount: ${fieldCount}, RecordCount: ${this.recordCount}`);
+    //     }
+    // }
 
-    notifyTableLayoutUpdated() {
-        if (this._table === undefined) {
-            throw new AssertInternalError('TFTFNTLU48571');
-        } else {
-            this._grid.loadLayout(this._table.layout);
-        }
-    }
+    // notifyTableLayoutUpdated() {
+    //     if (this._table === undefined) {
+    //         throw new AssertInternalError('TFTFNTLU48571');
+    //     } else {
+    //         this._grid.loadLayout(this._table.layout);
+    //     }
+    // }
 
-    notifyTableRecordDisplayOrderChanged(itemIndices: Integer[]) {
-        this._grid.reorderRecRows(itemIndices);
-    }
+    // notifyTableRecordDisplayOrderChanged(itemIndices: Integer[]) {
+    //     this._grid.reorderRecRows(itemIndices);
+    // }
 
-    notifyTableFirstPreUsable() {
-        // this is not fully implemented
-        if (this._autoSizeAllColumnWidthsOnFirstUsable) {
-            this.checkAutoSizeAllColumnWidthsOnFirstUsable();
-        }
-    }
+    // notifyTableFirstPreUsable() {
+    //     // this is not fully implemented
+    //     if (this._autoSizeAllColumnWidthsOnFirstUsable) {
+    //         this.checkAutoSizeAllColumnWidthsOnFirstUsable();
+    //     }
+    // }
 
     getFocusedRecordIndex() {
         return this._grid.focusedRecordIndex;
@@ -489,174 +492,174 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.focusedRecordIndex = itemIdx;
     }
 
-    clearRecordDefinitions() {
-        if (this._table === undefined) {
-            throw new AssertInternalError('TFCRD599995877');
-        } else {
-            if (this._table.addDeleteRecordDefinitionsAllowed) {
-                this._table.clearRecordDefinitions();
-            }
-        }
-    }
+    // clearRecordDefinitions() {
+    //     if (this._table === undefined) {
+    //         throw new AssertInternalError('TFCRD599995877');
+    //     } else {
+    //         if (this._table.addDeleteRecordDefinitionsAllowed) {
+    //             this._table.clearRecordDefinitions();
+    //         }
+    //     }
+    // }
 
-    canAddRecordDefinition(definition: TableRecordDefinition): boolean {
-        if (this._table === undefined) {
-            return false;
-        } else {
-            return this._table.canAddRecordDefinition(definition);
-        }
-    }
+    // canAddRecordDefinition(definition: TableRecordDefinition): boolean {
+    //     if (this._table === undefined) {
+    //         return false;
+    //     } else {
+    //         return this._table.canAddRecordDefinition(definition);
+    //     }
+    // }
 
-    addRecordDefinition(definition: TableRecordDefinition) {
-        if (this._table === undefined) {
-            Logger.assertError('addItemDefinition undefined');
-        } else {
-            if (this._table.addDeleteRecordDefinitionsAllowed) {
-                this._table.addRecordDefinition(definition);
-            }
-        }
-    }
+    // addRecordDefinition(definition: TableRecordDefinition) {
+    //     if (this._table === undefined) {
+    //         Logger.assertError('addItemDefinition undefined');
+    //     } else {
+    //         if (this._table.addDeleteRecordDefinitionsAllowed) {
+    //             this._table.addRecordDefinition(definition);
+    //         }
+    //     }
+    // }
 
-    setRecordDefinition(idx: Integer, value: TableRecordDefinition) {
-        if (this._table === undefined) {
-            Logger.assertError('setRecordDefinition undefined');
-        } else {
-            if (this._table.addDeleteRecordDefinitionsAllowed) {
-                this._table.setRecordDefinition(idx, value);
-            }
-        }
-    }
+    // setRecordDefinition(idx: Integer, value: TableRecordDefinition) {
+    //     if (this._table === undefined) {
+    //         Logger.assertError('setRecordDefinition undefined');
+    //     } else {
+    //         if (this._table.addDeleteRecordDefinitionsAllowed) {
+    //             this._table.setRecordDefinition(idx, value);
+    //         }
+    //     }
+    // }
 
-    deleteFocusedRecord() {
-        const itemIdx = this._grid.focusedRecordIndex;
-        if (itemIdx !== undefined && itemIdx >= 0 && this._table !== undefined) {
-            this._recordStore.beginChange();
-            try {
-                this._table.userRemoveAt(itemIdx, 1);
-            } finally {
-                this._recordStore.endChange();
-            }
-        }
-    }
+    // deleteFocusedRecord() {
+    //     const itemIdx = this._grid.focusedRecordIndex;
+    //     if (itemIdx !== undefined && itemIdx >= 0 && this._table !== undefined) {
+    //         this._recordStore.beginChange();
+    //         try {
+    //             this._table.userRemoveAt(itemIdx, 1);
+    //         } finally {
+    //             this._recordStore.endChange();
+    //         }
+    //     }
+    // }
 
-    canDeleteFocusedRecord() {
-        return this._table !== undefined &&
-            this._table.addDeleteRecordDefinitionsAllowed &&
-            this._grid.focusedRecordIndex !== undefined;
-    }
+    // canDeleteFocusedRecord() {
+    //     return this._table !== undefined &&
+    //         this._table.addDeleteRecordDefinitionsAllowed &&
+    //         this._grid.focusedRecordIndex !== undefined;
+    // }
 
-    newPrivateTable(tableDefinition: TableDefinition, keepCurrentLayout: boolean) {
+    // newPrivateTable(tableDefinition: TableDefinition, keepCurrentLayout: boolean) {
 
-        this._recordStore.beginChange();
-        try {
-            if (this.table !== undefined) {
-                this.closeTable(keepCurrentLayout);
-            }
+    //     this._recordStore.beginChange();
+    //     try {
+    //         if (this.table !== undefined) {
+    //             this.closeTable(keepCurrentLayout);
+    //         }
 
-            this.createPrivateTable();
+    //         this.createPrivateTable();
 
-            if (this.table !== undefined) {
-                this.table.setDefinition(tableDefinition);
-                const { name, suffixId } = this.calculateNewPrivateName();
-                this.table.setName(name);
-                this._privateNameSuffixId = suffixId;
+    //         if (this.table !== undefined) {
+    //             this.table.setDefinition(tableDefinition);
+    //             const { name, suffixId } = this.calculateNewPrivateName();
+    //             this.table.setName(name);
+    //             this._privateNameSuffixId = suffixId;
 
-                if (this._keptLayout !== undefined) {
-                    this.table.layout = this._keptLayout;
-                } else {
-                    this.table.layout = this.table.createDefaultLayout();
-                }
+    //             if (this._keptLayout !== undefined) {
+    //                 this.table.layout = this._keptLayout;
+    //             } else {
+    //                 this.table.layout = this.table.createDefaultLayout();
+    //             }
 
-                // this.table.newPrivateRecordDefinitionList();
-                this.activate(-1);
+    //             // this.table.newPrivateRecordDefinitionList();
+    //             this.activate(-1);
 
-                if (!keepCurrentLayout) {
-                    this.checkAutoSizeAllColumnWidthsOnFirstUsable();
-                }
-            }
-        } finally {
-            this._recordStore.endChange();
-        }
-    }
+    //             if (!keepCurrentLayout) {
+    //                 this.checkAutoSizeAllColumnWidthsOnFirstUsable();
+    //             }
+    //         }
+    //     } finally {
+    //         this._recordStore.endChange();
+    //     }
+    // }
 
-    openTableById(id: Guid): boolean {
-        const idx = this._tablesService.indexOfId(id);
+    // openTableById(id: Guid): boolean {
+    //     const idx = this._tablesService.indexOfId(id);
 
-        if (idx < 0) {
-            return false;
-        } else {
-            this.openTable(idx);
-            return true;
-        }
-    }
+    //     if (idx < 0) {
+    //         return false;
+    //     } else {
+    //         this.openTable(idx);
+    //         return true;
+    //     }
+    // }
 
-    openTable(recordSourceDefinition: TableRecordSourceDefinition) {
-        this._recordStore.beginChange();
-        try {
-            // this.closeTable(false);
-            this.closeTable();
-            const recordSource = this._tableRecordSourceFactoryService.createFromDefinition(recordSourceDefinition);
-            const table = new Table(recordSource);
-            this._recordStore.setTable(table);
-            table.open(this._opener);
-            //     this._table = this._tablesService.lock(idx, this);
-            // this.activate(idx);
-        } finally {
-            this._recordStore.endChange();
-        }
-    }
+    // openTable(recordSourceDefinition: TableRecordSourceDefinition) {
+    //     this._recordStore.beginChange();
+    //     try {
+    //         // this.closeTable(false);
+    //         this.closeTable();
+    //         const recordSource = this._tableRecordSourceFactoryService.createFromDefinition(recordSourceDefinition);
+    //         const table = new Table(recordSource);
+    //         this._recordStore.setTable(table);
+    //         table.open(this._opener);
+    //         //     this._table = this._tablesService.lock(idx, this);
+    //         // this.activate(idx);
+    //     } finally {
+    //         this._recordStore.endChange();
+    //     }
+    // }
 
-    openRecordDefinitionList(id: Guid, keepCurrentLayout: boolean) {
-        let layout: GridLayout | undefined;
-        if (!keepCurrentLayout) {
-            layout = undefined;
-        } else {
-            layout = this.getGridLayout();
-        }
+    // openRecordDefinitionList(id: Guid, keepCurrentLayout: boolean) {
+    //     let layout: GridLayout | undefined;
+    //     if (!keepCurrentLayout) {
+    //         layout = undefined;
+    //     } else {
+    //         layout = this.getGridLayout();
+    //     }
 
-        this.openRecordDefinitionListWithLayout(id, layout, !keepCurrentLayout);
-    }
+    //     this.openRecordDefinitionListWithLayout(id, layout, !keepCurrentLayout);
+    // }
 
-    openRecordDefinitionListWithLayout(id: Guid, layout: GridLayout | undefined,
-        autoSizeAllColumnWidthsRequired: boolean) {
-        if (this._table === undefined) {
-            throw new UnexpectedUndefinedError('TFORDLWL031195');
-        } else {
-            this._recordStore.beginChange();
-            try {
-                this.closeTable(false);
+    // openRecordDefinitionListWithLayout(id: Guid, layout: GridLayout | undefined,
+    //     autoSizeAllColumnWidthsRequired: boolean) {
+    //     if (this._table === undefined) {
+    //         throw new UnexpectedUndefinedError('TFORDLWL031195');
+    //     } else {
+    //         this._recordStore.beginChange();
+    //         try {
+    //             this.closeTable(false);
 
-                this.createPrivateTable();
-                const tableDefinition = this._tablesService.definitionFactory.createFromTableRecordDefinitionListDirectoryId(
-                    id, this._table
-                );
-                this._table.setDefinition(tableDefinition);
+    //             this.createPrivateTable();
+    //             const tableDefinition = this._tablesService.definitionFactory.createFromTableRecordDefinitionListDirectoryId(
+    //                 id, this._table
+    //             );
+    //             this._table.setDefinition(tableDefinition);
 
-                if (layout !== undefined) {
-                    this._table.layout = layout; // .createCopy();`
-                    // todo
-                } else {
-                    this._table.layout = this._table.createDefaultLayout();
-                    autoSizeAllColumnWidthsRequired = true;
-                }
+    //             if (layout !== undefined) {
+    //                 this._table.layout = layout; // .createCopy();`
+    //                 // todo
+    //             } else {
+    //                 this._table.layout = this._table.createDefaultLayout();
+    //                 autoSizeAllColumnWidthsRequired = true;
+    //             }
 
-                // this._table.lockRecordDefinitionListById(id);
-                this._table.setNameFromRecordDefinitionList();
-                this.activate(-1);
-                if (autoSizeAllColumnWidthsRequired) {
-                    this.checkAutoSizeAllColumnWidthsOnFirstUsable();
-                }
+    //             // this._table.lockRecordDefinitionListById(id);
+    //             this._table.setNameFromRecordDefinitionList();
+    //             this.activate(-1);
+    //             if (autoSizeAllColumnWidthsRequired) {
+    //                 this.checkAutoSizeAllColumnWidthsOnFirstUsable();
+    //             }
 
-            } finally {
-                this._recordStore.endChange();
-            }
-        }
-    }
+    //         } finally {
+    //             this._recordStore.endChange();
+    //         }
+    //     }
+    // }
 
-    openNullItemDefinitionList(keepCurrentLayout: boolean) {
-        const id = this._tableRecordDefinitionListsService.nullListId;
-        this.openRecordDefinitionList(id, keepCurrentLayout);
-    }
+    // openNullItemDefinitionList(keepCurrentLayout: boolean) {
+    //     const id = this._tableRecordDefinitionListsService.nullListId;
+    //     this.openRecordDefinitionList(id, keepCurrentLayout);
+    // }
 
     /*saveAsTable(saveAsExistingIdx: Integer | undefined, saveAsName: string | undefined, openSaved: boolean): Integer {
         if (this._table === undefined) {
@@ -800,35 +803,35 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.autoSizeAllColumnWidths();
     }
 
-    loadDefaultLayout() {
-        if (this._table !== undefined) {
-            this.setGridLayout(this._table.createDefaultLayout());
-        }
-    }
-
-    // setGridLayout(layout: GridLayout, changeAllowed: boolean) {
-    //     this._grid.loadLayout(layout);
+    // loadDefaultLayout() {
+    //     if (this._table !== undefined) {
+    //         this.setGridLayout(this._table.createDefaultLayout());
+    //     }
     // }
 
-    getGridLayout(): GridLayout {
-        return this._grid.saveLayout();
+    createAllowedFieldsAndLayoutDefinition() {
+        return this._grid.createAllowedFieldsAndLayoutDefinition();
     }
 
-    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._grid.getLayoutWithHeadersMap();
-    }
+    // getGridLayout(): GridLayout {
+    //     return this._grid.saveLayout();
+    // }
 
-    gridLoadLayout(layout: GridLayout) {
-        this._grid.loadLayout(layout);
-    }
+    // getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
+    //     return this._grid.getLayoutWithHeadersMap();
+    // }
+
+    // gridLoadLayout(layout: GridLayout) {
+    //     this._grid.loadLayout(layout);
+    // }
 
     // isPrivate(): boolean {
     //     return this._privateTable !== undefined;
     // }
 
-    hasPrivateRecordDefinitionList(): boolean {
-        return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
-    }
+    // hasPrivateRecordDefinitionList(): boolean {
+    //     return this._table !== undefined && this._table.hasPrivateRecordDefinitionList();
+    // }
 
     clearFilter(): void {
         this._grid.applyFilter(undefined);
@@ -838,8 +841,13 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.applyFilter(filter);
     }
 
-    private handleSettingChangedEvent() {
-        this.applySettings();
+    private handleGridSourceGridLayoutChangedEvent() {
+        const newLayout = this._openedGridSource.lockedGridLayout;
+        if (newLayout === undefined) {
+            throw new AssertInternalError('GSFHGSGLCE22202');
+        } else {
+            this._grid.updateGridLayout(newLayout);
+        }
     }
 
     private applySettings() {
@@ -869,18 +877,18 @@ export class GridSourceFrame extends ContentFrame {
 
     // }
 
-    private processFirstUsable() {
-        this._grid.setValuesBeenUsable(true);
-        if (this._table !== undefined) {
-            if (!this._table.beenUsable) {
-                this._autoSizeAllColumnWidthsOnFirstUsable = true;
-            } else {
-                this._autoSizeAllColumnWidthsOnFirstUsable = false;
-                // FGridDrawer.ApplyAppOptions;  // need to have font set to correctly calculate widths // todo
-                this.autoSizeAllColumnWidths();
-            }
-        }
-    }
+    // private processFirstUsable() {
+    //     this._grid.setValuesBeenUsable(true);
+    //     if (this._table !== undefined) {
+    //         if (!this._table.beenUsable) {
+    //             this._autoSizeAllColumnWidthsOnFirstUsable = true;
+    //         } else {
+    //             this._autoSizeAllColumnWidthsOnFirstUsable = false;
+    //             // FGridDrawer.ApplyAppOptions;  // need to have font set to correctly calculate widths // todo
+    //             this.autoSizeAllColumnWidths();
+    //         }
+    //     }
+    // }
 
     // private createPrivateTable() {
     //     assert(this._privateTable === undefined && this.table === undefined);
@@ -897,29 +905,29 @@ export class GridSourceFrame extends ContentFrame {
     //     };
     // }
 
-    private prepareGrid() {
-        if (this._table === undefined) {
-            throw new UnexpectedUndefinedError('TFPG448443');
-        } else {
-            if (this._gridPrepared) {
-                this._grid.reset();
-            }
+    // private prepareGrid() {
+    //     if (this._table === undefined) {
+    //         throw new UnexpectedUndefinedError('TFPG448443');
+    //     } else {
+    //         if (this._gridPrepared) {
+    //             this._grid.reset();
+    //         }
 
-            const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-            this._recordStore.addFields(fieldsAndInitialStates.fields);
+    //         const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
+    //         this._recordStore.addFields(fieldsAndInitialStates.fields);
 
-            const states = fieldsAndInitialStates.states;
-            const fieldCount = states.length; // one state for each field
-            for (let i = 0; i < fieldCount; i++) {
-                this._grid.setFieldState(fieldsAndInitialStates.fields[i], states[i]);
-            }
-            this._grid.loadLayout(this._table.layout);
-            this.updateGridSettingsFromTable();
-            this._recordStore.recordsLoaded();
+    //         const states = fieldsAndInitialStates.states;
+    //         const fieldCount = states.length; // one state for each field
+    //         for (let i = 0; i < fieldCount; i++) {
+    //             this._grid.setFieldState(fieldsAndInitialStates.fields[i], states[i]);
+    //         }
+    //         this._grid.loadLayout(this._table.layout);
+    //         this.updateGridSettingsFromTable();
+    //         this._recordStore.recordsLoaded();
 
-            this._gridPrepared = true;
-        }
-    }
+    //         this._gridPrepared = true;
+    //     }
+    // }
 
     // private activate(tableDirIdx: Integer) {
     //     if (this._table === undefined) {
@@ -943,113 +951,113 @@ export class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
-    private updateGridSettingsFromTable() {
-        if (this._table === undefined || !this._table.changeRecordDefinitionOrderAllowed) {
-            // Grid.ClickSort = false;
-        } else {
-            // Grid.ClickSort = true;
-        }
-    }
+    // private updateGridSettingsFromTable() {
+    //     if (this._table === undefined || !this._table.changeRecordDefinitionOrderAllowed) {
+    //         // Grid.ClickSort = false;
+    //     } else {
+    //         // Grid.ClickSort = true;
+    //     }
+    // }
 
     // private prepareDeleteListAction() {
     //     const canDeleteListResult = this.canDeleteList();
     //     this.notifyDeleteListActionPrepared(canDeleteListResult.deletable, canDeleteListResult.actionHint);
     // }
 
-    private canDeleteList(): GridSourceFrame.CanDeleteListResult {
-        if (this._table === undefined) {
-            return {
-                deletable: false,
-                isRecordDefinitionList: false,
-                listName: '',
-                actionHint: Strings[StringId.NoTable]
-            };
-        } else {
-            if (!this.isPrivate()) {
-                const listName = this._table.name;
-                const deletable = this._tablesService.isTableLocked(this._table, this);
-                let actionHint: string;
-                if (deletable) {
-                    actionHint = Strings[StringId.DeleteWatchlist] + ' "' + listName + '"';
-                } else {
-                    actionHint = Strings[StringId.CannotDeleteWatchlist] + ' "' + listName + '"';
-                }
-                return {
-                    deletable,
-                    isRecordDefinitionList: false,
-                    listName,
-                    actionHint
-                };
-            } else {
-                if (this._table.hasPrivateRecordDefinitionList()) {
-                    return {
-                        deletable: false,
-                        isRecordDefinitionList: false,
-                        listName: '',
-                        actionHint: Strings[StringId.CannotDeletePrivateList]
-                    };
-                } else {
-                    const recordDefinitionList = this._table.recordDefinitionList;
-                    const listName = recordDefinitionList.name;
-                    let actionHint: string;
-                    let deletable: boolean;
-                    if (recordDefinitionList.builtIn) {
-                        deletable = false;
-                        actionHint = Strings[StringId.CannotDeleteBuiltinList];
-                    } else {
-                        deletable = !this._tableRecordDefinitionListsService.isItemLocked(recordDefinitionList, this._table);
-                        if (deletable) {
-                            actionHint = Strings[StringId.DeleteList] + ' :' + listName;
-                        } else {
-                            actionHint = Strings[StringId.CannotDeleteList] + ' :' + listName;
-                        }
-                    }
+    // private canDeleteList(): GridSourceFrame.CanDeleteListResult {
+    //     if (this._table === undefined) {
+    //         return {
+    //             deletable: false,
+    //             isRecordDefinitionList: false,
+    //             listName: '',
+    //             actionHint: Strings[StringId.NoTable]
+    //         };
+    //     } else {
+    //         if (!this.isPrivate()) {
+    //             const listName = this._table.name;
+    //             const deletable = this._tablesService.isTableLocked(this._table, this);
+    //             let actionHint: string;
+    //             if (deletable) {
+    //                 actionHint = Strings[StringId.DeleteWatchlist] + ' "' + listName + '"';
+    //             } else {
+    //                 actionHint = Strings[StringId.CannotDeleteWatchlist] + ' "' + listName + '"';
+    //             }
+    //             return {
+    //                 deletable,
+    //                 isRecordDefinitionList: false,
+    //                 listName,
+    //                 actionHint
+    //             };
+    //         } else {
+    //             if (this._table.hasPrivateRecordDefinitionList()) {
+    //                 return {
+    //                     deletable: false,
+    //                     isRecordDefinitionList: false,
+    //                     listName: '',
+    //                     actionHint: Strings[StringId.CannotDeletePrivateList]
+    //                 };
+    //             } else {
+    //                 const recordDefinitionList = this._table.recordDefinitionList;
+    //                 const listName = recordDefinitionList.name;
+    //                 let actionHint: string;
+    //                 let deletable: boolean;
+    //                 if (recordDefinitionList.builtIn) {
+    //                     deletable = false;
+    //                     actionHint = Strings[StringId.CannotDeleteBuiltinList];
+    //                 } else {
+    //                     deletable = !this._tableRecordDefinitionListsService.isItemLocked(recordDefinitionList, this._table);
+    //                     if (deletable) {
+    //                         actionHint = Strings[StringId.DeleteList] + ' :' + listName;
+    //                     } else {
+    //                         actionHint = Strings[StringId.CannotDeleteList] + ' :' + listName;
+    //                     }
+    //                 }
 
-                    return {
-                        deletable,
-                        isRecordDefinitionList: true,
-                        listName,
-                        actionHint
-                    };
-                }
-            }
-        }
-    }
+    //                 return {
+    //                     deletable,
+    //                     isRecordDefinitionList: true,
+    //                     listName,
+    //                     actionHint
+    //                 };
+    //             }
+    //         }
+    //     }
+    // }
 
-    private deleteList() {
-        if (this._table !== undefined) {
-            const canDeleteListResult = this.canDeleteList();
-            if (canDeleteListResult.deletable) {
-                if (!canDeleteListResult.isRecordDefinitionList) {
-                    const idx = this._table.index;
-                    if (idx < 0) {
-                        throw new AssertInternalError('TFDLNID259', `${this._table.name}`);
-                    } else {
-                        this.closeTable(false);
-                        if (this._tablesService.isItemAtIndexLocked(idx, undefined)) {
-                            throw new AssertInternalError('TFDLDIS288', `${idx}`);
-                        } else {
-                            this._tablesService.delete(idx);
-                        }
-                    }
-                } else {
-                    const idx = this._table.recordDefinitionList.index;
-                    if (idx < 0) {
-                        throw new AssertInternalError('TFDLRNID897', `${this._table.recordDefinitionList.name}`);
-                    } else {
-                        this.closeTable(false);
-                        if (this._tableRecordDefinitionListsService.isItemAtIndexLocked(idx, undefined)) {
-                            throw new AssertInternalError('TFDLDISR211', `${idx}`);
-                        } else {
-                            this._tableRecordDefinitionListsService.deleteItemAtIndex(idx);
-                        }
-                    }
-                }
+    // private deleteList() {
+    //     if (this._table !== undefined) {
+    //         const canDeleteListResult = this.canDeleteList();
+    //         if (canDeleteListResult.deletable) {
+    //             if (!canDeleteListResult.isRecordDefinitionList) {
+    //                 const idx = this._table.index;
+    //                 if (idx < 0) {
+    //                     throw new AssertInternalError('TFDLNID259', `${this._table.name}`);
+    //                 } else {
+    //                     this.closeTable(false);
+    //                     if (this._tablesService.isItemAtIndexLocked(idx, undefined)) {
+    //                         throw new AssertInternalError('TFDLDIS288', `${idx}`);
+    //                     } else {
+    //                         this._tablesService.delete(idx);
+    //                     }
+    //                 }
+    //             } else {
+    //                 const idx = this._table.recordDefinitionList.index;
+    //                 if (idx < 0) {
+    //                     throw new AssertInternalError('TFDLRNID897', `${this._table.recordDefinitionList.name}`);
+    //                 } else {
+    //                     this.closeTable(false);
+    //                     if (this._tableRecordDefinitionListsService.isItemAtIndexLocked(idx, undefined)) {
+    //                         throw new AssertInternalError('TFDLDISR211', `${idx}`);
+    //                     } else {
+    //                         this._tableRecordDefinitionListsService.deleteItemAtIndex(idx);
+    //                     }
+    //                 }
+    //             }
 
-                // this.newPrivatePortfolioItemDefinitionList(false); // this should be done elsewhere
-            }
-        }
-    }
+    //             // this.newPrivatePortfolioItemDefinitionList(false); // this should be done elsewhere
+    //         }
+    //     }
+    // }
 
     // private tryNewDefaultPrivateTable() {
     //     if (this.requireDefaultTableDefinitionEvent === undefined) {

@@ -37,7 +37,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
     private _gridPrepared = false;
-    private _layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
+    private _allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition;
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
 
@@ -49,7 +49,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
         this._recordStore = new GridLayoutRecordStore();
     }
 
-    get gridLayout() { return this._recordStore.getLayout(); }
+    get gridLayoutDefinition() { return this._recordStore.getLayout(); }
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
     public get columnFilterId(): GridLayoutEditorGridNgComponent.ColumnFilterId { return this._columnFilterId; }
@@ -73,8 +73,8 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     // private initialise() {
     // }
 
-    setLayoutWithHeadersMap(layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap) {
-        this._layoutWithHeadings = layoutWithHeadings;
+    setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition) {
+        this._allowedFieldsAndLayoutDefinition = allowedFieldsAndLayoutDefinition;
         this.prepareGrid();
     }
 
@@ -99,7 +99,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     applyGridLayoutChangeAction(action: GridLayoutChange.Action): number | undefined {
 
         const moveColumn = (currentIndex: number, newIndex: number): boolean => {
-            const result = this._layoutWithHeadings.layout.moveColumn(currentIndex, newIndex);
+            const result = this._allowedFieldsAndLayoutDefinition.layout.moveColumn(currentIndex, newIndex);
             if (result) {
                 this._recordStore.recordsLoaded();
             }
@@ -166,12 +166,12 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     }
 
     getColumn(columnIndex: number): GridLayout.Column {
-        return this._layoutWithHeadings.layout.getColumn(columnIndex);
+        return this._allowedFieldsAndLayoutDefinition.layout.getColumn(columnIndex);
     }
 
     getColumnHeading(columnIndex: number) {
-        const fieldName = this._layoutWithHeadings.layout.getColumn(columnIndex).field.name;
-        const heading = this._layoutWithHeadings.headersMap.get(fieldName);
+        const fieldName = this._allowedFieldsAndLayoutDefinition.layout.getColumn(columnIndex).field.name;
+        const heading = this._allowedFieldsAndLayoutDefinition.headersMap.get(fieldName);
         if (heading !== undefined) {
             return heading;
         } else {
@@ -223,8 +223,8 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
                 this._grid.reset();
             }
 
-            if (this._layoutWithHeadings) {
-                this._recordStore.setData(this._layoutWithHeadings);
+            if (this._allowedFieldsAndLayoutDefinition) {
+                this._recordStore.setData(this._allowedFieldsAndLayoutDefinition);
 
                 const positionField = this._recordStore.createPositionField();
                 const headingField = this._recordStore.createHeadingField();

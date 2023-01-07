@@ -8,25 +8,24 @@ import {
     AdiService,
     CommandRegisterService,
     DepthStyleId,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
-    LitIvemIdTableRecordDefinition,
-    PortfolioTableDefinition,
-    PortfolioTableRecordDefinitionList,
+    LockOpenListItem,
+    StringId,
+    Strings,
     SymbolsService,
-    TableRecordDefinitionList,
-    TableRecordDefinitionListsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
-import { DepthFrame, GridSourceFrame, TradesFrame } from 'content-internal-api';
+import { DepthFrame, GridSourceFrame, RecordGrid, TradesFrame } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
+    private readonly _opener: LockOpenListItem.Opener;
+
     private _watchlistFrame: GridSourceFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
@@ -42,11 +41,14 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _tableRecordDefinitionsListService: TableRecordDefinitionListsService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
+
+        this._opener = {
+            lockerName: `${Strings[StringId.DitemMenuDisplay_DepthAndTrades]}: ${this.frameId}`
+        };
     }
 
     get initialised() { return this._depthFrame !== undefined; }
@@ -75,15 +77,15 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
 
         if (frameElement === undefined) {
             this._watchlistFrame.loadLayoutConfig(undefined);
-            this._tradesFrame.loadLayoutConfig(undefined);
-            this._depthFrame.loadLayoutConfig(undefined);
+            this._tradesFrame.loadConfig(undefined);
+            this._depthFrame.loadConfig(undefined);
         } else {
             const watchlistElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
             this._watchlistFrame.loadLayoutConfig(watchlistElement);
             const tradesElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);
-            this._tradesFrame.loadLayoutConfig(tradesElement);
+            this._tradesFrame.loadConfig(tradesElement);
             const depthElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.depth);
-            this._depthFrame.loadLayoutConfig(depthElement);
+            this._depthFrame.loadConfig(depthElement);
         }
 
         this.applyLinked();
@@ -99,7 +101,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         const depthElement = element.newElement(ParidepthDitemFrame.JsonName.depth);
         this._depthFrame.saveLayoutToConfig(depthElement);
         const tradesElement = element.newElement(ParidepthDitemFrame.JsonName.trades);
-        this._tradesFrame.saveLayoutConfig(tradesElement);
+        this._tradesFrame.saveLayoutToConfig(tradesElement);
     }
 
     async open() {
@@ -178,18 +180,18 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutsWithHeadings(): ParidepthDitemFrame.GridLayoutsWithHeaderMaps {
+    getAllowedFieldsAndLayoutDefinitions(): ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions {
         return {
-            depth: this._depthFrame.getGridLayoutsWithHeadings(),
-            watchlist: this._watchlistFrame.getGridLayoutWithHeadersMap(),
-            trades: this._tradesFrame.getGridLayoutWithHeadersMap(),
+            depth: this._depthFrame.createAllowedFieldsAndLayoutDefinitions(),
+            watchlist: this._watchlistFrame.getFieldsAndLayoutDefinition(),
+            trades: this._tradesFrame.getFieldsAndLayoutDefinition(),
         };
     }
 
-    setGridLayouts(layouts: ParidepthDitemFrame.GridLayouts) {
-        this._depthFrame.setGridLayouts(layouts.depth);
+    applyGridLayoutDefinitions(layouts: ParidepthDitemFrame.GridLayoutDefinitions) {
+        this._depthFrame.applyGridLayoutDefinitions(layouts.depth);
         this._watchlistFrame.setGridLayout(layouts.watchlist);
-        this._tradesFrame.setGridLayout(layouts.trades);
+        this._tradesFrame.applyGridLayoutDefinition(layouts.trades);
     }
 
     // adviseShown() {
@@ -277,16 +279,16 @@ export namespace ParidepthDitemFrame {
         export const historicalTradeDate = undefined;
     }
 
-    export interface GridLayouts {
-        watchlist: GridLayout;
-        depth: DepthFrame.GridLayouts;
-        trades: GridLayout;
+    export interface GridLayoutDefinitions {
+        watchlist: GridLayoutDefinition;
+        depth: DepthFrame.GridLayoutDefinitions;
+        trades: GridLayoutDefinition;
     }
 
-    export interface GridLayoutsWithHeaderMaps {
-        watchlist: GridLayoutRecordStore.LayoutWithHeadersMap;
-        depth: DepthFrame.GridLayoutsWithHeadersMap;
-        trades: GridLayoutRecordStore.LayoutWithHeadersMap;
+    export interface AllowedFieldsAndLayoutDefinitions {
+        watchlist: RecordGrid.AllowedFieldsAndLayoutDefinition;
+        depth: DepthFrame.AllowedFieldsAndLayoutDefinitions;
+        trades: RecordGrid.AllowedFieldsAndLayoutDefinition;
     }
 
     export type OpenedEventHandler = (this: void) => void;

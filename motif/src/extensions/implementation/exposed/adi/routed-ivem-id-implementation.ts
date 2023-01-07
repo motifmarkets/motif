@@ -5,7 +5,8 @@
  */
 
 import { RoutedIvemId } from '@motifmarkets/motif-core';
-import { Json as JsonApi, RoutedIvemId as RoutedIvemIdApi } from '../../../api/extension-api';
+import { JsonElement as JsonElementApi, RoutedIvemId as RoutedIvemIdApi } from '../../../api/extension-api';
+import { JsonElementImplementation } from '../sys/internal-api';
 import { ExchangeIdImplementation } from './exchange-id-api-implementation';
 import { IvemIdImplementation } from './ivem-id-implementation';
 import { OrderRouteImplementation } from './order-route-implementation';
@@ -21,8 +22,9 @@ export class RoutedIvemIdImplementation implements RoutedIvemIdApi {
     get route() { return OrderRouteImplementation.toApi(this._actual.route); }
     get name() { return this._actual.name; }
 
-    toJson(): JsonApi {
-        return this._actual.toJson();
+    saveToJson(elementApi: JsonElementApi): void {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        this._actual.saveToJson(element);
     }
 }
 

@@ -108,6 +108,7 @@ export namespace BadnessImplementation {
                 case Badness.ReasonId.StatusWarnings: return BadnessApi.ReasonEnum.StatusWarnings;
                 case Badness.ReasonId.StatusRetrieving: return BadnessApi.ReasonEnum.StatusRetrieving;
                 case Badness.ReasonId.StatusErrors: return BadnessApi.ReasonEnum.StatusErrors;
+                case Badness.ReasonId.LockError: return BadnessApi.ReasonEnum.LockError;
                 default: throw new UnreachableCaseError('BITA77553499', value);
             }
         }
@@ -201,6 +202,7 @@ export namespace BadnessImplementation {
                 case BadnessApi.ReasonEnum.StatusWarnings: return Badness.ReasonId.StatusWarnings;
                 case BadnessApi.ReasonEnum.StatusRetrieving: return Badness.ReasonId.StatusRetrieving;
                 case BadnessApi.ReasonEnum.StatusErrors: return Badness.ReasonId.StatusErrors;
+                case BadnessApi.ReasonEnum.LockError: return Badness.ReasonId.LockError;
                 default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidBadness, enumValue);
             }
         }

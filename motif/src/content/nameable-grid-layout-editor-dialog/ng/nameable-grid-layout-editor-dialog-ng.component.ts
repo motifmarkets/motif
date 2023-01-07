@@ -14,29 +14,25 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
     CommandRegisterService,
-    delay1Tick,
-    GridLayout,
-    GridLayoutItem,
-    GridLayoutRecordStore,
-    IconButtonUiAction,
+    delay1Tick, GridLayoutOrNamedReferenceDefinition, IconButtonUiAction,
     InternalCommand,
     StringId
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
+import { RecordGrid } from '../../adapted-revgrid/internal-api';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
-    selector: 'app-content-grid-layout-editor',
-    templateUrl: './content-grid-layout-editor-ng.component.html',
-    styleUrls: ['./content-grid-layout-editor-ng.component.scss'],
+    selector: 'app-nameable-grid-layout-editor-dialog',
+    templateUrl: './nameable-grid-layout-editor-dialog-ng.component.html',
+    styleUrls: ['./nameable-grid-layout-editor-dialog-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
@@ -48,7 +44,7 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
 
-    private _closeResolve: (value: GridLayout | undefined) => void;
+    private _closeResolve: (value: GridLayoutOrNamedReferenceDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
     constructor(
@@ -71,12 +67,13 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
         this._cancelUiAction.finalise();
     }
 
-    open(layoutWithHeadersMap: GridLayoutRecordStore.LayoutWithHeadersMap): ContentGridLayoutEditorNgComponent.ClosePromise {
-        this._editorComponent.setGridLayout(layoutWithHeadersMap);
+    open(
+        allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition
+    ): NameableGridLayoutEditorDialogNgComponent.ClosePromise {
+        this._editorComponent.setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition);
 
-        return new Promise<GridLayout | undefined>((resolve, reject) => {
+        return new Promise<GridLayoutOrNamedReferenceDefinition | undefined>((resolve) => {
             this._closeResolve = resolve;
-            this._closeReject = reject;
         });
     }
 
@@ -115,29 +112,26 @@ export class ContentGridLayoutEditorNgComponent extends ContentComponentBaseNgDi
 
     private close(ok: boolean) {
         if (ok) {
-            this._closeResolve(this._editorComponent.getGridLayout());
+            const gridLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
+            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(gridLayoutDefinition);
+            this._closeResolve(gridLayoutOrNamedReferenceDefinition);
         } else {
             this._closeResolve(undefined);
         }
     }
 }
 
-export namespace ContentGridLayoutEditorNgComponent {
-    export interface CloseResult {
-        newLayout: GridLayoutItem | GridLayoutItem.Id | undefined;
-    }
-    export type ClosePromise = Promise<GridLayout | undefined>;
+export namespace NameableGridLayoutEditorDialogNgComponent {
+    export type ClosePromise = Promise<GridLayoutOrNamedReferenceDefinition | undefined>;
 
     export function open(
         container: ViewContainerRef,
-        layoutWithHeadersMap: GridLayoutRecordStore.LayoutWithHeadersMap,
+        allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition,
     ): ClosePromise {
         container.clear();
-        const componentRef = container.createComponent(ContentGridLayoutEditorNgComponent);
-        assert(componentRef.instance instanceof ContentGridLayoutEditorNgComponent, 'ID:157271511202');
+        const componentRef = container.createComponent(NameableGridLayoutEditorDialogNgComponent);
+        const component = componentRef.instance as NameableGridLayoutEditorDialogNgComponent;
 
-        const component = componentRef.instance as ContentGridLayoutEditorNgComponent;
-
-        return component.open(layoutWithHeadersMap);
+        return component.open(allowedFieldsAndLayoutDefinition);
     }
 }

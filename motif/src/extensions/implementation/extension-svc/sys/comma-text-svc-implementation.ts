@@ -5,7 +5,7 @@
  */
 
 import { CommaText } from '@motifmarkets/motif-core';
-import { CommaTextSvc } from '../../../api/extension-api';
+import { CommaTextSvc, Result as ResultApi } from '../../../api/extension-api';
 
 export class CommaTextSvcImplementation implements CommaTextSvc {
     get delimiterChar(): string { return CommaText.delimiterChar; }
@@ -36,14 +36,14 @@ export class CommaTextSvcImplementation implements CommaTextSvc {
         return CommaText.toStringArray(value);
     }
 
-    toStringArrayWithResult(value: string, strict?: boolean): CommaTextSvc.ToStringArrayResult {
+    toStringArrayWithResult(value: string, strict?: boolean): ResultApi<string[]> {
         return CommaText.toStringArrayWithResult(value, strict !== false);
     }
-    toIntegerArrayWithResult(value: string): CommaText.ToIntegerArrayResult {
+    toIntegerArrayWithResult(value: string): ResultApi<number[]> {
         return CommaText.toIntegerArrayWithResult(value);
     }
 
-    strictValidate(value: string): CommaText.StrictValidateResult {
+    strictValidate(value: string): ResultApi<boolean> {
         return CommaText.strictValidate(value);
     }
 }

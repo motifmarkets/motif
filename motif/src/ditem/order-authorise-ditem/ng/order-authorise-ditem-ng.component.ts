@@ -32,7 +32,7 @@ import {
     TablesNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import { GridLayoutEditorDialogNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -259,11 +259,11 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {
-                        this._frame.setGridLayout(layout);
+                        this._frame.openGridLayoutOrNamedReferenceDefinition(layout);
                     }
                     this.closeLayoutEditor();
                 },

@@ -5,13 +5,13 @@ export abstract class AdaptedRevgrid extends Revgrid {
     resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
     renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
     ctrlKeyMouseMoveEventer: AdaptedRevgrid.CtrlKeyMouseMoveEventer | undefined;
+    columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
     // columnWidthChangedEventer: AdaptedRevgrid.ColumnWidthChangedEventer | undefined;
 
     protected readonly _settingsService: SettingsService;
 
     private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
 
-    private columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 

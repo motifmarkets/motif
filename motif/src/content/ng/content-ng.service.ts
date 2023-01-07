@@ -12,7 +12,6 @@ import {
     NamedGridLayoutsNgService,
     NamedGridSourcesNgService,
     SettingsNgService,
-    SharedGridSourcesNgService,
     SymbolsNgService,
     TableRecordSourceFactoryNgService,
     TextFormatterNgService
@@ -44,7 +43,6 @@ export class ContentNgService {
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
         namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
         namedGridSourceDefinitionsNgService: NamedGridSourcesNgService,
-        sharedGridSourcesNgService: SharedGridSourcesNgService,
     ) {
         this._content = new ContentService(
             settingsNgService.settingsService,
@@ -52,10 +50,9 @@ export class ContentNgService {
             appStorageNgService.appStorage,
             adiNgService.service,
             textFormatterNgService.service,
-            tableRecordSourceFactoryNgService.service,
             namedGridLayoutDefinitionsNgService.service,
+            tableRecordSourceFactoryNgService.service,
             namedGridSourceDefinitionsNgService.service,
-            sharedGridSourcesNgService.service,
         );
     }
 

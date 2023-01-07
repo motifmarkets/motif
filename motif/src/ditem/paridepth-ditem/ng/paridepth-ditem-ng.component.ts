@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ElementRef,
     Inject,
     OnDestroy,
@@ -42,7 +41,6 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordDefinitionListsNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
@@ -127,8 +125,6 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
-        tableRecordDefinitionListsNgService: TableRecordDefinitionListsNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -546,7 +542,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private showLayoutEditor() {
         this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getGridLayoutsWithHeadings();
+        const layoutWithHeadings = this._frame.getAllowedFieldsAndLayoutDefinitions();
 
         if (layoutWithHeadings !== undefined) {
             const closePromise = ParidepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, this._resolver,
@@ -555,7 +551,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {
-                        this._frame.setGridLayouts(layout);
+                        this._frame.applyGridLayoutDefinitions(layout);
                     }
                     this.closeLayoutEditor();
                 },

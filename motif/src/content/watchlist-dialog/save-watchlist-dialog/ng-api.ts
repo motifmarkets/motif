@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/content-grid-layout-editor-ng.component';
+export * from './ng/save-watchlist-dialog-ng.component';
 

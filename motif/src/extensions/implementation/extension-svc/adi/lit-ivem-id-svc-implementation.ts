@@ -8,14 +8,18 @@ import { DataEnvironmentId, LitIvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
     DataEnvironmentId as ExchangeEnvironmentIdApi,
-    Json as JsonApi,
+    Err as ErrApi,
+    JsonElement as JsonElementApi,
     LitIvemId as LitIvemIdApi,
     LitIvemIdSvc,
-    MarketId as MarketIdApi
+    MarketId as MarketIdApi,
+    Ok as OkApi,
+    Result as ResultApi
 } from '../../../api/extension-api';
 import {
     ComparisonResultImplementation,
     DataEnvironmentIdImplementation,
+    JsonElementImplementation,
     LitIvemIdImplementation,
     MarketIdImplementation
 } from '../../exposed/internal-api';
@@ -53,21 +57,25 @@ export class LitIvemIdSvcImplementation implements LitIvemIdSvc {
         return ComparisonResultImplementation.toApi(result);
     }
 
-    tryCreateFromJson(json: JsonApi): LitIvemIdApi | undefined {
-        const litIvemId = LitIvemId.tryCreateFromJson(json as LitIvemId.Json, false);
-        if (litIvemId === undefined) {
-            return undefined;
+    tryCreateFromJson(elementApi: JsonElementApi): ResultApi<LitIvemIdApi> {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        const result = LitIvemId.tryCreateFromJson(element);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return LitIvemIdImplementation.toApi(litIvemId);
+            const litIvemIdApi = LitIvemIdImplementation.toApi(result.value);
+            return new OkApi(litIvemIdApi);
         }
     }
 
-    tryCreateArrayFromJson(jsonArray: JsonApi[]): LitIvemIdApi[] | undefined {
-        const litIvemIdArray = LitIvemId.tryCreateArrayFromJson(jsonArray as LitIvemId.Json[], false);
-        if (litIvemIdArray === undefined) {
-            return undefined;
+    tryCreateArrayFromJson(elementsApi: JsonElementApi[]): ResultApi<LitIvemIdApi[]> {
+        const elements = JsonElementImplementation.arrayFromApi(elementsApi);
+        const result = LitIvemId.tryCreateArrayFromJsonElementArray(elements);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return LitIvemIdImplementation.arrayToApi(litIvemIdArray);
+            const litIvemIdArrayApi = LitIvemIdImplementation.arrayToApi(result.value);
+            return new OkApi(litIvemIdArrayApi);
         }
     }
 }

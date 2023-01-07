@@ -388,14 +388,14 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private showLayoutEditor() {
         this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getGridLayoutsWithHeadings();
+        const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinitions();
 
         if (layoutWithHeadings !== undefined) {
             const closePromise = DepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
             closePromise.then(
                 (layouts) => {
                     if (layouts !== undefined) {
-                        this._frame.setGridLayouts(layouts);
+                        this._frame.applyGridLayoutDefinitions(layouts);
                     }
                     this.closeLayoutEditor();
                 },

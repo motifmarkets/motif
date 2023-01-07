@@ -7,19 +7,16 @@
 import {
     Badness,
     Feed,
-    FeedTableRecordDefinitionList,
     Integer,
-    KeyedCorrectnessRecordList,
-    MultiEvent,
-    TableRecordDefinitionList,
-    TablesService
+    KeyedCorrectnessList,
+    MultiEvent
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
-import { GridSourceFrame } from '../table/grid-source-frame';
+import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class FeedsFrame extends ContentFrame {
     private _tableFrame: GridSourceFrame;
-    private _recordList: KeyedCorrectnessRecordList<Feed>;
+    private _recordList: KeyedCorrectnessList<Feed>;
     private _recordListBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private _componentAccess: FeedsFrame.ComponentAccess, private readonly _tablesService: TablesService) {

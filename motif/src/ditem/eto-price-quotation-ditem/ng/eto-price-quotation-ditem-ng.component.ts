@@ -159,7 +159,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
             layoutWithHeadings = this._callPutContentComponent.frame.getGridLayoutWithHeadersMap();
         }
         this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.LayoutEditor;
-        this._layoutEditorComponent.setGridLayout(layoutWithHeadings);
+        this._layoutEditorComponent.setAllowedFieldsAndLayoutDefinition(layoutWithHeadings);
     }
 
     private handleAutoSizeColumnWidthsSignalEvent() {
@@ -168,7 +168,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
 
     private handleLayoutEditorComponentCloseEvent(ok: boolean) {
         if (ok) {
-            const layout = this._layoutEditorComponent.getGridLayout();
+            const layout = this._layoutEditorComponent.getGridLayoutDefinition();
             // need to work out which is being edited
             this._watchContentComponent.frame.gridLoadLayout(layout);
         }

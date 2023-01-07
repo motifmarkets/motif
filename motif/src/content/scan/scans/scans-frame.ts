@@ -3,7 +3,6 @@ import {
     GridLayout,
     GridLayoutDefinition,
     GridLayoutRecordStore,
-    GridRecordFieldState,
     Integer,
     JsonElement,
     Scan,
@@ -100,7 +99,7 @@ export class ScansFrame extends ContentFrame {
     //     this._dataItem = this.adi.subscribe(definition) as DayTradesDataItem;
     //     this._recordStore.setDataItem(this._dataItem);
 
-    //     this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+    //     this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
     //         () => this.handleDataItemDataCorrectnessChangeEvent()
     //     );
     //     this._dataItemDataCorrectnessId = this._dataItem.correctnessId;
@@ -194,7 +193,7 @@ export class ScansFrame extends ContentFrame {
 
     // private checkClose() {
     //     if (this._dataItem !== undefined) {
-    //         this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
+    //         this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
     //         this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
     //         this._recordStore.clearDataItem();
     //         this.adi.unsubscribe(this._dataItem);

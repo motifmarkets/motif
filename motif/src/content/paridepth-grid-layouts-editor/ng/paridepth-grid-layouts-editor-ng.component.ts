@@ -108,22 +108,22 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
         if (value !== this._layoutId) {
             switch (this._layoutId) {
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.BidDepth:
-                    this._editorComponent.setGridLayout(this._layoutsWithHeadings.depth.bid);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.depth.bid);
                     this._bidDepthUiAction.pushSelected();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.AskDepth:
-                    this._editorComponent.setGridLayout(this._layoutsWithHeadings.depth.ask);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.depth.ask);
                     this._askDepthUiAction.pushSelected();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.Watchlist:
-                    this._editorComponent.setGridLayout(this._layoutsWithHeadings.watchlist);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.watchlist);
                     this._watchlistUiAction.pushSelected();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.Trades:
-                    this._editorComponent.setGridLayout(this._layoutsWithHeadings.trades);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.trades);
                     this._tradesUiAction.pushSelected();
                     break;
 
@@ -236,19 +236,19 @@ export class ParidepthGridLayoutsEditorNgComponent extends ContentComponentBaseN
         if (this._layoutId !== undefined) {
             switch (this._layoutId) {
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.BidDepth:
-                    this._layoutsWithHeadings.depth.bid.layout = this._editorComponent.getGridLayout();
+                    this._layoutsWithHeadings.depth.bid.layout = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.AskDepth:
-                    this._layoutsWithHeadings.depth.ask.layout = this._editorComponent.getGridLayout();
+                    this._layoutsWithHeadings.depth.ask.layout = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.Watchlist:
-                    this._layoutsWithHeadings.watchlist.layout = this._editorComponent.getGridLayout();
+                    this._layoutsWithHeadings.watchlist.layout = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 case ParidepthGridLayoutsEditorNgComponent.LayoutId.Trades:
-                    this._layoutsWithHeadings.trades.layout = this._editorComponent.getGridLayout();
+                    this._layoutsWithHeadings.trades.layout = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 default:
@@ -285,13 +285,13 @@ export namespace ParidepthGridLayoutsEditorNgComponent {
 
     export interface GridLayouts {
         watchlist: GridLayout;
-        depth: DepthFrame.GridLayouts;
+        depth: DepthFrame.GridLayoutDefinitions;
         trades: GridLayout;
     }
 
     export interface GridLayoutsWithHeadersMap {
         watchlist: GridLayoutRecordStore.LayoutWithHeadersMap;
-        depth: DepthFrame.GridLayoutsWithHeadersMap;
+        depth: DepthFrame.AllowedFieldsAndLayoutDefinitions;
         trades: GridLayoutRecordStore.LayoutWithHeadersMap;
     }
 

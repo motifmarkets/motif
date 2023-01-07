@@ -5,9 +5,16 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ComponentFactoryResolver,
     ElementRef,
-    Inject, OnDestroy, ViewChild, ViewContainerRef
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     assert,
@@ -24,7 +31,7 @@ import {
     Strings
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ContentGridLayoutEditorNgComponent, TradesNgComponent } from 'content-ng-api';
+import { GridLayoutEditorDialogNgComponent, TradesNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -308,14 +315,14 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     private showLayoutEditor() {
         this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
+        const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinition();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.setGridLayout(layout);
+                (layoutDefinition) => {
+                    if (layoutDefinition !== undefined) {
+                        this._frame.applyGridLayoutDefinition(layoutDefinition);
                     }
                     this.closeLayoutEditor();
                 },

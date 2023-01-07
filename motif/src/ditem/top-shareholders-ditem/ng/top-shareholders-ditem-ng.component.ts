@@ -36,7 +36,7 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -108,7 +108,6 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         desktopAccessNgService: DesktopAccessNgService,
         private readonly _symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tablesNgService: TablesNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 

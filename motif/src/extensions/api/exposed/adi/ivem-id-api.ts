@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Json } from '../sys/extension-api';
+import { JsonElement } from '../sys/extension-api';
 import { ExchangeId } from './exchange-id-api';
 
 /** @public */
@@ -14,5 +14,6 @@ export interface IvemId {
 
     readonly name: string;
 
-    toJson(): Json;
+    saveToJson(element: JsonElement): void;
 }
+

@@ -36,7 +36,10 @@ import {
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, GridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import {
+    GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent, OpenWatchlistDialogNgComponent,
+    SaveWatchlistDialogNgComponent
+} from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { FavouriteNamedLayoutDefinitionsNgService } from '../../../component-services/ng/favourite-named-layout-definitions-ng.service';
@@ -69,7 +72,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     public watchlistAbbreviatedDescription: string;
     public WatchListFullDescription: string;
 
-    private _layoutEditorComponent: GridLayoutEditorNgComponent | undefined;
+    private _layoutEditorComponent: NameableGridLayoutEditorDialogNgComponent | undefined;
 
     private _symbolEditUiAction: LitIvemIdUiAction;
     private _symbolApplyUiAction: IconButtonUiAction;
@@ -157,7 +160,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     public isLayoutEditorMode() {
-        return this._modeId === WatchlistDitemNgComponent.ModeId.LayoutEditor;
+        return this._modeId === WatchlistDitemNgComponent.ModeId.LayoutDialog;
     }
 
     public isOpenDialogMode() {
@@ -251,7 +254,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
         const keepCurrentLayout = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        this._frame.newPrivate(keepCurrentLayout);
+        this._frame.newEmpty(/*keepCurrentLayout*/);
     }
 
     private handleOpenUiActionSignalEvent() {
@@ -259,7 +262,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleSaveUiActionEvent() {
-        // TODO
+        this.showSaveDialog();
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -390,39 +393,48 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._modeId = WatchlistDitemNgComponent.ModeId.OpenDialog;
 
         try {
-            const gridSource = await WatchlistOpenDialog.open();
-            if (gridSource !== undefined) {
-                this._frame.tryOpenGridSource(gridSource);
+            const openDialogResult = await OpenWatchlistDialogNgComponent.open(this._dialogContainer);
+            if (openDialogResult.isOk()) {
+                this._frame.tryOpenGridSource(openDialogResult.value);
             }
         } finally {
-            this.closeOpenDialog();
+            this.closeDialog();
         }
 
         this.markForCheck();
     }
 
-    private closeOpenDialog() {
-        this._dialogContainer.clear();
-        this._modeId = WatchlistDitemNgComponent.ModeId.Input;
+    private async showSaveDialog() {
+        this._modeId = WatchlistDitemNgComponent.ModeId.SaveDialog;
+
+        try {
+            const openDialogResult = await SaveWatchlistDialogNgComponent.open(this._dialogContainer);
+            if (openDialogResult.isOk()) {
+                this._frame.tryOpenGridSource(openDialogResult.value);
+            }
+        } finally {
+            this.closeDialog();
+        }
+
         this.markForCheck();
     }
 
     private showLayoutEditor() {
-        this._modeId = WatchlistDitemNgComponent.ModeId.LayoutEditor;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadersMap();
+        this._modeId = WatchlistDitemNgComponent.ModeId.LayoutDialog;
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._dialogContainer, layoutWithHeadings);
+        if (allowedFieldsAndLayoutDefinition !== undefined) {
+            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
             closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.setGridLayout(layout);
+                (layoutOrReferenceDefinition) => {
+                    if (layoutOrReferenceDefinition !== undefined) {
+                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                     }
-                    this.closeLayoutEditor();
+                    this.closeDialog();
                 },
                 (reason) => {
                     Logger.logError(`Watchlist Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
+                    this.closeDialog();
                 }
             );
         }
@@ -430,7 +442,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.markForCheck();
     }
 
-    private closeLayoutEditor() {
+    private closeDialog() {
         this._dialogContainer.clear();
         this._modeId = WatchlistDitemNgComponent.ModeId.Input;
         this.markForCheck();
@@ -495,7 +507,7 @@ export namespace WatchlistDitemNgComponent {
 
     export const enum ModeId {
         Input,
-        LayoutEditor,
+        LayoutDialog,
         OpenDialog,
         SaveDialog,
     }

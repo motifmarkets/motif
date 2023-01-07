@@ -6,10 +6,8 @@
 
 import {
     AdiService,
-    AppStorageService,
-    LockOpenListItem,
-    NamedGridLayoutDefinitionsService,
-    NamedGridSourceDefinitionsService,
+    AppStorageService, NamedGridLayoutsService,
+    NamedGridSourcesService,
     ScansService,
     SessionInfoService,
     SettingsService,
@@ -31,14 +29,14 @@ import { ZenithStatusFrame } from './zenith-status/internal-api';
 
 export class ContentService {
     constructor(
-        private _settingsService: SettingsService,
+        private readonly _settingsService: SettingsService,
         private readonly _symbolsService: SymbolsService,
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
+        private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutDefinitionsService,
-        private readonly _namedGridSourceDefinitionsService: NamedGridSourceDefinitionsService,
+        private readonly _namedGridSourceDefinitionsService: NamedGridSourcesService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -53,12 +51,12 @@ export class ContentService {
         return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
     }
 
-    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
+    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new GridSourceFrame(
             componentAccess,
             this._settingsService,
-            this._tableRecordSourceFactoryService,
             this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceFactoryService,
             this._namedGridSourceDefinitionsService,
         );
     }

@@ -35,10 +35,10 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.initialise();
 
         if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
+            this._contentFrame.loadConfig(undefined);
         } else {
             const contentElement = frameElement.tryGetElement(DepthDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+            this._contentFrame.loadConfig(contentElement);
         }
 
         // this._contentFrame.initialiseWidths();
@@ -89,12 +89,12 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         this._contentFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutsWithHeadings() {
-        return this._contentFrame.getGridLayoutsWithHeadings();
+    createAllowedFieldsAndLayoutDefinitions() {
+        return this._contentFrame.createAllowedFieldsAndLayoutDefinitions();
     }
 
-    setGridLayouts(layout: DepthFrame.GridLayouts) {
-        this._contentFrame.setGridLayouts(layout);
+    applyGridLayoutDefinitions(layout: DepthFrame.GridLayoutDefinitions) {
+        this._contentFrame.applyGridLayoutDefinitions(layout);
     }
 
     // adviseShown() {
