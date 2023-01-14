@@ -114,20 +114,24 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     }
 
     protected tryGetChildFrameJsonElement(element: JsonElement | undefined) {
-        return element === undefined ? undefined : element.tryGetElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+        if (element === undefined) {
+            return undefined;
+        } else {
+            const frameResult = element.tryGetElementType(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+            if (frameResult.isErr()) {
+                return undefined;
+            } else {
+                return frameResult.value;
+            }
+        }
     }
 
     protected createChildFrameJsonElement(element: JsonElement) {
         return element.newElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
     }
 
-    protected getStateSchemaVersion(element: JsonElement) {
-        const jsonValue = element.tryGetString(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
-        if (jsonValue === undefined) {
-            return undefined;
-        } else {
-            return jsonValue;
-        }
+    protected tryGetStateSchemaVersion(element: JsonElement) {
+        return element.tryGetStringType(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
     }
 
     protected markForCheck() {

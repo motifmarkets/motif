@@ -80,12 +80,26 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this._tradesFrame.loadConfig(undefined);
             this._depthFrame.loadConfig(undefined);
         } else {
-            const watchlistElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
-            this._watchlistFrame.loadLayoutConfig(watchlistElement);
-            const tradesElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);
-            this._tradesFrame.loadConfig(tradesElement);
-            const depthElement = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.depth);
-            this._depthFrame.loadConfig(depthElement);
+            const watchlistElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.watchlist);
+            if (watchlistElementResult.isErr()) {
+                this._watchlistFrame.loadLayoutConfig(undefined);
+            } else {
+                this._watchlistFrame.loadLayoutConfig(watchlistElementResult.value);
+            }
+
+            const tradesElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.trades);
+            if (tradesElementResult.isErr()) {
+                this._tradesFrame.loadConfig(undefined);
+            } else {
+                this._tradesFrame.loadConfig(tradesElementResult.value);
+            }
+
+            const depthElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.depth);
+            if (depthElementResult.isErr()) {
+                this._depthFrame.loadConfig(undefined);
+            } else {
+                this._depthFrame.loadConfig(depthElementResult.value);
+            }
         }
 
         this.applyLinked();
@@ -190,7 +204,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
 
     applyGridLayoutDefinitions(layouts: ParidepthDitemFrame.GridLayoutDefinitions) {
         this._depthFrame.applyGridLayoutDefinitions(layouts.depth);
-        this._watchlistFrame.setGridLayout(layouts.watchlist);
+        this._watchlistFrame.applyGridLayoutDefinition(layouts.watchlist);
         this._tradesFrame.applyGridLayoutDefinition(layouts.trades);
     }
 

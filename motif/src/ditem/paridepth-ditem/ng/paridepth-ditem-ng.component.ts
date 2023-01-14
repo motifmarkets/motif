@@ -271,11 +271,11 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         if (element === undefined) {
             this.explicitDepthWidth = false;
         } else {
-            const depthWidthAsString = element.tryGetString(ParidepthDitemNgComponent.JsonName.depthWidth);
-            if (depthWidthAsString === undefined) {
+            const depthWidthAsStringResult = element.tryGetStringType(ParidepthDitemNgComponent.JsonName.depthWidth);
+            if (depthWidthAsStringResult.isErr()) {
                 this.explicitDepthWidth = false;
             } else {
-                const depthWidth = AngularSplitTypes.AreaSize.jsonValueToIOutput(depthWidthAsString);
+                const depthWidth = AngularSplitTypes.AreaSize.jsonValueToIOutput(depthWidthAsStringResult.value);
                 if (depthWidth === undefined) {
                     this.explicitDepthWidth = false;
                 } else {
@@ -341,7 +341,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleFilterEditUiActionCommitEvent(typeId: UiAction.CommitTypeId) {
-        const toArrayResult = CommaText.toStringArrayWithResult(this._filterEditUiAction.definedValue, false);
+        const toArrayResult = CommaText.tryToStringArray(this._filterEditUiAction.definedValue, false);
         if (toArrayResult.success) {
             this._frame.setFilter(toArrayResult.array);
             this.pushFilterEditValue();

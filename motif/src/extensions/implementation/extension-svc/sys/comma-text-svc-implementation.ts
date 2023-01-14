@@ -37,7 +37,7 @@ export class CommaTextSvcImplementation implements CommaTextSvc {
     }
 
     toStringArrayWithResult(value: string, strict?: boolean): ResultApi<string[]> {
-        return CommaText.toStringArrayWithResult(value, strict !== false);
+        return CommaText.tryToStringArray(value, strict !== false);
     }
     toIntegerArrayWithResult(value: string): ResultApi<number[]> {
         return CommaText.toIntegerArrayWithResult(value);

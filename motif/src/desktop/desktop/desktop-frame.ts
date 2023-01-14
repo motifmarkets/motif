@@ -56,6 +56,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
     private _activeLayoutName: string | undefined;
+    private _layoutSaveRequired = false;
 
     private _frames: DitemFrame[] = [];
     private _primaryFrames: DitemFrame[] = [];
@@ -175,6 +176,8 @@ export class DesktopFrame implements DesktopAccessService {
         this.createUiActions();
     }
 
+    get layoutSaveRequired() { return this._layoutSaveRequired; }
+
     get historicalAccountIds(): string[] { return this._historicalAccountIds; }
     get FrameCount(): Integer { return this.getFrameCount(); }
 
@@ -233,6 +236,7 @@ export class DesktopFrame implements DesktopAccessService {
                 if (!success) {
                     // layout does not exist
                     this._goldenLayoutHostFrame.loadDefaultLayout();
+                    this._activeLayoutName = undefined;
                 }
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
@@ -438,10 +442,10 @@ export class DesktopFrame implements DesktopAccessService {
         this._lastFocusedBrokerageAccountGroup = undefined;
     }
 
-    resetLayout() {
+    async resetLayout() {
         // this._activeLayoutName = undefined;
         // this._goldenLayoutHostFrame.resetLayout();
-        this._storage.removeSubNamedItem(AppStorageService.Key.Layout, DesktopFrame.mainLayoutName);
+        await this._storage.removeSubNamedItem(AppStorageService.Key.Layout, DesktopFrame.mainLayoutName);
         this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
     }
 
@@ -487,7 +491,7 @@ export class DesktopFrame implements DesktopAccessService {
                 } else {
                     let successOrErrorText: string | undefined;
                     try {
-                        successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr);
+                        successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr, name);
                     } catch (e) {
                         successOrErrorText = `${e}`;
                     }
@@ -502,7 +506,13 @@ export class DesktopFrame implements DesktopAccessService {
         );
     }
 
-    async saveLayout(name: string) {
+    flagLayoutSaveRequired() {
+        this._layoutSaveRequired = true;
+    }
+
+    async saveLayout() {
+        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
+
         const layoutElement = new JsonElement();
         let goldenLayoutConfig: LayoutConfig;
         const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
@@ -520,7 +530,8 @@ export class DesktopFrame implements DesktopAccessService {
 
         const layoutStr = JSON.stringify(layoutElement.json);
         try {
-            return await this._storage.setSubNamedItem(AppStorageService.Key.Layout, name, layoutStr);
+            await this._storage.setSubNamedItem(AppStorageService.Key.Layout, this._activeLayoutName, layoutStr);
+            this._layoutSaveRequired = false;
         } catch (e) {
             Logger.logError(`DesktopService save layout error: ${e}`);
             throw(e);
@@ -600,7 +611,7 @@ export class DesktopFrame implements DesktopAccessService {
     }
 
     private handleSaveLayoutUiActionSignal() {
-        this.saveLayout(DesktopFrame.mainLayoutName);
+        this.saveLayout();
     }
 
     private handleResetLayoutUiActionSignal() {
@@ -910,7 +921,7 @@ export class DesktopFrame implements DesktopAccessService {
         }
     }
 
-    private loadLayoutFromString(layoutAsStr: string): SuccessOrErrorText {
+    private loadLayoutFromString(layoutAsStr: string, layoutName: string): SuccessOrErrorText {
         let result: SuccessOrErrorText;
         let layoutJson: Json | undefined;
         try {
@@ -924,24 +935,24 @@ export class DesktopFrame implements DesktopAccessService {
 
         if (layoutJson !== undefined) {
             const layoutElement = new JsonElement(layoutJson);
-            this._activeLayoutName = layoutElement.tryGetString(DesktopFrame.JsonName.layoutName);
+            this._activeLayoutName = layoutName;
             const name = this._activeLayoutName ?? 'Unnamed';
-            const schemaVersion = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
-            if (schemaVersion === undefined) {
+            const schemaVersionResult = layoutElement.tryGetStringType(DesktopFrame.JsonName.layoutSchemaVersion);
+            if (schemaVersionResult.isErr()) {
                 Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
             } else {
-                if (schemaVersion !== DesktopFrame.layoutStateSchemaVersion) {
+                if (schemaVersionResult.value !== DesktopFrame.layoutStateSchemaVersion) {
                     Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
-                        `${schemaVersion}, ${DesktopFrame.layoutStateSchemaVersion}`);
+                        `${schemaVersionResult}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
-                    const golden = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
-                    if (golden === undefined) {
+                    const goldenResult = layoutElement.tryGetJsonObjectType(DesktopFrame.JsonName.layoutGolden);
+                    if (goldenResult.isErr()) {
                         Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();
                     } else {
-                        this._goldenLayoutHostFrame.loadLayout(golden as LayoutConfig);
+                        this._goldenLayoutHostFrame.loadLayout(goldenResult.value as LayoutConfig);
                     }
                 }
             }

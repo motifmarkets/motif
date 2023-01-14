@@ -344,7 +344,7 @@ export class DepthSideFrame extends ContentFrame {
         }
 
         const gridLayout = new GridLayout(element.lastLayoutDefinition);
-        this._grid.fieldsLayoutReset(element.gridFields, gridLayout, false);
+        this._grid.fieldsLayoutReset(element.gridFields, gridLayout);
 
         this. _grid.sortable = false;
         this. _grid.continuousFiltering = true;

@@ -140,11 +140,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (config === undefined) {
             this._explicitBalancesHeight = false;
         } else {
-            const balancesHeight = config.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
-            if (balancesHeight === undefined) {
+            const balancesHeightResult = config.tryGetIntegerType(HoldingsDitemNgComponent.JsonName.balancesHeight);
+            if (balancesHeightResult.isErr()) {
                 this._explicitBalancesHeight = false;
             } else {
-                this.balancesHeight = balancesHeight;
+                this.balancesHeight = balancesHeightResult.value;
                 this._explicitBalancesHeight = true;
             }
         }
@@ -205,11 +205,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (element === undefined) {
             this._explicitBalancesHeight = false;
         } else {
-            const balancesHeight = element.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
-            if (balancesHeight === undefined) {
+            const balancesHeightResult = element.tryGetIntegerType(HoldingsDitemNgComponent.JsonName.balancesHeight);
+            if (balancesHeightResult.isErr()) {
                 this._explicitBalancesHeight = false;
             } else {
-                this.balancesHeight = balancesHeight;
+                this.balancesHeight = balancesHeightResult.value;
                 this._explicitBalancesHeight = true;
             }
         }

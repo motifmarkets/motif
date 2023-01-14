@@ -143,20 +143,18 @@ export namespace PlaceholderDitemFrame {
                 } else {
                     const ditemCode = tryCreateDitemComponentResult.value;
 
-                    const state = value.tryGetJsonObject(JsonName.state, 'PDFDCFJS11190');
+                    const stateResult = value.tryGetJsonObjectType(JsonName.state);
+                    const state = stateResult.isErr() ? undefined : stateResult.value;
 
-                    let tabText = value.tryGetString(JsonName.tabText, 'PDFDCFJTT11190');
-                    if (tabText === undefined || typeof tabText !== 'string') {
-                        tabText = ditemCode.componentTypeName;
-                    }
-                    let reason = value.tryGetString(JsonName.reason, 'PDFDCFJR11190');
-                    if (reason === undefined || typeof reason !== 'string') {
-                        reason = Strings[StringId.Unknown];
-                    }
-                    let invalidReason = value.tryGetString(JsonName.invalidReason, 'PDFDCFJIR11190');;
-                    if (invalidReason !== undefined && typeof invalidReason !== 'string') {
-                        invalidReason = Strings[StringId.Unknown];
-                    }
+                    const tabTextResult = value.tryGetStringType(JsonName.tabText);
+                    const tabText = tabTextResult.isErr() ? ditemCode.componentTypeName : tabTextResult.value;
+
+                    const reasonResult = value.tryGetStringType(JsonName.reason);
+                    const reason = reasonResult.isErr() ? Strings[StringId.Unknown] : reasonResult.value;
+
+                    const invalidReasonResult = value.tryGetStringType(JsonName.invalidReason);
+                    const invalidReason = invalidReasonResult.isErr() ? Strings[StringId.Unknown] : invalidReasonResult.value;
+
                     const placeheld: Placeheld = {
                         definition: ditemCode,
                         state,

@@ -8,7 +8,8 @@ import {
     AdiService,
     BrokerageAccountGroup,
     CommandRegisterService,
-    ExtensionHandle, JsonElement,
+    ExtensionHandle,
+    JsonElement,
     LitIvemId,
     SymbolsService
 } from '@motifmarkets/motif-core';
@@ -146,34 +147,54 @@ export abstract class DitemFrame extends Frame {
             if (!this.litIvemIdLinkable) {
                 this._litIvemIdLinked = DitemFrame.DitemDefault.litIvemIdLinked;
             } else {
-                const isFrameLitIvemIdLinked = element.tryGetBoolean(DitemFrame.jsonTag_FrameLitIvemIdLinked, context);
-                if (isFrameLitIvemIdLinked === undefined) {
+                const isFrameLitIvemIdLinkedResult = element.tryGetBooleanType(DitemFrame.jsonTag_FrameLitIvemIdLinked);
+                if (isFrameLitIvemIdLinkedResult.isErr()) {
                     this.litIvemIdLinked = DitemFrame.DitemDefault.litIvemIdLinked;
                 } else {
-                    this.litIvemIdLinked = isFrameLitIvemIdLinked;
+                    this.litIvemIdLinked = isFrameLitIvemIdLinkedResult.value;
                 }
             }
 
             if (!this.brokerageAccountGroupLinkable) {
                 this._brokerageAccountGroupLinked = DitemFrame.DitemDefault.brokerageAccountGroupLinked;
             } else {
-                const isBrokerageAccountGroupLinked = element.tryGetBoolean(DitemFrame.jsonTag_BrokerageAccountGroupLinked, context);
-                if (isBrokerageAccountGroupLinked === undefined) {
+                const isBrokerageAccountGroupLinkedResult = element.tryGetBooleanType(DitemFrame.jsonTag_BrokerageAccountGroupLinked);
+                if (isBrokerageAccountGroupLinkedResult.isErr()) {
                     this.brokerageAccountGroupLinked = DitemFrame.DitemDefault.brokerageAccountGroupLinked;
                 } else {
-                    this.brokerageAccountGroupLinked = isBrokerageAccountGroupLinked;
+                    this.brokerageAccountGroupLinked = isBrokerageAccountGroupLinkedResult.value;
                 }
             }
 
-            this._litIvemId = LitIvemId.tryGetFromJsonElement(element, DitemFrame.jsonTag_FrameLitIvemId, context);
-            const groupElement = element.tryGetElement(DitemFrame.jsonTag_BrokerageAccountGroup, context);
-            this._brokerageAccountGroup = BrokerageAccountGroup.tryCreateFromJson(groupElement);
+            const litIvemIdElementResult = element.tryGetElementType(DitemFrame.jsonTag_FrameLitIvemId);
+            if (litIvemIdElementResult.isErr()) {
+                this._litIvemId = undefined;
+            } else {
+                const litIvemIdResult = LitIvemId.tryCreateFromJson(litIvemIdElementResult.value);
+                if (litIvemIdResult.isErr()) {
+                    this._litIvemId = undefined;
+                } else {
+                    this._litIvemId = litIvemIdResult.value;
+                }
+            }
 
-            const jsonPrimary = element.tryGetBoolean(DitemFrame.jsonTag_Primary, context);
-            if (jsonPrimary === undefined) {
+            const groupElementResult = element.tryGetElementType(DitemFrame.jsonTag_BrokerageAccountGroup);
+            if (groupElementResult.isErr()) {
+                this._brokerageAccountGroup = undefined;
+            } else {
+                const groupResult = BrokerageAccountGroup.tryCreateFromJson(groupElementResult.value);
+                if (groupResult.isErr()) {
+                    this._brokerageAccountGroup = undefined;
+                } else {
+                    this._brokerageAccountGroup = groupResult.value;
+                }
+            }
+
+            const jsonPrimaryResult = element.tryGetBooleanType(DitemFrame.jsonTag_Primary);
+            if (jsonPrimaryResult.isErr()) {
                 this._primary = DitemFrame.DitemDefault.primary;
             } else {
-                this._primary = jsonPrimary;
+                this._primary = jsonPrimaryResult.value;
                 if (this._primary) {
                     this.desktopAccessService.notifyDitemFramePrimaryChanged(this);
                 }
@@ -183,11 +204,14 @@ export abstract class DitemFrame extends Frame {
     }
 
     save(element: JsonElement) {
-        element.setJson(DitemFrame.jsonTag_FrameLitIvemId, this.litIvemId?.toJson());
+        if (this._litIvemId !== undefined) {
+            const litIvemIdElement = element.newElement(DitemFrame.jsonTag_FrameLitIvemId);
+            this._litIvemId.saveToJson(litIvemIdElement);
+        }
         element.setBoolean(DitemFrame.jsonTag_FrameLitIvemIdLinked, this.litIvemIdLinked);
-        if (this.brokerageAccountGroup !== undefined) {
+        if (this._brokerageAccountGroup !== undefined) {
             const groupElement = element.newElement(DitemFrame.jsonTag_BrokerageAccountGroup);
-            this.brokerageAccountGroup.saveToJson(groupElement);
+            this._brokerageAccountGroup.saveToJson(groupElement);
         }
         element.setBoolean(DitemFrame.jsonTag_BrokerageAccountGroupLinked, this.brokerageAccountGroupLinked);
         if (this._primary !== DitemFrame.DitemDefault.primary) {
@@ -242,6 +266,10 @@ export abstract class DitemFrame extends Frame {
                 }
             }
         }
+    }
+
+    protected flagSaveRequired() {
+        this._desktopAccessService.flagLayoutSaveRequired();
     }
 
     protected applyLinked() {

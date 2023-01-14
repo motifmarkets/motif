@@ -40,8 +40,12 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._contentFrame.loadConfig(undefined);
         } else {
-            const contentElement = frameElement.tryGetElement(TradesDitemFrame.JsonName.content);
-            this._contentFrame.loadConfig(contentElement);
+            const contentElementResult = frameElement.tryGetElementType(TradesDitemFrame.JsonName.content);
+            if (contentElementResult.isErr()) {
+                this._contentFrame.loadConfig(undefined);
+            } else {
+                this._contentFrame.loadConfig(contentElementResult.value);
+            }
         }
 
         this.applyLinked();

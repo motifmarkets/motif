@@ -5,6 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewContainerRef } from '@angular/core';
+import { GridSourceOrNamedReferenceDefinition, Result } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -15,7 +16,7 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveWatchlistDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
-    private _closeResolve: (value: Result<GridSourceOrNamedReferenceDefinition>) => void;
+    private _closeResolve: (value: Result<GridSourceOrNamedReferenceDefinition.SaveAsDefinition>) => void;
 
     constructor() {
         super();
@@ -31,14 +32,14 @@ export class SaveWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     }
 
     open(): SaveWatchlistDialogNgComponent.ClosePromise {
-        return new Promise<Result<GridSourceOrNamedReferenceDefinition>>((resolve) => {
+        return new Promise<Result<GridSourceOrNamedReferenceDefinition.SaveAsDefinition>>((resolve) => {
             this._closeResolve = resolve;
         });
     }
 }
 
 export namespace SaveWatchlistDialogNgComponent {
-    export type ClosePromise = Promise<Result<GridSourceOrNamedReferenceDefinition>>;
+    export type ClosePromise = Promise<Result<GridSourceOrNamedReferenceDefinition.SaveAsDefinition>>;
 
     export function open(
         container: ViewContainerRef,

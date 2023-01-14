@@ -14,8 +14,6 @@ import {
     DataEnvironmentId,
     ErrorCode,
     ExchangeInfo,
-    IdleDeadline,
-    IdleRequestOptions,
     Integer,
     JsonElement,
     Logger,
@@ -31,9 +29,7 @@ import {
     SettingsService,
     StringId,
     Strings,
-    SymbolsService,
-    SysTick,
-    TradingEnvironment,
+    SymbolsService, TradingEnvironment,
     UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
@@ -43,10 +39,12 @@ import {
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
+import { SignOutService } from 'component-services-internal-api';
 import { Version } from 'generated-internal-api';
-import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
+import { WorkspaceService } from 'workspace-internal-api';
 import { Config } from './config';
+import { IdleProcessor } from './idle-processor';
 import { OpenIdService } from './open-id-service';
 import { TelemetryService } from './telemetry-service';
 
@@ -62,6 +60,7 @@ export class SessionService {
     private _motifServicesEndpoint: string;
 
     private _infoService: SessionInfoService = new SessionInfoService();
+    private _idleProcessor: IdleProcessor;
 
     private _useLocalStateStorage: boolean;
     private _motifServicesEndpoints: readonly string[];
@@ -81,10 +80,6 @@ export class SessionService {
     private _zenithLogSubscriptionId: MultiEvent.SubscriptionId;
     private _publisherSessionTerminatedSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _requestIdleCallbackHandle: number | undefined;
-    private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
-    private _lastSettingsSaveFailed = false;
-
     constructor(
         private readonly _telemetryService: TelemetryService,
         private readonly _userAlertService: UserAlertService,
@@ -94,6 +89,7 @@ export class SessionService {
         private readonly _motifServicesService: MotifServicesService,
         private readonly _appStorageService: AppStorageService,
         private readonly _extensionService: ExtensionsService,
+        private readonly _workspaceService: WorkspaceService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _scansService: ScansService,
@@ -192,9 +188,8 @@ export class SessionService {
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
 
-            if (this._requestIdleCallbackHandle !== undefined) {
-                window.cancelIdleCallback(this._requestIdleCallbackHandle);
-                this._requestIdleCallbackHandle = undefined;
+            if (this._idleProcessor !== undefined) {
+                this._idleProcessor.destroy();
             }
 
             this.unsubscribeZenithExtConnection();
@@ -428,8 +423,9 @@ export class SessionService {
             } else {
                 this.logInfo('Loading Settings');
                 rootElement = new JsonElement();
-                if (!rootElement.parse(appSettings, 'Load Settings')) {
-                    this.logWarning('Could not parse saved settings. Using defaults');
+                const parseResult = rootElement.parse(appSettings);
+                if (parseResult.isErr()) {
+                    this.logWarning('Could not parse saved settings. Using defaults.  ' + parseResult.error);
                     rootElement = undefined;
                 }
             }
@@ -470,7 +466,7 @@ export class SessionService {
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
         this._scansService.start();
-        this.startIdleProcessing();
+        this._idleProcessor = new IdleProcessor(this._settingsService, this._appStorageService, this._workspaceService);
     }
 
     private subscribeZenithExtConnection() {
@@ -531,45 +527,6 @@ export class SessionService {
             this._zenithExtConnectionDataItem = undefined;
         }
     }
-
-    private startIdleProcessing() {
-        this.initiateRequestIdleCallback();
-    }
-
-    private initiateRequestIdleCallback() {
-        const options: IdleRequestOptions = {
-            timeout: SessionService.idleCallbackTimeout,
-        };
-        this._requestIdleCallbackHandle = window.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
-    }
-
-    private idleCallback(deadline: IdleDeadline) {
-        if (!this.final) {
-            // Check for dirty elements....
-            if (this._settingsService.saveRequired) {
-                if (SysTick.now() > this._settingsSaveNotAllowedUntilTime) {
-                    const promise = this.saveSettings();
-                    promise.then(
-                        () => {
-                            this._settingsService.reportSaved();
-                            if (this._lastSettingsSaveFailed) {
-                                this.logWarning(`Save settings succeeded`);
-                                this._lastSettingsSaveFailed = false;
-                            }
-                            this._settingsSaveNotAllowedUntilTime = SysTick.now() + SessionService.minimumSettingsSaveRepeatSpan;
-                        },
-                        (reason) => {
-                            this.logWarning(`Save settings error: ${reason}`);
-                            this._lastSettingsSaveFailed = true;
-                            this._settingsSaveNotAllowedUntilTime = SysTick.now() + SessionService.minimumSettingsSaveRepeatSpan;
-                        }
-                    );
-                }
-            }
-
-            this.initiateRequestIdleCallback();
-        }
-    }
 }
 
 export namespace SessionService {
@@ -586,6 +543,4 @@ export namespace SessionService {
 
     export const motifServicesGetClientConfigurationRetryDelaySpan = 30 * mSecsPerSec;
     export const getSettingsRetryDelaySpan = 30 * mSecsPerSec;
-    export const idleCallbackTimeout = 30 * mSecsPerSec;
-    export const minimumSettingsSaveRepeatSpan = 15 * mSecsPerSec;
 }

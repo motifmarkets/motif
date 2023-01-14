@@ -8,8 +8,7 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     AdiNgService,
-    AppStorageNgService,
-    MotifServicesNgService,
+    AppStorageNgService, CapabilitiesNgService, MotifServicesNgService,
     ScansNgService,
     SessionInfoNgService,
     SettingsNgService,
@@ -17,8 +16,8 @@ import {
     SymbolsNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
-import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
+import { WorkspaceNgService } from 'workspace-ng-api';
 import { Config } from '../config';
 import { SessionService } from '../session-service';
 import { ConfigNgService } from './config-ng.service';
@@ -42,6 +41,7 @@ export class SessionNgService implements OnDestroy {
         motifServicesNgService: MotifServicesNgService,
         appStorageNgService: AppStorageNgService,
         extensionNgService: ExtensionsNgService,
+        workspaceNgService: WorkspaceNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
         scansNgService: ScansNgService,
@@ -57,6 +57,7 @@ export class SessionNgService implements OnDestroy {
             motifServicesNgService.service,
             appStorageNgService.appStorage,
             extensionNgService.service,
+            workspaceNgService.service,
             adiNgService.service,
             symbolsNgService.service,
             scansNgService.service,

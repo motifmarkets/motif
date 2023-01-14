@@ -73,8 +73,12 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._tableFrame.loadLayoutConfig(undefined);
         } else {
-            const contentElement = frameElement.tryGetElement(OrderAuthoriseDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+            const contentElementResult = frameElement.tryGetElementType(OrderAuthoriseDitemFrame.JsonName.content);
+            if (contentElementResult.isErr()) {
+                this._tableFrame.loadLayoutConfig(undefined);
+            } else {
+                this._tableFrame.loadLayoutConfig(contentElementResult.value);
+            }
         }
 
         this.applyLinked();

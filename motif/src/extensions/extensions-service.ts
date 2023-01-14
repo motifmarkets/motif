@@ -222,7 +222,8 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 return { component: undefined, errorText: Strings[StringId.Extensions_ExtensionNotInstalledOrEnabled] };
             } else {
                 const localDesktop = extensionSvc.workspaceSvc.localDesktop;
-                if (localDesktop === undefined) {
+                const localDesktopFrame = this._workspaceService.localDesktopFrame;
+                if (localDesktop === undefined || localDesktopFrame === undefined) {
                     return { component: undefined, errorText: Strings[StringId.Extensions_LocalDesktopNotLoaded] };
                 } else {
                     const frameSvc = new FrameSvcImplementation(
@@ -230,7 +231,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                         frameTypeName,
                         container,
                         this._commandRegisterService,
-                        this._workspaceService.localDesktopFrame, // LocalDesktopAccessService
+                        localDesktopFrame, // LocalDesktopAccessService
                         this._symbolsService,
                         this._adiService,
                         this._apiControlComponentFactory,

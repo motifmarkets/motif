@@ -216,9 +216,9 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleFilterEditUiActionCommitEvent(typeId: UiAction.CommitTypeId) {
-        const toArrayResult = CommaText.toStringArrayWithResult(this._filterEditUiAction.definedValue, false);
-        if (toArrayResult.success) {
-            this._frame.setFilter(toArrayResult.array);
+        const toArrayResult = CommaText.tryToStringArray(this._filterEditUiAction.definedValue, false);
+        if (toArrayResult.isOk()) {
+            this._frame.setFilter(toArrayResult.value);
             this.pushFilterEditValue();
         } else {
             this._filterUiAction.pushInvalid(Strings[StringId.InvalidFilterXrefs]);

@@ -21,7 +21,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
-import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { ExtensionsNgService } from 'src/extensions/ng-api';

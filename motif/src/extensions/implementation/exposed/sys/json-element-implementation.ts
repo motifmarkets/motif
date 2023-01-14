@@ -42,8 +42,8 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.stringify();
     }
 
-    parse(jsonText: string, context?: string): boolean {
-        return this._actual.parse(jsonText, context);
+    parse(jsonText: string): ResultApi<void, string> {
+        return this._actual.parse(jsonText);
     }
 
     tryGetElement(name: string): ResultApi<JsonElementApi, string> {

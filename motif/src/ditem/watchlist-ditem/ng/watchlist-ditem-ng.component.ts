@@ -20,6 +20,7 @@ import {
     assigned,
     delay1Tick,
     ExplicitElementsArrayUiAction,
+    GridLayout,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -34,7 +35,13 @@ import {
     Strings,
     UiAction
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import {
     GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent, OpenWatchlistDialogNgComponent,
@@ -42,7 +49,7 @@ import {
 } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { FavouriteNamedLayoutDefinitionsNgService } from '../../../component-services/ng/favourite-named-layout-definitions-ng.service';
+import { FavouriteNamedGridLayoutDefinitionReferencesNgService } from '../../../component-services/ng-api';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
@@ -97,7 +104,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        favouriteLayoutsNgService: FavouriteNamedLayoutDefinitionsNgService,
+        favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -107,13 +115,13 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            favouriteLayoutsNgService.service,
+            favouriteNamedGridLayoutDefinitionReferencesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
             (description) => this.handleLoadGridSourceEvent(description),
             (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex),
+            (layout) => this.handleGridLayoutSetEvent(layout),
+            (litIvemId) => this.handleLitIvemIdAcceptedEvent(litIvemId),
         );
-        this._frame.differentLayoutAppliedEvent = (layout) => this.handleDifferentLayoutAppliedEvent(layout);
-        this._frame.litIvemIdAcceptedEvent = (litIvemId) => this.handleLitIvemIdAcceptedEvent(litIvemId);
-
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();
         this._deleteSymbolUiAction = this.createDeleteSymbolUiAction();
@@ -284,6 +292,10 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private handleLitIvemIdAcceptedEvent(litIvemId: LitIvemId) {
         this._symbolEditUiAction.pushValue(litIvemId);
         this._symbolApplyUiAction.pushDisabled();
+    }
+
+    private handleGridLayoutSetEvent(layout: GridLayout) {
+
     }
 
     private createSymbolEditUiAction() {

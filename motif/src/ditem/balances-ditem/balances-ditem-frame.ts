@@ -65,12 +65,13 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const contentElement = frameElement.tryGetElement(BalancesDitemFrame.JsonName.content);
-            if (contentElement === undefined) {
+            const contentElementResult = frameElement.tryGetElementType(BalancesDitemFrame.JsonName.content);
+            if (contentElementResult.isErr()) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
             } else {
                 const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService, frameElement,
+                    this._tableRecordSourceDefinitionFactoryService,
+                    contentElementResult.value,
                 );
                 if (definitionResult.isOk()) {
                     gridSourceOrNamedReferenceDefinition = definitionResult.value;
@@ -86,7 +87,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     override finalise(): void {
-        this._gridSourceFrame.close();
+        this._gridSourceFrame.close(false);
         super.finalise();
     }
 
@@ -160,7 +161,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        this._gridSourceOrNamedReference = this._gridSourceFrame.open(definition);
+        this._gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
         if (this._gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as BalancesTableRecordSource;

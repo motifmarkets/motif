@@ -70,10 +70,9 @@ export class ScansFrame extends ContentFrame {
 
     loadLayoutConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
-            const context = 'ScansFrame';
-            const layoutElement = element.tryGetElement(ScansFrame.JsonName.layout, context);
-            if (layoutElement !== undefined) {
-                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElement);
+            const layoutElementResult = element.tryGetElementType(ScansFrame.JsonName.layout);
+            if (layoutElementResult.isOk()) {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElementResult.value);
                 if (definitionResult.isOk()) {
                     this._grid.loadLayoutDefinition(definitionResult.value);
                 }

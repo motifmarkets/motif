@@ -57,6 +57,8 @@
       "ditem-internal-api": ["src/ditem/internal-api"],
       "ditem-ng-api": ["src/ditem/ng-api"],
       "desktop-ng-api": ["src/desktop/ng-api"],
+      "workspace-internal-api": ["src/workspace/internal-api"],
+      "workspace-ng-api": ["src/workspace/ng-api"],
       // make sure we do not import the CommonJS decimal.js-light
       // "decimal.js-light": ["node_modules/decimal.js-light.mjs"]
     }

@@ -90,18 +90,17 @@ export class DepthFrame extends ContentFrame {
         } else {
             this.openExpand = element.getBoolean(DepthFrame.JsonName.openExpand, DepthFrame.JsonDefault.openExpand);
 
-            this._filterActive =
-                element.getBoolean(DepthFrame.JsonName.filterActive, DepthFrame.JsonDefault.filterActive);
-            const asStr = element.tryGetString(DepthFrame.JsonName.filterXrefs);
-            if (asStr === undefined) {
+            this._filterActive = element.getBoolean(DepthFrame.JsonName.filterActive, DepthFrame.JsonDefault.filterActive);
+            const asStrResult = element.tryGetStringType(DepthFrame.JsonName.filterXrefs);
+            if (asStrResult.isErr()) {
                 this._filterActive = false;
                 this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
             } else {
-                const commaTextResult = CommaText.toStringArrayWithResult(asStr, true);
+                const commaTextResult = CommaText.tryToStringArray(asStrResult.value, true);
                 if (commaTextResult.isErr()) {
                     this._filterActive = false;
                     this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: ${asStr} (${commaTextResult.error})`);
+                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: ${asStrResult} (${commaTextResult.error})`);
                 } else {
                     this._filterXrefs = commaTextResult.value;
                 }
@@ -111,10 +110,18 @@ export class DepthFrame extends ContentFrame {
                 this.activateBidAskFilter();
             }
 
-            const bidElement = element.tryGetElement(DepthFrame.JsonName.bid);
-            this._bidDepthSideFrame.loadConfig(bidElement);
-            const askElement = element.tryGetElement(DepthFrame.JsonName.ask);
-            this._askDepthSideFrame.loadConfig(askElement);
+            const bidElementResult = element.tryGetElementType(DepthFrame.JsonName.bid);
+            if (bidElementResult.isErr()) {
+                this._bidDepthSideFrame.loadConfig(undefined);
+            } else {
+                this._bidDepthSideFrame.loadConfig(bidElementResult.value);
+            }
+            const askElementResult = element.tryGetElementType(DepthFrame.JsonName.ask);
+            if (askElementResult.isErr()) {
+                this._askDepthSideFrame.loadConfig(undefined);
+            } else {
+                this._askDepthSideFrame.loadConfig(askElementResult.value);
+            }
         }
     }
 

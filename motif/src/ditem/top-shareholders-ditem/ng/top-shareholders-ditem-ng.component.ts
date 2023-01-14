@@ -256,13 +256,12 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         if (element === undefined) {
             this.setModeId(TopShareholdersDitemNgComponent.defaultModeId);
         } else {
-            const context = 'Top Shareholders: ModeId';
             let loadedModeId: TopShareholdersDitemNgComponent.ModeId;
-            const modeIdJsonValue = element.tryGetString(TopShareholdersDitemNgComponent.JsonName.modeId, context);
-            if (modeIdJsonValue === undefined) {
+            const modeIdJsonValueResult = element.tryGetStringType(TopShareholdersDitemNgComponent.JsonName.modeId);
+            if (modeIdJsonValueResult.isErr()) {
                 loadedModeId = TopShareholdersDitemNgComponent.defaultModeId;
             } else {
-                const typedModeId = TopShareholdersDitemNgComponent.Mode.tryJsonValueToId(modeIdJsonValue);
+                const typedModeId = TopShareholdersDitemNgComponent.Mode.tryJsonValueToId(modeIdJsonValueResult.value);
                 if (typedModeId === undefined) {
                     loadedModeId = TopShareholdersDitemNgComponent.defaultModeId;
                 } else {
@@ -271,12 +270,12 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             }
             this.setModeId(loadedModeId);
 
-            /*const historicalJsonDate = element.tryGetDate(TopShareholdersInputComponent.jsonTag_HistoricalDate);
+            /*const historicalJsonDateResult = element.tryGetDateType(TopShareholdersInputComponent.jsonTag_HistoricalDate);
             if (historicalJsonDate !== undefined) {
                 this._historicalDateInputElement.setValue(historicalJsonDate);
             }
 
-            const compareJsonDate = element.tryGetDate(TopShareholdersInputComponent.jsonTag_CompareDate);
+            const compareJsonDateResult = element.tryGetDateType(TopShareholdersInputComponent.jsonTag_CompareDate);
             if (compareJsonDate !== undefined) {
                 this._historicalDateInputElement.setValue(compareJsonDate);
             }*/

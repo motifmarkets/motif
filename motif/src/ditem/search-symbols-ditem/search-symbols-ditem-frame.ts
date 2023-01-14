@@ -166,7 +166,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         // if (frameElement === undefined) {
             this._queryTableFrame.loadLayoutConfig(undefined);
         // } else {
-        //     const queryContentElement = frameElement.tryGetElement(SymbolsDitemFrame.JsonName.queryContent);
+        //     const queryContentElementResult = frameElement.tryGetElementType(SymbolsDitemFrame.JsonName.queryContent);
         //     this._queryTableFrame.loadLayoutConfig(queryContentElement);
         // }
 
@@ -189,7 +189,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     setActiveGridLayout(value: GridLayout) {
-        this._queryTableFrame.setGridLayout(value);
+        this._queryTableFrame.applyGridLayoutDefinition(value);
     }
 
     getActiveGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {

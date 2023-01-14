@@ -15,6 +15,8 @@ export interface DesktopAccessService {
     readonly litIvemId: LitIvemId | undefined;
     readonly brokerageAccountGroup: BrokerageAccountGroup | undefined;
     readonly brokerageAccountGroupOrLitIvemIdSetting: boolean;
+
+    flagLayoutSaveRequired(): void;
     notifyDitemFramePrimaryChanged(frame: DitemFrame): void;
     initialiseLitIvemId(litIvemId: LitIvemId): void;
     setLitIvemId(litIvemId: LitIvemId | undefined, initiatingFrame: DitemFrame | undefined): void;

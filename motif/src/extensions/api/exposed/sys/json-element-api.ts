@@ -17,7 +17,7 @@ export interface JsonElement {
     deepExtend(other: Json): void;
 
     stringify(): string;
-    parse(jsonText: string, context?: string): boolean;
+    parse(jsonText: string): Result<void, string>;
 
     tryGetElement(name: string): Result<JsonElement, string>;
     tryGetJsonValue(name: string): JsonValue | undefined;

@@ -81,9 +81,26 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     initialise(frameElement: JsonElement | undefined) {
         if (frameElement !== undefined) {
-            this._padConfigJsonElement = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.pad);
-            this._reviewConfigJsonElement = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.review);
-            this._resultConfigJsonElement = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.result);
+            const padConfigJsonElementResult = frameElement.tryGetElementType(OrderRequestDitemFrame.JsonName.pad);
+            if (padConfigJsonElementResult.isErr()) {
+                this._padConfigJsonElement = undefined;
+            } else {
+                this._padConfigJsonElement = padConfigJsonElementResult.value;
+            }
+
+            const reviewConfigJsonElementResult = frameElement.tryGetElementType(OrderRequestDitemFrame.JsonName.review);
+            if (reviewConfigJsonElementResult.isErr()) {
+                this._reviewConfigJsonElement = undefined;
+            } else {
+                this._reviewConfigJsonElement = reviewConfigJsonElementResult.value;
+            }
+
+            const resultConfigJsonElementResult = frameElement.tryGetElementType(OrderRequestDitemFrame.JsonName.result);
+            if (resultConfigJsonElementResult.isErr()) {
+                this._resultConfigJsonElement = undefined;
+            } else {
+                this._resultConfigJsonElement = resultConfigJsonElementResult.value;
+            }
         }
 
         if (this._initialOrderPad === undefined) {

@@ -7,7 +7,9 @@
 import {
     AssertInternalError,
     Badness,
+    GridLayout,
     GridLayoutOrNamedReferenceDefinition,
+    GridRowOrderDefinition,
     GridSource,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
@@ -31,6 +33,7 @@ export class GridSourceFrame extends ContentFrame {
     dragDropAllowed: boolean;
 
     settingsApplyEvent: GridSourceFrame.SettingsApplyEvent;
+    gridLayoutSetEvent: GridSourceFrame.GridLayoutSetEvent;
     recordFocusEvent: GridSourceFrame.RecordFocusEvent;
     gridClickEvent: GridSourceFrame.GridClickEvent;
     gridDblClickEvent: GridSourceFrame.GridDblClickEvent;
@@ -50,15 +53,17 @@ export class GridSourceFrame extends ContentFrame {
 
     private _table: Table | undefined;
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
-    private _keptLayout: GridLayoutOrNamedReferenceDefinition | undefined;
     private _keepPreviousLayoutIfPossible = false;
+    private _keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
+    private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
+    private _keptGridRowAnchor: RecordGrid.ViewAnchor | undefined;
 
     private _autoSizeAllColumnWidthsOnFirstUsable: boolean;
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _tableFieldsChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _tableFirstUsableSubscriptionId: MultiEvent.SubscriptionId;
-    private _gridSourceGridLayoutChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private _gridSourceGridLayoutSetSubscriptionId: MultiEvent.SubscriptionId;
 
 
     constructor(
@@ -94,7 +99,7 @@ export class GridSourceFrame extends ContentFrame {
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-            this.close();
+            this.close(false);
             super.finalise();
         }
     }
@@ -121,14 +126,14 @@ export class GridSourceFrame extends ContentFrame {
         this.applySettings();
     }
 
-    open(definition: GridSourceOrNamedReferenceDefinition): GridSourceOrNamedReference | undefined {
-        this.close();
+    open(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
+        this.close(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
             this._keepPreviousLayoutIfPossible &&
-            this._keptLayout !== undefined
+            this._keptGridLayoutOrNamedReferenceDefinition !== undefined
         ) {
-            definition.updateGridLayoutDefinitionOrNamedReference(this._keptLayout);
+            definition.updateGridLayoutDefinitionOrNamedReference(this._keptGridLayoutOrNamedReferenceDefinition);
         }
         const gridSourceOrNamedReference = new GridSourceOrNamedReference(
             this._namedGridLayoutsService,
@@ -163,8 +168,8 @@ export class GridSourceFrame extends ContentFrame {
                         this._openedGridSource = gridSource;
                         this._openedTable = table;
 
-                        this._gridSourceGridLayoutChangedSubscriptionId = this._openedGridSource.subscribeGridLayoutChangedEvent(
-                            () => this.handleGridSourceGridLayoutChangedEvent()
+                        this._gridSourceGridLayoutSetSubscriptionId = this._openedGridSource.subscribeGridLayoutSetEvent(
+                            () => this.handleGridSourceGridLayoutSetEvent()
                         );
 
                         this._recordStore.setTable(table);
@@ -172,19 +177,18 @@ export class GridSourceFrame extends ContentFrame {
                             () => this._grid.updateAllowedFields(table.fields)
                         );
 
-                        this._grid.fieldsLayoutReset(table.fields, layout, false);
+                        this._grid.fieldsLayoutReset(table.fields, layout);
 
                         if (table.beenUsable) {
-                            this._grid.applyFirstUsable(gridSource.initialRowOrderDefinition?.sortColumns);
+                            this.applyFirstUsable();
                         } else {
                             this._tableFirstUsableSubscriptionId = table.subscribeFirstUsableEvent(() => {
                                 table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId);
-                                const sortColumns = gridSource.initialRowOrderDefinition?.sortColumns;
-                                this._grid.applyFirstUsable(sortColumns);
+                                this.applyFirstUsable();
                             });
                         }
 
-                        this._keptLayout = gridSource.createGridLayoutOrNamedReferenceDefinition();
+                        this.gridLayoutSetEvent(layout);
                         return gridSourceOrNamedReference;
                     }
                 }
@@ -192,7 +196,7 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    close() {
+    close(keepView: boolean) {
         if (this._lockedGridSourceOrNamedReference !== undefined) {
             if (this._table === undefined) {
                 throw new AssertInternalError('GSF22209');
@@ -202,12 +206,23 @@ export class GridSourceFrame extends ContentFrame {
                 this._table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
                 this._tableFirstUsableSubscriptionId = undefined;
                 this._tableFieldsChangedSubscriptionId = undefined;
-                this._openedGridSource.unsubscribeGridLayoutChangedEvent(this._gridSourceGridLayoutChangedSubscriptionId);
-                this._gridSourceGridLayoutChangedSubscriptionId = undefined;
+                this._openedGridSource.unsubscribeGridLayoutSetEvent(this._gridSourceGridLayoutSetSubscriptionId);
+                this._gridSourceGridLayoutSetSubscriptionId = undefined;
+                if (this._keepPreviousLayoutIfPossible) {
+                    this._keptGridLayoutOrNamedReferenceDefinition = this.createGridLayoutOrNamedReferenceDefinition();
+                } else {
+                    this._keptGridLayoutOrNamedReferenceDefinition = undefined;
+                }
+                if (keepView) {
+                    this._keptRowOrderDefinition = this._grid.getRowOrderDefinition();
+                    this._keptGridRowAnchor = this._grid.getViewAnchor();
+                } else {
+                    this._keptRowOrderDefinition = undefined;
+                    this._keptGridRowAnchor = undefined;
+                }
                 this._openedGridSource.closeLocked(this._opener);
                 this._lockedGridSourceOrNamedReference.unlock(this._opener);
                 this._lockedGridSourceOrNamedReference = undefined;
-                this._keptLayout = undefined;
             }
         }
     }
@@ -221,6 +236,10 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
+    createGridLayoutOrNamedReferenceDefinition() {
+        return this._openedGridSource.createGridLayoutOrNamedReferenceDefinition();
+    }
+
     createTableRecordSourceDefinition(): TableRecordSourceDefinition {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
@@ -229,11 +248,15 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
+    createRowOrderDefinition() {
+        return this._grid.getRowOrderDefinition();
+    }
+
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
         this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
     }
 
-    setGridLayout(definition: GridLayoutOrNamedReferenceDefinition) {
+    applyGridLayoutDefinition(definition: GridLayoutOrNamedReferenceDefinition) {
         this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
     }
 
@@ -248,14 +271,14 @@ export class GridSourceFrame extends ContentFrame {
     //         if (element === undefined) {
     //             this.tryNewDefaultPrivateTable();
     //         } else {
-    //             const tableElement = element.tryGetElement(GridSourceFrame.JsonName.table);
+    //             const tableElementResult = element.tryGetElementType(GridSourceFrame.JsonName.table);
     //             if (tableElement === undefined) {
     //                 this.tryNewDefaultPrivateTable();
     //             } else {
     //                 const definition = TableDefinition.createFr
     //             }
 
-    //             const privateElement = element.tryGetElement(GridSourceFrame.JsonName.privateTable);
+    //             const privateElementResult = element.tryGetElementType(GridSourceFrame.JsonName.privateTable);
     //             if (privateElement !== undefined) {
     //                 const id = nanoid(); // not sure if needed
     //                 this._table = this._tablesService.newTable(id, undefined, );
@@ -266,7 +289,7 @@ export class GridSourceFrame extends ContentFrame {
     //                         this.closeTable(false);
     //                         this.tryNewDefaultPrivateTable();
     //                     } else {
-    //                         this._privateNameSuffixId = privateElement.tryGetInteger(GridSourceFrame.JsonName.privateNameSuffixId);
+    //                         this._privateNameSuffixId = privateElement.tryGetIntegerType(GridSourceFrame.JsonName.privateNameSuffixId);
     //                         if (this._privateNameSuffixId !== undefined) {
     //                             GridSourceFrame.addlayoutConfigLoadedNewPrivateNameSuffixId(this._privateNameSuffixId);
     //                         }
@@ -274,7 +297,10 @@ export class GridSourceFrame extends ContentFrame {
     //                     }
     //                 }
     //             } else {
-    //                 const loadedTableId = element.tryGetGuid(GridSourceFrame.JsonName.tableId, 'TableFrame.loadLayoutConfigId');
+    //                 const loadedTableIdResult = element.tryGetGuidType(
+    //                     GridSourceFrame.JsonName.tableId,
+    //                     'TableFrame.loadLayoutConfigId'
+    //                 );
     //                 if (loadedTableId === undefined) {
     //                     this.tryNewDefaultPrivateTable();
     //                 } else {
@@ -841,12 +867,13 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.applyFilter(filter);
     }
 
-    private handleGridSourceGridLayoutChangedEvent() {
+    private handleGridSourceGridLayoutSetEvent() {
         const newLayout = this._openedGridSource.lockedGridLayout;
         if (newLayout === undefined) {
             throw new AssertInternalError('GSFHGSGLCE22202');
         } else {
             this._grid.updateGridLayout(newLayout);
+            this.gridLayoutSetEvent(newLayout);
         }
     }
 
@@ -856,6 +883,17 @@ export class GridSourceFrame extends ContentFrame {
         if (this.settingsApplyEvent !== undefined) {
             this.settingsApplyEvent();
         }
+    }
+
+    private applyFirstUsable() {
+        let rowOrderDefinition = this._keptRowOrderDefinition;
+        this._keptRowOrderDefinition = undefined;
+        if (rowOrderDefinition === undefined) {
+            rowOrderDefinition = this._openedGridSource.initialRowOrderDefinition;
+        }
+        const viewAnchor = this._keptGridRowAnchor;
+        this._keptGridRowAnchor = undefined;
+        this._grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
     }
 
     // private closeTable() {
@@ -1074,6 +1112,7 @@ export class GridSourceFrame extends ContentFrame {
 
 export namespace GridSourceFrame {
     export type SettingsApplyEvent = (this: void) => void;
+    export type GridLayoutSetEvent = (this: void, layout: GridLayout) => void;
     export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
     export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
     export type GridDblClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;

@@ -93,10 +93,18 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             this._holdingsTableFrame.loadLayoutConfig(undefined);
             this._balancesTableFrame.loadLayoutConfig(undefined);
         } else {
-            const holdingsElement = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.holdings);
-            this._holdingsTableFrame.loadLayoutConfig(holdingsElement);
-            const balancesElement = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.balances);
-            this._balancesTableFrame.loadLayoutConfig(balancesElement);
+            const holdingsElementResult = frameElement.tryGetElementType(HoldingsDitemFrame.JsonName.holdings);
+            if (holdingsElementResult.isErr()) {
+                this._holdingsTableFrame.loadLayoutConfig(undefined);
+            } else {
+                this._holdingsTableFrame.loadLayoutConfig(holdingsElementResult.value);
+            }
+            const balancesElementResult = frameElement.tryGetElementType(HoldingsDitemFrame.JsonName.balances);
+            if (balancesElementResult.isErr()) {
+                this._balancesTableFrame.loadLayoutConfig(undefined);
+            } else {
+                this._balancesTableFrame.loadLayoutConfig(balancesElementResult.value);
+            }
         }
 
         this.applyLinked();

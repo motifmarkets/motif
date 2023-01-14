@@ -55,8 +55,8 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._tableFrame.loadLayoutConfig(undefined);
         } else {
-            const contentElement = frameElement.tryGetElement(BrokerageAccountsDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+            const contentElementResult = frameElement.tryGetElementType(BrokerageAccountsDitemFrame.JsonName.content);
+            this._tableFrame.loadLayoutConfig(contentElementResult);
         }
 
         this.applyLinked();

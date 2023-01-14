@@ -43,10 +43,18 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
             this._watchContentFrame.loadLayoutConfig(undefined);
             this._callPutContentFrame.loadLayoutConfig(undefined);
         } else {
-            const watchElement = frameElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.watch);
-            this._watchContentFrame.loadLayoutConfig(watchElement);
-            const callPutElement = frameElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
-            this._callPutContentFrame.loadLayoutConfig(callPutElement);
+            const watchElementResult = frameElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.watch);
+            if (watchElementResult.isErr()) {
+                this._watchContentFrame.loadLayoutConfig(undefined);
+            } else {
+                this._watchContentFrame.loadLayoutConfig(watchElementResult.value);
+            }
+            const callPutElementResult = frameElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.callPut);
+            if (callPutElementResult.isErr()) {
+                this._callPutContentFrame.loadLayoutConfig(undefined);
+            } else {
+                this._callPutContentFrame.loadLayoutConfig(callPutElementResult.value);
+            }
         }
 
         this.prepareContentFrame();

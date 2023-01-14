@@ -38,7 +38,7 @@ import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
-import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng-service';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';

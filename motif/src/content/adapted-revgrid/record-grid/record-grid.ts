@@ -58,8 +58,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
     private _beenUsable = false;
     private _usableRendered = false;
-    private _firstUsableRenderKeptViewport: RecordGrid.KeptView | undefined;
-    private _firstUsableKeptSortColumns: GridSortDefinition.Column[] | undefined;
+    private _firstUsableRenderViewAnchor: RecordGrid.ViewAnchor | undefined;
 
     private _lastNotifiedFocusedRecordIndex: number | undefined;
 
@@ -310,32 +309,21 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         if (!this._usableRendered && this._beenUsable) {
             this._usableRendered = true;
 
-            if (this._firstUsableRenderKeptViewport !== undefined) {
+            if (this._firstUsableRenderViewAnchor !== undefined) {
                 this.setViewport(
-                    this._firstUsableRenderKeptViewport.columnScrollAnchorIndex,
-                    this._firstUsableRenderKeptViewport.columnScrollAnchorOffset,
-                    this._firstUsableRenderKeptViewport.rowScrollAnchorIndex,
+                    this._firstUsableRenderViewAnchor.columnScrollAnchorIndex,
+                    this._firstUsableRenderViewAnchor.columnScrollAnchorOffset,
+                    this._firstUsableRenderViewAnchor.rowScrollAnchorIndex,
                     0
                 );
-                this._firstUsableRenderKeptViewport = undefined;
+                this._firstUsableRenderViewAnchor = undefined;
             }
         }
 
         return super.fireSyntheticGridRenderedEvent();
     }
 
-    fieldsLayoutReset(fields: readonly GridField[], gridLayout: GridLayout, keepView: boolean) {
-        if (keepView && this._usableRendered) {
-            this._firstUsableRenderKeptViewport = {
-                rowScrollAnchorIndex: this.rowScrollAnchorIndex,
-                columnScrollAnchorIndex: this.columnScrollAnchorIndex,
-                columnScrollAnchorOffset: this.columnScrollAnchorOffset,
-            };
-            this._firstUsableKeptSortColumns = this.getSortColumns();
-        } else {
-            this._firstUsableKeptSortColumns = undefined;
-            this._firstUsableRenderKeptViewport = undefined;
-        }
+    fieldsLayoutReset(fields: readonly GridField[], gridLayout: GridLayout) {
         this.dataReset();
         this._allowedFields = fields;
         this.updateGridLayout(gridLayout);
@@ -346,18 +334,14 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._beenUsable = false;
     }
 
-    applyFirstUsable(sortColumns: GridSortDefinition.Column[] | undefined) {
+    applyFirstUsable(rowOrderDefinition: GridRowOrderDefinition | undefined, viewAnchor: RecordGrid.ViewAnchor | undefined) {
         this._beenUsable = true;
+
+        this._firstUsableRenderViewAnchor = viewAnchor;
+
+        const sortColumns = rowOrderDefinition?.sortColumns;
         if (sortColumns !== undefined) {
             this.applySortColumns(sortColumns);
-            this._firstUsableKeptSortColumns = undefined;
-        } else {
-            if (this._firstUsableKeptSortColumns !== undefined) {
-                this.applySortColumns(this._firstUsableKeptSortColumns);
-                this._firstUsableKeptSortColumns = undefined;
-            } else {
-                this._mainRecordAdapter.invalidateAll();
-            }
         }
     }
 
@@ -442,6 +426,18 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
                 }
             }
             return columnDefinitions;
+        }
+    }
+
+    getViewAnchor(): RecordGrid.ViewAnchor | undefined {
+        if (this._usableRendered) {
+            return {
+                rowScrollAnchorIndex: this.rowScrollAnchorIndex,
+                columnScrollAnchorIndex: this.columnScrollAnchorIndex,
+                columnScrollAnchorOffset: this.columnScrollAnchorOffset,
+            };
+        } else {
+            return undefined;
         }
     }
 
@@ -1118,7 +1114,7 @@ export namespace RecordGrid {
         readonly layoutDefinition: GridLayoutDefinition;
     }
 
-    export interface KeptView {
+    export interface ViewAnchor {
         readonly columnScrollAnchorIndex: Integer;
         readonly columnScrollAnchorOffset: Integer;
         readonly rowScrollAnchorIndex: Integer;

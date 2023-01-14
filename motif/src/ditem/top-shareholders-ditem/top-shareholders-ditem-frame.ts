@@ -48,8 +48,12 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._tableFrame.loadLayoutConfig(undefined);
         } else {
-            const contentElement = frameElement.tryGetElement(TopShareholdersDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+            const contentElementResult = frameElement.tryGetElementType(TopShareholdersDitemFrame.JsonName.content);
+            if (contentElementResult.isErr()) {
+                this._tableFrame.loadLayoutConfig(undefined);
+            } else {
+                this._tableFrame.loadLayoutConfig(contentElementResult.value);
+            }
         }
 
         this.applyLinked();
