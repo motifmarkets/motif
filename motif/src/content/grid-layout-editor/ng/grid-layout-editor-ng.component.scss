@@ -10,6 +10,26 @@
     height: 100%
 }
 
+#availableFieldsSection {
+    flex: 1 1 26em;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    #searchDiv {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        visibility: collapse;
+    }
+
+    #grid {
+        flex: 1 1 0;
+        min-height: 0;
+    }
+}
+
 #leftDiv {
     flex: 1 1 26em;
     display: flex;

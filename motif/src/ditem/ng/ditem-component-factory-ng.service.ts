@@ -5,9 +5,11 @@
  */
 
 import {
-    ComponentFactoryResolver,
+    ComponentRef,
+    createComponent,
+    createEnvironmentInjector,
+    EnvironmentInjector,
     Injectable,
-    Injector,
     StaticProvider,
     Type
 } from '@angular/core';
@@ -21,7 +23,7 @@ import { BuiltinDitemNgComponentBaseNgDirective } from './builtin-ditem-ng-compo
 export class DitemComponentFactoryNgService {
     private readonly _componentTypeMapByName = new Map<string, Type<BuiltinDitemNgComponentBaseNgDirective>>();
 
-    constructor(private readonly _componentFactoryResolver: ComponentFactoryResolver) {}
+    constructor(private readonly _environmentInjector: EnvironmentInjector) {}
 
     registerDitemComponentType(name: string, componentType: Type<BuiltinDitemNgComponentBaseNgDirective>) {
         this._componentTypeMapByName.set(name, componentType);
@@ -37,22 +39,19 @@ export class DitemComponentFactoryNgService {
         return result;
     }
 
-    createComponent(componentTypeName: string, container: ComponentContainer) {
+    createComponent(componentTypeName: string, container: ComponentContainer): ComponentRef<BuiltinDitemNgComponentBaseNgDirective> {
         let componentType = this._componentTypeMapByName.get(componentTypeName);
         if (componentType === undefined) {
             componentType = PlaceholderDitemNgComponent;
         }
+
         const provider: StaticProvider = {
             provide: BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken,
             useValue: container,
         };
-        const injector = Injector.create({
-            providers: [provider],
-        });
-        const componentFactoryRef = this._componentFactoryResolver.resolveComponentFactory<BuiltinDitemNgComponentBaseNgDirective>(
-            componentType
-        );
-        return componentFactoryRef.create(injector);
+
+        const newEnvironmentInjector = createEnvironmentInjector([provider], this._environmentInjector);
+        return createComponent(componentType, { environmentInjector: newEnvironmentInjector } );
     }
 }
 

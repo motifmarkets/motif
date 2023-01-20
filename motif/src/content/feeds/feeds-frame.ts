@@ -7,29 +7,38 @@
 import {
     Badness,
     Feed,
+    FeedTableRecordSource,
+    GridSourceDefinition,
+    GridSourceOrNamedReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
-    MultiEvent
+    LockOpenListItem,
+    MultiEvent, TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class FeedsFrame extends ContentFrame {
-    private _tableFrame: GridSourceFrame;
+    private _gridSourceFrame: GridSourceFrame;
+    private _recordSource: FeedTableRecordSource;
     private _recordList: KeyedCorrectnessList<Feed>;
     private _recordListBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _componentAccess: FeedsFrame.ComponentAccess, private readonly _tablesService: TablesService) {
+    constructor(
+        private _componentAccess: FeedsFrame.ComponentAccess,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _opener: LockOpenListItem.Opener,
+    ) {
         super();
     }
 
-    initialise(tableFrame: GridSourceFrame) {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(gridSourceFrame: GridSourceFrame) {
+        this._gridSourceFrame = gridSourceFrame;
+        this._gridSourceFrame.opener = this._opener;
+        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
 
-        this.newTable(false);
+        const gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition);
     }
 
     override finalise() {
@@ -42,24 +51,11 @@ export class FeedsFrame extends ContentFrame {
         this._componentAccess.setBadness(badness);
     }
 
-    private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
             const feed = this._recordList.records[newRecordIndex];
             this.processFeedFocusChange(feed);
         }
-    }
-
-    private handleRequireDefaultTableDefinitionEvent() {
-        return this._tablesService.definitionFactory.createBrokerageAccount();
-    }
-
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const feedRecordDefinitionList = recordDefinitionList as FeedTableRecordDefinitionList;
-        this._recordList = feedRecordDefinitionList.recordList;
-        this._recordListBadnessChangeSubscriptionId = this._recordList.subscribeBadnessChangeEvent(
-            () => this.handleRecordListBadnessChangeEvent
-        );
     }
 
     private checkUnsubscribeRecordListBadnessChangeEvent() {
@@ -69,15 +65,32 @@ export class FeedsFrame extends ContentFrame {
         }
     }
 
-    private processFeedFocusChange(newFocusedFeed: Feed) {
-        // not yet used
+    private createGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createFeed();
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
-    private newTable(keepCurrentLayout: boolean) {
+    private createDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createGridSourceOrNamedReferenceDefinition();
+    }
+
+    private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
         this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const tableDefinition = this._tablesService.definitionFactory.createFeed();
-        this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
+        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
+        if (gridSourceOrNamedReference !== undefined) {
+            const table = this._gridSourceFrame.openedTable;
+            this._recordSource = table.recordSource as FeedTableRecordSource;
+            this._recordList = this._recordSource.recordList;
+            this._recordListBadnessChangeSubscriptionId = this._recordList.subscribeBadnessChangeEvent(
+                () => this.handleRecordListBadnessChangeEvent
+            );
+        }
         this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);
+    }
+
+    private processFeedFocusChange(newFocusedFeed: Feed) {
+        // not yet used
     }
 }
 

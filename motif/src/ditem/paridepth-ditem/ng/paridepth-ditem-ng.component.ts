@@ -545,9 +545,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         const layoutWithHeadings = this._frame.getAllowedFieldsAndLayoutDefinitions();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = ParidepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, this._resolver,
-                layoutWithHeadings
-            );
+            const closePromise = ParidepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layout) => {
                     if (layout !== undefined) {

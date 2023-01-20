@@ -371,7 +371,7 @@ export class GoldenLayoutHostFrame {
 
     private createBuiltinComponentConfig(type: BuiltinDitemFrame.BuiltinTypeId, initialState: JsonValue | undefined, tabText?: string) {
         if (tabText === undefined) {
-            tabText = BuiltinDitemFrame.BuiltinType.idToTabTitle(type);
+            tabText = BuiltinDitemFrame.BuiltinType.idToBaseTabDisplay(type);
         }
 
         return this.createComponentConfig(

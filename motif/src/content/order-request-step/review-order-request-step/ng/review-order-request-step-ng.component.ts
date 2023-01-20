@@ -8,10 +8,9 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactory,
-    ComponentFactoryResolver,
     Injector,
     StaticProvider,
+    Type,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -40,10 +39,7 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
 
     private _requestTypeComponent: ReviewOrderRequestComponentNgDirective;
 
-    constructor(cdr: ChangeDetectorRef,
-        private _resolver: ComponentFactoryResolver,
-        private _contentService: ContentNgService
-    ) {
+    constructor(cdr: ChangeDetectorRef, private readonly _contentService: ContentNgService) {
         super(cdr);
         this._frame = this._contentService.createReviewOrderRequestStepFrame(this);
     }
@@ -55,27 +51,25 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
     }
 
     public reviewPlace(orderPad: OrderPad, definition: OrderRequestDataDefinition, zenithMessageActive: boolean) {
-        const factory = this._resolver.resolveComponentFactory<ReviewPlaceOrderRequestNgComponent>(ReviewPlaceOrderRequestNgComponent);
-        this.review(orderPad, definition, factory, zenithMessageActive);
+        this.review(orderPad, definition, ReviewPlaceOrderRequestNgComponent, zenithMessageActive);
     }
 
     public reviewAmend(orderPad: OrderPad, definition: OrderRequestDataDefinition, zenithMessageActive: boolean) {
-        const factory = this._resolver.resolveComponentFactory<ReviewAmendOrderRequestNgComponent>(ReviewAmendOrderRequestNgComponent);
-        this.review(orderPad, definition, factory, zenithMessageActive);
+        this.review(orderPad, definition, ReviewAmendOrderRequestNgComponent, zenithMessageActive);
     }
 
     public reviewMove(orderPad: OrderPad, definition: OrderRequestDataDefinition, zenithMessageActive: boolean) {
-        const factory = this._resolver.resolveComponentFactory<ReviewMoveOrderRequestNgComponent>(ReviewMoveOrderRequestNgComponent);
-        this.review(orderPad, definition, factory, zenithMessageActive);
+        this.review(orderPad, definition, ReviewMoveOrderRequestNgComponent, zenithMessageActive);
     }
 
     public reviewCancel(orderPad: OrderPad, definition: OrderRequestDataDefinition, zenithMessageActive: boolean) {
-        const factory = this._resolver.resolveComponentFactory<ReviewCancelOrderRequestNgComponent>(ReviewCancelOrderRequestNgComponent);
-        this.review(orderPad, definition, factory, zenithMessageActive);
+        this.review(orderPad, definition, ReviewCancelOrderRequestNgComponent, zenithMessageActive);
     }
 
-    private review(orderPad: OrderPad, definition: OrderRequestDataDefinition,
-        factory: ComponentFactory<ReviewOrderRequestComponentNgDirective>,
+    private review<T extends ReviewOrderRequestComponentNgDirective>(
+        orderPad: OrderPad,
+        definition: OrderRequestDataDefinition,
+        componentType: Type<T>,
         zenithMessageActive: boolean,
     ) {
         this._reviewContainer.clear();
@@ -91,7 +85,7 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
         const injector = Injector.create({
             providers: [orderPadProvider, definitionProvider],
         });
-        const componentRef = this._reviewContainer.createComponent(factory, undefined, injector);
+        const componentRef = this._reviewContainer.createComponent(componentType, { injector });
         this._requestTypeComponent = componentRef.instance;
 
         this._requestTypeComponent.setZenithMessageActive(zenithMessageActive);

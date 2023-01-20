@@ -31,12 +31,14 @@ import { ContentFrame } from '../content-frame';
 export class GridSourceFrame extends ContentFrame {
     opener: LockOpenListItem.Opener;
     dragDropAllowed: boolean;
+    keepPreviousLayoutIfPossible = false;
+    keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
 
-    settingsApplyEvent: GridSourceFrame.SettingsApplyEvent;
-    gridLayoutSetEvent: GridSourceFrame.GridLayoutSetEvent;
-    recordFocusEvent: GridSourceFrame.RecordFocusEvent;
-    gridClickEvent: GridSourceFrame.GridClickEvent;
-    gridDblClickEvent: GridSourceFrame.GridDblClickEvent;
+    settingsApplyEventer: GridSourceFrame.SettingsApplyEventer;
+    gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer;
+    recordFocusedEventer: GridSourceFrame.RecordFocusedEventer;
+    gridClickEventer: GridSourceFrame.GridClickEventer;
+    gridDblClickEventer: GridSourceFrame.GridDblClickEventer;
     // requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
     // tableOpenEvent: GridSourceFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
@@ -53,8 +55,6 @@ export class GridSourceFrame extends ContentFrame {
 
     private _table: Table | undefined;
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
-    private _keepPreviousLayoutIfPossible = false;
-    private _keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
     private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
     private _keptGridRowAnchor: RecordGrid.ViewAnchor | undefined;
 
@@ -95,7 +95,6 @@ export class GridSourceFrame extends ContentFrame {
     get isFiltered(): boolean { return this._grid.isFiltered; }
     get recordFocused() {return this._grid.recordFocused; }
 
-
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
@@ -116,7 +115,7 @@ export class GridSourceFrame extends ContentFrame {
 
     setGrid(value: RecordGrid) {
         this._grid = value;
-        this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
+        this._grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
         this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
 
@@ -130,10 +129,10 @@ export class GridSourceFrame extends ContentFrame {
         this.close(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
-            this._keepPreviousLayoutIfPossible &&
-            this._keptGridLayoutOrNamedReferenceDefinition !== undefined
+            this.keepPreviousLayoutIfPossible &&
+            this.keptGridLayoutOrNamedReferenceDefinition !== undefined
         ) {
-            definition.updateGridLayoutDefinitionOrNamedReference(this._keptGridLayoutOrNamedReferenceDefinition);
+            definition.updateGridLayoutDefinitionOrNamedReference(this.keptGridLayoutOrNamedReferenceDefinition);
         }
         const gridSourceOrNamedReference = new GridSourceOrNamedReference(
             this._namedGridLayoutsService,
@@ -188,7 +187,7 @@ export class GridSourceFrame extends ContentFrame {
                             });
                         }
 
-                        this.gridLayoutSetEvent(layout);
+                        this.gridLayoutSetEventer(layout);
                         return gridSourceOrNamedReference;
                     }
                 }
@@ -208,10 +207,10 @@ export class GridSourceFrame extends ContentFrame {
                 this._tableFieldsChangedSubscriptionId = undefined;
                 this._openedGridSource.unsubscribeGridLayoutSetEvent(this._gridSourceGridLayoutSetSubscriptionId);
                 this._gridSourceGridLayoutSetSubscriptionId = undefined;
-                if (this._keepPreviousLayoutIfPossible) {
-                    this._keptGridLayoutOrNamedReferenceDefinition = this.createGridLayoutOrNamedReferenceDefinition();
+                if (this.keepPreviousLayoutIfPossible) {
+                    this.keptGridLayoutOrNamedReferenceDefinition = this.createGridLayoutOrNamedReferenceDefinition();
                 } else {
-                    this._keptGridLayoutOrNamedReferenceDefinition = undefined;
+                    this.keptGridLayoutOrNamedReferenceDefinition = undefined;
                 }
                 if (keepView) {
                     this._keptRowOrderDefinition = this._grid.getRowOrderDefinition();
@@ -338,21 +337,21 @@ export class GridSourceFrame extends ContentFrame {
         return this._openedTable.createRecordDefinition(index);
     }
 
-    handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
-        if (this.recordFocusEvent !== undefined) {
-            this.recordFocusEvent(newRecordIndex, oldRecordIndex);
+    handleRecordFocusedEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+        if (this.recordFocusedEventer !== undefined) {
+            this.recordFocusedEventer(newRecordIndex, oldRecordIndex);
         }
     }
 
     handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-        if (this.gridClickEvent !== undefined) {
-            this.gridClickEvent(fieldIndex, recordIndex);
+        if (this.gridClickEventer !== undefined) {
+            this.gridClickEventer(fieldIndex, recordIndex);
         }
     }
 
     handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-        if (this.gridDblClickEvent !== undefined) {
-            this.gridDblClickEvent(fieldIndex, recordIndex);
+        if (this.gridDblClickEventer !== undefined) {
+            this.gridDblClickEventer(fieldIndex, recordIndex);
         }
     }
 
@@ -873,15 +872,15 @@ export class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFHGSGLCE22202');
         } else {
             this._grid.updateGridLayout(newLayout);
-            this.gridLayoutSetEvent(newLayout);
+            this.gridLayoutSetEventer(newLayout);
         }
     }
 
     private applySettings() {
         this._table?.clearRendering();
 
-        if (this.settingsApplyEvent !== undefined) {
-            this.settingsApplyEvent();
+        if (this.settingsApplyEventer !== undefined) {
+            this.settingsApplyEventer();
         }
     }
 
@@ -1111,11 +1110,11 @@ export class GridSourceFrame extends ContentFrame {
 }
 
 export namespace GridSourceFrame {
-    export type SettingsApplyEvent = (this: void) => void;
-    export type GridLayoutSetEvent = (this: void, layout: GridLayout) => void;
-    export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
-    export type GridClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
-    export type GridDblClickEvent = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
+    export type SettingsApplyEventer = (this: void) => void;
+    export type GridLayoutSetEventer = (this: void, layout: GridLayout) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
+    export type GridClickEventer = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
+    export type GridDblClickEventer = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
     // export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
     // export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
     // export type TableOpenChangeEvent = (this: void, opened: boolean) => void;

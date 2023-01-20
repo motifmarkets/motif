@@ -36,7 +36,13 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -108,6 +114,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         desktopAccessNgService: DesktopAccessNgService,
         private readonly _symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -117,7 +124,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             desktopAccessNgService.service,
             this._symbolsNgService.service,
             adiNgService.service,
-            tablesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
         );
 
         this._toggleSymbolLinkingButtonUiAction = this.createToggleSymbolLinkingButtonUiAction();
@@ -464,14 +471,14 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
                 if (!this.isHistoryValid()) {
                     Logger.logWarning('TopShareholders history clicked when not all history controls valid');
                 } else {
-                    this.newTable();
+                    this.tryOpenGridSource();
                 }
                 break;
             case TopShareholdersDitemNgComponent.ModeId.Compare:
                 if (!this.isCompareValid()) {
                     Logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
                 } else {
-                    this.newTable();
+                    this.tryOpenGridSource();
                 }
                 break;
             default: throw new UnexpectedCaseError('TSICHCCU239984', this._modeId.toString(10));
@@ -489,9 +496,9 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         this._compareDateUiAction.pushAccepted();
     }
 
-    private newTable() {
+    private tryOpenGridSource() {
         this.acceptUi();
-        this._frame.newTable(true);
+        this._frame.tryOpenGridSource();
     }
 
     private initialiseComponents() {

@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ElementRef,
     Inject,
     OnDestroy,
@@ -78,7 +77,6 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 

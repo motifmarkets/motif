@@ -8,16 +8,16 @@ import {
     Account,
     AdiService,
     BrokerageAccountGroup,
-    BrokerageAccountTableRecordDefinition,
-    BrokerageAccountTableRecordDefinitionList,
+    BrokerageAccountId,
+    BrokerageAccountTableRecordSource,
     CommandRegisterService,
+    GridSourceDefinition,
+    GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
-    KeyedCorrectnessRecordList,
-    SingleBrokerageAccountGroup,
+    KeyedCorrectnessList,
     SymbolsService,
-    TableRecordDefinitionList,
-    TablesService
+    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -25,8 +25,9 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
-    private _tableFrame: GridSourceFrame;
-    private _accountsDataItem: KeyedCorrectnessRecordList<Account>;
+    private _gridSourceFrame: GridSourceFrame;
+    private _recordSource: BrokerageAccountTableRecordSource;
+    private _recordList: KeyedCorrectnessList<Account>;
 
     private _accountGroupApplying = false;
     private _currentFocusedAccountIdSetting = false;
@@ -37,78 +38,113 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _tablesService: TablesService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _gridSourceOpenedEventer: BrokerageAccountsDitemFrame.GridSourceOpenedEventer,
+        private readonly _recordFocusedEventer: BrokerageAccountsDitemFrame.RecordFocusedEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
-    get initialised() { return this._tableFrame !== undefined; }
+    get initialised() { return this._gridSourceFrame !== undefined; }
 
-    initialise(tableFrame: GridSourceFrame, frameElement: JsonElement | undefined) {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined) {
+        this._gridSourceFrame = gridSourceFrame;
+        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
 
+        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
-            this._tableFrame.loadLayoutConfig(undefined);
+            gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
             const contentElementResult = frameElement.tryGetElementType(BrokerageAccountsDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElementResult);
+            if (contentElementResult.isErr()) {
+                gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
+            } else {
+                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+                    this._tableRecordSourceDefinitionFactoryService,
+                    contentElementResult.value,
+                );
+                if (definitionResult.isOk()) {
+                    gridSourceOrNamedReferenceDefinition = definitionResult.value;
+                } else {
+                    gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
+                    // Temporary error toast
+                }
+            }
         }
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition);
 
         this.applyLinked();
     }
 
+    override save(element: JsonElement) {
+        super.save(element);
+
+        const contentElement = element.newElement(BrokerageAccountsDitemFrame.JsonName.content);
+        const definition = this._gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
+        definition.saveToJson(contentElement);
+    }
+
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean { // override
-        if (this._tableFrame.layoutConfigLoading || this._currentFocusedAccountIdSetting || group === undefined) {
+        if (this._currentFocusedAccountIdSetting || group === undefined) {
             return false;
         } else {
-            if (!(group instanceof SingleBrokerageAccountGroup)) {
+            if (!BrokerageAccountGroup.isSingle(group)) {
                 return false;
             } else {
-                let result: boolean;
                 this._accountGroupApplying = true;
                 try {
-                    const key = group.accountKey;
-                    const definition = new BrokerageAccountTableRecordDefinition(undefined, key);
-                    const itemDefinitionIndex = this._tableFrame.findRecordDefinition(definition);
-
-                    if (itemDefinitionIndex === undefined) {
-                        result = false;
+                    let index = -1;
+                    const accountId = group.id;
+                    const count = this._recordList.count;
+                    for (let i = 0; i < count; i++) {
+                        const record = this._recordList.getAt(i);
+                        if (BrokerageAccountId.isDefinedEqual(record.id, accountId)) {
+                            index = i;
+                            break;
+                        }
+                    }
+                    if (index === -1) {
+                        return false;
                     } else {
-                        this._tableFrame.focusItem(itemDefinitionIndex);
-                        result = super.applyBrokerageAccountGroup(group, selfInitiated);
-
-                        // if (result && selfInitiated) {
-                        //     this.notifyAccountIdAccepted(group);
-                        // }
+                        this._gridSourceFrame.focusItem(index);
+                        return super.applyBrokerageAccountGroup(group, selfInitiated);
                     }
                 } finally {
                     this._accountGroupApplying = false;
                 }
-
-                return result;
             }
         }
     }
 
     private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const account = this._accountsDataItem.records[newRecordIndex];
+            const account = this._recordList.records[newRecordIndex];
             this.processAccountFocusChange(account);
         }
+        this._recordFocusedEventer(newRecordIndex);
     }
 
-    private handleRequireDefaultTableDefinitionEvent() {
-        return this._tablesService.definitionFactory.createBrokerageAccount();
+    private createGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createBrokerageAccount();
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const accountRecordDefinitionList = recordDefinitionList as BrokerageAccountTableRecordDefinitionList;
-        this._accountsDataItem = accountRecordDefinitionList.recordList;
+    private createDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createGridSourceOrNamedReferenceDefinition();
+    }
+
+    private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
+        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
+        if (gridSourceOrNamedReference !== undefined) {
+            const table = this._gridSourceFrame.openedTable;
+            this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
+            this._recordList = this._recordSource.recordList;
+            this._gridSourceOpenedEventer();
+        }
     }
 
     private processAccountFocusChange(newFocusedAccount: Account) {
@@ -130,4 +166,7 @@ export namespace BrokerageAccountsDitemFrame {
     export namespace JsonName {
         export const content = 'content';
     }
+
+    export type GridSourceOpenedEventer = (this: void) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }

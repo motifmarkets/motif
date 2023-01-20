@@ -5,8 +5,12 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, ViewChild,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import { assert, BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
@@ -450,13 +454,9 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
 
 export namespace GridSettingsNgComponent {
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(GridSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(GridSettingsNgComponent);
         assert(componentRef.instance instanceof GridSettingsNgComponent, 'GSCC39399987');
         return componentRef.instance as GridSettingsNgComponent;
     }

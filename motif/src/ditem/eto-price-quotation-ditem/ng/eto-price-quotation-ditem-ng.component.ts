@@ -15,8 +15,14 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    delay1Tick, GridLayoutRecordStore, IconButtonUiAction,
-    InternalCommand, JsonElement, LitIvemIdUiAction, ModifierKey, ModifierKeyId, StringId, Strings
+    delay1Tick,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    LitIvemIdUiAction,
+    ModifierKey,
+    StringId,
+    Strings
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
@@ -40,8 +46,8 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('watchTable', { static: true }) private _watchContentComponent: GridSourceNgComponent;
-    @ViewChild('etoPriceQuotationTable', { static: true }) private _callPutContentComponent: GridSourceNgComponent;
+    @ViewChild('watchGridSource', { static: true }) private _watchGridSourceComponent: GridSourceNgComponent;
+    @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
     public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
@@ -98,13 +104,13 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     isLayoutEditorMode() {
-        return this._modeId === EtoPriceQuotationDitemNgComponent.ModeId.LayoutEditor;
+        return this._modeId === EtoPriceQuotationDitemNgComponent.ModeId.LayoutDialog;
     }
 
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._watchContentComponent.frame, this._callPutContentComponent.frame, frameElement);
+        this._frame.initialise(this._watchGridSourceComponent.frame, this._callPutGridSourceComponent.frame, frameElement);
 
         // this._frame.ensureOpened();
 
@@ -152,14 +158,14 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private handleColumnsSignalEvent(downKeys: ModifierKey.IdSet) {
-        let layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
-        if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift)) {
-            layoutWithHeadings = this._watchContentComponent.frame.getGridLayoutWithHeadersMap();
-        } else {
-            layoutWithHeadings = this._callPutContentComponent.frame.getGridLayoutWithHeadersMap();
-        }
-        this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.LayoutEditor;
-        this._layoutEditorComponent.setAllowedFieldsAndLayoutDefinition(layoutWithHeadings);
+        // let layoutWithHeadings: GridLayoutRecordStore.LayoutWithHeadersMap;
+        // if (ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift)) {
+        //     layoutWithHeadings = this._watchGridSourceComponent.frame.getGridLayoutWithHeadersMap();
+        // } else {
+        //     layoutWithHeadings = this._callPutGridSourceComponent.frame.getGridLayoutWithHeadersMap();
+        // }
+        // this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.LayoutDialog;
+        // this._layoutEditorComponent.setAllowedFieldsAndLayoutDefinition(layoutWithHeadings);
     }
 
     private handleAutoSizeColumnWidthsSignalEvent() {
@@ -167,12 +173,12 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     }
 
     private handleLayoutEditorComponentCloseEvent(ok: boolean) {
-        if (ok) {
-            const layout = this._layoutEditorComponent.getGridLayoutDefinition();
-            // need to work out which is being edited
-            this._watchContentComponent.frame.gridLoadLayout(layout);
-        }
-        this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.Input;
+        // if (ok) {
+        //     const layout = this._layoutEditorComponent.getGridLayoutDefinition();
+        //     // need to work out which is being edited
+        //     this._watchGridSourceComponent.frame.gridLoadLayout(layout);
+        // }
+        // this._modeId = EtoPriceQuotationDitemNgComponent.ModeId.Input;
     }
 
     private createSymbolEditUiAction() {
@@ -250,6 +256,6 @@ export namespace EtoPriceQuotationDitemNgComponent {
 
     export const enum ModeId {
         Input,
-        LayoutEditor,
+        LayoutDialog,
     }
 }

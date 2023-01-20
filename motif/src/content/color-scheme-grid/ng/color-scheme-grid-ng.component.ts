@@ -61,7 +61,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         };
 
         this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridNgComponent.frameGridProperties);
-        this._grid.recordFocusEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        this._grid.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
         this._grid.columnsViewWidthsChangedEventer =
             (fixedChanged, nonFixedChanged, allChanged) => this.handleColumnsViewWidthsChangedEvent(
@@ -146,7 +146,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         }
         const gridLayoutDefinition = new GridLayoutDefinition(columns);
         const gridLayout = new GridLayout(gridLayoutDefinition);
-        this._grid.fieldsLayoutReset(fields, gridLayout, false);
+        this._grid.fieldsLayoutReset(fields, gridLayout);
     }
 }
 

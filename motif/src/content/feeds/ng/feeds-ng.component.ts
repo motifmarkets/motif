@@ -8,13 +8,16 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ComponentFactoryResolver,
+    Inject,
+    Injector,
     OnDestroy,
+    StaticProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness, delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, Badness, delay1Tick, LockOpenListItem } from '@motifmarkets/motif-core';
 import { AdaptedRevgrid } from 'content-internal-api';
+import { CoreInjectionTokens } from '../../../component-services/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { GridSourceNgComponent } from '../../grid-source/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -38,10 +41,13 @@ export class FeedsNgComponent extends ContentComponentBaseNgDirective implements
 
     private _frame: FeedsFrame;
 
-    constructor(contentService: ContentNgService) {
+    constructor(
+        contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
+    ) {
         super();
 
-        this._frame = contentService.createFeedsFrame(this);
+        this._frame = contentNgService.createFeedsFrame(this, opener);
     }
 
     ngAfterViewInit() {
@@ -62,13 +68,19 @@ export class FeedsNgComponent extends ContentComponentBaseNgDirective implements
 }
 
 export namespace FeedsNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef, opener: LockOpenListItem.Opener) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(FeedsNgComponent);
-        const componentRef = container.createComponent(factory);
+
+        const openerProvider: StaticProvider = {
+            provide: CoreInjectionTokens.lockOpenListItemOpener,
+            useValue: opener,
+        };
+        const injector = Injector.create({
+            providers: [openerProvider],
+        });
+
+        const componentRef = container.createComponent(FeedsNgComponent, { injector });
+
         const instance = componentRef.instance;
         if (!(instance instanceof FeedsNgComponent)) {
             throw new AssertInternalError('FCCI59923112141');

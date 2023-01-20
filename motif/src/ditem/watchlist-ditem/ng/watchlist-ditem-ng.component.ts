@@ -31,13 +31,16 @@ import {
     ModifierKey,
     ModifierKeyId,
     NamedGridLayoutDefinition,
+    RankedLitIvemIdList,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     CommandRegisterNgService,
+    NamedJsonRankedLitIvemIdListsNgService,
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService
@@ -50,7 +53,6 @@ import {
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { FavouriteNamedGridLayoutDefinitionReferencesNgService } from '../../../component-services/ng-api';
-import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { WatchlistDitemFrame } from '../watchlist-ditem-frame';
@@ -73,11 +75,11 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
+    @ViewChild('layoutDialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public watchlistCaption: string;
     public watchlistAbbreviatedDescription: string;
-    public WatchListFullDescription: string;
+    public watchListFullDescription: string;
 
     private _layoutEditorComponent: NameableGridLayoutEditorDialogNgComponent | undefined;
 
@@ -104,6 +106,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
@@ -115,10 +118,14 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            namedJsonRankedLitIvemIdListsNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
-            (description) => this.handleLoadGridSourceEvent(description),
-            (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex),
+            (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
+                rankedLitIvemIdList,
+                rankedLitIvemIdListName
+            ),
+            (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex),
             (layout) => this.handleGridLayoutSetEvent(layout),
             (litIvemId) => this.handleLitIvemIdAcceptedEvent(litIvemId),
         );
@@ -167,8 +174,17 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         return this._modeId === WatchlistDitemNgComponent.ModeId.Input;
     }
 
-    public isLayoutEditorMode() {
-        return this._modeId === WatchlistDitemNgComponent.ModeId.LayoutDialog;
+    public isDialogMode() {
+        switch (this._modeId) {
+            case WatchlistDitemNgComponent.ModeId.LayoutDialog:
+            case WatchlistDitemNgComponent.ModeId.OpenDialog:
+            case WatchlistDitemNgComponent.ModeId.SaveDialog:
+                return true;
+            case WatchlistDitemNgComponent.ModeId.Input:
+                return false;
+            default:
+                throw new UnreachableCaseError('WDNCISM65311', this._modeId);
+        }
     }
 
     public isOpenDialogMode() {
@@ -228,7 +244,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.save(frameElement);
     }
 
-    private handleRecordFocusEvent(currentRecordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(currentRecordIndex: Integer | undefined) {
         this.pushDeleteButtonState(currentRecordIndex !== undefined);
     }
 
@@ -285,8 +301,22 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private handleLoadGridSourceEvent(description: WatchlistDitemFrame.TableDescription) {
-        this.updateWatchlistDescription(description);
+    private handleGridSourceOpenedEvent(rankedLitIvemIdList: RankedLitIvemIdList, rankedLitIvemIdListName: string | undefined) {
+        this.watchlistCaption = Strings[StringId.Watchlist];
+        const baseTabDisplay = this._frame.baseTabDisplay;
+        let tabTitle: string;
+        if (rankedLitIvemIdListName === undefined) {
+            tabTitle = baseTabDisplay;
+            this.watchlistAbbreviatedDescription = '';
+            this.watchListFullDescription = Strings[StringId.RankedLitIvemIdListDisplay_Json];
+        } else {
+            tabTitle = `${baseTabDisplay} ${rankedLitIvemIdListName}`;
+            const typeId = rankedLitIvemIdList.typeId;
+            this.watchlistAbbreviatedDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToAbbreviation(typeId)})`;
+            this.watchListFullDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToDisplay(typeId)})`;
+        }
+        this.setTitle(baseTabDisplay, rankedLitIvemIdListName);
+        this.markForCheck();
     }
 
     private handleLitIvemIdAcceptedEvent(litIvemId: LitIvemId) {
@@ -407,7 +437,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         try {
             const openDialogResult = await OpenWatchlistDialogNgComponent.open(this._dialogContainer);
             if (openDialogResult.isOk()) {
-                this._frame.tryOpenGridSource(openDialogResult.value);
+                this._frame.tryOpenGridSource(openDialogResult.value, false);
             }
         } finally {
             this.closeDialog();
@@ -422,7 +452,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         try {
             const openDialogResult = await SaveWatchlistDialogNgComponent.open(this._dialogContainer);
             if (openDialogResult.isOk()) {
-                this._frame.tryOpenGridSource(openDialogResult.value);
+                this._frame.saveAs(openDialogResult.value);
             }
         } finally {
             this.closeDialog();
@@ -502,15 +532,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             this._frame.setLitIvemIdFromDitem(litIvemId, this._forceOnNextCommit);
             this._forceOnNextCommit = false;
         }
-    }
-
-    private updateWatchlistDescription(description: WatchlistDitemFrame.TableDescription) {
-        this.watchlistCaption = Strings[StringId.Watchlist] + ' ' + description.name;
-        this.watchlistAbbreviatedDescription = description.abbreviate;
-        this.WatchListFullDescription = description.full;
-        const moduleTitle = BuiltinDitemFrame.BuiltinType.idToTabTitle(BuiltinDitemFrame.BuiltinTypeId.Watchlist) + ' ' + description.name;
-        this.setTitle(moduleTitle);
-        this.markForCheck();
     }
 }
 

@@ -8,7 +8,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -63,13 +62,9 @@ export class MarketsNgComponent extends ContentComponentBaseNgDirective implemen
 }
 
 export namespace MarketsNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(MarketsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(MarketsNgComponent);
         const instance = componentRef.instance;
         if (!(instance instanceof MarketsNgComponent)) {
             throw new AssertInternalError('MCCI129953235');

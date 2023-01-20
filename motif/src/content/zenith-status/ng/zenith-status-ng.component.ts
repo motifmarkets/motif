@@ -8,7 +8,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -198,13 +197,9 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace ZenithStatusNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ZenithStatusNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ZenithStatusNgComponent);
         const instance = componentRef.instance;
         if (!(instance instanceof ZenithStatusNgComponent)) {
             throw new AssertInternalError('ZSCCI339212772');

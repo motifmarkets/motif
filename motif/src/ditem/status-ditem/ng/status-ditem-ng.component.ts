@@ -8,10 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
-
     ElementRef,
-
     Inject,
     OnDestroy,
     OnInit,
@@ -52,11 +49,15 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new StatusDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new StatusDitemFrame(
+            this,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service
+        );
     }
 
     get ditemFrame() { return this._frame; }
@@ -125,7 +126,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = false;
         this.zenithActive = false;
-        StatusSummaryNgComponent.create(this._statusContainer, this._resolver);
+        StatusSummaryNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 
@@ -134,7 +135,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = true;
         this.feedsActive = false;
         this.zenithActive = false;
-        MarketsNgComponent.create(this._statusContainer, this._resolver);
+        MarketsNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 
@@ -143,7 +144,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = true;
         this.zenithActive = false;
-        FeedsNgComponent.create(this._statusContainer, this._resolver);
+        FeedsNgComponent.create(this._statusContainer, this._frame.opener);
         this.markForCheck();
     }
 
@@ -152,7 +153,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = false;
         this.zenithActive = true;
-        ZenithStatusNgComponent.create(this._statusContainer, this._resolver);
+        ZenithStatusNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 }

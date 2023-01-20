@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ElementRef,
     Inject,
     OnDestroy,
@@ -60,7 +59,6 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
         this._frame = new SettingsDitemFrame(this, this.commandRegisterService,
@@ -138,23 +136,23 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             switch (value) {
                 case SettingsDitemFrame.SettingsGroupId.General:
                     this.generalGroupActive = true;
-                    this._groupComponent = GeneralSettingsNgComponent.create(this._groupContainer, this._resolver);
+                    this._groupComponent = GeneralSettingsNgComponent.create(this._groupContainer);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.Grid:
                     this.gridGroupActive = true;
-                    this._groupComponent = GridSettingsNgComponent.create(this._groupContainer, this._resolver);
+                    this._groupComponent = GridSettingsNgComponent.create(this._groupContainer);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.OrderPad:
                     this.orderPadGroupActive = true;
-                    this._groupComponent = OrderPadSettingsNgComponent.create(this._groupContainer, this._resolver);
+                    this._groupComponent = OrderPadSettingsNgComponent.create(this._groupContainer);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.Exchanges:
                     this.exchangesGroupActive = true;
-                    this._groupComponent = ExchangesSettingsNgComponent.create(this._groupContainer, this._resolver);
+                    this._groupComponent = ExchangesSettingsNgComponent.create(this._groupContainer);
                     break;
                 case SettingsDitemFrame.SettingsGroupId.Color:
                     this.colorGroupActive = true;
-                    this._groupComponent = ColorSettingsNgComponent.create(this._groupContainer, this._resolver);
+                    this._groupComponent = ColorSettingsNgComponent.create(this._groupContainer);
                     break;
             }
 

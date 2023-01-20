@@ -11,7 +11,7 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class DepthDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: DepthFrame;
+    private _depthFrame: DepthFrame;
 
     constructor(
         private _componentAccess: DepthDitemFrame.ComponentAccess,
@@ -25,23 +25,23 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    get filterActive() { return this._contentFrame.filterActive; }
-    get filterXrefs() { return this._contentFrame.filterXrefs; }
+    get filterActive() { return this._depthFrame.filterActive; }
+    get filterXrefs() { return this._depthFrame.filterXrefs; }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    get initialised() { return this._depthFrame !== undefined; }
 
-    initialise(depthContentFrame: DepthFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = depthContentFrame;
-        this._contentFrame.initialise();
+    initialise(depthFrame: DepthFrame, frameElement: JsonElement | undefined): void {
+        this._depthFrame = depthFrame;
+        this._depthFrame.initialise();
 
         if (frameElement === undefined) {
-            this._contentFrame.loadConfig(undefined);
+            this._depthFrame.loadConfig(undefined);
         } else {
             const contentElementResult = frameElement.tryGetElementType(DepthDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
-                this._contentFrame.loadConfig(undefined);
+                this._depthFrame.loadConfig(undefined);
             } else {
-                this._contentFrame.loadConfig(contentElementResult.value);
+                this._depthFrame.loadConfig(contentElementResult.value);
             }
         }
 
@@ -54,15 +54,15 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(DepthDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutToConfig(contentElement);
+        this._depthFrame.saveLayoutToConfig(contentElement);
     }
 
     open() {
         const litIvemId = this.litIvemId;
         if (litIvemId === undefined) {
-            this._contentFrame.close();
+            this._depthFrame.close();
         } else {
-            this._contentFrame.open(litIvemId, DepthStyleId.Full);
+            this._depthFrame.open(litIvemId, DepthStyleId.Full);
         }
         this._componentAccess.notifyOpenedClosed(litIvemId);
     }
@@ -72,33 +72,33 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     // }
 
     toggleFilterActive() {
-        this._contentFrame.toggleFilterActive();
+        this._depthFrame.toggleFilterActive();
     }
 
     setFilter(xrefs: string[]) {
-        this._contentFrame.setFilter(xrefs);
+        this._depthFrame.setFilter(xrefs);
     }
 
     expand(newRecordsOnly: boolean) {
-        this._contentFrame.openExpand = true;
-        this._contentFrame.expand(newRecordsOnly);
+        this._depthFrame.openExpand = true;
+        this._depthFrame.expand(newRecordsOnly);
     }
 
     rollUp(newRecordsOnly: boolean) {
-        this._contentFrame.openExpand = false;
-        this._contentFrame.rollup(newRecordsOnly);
+        this._depthFrame.openExpand = false;
+        this._depthFrame.rollup(newRecordsOnly);
     }
 
     autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
+        this._depthFrame.autoSizeAllColumnWidths();
     }
 
     createAllowedFieldsAndLayoutDefinitions() {
-        return this._contentFrame.createAllowedFieldsAndLayoutDefinitions();
+        return this._depthFrame.createAllowedFieldsAndLayoutDefinitions();
     }
 
     applyGridLayoutDefinitions(layout: DepthFrame.GridLayoutDefinitions) {
-        this._contentFrame.applyGridLayoutDefinitions(layout);
+        this._depthFrame.applyGridLayoutDefinitions(layout);
     }
 
     // adviseShown() {

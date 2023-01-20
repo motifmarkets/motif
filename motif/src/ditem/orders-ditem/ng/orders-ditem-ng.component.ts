@@ -5,8 +5,15 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     assert,
@@ -21,7 +28,8 @@ import {
     Logger,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -29,10 +37,10 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TablesNgService
+    TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { GridLayoutEditorDialogNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import { GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -59,7 +67,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
@@ -90,8 +98,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
-        tablesNgService: TablesNgService,
-        private _resolver: ComponentFactoryResolver,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -103,10 +110,10 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
             symbolsNgService.service,
             adiNgService.service,
             symbolDetailCacheNgService.service,
-            tablesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
-        this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
-        this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._buyUiAction = this.createBuyUiAction();
@@ -146,8 +153,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         return this._modeId === OrdersDitemNgComponent.ModeId.Main;
     }
 
-    public isLayoutEditorMode() {
-        return this._modeId === OrdersDitemNgComponent.ModeId.LayoutEditor;
+    public isDialogMode() {
+        switch (this._modeId) {
+            case OrdersDitemNgComponent.ModeId.LayoutDialog:
+                return true;
+            case OrdersDitemNgComponent.ModeId.Main:
+                return false;
+            default:
+                throw new UnreachableCaseError('ODNCIDM65312', this._modeId);
+        }
     }
 
     public override processSymbolLinkedChanged() {
@@ -230,12 +244,14 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this._frame.moveFocused();
     }
 
-    private handleRecordFocusEvent(recordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
         this.pushAmendCancelButtonState(recordIndex);
     }
 
-    private handleTableOpenEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -255,21 +271,22 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private showLayoutEditor() {
-        this._modeId = OrdersDitemNgComponent.ModeId.LayoutEditor;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
+        this._modeId = OrdersDitemNgComponent.ModeId.LayoutDialog;
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
+
+        if (allowedFieldsAndLayoutDefinition !== undefined) {
+            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
             closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.openGridLayoutOrNamedReferenceDefinition(layout);
+                (layoutOrReferenceDefinition) => {
+                    if (layoutOrReferenceDefinition !== undefined) {
+                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                     }
-                    this.closeLayoutEditor();
+                    this.closeDialog();
                 },
                 (reason) => {
-                    Logger.logError(`Orders Ditem Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
+                    Logger.logError(`Orders Ditem Layout Dialog error: ${reason}`);
+                    this.closeDialog();
                 }
             );
         }
@@ -277,8 +294,8 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.markForCheck();
     }
 
-    private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
+    private closeDialog() {
+        this._dialogContainer.clear();
         this._modeId = OrdersDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }
@@ -443,6 +460,6 @@ export namespace OrdersDitemNgComponent {
 
     export const enum ModeId {
         Main,
-        LayoutEditor,
+        LayoutDialog,
     }
 }

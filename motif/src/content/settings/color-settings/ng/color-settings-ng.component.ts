@@ -5,8 +5,14 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-    ElementRef, OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     assert,
@@ -64,7 +70,6 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
         super(cdr, settingsNgService.settingsService);
 
@@ -156,7 +161,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     private showPresetCode() {
         this.isPresetCodeVisible = true;
 
-        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this._resolver, this.colorSettings);
+        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this.colorSettings);
         closePromise.then(
             () => {
                 this.closePresetCode();
@@ -205,13 +210,9 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 export namespace ColorSettingsNgComponent {
     export const extraGridFixedColumnsWidth = 20;
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ColorSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ColorSettingsNgComponent);
         assert(componentRef.instance instanceof ColorSettingsNgComponent, 'CSCC909553');
         return componentRef.instance as ColorSettingsNgComponent;
     }

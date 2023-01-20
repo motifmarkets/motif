@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     Badness,
     CoreSettings,
     Correctness,
@@ -143,12 +144,14 @@ export class MarketsFrame extends ContentFrame {
                 return true;
             case UsableListChangeTypeId.Insert:
                 return this.insertMarkets(index, count);
+            case UsableListChangeTypeId.Replace:
+                throw new AssertInternalError('CIDFPMLCRP09134');
             case UsableListChangeTypeId.Remove:
                 return this.removeMarkets(index, count);
             case UsableListChangeTypeId.Clear:
                 return this.clearMarkets();
             default:
-                throw new UnreachableCaseError('CIDFPMLCU10009134', listChangeTypeId);
+                throw new UnreachableCaseError('CIDFPMLCU09134', listChangeTypeId);
         }
     }
 

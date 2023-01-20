@@ -15,7 +15,6 @@ import {
     BrokerageAccountGroupRecordList,
     CommandRegisterService,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
@@ -33,7 +32,6 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     };
 
     private _gridSourceFrame: GridSourceFrame;
-    private _gridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
     private _recordSource: BalancesTableRecordSource;
     private _recordList: BrokerageAccountGroupRecordList<Balances>;
     private _currentFocusedAccountIdSetting: boolean;
@@ -46,8 +44,8 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly _openEventer: BalancesDitemFrame.OpenEventer,
-        private readonly _recordFocusEventer: BalancesDitemFrame.RecordFocusEventer,
+        private readonly _gridSourceOpenedEventer: BalancesDitemFrame.GridSourceOpenedEventer,
+        private readonly _recordFocusedEventer: BalancesDitemFrame.RecordFocusedEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Balances,
             ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -59,7 +57,8 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
 
     initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._gridSourceFrame = gridSourceFrame;
-        this._gridSourceFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
 
         let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
@@ -134,7 +133,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             const record = this._recordList.getAt(newRecordIndex);
             this.processRecordFocusChange(record);
         }
-        this._recordFocusEventer(newRecordIndex);
+        this._recordFocusedEventer(newRecordIndex);
     }
 
     private createGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
@@ -161,12 +160,14 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        this._gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
-        if (this._gridSourceOrNamedReference !== undefined) {
+        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
+        if (gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as BalancesTableRecordSource;
             this._recordList = this._recordSource.recordList;
-            this._openEventer(this._recordSource.brokerageAccountGroup);
+            const brokerageAccountGroup = this._recordSource.brokerageAccountGroup;
+            this.updateLockerName(brokerageAccountGroup.isAll() ? '' : brokerageAccountGroup.id);
+            this._gridSourceOpenedEventer(brokerageAccountGroup);
         }
     }
 
@@ -192,6 +193,6 @@ export namespace BalancesDitemFrame {
         export const content = 'content';
     }
 
-    export type RecordFocusEventer = (this: void, newRecordIndex: Integer | undefined) => void;
-    export type OpenEventer = (this: void, group: BrokerageAccountGroup) => void;
+    export type GridSourceOpenedEventer = (this: void, group: BrokerageAccountGroup) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }

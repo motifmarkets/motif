@@ -18,7 +18,7 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class TradesDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: TradesFrame;
+    private _tradesFrame: TradesFrame;
 
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
@@ -32,19 +32,19 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    get initialised() { return this._tradesFrame !== undefined; }
 
     initialise(tradesContentFrame: TradesFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = tradesContentFrame;
+        this._tradesFrame = tradesContentFrame;
 
         if (frameElement === undefined) {
-            this._contentFrame.loadConfig(undefined);
+            this._tradesFrame.initialise(undefined);
         } else {
             const contentElementResult = frameElement.tryGetElementType(TradesDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
-                this._contentFrame.loadConfig(undefined);
+                this._tradesFrame.initialise(undefined);
             } else {
-                this._contentFrame.loadConfig(contentElementResult.value);
+                this._tradesFrame.initialise(contentElementResult.value);
             }
         }
 
@@ -55,17 +55,17 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(TradesDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutToConfig(contentElement);
+        this._tradesFrame.saveLayoutToConfig(contentElement);
     }
 
     open() {
         const litIvemId = this.litIvemId;
         if (litIvemId === undefined) {
-            this._contentFrame.close();
+            this._tradesFrame.close();
             this._componentAccess.notifyOpenedClosed(undefined, undefined);
         } else {
             const historicalDate = this._componentAccess.getHistoricalDate();
-            this._contentFrame.open(litIvemId, historicalDate);
+            this._tradesFrame.open(litIvemId, historicalDate);
 
             this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
         }
@@ -78,18 +78,18 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
     }
 
     autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
+        this._tradesFrame.autoSizeAllColumnWidths();
     }
 
     createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition | undefined {
-        return this._contentFrame?.createAllowedFieldsAndLayoutDefinition();
+        return this._tradesFrame?.createAllowedFieldsAndLayoutDefinition();
     }
 
     applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
-        if (!this._contentFrame) {
+        if (!this._tradesFrame) {
             throw new Error('Condition not handled [ID:5326171853]');
         }
-        this._contentFrame.applyGridLayoutDefinition(layoutDefinition);
+        this._tradesFrame.applyGridLayoutDefinition(layoutDefinition);
     }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {

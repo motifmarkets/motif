@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
+import { LockOpenListItem, ScansService, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -13,6 +13,7 @@ import {
     NamedGridSourcesNgService,
     SettingsNgService,
     SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService,
     TableRecordSourceFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
@@ -41,8 +42,9 @@ export class ContentNgService {
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
-        namedGridSourceDefinitionsNgService: NamedGridSourcesNgService,
+        namedGridSourcesNgService: NamedGridSourcesNgService,
     ) {
         this._content = new ContentService(
             settingsNgService.settingsService,
@@ -51,8 +53,9 @@ export class ContentNgService {
             adiNgService.service,
             textFormatterNgService.service,
             namedGridLayoutDefinitionsNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
-            namedGridSourceDefinitionsNgService.service,
+            namedGridSourcesNgService.service,
         );
     }
 
@@ -60,8 +63,8 @@ export class ContentNgService {
         return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
-        return this._content.createFeedsFrame(componentAccess);
+    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
+        return this._content.createFeedsFrame(componentAccess, opener);
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {

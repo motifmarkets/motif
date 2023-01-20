@@ -7,10 +7,10 @@
 import {
     AdiService,
     CommandRegisterService,
+    GridLayoutOrNamedReferenceDefinition,
     Integer,
     JsonElement,
-    SymbolsService,
-    TableRecordDefinitionList
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -18,8 +18,8 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
-    private _watchContentFrame: GridSourceFrame;
-    private _callPutContentFrame: GridSourceFrame;
+    private _watchGridSourceFrame: GridSourceFrame;
+    private _callPutGridSourceFrame: GridSourceFrame;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -33,43 +33,49 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    get initialised() { return this._callPutContentFrame !== undefined; }
+    get initialised() { return this._callPutGridSourceFrame !== undefined; }
 
-    initialise(watchContentFrame: GridSourceFrame, callPutContentFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._watchContentFrame = watchContentFrame;
-        this._callPutContentFrame = callPutContentFrame;
+    initialise(watchFrame: GridSourceFrame, callPutFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
+        this._watchGridSourceFrame = watchFrame;
+        this._callPutGridSourceFrame = callPutFrame;
 
         if (frameElement === undefined) {
-            this._watchContentFrame.loadLayoutConfig(undefined);
-            this._callPutContentFrame.loadLayoutConfig(undefined);
+            this.initialiseWatch(undefined);
+            this.initialiseCallPut(undefined);
         } else {
             const watchElementResult = frameElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.watch);
             if (watchElementResult.isErr()) {
-                this._watchContentFrame.loadLayoutConfig(undefined);
+                this.initialiseWatch(undefined);
             } else {
-                this._watchContentFrame.loadLayoutConfig(watchElementResult.value);
+                this.initialiseWatch(watchElementResult.value);
             }
+
             const callPutElementResult = frameElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.callPut);
             if (callPutElementResult.isErr()) {
-                this._callPutContentFrame.loadLayoutConfig(undefined);
+                this.initialiseCallPut(undefined);
             } else {
-                this._callPutContentFrame.loadLayoutConfig(callPutElementResult.value);
+                this.initialiseCallPut(callPutElementResult.value);
             }
         }
 
-        this.prepareContentFrame();
-        this.newTable(false);
+        this._watchGridSourceFrame = watchFrame;
+        this._watchGridSourceFrame.opener = this.opener;
+        this._watchGridSourceFrame.keepPreviousLayoutIfPossible = true;
+        this._callPutGridSourceFrame.opener = this.opener;
+        this._callPutGridSourceFrame.keepPreviousLayoutIfPossible = true;
+
+        // something
 
         this.applyLinked();
     }
 
-    override save(config: JsonElement) {
-        super.save(config);
+    override save(frameElement: JsonElement) {
+        super.save(frameElement);
 
-        const watchElement = config.newElement(EtoPriceQuotationDitemFrame.JsonName.watch);
-        this._watchContentFrame.saveLayoutConfig(watchElement);
-        const callPutElement = config.newElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
-        this._callPutContentFrame.saveLayoutConfig(callPutElement);
+        const watchElement = frameElement.newElement(EtoPriceQuotationDitemFrame.JsonName.watch);
+        this.saveWatchCallPut(this._watchGridSourceFrame, watchElement);
+        const callPutElement = frameElement.newElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
+        this.saveWatchCallPut(this._callPutGridSourceFrame, callPutElement);
     }
 
     private handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
@@ -84,17 +90,50 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
     private handleRequireDefaultTableDefinitionEvent() {
     }
 
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
+    private initialiseWatch(element: JsonElement | undefined) {
+        this._watchGridSourceFrame.opener = this.opener;
+        this._watchGridSourceFrame.keepPreviousLayoutIfPossible = true;
+
+        if (element !== undefined) {
+            const elementResult = element.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.watch);
+            if (elementResult.isOk()) {
+                const watchElement = elementResult.value;
+                const keptLayoutElementResult = watchElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
+                if (keptLayoutElementResult.isOk()) {
+                    const keptLayoutElement = keptLayoutElementResult.value;
+                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    if (keptLayoutResult.isOk()) {
+                        this._watchGridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                    }
+                }
+            }
+        }
     }
 
+    private initialiseCallPut(element: JsonElement | undefined) {
+        this._callPutGridSourceFrame.opener = this.opener;
+        this._callPutGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
-    private newTable(keepCurrentLayout: boolean) {
-        // TODO:HIGH
-        // const tableDefinition = BrokerageAccountTableDefinition.create(this.settings, this.adi);
-        // this._contentFrame.newPrivateTable(tableDefinition, undefined, keepCurrentLayout);
+        if (element !== undefined) {
+            const elementResult = element.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.callPut);
+            if (elementResult.isOk()) {
+                const callPutElement = elementResult.value;
+                const keptLayoutElementResult = callPutElement.tryGetElementType(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
+                if (keptLayoutElementResult.isOk()) {
+                    const keptLayoutElement = keptLayoutElementResult.value;
+                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    if (keptLayoutResult.isOk()) {
+                        this._callPutGridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                    }
+                }
+            }
+        }
     }
 
-    private prepareContentFrame() {
+    private saveWatchCallPut(frame: GridSourceFrame, element: JsonElement) {
+        const keptLayoutElement = element.newElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
+        const layoutDefinition = frame.createGridLayoutOrNamedReferenceDefinition();
+        layoutDefinition.saveToJson(keptLayoutElement);
     }
 }
 
@@ -102,5 +141,6 @@ export namespace EtoPriceQuotationDitemFrame {
     export namespace JsonName {
         export const watch = 'watch';
         export const callPut = 'callPut';
+        export const keptLayout = 'keptLayout';
     }
 }

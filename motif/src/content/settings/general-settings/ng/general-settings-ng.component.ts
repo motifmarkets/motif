@@ -5,14 +5,34 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, OnInit, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
-    ArrayUiAction, assert, BooleanUiAction, delay1Tick, EnumUiAction, ExchangeInfo, ExplicitElementsEnumArrayUiAction,
+    ArrayUiAction,
+    assert,
+    BooleanUiAction,
+    delay1Tick,
+    EnumUiAction,
+    ExchangeInfo,
+    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
     IntegerUiAction,
-    MasterSettings, MultiEvent, SourceTzOffsetDateTime, StringId, Strings, StringUiAction, SymbolField, SymbolFieldId, SymbolsService
+    MasterSettings,
+    MultiEvent,
+    SourceTzOffsetDateTime,
+    StringId,
+    Strings,
+    StringUiAction,
+    SymbolField,
+    SymbolFieldId,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
@@ -451,13 +471,9 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
 export namespace GeneralSettingsNgComponent {
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(GeneralSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(GeneralSettingsNgComponent);
         assert(componentRef.instance instanceof GeneralSettingsNgComponent, 'ASCC2288532');
         return componentRef.instance as GeneralSettingsNgComponent;
     }

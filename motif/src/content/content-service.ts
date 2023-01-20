@@ -6,12 +6,13 @@
 
 import {
     AdiService,
-    AppStorageService, NamedGridLayoutsService,
+    AppStorageService, LockOpenListItem, NamedGridLayoutsService,
     NamedGridSourcesService,
     ScansService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
+    TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
@@ -35,16 +36,21 @@ export class ContentService {
         private readonly _adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        private readonly _namedGridSourceDefinitionsService: NamedGridSourcesService,
+        private readonly _namedGridSourcesService: NamedGridSourcesService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
-        return new FeedsFrame(componentAccess, this._namedGridSourceDefinitionsService);
+    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
+        return new FeedsFrame(
+            componentAccess,
+            this._tableRecordSourceDefinitionFactoryService,
+            opener
+        );
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -57,7 +63,7 @@ export class ContentService {
             this._settingsService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourceDefinitionsService,
+            this._namedGridSourcesService,
         );
     }
 

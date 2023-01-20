@@ -138,8 +138,14 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
         this._cdr.markForCheck();
     }
 
-    protected setTitle(value: string) {
-        this._container.setTitle(value);
+    protected setTitle(baseTabDisplay: string, contentName: string | undefined) {
+        let title: string;
+        if (contentName === undefined || contentName === '') {
+            title = baseTabDisplay;
+        } else {
+            title = `${baseTabDisplay}: ${contentName}`;
+        }
+        this._container.setTitle(title);
     }
 
     protected processShown() {

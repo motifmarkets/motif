@@ -8,7 +8,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     ElementRef,
     Inject,
     OnDestroy,
@@ -41,9 +40,15 @@ import {
     SymbolFieldId,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { GridLayoutEditorDialogNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import { GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionedCheckboxNgComponent,
@@ -123,7 +128,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     @ViewChild('bottomPageCountLabel', { static: true }) private _bottomPageCountLabel: IntegerLabelNgComponent;
     @ViewChild('bottomNextButton', { static: true }) private _bottomNextButtonComponent: ButtonInputNgComponent;
 
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
         fixedColumnCount: 0,
@@ -177,8 +182,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tablesNgService: TablesNgService,
-        private _resolver: ComponentFactoryResolver,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -193,7 +197,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tablesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
         );
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -221,16 +225,16 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         this.constructLoad(this.getInitialComponentStateJsonElement());
 
         this.pushSymbolLinkButtonState();
-        this._exchangeUiAction.pushValue(this._frame.queryExchangeId);
-        this._marketsUiAction.pushValue(this._frame.queryMarketIds);
-        this._cfiUiAction.pushValue(this._frame.queryCfi);
-        this._fieldsUiAction.pushValue(this._frame.queryFieldIds);
+        this._exchangeUiAction.pushValue(this._frame.exchangeId);
+        this._marketsUiAction.pushValue(this._frame.marketIds);
+        this._cfiUiAction.pushValue(this._frame.cfi);
+        this._fieldsUiAction.pushValue(this._frame.fieldIds);
         this._indicesInclusionUiAction.pushValue(this._frame.indicesInclusion);
-        this._partialUiAction.pushValue(this._frame.queryIsPartial);
-        this._preferExactUiAction.pushValue(this._frame.queryPreferExact);
-        this._showFullUiAction.pushValue(this._frame.queryShowFull);
-        this._pageSizeUiAction.pushValue(this._frame.queryCount);
-        this._searchUiAction.pushValue(this._frame.querySearchText);
+        this._partialUiAction.pushValue(this._frame.isPartial);
+        this._preferExactUiAction.pushValue(this._frame.preferExact);
+        this._showFullUiAction.pushValue(this._frame.showFull);
+        this._pageSizeUiAction.pushValue(this._frame.count);
+        this._searchUiAction.pushValue(this._frame.searchText);
     }
 
     get ditemFrame() { return this._frame; }
@@ -371,23 +375,23 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
     private handleExchangeCommitEvent() {
         const id = this._exchangeUiAction.definedValue as ExchangeId;
-        this._frame.queryExchangeId = id;
-        this._marketsUiAction.pushValue(this._frame.queryMarketIds);
+        this._frame.exchangeId = id;
+        this._marketsUiAction.pushValue(this._frame.marketIds);
     }
 
     private handleMarketsCommitEvent() {
         const ids = this._marketsUiAction.definedValue as readonly MarketId[];
-        this._frame.queryMarketIds = ids;
+        this._frame.marketIds = ids;
     }
 
     private handleCfiCommitEvent() {
         const cfi = this._cfiUiAction.definedValue;
-        this._frame.queryCfi = cfi;
+        this._frame.cfi = cfi;
     }
 
     private handleFieldsCommitEvent() {
         const ids = this._fieldsUiAction.definedValue as readonly SymbolFieldId[];
-        this._frame.queryFieldIds = ids;
+        this._frame.fieldIds = ids;
     }
 
     private handleIndicesInclusionCommitEvent() {
@@ -395,27 +399,27 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private handlePartialCommitEvent() {
-        this._frame.queryIsPartial = this._partialUiAction.definedValue;
+        this._frame.isPartial = this._partialUiAction.definedValue;
     }
 
     private handlePreferExactCommitEvent() {
-        this._frame.queryPreferExact = this._preferExactUiAction.definedValue;
+        this._frame.preferExact = this._preferExactUiAction.definedValue;
     }
 
     private handleShowFullCommitEvent() {
-        this._frame.queryShowFull = this._showFullUiAction.definedValue;
+        this._frame.showFull = this._showFullUiAction.definedValue;
     }
 
     private handlePageSizeCommitEvent() {
-        this._frame.queryCount = this._pageSizeUiAction.definedValue;
+        this._frame.count = this._pageSizeUiAction.definedValue;
     }
 
     private handleSearchCommitEvent() {
-        this._frame.querySearchText = this._searchUiAction.definedValue;
+        this._frame.searchText = this._searchUiAction.definedValue;
     }
 
     private handleQuerySignalEvent() {
-        this._frame.executeQueryRequest();
+        this._frame.executeRequest();
     }
 
     private handleNextPageSignalEvent() {
@@ -424,19 +428,19 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
     private showLayoutEditor() {
         this._modeId = SearchSymbolsDitemNgComponent.ModeId.LayoutEditor;
-        const layoutWithHeadings = this._frame.getActiveGridLayoutWithHeadings();
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+        if (allowedFieldsAndLayoutDefinition !== undefined) {
+            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
             closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.setActiveGridLayout(layout);
+                (layoutOrReferenceDefinition) => {
+                    if (layoutOrReferenceDefinition !== undefined) {
+                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                     }
                     this.closeLayoutEditor();
                 },
                 (reason) => {
-                    Logger.logError(`Symbols Ditem Layout Editor error: ${reason}`);
+                    Logger.logError(`Symbols Layout Editor error: ${reason}`);
                     this.closeLayoutEditor();
                 }
             );
@@ -446,7 +450,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
+        this._dialogContainer.clear();
         this._modeId = SearchSymbolsDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }

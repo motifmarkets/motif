@@ -35,7 +35,7 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TablesNgService
+    TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
@@ -89,7 +89,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
-        tablesNgService: TablesNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -101,11 +101,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             symbolsNgService.service,
             adiNgService.service,
             symbolDetailCacheNgService.service,
-            tablesNgService.service
+            tableRecordSourceDefinitionFactoryNgService.service,
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex),
         );
-        this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);
-        this._frame.groupOpenedEvent = (group) => this.handleGroupOpenedEvent(group);
-
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._sellUiAction = this.createSellUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -246,8 +245,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.pushSellButtonState(this._frame.focusedRecordIndex);
     }
 
-    private handleGroupOpenedEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private createAccountIdUiAction() {

@@ -8,7 +8,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     ViewContainerRef
 } from '@angular/core';
@@ -65,10 +64,9 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
 }
 
 export namespace ExchangesSettingsNgComponent {
-    export function create(container: ViewContainerRef, resolver: ComponentFactoryResolver) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ExchangesSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ExchangesSettingsNgComponent);
         return componentRef.instance as ExchangesSettingsNgComponent;
     }
 }

@@ -24,7 +24,8 @@ import {
     InternalCommand,
     JsonElement,
     StringId,
-    Strings, UiAction
+    Strings,
+    UiAction
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -74,7 +75,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        ) {
+    ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
         this._frame = new BalancesDitemFrame(
@@ -84,8 +85,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             symbolsNgService.service,
             adiNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
-            (group) => this.handleTableOpenEvent(group),
-            (recordIndex) => this.handleRecordFocusEvent(recordIndex),
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
@@ -153,12 +154,14 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 
-    private handleRecordFocusEvent(recordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
         //
     }
 
-    private handleTableOpenEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private createAccountIdUiAction() {

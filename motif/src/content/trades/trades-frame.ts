@@ -13,6 +13,7 @@ import {
     DayTradesDataItem,
     DayTradesGridField,
     DayTradesGridRecordStore,
+    GridLayout,
     GridLayoutDefinition,
     Integer,
     JsonElement,
@@ -26,7 +27,6 @@ export class TradesFrame extends ContentFrame {
     // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
 
     private _grid: RecordGrid;
-    private _gridPrepared = false;
     private _recordStore: DayTradesGridRecordStore;
 
     private _dataItem: DayTradesDataItem | undefined;
@@ -42,36 +42,48 @@ export class TradesFrame extends ContentFrame {
         this._recordStore = new DayTradesGridRecordStore();
     }
 
-    get recordStore() { return this._recordStore; }
+    initialise(element: JsonElement | undefined) {
+        this._grid = this._componentAccess.createGrid(this._recordStore);
+        this._grid.rowOrderReversed = true;
+        this._grid.recordFocusedEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
+        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
+        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
+
+        let gridLayout: GridLayout;
+        if (element === undefined) {
+            gridLayout = this.createDefaultGridLayout();
+        } else {
+            const tryGetElementResult = element.tryGetElementType(TradesFrame.JsonName.layout);
+            if (tryGetElementResult.isErr()) {
+                gridLayout = this.createDefaultGridLayout();
+            } else {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetElementResult.value);
+                if (definitionResult.isErr()) {
+                    gridLayout = this.createDefaultGridLayout();
+                } else {
+                    gridLayout = new GridLayout(definitionResult.value);
+                }
+            }
+        }
+
+        const fieldCount = DayTradesGridField.idCount;
+        const fields = new Array<DayTradesGridField>(fieldCount);
+
+        for (let id = 0; id < fieldCount; id++) {
+            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
+            fields[id] = gridField;
+        }
+
+        this._grid.fieldsLayoutReset(fields, gridLayout);
+        this._grid.sortable = false;
+
+        this._recordStore.recordsLoaded();
+    }
 
     override finalise() {
         if (!this.finalised) {
             this.checkClose();
             super.finalise();
-        }
-    }
-
-    // grid functions used by Component
-
-    setGrid(value: RecordGrid) {
-        this._grid = value;
-        this._grid.rowOrderReversed = true;
-        this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
-        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
-
-        this.prepareGrid();
-    }
-
-    loadConfig(element: JsonElement | undefined) {
-        if (element !== undefined) {
-            const tryGetElementResult = element.tryGetElementType(TradesFrame.JsonName.layout);
-            if (tryGetElementResult.isOk()) {
-                const definitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetElementResult.value);
-                if (definitionResult.isOk()) {
-                    this._grid.applyGridLayoutDefinition(definitionResult.value);
-                }
-            }
         }
     }
 
@@ -156,6 +168,26 @@ export class TradesFrame extends ContentFrame {
         return this._dataItemDataCorrectnessId;
     }
 
+    private createDefaultGridLayout() {
+        const fieldIds: DayTradesGridField.Id[] = [
+            DayTradesDataItem.Field.Id.Time,
+            DayTradesDataItem.Field.Id.Price,
+            DayTradesDataItem.Field.Id.Quantity,
+        ];
+
+        const count = fieldIds.length;
+        const columns = new Array<GridLayoutDefinition.Column>(count);
+        for (let i = 0; i < count; i++) {
+            const fieldId = fieldIds[i];
+            const column: GridLayoutDefinition.Column = {
+                fieldName: DayTradesDataItem.Field.idToName(fieldId),
+            };
+            columns[i] = column;
+        }
+        const definition = new GridLayoutDefinition(columns);
+        return new GridLayout(definition);
+    }
+
     private checkClose() {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
@@ -166,27 +198,6 @@ export class TradesFrame extends ContentFrame {
             this._dataItemDataCorrectnessId = CorrectnessId.Suspect;
         }
     }
-
-    private prepareGrid() {
-        if (this._gridPrepared) {
-            this._grid.reset();
-        }
-
-        const fieldCount = DayTradesGridField.idCount;
-        const fields = new Array<DayTradesGridField>(fieldCount);
-
-        for (let id = 0; id < fieldCount; id++) {
-            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
-            fields[id] = gridField;
-        }
-        this._grid.updateAllowedFields(fields);
-        this._grid.sortable = false;
-
-        this._recordStore.recordsLoaded();
-
-        this._gridPrepared = true;
-    }
-
 }
 
 export namespace TradesFrame {
@@ -202,6 +213,7 @@ export namespace TradesFrame {
     export interface ComponentAccess {
         readonly id: string;
 
+        createGrid(dataStore: DayTradesGridRecordStore): RecordGrid;
         setBadness(value: Badness): void;
         hideBadnessWithVisibleDelay(badness: Badness): void;
     }

@@ -42,7 +42,7 @@ import { RecordGridHeaderAdapter } from './record-grid-header-adapter';
  * @public
  */
 export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeInitiator {
-    recordFocusEventer: RecordGrid.RecordFocusEventer | undefined;
+    recordFocusedEventer: RecordGrid.RecordFocusEventer | undefined;
     mainClickEventer: RecordGrid.MainClickEventer | undefined;
     mainDblClickEventer: RecordGrid.MainDblClickEventer | undefined;
     // fieldSortedEventer: RecordGrid.FieldSortedEventer | undefined;
@@ -284,9 +284,9 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
             if (this._lastNotifiedFocusedRecordIndex !== undefined) {
                 const oldSelectedRecordIndex = this._lastNotifiedFocusedRecordIndex;
                 this._lastNotifiedFocusedRecordIndex = undefined;
-                const recordFocusEventer = this.recordFocusEventer;
-                if (recordFocusEventer !== undefined) {
-                    recordFocusEventer(undefined, oldSelectedRecordIndex);
+                const recordFocusedEventer = this.recordFocusedEventer;
+                if (recordFocusedEventer !== undefined) {
+                    recordFocusedEventer(undefined, oldSelectedRecordIndex);
                 }
             }
         } else {
@@ -295,9 +295,9 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
             if (newFocusedRecordIndex !== this._lastNotifiedFocusedRecordIndex) {
                 const oldFocusedRecordIndex = this._lastNotifiedFocusedRecordIndex;
                 this._lastNotifiedFocusedRecordIndex = newFocusedRecordIndex;
-                const recordFocusEventer = this.recordFocusEventer;
-                if (recordFocusEventer !== undefined) {
-                    recordFocusEventer(newFocusedRecordIndex, oldFocusedRecordIndex);
+                const recordFocusedEventer = this.recordFocusedEventer;
+                if (recordFocusedEventer !== undefined) {
+                    recordFocusedEventer(newFocusedRecordIndex, oldFocusedRecordIndex);
                 }
             }
         }

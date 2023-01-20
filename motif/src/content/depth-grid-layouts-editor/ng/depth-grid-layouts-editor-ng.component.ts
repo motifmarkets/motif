@@ -5,14 +5,20 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, ViewChild,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     assert, ButtonUiAction,
     CommandRegisterService,
     delay1Tick,
+    GridField,
+    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     ModifierKey, OrderSideId, StringId,
@@ -49,7 +55,11 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
     private _closeResolve: (value: DepthFrame.GridLayoutDefinitions | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
-    private _layoutsWithHeadings: DepthFrame.AllowedFieldsAndLayoutDefinitions;
+    private _bidAllowedFields: readonly GridField[];
+    private _bidLayoutDefinition: GridLayoutDefinition;
+    private _askAllowedFields: readonly GridField[];
+    private _askLayoutDefinition: GridLayoutDefinition;
+    private _allowedFieldsAndLayoutDefinitions: DepthFrame.AllowedFieldsAndLayoutDefinitions;
     private _sideId: OrderSideId;
 
     constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
@@ -74,8 +84,12 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         this._cancelUiAction.finalise();
     }
 
-    open(layoutsWithHeadings: DepthFrame.AllowedFieldsAndLayoutDefinitions): DepthGridLayoutsEditorNgComponent.ClosePromise {
-        this._layoutsWithHeadings = layoutsWithHeadings;
+    open(allowedFieldsAndLayoutDefinitions: DepthFrame.AllowedFieldsAndLayoutDefinitions): DepthGridLayoutsEditorNgComponent.ClosePromise {
+        const { bid, ask } = allowedFieldsAndLayoutDefinitions;
+        this._bidAllowedFields = bid.allowedFields;
+        this._bidLayoutDefinition = bid.layoutDefinition;
+        this._askAllowedFields = ask.allowedFields;
+        this._askLayoutDefinition = ask.layoutDefinition;
 
         return new Promise<DepthFrame.GridLayoutDefinitions | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
@@ -89,13 +103,19 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         if (value !== this._sideId) {
             switch (value) {
                 case OrderSideId.Bid:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.bid);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition({
+                        allowedFields: this._bidAllowedFields,
+                        layoutDefinition: this._bidLayoutDefinition
+                    });
                     this._bidDepthUiAction.pushSelected();
                     this._askDepthUiAction.pushUnselected();
                     break;
 
                 case OrderSideId.Ask:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._layoutsWithHeadings.ask);
+                    this._editorComponent.setAllowedFieldsAndLayoutDefinition({
+                        allowedFields: this._askAllowedFields,
+                        layoutDefinition: this._askLayoutDefinition
+                    });
                     this._askDepthUiAction.pushSelected();
                     this._bidDepthUiAction.pushUnselected();
                     break;
@@ -174,11 +194,11 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         if (this._sideId !== undefined) {
             switch (this._sideId) {
                 case OrderSideId.Bid:
-                    this._layoutsWithHeadings.bid.layout = this._editorComponent.getGridLayoutDefinition();
+                    this._bidLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 case OrderSideId.Ask:
-                    this._layoutsWithHeadings.ask.layout = this._editorComponent.getGridLayoutDefinition();
+                    this._askLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
                     break;
 
                 default:
@@ -191,8 +211,8 @@ export class DepthGridLayoutsEditorNgComponent extends ContentComponentBaseNgDir
         if (ok) {
             // this.checkUpdateLayoutFromEditor();
             const layouts: DepthFrame.GridLayoutDefinitions = {
-                bid: this._layoutsWithHeadings.bid.layout,
-                ask: this._layoutsWithHeadings.ask.layout,
+                bid: this._bidLayoutDefinition,
+                ask: this._askLayoutDefinition,
             };
             this._closeResolve(layouts);
         } else {
@@ -206,12 +226,10 @@ export namespace DepthGridLayoutsEditorNgComponent {
 
     export function open(
         container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
         layoutsWithHeadings: DepthFrame.AllowedFieldsAndLayoutDefinitions,
     ): ClosePromise {
         container.clear();
-        const factory = resolver.resolveComponentFactory(DepthGridLayoutsEditorNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(DepthGridLayoutsEditorNgComponent);
         assert(componentRef.instance instanceof DepthGridLayoutsEditorNgComponent, 'ID:157271511202');
 
         const component = componentRef.instance as DepthGridLayoutsEditorNgComponent;

@@ -19,14 +19,19 @@ import {
     assigned,
     delay1Tick,
     IconButtonUiAction,
+    Integer,
     InternalCommand,
     JsonElement,
-    ModifierKey,
     StringId,
-    Strings,
-    UiAction
+    Strings
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TablesNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -63,7 +68,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tablesNgService: TablesNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
 
@@ -73,7 +78,9 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tablesNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            () => this.handleGridSourceOpenedEvent(),
+            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();
@@ -142,11 +149,19 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.ToggleAccountLinkingTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AccountGroupLink);
-        action.signalEvent = (signalTypeId, downKeys) => this.handleAccountLinkButtonSignalEvent(signalTypeId, downKeys);
+        action.signalEvent = () => this.handleAccountLinkButtonSignalEvent();
         return action;
     }
 
-    private handleAccountLinkButtonSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
+        //
+    }
+
+    private handleGridSourceOpenedEvent() {
+        //
+    }
+
+    private handleAccountLinkButtonSignalEvent() {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 

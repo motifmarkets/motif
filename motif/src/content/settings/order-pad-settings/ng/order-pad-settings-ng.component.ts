@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -23,7 +22,7 @@ import {
     OrderType,
     StringId,
     Strings,
-    TimeInForce,
+    TimeInForce
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
@@ -203,13 +202,9 @@ export namespace OrderPadSettingsNgComponent {
     export const UndefinedOrderTypeIdEnumValue = -1;
     export const UndefinedTimeInForceIdEnumValue = -1;
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(OrderPadSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(OrderPadSettingsNgComponent);
         return componentRef.instance as OrderPadSettingsNgComponent;
     }
 }

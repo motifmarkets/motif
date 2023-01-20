@@ -7,10 +7,15 @@
 import {
     AdiService,
     CommandRegisterService,
+    GridLayoutOrNamedReferenceDefinition,
+    GridSourceDefinition,
+    GridSourceOrNamedReferenceDefinition,
     JsonElement,
     LitIvemId,
     SymbolsService,
-    TopShareholdersDataItem
+    TableRecordSourceDefinitionFactoryService,
+    TopShareholder,
+    TopShareholderTableRecordSource
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -19,8 +24,9 @@ import { DitemFrame } from '../ditem-frame';
 
 export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
 
-    private _tableFrame: GridSourceFrame;
-    private _topShareholdersDataItem: TopShareholdersDataItem;
+    private _gridSourceFrame: GridSourceFrame;
+    private _recordSource: TopShareholderTableRecordSource;
+    private _recordList: TopShareholder[];
 
     private _historicalDate: Date | undefined;
     private _compareDate: Date | undefined;
@@ -31,28 +37,32 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _tablesService: TablesService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.TopShareholders, _componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
-    get initialised() { return this._tableFrame !== undefined; }
+    get initialised() { return this._gridSourceFrame !== undefined; }
 
-    initialise(contentFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._tableFrame = contentFrame;
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
+        this._gridSourceFrame = gridSourceFrame;
+        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.keepPreviousLayoutIfPossible = true;
 
-        if (frameElement === undefined) {
-            this._tableFrame.loadLayoutConfig(undefined);
-        } else {
+        if (frameElement !== undefined) {
             const contentElementResult = frameElement.tryGetElementType(TopShareholdersDitemFrame.JsonName.content);
-            if (contentElementResult.isErr()) {
-                this._tableFrame.loadLayoutConfig(undefined);
-            } else {
-                this._tableFrame.loadLayoutConfig(contentElementResult.value);
+            if (contentElementResult.isOk()) {
+                const contentElement = contentElementResult.value;
+                const keptLayoutElementResult = contentElement.tryGetElementType(TopShareholdersDitemFrame.JsonName.keptLayout);
+                if (keptLayoutElementResult.isOk()) {
+                    const keptLayoutElement = keptLayoutElementResult.value;
+                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    if (keptLayoutResult.isOk()) {
+                        this._gridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                    }
+                }
             }
         }
 
@@ -63,32 +73,41 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         super.finalise();
     }
 
-    override save(config: JsonElement) {
-        super.save(config);
+    override save(frameElement: JsonElement) {
+        super.save(frameElement);
 
-        const contentElement = config.newElement(TopShareholdersDitemFrame.JsonName.content);
-        this._tableFrame.saveLayoutConfig(contentElement);
+        const contentElement = frameElement.newElement(TopShareholdersDitemFrame.JsonName.content);
+        const keptLayoutElement = contentElement.newElement(TopShareholdersDitemFrame.JsonName.keptLayout);
+        const layoutDefinition = this._gridSourceFrame.createGridLayoutOrNamedReferenceDefinition();
+        layoutDefinition.saveToJson(keptLayoutElement);
     }
 
     ensureOpened() {
-        if (!this._tableFrame.tableOpened) {
-            this.newTable(false);
+        if (!this._gridSourceFrame.tableOpened) {
+            this.tryOpenGridSource();
         }
     }
 
-    newTable(keepCurrentLayout: boolean) {
+    tryOpenGridSource() {
         if (!this.getParamsFromGui() || this.litIvemId === undefined) {
             return false;
         } else {
-            const tableDefinition = this._tablesService.definitionFactory.createTopShareholder(this.litIvemId,
-                this._historicalDate, this._compareDate);
-            this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
-            this._componentAccess.notifyNewTable({
-                litIvemId: this.litIvemId,
-                historicalDate: this._historicalDate,
-                compareDate: this._compareDate,
-            });
-            return true;
+            const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createTopShareholder(
+                this.litIvemId,
+                this._historicalDate,
+                this._compareDate
+            );
+            const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+            const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+            const gridSourceOrNamedReference = this._gridSourceFrame.open(gridSourceOrNamedReferenceDefinition, false);
+            if (gridSourceOrNamedReference === undefined) {
+                return false;
+            } else {
+                const table = this._gridSourceFrame.openedTable;
+                this._recordSource = table.recordSource as TopShareholderTableRecordSource;
+                this._recordList = this._recordSource.recordList;
+                return true;
+            }
         }
     }
 
@@ -100,7 +119,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
             if (litIvemId === undefined) {
                 return false;
             } else {
-                const done = this.newTable(true);
+                const done = this.tryOpenGridSource();
                 if (done) {
                     return super.applyLitIvemId(litIvemId, SelfInitiated);
                 } else {
@@ -108,15 +127,6 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 }
             }
         }
-    }
-
-    private handleRequireDefaultTableDefinitionEvent() {
-        return undefined;
-    }
-
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const topShareholderRecordDefinitionList = recordDefinitionList as TopShareholderTableRecordDefinitionList;
-        this._topShareholdersDataItem = topShareholderRecordDefinitionList.dataItem;
     }
 
     private getParamsFromGui() {
@@ -136,6 +146,7 @@ export namespace TopShareholdersDitemFrame {
         export const historicalDate = 'historicalDate';
         export const compareDate = 'compareDate';
         export const content = 'content';
+        export const keptLayout = 'keptLayout';
     }
 
     export class GuiParams {

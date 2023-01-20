@@ -5,8 +5,13 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-    OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
 import {
@@ -174,12 +179,10 @@ export namespace ColorSchemePresetCodeNgComponent {
 
     export function open(
         container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
         colorSettings: ColorSettings,
     ): ClosePromise {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ColorSchemePresetCodeNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ColorSchemePresetCodeNgComponent);
         assert(componentRef.instance instanceof ColorSchemePresetCodeNgComponent, 'CSPCCO232324');
 
         const component = componentRef.instance as ColorSchemePresetCodeNgComponent;

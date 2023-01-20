@@ -11,7 +11,7 @@ import {
     GridLayoutRecordStore,
     JsonElement,
     LitIvemId,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { ScansFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -45,8 +45,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._contentFrame.loadLayoutConfig(undefined);
         } else {
-            const contentElement = frameElement.tryGetElement(ScansDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+            const contentElement = frameElement.tryGetElementType(ScansDitemFrame.JsonName.content);
+            // this._contentFrame.loadLayoutConfig(contentElement);
         }
 
         // this._contentFrame.initialiseWidths();

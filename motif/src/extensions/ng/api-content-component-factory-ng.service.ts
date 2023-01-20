@@ -5,12 +5,10 @@
  */
 
 import {
-    ApplicationRef,
-    ComponentFactoryResolver,
-    ComponentRef,
-    Injectable,
-    Injector,
-    Type
+    ApplicationRef, ComponentRef,
+    createComponent,
+    EnvironmentInjector,
+    Injectable, Type
 } from '@angular/core';
 import { ContentComponentBaseNgDirective, DelayedBadnessNgComponent } from 'content-ng-api';
 import {
@@ -25,7 +23,7 @@ import { ApiComponentFactoryServiceBaseNgDirective } from './api-component-facto
 export class ApiContentComponentFactoryNgService extends ApiComponentFactoryServiceBaseNgDirective implements ApiContentComponentFactory {
     constructor(
         appRef: ApplicationRef,
-        private readonly _componentFactoryResolver: ComponentFactoryResolver
+        private readonly _environmentInjector: EnvironmentInjector,
     ) {
         super(appRef);
     }
@@ -41,11 +39,7 @@ export class ApiContentComponentFactoryNgService extends ApiComponentFactoryServ
     }
 
     private createContentComponent<T extends ContentComponentBaseNgDirective>(componentType: Type<T>) {
-        const injector = Injector.create({
-            providers: [],
-        });
-        const componentFactoryRef = this._componentFactoryResolver.resolveComponentFactory<T>(componentType);
-        const componentRef = componentFactoryRef.create(injector);
+        const componentRef = createComponent(componentType, { environmentInjector: this._environmentInjector } );
 
         this.appRef.attachView(componentRef.hostView);
 

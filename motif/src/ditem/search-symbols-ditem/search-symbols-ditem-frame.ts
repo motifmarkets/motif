@@ -6,15 +6,17 @@
 
 import {
     AdiService,
-    AssertInternalError,
     CommandRegisterService,
     EnumInfoOutOfOrderError,
     ExchangeId,
     ExchangeInfo,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayoutOrNamedReferenceDefinition,
+    GridSourceDefinition,
+    GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
+    LitIvemDetail,
+    LitIvemIdFromSearchSymbolsTableRecordSource,
     MarketId,
     MarketInfo,
     SearchSymbolsDataDefinition,
@@ -23,10 +25,8 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsDataItem,
-    SymbolsDataItemTableRecordDefinitionList,
     SymbolsService,
-    TableRecordDefinitionList,
-    TablesService,
+    TableRecordSourceDefinitionFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
@@ -37,13 +37,15 @@ import { DitemFrame } from '../ditem-frame';
 export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
-    private _querySymbolsDataItem: SymbolsDataItem;
-    private _queryTableFrame: GridSourceFrame;
+    private _symbolsDataItem: SymbolsDataItem;
+    private _gridSourceFrame: GridSourceFrame;
+    private _recordSource: LitIvemIdFromSearchSymbolsTableRecordSource;
+    private _recordList: LitIvemDetail[];
 
     private _currentFocusedSymbolSetting: boolean;
     private _symbolApplying: boolean;
 
-    private _queryShowFull: boolean;
+    private _showFull: boolean;
 
     constructor(
         private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
@@ -51,7 +53,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsMgr: SymbolsService,
         adiService: AdiService,
-        private readonly _tablesService: TablesService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
             commandRegisterService, desktopAccessService, symbolsMgr, adiService
@@ -60,20 +62,22 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
-        this._uiDataDefinition = SymbolsDataItemTableRecordDefinitionList.createDefaultDataDefinition(defaultExchangeId, defaultMarketId);
+        this._uiDataDefinition = LitIvemIdFromSearchSymbolsTableRecordSource.createDefaultDataDefinition(
+            defaultExchangeId, defaultMarketId
+        );
         this.setUiConditions();
     }
 
-    get initialised() { return this._queryTableFrame !== undefined; }
+    get initialised() { return this._gridSourceFrame !== undefined; }
 
-    get querySearchText() { return this._uiConditions[0].text; }
-    set querySearchText(value: string) { this._uiConditions[0].text = value; }
+    get searchText() { return this._uiConditions[0].text; }
+    set searchText(value: string) { this._uiConditions[0].text = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryShowFull() { return this._uiDataDefinition.fullSymbol; }
-    set queryShowFull(value: boolean) { this._uiDataDefinition.fullSymbol = value; }
+    get showFull() { return this._uiDataDefinition.fullSymbol; }
+    set showFull(value: boolean) { this._uiDataDefinition.fullSymbol = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryExchangeId() { return this._uiDataDefinition.exchangeId; }
-    set queryExchangeId(value: ExchangeId | undefined) {
+    get exchangeId() { return this._uiDataDefinition.exchangeId; }
+    set exchangeId(value: ExchangeId | undefined) {
         this._uiDataDefinition.exchangeId = value;
         if (value !== undefined) {
             const oldMarketIds = this._uiDataDefinition.marketIds;
@@ -94,14 +98,14 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryMarketIds() { return this._uiDataDefinition.marketIds; }
-    set queryMarketIds(value: readonly MarketId[] | undefined) { this._uiDataDefinition.marketIds = value?.slice(); }
+    get marketIds() { return this._uiDataDefinition.marketIds; }
+    set marketIds(value: readonly MarketId[] | undefined) { this._uiDataDefinition.marketIds = value?.slice(); }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryCfi() { return this._uiDataDefinition.cfi; }
-    set queryCfi(value: string | undefined) { this._uiDataDefinition.cfi = value; }
+    get cfi() { return this._uiDataDefinition.cfi; }
+    set cfi(value: string | undefined) { this._uiDataDefinition.cfi = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryFieldIds() { return this._uiConditions[0].fieldIds; }
-    set queryFieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiConditions[0].fieldIds = value?.slice(); }
+    get fieldIds() { return this._uiConditions[0].fieldIds; }
+    set fieldIds(value: readonly SymbolFieldId[] | undefined) { this._uiConditions[0].fieldIds = value?.slice(); }
     // eslint-disable-next-line @typescript-eslint/member-ordering
     get indicesInclusion() {
         const index = this._uiDataDefinition.index;
@@ -131,14 +135,14 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryIsPartial() {
+    get isPartial() {
         if (this._uiConditions[0].matchIds === undefined) {
             return true;
         } else {
             return this._uiConditions[0].matchIds.includes(SearchSymbolsDataDefinition.Condition.MatchId.exact);
         }
     }
-    set queryIsPartial(value: boolean | undefined) {
+    set isPartial(value: boolean | undefined) {
         if (value === true) {
             this._uiConditions[0].matchIds = undefined;
         } else {
@@ -146,29 +150,22 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryIsCaseSensitive() { return this._uiConditions[0].isCaseSensitive; }
-    set queryIsCaseSensitive(value: boolean | undefined) { this._uiConditions[0].isCaseSensitive = value; }
+    get isCaseSensitive() { return this._uiConditions[0].isCaseSensitive; }
+    set isCaseSensitive(value: boolean | undefined) { this._uiConditions[0].isCaseSensitive = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryPreferExact() { return this._uiDataDefinition.preferExact; }
-    set queryPreferExact(value: boolean | undefined) { this._uiDataDefinition.preferExact = value; }
+    get preferExact() { return this._uiDataDefinition.preferExact; }
+    set preferExact(value: boolean | undefined) { this._uiDataDefinition.preferExact = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryStartIndex() { return this._uiDataDefinition.startIndex; }
-    set queryStartIndex(value: Integer | undefined) { this._uiDataDefinition.startIndex = value; }
+    get startIndex() { return this._uiDataDefinition.startIndex; }
+    set startIndex(value: Integer | undefined) { this._uiDataDefinition.startIndex = value; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    get queryCount() { return this._uiDataDefinition.count; }
-    set queryCount(value: Integer | undefined) { this._uiDataDefinition.count = value; }
+    get count() { return this._uiDataDefinition.count; }
+    set count(value: Integer | undefined) { this._uiDataDefinition.count = value; }
 
     initialise(queryTableFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._queryTableFrame = queryTableFrame;
-        this._queryTableFrame.recordFocusEvent = (newRecordIndex) => this.handleQueryRecordFocusEvent(newRecordIndex);
-        this._queryTableFrame.tableOpenEvent = (recordDefinitionList) => this.handleQueryTableOpenEvent(recordDefinitionList);
-
-        // if (frameElement === undefined) {
-            this._queryTableFrame.loadLayoutConfig(undefined);
-        // } else {
-        //     const queryContentElementResult = frameElement.tryGetElementType(SymbolsDitemFrame.JsonName.queryContent);
-        //     this._queryTableFrame.loadLayoutConfig(queryContentElement);
-        // }
+        this._gridSourceFrame = queryTableFrame;
+        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
 
         this.applyLinked();
     }
@@ -177,43 +174,46 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         super.finalise();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
+    executeRequest() {
+        const dataDefinition = this._uiDataDefinition.createCopy();
+        this._gridSourceFrame.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
+        this._showFull = dataDefinition.fullSymbol;
 
-        const queryContentElement = element.newElement(SearchSymbolsDitemFrame.JsonName.queryContent);
-        this._queryTableFrame.saveLayoutConfig(queryContentElement);
+        const gridSourceOrNamedReferenceDefinition = this.createGridSourceOrNamedReferenceDefinition(dataDefinition);
+
+        const gridSourceOrNamedReference = this._gridSourceFrame.open(gridSourceOrNamedReferenceDefinition, false);
+        if (gridSourceOrNamedReference !== undefined) {
+            const table = this._gridSourceFrame.openedTable;
+            this._recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
+            this._recordList = this._recordSource.recordList;
+
+            const description = this.generateQueryDescription(dataDefinition);
+            this._componentAccess.processQueryTableOpen(description);
+        }
     }
 
-    executeQueryRequest() {
-        this.newQueryTable();
+    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+        this._gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
     }
 
-    setActiveGridLayout(value: GridLayout) {
-        this._queryTableFrame.applyGridLayoutDefinition(value);
+    createAllowedFieldsAndLayoutDefinition() {
+        return this._gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
     }
 
-    getActiveGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._queryTableFrame.getGridLayoutWithHeadersMap();
-    }
-
-    private handleQueryRecordFocusEvent(newRecordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const record = this._querySymbolsDataItem.records[newRecordIndex];
+            const record = this._symbolsDataItem.records[newRecordIndex];
             this.processRecordFocusChange(record);
             this._componentAccess.processQueryRecordFocusChange(newRecordIndex);
         }
     }
 
-    private handleQueryTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const symbolsRecordDefinitionList = recordDefinitionList as SymbolsDataItemTableRecordDefinitionList;
-        this._querySymbolsDataItem = symbolsRecordDefinitionList.dataItem;
-        const definition = this._querySymbolsDataItem.definition;
-        if (!(definition instanceof SearchSymbolsDataDefinition)) {
-            throw new AssertInternalError('SDFHQTOEQ639228436');
-        } else {
-            const description = this.generateQueryDescription(definition);
-            this._componentAccess.processQueryTableOpen(description);
-        }
+    private createGridSourceOrNamedReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
+        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createLitIvemIdFromSearchSymbols(
+            dataDefinition
+        );
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
     private processRecordFocusChange(newFocusedRecord: SymbolsDataItem.Record) {
@@ -287,20 +287,12 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         return result;
     }
 
-    private newQueryTable() {
-        const dataDefinition = this._uiDataDefinition.createCopy();
-        const keepCurrentLayout = dataDefinition.fullSymbol === this._queryShowFull;
-        this._queryShowFull = dataDefinition.fullSymbol;
-        const tableDefinition = this._tablesService.definitionFactory.createSymbolsDataItem(dataDefinition);
-        this._queryTableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
-    }
-
     private setUiConditions() {
         const conditions = this._uiDataDefinition.conditions;
         if (conditions !== undefined && conditions.length > 0) {
             this._uiConditions = conditions;
         } else {
-            const condition = SymbolsDataItemTableRecordDefinitionList.createDefaultCondition();
+            const condition = LitIvemIdFromSearchSymbolsTableRecordSource.createDefaultCondition();
             this._uiConditions = [condition];
             this._uiDataDefinition.conditions = this._uiConditions;
         }
@@ -309,7 +301,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
 export namespace SearchSymbolsDitemFrame {
     export namespace JsonName {
-        export const queryContent = 'queryContent';
+        export const content = 'content';
     }
 
     export type TargetFieldId = SymbolFieldId;

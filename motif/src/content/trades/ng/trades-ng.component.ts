@@ -5,7 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
-import { Badness } from '@motifmarkets/motif-core';
+import { Badness, DayTradesGridRecordStore } from '@motifmarkets/motif-core';
 import { AdaptedRevgrid } from 'content-internal-api';
 import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
@@ -48,9 +48,6 @@ export class TradesNgComponent extends ContentComponentBaseNgDirective implement
             this.frame.finalise();
             this._gridComponent.destroyGrid();
         };
-
-        const grid = this._gridComponent.createGrid(this._frame.recordStore, TradesNgComponent.frameGridProperties);
-        this._frame.setGrid(grid);
     }
 
     // onColumnWidthChanged(columnIndex: Integer) {
@@ -60,6 +57,10 @@ export class TradesNgComponent extends ContentComponentBaseNgDirective implement
     // public gridGetRenderedActiveWidth() {
     //     return this._gridAdapter.GetRenderedActiveWidth(false);
     // }
+
+    public createGrid(recordStore: DayTradesGridRecordStore) {
+        return this._gridComponent.createGrid(recordStore, TradesNgComponent.frameGridProperties);
+    }
 
     public setBadness(value: Badness) {
         this._delayedBadnessComponent.setBadness(value);

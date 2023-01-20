@@ -5,11 +5,15 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
     ElementRef,
-
-    Inject, OnDestroy, ViewChild, ViewContainerRef
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     CommaText,
@@ -77,7 +81,6 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
-        private _resolver: ComponentFactoryResolver,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService
@@ -391,7 +394,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinitions();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = DepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
+            const closePromise = DepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layouts) => {
                     if (layouts !== undefined) {

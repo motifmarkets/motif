@@ -11,9 +11,6 @@ import {
     GridLayoutDefinition,
     JsonElement,
     LitIvemId,
-    LockOpenListItem,
-    StringId,
-    Strings,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
@@ -24,8 +21,6 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
-    private readonly _opener: LockOpenListItem.Opener;
-
     private _watchlistFrame: GridSourceFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
@@ -45,10 +40,6 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
-
-        this._opener = {
-            lockerName: `${Strings[StringId.DitemMenuDisplay_DepthAndTrades]}: ${this.frameId}`
-        };
     }
 
     get initialised() { return this._depthFrame !== undefined; }
@@ -56,16 +47,14 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     get filterActive() { return this._depthFrame.filterActive; }
     get filterXrefs() { return this._depthFrame.filterXrefs; }
 
-    initialise(tableContentFrame: GridSourceFrame, depthContentFrame: DepthFrame, tradesContentFrame: TradesFrame,
+    initialise(watchlistFrame: GridSourceFrame, depthFrame: DepthFrame, tradesFrame: TradesFrame,
         frameElement: JsonElement | undefined
     ): void {
-        this._watchlistFrame = tableContentFrame;
-        this._depthFrame = depthContentFrame;
-        this._tradesFrame = tradesContentFrame;
+        this._watchlistFrame = watchlistFrame;
+        this._depthFrame = depthFrame;
+        this._tradesFrame = tradesFrame;
 
-        this._watchlistFrame.requireDefaultTableDefinitionEvent = () => this.handleWatchlistRequireDefaultTableDefinitionEvent();
-        this._watchlistFrame.tableOpenEvent = (recordDefinitionList) => this.handleWatchlistTableOpenEvent(recordDefinitionList);
-        this._watchlistFrame.settingsApplyEvent = () => this.handleWatchlistSettingsApplyEvent();
+        this._watchlistFrame.settingsApplyEventer = () => this.handleWatchlistSettingsApplyEvent();
 
         // this._depthFrame.activeWidthChangedEvent =
         //     (bidActiveWidth, askActiveWidth) => this.handleDepthActiveWidthChangedEvent(bidActiveWidth, askActiveWidth);
@@ -76,22 +65,22 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._depthFrame.initialise();
 
         if (frameElement === undefined) {
-            this._watchlistFrame.loadLayoutConfig(undefined);
-            this._tradesFrame.loadConfig(undefined);
+            this.loadWatchlistConfig(undefined);
+            this._tradesFrame.initialise(undefined);
             this._depthFrame.loadConfig(undefined);
         } else {
             const watchlistElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isErr()) {
-                this._watchlistFrame.loadLayoutConfig(undefined);
+                this.loadWatchlistConfig(undefined);
             } else {
-                this._watchlistFrame.loadLayoutConfig(watchlistElementResult.value);
+                this.loadWatchlistConfig(watchlistElementResult.value);
             }
 
             const tradesElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.trades);
             if (tradesElementResult.isErr()) {
-                this._tradesFrame.loadConfig(undefined);
+                this._tradesFrame.initialise(undefined);
             } else {
-                this._tradesFrame.loadConfig(tradesElementResult.value);
+                this._tradesFrame.initialise(tradesElementResult.value);
             }
 
             const depthElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.depth);
@@ -223,19 +212,6 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private handleWatchlistRequireDefaultTableDefinitionEvent() {
-        return new PortfolioTableDefinition(
-            this.adi,
-            this._textFormatterService,
-            this._tableRecordDefinitionsListService,
-            new PortfolioTableRecordDefinitionList()
-        );
-    }
-
-    private handleWatchlistTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        // ignore as not needed
-    }
-
     // private async handleDepthActiveWidthChangedEvent(bidActiveWidth: Integer | undefined, askActiveWidth: Integer | undefined) {
     //     const depthActiveWidth = await this._depthFrame.getCompleteRenderedActiveWidth(bidActiveWidth, askActiveWidth);
     //     this._componentAccess.setDepthActiveWidth(depthActiveWidth);
@@ -253,6 +229,10 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         const gridHorizontalScrollbarMarginedHeight = this._watchlistFrame.gridHorizontalScrollbarMarginedHeight;
         const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
         this._watchlistFrame.setFlexBasis(height);
+    }
+
+    private loadWatchlistConfig(frameElement: JsonElement | undefined) {
+
     }
 
     private close() {

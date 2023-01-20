@@ -9,7 +9,6 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     OnDestroy,
     ViewChild,
     ViewContainerRef
@@ -297,14 +296,9 @@ export namespace ParidepthGridLayoutsEditorNgComponent {
 
     export type ClosePromise = Promise<GridLayouts | undefined>;
 
-    export function open(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-        layoutsWithHeadings: GridLayoutsWithHeadersMap,
-    ): ClosePromise {
+    export function open(container: ViewContainerRef, layoutsWithHeadings: GridLayoutsWithHeadersMap): ClosePromise {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ParidepthGridLayoutsEditorNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ParidepthGridLayoutsEditorNgComponent);
         assert(componentRef.instance instanceof ParidepthGridLayoutsEditorNgComponent, 'ID:157271511202');
 
         const component = componentRef.instance as ParidepthGridLayoutsEditorNgComponent;

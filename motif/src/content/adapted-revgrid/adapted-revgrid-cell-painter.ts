@@ -5,7 +5,7 @@ import {
     CoreSettings,
     CorrectnessId,
     DepthRecord,
-    GridRecordRenderValue,
+    DepthRecordRenderValue,
     HigherLowerId,
     IndexSignatureHack,
     Integer,
@@ -128,10 +128,7 @@ export class AdaptedRevgridCellPainter {
                         if (renderValue.isUndefined()) {
                             graphicId = GraphicId.UndefinedColor;
                         } else {
-                            if (
-                                renderValue.definedData ===
-                                ColorScheme.schemeInheritColor
-                            ) {
+                            if (renderValue.definedData === ColorScheme.schemeInheritColor) {
                                 graphicId = GraphicId.InheritColor;
                             } else {
                                 bkgdColor = renderValue.definedData;
@@ -141,13 +138,10 @@ export class AdaptedRevgridCellPainter {
                     break;
 
                 case RenderValue.AttributeId.DepthRecord:
-                    const depthRecordAttribute =
-                        attribute as GridRecordRenderValue.DepthRecordAttribute;
+                    const depthRecordAttribute = attribute as DepthRecordRenderValue.Attribute;
                     let depthRecordItemId: ColorScheme.ItemId;
                     if (depthRecordAttribute.ownOrder) {
-                        depthRecordItemId = altRow
-                            ? ColorScheme.ItemId.Grid_MyOrderAlt
-                            : ColorScheme.ItemId.Grid_MyOrder;
+                        depthRecordItemId = altRow ? ColorScheme.ItemId.Grid_MyOrderAlt : ColorScheme.ItemId.Grid_MyOrder;
                     } else {
                         depthRecordItemId =
                             calculateDepthRecordBidAskOrderPriceLevelColorSchemeItemId(
@@ -160,8 +154,7 @@ export class AdaptedRevgridCellPainter {
                     break;
 
                 case RenderValue.AttributeId.DepthCountXRefField:
-                    const depthCountXRefFieldAttribute =
-                        attribute as RenderValue.DepthCountXRefFieldAttribute;
+                    const depthCountXRefFieldAttribute = attribute as RenderValue.DepthCountXRefFieldAttribute;
                     if (depthCountXRefFieldAttribute.isCountAndXrefs) {
                         halign = 'right';
                     } else {
@@ -172,29 +165,21 @@ export class AdaptedRevgridCellPainter {
                 case RenderValue.AttributeId.DepthRecordInAuction:
                     const depthRecordInAuctionAttribute =
                         attribute as RenderValue.DepthRecordInAuctionAttribute;
-                    const auctionItemId = altRow
-                        ? ColorScheme.ItemId.Grid_PriceSellOverlapAlt
-                        : ColorScheme.ItemId.Grid_PriceSellOverlap;
-                    if (
-                        depthRecordInAuctionAttribute.partialAuctionProportion ===
-                        undefined
-                    ) {
+                    const auctionItemId = altRow ? ColorScheme.ItemId.Grid_PriceSellOverlapAlt : ColorScheme.ItemId.Grid_PriceSellOverlap;
+                    if (depthRecordInAuctionAttribute.partialAuctionProportion === undefined) {
                         bkgdColor = this._colorSettings.getBkgd(auctionItemId);
                     } else {
                         graphicId = GraphicId.ProportionBar;
                         proportionBarGraphic = {
                             color: this._colorSettings.getBkgd(auctionItemId),
-                            proportion:
-                                depthRecordInAuctionAttribute.partialAuctionProportion,
+                            proportion: depthRecordInAuctionAttribute.partialAuctionProportion,
                         };
                     }
                     break;
 
                 case RenderValue.AttributeId.OwnOrder:
                     // Note that Depth does not use this attribute as it has a custom attribute
-                    const ownOrderRecordItemId = altRow
-                        ? ColorScheme.ItemId.Grid_MyOrderAlt
-                        : ColorScheme.ItemId.Grid_MyOrder;
+                    const ownOrderRecordItemId = altRow ? ColorScheme.ItemId.Grid_MyOrderAlt : ColorScheme.ItemId.Grid_MyOrder;
                     bkgdColor = this._colorSettings.getBkgd(ownOrderRecordItemId);
                     break;
 
@@ -214,10 +199,7 @@ export class AdaptedRevgridCellPainter {
                     break;
 
                 default:
-                    throw new UnreachableCaseError(
-                        'GCRDGCRP333389',
-                        attribute.id
-                    );
+                    throw new UnreachableCaseError('GCRDGCRP333389', attribute.id);
             }
         }
 

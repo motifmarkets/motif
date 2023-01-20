@@ -8,10 +8,9 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactory,
-    ComponentFactoryResolver,
-    Injector,
-
+    createComponent,
+    createEnvironmentInjector,
+    EnvironmentInjector,
     StaticProvider,
     ViewChild,
     ViewContainerRef,
@@ -32,17 +31,18 @@ export class MenuBarOverlayNgComponent {
     @ViewChild('menusContainer', {read: ViewContainerRef}) private _menusContainerRef: ViewContainerRef;
 
     private readonly _menuBarService: MenuBarService;
-    private readonly _menuFactory: ComponentFactory<MenuBarOverlayMenuNgComponent>;
     private readonly _activeMenus: MenuBarOverlayComponent.Menu[] = [];
 
-    constructor(private _cdr: ChangeDetectorRef, componentFactoryResolver: ComponentFactoryResolver, menuBarNgService: MenuBarNgService) {
+    constructor(
+        private readonly _cdr: ChangeDetectorRef,
+        private readonly _environmentInjector: EnvironmentInjector,
+        menuBarNgService: MenuBarNgService
+    ) {
         this._menuBarService = menuBarNgService.service;
         this._menuBarService.addOverlayChildMenuEvent = (menu, parentItemContactDocumentLine) =>
             this.handleAddOverlayChildMenuEvent(menu, parentItemContactDocumentLine);
         this._menuBarService.deleteOverlayChildMenuEvent = (menu) => this.handleDeleteOverlayChildMenuEvent(menu);
         this._menuBarService.clearOverlayChildMenusEvent = () => this.handleClearOverlayChildMenusEvent();
-
-        this._menuFactory = componentFactoryResolver.resolveComponentFactory(MenuBarOverlayMenuNgComponent);
     }
 
     private handleAddOverlayChildMenuEvent(childMenu: MenuBarService.ChildMenu, parentItemContactDocumentLine: Line) {
@@ -54,10 +54,11 @@ export class MenuBarOverlayNgComponent {
             provide: MenuBarOverlayMenuNgComponent.ParentItemContactDocumentLineInjectionToken,
             useValue: parentItemContactDocumentLine,
         };
-        const injector = Injector.create({
-            providers: [childMenuProvider, parentItemContactDocumentLineProvider],
-        });
-        const componentRef = this._menuFactory.create(injector);
+        const newEnvironmentInjector = createEnvironmentInjector(
+            [childMenuProvider, parentItemContactDocumentLineProvider],
+            this._environmentInjector
+        );
+        const componentRef = createComponent(MenuBarOverlayMenuNgComponent, { environmentInjector: newEnvironmentInjector });
         const viewRef = componentRef.hostView;
         this._menusContainerRef.insert(viewRef);
         this._activeMenus.push({

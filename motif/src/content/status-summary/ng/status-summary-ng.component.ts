@@ -8,14 +8,19 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
     isDevMode,
     OnDestroy,
     OnInit,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness, DataEnvironment, SessionInfoService, TradingEnvironment } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    Badness,
+    DataEnvironment,
+    SessionInfoService,
+    TradingEnvironment
+} from '@motifmarkets/motif-core';
 import { SessionInfoNgService } from 'component-services-ng-api';
 import { Version } from 'generated-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
@@ -148,13 +153,9 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace StatusSummaryNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(StatusSummaryNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(StatusSummaryNgComponent);
         const instance = componentRef.instance;
         if (!(instance instanceof StatusSummaryNgComponent)) {
             throw new AssertInternalError('SSCCI233338134');

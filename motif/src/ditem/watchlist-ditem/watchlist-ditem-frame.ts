@@ -14,13 +14,11 @@ import {
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
-    LockOpenListItem,
     NamedJsonRankedLitIvemIdListDefinition,
     NamedJsonRankedLitIvemIdListsService,
     newGuid,
@@ -29,8 +27,6 @@ import {
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListOrNamedReferenceDefinition,
     RankedLitIvemIdListTableRecordSource,
-    StringId,
-    Strings,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
@@ -42,11 +38,8 @@ import { DitemFrame } from '../ditem-frame';
 export class WatchlistDitemFrame extends BuiltinDitemFrame {
     defaultLitIvemIds: readonly LitIvemId[] | undefined;
 
-    private readonly _opener: LockOpenListItem.Opener;
-
     private _litIvemIdList: RankedLitIvemIdList;
     private _gridSourceFrame: GridSourceFrame;
-    private _gridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
     private _recordSource: RankedLitIvemIdListTableRecordSource;
 
     private _litIvemIdApplying = false;
@@ -61,18 +54,14 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteNamedGridLayoutDefinitionReferencesService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly loadGridSourceEvent: WatchlistDitemFrame.LoadGridSourceEvent,
-        private readonly recordFocusEvent: WatchlistDitemFrame.RecordFocusEvent,
-        private readonly gridLayoutSetEvent: WatchlistDitemFrame.GridLayoutSetEvent,
-        private readonly litIvemIdAcceptedEvent: WatchlistDitemFrame.LitIvemIdAcceptedEvent,
+        private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
+        private readonly _recordFocusedEventer: WatchlistDitemFrame.RecordFocusedEventer,
+        private readonly _gridLayoutSetEventer: WatchlistDitemFrame.GridLayoutSetEventer,
+        private readonly _litIvemIdAcceptedEventer: WatchlistDitemFrame.LitIvemIdAcceptedEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Watchlist, componentAccess,
             commandRegisterService, desktopAccessService, symbolsService, adiService
         );
-
-        this._opener = {
-            lockerName: `${Strings[StringId.Watchlist]}: ${this.frameId}`
-        };
     }
 
     get initialised() { return this._gridSourceFrame !== undefined; }
@@ -80,8 +69,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._gridSourceFrame = gridSourceFrame;
-        this._gridSourceFrame.opener = this._opener;
-        this._gridSourceFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
 
         let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
@@ -118,11 +107,14 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
-        this._gridSourceOrNamedReference = this._gridSourceFrame.open(definition, keepView);
-        if (this._gridSourceOrNamedReference !== undefined) {
+        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, keepView);
+        if (gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
             this._litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
+            const rankedLitIvemIdListName = this._recordSource.lockedNamedRankedLitIvemIdList?.name;
+            this.updateLockerName(rankedLitIvemIdListName ?? '');
+            this._gridSourceOpenedEventer(this._recordSource.lockedRankedLitIvemIdList, rankedLitIvemIdListName);
         }
     }
 
@@ -292,7 +284,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             const litIvemId = this._litIvemIdList.getAt(newRecordIndex).litIvemId;
             this.processLitIvemIdFocusChange(litIvemId);
         }
-        this.recordFocusEvent(newRecordIndex);
+        this._recordFocusedEventer(newRecordIndex);
     }
 
     // private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
@@ -304,7 +296,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     // }
 
     private notifyLitIvemIdAccepted(litIvemId: LitIvemId) {
-        this.litIvemIdAcceptedEvent(litIvemId);
+        this._litIvemIdAcceptedEventer(litIvemId);
     }
 
     private createGridSourceOrNamedReferenceDefinitionFromList(
@@ -412,8 +404,12 @@ export namespace WatchlistDitemFrame {
     }
 
     export type NotifySaveLayoutConfigEventHandler = (this: void) => void;
-    export type LoadGridSourceEvent = (this: void, description: TableDescription) => void;
-    export type LitIvemIdAcceptedEvent = (this: void, litIvemId: LitIvemId) => void;
-    export type GridLayoutSetEvent = (this: void, layout: GridLayout) => void;
-    export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined) => void;
+    export type GridSourceOpenedEventer = (
+        this: void,
+        rankedLitIvemIdList: RankedLitIvemIdList,
+        rankedLitIvemIdListName: string | undefined
+    ) => void;
+    export type LitIvemIdAcceptedEventer = (this: void, litIvemId: LitIvemId) => void;
+    export type GridLayoutSetEventer = (this: void, layout: GridLayout) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }
