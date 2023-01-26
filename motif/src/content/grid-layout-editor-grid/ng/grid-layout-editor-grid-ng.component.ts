@@ -7,16 +7,18 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
 import {
     EnumUiAction,
+    GridField,
     GridLayout,
     GridLayoutChange,
+    GridLayoutDefinition,
     GridLayoutRecordStore,
     Integer,
     StringId,
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
+import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -36,7 +38,8 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
     private _gridPrepared = false;
-    private _allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition;
+    private _allowedFields: readonly GridField[];
+    private _layoutDefinition: GridLayoutDefinition;
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
 
@@ -72,8 +75,9 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     // private initialise() {
     // }
 
-    setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition) {
-        this._allowedFieldsAndLayoutDefinition = allowedFieldsAndLayoutDefinition;
+    setAllowedFieldsAndLayoutDefinition(allowedFields: readonly GridField[], layoutDefinition: GridLayoutDefinition) {
+        this._allowedFields = allowedFields;
+        this._layoutDefinition = layoutDefinition;
         this.prepareGrid();
     }
 

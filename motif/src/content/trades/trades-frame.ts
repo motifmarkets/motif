@@ -22,6 +22,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
+import { AllowedFieldsAndLayoutDefinition } from '../grid-layout-editor-dialog-definition';
 
 export class TradesFrame extends ContentFrame {
     // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
@@ -53,7 +54,7 @@ export class TradesFrame extends ContentFrame {
         if (element === undefined) {
             gridLayout = this.createDefaultGridLayout();
         } else {
-            const tryGetElementResult = element.tryGetElementType(TradesFrame.JsonName.layout);
+            const tryGetElementResult = element.tryGetElement(TradesFrame.JsonName.layout);
             if (tryGetElementResult.isErr()) {
                 gridLayout = this.createDefaultGridLayout();
             } else {
@@ -117,7 +118,7 @@ export class TradesFrame extends ContentFrame {
         this.checkClose();
     }
 
-    createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition {
+    createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition {
         return this._grid.createAllowedFieldsAndLayoutDefinition();
     }
 

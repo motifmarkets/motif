@@ -15,7 +15,6 @@ import {
     DepthLevelsDataDefinition,
     DepthLevelsDataItem,
     DepthStyleId,
-    GridLayoutDefinition,
     Integer,
     JsonElement,
     LitIvemId,
@@ -28,9 +27,9 @@ import {
     UnreachableCaseError,
     ZenithSubscriptionDataId
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
+import { BidAskAllowedFieldsAndLayoutDefinitions, BidAskGridLayoutDefinitions } from '../grid-layout-editor-dialog-definition';
 
 export class DepthFrame extends ContentFrame {
     public openExpand = false;
@@ -66,32 +65,21 @@ export class DepthFrame extends ContentFrame {
     get filterActive() { return this._filterActive; }
     get filterXrefs() { return this._filterXrefs; }
 
-    initialise() {
-        this._bidDepthSideFrame.setOrderSideId(OrderSideId.Bid);
-        this._askDepthSideFrame.setOrderSideId(OrderSideId.Ask);
-    }
+    initialise(element: JsonElement | undefined) {
+        this._bidDepthSideFrame = this._componentAccess.bidDepthSideFrame;
+        this._askDepthSideFrame = this._componentAccess.askDepthSideFrame;
 
-    bindChildFrames(bidDepthSideFrame: DepthSideFrame, askDepthSideFrame: DepthSideFrame) {
-        this._bidDepthSideFrame = bidDepthSideFrame;
-        // this._bidDepthSideFrame.columnWidthChangedEvent = (columnIndex) => this.handleBidSideColumnWidthChangedEvent(columnIndex);
-        // this._bidDepthSideFrame.activeWidthChangedEvent = () => this.handleBidSideActiveWidthChangedEvent();
-        this._askDepthSideFrame = askDepthSideFrame;
-        // this._askDepthSideFrame.columnWidthChangedEvent = (columnIndex) => this.handleAskSideColumnWidthChangedEvent(columnIndex);
-        // this._askDepthSideFrame.activeWidthChangedEvent = () => this.handleAskSideActiveWidthChangedEvent();
-    }
-
-    loadConfig(element: JsonElement | undefined) {
         if (element === undefined) {
             this.openExpand = DepthFrame.JsonDefault.openExpand;
             this._filterActive = DepthFrame.JsonDefault.filterActive;
             this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-            this._bidDepthSideFrame.loadConfig(undefined);
-            this._askDepthSideFrame.loadConfig(undefined);
+            this._bidDepthSideFrame.initialise(OrderSideId.Bid, undefined);
+            this._askDepthSideFrame.initialise(OrderSideId.Ask, undefined);
         } else {
             this.openExpand = element.getBoolean(DepthFrame.JsonName.openExpand, DepthFrame.JsonDefault.openExpand);
 
             this._filterActive = element.getBoolean(DepthFrame.JsonName.filterActive, DepthFrame.JsonDefault.filterActive);
-            const asStrResult = element.tryGetStringType(DepthFrame.JsonName.filterXrefs);
+            const asStrResult = element.tryGetString(DepthFrame.JsonName.filterXrefs);
             if (asStrResult.isErr()) {
                 this._filterActive = false;
                 this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
@@ -110,22 +98,22 @@ export class DepthFrame extends ContentFrame {
                 this.activateBidAskFilter();
             }
 
-            const bidElementResult = element.tryGetElementType(DepthFrame.JsonName.bid);
+            const bidElementResult = element.tryGetElement(DepthFrame.JsonName.bid);
             if (bidElementResult.isErr()) {
-                this._bidDepthSideFrame.loadConfig(undefined);
+                this._bidDepthSideFrame.initialise(OrderSideId.Bid, undefined);
             } else {
-                this._bidDepthSideFrame.loadConfig(bidElementResult.value);
+                this._bidDepthSideFrame.initialise(OrderSideId.Bid, bidElementResult.value);
             }
-            const askElementResult = element.tryGetElementType(DepthFrame.JsonName.ask);
+            const askElementResult = element.tryGetElement(DepthFrame.JsonName.ask);
             if (askElementResult.isErr()) {
-                this._askDepthSideFrame.loadConfig(undefined);
+                this._askDepthSideFrame.initialise(OrderSideId.Ask, undefined);
             } else {
-                this._askDepthSideFrame.loadConfig(askElementResult.value);
+                this._askDepthSideFrame.initialise(OrderSideId.Ask, askElementResult.value);
             }
         }
     }
 
-    saveLayoutToConfig(element: JsonElement) {
+    save(element: JsonElement) {
         if (this.openExpand !== DepthFrame.JsonDefault.openExpand) {
             element.setBoolean(DepthFrame.JsonName.openExpand, this.openExpand);
         }
@@ -139,9 +127,9 @@ export class DepthFrame extends ContentFrame {
         }
 
         const bidElement = element.newElement(DepthFrame.JsonName.bid);
-        this._bidDepthSideFrame.saveConfig(bidElement);
+        this._bidDepthSideFrame.save(bidElement);
         const askElement = element.newElement(DepthFrame.JsonName.ask);
-        this._askDepthSideFrame.saveConfig(askElement);
+        this._askDepthSideFrame.save(askElement);
     }
 
     // getBidRenderedActiveWidth() {
@@ -287,14 +275,14 @@ export class DepthFrame extends ContentFrame {
         this._askDepthSideFrame.autoSizeAllColumnWidths();
     }
 
-    createAllowedFieldsAndLayoutDefinitions(): DepthFrame.AllowedFieldsAndLayoutDefinitions {
+    createAllowedFieldsAndLayoutDefinitions(): BidAskAllowedFieldsAndLayoutDefinitions {
         return {
             bid: this._bidDepthSideFrame.createAllowedFieldsAndLayoutDefinition(),
             ask: this._askDepthSideFrame.createAllowedFieldsAndLayoutDefinition(),
         };
     }
 
-    applyGridLayoutDefinitions(layoutDefinitions: DepthFrame.GridLayoutDefinitions) {
+    applyGridLayoutDefinitions(layoutDefinitions: BidAskGridLayoutDefinitions) {
         this._bidDepthSideFrame.applyGridLayoutDefinition(layoutDefinitions.bid);
         this._askDepthSideFrame.applyGridLayoutDefinition(layoutDefinitions.ask);
     }
@@ -556,16 +544,6 @@ export namespace DepthFrame {
     // type RenderedActiveWidthResolveFtn = (width: number) => void;
     // export type NextRenderedActiveWidthResolveFtns = RenderedActiveWidthResolveFtn[];
 
-    export interface GridLayoutDefinitions {
-        bid: GridLayoutDefinition;
-        ask: GridLayoutDefinition;
-    }
-
-    export interface AllowedFieldsAndLayoutDefinitions {
-        bid: RecordGrid.AllowedFieldsAndLayoutDefinition;
-        ask: RecordGrid.AllowedFieldsAndLayoutDefinition;
-    }
-
     export interface ComponentAccess {
         // setActiveWidths(bidActiveWidth: number, askActiveWidth: number): void;
         // getBidAskSeparatorWidth(): Integer;
@@ -574,6 +552,9 @@ export namespace DepthFrame {
         // getSplitAreaSizes(): void;
 
         readonly splitterGutterSize: number;
+        readonly bidDepthSideFrame: DepthSideFrame;
+        readonly askDepthSideFrame: DepthSideFrame;
+
         setBadness(value: Badness): void;
         hideBadnessWithVisibleDelay(badness: Badness): void;
     }

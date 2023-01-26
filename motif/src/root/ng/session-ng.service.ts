@@ -8,7 +8,9 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
 import {
     AdiNgService,
-    AppStorageNgService, CapabilitiesNgService, MotifServicesNgService,
+    AppStorageNgService,
+    CapabilitiesNgService,
+    MotifServicesNgService,
     ScansNgService,
     SessionInfoNgService,
     SettingsNgService,
@@ -31,7 +33,8 @@ export class SessionNgService implements OnDestroy {
     private _config: Config;
     private _session: SessionService;
 
-    constructor(private _router: Router,
+    constructor(
+        private readonly _router: Router,
         configNgService: ConfigNgService,
         telemetryNgService: TelemetryNgService,
         userAlertNgService: UserAlertNgService,
@@ -49,13 +52,14 @@ export class SessionNgService implements OnDestroy {
         signOutNgService: SignOutNgService,
     ) {
         this._config = configNgService.config;
-        this._session = new SessionService(telemetryNgService.telemetry,
+        this._session = new SessionService(
+            telemetryNgService.telemetry,
             userAlertNgService.service,
             settingsNgService.settingsService,
             openIdNgService.service,
             capabilitiesNgService.service,
             motifServicesNgService.service,
-            appStorageNgService.appStorage,
+            appStorageNgService.service,
             extensionNgService.service,
             workspaceNgService.service,
             adiNgService.service,

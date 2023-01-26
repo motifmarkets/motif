@@ -8,6 +8,7 @@ import {
     AdiService,
     AppStorageService, LockOpenListItem, NamedGridLayoutsService,
     NamedGridSourcesService,
+    NamedJsonRankedLitIvemIdListsService,
     ScansService,
     SessionInfoService,
     SettingsService,
@@ -26,6 +27,7 @@ import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderReque
 import { ScansFrame } from './scan/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TradesFrame } from './trades/internal-api';
+import { WatchlistFrame } from './watchlist/internal-api';
 import { ZenithStatusFrame } from './zenith-status/internal-api';
 
 export class ContentService {
@@ -35,6 +37,7 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
+        private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
@@ -62,6 +65,18 @@ export class ContentService {
             componentAccess,
             this._settingsService,
             this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+        );
+    }
+
+    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess) {
+        return new WatchlistFrame(
+            componentAccess,
+            this._settingsService,
+            this._namedJsonRankedLitIvemIdListsService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
         );

@@ -407,11 +407,11 @@ export namespace ConfigNgService {
             if (json === undefined) {
                 Logger.logConfigError('CNSPJU13300911', serviceName);
             } else {
-                const installResult = json.tryGetBooleanType(JsonName.install);
+                const installResult = json.tryGetBoolean(JsonName.install);
                 if (installResult.isErr()) {
                     Logger.logConfigError('CNSPJI13300911', serviceName);
                 } else {
-                    const infoElementResult = json.tryGetElementType(JsonName.info);
+                    const infoElementResult = json.tryGetElement(JsonName.info);
                     if (infoElementResult.isErr()) {
                         Logger.logConfigError('CNSBEPBEJNL20558', serviceName);
                     } else {

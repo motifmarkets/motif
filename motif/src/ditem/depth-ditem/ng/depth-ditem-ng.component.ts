@@ -32,7 +32,7 @@ import {
     UiAction
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
+import { DepthGridLayoutsEditorDialogNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -394,7 +394,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinitions();
 
         if (layoutWithHeadings !== undefined) {
-            const closePromise = DepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+            const closePromise = DepthGridLayoutsEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
             closePromise.then(
                 (layouts) => {
                     if (layouts !== undefined) {

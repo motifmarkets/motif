@@ -47,7 +47,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetElement(name: string): ResultApi<JsonElementApi, string> {
-        const result = this._actual.tryGetElementType(name);
+        const result = this._actual.tryGetElement(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -62,7 +62,7 @@ export class JsonElementImplementation implements JsonElementApi {
 
     // eslint-disable-next-line @typescript-eslint/ban-types
     tryGetNativeObject(name: string): ResultApi<object, string> {
-        const result = this._actual.tryGetNativeObjectType(name);
+        const result = this._actual.tryGetNativeObject(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -71,7 +71,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetJsonObject(name: string): ResultApi<JsonApi, string> {
-        const result = this._actual.tryGetJsonObjectType(name);
+        const result = this._actual.tryGetJsonObject(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -80,7 +80,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetString(name: string): ResultApi<string, string> {
-        const result = this._actual.tryGetStringType(name);
+        const result = this._actual.tryGetString(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -93,7 +93,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetNumber(name: string): ResultApi<number, string> {
-        const result = this._actual.tryGetNumberType(name);
+        const result = this._actual.tryGetNumber(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -106,7 +106,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetBoolean(name: string, context?: string): ResultApi<boolean, string> {
-        const result = this._actual.tryGetBooleanType(name);
+        const result = this._actual.tryGetBoolean(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -145,11 +145,11 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetAnyJsonValueTypeArray(name: string): ResultApi<JsonValueArrayApi, number> {
-        return this._actual.tryGetAnyJsonValueTypeArray(name);
+        return this._actual.tryGetAnyJsonValueArray(name);
     }
 
     tryGetInteger(name: string): ResultApi<IntegerApi, string> {
-        const result = this._actual.tryGetIntegerType(name);
+        const result = this._actual.tryGetInteger(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -162,7 +162,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetDate(name: string): ResultApi<Date, string> {
-        const result = this._actual.tryGetDateType(name);
+        const result = this._actual.tryGetDate(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -175,7 +175,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetDateTime(name: string): ResultApi<Date, string> {
-        const result = this._actual.tryGetDateTimeType(name);
+        const result = this._actual.tryGetDateTime(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -188,7 +188,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetGuid(name: string): ResultApi<GuidApi, string> {
-        const result = this._actual.tryGetGuidType(name);
+        const result = this._actual.tryGetGuid(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
@@ -201,7 +201,7 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     tryGetDecimal(name: string): ResultApi<DecimalApi, string> {
-        const result = this._actual.tryGetDecimalType(name);
+        const result = this._actual.tryGetDecimal(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {

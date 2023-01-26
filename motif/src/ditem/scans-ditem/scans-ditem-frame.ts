@@ -6,10 +6,7 @@
 
 import {
     AdiService,
-    CommandRegisterService,
-    GridLayout,
-    GridLayoutRecordStore,
-    JsonElement,
+    CommandRegisterService, JsonElement,
     LitIvemId,
     SymbolsService
 } from '@motifmarkets/motif-core';
@@ -19,7 +16,7 @@ import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: ScansFrame;
+    private _scansFrame: ScansFrame;
 
     constructor(
         private _componentAccess: ScansDitemFrame.ComponentAccess,
@@ -33,23 +30,24 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    get initialised() { return this._scansFrame !== undefined; }
 
-    get filterText() { return this._contentFrame.filterText; }
-    set filterText(value: string) { this._contentFrame.filterText = value; }
+    get filterText() { return this._scansFrame.filterText; }
+    set filterText(value: string) { this._scansFrame.filterText = value; }
 
     initialise(contentFrame: ScansFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = contentFrame;
-        this._contentFrame.initialise();
+        this._scansFrame = contentFrame;
 
         if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
+            this._scansFrame.initialise(undefined);
         } else {
-            const contentElement = frameElement.tryGetElementType(ScansDitemFrame.JsonName.content);
-            // this._contentFrame.loadLayoutConfig(contentElement);
+            const contentElementResult = frameElement.tryGetElement(ScansDitemFrame.JsonName.content);
+            if (contentElementResult.isErr()) {
+                this._scansFrame.initialise(undefined);
+            } else {
+                this._scansFrame.initialise(contentElementResult.value);
+            }
         }
-
-        // this._contentFrame.initialiseWidths();
 
         this.applyLinked();
     }
@@ -58,7 +56,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(ScansDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutConfig(contentElement);
+        this._scansFrame.save(contentElement);
     }
 
     // open() {
@@ -76,17 +74,9 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     // }
 
     autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
+        this._scansFrame.autoSizeAllColumnWidths();
     }
 
-    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap | undefined {
-        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadersMap();
-    }
-
-
-    setGridLayout(layout: GridLayout) {
-        this._contentFrame.setGridLayout(layout);
-    }
 
     // adviseShown() {
     //     setTimeout(() => this._contentFrame.initialiseWidths(), 200);

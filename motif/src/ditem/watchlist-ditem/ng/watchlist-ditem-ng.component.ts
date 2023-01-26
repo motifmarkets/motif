@@ -47,8 +47,10 @@ import {
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
 import {
-    GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent, OpenWatchlistDialogNgComponent,
-    SaveWatchlistDialogNgComponent
+    NameableGridLayoutEditorDialogNgComponent,
+    OpenWatchlistDialogNgComponent,
+    SaveWatchlistDialogNgComponent,
+    WatchlistNgComponent
 } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -74,7 +76,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
+    @ViewChild('gridSource', { static: true }) private _watchlistComponent: WatchlistNgComponent;
     @ViewChild('layoutDialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public watchlistCaption: string;
@@ -118,7 +120,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            namedJsonRankedLitIvemIdListsNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
             (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
@@ -161,7 +162,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     protected get stateSchemaVersion() { return WatchlistDitemNgComponent.stateSchemaVersion; }
 
     ngAfterViewInit() {
-        assert(assigned(this._contentComponent), '3111100759');
+        assert(assigned(this._watchlistComponent), '3111100759');
 
         delay1Tick(() => this.initialise());
     }
@@ -208,7 +209,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        this._frame.initialise(this._watchlistComponent.watchlistFrame, frameElement);
 
         this._symbolEditComponent.focus();
 
@@ -273,7 +274,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleDeleteSymbolUiActionEvent() {
-        this._frame.deleteFocusedSymbol();
+        this._frame.deleteFocusedRecord();
     }
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
@@ -452,7 +453,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         try {
             const openDialogResult = await SaveWatchlistDialogNgComponent.open(this._dialogContainer);
             if (openDialogResult.isOk()) {
-                this._frame.saveAs(openDialogResult.value);
+                this._frame.saveGridSourceAs(openDialogResult.value);
             }
         } finally {
             this.closeDialog();
@@ -494,7 +495,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         if (!isRecordFocused) {
             this._deleteSymbolUiAction.pushDisabled();
         } else {
-            if (this._frame.canDeleteFocusedRecord()) {
+            if (this._frame.canDeleteRecord()) {
                 this._deleteSymbolUiAction.pushUnselected();
             } else {
                 this._deleteSymbolUiAction.pushDisabled();

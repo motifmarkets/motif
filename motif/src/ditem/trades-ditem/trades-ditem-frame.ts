@@ -12,7 +12,7 @@ import {
     LitIvemId,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { RecordGrid, TradesFrame } from 'content-internal-api';
+import { AllowedFieldsAndLayoutDefinition, TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -40,7 +40,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             this._tradesFrame.initialise(undefined);
         } else {
-            const contentElementResult = frameElement.tryGetElementType(TradesDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(TradesDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
                 this._tradesFrame.initialise(undefined);
             } else {
@@ -81,7 +81,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths();
     }
 
-    createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition | undefined {
+    createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition | undefined {
         return this._tradesFrame?.createAllowedFieldsAndLayoutDefinition();
     }
 

@@ -78,10 +78,11 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._symbolListUiAction.finalise();
     }
 
-    protected override processChangedProperties(changedFieldIds: Scan.FieldId[]) {
+    protected override processChangedProperties(valueChanges: Scan.ValueChange[]) {
         const scan = this._scan;
         if (scan !== undefined) {
-            for (const fieldId of changedFieldIds) {
+            for (const valueChange of valueChanges) {
+                const fieldId = valueChange.fieldId;
                 switch (fieldId) {
                     case Scan.FieldId.Name:
                         this._nameUiAction.pushValue(scan.name);

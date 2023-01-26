@@ -32,7 +32,8 @@ import {
     StringId,
     Strings,
     StringUiAction,
-    UiAction
+    UiAction,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
@@ -44,7 +45,7 @@ import {
     TextFormatterNgService
 } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
-import { DepthNgComponent, GridSourceNgComponent, ParidepthGridLayoutsEditorNgComponent, TradesNgComponent } from 'content-ng-api';
+import { DepthNgComponent, ParidepthGridLayoutsEditorDialogNgComponent, TradesNgComponent, WatchlistNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import {
     CommandBarNgComponent,
@@ -81,9 +82,9 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('depthTradesDiv', { static: true }) private _depthTradesDiv: ElementRef;
     @ViewChild('depth', { static: true }) private _depthComponent: DepthNgComponent;
     @ViewChild('trades', { static: true }) private _tradesComponent: TradesNgComponent;
-    @ViewChild('watchlist', { static: true }) private _watchlistComponent: GridSourceNgComponent;
+    @ViewChild('watchlist', { static: true }) private _watchlistComponent: WatchlistNgComponent;
     @ViewChild(SplitComponent) private _depthTradesSplitComponent: SplitComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;
 
     public readonly watchListFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
@@ -91,7 +92,6 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         gridRightAligned: false,
     };
 
-    public isLayoutEditorVisible = false;
     public splitterGutterSize = 3;
     public depthWidth: AngularSplitTypes.AreaSize.Html = 200; // pushed
     // public depthActiveWidth = 200;
@@ -99,7 +99,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     public explicitDepthWidth = false;
 
-    private _layoutEditorComponent: ParidepthGridLayoutsEditorNgComponent | undefined;
+    private _layoutEditorComponent: ParidepthGridLayoutsEditorDialogNgComponent | undefined;
 
     private _symbolEditUiAction: LitIvemIdUiAction;
     private _symbolApplyUiAction: IconButtonUiAction;
@@ -112,7 +112,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
 
-    private _modeId = ParidepthDitemNgComponent.ModeId.Input;
+    private _modeId = ParidepthDitemNgComponent.ModeId.Main;
     private _frame: ParidepthDitemFrame;
 
     constructor(
@@ -135,7 +135,6 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             symbolsNgService.service,
             adiNgService.service,
             textFormatterNgService.service,
-            tableRecordDefinitionListsNgService.service,
         );
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
@@ -188,17 +187,24 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     // }
 
     // template functions
-    public isInputMode() {
-        return this._modeId === ParidepthDitemNgComponent.ModeId.Input;
+    public isMainMode() {
+        return this._modeId === ParidepthDitemNgComponent.ModeId.Main;
     }
 
-    public isLayoutEditorMode() {
-        return this._modeId === ParidepthDitemNgComponent.ModeId.LayoutEditor;
+    public isDialogMode() {
+        switch (this._modeId) {
+            case ParidepthDitemNgComponent.ModeId.LayoutDialog:
+                return true;
+            case ParidepthDitemNgComponent.ModeId.Main:
+                return false;
+            default:
+                throw new UnreachableCaseError('PDNCIDM65312', this._modeId);
+        }
     }
 
     public splitDragEnd(data: IOutputData) {
         this.explicitDepthWidth = true;
-        const [depthWidth, tradesWidth] = this.getDepthTradesWidths();
+        const [depthWidth, ignoredTradesWidth] = this.getDepthTradesWidths();
         if (depthWidth === '*') {
             throw new AssertInternalError('PDNCSDE43369');
         } else {
@@ -232,7 +238,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         this._frame.initialise(
-            this._watchlistComponent.frame,
+            this._watchlistComponent.watchlistFrame,
             this._depthComponent.frame,
             this._tradesComponent.frame,
             frameElement,
@@ -271,7 +277,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         if (element === undefined) {
             this.explicitDepthWidth = false;
         } else {
-            const depthWidthAsStringResult = element.tryGetStringType(ParidepthDitemNgComponent.JsonName.depthWidth);
+            const depthWidthAsStringResult = element.tryGetString(ParidepthDitemNgComponent.JsonName.depthWidth);
             if (depthWidthAsStringResult.isErr()) {
                 this.explicitDepthWidth = false;
             } else {
@@ -288,7 +294,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     protected save(element: JsonElement) {
         if (this.explicitDepthWidth) {
-            const [depthWidth, tradesWidth] = this.getDepthTradesWidths();
+            const [depthWidth, ignoredTradesWidth] = this.getDepthTradesWidths();
             element.setString(ParidepthDitemNgComponent.JsonName.depthWidth, AngularSplitTypes.AreaSize.iOutputToJsonValue(depthWidth));
         }
         const frameElement = this.createChildFrameJsonElement(element);
@@ -342,8 +348,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleFilterEditUiActionCommitEvent(typeId: UiAction.CommitTypeId) {
         const toArrayResult = CommaText.tryToStringArray(this._filterEditUiAction.definedValue, false);
-        if (toArrayResult.success) {
-            this._frame.setFilter(toArrayResult.array);
+        if (toArrayResult.isOk()) {
+            this._frame.setFilter(toArrayResult.value);
             this.pushFilterEditValue();
         } else {
             this._filterUiAction.pushInvalid(Strings[StringId.InvalidFilterXrefs]);
@@ -356,7 +362,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.showLayoutEditor();
+        this.showLayoutDialog();
     }
 
     private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
@@ -540,32 +546,33 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._historicalTradesDateUiAction.pushValid();
     }
 
-    private showLayoutEditor() {
-        this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getAllowedFieldsAndLayoutDefinitions();
+    private showLayoutDialog() {
+        this._modeId = ParidepthDitemNgComponent.ModeId.LayoutDialog;
+        const allowedFieldsAndLayoutDefinitions = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = ParidepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+        if (allowedFieldsAndLayoutDefinitions !== undefined) {
+            const closePromise = ParidepthGridLayoutsEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinitions);
             closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.applyGridLayoutDefinitions(layout);
+                (layoutOrReferenceDefinition) => {
+                    if (layoutOrReferenceDefinition !== undefined) {
+                        this._frame.applyGridLayoutDefinitions(layoutOrReferenceDefinition);
                     }
-                    this.closeLayoutEditor();
+                    this.closeDialog();
                 },
                 (reason) => {
                     Logger.logError(`ParidepthInput Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
+                    this.closeDialog();
                 }
             );
         }
 
+
         this.markForCheck();
     }
 
-    private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
-        this.isLayoutEditorVisible = false;
+    private closeDialog() {
+        this._dialogContainer.clear();
+        this._modeId = ParidepthDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }
 
@@ -592,8 +599,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
 export namespace ParidepthDitemNgComponent {
     export const enum ModeId {
-        Input,
-        LayoutEditor,
+        Main,
+        LayoutDialog,
     }
 
     export namespace JsonName {

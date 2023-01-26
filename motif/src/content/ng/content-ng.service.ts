@@ -11,6 +11,7 @@ import {
     AppStorageNgService,
     NamedGridLayoutsNgService,
     NamedGridSourcesNgService,
+    NamedJsonRankedLitIvemIdListsNgService,
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService,
@@ -27,6 +28,7 @@ import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderReque
 import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
+import { WatchlistFrame } from '../watchlist/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
 @Injectable({
@@ -41,6 +43,7 @@ export class ContentNgService {
         appStorageNgService: AppStorageNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
+        namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
@@ -49,9 +52,10 @@ export class ContentNgService {
         this._content = new ContentService(
             settingsNgService.settingsService,
             symbolsNgService.service,
-            appStorageNgService.appStorage,
+            appStorageNgService.service,
             adiNgService.service,
             textFormatterNgService.service,
+            namedJsonRankedLitIvemIdListsNgService.service,
             namedGridLayoutDefinitionsNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
@@ -73,6 +77,10 @@ export class ContentNgService {
 
     createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return this._content.createGridSourceFrame(componentAccess);
+    }
+
+    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess) {
+        return this._content.createWatchlistFrame(componentAccess);
     }
 
     createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {

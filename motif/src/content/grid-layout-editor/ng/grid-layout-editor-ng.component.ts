@@ -13,6 +13,7 @@ import {
     delay1Tick,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
+    GridField,
     GridLayout,
     GridLayoutChange,
     GridLayoutDefinition,
@@ -32,7 +33,6 @@ import {
     TextInputNgComponent
 } from 'controls-ng-api';
 import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
-import { RecordGrid } from '../../internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -116,8 +116,8 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         return this._gridComponent.gridLayoutDefinition;
     }
 
-    setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition) {
-        this._gridComponent.setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition);
+    setAllowedFieldsAndLayoutDefinition(allowedFields: readonly GridField[], layoutDefinition: GridLayoutDefinition) {
+        this._gridComponent.setAllowedFieldsAndLayoutDefinition(allowedFields, layoutDefinition);
     }
 
     ngAfterViewInit() {

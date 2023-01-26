@@ -1,15 +1,9 @@
 import {
-    AdiService,
-    GridLayout,
-    GridLayoutDefinition,
-    GridLayoutRecordStore,
-    Integer,
+    AdiService, Integer,
     JsonElement,
     Scan,
-    ScansGridField,
     ScansGridRecordStore,
-    ScansService,
-    Strings
+    ScansService
 } from '@motifmarkets/motif-core';
 import { RecordGrid } from '../../adapted-revgrid/internal-api';
 import { ContentFrame } from '../../content-frame';
@@ -46,8 +40,16 @@ export class ScansFrame extends ContentFrame {
         this.applyFilter();
     }
 
-    initialise() {
-
+    initialise(element: JsonElement | undefined) {
+        // if (element !== undefined) {
+        //     const layoutElementResult = element.tryGetElement(ScansFrame.JsonName.layout);
+        //     if (layoutElementResult.isOk()) {
+        //         const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElementResult.value);
+        //         if (definitionResult.isOk()) {
+        //             this._grid.loadLayoutDefinition(definitionResult.value);
+        //         }
+        //     }
+        // }
     }
 
     override finalise() {
@@ -68,22 +70,10 @@ export class ScansFrame extends ContentFrame {
         this.prepareGrid();
     }
 
-    loadLayoutConfig(element: JsonElement | undefined) {
-        if (element !== undefined) {
-            const layoutElementResult = element.tryGetElementType(ScansFrame.JsonName.layout);
-            if (layoutElementResult.isOk()) {
-                const definitionResult = GridLayoutDefinition.tryCreateFromJson(layoutElementResult.value);
-                if (definitionResult.isOk()) {
-                    this._grid.loadLayoutDefinition(definitionResult.value);
-                }
-            }
-        }
-    }
-
-    saveLayoutConfig(element: JsonElement) {
-        const layoutElement = element.newElement(ScansFrame.JsonName.layout);
-        const definition = this._grid.saveLayoutDefinition();
-        definition.saveToJson(layoutElement);
+    save(element: JsonElement) {
+        // const layoutElement = element.newElement(ScansFrame.JsonName.layout);
+        // const definition = this._grid.saveLayoutDefinition();
+        // definition.saveToJson(layoutElement);
     }
 
     // close() {
@@ -110,35 +100,26 @@ export class ScansFrame extends ContentFrame {
     // }
 
     prepareGrid() {
-        if (this._gridPrepared) {
-            this._grid.reset();
-        }
-
-        this._grid.sortable = true;
-
-        const fields = ScansGridField.allIds.map((id) => ScansGridField.createField(id));
-        this.recordStore.addFields(fields);
-
-        fields.forEach((field) => {
-            this.setFieldState(field);
-            this._grid.setFieldVisible(field, field.defaultVisible);
-        });
-
-        this.recordStore.recordsLoaded();
-
-        this._gridPrepared = true;
-
-        this.applyFilter();
-
-        // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-        // this._componentAccess.gridAddFields(fieldsAndInitialStates.fields);
-        // const states = fieldsAndInitialStates.states;
-        // const fieldCount = states.length; // one state for each field
-        // for (let i = 0; i < fieldCount; i++) {
-        //     this._componentAccess.gridSetFieldState(i, states[i]);
+        // if (this._gridPrepared) {
+        //     this._grid.reset();
         // }
 
-        // this._componentAccess.gridLoadLayout(this._table.layout);
+        // this._grid.sortable = true;
+
+        // const fields = ScansGridField.allIds.map((id) => ScansGridField.createField(id));
+        // this.recordStore.addFields(fields);
+
+        // fields.forEach((field) => {
+        //     this.setFieldState(field);
+        //     this._grid.setFieldVisible(field, field.defaultVisible);
+        // });
+
+        // this.recordStore.recordsLoaded();
+
+        // this._gridPrepared = true;
+
+        // this.applyFilter();
+
 
     }
 
@@ -153,22 +134,14 @@ export class ScansFrame extends ContentFrame {
         if (newRecordIndex === undefined) {
             this._componentAccess.setFocusedScan(undefined);
         } else {
-            const scan = this._scansService.getItemAtIndex(newRecordIndex);
+            const scan = this._scansService.getAt(newRecordIndex);
             this._componentAccess.setFocusedScan(scan);
         }
     }
 
-    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {}
+    handleGridClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {}
 
-    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {}
-
-    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._grid.getLayoutWithHeadersMap();
-    }
-
-    setGridLayout(layout: GridLayout): void {
-        this._grid.loadLayout(layout);
-    }
+    handleGridDblClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {}
 
     // private handleDataItemDataCorrectnessChangeEvent() {
     //     if (this._dataItem === undefined) {
@@ -200,16 +173,6 @@ export class ScansFrame extends ContentFrame {
     //         this._dataItemDataCorrectnessId = CorrectnessId.Suspect;
     //     }
     // }
-
-    private setFieldState(field: ScansGridField) {
-        const fieldStateDefinition = field.fieldStateDefinition;
-        const state: GridRecordFieldState = {
-            header: Strings[fieldStateDefinition.headerId],
-            width: undefined,
-            alignment: fieldStateDefinition.alignment
-        };
-        this._grid.setFieldState(field, state);
-    }
 
     private filterItems(scan: Scan) {
         if (this._uppercaseFilterText.length === 0) {

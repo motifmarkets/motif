@@ -38,7 +38,7 @@ export class ExtensionsNgService implements OnDestroy {
         this._service = new ExtensionsService(
             adiNgService.service,
             commandRegisterNgService.service,
-            storageNgService.appStorage,
+            storageNgService.service,
             symbolsNgService.service,
             menuBarNgService.service,
             workspaceNgService.service,

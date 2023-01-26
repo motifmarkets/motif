@@ -117,7 +117,7 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
         if (element === undefined) {
             return undefined;
         } else {
-            const frameResult = element.tryGetElementType(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+            const frameResult = element.tryGetElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
             if (frameResult.isErr()) {
                 return undefined;
             } else {
@@ -131,7 +131,7 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     }
 
     protected tryGetStateSchemaVersion(element: JsonElement) {
-        return element.tryGetStringType(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
+        return element.tryGetString(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
     }
 
     protected markForCheck() {

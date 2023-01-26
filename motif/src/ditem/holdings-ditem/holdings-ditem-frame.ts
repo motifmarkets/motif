@@ -87,7 +87,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
             balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
         } else {
-            const holdingsElementResult = frameElement.tryGetElementType(HoldingsDitemFrame.JsonName.holdings);
+            const holdingsElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.holdings);
             if (holdingsElementResult.isErr()) {
                 holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
             } else {
@@ -102,7 +102,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
                     // Temporary error toast
                 }
             }
-            const balancesElementResult = frameElement.tryGetElementType(HoldingsDitemFrame.JsonName.balances);
+            const balancesElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.balances);
             if (balancesElementResult.isErr()) {
                 balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
             } else {
@@ -125,8 +125,8 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     }
 
     override finalise(): void {
-        this._holdingsGridSourceFrame.close(false);
-        this._balancesGridSourceFrame.close(false);
+        this._holdingsGridSourceFrame.closeGridSource(false);
+        this._balancesGridSourceFrame.closeGridSource(false);
         super.finalise();
     }
 
@@ -250,7 +250,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenHoldingsGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        const holdingsGridSourceOrNamedReference = this._holdingsGridSourceFrame.open(definition, false);
+        const holdingsGridSourceOrNamedReference = this._holdingsGridSourceFrame.tryOpenGridSource(definition, false);
         if (holdingsGridSourceOrNamedReference !== undefined) {
             const table = this._holdingsGridSourceFrame.openedTable;
             this._holdingsRecordSource = table.recordSource as HoldingTableRecordSource;
@@ -265,7 +265,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenBalancesGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        this._balancesGridSourceFrame.open(definition, false);
+        this._balancesGridSourceFrame.tryOpenGridSource(definition, false);
         // if (balancesGridSourceOrNamedReference !== undefined) {
         //     const table = this._balancesGridSourceFrame.openedTable;
         //     this._balancesRecordSource = table.recordSource as BalancesTableRecordSource;
@@ -299,7 +299,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     }
 
     private closeAndHideBalances() {
-        this._balancesGridSourceFrame.close(false);
+        this._balancesGridSourceFrame.closeGridSource(false);
         this._balancesSingleGroup = undefined;
         this._componentAccess.setBalancesVisible(false);
     }

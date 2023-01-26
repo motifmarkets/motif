@@ -52,10 +52,10 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         this._gridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (frameElement !== undefined) {
-            const contentElementResult = frameElement.tryGetElementType(TopShareholdersDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(TopShareholdersDitemFrame.JsonName.content);
             if (contentElementResult.isOk()) {
                 const contentElement = contentElementResult.value;
-                const keptLayoutElementResult = contentElement.tryGetElementType(TopShareholdersDitemFrame.JsonName.keptLayout);
+                const keptLayoutElementResult = contentElement.tryGetElement(TopShareholdersDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
                     const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
@@ -83,7 +83,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
     }
 
     ensureOpened() {
-        if (!this._gridSourceFrame.tableOpened) {
+        if (!this._gridSourceFrame.opened) {
             this.tryOpenGridSource();
         }
     }
@@ -99,7 +99,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
             );
             const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
             const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-            const gridSourceOrNamedReference = this._gridSourceFrame.open(gridSourceOrNamedReferenceDefinition, false);
+            const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
             if (gridSourceOrNamedReference === undefined) {
                 return false;
             } else {

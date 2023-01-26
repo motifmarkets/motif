@@ -114,7 +114,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         this._desktopFrame = new DesktopFrame(
             elRef.nativeElement,
             this._settingsService,
-            appStorageNgService.appStorage,
+            appStorageNgService.service,
             userAlertNgService.service,
             capabilitiesService,
             extensionsAccessNgService.service,

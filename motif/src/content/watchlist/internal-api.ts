@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/depth-grid-layouts-editor-ng.component';
+export * from './watchlist-frame';
 

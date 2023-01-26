@@ -42,7 +42,7 @@ export namespace DitemComponent {
         };
 
         export function tryCreateFromJson(value: JsonElement): Result<Definition> {
-            const getExtensionIdElementResult = value.tryGetElementType(JsonName.extensionId);
+            const getExtensionIdElementResult = value.tryGetElement(JsonName.extensionId);
             if (getExtensionIdElementResult.isErr()) {
                 return getExtensionIdElementResult.createOuter(ErrorCode.DitemComponent_ExtensionIdIsNotSpecified);
             } else {
@@ -53,12 +53,12 @@ export namespace DitemComponent {
                 } else {
                     const extensionId = extensionIdCreateResult.value;
 
-                    const componentTypeNameResult = value.tryGetStringType(JsonName.componentTypeName);
+                    const componentTypeNameResult = value.tryGetString(JsonName.componentTypeName);
                     if (componentTypeNameResult.isErr()) {
                         const errorCode = ErrorCode.DitemComponent_ComponentTypeNameIsNotSpecifiedOrInvalid;
                         return componentTypeNameResult.createOuter(errorCode);
                     } else {
-                        const constructionMethodNameResult = value.tryGetStringType(JsonName.constructionMethodId);
+                        const constructionMethodNameResult = value.tryGetString(JsonName.constructionMethodId);
                         if (constructionMethodNameResult.isErr()) {
                             const errorCode = ErrorCode.DitemComponent_ConstructionMethodNameIsNotSpecifiedOrInvalid;
                             return constructionMethodNameResult.createOuter(errorCode);

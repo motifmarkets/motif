@@ -181,7 +181,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
         const gridSourceOrNamedReferenceDefinition = this.createGridSourceOrNamedReferenceDefinition(dataDefinition);
 
-        const gridSourceOrNamedReference = this._gridSourceFrame.open(gridSourceOrNamedReferenceDefinition, false);
+        const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
         if (gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;

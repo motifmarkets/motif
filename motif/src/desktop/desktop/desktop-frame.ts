@@ -485,24 +485,29 @@ export class DesktopFrame implements DesktopAccessService {
         // return Promise.resolve(false); // uncomment to force default layout
         const getPromise = this._storage.getSubNamedItem(AppStorageService.Key.Layout, name);
         return getPromise.then(
-            (layoutConfigAsStr) => {
-                if (layoutConfigAsStr === undefined) {
+            (getResult) => {
+                if (getResult.isErr()) {
                     return Promise.resolve(false);
                 } else {
-                    let successOrErrorText: string | undefined;
-                    try {
-                        successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr, name);
-                    } catch (e) {
-                        successOrErrorText = `${e}`;
-                    }
-                    if (successOrErrorText !== SuccessOrErrorText_Success) {
-                        return Promise.reject(`Load layout "${name}" failure: ${successOrErrorText}`);
+                    const layoutConfigAsStr = getResult.value;
+                    if (layoutConfigAsStr === undefined) {
+                        return Promise.resolve(false);
                     } else {
-                        return Promise.resolve(true);
+                        let successOrErrorText: string | undefined;
+                        try {
+                            successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr, name);
+                        } catch (e) {
+                            successOrErrorText = `${e}`;
+                        }
+                        if (successOrErrorText !== SuccessOrErrorText_Success) {
+                            return Promise.reject(`Load layout "${name}" failure: ${successOrErrorText}`);
+                        } else {
+                            return Promise.resolve(true);
+                        }
                     }
                 }
             },
-            (reason) => Promise.reject(`Storage Get Failure: ${reason}`)
+            (reason) => Promise.reject(`Storage Get Internal Error: ${reason}`)
         );
     }
 
@@ -937,7 +942,7 @@ export class DesktopFrame implements DesktopAccessService {
             const layoutElement = new JsonElement(layoutJson);
             this._activeLayoutName = layoutName;
             const name = this._activeLayoutName ?? 'Unnamed';
-            const schemaVersionResult = layoutElement.tryGetStringType(DesktopFrame.JsonName.layoutSchemaVersion);
+            const schemaVersionResult = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
             if (schemaVersionResult.isErr()) {
                 Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
@@ -947,7 +952,7 @@ export class DesktopFrame implements DesktopAccessService {
                         `${schemaVersionResult}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
-                    const goldenResult = layoutElement.tryGetJsonObjectType(DesktopFrame.JsonName.layoutGolden);
+                    const goldenResult = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
                     if (goldenResult.isErr()) {
                         Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();

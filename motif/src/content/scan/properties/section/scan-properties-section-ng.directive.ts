@@ -26,13 +26,13 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
 
     setScan(value: Scan | undefined) {
         if (this._scan !== undefined) {
-            this._scan.unsubscribeChangedEvent(this._scanPropertiesChangedSubscriptionId);
+            this._scan.unsubscribeValuesChangedEvent(this._scanPropertiesChangedSubscriptionId);
             this._scanPropertiesChangedSubscriptionId = undefined;
         }
         this._scan = value;
         if (this._scan !== undefined) {
-            this._scanPropertiesChangedSubscriptionId = this._scan.subscribeConfigChangedEvent(
-                (changedFieldIds) => this.processChangedProperties(changedFieldIds)
+            this._scanPropertiesChangedSubscriptionId = this._scan.subscribeValuesChangedEvent(
+                (valueChanges) => this.processChangedProperties(valueChanges)
             );
         }
     }
@@ -49,5 +49,5 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
 
     }
 
-    protected abstract processChangedProperties(changedFieldIds: readonly Scan.FieldId[]): void;
+    protected abstract processChangedProperties(valueChanges: readonly Scan.ValueChange[]): void;
 }

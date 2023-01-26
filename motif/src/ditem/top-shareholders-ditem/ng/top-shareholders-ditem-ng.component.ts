@@ -264,7 +264,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             this.setModeId(TopShareholdersDitemNgComponent.defaultModeId);
         } else {
             let loadedModeId: TopShareholdersDitemNgComponent.ModeId;
-            const modeIdJsonValueResult = element.tryGetStringType(TopShareholdersDitemNgComponent.JsonName.modeId);
+            const modeIdJsonValueResult = element.tryGetString(TopShareholdersDitemNgComponent.JsonName.modeId);
             if (modeIdJsonValueResult.isErr()) {
                 loadedModeId = TopShareholdersDitemNgComponent.defaultModeId;
             } else {

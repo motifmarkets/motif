@@ -142,12 +142,10 @@ export abstract class DitemFrame extends Frame {
             this._brokerageAccountGroup = DitemFrame.DitemDefault.brokerageAccountGroup;
             this._primary = DitemFrame.DitemDefault.primary;
         } else {
-            const context = 'ditem-frame';
-
             if (!this.litIvemIdLinkable) {
                 this._litIvemIdLinked = DitemFrame.DitemDefault.litIvemIdLinked;
             } else {
-                const isFrameLitIvemIdLinkedResult = element.tryGetBooleanType(DitemFrame.jsonTag_FrameLitIvemIdLinked);
+                const isFrameLitIvemIdLinkedResult = element.tryGetBoolean(DitemFrame.jsonTag_FrameLitIvemIdLinked);
                 if (isFrameLitIvemIdLinkedResult.isErr()) {
                     this.litIvemIdLinked = DitemFrame.DitemDefault.litIvemIdLinked;
                 } else {
@@ -158,7 +156,7 @@ export abstract class DitemFrame extends Frame {
             if (!this.brokerageAccountGroupLinkable) {
                 this._brokerageAccountGroupLinked = DitemFrame.DitemDefault.brokerageAccountGroupLinked;
             } else {
-                const isBrokerageAccountGroupLinkedResult = element.tryGetBooleanType(DitemFrame.jsonTag_BrokerageAccountGroupLinked);
+                const isBrokerageAccountGroupLinkedResult = element.tryGetBoolean(DitemFrame.jsonTag_BrokerageAccountGroupLinked);
                 if (isBrokerageAccountGroupLinkedResult.isErr()) {
                     this.brokerageAccountGroupLinked = DitemFrame.DitemDefault.brokerageAccountGroupLinked;
                 } else {
@@ -166,7 +164,7 @@ export abstract class DitemFrame extends Frame {
                 }
             }
 
-            const litIvemIdElementResult = element.tryGetElementType(DitemFrame.jsonTag_FrameLitIvemId);
+            const litIvemIdElementResult = element.tryGetElement(DitemFrame.jsonTag_FrameLitIvemId);
             if (litIvemIdElementResult.isErr()) {
                 this._litIvemId = undefined;
             } else {
@@ -178,7 +176,7 @@ export abstract class DitemFrame extends Frame {
                 }
             }
 
-            const groupElementResult = element.tryGetElementType(DitemFrame.jsonTag_BrokerageAccountGroup);
+            const groupElementResult = element.tryGetElement(DitemFrame.jsonTag_BrokerageAccountGroup);
             if (groupElementResult.isErr()) {
                 this._brokerageAccountGroup = undefined;
             } else {
@@ -190,7 +188,7 @@ export abstract class DitemFrame extends Frame {
                 }
             }
 
-            const jsonPrimaryResult = element.tryGetBooleanType(DitemFrame.jsonTag_Primary);
+            const jsonPrimaryResult = element.tryGetBoolean(DitemFrame.jsonTag_Primary);
             if (jsonPrimaryResult.isErr()) {
                 this._primary = DitemFrame.DitemDefault.primary;
             } else {

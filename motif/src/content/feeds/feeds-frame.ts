@@ -77,7 +77,7 @@ export class FeedsFrame extends ContentFrame {
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
         this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
+        const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(definition, false);
         if (gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as FeedTableRecordSource;

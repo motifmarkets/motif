@@ -5,7 +5,7 @@
  */
 
 import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
-import { DepthFrame } from 'content-internal-api';
+import { BidAskGridLayoutDefinitions, DepthFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -32,16 +32,15 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
 
     initialise(depthFrame: DepthFrame, frameElement: JsonElement | undefined): void {
         this._depthFrame = depthFrame;
-        this._depthFrame.initialise();
 
         if (frameElement === undefined) {
-            this._depthFrame.loadConfig(undefined);
+            this._depthFrame.initialise(undefined);
         } else {
-            const contentElementResult = frameElement.tryGetElementType(DepthDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(DepthDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
-                this._depthFrame.loadConfig(undefined);
+                this._depthFrame.initialise(undefined);
             } else {
-                this._depthFrame.loadConfig(contentElementResult.value);
+                this._depthFrame.initialise(contentElementResult.value);
             }
         }
 
@@ -54,7 +53,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(DepthDitemFrame.JsonName.content);
-        this._depthFrame.saveLayoutToConfig(contentElement);
+        this._depthFrame.save(contentElement);
     }
 
     open() {
@@ -97,7 +96,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         return this._depthFrame.createAllowedFieldsAndLayoutDefinitions();
     }
 
-    applyGridLayoutDefinitions(layout: DepthFrame.GridLayoutDefinitions) {
+    applyGridLayoutDefinitions(layout: BidAskGridLayoutDefinitions) {
         this._depthFrame.applyGridLayoutDefinitions(layout);
     }
 

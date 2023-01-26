@@ -4,12 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
+import { Result } from '../../exposed/extension-api';
+
 /** @public */
 export interface StorageSvc {
-    getItem(key: string): Promise<string | undefined>;
-    getSubNamedItem(key: string, subName: string): Promise<string | undefined>;
-    setItem(key: string, value: string): Promise<void>;
-    setSubNamedItem(key: string, subName: string, value: string): Promise<void>;
-    removeItem(key: string): Promise<void>;
-    removeSubNamedItem(key: string, subName: string): Promise<void>;
+    getItem(key: string): Promise<Result<string | undefined>>;
+    getSubNamedItem(key: string, subName: string): Promise<Result<string | undefined>>;
+    setItem(key: string, value: string): Promise<Result<void>>;
+    setSubNamedItem(key: string, subName: string, value: string): Promise<Result<void>>;
+    removeItem(key: string): Promise<Result<void>>;
+    removeSubNamedItem(key: string, subName: string): Promise<Result<void>>;
 }

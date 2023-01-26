@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
 import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
+import { AdaptedRevgrid } from 'content-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { DepthSideNgComponent } from '../../depth-side/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -21,7 +21,7 @@ import { DepthFrame } from '../depth-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, DepthFrame.ComponentAccess {
+export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthFrame.ComponentAccess {
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(SplitComponent) private _split: SplitComponent;
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
@@ -51,13 +51,11 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
     }
 
     public get frame(): DepthFrame { return this._frame; }
+    public get bidDepthSideFrame() { return this._bidComponent.frame; }
+    public get askDepthSideFrame() { return this._askComponent.frame; }
 
     ngOnDestroy() {
         this._frame.finalise();
-    }
-
-    ngAfterViewInit() {
-        this._frame.bindChildFrames(this._bidComponent.frame, this._askComponent.frame);
     }
 
     // Component Access Methods

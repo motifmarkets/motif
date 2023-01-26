@@ -59,7 +59,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this._viewUiAction.finalise();
     }
 
-    protected override processChangedProperties(changedFieldIds: Scan.FieldId[]) {
+    protected override processChangedProperties(valueChanges: Scan.ValueChange[]) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;
         // for (const fieldId of changedFieldIds) {

@@ -11,6 +11,7 @@ export * from './ng/command-register-ng.service';
 export * from './ng/core-injection-tokens';
 export * from './ng/core-ng.service';
 export * from './ng/favourite-named-grid-layout-definition-references-ng.service';
+export * from './ng/idle-processing-ng.service';
 export * from './ng/motif-services-ng.service';
 export * from './ng/named-grid-layouts-ng.service';
 export * from './ng/named-grid-sources-ng.service';

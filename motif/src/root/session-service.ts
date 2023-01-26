@@ -414,19 +414,25 @@ export class SessionService {
 
     private async processLoadSettings() {
         this.logInfo('Retrieving Settings');
-        const appSettings = await this._appStorageService.getItem(AppStorageService.Key.Settings);
+        const appSettingsGetResult = await this._appStorageService.getItem(AppStorageService.Key.Settings);
         if (!this.final) {
             let rootElement: JsonElement | undefined;
-            if (appSettings === undefined || appSettings === '') {
-                this.logWarning('Could not retrieve saved settings. Using defaults');
+            if (appSettingsGetResult.isErr()) {
+                this.logWarning(`Error retrieving saved settings: "${appSettingsGetResult.error}". Using defaults`);
                 rootElement = undefined;
             } else {
-                this.logInfo('Loading Settings');
-                rootElement = new JsonElement();
-                const parseResult = rootElement.parse(appSettings);
-                if (parseResult.isErr()) {
-                    this.logWarning('Could not parse saved settings. Using defaults.  ' + parseResult.error);
+                const appSettings = appSettingsGetResult.value;
+                if (appSettings === undefined || appSettings === '') {
+                    this.logWarning('App Settings not specified. Using defaults');
                     rootElement = undefined;
+                } else {
+                    this.logInfo('Loading Settings');
+                    rootElement = new JsonElement();
+                    const parseResult = rootElement.parse(appSettings);
+                    if (parseResult.isErr()) {
+                        this.logWarning('Could not parse saved settings. Using defaults.  ' + parseResult.error);
+                        rootElement = undefined;
+                    }
                 }
             }
 

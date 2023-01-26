@@ -130,7 +130,7 @@ export namespace PlaceholderDitemFrame {
         }
 
         export function createFromJson(value: JsonElement): Result<Placeheld> {
-            const ditemComponentDefinitionElementResult = value.tryGetElementType(JsonName.definition);
+            const ditemComponentDefinitionElementResult = value.tryGetElement(JsonName.definition);
             if (ditemComponentDefinitionElementResult.isErr()) {
                 const errorCode = ErrorCode.PlaceholderDitemFrameDefinition_DitemComponentIsNotSpecified;
                 return ditemComponentDefinitionElementResult.createOuter(errorCode);
@@ -143,16 +143,16 @@ export namespace PlaceholderDitemFrame {
                 } else {
                     const ditemCode = tryCreateDitemComponentResult.value;
 
-                    const stateResult = value.tryGetJsonObjectType(JsonName.state);
+                    const stateResult = value.tryGetJsonObject(JsonName.state);
                     const state = stateResult.isErr() ? undefined : stateResult.value;
 
-                    const tabTextResult = value.tryGetStringType(JsonName.tabText);
+                    const tabTextResult = value.tryGetString(JsonName.tabText);
                     const tabText = tabTextResult.isErr() ? ditemCode.componentTypeName : tabTextResult.value;
 
-                    const reasonResult = value.tryGetStringType(JsonName.reason);
+                    const reasonResult = value.tryGetString(JsonName.reason);
                     const reason = reasonResult.isErr() ? Strings[StringId.Unknown] : reasonResult.value;
 
-                    const invalidReasonResult = value.tryGetStringType(JsonName.invalidReason);
+                    const invalidReasonResult = value.tryGetString(JsonName.invalidReason);
                     const invalidReason = invalidReasonResult.isErr() ? Strings[StringId.Unknown] : invalidReasonResult.value;
 
                     const placeheld: Placeheld = {

@@ -4,7 +4,7 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="contentDiv" [style.display]="isInputMode() ? null : 'none'">
+<div id="contentDiv" [style.display]="isMainMode() ? null : 'none'">
     <div id="mainToolbarDiv">
 
         <div class="toolbarGroup">
@@ -29,7 +29,7 @@
         <app-command-bar #commandBar id="commandBar"></app-command-bar>
     </div>
 
-    <app-grid-source #watchlist id="watchlist" [frameGridProperties]="watchListFrameGridProperties"></app-grid-source>
+    <app-watchlist #watchlist id="watchlist" [frameGridProperties]="watchListFrameGridProperties"></app-watchlist>
 
     <div #depthTradesDiv id="depthTradesDiv">
         <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">
@@ -42,6 +42,6 @@
         </as-split>
     </div>
 </div>
-<div id="layoutEditorDiv" [style.display]="isLayoutEditorMode() ? null : 'none'">
-    <ng-template #layoutEditorContainer></ng-template>
+<div id="dialogDiv" [style.display]="isDialogMode() ? null : 'none'">
+    <ng-template #dialogContainer></ng-template>
 </div>

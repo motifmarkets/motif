@@ -6,31 +6,20 @@
 
 import {
     AdiService,
-    AssertInternalError,
     CommandRegisterService,
-    compareInteger,
     FavouriteNamedGridLayoutDefinitionReferencesService,
     GridLayout,
     GridLayoutOrNamedReferenceDefinition,
-    GridRowOrderDefinition,
-    GridSourceDefinition,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
-    NamedJsonRankedLitIvemIdListDefinition,
-    NamedJsonRankedLitIvemIdListsService,
-    newGuid,
-    RankedLitIvemId,
     RankedLitIvemIdList,
-    RankedLitIvemIdListDefinition,
-    RankedLitIvemIdListOrNamedReferenceDefinition,
-    RankedLitIvemIdListTableRecordSource,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
-import { GridSourceFrame } from 'content-internal-api';
+import { GridSourceFrame, WatchlistFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
@@ -38,9 +27,7 @@ import { DitemFrame } from '../ditem-frame';
 export class WatchlistDitemFrame extends BuiltinDitemFrame {
     defaultLitIvemIds: readonly LitIvemId[] | undefined;
 
-    private _litIvemIdList: RankedLitIvemIdList;
-    private _gridSourceFrame: GridSourceFrame;
-    private _recordSource: RankedLitIvemIdListTableRecordSource;
+    private _watchlistFrame: WatchlistFrame;
 
     private _litIvemIdApplying = false;
     private _currentFocusedLitIvemIdSetting = false;
@@ -51,7 +38,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteNamedGridLayoutDefinitionReferencesService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
@@ -64,19 +50,20 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    get initialised() { return this._gridSourceFrame !== undefined; }
-    get recordFocused() { return this._gridSourceFrame.recordFocused; }
+    get initialised() { return this._watchlistFrame !== undefined; }
+    get recordFocused() { return this._watchlistFrame.recordFocused; }
 
-    initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._gridSourceFrame = gridSourceFrame;
-        this._gridSourceFrame.opener = this.opener;
-        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+    initialise(gridSourceFrame: WatchlistFrame, frameElement: JsonElement | undefined): void {
+        this._watchlistFrame = gridSourceFrame;
+        this._watchlistFrame.opener = this.opener;
+        this._watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        this._watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
 
         let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const contentElementResult = frameElement.tryGetElementType(WatchlistDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(WatchlistDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
             } else {
@@ -102,97 +89,34 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(WatchlistDitemFrame.JsonName.content);
-        const definition = this._gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
+        const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinition();
         definition.saveToJson(contentElement);
     }
 
     tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
-        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, keepView);
+        const gridSourceOrNamedReference = this._watchlistFrame.tryOpenGridSource(definition, keepView);
         if (gridSourceOrNamedReference !== undefined) {
-            const table = this._gridSourceFrame.openedTable;
-            this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
-            this._litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
-            const rankedLitIvemIdListName = this._recordSource.lockedNamedRankedLitIvemIdList?.name;
+            const rankedLitIvemIdListName = this._watchlistFrame.lockedNamedRankedLitIvemIdList?.name;
             this.updateLockerName(rankedLitIvemIdListName ?? '');
-            this._gridSourceOpenedEventer(this._recordSource.lockedRankedLitIvemIdList, rankedLitIvemIdListName);
+            this._gridSourceOpenedEventer(this._watchlistFrame.lockedRankedLitIvemIdList, rankedLitIvemIdListName);
         }
+    }
+
+    saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
+        this._watchlistFrame.saveGridSourceAs(as);
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
-        this._gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        this._watchlistFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
     }
 
     createAllowedFieldsAndLayoutDefinition() {
-        return this._gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
-    }
-
-    canDeleteFocusedRecord() {
-        return this._litIvemIdList.userCanRemove;
-    }
-
-    deleteFocusedSymbol() {
-        const index = this._gridSourceFrame.getFocusedRecordIndex();
-        if (index === undefined) {
-            throw new AssertInternalError('WDFDFS01023');
-        } else {
-            this._litIvemIdList.userRemoveAt(index, 1);
-        }
+        return this._watchlistFrame.createAllowedFieldsAndLayoutDefinition();
     }
 
     newEmpty() {
         const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
         this.tryOpenGridSource(definition, false);
-    }
-
-    saveAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
-        const oldLitIvemIdList = this._litIvemIdList;
-        const count = oldLitIvemIdList.count;
-        const rankedLitIvemIds = new Array<RankedLitIvemId>(count);
-        for (let i = 0; i < count; i++) {
-            rankedLitIvemIds[i] = oldLitIvemIdList.getAt(i);
-        }
-
-        rankedLitIvemIds.sort((left, right) => compareInteger(left.rank, right.rank));
-        const newLitIvemIds = rankedLitIvemIds.map((rankedLitIvemId) => rankedLitIvemId.litIvemId);
-
-        let gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
-        let rowOrderDefinition: GridRowOrderDefinition | undefined;
-        if (as.tableRecordSourceOnly) {
-            gridLayoutOrNamedReferenceDefinition = undefined;
-            rowOrderDefinition = undefined;
-        } else {
-            gridLayoutOrNamedReferenceDefinition = this._gridSourceFrame.createGridLayoutOrNamedReferenceDefinition();
-            rowOrderDefinition = this._gridSourceFrame.createRowOrderDefinition();
-        }
-
-        let jsonRankedLitIvemIdListDefinition: JsonRankedLitIvemIdListDefinition | undefined;
-        if (as.name === undefined) {
-            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(newLitIvemIds);
-            this.flagSaveRequired();
-        } else {
-            if (as.id !== undefined) {
-                const list = this._namedJsonRankedLitIvemIdListsService.getItemByKey(as.id);
-                if (list !== undefined) {
-                    list.set(newLitIvemIds);
-                    jsonRankedLitIvemIdListDefinition = list.createDefinition();
-                }
-            }
-
-            if (jsonRankedLitIvemIdListDefinition === undefined) {
-                const id = newGuid();
-                const namedJsonRankedLitIvemIdListDefinition = new NamedJsonRankedLitIvemIdListDefinition(id, as.name, newLitIvemIds);
-                this._namedJsonRankedLitIvemIdListsService.new(namedJsonRankedLitIvemIdListDefinition);
-                jsonRankedLitIvemIdListDefinition = namedJsonRankedLitIvemIdListDefinition;
-            }
-        }
-
-        const definition = this.createGridSourceOrNamedReferenceDefinitionFromList(
-            jsonRankedLitIvemIdListDefinition,
-            gridLayoutOrNamedReferenceDefinition,
-            rowOrderDefinition,
-        );
-
-        this.tryOpenGridSource(definition, true);
     }
 
     // saveAsPrivate() {
@@ -226,7 +150,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     // }
 
     autoSizeAllColumnWidths() {
-        this._gridSourceFrame.autoSizeAllColumnWidths();
+        this._watchlistFrame.autoSizeAllColumnWidths();
     }
 
     tryIncludeLitIvemIds(litIvemIds: LitIvemId[], focusFirst: boolean) {
@@ -238,13 +162,22 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             } else {
                 this._litIvemIdApplying = true;
                 try {
-                    return this.addLitIvemIds(litIvemIds, focusFirst);
+                    return this._watchlistFrame.addLitIvemIds(litIvemIds, focusFirst);
                 } finally {
                     this._litIvemIdApplying = false;
                 }
             }
         }
     }
+
+    canDeleteRecord() {
+        return this._watchlistFrame.userCanRemove;
+    }
+
+    deleteFocusedRecord() {
+        this._watchlistFrame.deleteFocusedRecord();
+    }
+
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean { // override
         if (this._currentFocusedLitIvemIdSetting || litIvemId === undefined) {
@@ -253,19 +186,12 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             let result: boolean;
             this._litIvemIdApplying = true;
             try {
-                const existingIndex = this.indexOfRecordByLitIvemId(litIvemId);
+                const focused = this._watchlistFrame.tryFocus(litIvemId, selfInitiated);
 
-                if (existingIndex >= 0) {
-                    this._gridSourceFrame.focusItem(existingIndex);
+                if (focused) {
                     result = super.applyLitIvemId(litIvemId, selfInitiated);
                 } else {
-                    if (!selfInitiated || !this._litIvemIdList.userCanAdd) {
-                        result = false;
-                    } else {
-                        const addIndex = this._litIvemIdList.userAdd(litIvemId);
-                        this._gridSourceFrame.focusItem(addIndex);
-                        result = super.applyLitIvemId(litIvemId, selfInitiated);
-                    }
+                    result = false;
                 }
 
                 if (result && selfInitiated) {
@@ -281,7 +207,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const litIvemId = this._litIvemIdList.getAt(newRecordIndex).litIvemId;
+            const litIvemId = this._watchlistFrame.getAt(newRecordIndex).litIvemId;
             this.processLitIvemIdFocusChange(litIvemId);
         }
         this._recordFocusedEventer(newRecordIndex);
@@ -299,72 +225,16 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._litIvemIdAcceptedEventer(litIvemId);
     }
 
-    private createGridSourceOrNamedReferenceDefinitionFromList(
-        listDefinition: RankedLitIvemIdListDefinition,
-        gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined,
-        rowOrderDefinition: GridRowOrderDefinition | undefined,
-    ) {
-        const listOrNamedReferenceDefinition = new RankedLitIvemIdListOrNamedReferenceDefinition(listDefinition);
-        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
-            listOrNamedReferenceDefinition
-        );
-        const gridSourceDefinition = new GridSourceDefinition(
-            tableRecordSourceDefinition,
-            gridLayoutOrNamedReferenceDefinition,
-            rowOrderDefinition,
-        );
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-    }
-
     private createDefaultGridSourceOrNamedReferenceDefinition() {
         const litIvemIds: readonly LitIvemId[] = this.defaultLitIvemIds ?? [];
         const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
-        return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
+        return this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 
     private createEmptyGridSourceOrNamedReferenceDefinition() {
         const litIvemIds: readonly LitIvemId[] = [];
         const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
-        return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
-    }
-
-    private indexOfRecordByLitIvemId(litIvemId: LitIvemId): Integer {
-        const list = this._litIvemIdList;
-        const count = list.count;
-        for (let i = 0; i < count; i++) {
-            const rankedLitIvemId = list.getAt(i);
-            if (LitIvemId.isEqual(rankedLitIvemId.litIvemId, litIvemId)) {
-                return i;
-            }
-        }
-        return -1;
-    }
-
-    private addLitIvemIds(litIvemIds: LitIvemId[], focusFirst: boolean) {
-        let wantFocus = focusFirst;
-        let result = false;
-        const count = litIvemIds.length;
-
-        const canAdd = this._litIvemIdList.userCanAdd;
-        for (let i = 0; i < count; i++) {
-            const litIvemId = litIvemIds[i];
-            let existingIndexOrAddIndex = this.indexOfRecordByLitIvemId(litIvemId);
-            if (existingIndexOrAddIndex < 0) {
-                if (canAdd) {
-                    existingIndexOrAddIndex = this._litIvemIdList.userAdd(litIvemId);
-                } else {
-                    existingIndexOrAddIndex = -1;
-                }
-            }
-            if (existingIndexOrAddIndex >= 0) {
-                result = true;
-
-                if (wantFocus) {
-                    this._gridSourceFrame.focusItem(existingIndexOrAddIndex);
-                    wantFocus = false;
-                }
-            }
-        }
+        return this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 
     private processLitIvemIdFocusChange(newFocusedLitIvemId: LitIvemId) {
@@ -381,7 +251,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     private checkConfirmPrivateWatchListCanBeDiscarded(): boolean {
-        if (this._gridSourceFrame.isNamed || this._gridSourceFrame.recordCount === 0) {
+        if (this._watchlistFrame.isNamed || this._watchlistFrame.recordCount === 0) {
             return true;
         } else {
             return true;

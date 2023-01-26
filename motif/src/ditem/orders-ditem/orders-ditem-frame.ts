@@ -74,7 +74,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const contentElementResult = frameElement.tryGetElementType(OrdersDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(OrdersDitemFrame.JsonName.content);
             if (contentElementResult.isErr()) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
             } else {
@@ -96,7 +96,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     }
 
     override finalise() {
-        this._gridSourceFrame.close(false);
+        this._gridSourceFrame.closeGridSource(false);
         super.finalise();
     }
 
@@ -263,7 +263,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        const gridSourceOrNamedReference = this._gridSourceFrame.open(definition, false);
+        const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(definition, false);
         if (gridSourceOrNamedReference !== undefined) {
             const table = this._gridSourceFrame.openedTable;
             this._recordSource = table.recordSource as OrderTableRecordSource;

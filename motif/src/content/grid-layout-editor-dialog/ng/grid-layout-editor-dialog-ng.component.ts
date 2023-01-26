@@ -22,7 +22,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { RecordGrid } from '../../adapted-revgrid/internal-api';
+import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -68,8 +68,11 @@ export class GridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDir
         this._cancelUiAction.finalise();
     }
 
-    open(allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition): GridLayoutEditorDialogNgComponent.ClosePromise {
-        this._editorComponent.setAllowedFieldsAndLayoutDefinition(allowedFieldsAndLayoutDefinition);
+    open(allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition): GridLayoutEditorDialogNgComponent.ClosePromise {
+        this._editorComponent.setAllowedFieldsAndLayoutDefinition(
+            allowedFieldsAndLayoutDefinition.allowedFields,
+            allowedFieldsAndLayoutDefinition.layoutDefinition,
+        );
 
         return new Promise<GridLayoutDefinition | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
@@ -124,7 +127,7 @@ export namespace GridLayoutEditorDialogNgComponent {
 
     export function open(
         container: ViewContainerRef,
-        allowedFieldsAndLayoutDefinition: RecordGrid.AllowedFieldsAndLayoutDefinition,
+        allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition,
     ): ClosePromise {
         container.clear();
         const componentRef = container.createComponent(GridLayoutEditorDialogNgComponent);

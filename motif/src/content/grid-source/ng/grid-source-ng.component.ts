@@ -43,12 +43,11 @@ export class GridSourceNgComponent
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
-        contentService: ContentNgService,
+        contentNgService: ContentNgService,
     ) {
         super();
 
-        this._frame = contentService.createGridSourceFrame(this);
-        // this._frame.tableOpenChangeEvent = (opened) => this.handleTableOpenChangeEvent(opened);
+        this._frame = this.createGridSourceFrame(contentNgService);
     }
 
     get frame(): GridSourceFrame { return this._frame; }
@@ -101,9 +100,9 @@ export class GridSourceNgComponent
         this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 
-    // private handleTableOpenChangeEvent(opened: boolean) {
-    //     this.setGridVisible(opened);
-    // }
+    protected createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createGridSourceFrame(this);
+    }
 }
 
 export namespace GridSourceNgComponent {

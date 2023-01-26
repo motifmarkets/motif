@@ -34,7 +34,6 @@ export class GridSourceFrame extends ContentFrame {
     keepPreviousLayoutIfPossible = false;
     keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
 
-    settingsApplyEventer: GridSourceFrame.SettingsApplyEventer;
     gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer;
     recordFocusedEventer: GridSourceFrame.RecordFocusedEventer;
     gridClickEventer: GridSourceFrame.GridClickEventer;
@@ -65,7 +64,6 @@ export class GridSourceFrame extends ContentFrame {
     private _tableFirstUsableSubscriptionId: MultiEvent.SubscriptionId;
     private _gridSourceGridLayoutSetSubscriptionId: MultiEvent.SubscriptionId;
 
-
     constructor(
         private readonly _componentAccess: GridSourceFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
@@ -90,7 +88,7 @@ export class GridSourceFrame extends ContentFrame {
     // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
     // get table(): Table | undefined { return this._table; }
     get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
-    get tableOpened(): boolean { return this._table !== undefined; }
+    get opened(): boolean { return this._table !== undefined; }
 
     get isFiltered(): boolean { return this._grid.isFiltered; }
     get recordFocused() {return this._grid.recordFocused; }
@@ -98,7 +96,7 @@ export class GridSourceFrame extends ContentFrame {
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
-            this.close(false);
+            this.closeGridSource(false);
             super.finalise();
         }
     }
@@ -125,8 +123,8 @@ export class GridSourceFrame extends ContentFrame {
         this.applySettings();
     }
 
-    open(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
-        this.close(keepView);
+    tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
+        this.closeGridSource(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
             this.keepPreviousLayoutIfPossible &&
@@ -195,7 +193,7 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
-    close(keepView: boolean) {
+    closeGridSource(keepView: boolean) {
         if (this._lockedGridSourceOrNamedReference !== undefined) {
             if (this._table === undefined) {
                 throw new AssertInternalError('GSF22209');
@@ -222,6 +220,7 @@ export class GridSourceFrame extends ContentFrame {
                 this._openedGridSource.closeLocked(this._opener);
                 this._lockedGridSourceOrNamedReference.unlock(this._opener);
                 this._lockedGridSourceOrNamedReference = undefined;
+                this._table = undefined;
             }
         }
     }
@@ -270,14 +269,14 @@ export class GridSourceFrame extends ContentFrame {
     //         if (element === undefined) {
     //             this.tryNewDefaultPrivateTable();
     //         } else {
-    //             const tableElementResult = element.tryGetElementType(GridSourceFrame.JsonName.table);
+    //             const tableElementResult = element.tryGetElement(GridSourceFrame.JsonName.table);
     //             if (tableElement === undefined) {
     //                 this.tryNewDefaultPrivateTable();
     //             } else {
     //                 const definition = TableDefinition.createFr
     //             }
 
-    //             const privateElementResult = element.tryGetElementType(GridSourceFrame.JsonName.privateTable);
+    //             const privateElementResult = element.tryGetElement(GridSourceFrame.JsonName.privateTable);
     //             if (privateElement !== undefined) {
     //                 const id = nanoid(); // not sure if needed
     //                 this._table = this._tablesService.newTable(id, undefined, );
@@ -296,7 +295,7 @@ export class GridSourceFrame extends ContentFrame {
     //                     }
     //                 }
     //             } else {
-    //                 const loadedTableIdResult = element.tryGetGuidType(
+    //                 const loadedTableIdResult = element.tryGetGuid(
     //                     GridSourceFrame.JsonName.tableId,
     //                     'TableFrame.loadLayoutConfigId'
     //                 );
@@ -866,6 +865,10 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.applyFilter(filter);
     }
 
+    protected applySettings() {
+        this._table?.clearRendering();
+    }
+
     private handleGridSourceGridLayoutSetEvent() {
         const newLayout = this._openedGridSource.lockedGridLayout;
         if (newLayout === undefined) {
@@ -873,14 +876,6 @@ export class GridSourceFrame extends ContentFrame {
         } else {
             this._grid.updateGridLayout(newLayout);
             this.gridLayoutSetEventer(newLayout);
-        }
-    }
-
-    private applySettings() {
-        this._table?.clearRendering();
-
-        if (this.settingsApplyEventer !== undefined) {
-            this.settingsApplyEventer();
         }
     }
 

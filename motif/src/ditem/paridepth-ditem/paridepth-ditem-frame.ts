@@ -9,19 +9,27 @@ import {
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
+    GridLayoutOrNamedReferenceDefinition,
     JsonElement,
+    JsonRankedLitIvemIdListDefinition,
     LitIvemId,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
-import { DepthFrame, GridSourceFrame, RecordGrid, TradesFrame } from 'content-internal-api';
+import {
+    BidAskGridLayoutDefinitions,
+    DepthFrame,
+    ParidepthAllowedFieldsAndLayoutDefinitions,
+    TradesFrame,
+    WatchlistFrame
+} from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
-    private _watchlistFrame: GridSourceFrame;
+    private _watchlistFrame: WatchlistFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
 
@@ -47,62 +55,52 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     get filterActive() { return this._depthFrame.filterActive; }
     get filterXrefs() { return this._depthFrame.filterXrefs; }
 
-    initialise(watchlistFrame: GridSourceFrame, depthFrame: DepthFrame, tradesFrame: TradesFrame,
+    initialise(watchlistFrame: WatchlistFrame, depthFrame: DepthFrame, tradesFrame: TradesFrame,
         frameElement: JsonElement | undefined
     ): void {
         this._watchlistFrame = watchlistFrame;
         this._depthFrame = depthFrame;
         this._tradesFrame = tradesFrame;
 
-        this._watchlistFrame.settingsApplyEventer = () => this.handleWatchlistSettingsApplyEvent();
-
-        // this._depthFrame.activeWidthChangedEvent =
-        //     (bidActiveWidth, askActiveWidth) => this.handleDepthActiveWidthChangedEvent(bidActiveWidth, askActiveWidth);
-
-        // this._tradesFrame.activeWidthChangedEvent = () => this.handleTradesActiveWidthChangedEvent();
-
-        // initialise() not required for watchlist or trades
-        this._depthFrame.initialise();
-
         if (frameElement === undefined) {
-            this.loadWatchlistConfig(undefined);
+            this._watchlistFrame.initialise(undefined, true, 1);
             this._tradesFrame.initialise(undefined);
-            this._depthFrame.loadConfig(undefined);
+            this._depthFrame.initialise(undefined);
         } else {
-            const watchlistElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.watchlist);
+            const watchlistElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isErr()) {
-                this.loadWatchlistConfig(undefined);
+                this._watchlistFrame.initialise(undefined, true, 1);
             } else {
-                this.loadWatchlistConfig(watchlistElementResult.value);
+                this._watchlistFrame.initialise(watchlistElementResult.value, true, 1);
             }
 
-            const tradesElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.trades);
+            const tradesElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);
             if (tradesElementResult.isErr()) {
                 this._tradesFrame.initialise(undefined);
             } else {
                 this._tradesFrame.initialise(tradesElementResult.value);
             }
 
-            const depthElementResult = frameElement.tryGetElementType(ParidepthDitemFrame.JsonName.depth);
+            const depthElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.depth);
             if (depthElementResult.isErr()) {
-                this._depthFrame.loadConfig(undefined);
+                this._depthFrame.initialise(undefined);
             } else {
-                this._depthFrame.loadConfig(depthElementResult.value);
+                this._depthFrame.initialise(depthElementResult.value);
             }
         }
 
         this.applyLinked();
-
-        this.handleWatchlistSettingsApplyEvent();
     }
 
     override save(element: JsonElement) {
         super.save(element);
 
         const watchlistElement = element.newElement(ParidepthDitemFrame.JsonName.watchlist);
-        this._watchlistFrame.saveLayoutConfig(watchlistElement);
+        this._watchlistFrame.saveLayout(watchlistElement);
+
         const depthElement = element.newElement(ParidepthDitemFrame.JsonName.depth);
-        this._depthFrame.saveLayoutToConfig(depthElement);
+        this._depthFrame.save(depthElement);
+
         const tradesElement = element.newElement(ParidepthDitemFrame.JsonName.trades);
         this._tradesFrame.saveLayoutToConfig(tradesElement);
     }
@@ -113,21 +111,20 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this.close();
         } else {
             // watchlist
-            const definition = new LitIvemIdTableRecordDefinition(litIvemId);
-            if (!this._watchlistFrame.tableOpened) {
-                const tableDefinition = new PortfolioTableDefinition(
-                    this.adi,
-                    this._textFormatterService,
-                    this._tableRecordDefinitionsListService,
-                    new PortfolioTableRecordDefinitionList());
-                this._watchlistFrame.newPrivateTable(tableDefinition, true);
-                this._watchlistFrame.addRecordDefinition(definition);
+            if (!this._watchlistFrame.opened) {
+                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition([litIvemId]);
+                const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(
+                    litIvemIdListDefinition,
+                    undefined,
+                    undefined
+                );
+                this._watchlistFrame.tryOpenGridSource(definition, false);
                 this._watchlistFrame.focusItem(0);
             } else {
                 if (this._watchlistFrame.recordCount === 0) {
-                    this._watchlistFrame.addRecordDefinition(definition);
+                    this._watchlistFrame.addLitIvemIds([litIvemId], true);
                 } else {
-                    this._watchlistFrame.setRecordDefinition(0, definition);
+                    this._watchlistFrame.userReplaceAt(0, [litIvemId]);
                 }
             }
             // depth
@@ -183,11 +180,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths();
     }
 
-    getAllowedFieldsAndLayoutDefinitions(): ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions {
+    createAllowedFieldsAndLayoutDefinition(): ParidepthAllowedFieldsAndLayoutDefinitions {
         return {
             depth: this._depthFrame.createAllowedFieldsAndLayoutDefinitions(),
-            watchlist: this._watchlistFrame.getFieldsAndLayoutDefinition(),
-            trades: this._tradesFrame.getFieldsAndLayoutDefinition(),
+            watchlist: this._watchlistFrame.createAllowedFieldsAndLayoutDefinition(),
+            trades: this._tradesFrame.createAllowedFieldsAndLayoutDefinition(),
         };
     }
 
@@ -222,21 +219,8 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     //     this._componentAccess.setTradesActiveWidth(tradesActiveWidth);
     // }
 
-    private handleWatchlistSettingsApplyEvent() {
-        // process settings change here to ensure grid has been updated
-        const rowHeight = this._watchlistFrame.gridRowHeight;
-        const headerHeight = this._watchlistFrame.getHeaderPlusFixedLineHeight();
-        const gridHorizontalScrollbarMarginedHeight = this._watchlistFrame.gridHorizontalScrollbarMarginedHeight;
-        const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
-        this._watchlistFrame.setFlexBasis(height);
-    }
-
-    private loadWatchlistConfig(frameElement: JsonElement | undefined) {
-
-    }
-
     private close() {
-        this._watchlistFrame.clearRecordDefinitions();
+        this._watchlistFrame.closeGridSource(false);
         this._depthFrame.close();
         this._tradesFrame.close();
     }
@@ -262,6 +246,7 @@ export namespace ParidepthDitemFrame {
         export const watchlist = 'watchlist';
         export const depth = 'depth';
         export const trades = 'trades';
+        export const keptLayout = 'keptLayout';
         export const filterActive = 'filterActive';
         export const filterXrefs = 'filterXrefs';
         export const historicalTradeDate = 'historicalTradeDate';
@@ -274,15 +259,9 @@ export namespace ParidepthDitemFrame {
     }
 
     export interface GridLayoutDefinitions {
-        watchlist: GridLayoutDefinition;
-        depth: DepthFrame.GridLayoutDefinitions;
+        watchlist: GridLayoutOrNamedReferenceDefinition;
+        depth: BidAskGridLayoutDefinitions;
         trades: GridLayoutDefinition;
-    }
-
-    export interface AllowedFieldsAndLayoutDefinitions {
-        watchlist: RecordGrid.AllowedFieldsAndLayoutDefinition;
-        depth: DepthFrame.AllowedFieldsAndLayoutDefinitions;
-        trades: RecordGrid.AllowedFieldsAndLayoutDefinition;
     }
 
     export type OpenedEventHandler = (this: void) => void;

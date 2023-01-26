@@ -6,6 +6,8 @@
 
 import { Injectable } from '@angular/core';
 import { NamedJsonRankedLitIvemIdListsService } from '@motifmarkets/motif-core';
+import { AppStorageNgService } from './app-storage-ng.service';
+import { IdleProcessingNgService } from './idle-processing-ng.service';
 
 @Injectable({
     providedIn: 'root',
@@ -13,8 +15,11 @@ import { NamedJsonRankedLitIvemIdListsService } from '@motifmarkets/motif-core';
 export class NamedJsonRankedLitIvemIdListsNgService {
     private _service: NamedJsonRankedLitIvemIdListsService;
 
-    constructor() {
-        this._service = new NamedJsonRankedLitIvemIdListsService();
+    constructor(
+        appStorageNgService: AppStorageNgService,
+        idleProcessingNgService: IdleProcessingNgService,
+    ) {
+        this._service = new NamedJsonRankedLitIvemIdListsService(appStorageNgService.service, idleProcessingNgService.service);
     }
 
     get service() { return this._service; }

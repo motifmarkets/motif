@@ -32,6 +32,7 @@ import {
     SelectionDetail,
     Subgrid
 } from 'revgrid';
+import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { AdaptedRevgrid } from '../adapted-revgrid';
 import { RecordGridCellPainter } from './record-grid-cell-painter';
 import { RecordGridHeaderAdapter } from './record-grid-header-adapter';
@@ -396,7 +397,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         return new GridLayoutDefinition(definitionColumns);
     }
 
-    createAllowedFieldsAndLayoutDefinition(): RecordGrid.AllowedFieldsAndLayoutDefinition {
+    createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition {
         return {
             allowedFields: this._allowedFields,
             layoutDefinition: this.createGridLayoutDefinition(),
@@ -1109,11 +1110,6 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
 /** @public */
 export namespace RecordGrid {
-    export interface AllowedFieldsAndLayoutDefinition {
-        readonly allowedFields: readonly GridField[];
-        readonly layoutDefinition: GridLayoutDefinition;
-    }
-
     export interface ViewAnchor {
         readonly columnScrollAnchorIndex: Integer;
         readonly columnScrollAnchorOffset: Integer;
