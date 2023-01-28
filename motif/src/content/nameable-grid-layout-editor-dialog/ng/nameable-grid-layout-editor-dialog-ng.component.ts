@@ -15,7 +15,9 @@ import {
 } from '@angular/core';
 import {
     CommandRegisterService,
-    delay1Tick, GridLayoutOrNamedReferenceDefinition, IconButtonUiAction,
+    delay1Tick,
+    GridLayoutOrNamedReferenceDefinition,
+    IconButtonUiAction,
     InternalCommand,
     StringId
 } from '@motifmarkets/motif-core';

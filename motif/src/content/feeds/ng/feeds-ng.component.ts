@@ -8,8 +8,7 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    Inject,
-    Injector,
+    inject, Injector,
     OnDestroy,
     StaticProvider,
     ViewChild,
@@ -43,10 +42,10 @@ export class FeedsNgComponent extends ContentComponentBaseNgDirective implements
 
     constructor(
         contentNgService: ContentNgService,
-        @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
     ) {
         super();
 
+        const opener: LockOpenListItem.Opener = inject(CoreInjectionTokens.lockOpenListItemOpener);
         this._frame = contentNgService.createFeedsFrame(this, opener);
     }
 
