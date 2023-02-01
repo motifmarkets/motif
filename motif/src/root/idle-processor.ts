@@ -4,7 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { AppStorageService, JsonElement, Logger, mSecsPerSec, SettingsService, SysTick } from '@motifmarkets/motif-core';
+import {
+    AppStorageService, JsonElement, KeyValueStore, Logger,
+    mSecsPerSec,
+    SettingsService,
+    SysTick
+} from '@motifmarkets/motif-core';
 import { WorkspaceService } from 'workspace-internal-api';
 import { DesktopFrame } from '../desktop/internal-api';
 
@@ -68,7 +73,7 @@ export class IdleProcessor {
         this._settingsService.save(rootElement);
         const settingsAsJsonString = rootElement.stringify();
         try {
-            await this._appStorageService.setItem(AppStorageService.Key.Settings, settingsAsJsonString);
+            await this._appStorageService.setItem(KeyValueStore.Key.Settings, settingsAsJsonString);
             this._settingsService.reportSaved();
             if (this._lastSettingsSaveFailed) {
                 this.logWarning(`Save settings succeeded`);

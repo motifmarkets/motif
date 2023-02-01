@@ -139,9 +139,13 @@ export class ScansFrame extends ContentFrame {
         }
     }
 
-    handleGridClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {}
+    handleGridClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {
+        //
+    }
 
-    handleGridDblClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {}
+    handleGridDblClickEvent(_fieldIndex: Integer, _recordIndex: Integer) {
+        //
+    }
 
     // private handleDataItemDataCorrectnessChangeEvent() {
     //     if (this._dataItem === undefined) {

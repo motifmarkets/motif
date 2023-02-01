@@ -21,6 +21,7 @@ import {
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     delay1Tick,
+    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -285,7 +286,8 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
                     this.closeDialog();
                 },
                 (reason) => {
-                    Logger.logError(`Orders Ditem Layout Dialog error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`Orders Ditem Layout Dialog error: ${errorText}`);
                     this.closeDialog();
                 }
             );

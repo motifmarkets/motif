@@ -92,7 +92,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         this._userAlertService = userAlertNgService.service;
     }
 
-    public get advertisingActive() { return this._capabilitiesService.advertisingEnabled && !this.starting; };
+    public get advertisingActive() { return this._capabilitiesService.advertisingEnabled && !this.starting; }
 
     ngOnInit() {
         this._userAlertService.alertQueueChangedEvent = () => this.handleUserAlertServiceAlertQueueChangedEvent();
@@ -136,7 +136,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         const color = this._settingsService.color.getFore(panelItemId);
         this._elRef.nativeElement.style.setProperty('color', color);
 
-        const borderItemId = ColorScheme.ItemId.Text_ControlBorder;
+        // const borderItemId = ColorScheme.ItemId.Text_ControlBorder;
 
         this._cdr.markForCheck();
 

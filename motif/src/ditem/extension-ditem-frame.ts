@@ -11,9 +11,8 @@ import {
     JsonElement,
     JsonValue,
     LitIvemId,
-    SymbolsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
-import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 
 export class ExtensionDitemFrame extends DitemFrame {
@@ -23,7 +22,7 @@ export class ExtensionDitemFrame extends DitemFrame {
         ditemTypeId: DitemFrame.TypeId,
         private readonly _componentAccess: ExtensionDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {

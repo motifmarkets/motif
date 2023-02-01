@@ -8,7 +8,6 @@ export * from './balances-ditem/internal-api';
 export * from './brokerage-accounts-ditem/internal-api';
 export * from './builtin-ditem-frame';
 export * from './depth-ditem/internal-api';
-export * from './desktop-access-service';
 export * from './ditem-command';
 export * from './ditem-command-context';
 // export * from './ditem-command-parameters';

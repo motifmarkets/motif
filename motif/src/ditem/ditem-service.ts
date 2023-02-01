@@ -5,11 +5,11 @@
  */
 
 import { CoreService, SessionInfoService } from '@motifmarkets/motif-core';
-import { DesktopAccessService } from './desktop-access-service';
+import { DitemFrame } from './ditem-frame';
 
 export class DitemService {
     constructor(private readonly _coreService: CoreService,
-        private readonly _desktopAccessService: DesktopAccessService,
+        private readonly _desktopAccessService: DitemFrame.DesktopAccessService,
         private readonly _sessionInfoService: SessionInfoService
     ) {
 

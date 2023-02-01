@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -13,10 +13,5 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     styleUrls: ['./search-symbols-condition-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchSymbolsConditionNgComponent extends ContentComponentBaseNgDirective implements OnInit {
-    constructor() {
-        super();
-    }
-
-    ngOnInit(): void {}
+export class SearchSymbolsConditionNgComponent extends ContentComponentBaseNgDirective {
 }

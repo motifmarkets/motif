@@ -20,6 +20,7 @@ import {
     assigned,
     delay1Tick,
     ExplicitElementsArrayUiAction,
+    getErrorMessage,
     GridLayout,
     IconButtonUiAction,
     Integer,
@@ -476,7 +477,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
                     this.closeDialog();
                 },
                 (reason) => {
-                    Logger.logError(`Watchlist Layout Editor error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`Watchlist Layout Editor error: ${errorText}`);
                     this.closeDialog();
                 }
             );

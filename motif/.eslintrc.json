@@ -4,78 +4,88 @@
     "projects/**/*",
     "public-api.d.ts"
   ],
+  "env": {
+    "browser": true,
+    "es2022": true
+  },
   "overrides": [
     {
       "files": [
         "*.ts"
       ],
+      "parser": "@typescript-eslint/parser", // Specifies the ESLint parser
       "parserOptions": {
+        "ecmaVersion": 2022,
+        "ecmaFeatures": {
+          "impliedStrict": true
+        },
+        "sourceType": "module",
+        "tsconfigRootDir": ".",
         "project": [
           "tsconfig.app.json"
-        ],
-        "createDefaultProgram": true
+        ]
       },
       "extends": [
+        "eslint:recommended",
         "plugin:@typescript-eslint/recommended", // Uses the recommended rules from @typescript-eslint/eslint-plugin
-        "plugin:@angular-eslint/ng-cli-compat",
-        "plugin:@angular-eslint/ng-cli-compat--formatting-add-on",
+        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/strict",
+        "plugin:import/recommended",
+        "plugin:@angular-eslint/recommended",
         "plugin:@angular-eslint/template/process-inline-templates"
       ],
+      "settings": {
+        "import/resolver": {
+          "typescript": {
+            "alwaysTryTypes": true, // always try to resolve types under `<root>@types` directory even it doesn't contain any source code, like `@types/unist`
+            "project": [
+              "tsconfig.app.json"
+            ]
+          },
+          "node": {
+            "moduleDirectory": ["node_modules", "src/"]
+          }
+        },
+        "import/parsers": {
+          "@typescript-eslint/parser": [".ts"]
+        }
+      },
       "rules": {
         "no-fallthrough":"error",
         "no-underscore-dangle": "off",
         "prefer-arrow/prefer-arrow-functions": "off",
         "newline-after-description": "off",
-        "@angular-eslint/component-selector": [
-          "error",
-          {
+        "brace-style": ["error", "1tbs", { "allowSingleLine": true }],
+        "no-inner-declarations": "off",
+        "no-constant-condition": ["error", { "checkLoops": false }],
+        "@typescript-eslint/non-nullable-type-assertion-style": "off",
+        "@typescript-eslint/consistent-type-definitions": "error",
+        "@typescript-eslint/naming-convention": ["error", { "selector": "enumMember", "format": null }],
+        "@typescript-eslint/dot-notation": "off",
+        "@typescript-eslint/explicit-member-accessibility": ["off", { "accessibility": "explicit" }],
+        "@typescript-eslint/no-empty-interface": "off",
+        "@typescript-eslint/no-explicit-any": "error",
+        "@typescript-eslint/no-namespace": "off",
+        "@typescript-eslint/prefer-for-of": "off",
+        "@typescript-eslint/no-invalid-void-type": ["warn", { "allowAsThisParameter": true }],
+        "no-unused-vars": "off",
+        "@typescript-eslint/no-unused-vars": ["error", { "args": "none", "varsIgnorePattern": "[iI]gnored", "argsIgnorePattern": "^_" }],
+        "no-shadow": "off",
+        "@typescript-eslint/no-shadow": ["error", { "ignoreTypeValueShadow": true }],
+        "no-return-await": "off",
+        "@typescript-eslint/return-await": "error",
+        "import/no-cycle": ["error"],
+        "@angular-eslint/component-selector": ["error", {
             "type": "element",
             "prefix": "app",
             "style": "kebab-case"
           }
         ],
-        "@angular-eslint/directive-selector": [
-          "error",
-          {
+        "@angular-eslint/directive-selector": ["error", {
             "type": "attribute",
             "prefix": "app",
             "style": "camelCase"
           }
-        ],
-        "@typescript-eslint/consistent-type-definitions": "error",
-        "@typescript-eslint/naming-convention": [
-          "error",
-          {
-            "selector": "enumMember",
-            "format": null
-          }
-        ],
-        "@typescript-eslint/dot-notation": "off",
-        "@typescript-eslint/explicit-member-accessibility": [
-          "off",
-          {
-            "accessibility": "explicit"
-          }
-        ],
-        "@typescript-eslint/no-empty-interface": "off",
-        "@typescript-eslint/no-explicit-any": "error",
-        "brace-style": [
-          "error",
-          "1tbs", { "allowSingleLine": true }
-        ],
-        "@typescript-eslint/no-namespace": "off",
-        "@typescript-eslint/prefer-for-of": "off",
-        "no-shadow": "off",
-        "@typescript-eslint/no-shadow": [
-          "error",
-          { "ignoreTypeValueShadow": true }
-        ],
-        "no-return-await": "off",
-        "@typescript-eslint/return-await": "error",
-        "no-unused-vars": "off",
-        "@typescript-eslint/no-unused-vars": [
-          "error",
-          { "args": "none", "varsIgnorePattern": "[iI]gnored", "argsIgnorePattern": "^_" }
         ]
       }
     },

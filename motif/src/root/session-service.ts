@@ -16,6 +16,7 @@ import {
     ExchangeInfo,
     Integer,
     JsonElement,
+    KeyValueStore,
     Logger,
     MotifServicesError,
     MotifServicesService,
@@ -414,7 +415,7 @@ export class SessionService {
 
     private async processLoadSettings() {
         this.logInfo('Retrieving Settings');
-        const appSettingsGetResult = await this._appStorageService.getItem(AppStorageService.Key.Settings);
+        const appSettingsGetResult = await this._appStorageService.getItem(KeyValueStore.Key.Settings);
         if (!this.final) {
             let rootElement: JsonElement | undefined;
             if (appSettingsGetResult.isErr()) {
@@ -464,7 +465,7 @@ export class SessionService {
         const rootElement = new JsonElement();
         this._settingsService.save(rootElement);
         const settingsAsJsonString = rootElement.stringify();
-        return this._appStorageService.setItem(AppStorageService.Key.Settings, settingsAsJsonString);
+        return this._appStorageService.setItem(KeyValueStore.Key.Settings, settingsAsJsonString);
     }
 
     private finishStartup() {

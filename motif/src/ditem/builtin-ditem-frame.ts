@@ -17,7 +17,6 @@ import {
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { MenuBarService } from 'controls-internal-api';
-import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 
 export abstract class BuiltinDitemFrame extends DitemFrame {
@@ -26,7 +25,7 @@ export abstract class BuiltinDitemFrame extends DitemFrame {
     constructor(private readonly _builtinDitemTypeId: BuiltinDitemFrame.BuiltinTypeId,
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {

@@ -27,7 +27,6 @@ import {
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from 'content-internal-api';
 import { OrderRequestStepFrame } from 'src/content/order-request-step/order-request-step-frame';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class OrderRequestDitemFrame extends BuiltinDitemFrame {
@@ -61,7 +60,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         private readonly _componentAccess: OrderRequestDitemFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,

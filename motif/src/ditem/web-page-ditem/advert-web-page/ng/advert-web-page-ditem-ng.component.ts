@@ -2,10 +2,10 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { delay1Tick, JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { AdvertWebPageNgComponent } from 'src/content/advert/ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'src/ditem/ng/builtin-ditem-ng-component-base.directive';
+import { DesktopAccessNgService } from '../../../ng/desktop-access-ng.service';
 import { WebPageDitemNgComponentBaseNgDirective } from '../../ng/web-page-ditem-ng-component-base-ng.directive';
 import { AdvertWebPageDitemFrame } from '../advert-web-page-ditem-frame';
 

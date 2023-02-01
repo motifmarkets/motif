@@ -18,7 +18,7 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     private _grid: SimpleGrid;
 
-    constructor(elRef: ElementRef, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
         super(elRef.nativeElement, settingsService);
 
@@ -78,4 +78,4 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
 }
 
-let simpleGridCellPainter: SimpleGridCellPainter; // singleton shared with all RecordGrid instantiations
+let simpleGridCellPainter: SimpleGridCellPainter | undefined; // singleton shared with all RecordGrid instantiations

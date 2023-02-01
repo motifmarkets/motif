@@ -15,25 +15,28 @@ import {
     CommandContext,
     CommandRegisterService,
     CommandUiAction,
+    Err,
     ExtensionHandle,
+    getErrorMessage,
     Integer,
     InternalCommand,
     Json,
     JsonElement,
     JsonValue,
     KeyboardService,
+    KeyValueStore,
     LitIvemId,
     Logger,
     MarketOrderId,
     MultiEvent,
+    Ok,
     OrderPad,
     OrderRequestTypeId,
+    Result,
     SettingsService,
     SingleBrokerageAccountGroup,
     StringId,
     Strings,
-    SuccessOrErrorText,
-    SuccessOrErrorText_Success,
     SymbolDetailCacheService,
     UiAction,
     UserAlertService
@@ -41,17 +44,17 @@ import {
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
+import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
-export class DesktopFrame implements DesktopAccessService {
+export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private static readonly XmlTag_HistoricalAccountIds = 'HistoricalAccountIds';
     private static readonly DefaultMaxHistoricalAccountIdCount = 15;
 
-    initialLoadedEvent: DesktopAccessService.InitialLoadedEvent;
+    initialLoadedEvent: DitemFrame.DesktopAccessService.InitialLoadedEvent;
 
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
@@ -242,7 +245,8 @@ export class DesktopFrame implements DesktopAccessService {
                 this.notifInitialLoaded();
             },
             (reason) => {
-                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${reason}". Resetting Layout`);
+                const errorText = getErrorMessage(reason);
+                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
                 this._goldenLayoutHostFrame.resetLayout();
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
@@ -445,7 +449,7 @@ export class DesktopFrame implements DesktopAccessService {
     async resetLayout() {
         // this._activeLayoutName = undefined;
         // this._goldenLayoutHostFrame.resetLayout();
-        await this._storage.removeSubNamedItem(AppStorageService.Key.Layout, DesktopFrame.mainLayoutName);
+        await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName);
         this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
     }
 
@@ -483,7 +487,7 @@ export class DesktopFrame implements DesktopAccessService {
 
     loadLayout(name: string): Promise<boolean> {
         // return Promise.resolve(false); // uncomment to force default layout
-        const getPromise = this._storage.getSubNamedItem(AppStorageService.Key.Layout, name);
+        const getPromise = this._storage.getSubNamedItem(KeyValueStore.Key.Layout, name);
         return getPromise.then(
             (getResult) => {
                 if (getResult.isErr()) {
@@ -493,21 +497,21 @@ export class DesktopFrame implements DesktopAccessService {
                     if (layoutConfigAsStr === undefined) {
                         return Promise.resolve(false);
                     } else {
-                        let successOrErrorText: string | undefined;
+                        let loadResult: Result<void>;
                         try {
-                            successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr, name);
+                            loadResult = this.loadLayoutFromString(layoutConfigAsStr, name);
                         } catch (e) {
-                            successOrErrorText = `${e}`;
+                            loadResult = new Err(getErrorMessage(e));
                         }
-                        if (successOrErrorText !== SuccessOrErrorText_Success) {
-                            return Promise.reject(`Load layout "${name}" failure: ${successOrErrorText}`);
+                        if (loadResult.isErr()) {
+                            return Promise.reject(`Load layout "${name}" failure: ${loadResult.error}`);
                         } else {
                             return Promise.resolve(true);
                         }
                     }
                 }
             },
-            (reason) => Promise.reject(`Storage Get Internal Error: ${reason}`)
+            (reason) => Promise.reject(`Storage Get Internal Error: ${getErrorMessage(reason)}`)
         );
     }
 
@@ -535,7 +539,7 @@ export class DesktopFrame implements DesktopAccessService {
 
         const layoutStr = JSON.stringify(layoutElement.json);
         try {
-            await this._storage.setSubNamedItem(AppStorageService.Key.Layout, this._activeLayoutName, layoutStr);
+            await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr);
             this._layoutSaveRequired = false;
         } catch (e) {
             Logger.logError(`DesktopService save layout error: ${e}`);
@@ -926,15 +930,16 @@ export class DesktopFrame implements DesktopAccessService {
         }
     }
 
-    private loadLayoutFromString(layoutAsStr: string, layoutName: string): SuccessOrErrorText {
-        let result: SuccessOrErrorText;
+    private loadLayoutFromString(layoutAsStr: string, layoutName: string): Result<void> {
+        let result: Result<void>;
         let layoutJson: Json | undefined;
         try {
             layoutJson = JSON.parse(layoutAsStr);
-            result = SuccessOrErrorText_Success;
+            result = new Ok(undefined);
         } catch (e) {
-            result = `${Strings[StringId.Layout_InvalidJson]}: "${e}": ${layoutAsStr}`;
-            Logger.logError(result, 1000);
+            const errorText = `${Strings[StringId.Layout_InvalidJson]}: "${getErrorMessage(e)}": ${layoutAsStr}`;
+            Logger.logError(errorText, 1000);
+            result = new Err(errorText);
             layoutJson = undefined;
         }
 

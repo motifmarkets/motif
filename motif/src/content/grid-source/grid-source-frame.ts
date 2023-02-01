@@ -24,8 +24,8 @@ import {
     TableRecordSourceDefinition,
     TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from 'content-internal-api';
 import { RevRecordMainAdapter } from 'revgrid';
+import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class GridSourceFrame extends ContentFrame {

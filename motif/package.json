@@ -59,6 +59,7 @@
     "angular-split": "^14.1.0",
     "codemirror": "^6.0.1",
     "decimal.js-light": "^2.5.1",
+    "eslint-import-resolver-typescript": "^3.5.3",
     "file-saver": "^2.0.5",
     "golden-layout": "^2.6.0",
     "nanoid": "^4.0.0",

@@ -19,6 +19,7 @@ import {
     ColorScheme,
     CommandRegisterService,
     delay1Tick,
+    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -167,7 +168,8 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
                 this.closePresetCode();
             },
             (reason) => {
-                Logger.logError(`ColorSchemePresetCode error: ${reason}`);
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`ColorSchemePresetCode error: ${errorText}`);
                 this.closePresetCode();
             }
         );

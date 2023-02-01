@@ -11,11 +11,11 @@ import {
     ExtensionHandle,
     JsonElement,
     LitIvemId,
+    OrderPad,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { Frame } from 'component-internal-api';
 import { ComponentContainer } from 'golden-layout';
-import { DesktopAccessService } from './desktop-access-service';
 import { DitemCommandProcessor } from './ditem-command-processor';
 
 export abstract class DitemFrame extends Frame {
@@ -55,7 +55,7 @@ export abstract class DitemFrame extends Frame {
     constructor(private readonly _ditemTypeId: DitemFrame.TypeId,
         private readonly _ditemComponentAccess: DitemFrame.ComponentAccess,
         private readonly _commandRegisterService: CommandRegisterService,
-        private readonly _desktopAccessService: DesktopAccessService,
+        private readonly _desktopAccessService: DitemFrame.DesktopAccessService,
         private readonly _symbolsService: SymbolsService,
         private readonly _adiService: AdiService
     ) {
@@ -251,7 +251,7 @@ export abstract class DitemFrame extends Frame {
         this.setBrokerageAccountGroup(group, initiatingFrame);
     }
 
-    setBrokerageAccountGroupFromDitem(group: BrokerageAccountGroup | undefined, force: boolean = false) {
+    setBrokerageAccountGroupFromDitem(group: BrokerageAccountGroup | undefined, force = false) {
         const groupChanged = !BrokerageAccountGroup.isUndefinableEqual(group, this._brokerageAccountGroup);
 
         if (!groupChanged && force) {
@@ -497,5 +497,33 @@ export namespace DitemFrame {
         processSymbolLinkedChanged(): void;
         processBrokerageAccountGroupLinkedChanged(): void;
         processPrimaryChanged(): void;
+    }
+
+    export interface DesktopAccessService {
+        readonly lastSingleBrokerageAccountGroup: BrokerageAccountGroup | undefined;
+
+        initialLoadedEvent: DesktopAccessService.InitialLoadedEvent;
+
+        readonly litIvemId: LitIvemId | undefined;
+        readonly brokerageAccountGroup: BrokerageAccountGroup | undefined;
+        readonly brokerageAccountGroupOrLitIvemIdSetting: boolean;
+
+        flagLayoutSaveRequired(): void;
+        notifyDitemFramePrimaryChanged(frame: DitemFrame): void;
+        initialiseLitIvemId(litIvemId: LitIvemId): void;
+        setLitIvemId(litIvemId: LitIvemId | undefined, initiatingFrame: DitemFrame | undefined): void;
+        setBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, initiatingFrame: DitemFrame | undefined): void;
+        setLastFocusedLitIvemId(value: LitIvemId): void;
+        setLastFocusedBrokerageAccountGroup(group: BrokerageAccountGroup): void;
+
+        editOrderRequest(orderPad: OrderPad): void;
+
+        registerFrame(frame: DitemFrame): void;
+        deleteFrame(frame: DitemFrame): void;
+
+    }
+
+    export namespace DesktopAccessService {
+        export type InitialLoadedEvent = (this: void) => void;
     }
 }

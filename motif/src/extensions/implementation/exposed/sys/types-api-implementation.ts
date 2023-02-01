@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, ComparisonResult, PublisherId, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ComparisonResult, PublisherId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ComparisonResult as ComparisonResultApi, PublisherType as PublisherTypeApi } from '../../../api/extension-api';
 
 export namespace ComparisonResultImplementation {
@@ -30,7 +30,6 @@ export namespace ComparisonResultImplementation {
 export namespace PublisherTypeImplementation {
     export function toApi(value: PublisherId.TypeId) {
         switch (value) {
-            case PublisherId.TypeId.Invalid: throw new AssertInternalError('TAIPTITAI87773231');
             case PublisherId.TypeId.Builtin: return PublisherTypeApi.builtin;
             case PublisherId.TypeId.User: return PublisherTypeApi.user;
             case PublisherId.TypeId.Organisation: return PublisherTypeApi.organisation;
@@ -44,15 +43,6 @@ export namespace PublisherTypeImplementation {
             case PublisherTypeApi.user: return PublisherId.TypeId.User;
             case PublisherTypeApi.organisation: return PublisherId.TypeId.Organisation;
             default: return undefined;
-        }
-    }
-
-    export function fromApi(value: PublisherTypeApi) {
-        const publisherTypeId = tryFromApi(value);
-        if (publisherTypeId === undefined) {
-            return PublisherId.TypeId.Invalid;
-        } else {
-            return publisherTypeId;
         }
     }
 }

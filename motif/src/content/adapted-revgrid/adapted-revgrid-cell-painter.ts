@@ -75,7 +75,7 @@ export class AdaptedRevgridCellPainter {
         for (let i = attributes.length - 1; i >= 0; i--) {
             const attribute = attributes[i];
             switch (attribute.id) {
-                case RenderValue.AttributeId.Correctness:
+                case RenderValue.AttributeId.Correctness: {
                     const correctnessAttribute =
                         attribute as RenderValue.CorrectnessAttribute;
                     const correctnessId = correctnessAttribute.correctnessId;
@@ -104,8 +104,9 @@ export class AdaptedRevgridCellPainter {
                             break;
                     }
                     break;
+                }
 
-                case RenderValue.AttributeId.HigherLower:
+                case RenderValue.AttributeId.HigherLower: {
                     const higherLowerAttribute =
                         attribute as RenderValue.HigherLowerAttribute;
                     const higherLowerId = higherLowerAttribute.higherLowerId;
@@ -122,8 +123,9 @@ export class AdaptedRevgridCellPainter {
                             break;
                     }
                     break;
+                }
 
-                case RenderValue.AttributeId.BackgroundColor:
+                case RenderValue.AttributeId.BackgroundColor: {
                     if (renderValue instanceof ColorRenderValue) {
                         if (renderValue.isUndefined()) {
                             graphicId = GraphicId.UndefinedColor;
@@ -136,8 +138,9 @@ export class AdaptedRevgridCellPainter {
                         }
                     }
                     break;
+                }
 
-                case RenderValue.AttributeId.DepthRecord:
+                case RenderValue.AttributeId.DepthRecord: {
                     const depthRecordAttribute = attribute as DepthRecordRenderValue.Attribute;
                     let depthRecordItemId: ColorScheme.ItemId;
                     if (depthRecordAttribute.ownOrder) {
@@ -152,8 +155,9 @@ export class AdaptedRevgridCellPainter {
                     }
                     bkgdColor = this._colorSettings.getBkgd(depthRecordItemId);
                     break;
+                }
 
-                case RenderValue.AttributeId.DepthCountXRefField:
+                case RenderValue.AttributeId.DepthCountXRefField: {
                     const depthCountXRefFieldAttribute = attribute as RenderValue.DepthCountXRefFieldAttribute;
                     if (depthCountXRefFieldAttribute.isCountAndXrefs) {
                         halign = 'right';
@@ -161,8 +165,9 @@ export class AdaptedRevgridCellPainter {
                         halign = 'left';
                     }
                     break;
+                }
 
-                case RenderValue.AttributeId.DepthRecordInAuction:
+                case RenderValue.AttributeId.DepthRecordInAuction: {
                     const depthRecordInAuctionAttribute =
                         attribute as RenderValue.DepthRecordInAuctionAttribute;
                     const auctionItemId = altRow ? ColorScheme.ItemId.Grid_PriceSellOverlapAlt : ColorScheme.ItemId.Grid_PriceSellOverlap;
@@ -176,27 +181,32 @@ export class AdaptedRevgridCellPainter {
                         };
                     }
                     break;
+                }
 
-                case RenderValue.AttributeId.OwnOrder:
+                case RenderValue.AttributeId.OwnOrder: {
                     // Note that Depth does not use this attribute as it has a custom attribute
                     const ownOrderRecordItemId = altRow ? ColorScheme.ItemId.Grid_MyOrderAlt : ColorScheme.ItemId.Grid_MyOrder;
                     bkgdColor = this._colorSettings.getBkgd(ownOrderRecordItemId);
                     break;
+                }
 
-                case RenderValue.AttributeId.Cancelled:
+                case RenderValue.AttributeId.Cancelled: {
                     graphicId = GraphicId.LineThrough;
                     break;
+                }
 
                 case RenderValue.AttributeId.Canceller:
-                case RenderValue.AttributeId.GreyedOut:
+                case RenderValue.AttributeId.GreyedOut: {
                     foreColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_GreyedOut);
                     break;
+                }
 
-                case RenderValue.AttributeId.Advert:
+                case RenderValue.AttributeId.Advert: {
                     if (!rowFocused) {
                         bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Advert);
                     }
                     break;
+                }
 
                 default:
                     throw new UnreachableCaseError('GCRDGCRP333389', attribute.id);
@@ -351,7 +361,7 @@ export class AdaptedRevgridCellPainter {
 
             if (graphicId !== GraphicId.None) {
                 switch (graphicId) {
-                    case GraphicId.UndefinedColor:
+                    case GraphicId.UndefinedColor: {
                         const paddedLeftX = x + cellPadding;
                         const paddedRightX = x + width - cellPadding;
                         const paddedTopY = y + cellPadding;
@@ -367,8 +377,9 @@ export class AdaptedRevgridCellPainter {
                         gc.lineTo(paddedLeftX, paddedBottomY);
                         gc.stroke();
                         break;
+                    }
 
-                    case GraphicId.InheritColor:
+                    case GraphicId.InheritColor: {
                         const inheritColorCenterY = y + height / 2 - 0.5;
 
                         gc.cache.strokeStyle = foreColor;
@@ -380,8 +391,9 @@ export class AdaptedRevgridCellPainter {
                         );
                         gc.stroke();
                         break;
+                    }
 
-                    case GraphicId.ProportionBar:
+                    case GraphicId.ProportionBar: {
                         if (proportionBarGraphic !== undefined) {
                             const barWidth =
                                 proportionBarGraphic.proportion * width;
@@ -389,8 +401,9 @@ export class AdaptedRevgridCellPainter {
                             gc.fillRect(x, y, barWidth, height);
                         }
                         break;
+                    }
 
-                    case GraphicId.LineThrough:
+                    case GraphicId.LineThrough: {
                         const lineThroughcenterY = y + height / 2 - 0.5;
 
                         gc.cache.strokeStyle = foreColor;
@@ -399,6 +412,7 @@ export class AdaptedRevgridCellPainter {
                         gc.lineTo(x + width, lineThroughcenterY);
                         gc.stroke();
                         break;
+                    }
 
                     default:
                         throw new UnreachableCaseError(

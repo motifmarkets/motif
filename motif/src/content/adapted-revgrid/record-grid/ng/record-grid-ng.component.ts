@@ -18,7 +18,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     private _grid: RecordGrid;
 
-    constructor(elRef: ElementRef, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
         super(elRef.nativeElement, settingsService);
 

@@ -21,6 +21,7 @@ import {
     DateUiAction,
     defined,
     delay1Tick,
+    getErrorMessage,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -560,7 +561,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
                     this.closeDialog();
                 },
                 (reason) => {
-                    Logger.logError(`ParidepthInput Layout Editor error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`ParidepthInput Layout Editor error: ${errorText}`);
                     this.closeDialog();
                 }
             );

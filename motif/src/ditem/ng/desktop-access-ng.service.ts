@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { DesktopAccessService } from '../desktop-access-service';
+import { DitemFrame } from '../ditem-frame';
 
 @Injectable({
     providedIn: 'root',
@@ -13,11 +13,11 @@ import { DesktopAccessService } from '../desktop-access-service';
 export class DesktopAccessNgService {
     initialLoadedEvent: DesktopAccessNgService.InitialLoadedEvent;
 
-    private _service: DesktopAccessService;
+    private _service: DitemFrame.DesktopAccessService;
 
     get service() { return this._service; }
 
-    setService(value: DesktopAccessService) {
+    setService(value: DitemFrame.DesktopAccessService) {
         this._service = value;
         this._service.initialLoadedEvent = () => this.handleServiceInitialLoadedEvent();
     }

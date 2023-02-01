@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
+    AssertInternalError,
     calculateIntlNumberFormatCharParts,
     createNumberGroupCharRemoveRegex,
     DecimalUiAction,
@@ -123,12 +124,17 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
                 useGrouping = this.coreSettings.format_NumberGroupingActive;
                 break;
             default:
-                throw new UnreachableCaseError('DICCNF232388', this.uiAction.options.useGrouping);
+                throw new UnreachableCaseError('DICCNF23238', this.uiAction.options.useGrouping);
         }
 
         this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        const partsResult = calculateIntlNumberFormatCharParts(this._numberFormat);
+        if (partsResult.isErr()) {
+            throw new AssertInternalError('DINCUNFP23238', partsResult.error);
+        } else {
+            this._numberFormatCharParts = partsResult.value;
+            this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        }
     }
 
     private testInputValue(text?: string): boolean {

@@ -5,7 +5,7 @@
  */
 
 import { JsonElement } from '../sys/extension-api';
-import { ExchangeId } from './extension-api';
+import { ExchangeId } from './exchange-id-api';
 import { IvemId } from './ivem-id-api';
 import { OrderRoute } from './order-route-api';
 

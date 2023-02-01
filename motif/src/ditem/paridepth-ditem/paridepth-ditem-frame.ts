@@ -25,7 +25,6 @@ import {
 } from 'content-internal-api';
 import { lowestValidModelUpdateId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ParidepthDitemFrame extends BuiltinDitemFrame {
@@ -40,7 +39,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     constructor(
         private _componentAccess: ParidepthDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,

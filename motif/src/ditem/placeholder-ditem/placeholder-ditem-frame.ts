@@ -18,7 +18,6 @@ import {
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';
 
@@ -29,7 +28,7 @@ export class PlaceholderDitemFrame extends BuiltinDitemFrame {
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {

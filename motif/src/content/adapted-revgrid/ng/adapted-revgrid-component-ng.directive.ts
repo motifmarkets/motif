@@ -5,7 +5,7 @@ import { AdaptedRevgrid } from '../adapted-revgrid';
 
 @Directive()
 export class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDirective {
-    destroyEventer: AdaptedRevgridComponentNgDirective.DestroyEventer;
+    destroyEventer: AdaptedRevgridComponentNgDirective.DestroyEventer | undefined;
 
     private _horizontalScrollbarWidth: number;
     private _horizontalScrollbarThumbWidth: number;

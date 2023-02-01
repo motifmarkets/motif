@@ -18,6 +18,7 @@ import {
 import {
     CommaText,
     delay1Tick,
+    getErrorMessage,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -403,7 +404,8 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
                     this.closeLayoutEditor();
                 },
                 (reason) => {
-                    Logger.logError(`DepthInput Layout Editor error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`DepthInput Layout Editor error: ${errorText}`);
                     this.closeLayoutEditor();
                 }
             );

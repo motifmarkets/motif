@@ -7,7 +7,6 @@
 import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
 import { BidAskGridLayoutDefinitions, DepthFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class DepthDitemFrame extends BuiltinDitemFrame {
@@ -16,7 +15,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     constructor(
         private _componentAccess: DepthDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopInterface: DesktopAccessService,
+        desktopInterface: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {

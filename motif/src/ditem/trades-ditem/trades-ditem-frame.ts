@@ -14,7 +14,6 @@ import {
 } from '@motifmarkets/motif-core';
 import { AllowedFieldsAndLayoutDefinition, TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class TradesDitemFrame extends BuiltinDitemFrame {
@@ -23,7 +22,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {

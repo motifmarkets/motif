@@ -6,13 +6,13 @@
 
 import { AssertInternalError, CommandRegisterService, delay1Tick, RegisteredExtension, StringId, Strings } from '@motifmarkets/motif-core';
 import { DesktopFrame, GoldenLayoutHostFrame } from 'src/desktop/internal-api';
+import { ExtensionDitemFrame } from 'src/ditem/internal-api';
 import {
     ApiError as ApiErrorApi,
     Frame as FrameApi,
     JsonValue as JsonValueApi,
     LocalDesktop as LocalDesktopApi
 } from '../../../api/extension-api';
-import { FrameSvcImplementation } from '../../frame-svc/internal-api';
 import {
     BrokerageAccountGroupImplementation,
     LitIvemIdImplementation,
@@ -28,7 +28,7 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
     private readonly _frames: FrameApi[] = [];
 
     private _placeheldFramesCreated = false;
-    private _getFrameEventer: LocalDesktopApi.GetFrameEventHandler;
+    private _getFrameEventer: LocalDesktopApi.GetFrameEventHandler | undefined;
 
     constructor(
         private readonly _registeredExtension: RegisteredExtension,
@@ -89,7 +89,7 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
     get menuBar() { return this._menuBarImplementation; }
 
     public get getFrameEventer() { return this._getFrameEventer; }
-    public set getFrameEventer(value: LocalDesktopApi.GetFrameEventHandler) {
+    public set getFrameEventer(value: LocalDesktopApi.GetFrameEventHandler | undefined) {
         this._getFrameEventer = value;
         if (!this._placeheldFramesCreated) {
             delay1Tick(() => this.createPlaceheldFrames());
@@ -101,7 +101,7 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
         this._menuBarImplementation.destroy();
     }
 
-    getFrame(frameSvc: FrameSvcImplementation) {
+    getFrame(frameSvc: FrameApi.SvcProxy) {
         if (this._getFrameEventer === undefined) {
             throw new ApiErrorImplementation(ApiErrorApi.CodeEnum.GetFrameEventerIsUndefined);
         } else {
@@ -146,8 +146,8 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
     }
 
     public destroyFrame(frame: FrameApi) {
-        const frameSvc = frame.svc as FrameSvcImplementation;
-        const ditemFrame = frameSvc.ditemFrame;
+        const frameSvc = frame.svc;
+        const ditemFrame = frameSvc.ditemFrame as ExtensionDitemFrame;
         this._desktopFrame.destroyExtensionComponent(ditemFrame); // ditemFrame is used to get container
         frameSvc.destroy();
     }
@@ -182,8 +182,8 @@ export class LocalDesktopImplementation implements LocalDesktopApi {
     }
 
     private placeholdFrame(frame: FrameApi) {
-        const frameSvc = frame.svc as FrameSvcImplementation;
-        const ditemFrame = frameSvc.ditemFrame;
+        const frameSvc = frame.svc;
+        const ditemFrame = frameSvc.ditemFrame as ExtensionDitemFrame;
         frameSvc.destroy(); // destroy before placeholding as need to release ComponentContainer.stateRequestEvent first
         this._desktopFrame.placeholdExtensionComponent(ditemFrame, Strings[StringId.Extensions_ExtensionNotInstalledOrEnabled]);
     }

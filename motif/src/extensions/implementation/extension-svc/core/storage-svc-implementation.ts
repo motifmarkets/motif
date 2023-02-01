@@ -4,14 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { AppStorageService, RegisteredExtension, Result } from '@motifmarkets/motif-core';
+import { AppStorageService, KeyValueStore, RegisteredExtension, Result } from '@motifmarkets/motif-core';
 import { StorageSvc } from '../../../api/extension-api';
 
 export class StorageSvcImplementation implements StorageSvc {
     private _keyPrefix: string;
 
     constructor(private readonly _registeredExtension: RegisteredExtension, private readonly _storageService: AppStorageService) {
-        this._keyPrefix = AppStorageService.Key.Extensions + ':' + this._registeredExtension.persistKey + ':';
+        this._keyPrefix = KeyValueStore.Key.Extensions + ':' + this._registeredExtension.persistKey + ':';
     }
 
     getItem(key: string): Promise<Result<string | undefined>> {

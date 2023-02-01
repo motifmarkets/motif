@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { getObjectPropertyValue, Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
 import Rollbar, { LogArgument } from 'rollbar';
 import { environment } from 'src/environments/environment';
@@ -102,8 +102,8 @@ export class TelemetryService {
         if (this._enabled && this._errorCount < this._maxErrorCount) {
             this._errorCount++;
             if (typeof err === 'object' && err !== null) {
-                const originalErr = getObjectPropertyValue(err, 'originalError');
-                if (originalErr !== undefined) {
+                if ('originalError' in err) {
+                    const originalErr = err['originalError'];
                     err = originalErr;
                 }
             }

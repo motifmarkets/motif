@@ -20,6 +20,7 @@ import {
     assigned,
     DateUiAction,
     delay1Tick,
+    getErrorMessage,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -325,7 +326,8 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
                     this.closeLayoutEditor();
                 },
                 (reason) => {
-                    Logger.logError(`TradesInput Layout Editor error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`TradesInput Layout Editor error: ${errorText}`);
                     this.closeLayoutEditor();
                 }
             );

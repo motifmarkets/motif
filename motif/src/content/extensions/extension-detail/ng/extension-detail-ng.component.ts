@@ -127,6 +127,7 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private setInfo(value: ExtensionInfo) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (value === undefined) {
             this._info = ExtensionDetailNgComponent.invalidExtensionInfo;
             this.hostDisplay = HtmlTypes.Display.None;
@@ -188,7 +189,7 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
 export namespace ExtensionDetailNgComponent {
     export const invalidExtensionInfo: ExtensionInfo = {
         publisherId: {
-            typeId: PublisherId.TypeId.Invalid,
+            typeId: PublisherId.TypeId.Builtin,
             name: '',
         },
         name: '',

@@ -7,14 +7,13 @@
 import { SafeResourceUrl } from '@angular/platform-browser';
 import { AdiService, CommandRegisterService, SymbolsService } from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
-import { DesktopAccessService } from '../../desktop-access-service';
 import { DitemFrame } from '../../ditem-frame';
 
 export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
     constructor(
         private readonly _componentAccess: BrandingSplashWebPageDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {

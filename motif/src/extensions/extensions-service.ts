@@ -10,6 +10,7 @@ import {
     AssertInternalError,
     CommandRegisterService,
     ComparisonResult,
+    Err,
     ErrorCode,
     ExtensionError,
     ExtensionHandle,
@@ -23,12 +24,12 @@ import {
     Logger,
     mSecsPerMin,
     MultiEvent,
+    Ok,
     PublisherId,
     RegisteredExtension,
+    Result,
     StringId,
     Strings,
-    SuccessOrErrorText,
-    SuccessOrErrorText_Success,
     SymbolsService,
     SysTick
 } from '@motifmarkets/motif-core';
@@ -158,6 +159,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     public uninstallExtension(handle: Integer) {
         const registration = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (registration === undefined) {
             throw new AssertInternalError('ESUE319981667');
         } else {
@@ -176,8 +178,9 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     public getExtensionName(handle: ExtensionHandle) {
         const extension = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (extension === undefined) {
-            throw new ExtensionError(ErrorCode.ExtensionsServiceGetNameHandleExtensionUndefined, handle.toString());
+            throw new ExtensionError(ErrorCode.ExtensionsService_GetNameHandleExtensionUndefined, handle.toString());
         } else {
             return extension.name;
         }
@@ -185,8 +188,9 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     public getExtensionPublisherName(handle: ExtensionHandle) {
         const extension = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (extension === undefined) {
-            throw new ExtensionError(ErrorCode.ExtensionsServiceGetPublisherHandleExtensionUndefined,
+            throw new ExtensionError(ErrorCode.ExtensionsService_GetPublisherHandleExtensionUndefined,
                 handle.toString()
             );
         } else {
@@ -477,51 +481,64 @@ export class ExtensionsService implements FrameExtensionsAccessService {
     }
 
     private processRegistrationRequest(request: ExtensionRegistrarApi.Request) {
-        const publisherTypeId = PublisherTypeImplementation.fromApi(request.publisherType);
-        const publisherId: PublisherId = {
-            typeId: publisherTypeId,
-            name: request.publisherName,
-        };
-
-        const requestExtensionInfo: ExtensionInfo = {
-            publisherId,
-            name: request.name,
-            version: '',
-            apiVersion: '',
-            shortDescription: '',
-            longDescription: '',
-            urlPath: '',
-        };
-
-        const activeDownload = this.extractActiveDownload(requestExtensionInfo);
-        if (activeDownload === undefined) {
-            // must have timed out
-            Logger.logWarning('Extension active download not found:',
-                `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
-            );
+        const publisherType = request.publisherType;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (publisherType === undefined) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            Logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
         } else {
-            const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
-            if (matchingExtension !== undefined) {
-                Logger.logExternalError(ErrorCode.ExtensionsServiceAddDuplicateName,
-                    `${this.generateExtensionKeyText(requestExtensionInfo)}`
-                );
+            const publisherTypeId = PublisherTypeImplementation.tryFromApi(publisherType);
+            if (publisherTypeId === undefined) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                Logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
             } else {
-                const requestedInfo = activeDownload.info;
-                const matchOrErrorText = this.matchRequestWithInfo(request, requestedInfo);
-                if (matchOrErrorText !== SuccessOrErrorText_Success) {
-                    Logger.logExternalError(ErrorCode.ExtensionsServiceMismatchedExtensionInfo,
-                        `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchOrErrorText}`
+                const publisherId: PublisherId = {
+                    typeId: publisherTypeId,
+                    name: request.publisherName,
+                };
+
+                const requestExtensionInfo: ExtensionInfo = {
+                    publisherId,
+                    name: request.name,
+                    version: '',
+                    apiVersion: '',
+                    shortDescription: '',
+                    longDescription: '',
+                    urlPath: '',
+                };
+
+                const activeDownload = this.extractActiveDownload(requestExtensionInfo);
+                if (activeDownload === undefined) {
+                    // must have timed out
+                    Logger.logWarning('Extension active download not found:',
+                        `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
                     );
                 } else {
-                    const registration = this.registerExtension(request, requestedInfo);
-                    this.installRegistration(registration, activeDownload.loadAlso);
+                    const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
+                    if (matchingExtension !== undefined) {
+                        Logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
+                            `${this.generateExtensionKeyText(requestExtensionInfo)}`
+                        );
+                    } else {
+                        const requestedInfo = activeDownload.info;
+                        const matchResult = this.matchRequestWithInfo(request, requestedInfo);
+                        if (matchResult.isErr()) {
+                            Logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
+                                `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchResult.error}`
+                            );
+                        } else {
+                            const registration = this.registerExtension(request, requestedInfo);
+                            this.installRegistration(registration, activeDownload.loadAlso);
+                        }
+                    }
                 }
             }
         }
     }
 
     private generateExtensionKeyText(info: ExtensionInfo) {
-        return `"${PublisherId.Type.idToDisplay(info.publisherId.typeId)}" "${info.publisherId.name}" "${info.name}"`;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        return `"${PublisherId.Type.idToDisplay(info.publisherId.typeId)}" "${info.publisherId.name ?? ''}" "${info.name ?? ''}"`;
     }
 
     private registerExtension(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo) {
@@ -622,7 +639,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo): SuccessOrErrorText {
+    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo): Result<void> {
         const match =
             request.publisherName === extensionInfo.publisherId.name &&
             request.name === extensionInfo.name &&
@@ -630,7 +647,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             request.apiVersion === extensionInfo.apiVersion;
 
         if (match) {
-            return SuccessOrErrorText_Success;
+            return new Ok(undefined);
         } else {
             const extensionText =
                 `${extensionInfo.publisherId.name}|` +
@@ -644,7 +661,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 `${request.version}|` +
                 `${request.apiVersion}`;
 
-            return `${extensionText}|:|${requestText}`;
+            return new Err(`${extensionText}|:|${requestText}`);
         }
     }
 }

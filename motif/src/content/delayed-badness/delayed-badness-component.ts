@@ -5,7 +5,7 @@
  */
 
 import { Badness, TimeSpan } from '@motifmarkets/motif-core';
-import { ContentComponent } from 'content-internal-api';
+import { ContentComponent } from '../content-component';
 
 export interface DelayedBadnessComponent extends ContentComponent {
     delayTimeSpan: TimeSpan;

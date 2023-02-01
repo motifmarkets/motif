@@ -6,6 +6,7 @@
 
 import { ChangeDetectorRef, Directive } from '@angular/core';
 import {
+    AssertInternalError,
     calculateIntlNumberFormatCharParts,
     createNumberGroupCharRemoveRegex,
     IntlNumberFormatCharParts,
@@ -159,8 +160,13 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
                 throw new UnreachableCaseError('NUAICCNF43439', this.uiAction.options.useGrouping);
         }
         this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        const partsResult = calculateIntlNumberFormatCharParts(this._numberFormat);
+        if (partsResult.isErr()) {
+            throw new AssertInternalError('NUACBNUNFDP43439', partsResult.error);
+        } else {
+            this._numberFormatCharParts = partsResult.value;
+            this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        }
     }
 
     private applyOptions(options: NumberUiAction.Options) {

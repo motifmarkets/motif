@@ -9,6 +9,7 @@ import {
     Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountsDataDefinition,
     BrokerageAccountsDataItem,
     DataItemIncubator,
+    getErrorMessage,
     MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { CoreNgService } from 'component-services-ng-api';
@@ -71,7 +72,8 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
             dataItemOrPromise.then(
                 (dataItem) => this.processDataItemIncubated(dataItem),
                 (reason) => {
-                    throw new AssertInternalError('BAIICBC323299', reason);
+                    const errorText = getErrorMessage(reason);
+                    throw new AssertInternalError('BAIICBC323299', errorText);
                 }
             );
         }

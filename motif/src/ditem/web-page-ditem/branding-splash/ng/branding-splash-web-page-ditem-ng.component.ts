@@ -2,9 +2,9 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inje
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'src/ditem/ng/builtin-ditem-ng-component-base.directive';
+import { DesktopAccessNgService } from '../../../ng/desktop-access-ng.service';
 import { WebPageDitemNgComponentBaseNgDirective } from '../../ng/web-page-ditem-ng-component-base-ng.directive';
 import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-ditem-frame';
 

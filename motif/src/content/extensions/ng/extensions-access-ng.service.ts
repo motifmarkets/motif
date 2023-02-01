@@ -5,17 +5,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { FrameExtensionsAccessService } from 'src/desktop/internal-api';
+import { ExtensionsAccessService } from '../extensions-access-service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class ExtensionsAccessNgService {
-    private _service: FrameExtensionsAccessService;
+    private _service: ExtensionsAccessService;
 
     get service() { return this._service; }
 
-    setService(value: FrameExtensionsAccessService) {
+    setService(value: ExtensionsAccessService) {
         this._service = value;
     }
 }

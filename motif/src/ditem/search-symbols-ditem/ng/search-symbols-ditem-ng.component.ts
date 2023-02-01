@@ -26,6 +26,7 @@ import {
     ExchangeInfo,
     ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
+    getErrorMessage,
     IconButtonUiAction,
     Integer,
     IntegerUiAction,
@@ -440,7 +441,8 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
                     this.closeLayoutEditor();
                 },
                 (reason) => {
-                    Logger.logError(`Symbols Layout Editor error: ${reason}`);
+                    const errorText = getErrorMessage(reason);
+                    Logger.logError(`Symbols Layout Editor error: ${errorText}`);
                     this.closeLayoutEditor();
                 }
             );

@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
-import { GridSourceNgComponent } from '../../ng-api';
+import { GridSourceNgComponent } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { WatchlistFrame } from '../watchlist-frame';
 

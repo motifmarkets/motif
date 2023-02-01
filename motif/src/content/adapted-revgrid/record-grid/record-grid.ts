@@ -116,8 +116,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     get fieldNames() { return this._fieldAdapter.getFieldNames(); }
 
     get recordFocused() {
-        const selections = this.selections;
-        return selections !== null && selections.length > 0;
+        return this.selections.length > 0;
     }
 
     get sortable(): boolean {
@@ -169,7 +168,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     get focusedRecordIndex(): RevRecordIndex | undefined {
         const selections = this.selections;
 
-        if (selections === null || selections.length === 0) {
+        if (selections.length === 0) {
             return undefined;
         } else {
             const rowIndex = selections[0].firstSelectedCell.y;
@@ -410,7 +409,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         if (count === 0) {
             return undefined;
         } else {
-            const columnDefinitions = new Array(count);
+            const columnDefinitions = new Array<GridSortDefinition.Column>(count);
             const fieldCount = this.fieldCount;
             for (let i = 0; i < count; i++) {
                 const specifier = specifiers[i];

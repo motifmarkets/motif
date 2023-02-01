@@ -21,7 +21,6 @@ import {
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
@@ -35,7 +34,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,

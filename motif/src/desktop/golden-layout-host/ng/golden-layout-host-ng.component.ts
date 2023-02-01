@@ -98,7 +98,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         this._componentsParentHtmlElement = this._elRef.nativeElement;
         this._settingsService = settingsNgService.settingsService;
         this._colorSettings = this._settingsService.color;
-        this._extensionsAccessService = extensionsAccessNgService.service;
+        this._extensionsAccessService = extensionsAccessNgService.service as FrameExtensionsAccessService;
 
         this._virtualLayout = new VirtualLayout(
             this._componentsParentHtmlElement,

@@ -4,10 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { FrameSvc } from '../../frame-svc/extension-api';
-
 /** @public */
 export interface Frame {
     readonly rootHtmlElement: HTMLElement;
-    readonly svc: FrameSvc;
+    readonly svc: Frame.SvcProxy;
+}
+
+export namespace Frame {
+    export interface SvcProxy {
+        frameTypeName: string;
+        ditemFrame: unknown;
+        destroy(): void;
+    }
 }

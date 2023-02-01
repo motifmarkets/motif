@@ -47,18 +47,22 @@ export class ExtensionRegistration implements RegisteredExtension {
         private readonly _longDescription: string,
         private readonly _urlPath: string,
     ) {
-        const publisherTypeId = PublisherTypeImplementation.fromApi(request.publisherType);
-        const publisherName = request.publisherName;
-        this._publisherId = {
-            typeId: publisherTypeId,
-            name: publisherName,
-        };
-        this._name = request.name;
-        this._version = request.version;
-        this._apiVersion = request.apiVersion;
-        this._loadCallback = request.loadCallback;
+        const publisherTypeId = PublisherTypeImplementation.tryFromApi(request.publisherType);
+        if (publisherTypeId === undefined) {
+            throw new AssertInternalError('ERC30308'); // should already be checked
+        } else {
+            const publisherName = request.publisherName;
+            this._publisherId = {
+                typeId: publisherTypeId,
+                name: publisherName,
+            };
+            this._name = request.name;
+            this._version = request.version;
+            this._apiVersion = request.apiVersion;
+            this._loadCallback = request.loadCallback;
 
-        this._persistKey = this.generatePersistKey();
+            this._persistKey = this.generatePersistKey();
+        }
     }
 
     get handle() { return this._handle; }

@@ -7,11 +7,11 @@
 import {
     AssertInternalError,
     ExtensionHandle,
+    Integer,
     JsonElement,
     LitIvemId,
     Logger,
     SessionInfoService,
-    TUID,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
@@ -19,7 +19,6 @@ import {
     BalancesDitemFrame,
     BrokerageAccountsDitemFrame,
     BuiltinDitemFrame,
-    DesktopAccessService,
     DitemComponent,
     DitemFrame,
     ExtensionDitemComponent,
@@ -45,13 +44,16 @@ import {
 } from 'golden-layout';
 
 export class GoldenLayoutHostFrame {
+    private _lastComponentIdInteger: Integer;
     constructor(
         private readonly _componentAccess: GoldenLayoutHostFrame.ComponentAccess,
         private readonly _goldenLayout: VirtualLayout,
         private readonly _defaultLayoutConfig: SessionInfoService.DefaultLayout,
         private readonly _extensionsAccessService: ExtensionsAccessService,
-        private readonly _desktopAccessService: DesktopAccessService,
-    ) { }
+        private readonly _desktopAccessService: DitemFrame.DesktopAccessService,
+    ) {
+        this._lastComponentIdInteger = Number.MIN_SAFE_INTEGER;
+    }
 
     finalise() {
     }
@@ -191,7 +193,11 @@ export class GoldenLayoutHostFrame {
     }
 
     private generateComponentId(): string {
-        return TUID.getUID().toString(36);
+        if (this._lastComponentIdInteger >= Number.MAX_SAFE_INTEGER - 1) {
+            throw new AssertInternalError('GLHFGCI93112');
+        } else {
+            return (++this._lastComponentIdInteger).toString(36);
+        }
     }
 
     private createDefaultLayoutConfig() {

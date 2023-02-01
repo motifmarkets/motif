@@ -12,7 +12,6 @@ import {
 } from '@motifmarkets/motif-core';
 import { ScansFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
@@ -21,7 +20,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     constructor(
         private _componentAccess: ScansDitemFrame.ComponentAccess,
         commandRegisterService: CommandRegisterService,
-        desktopInterface: DesktopAccessService,
+        desktopInterface: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
