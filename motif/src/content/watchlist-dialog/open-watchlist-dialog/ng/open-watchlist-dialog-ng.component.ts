@@ -47,7 +47,7 @@ export namespace OpenWatchlistDialogNgComponent {
         container.clear();
         const componentRef = container.createComponent(OpenWatchlistDialogNgComponent);
 
-        const component = componentRef.instance as OpenWatchlistDialogNgComponent;
+        const component = componentRef.instance;
 
         return component.open();
     }

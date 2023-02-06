@@ -226,7 +226,7 @@ export namespace DepthGridLayoutsEditorDialogNgComponent {
         const componentRef = container.createComponent(DepthGridLayoutsEditorDialogNgComponent);
         assert(componentRef.instance instanceof DepthGridLayoutsEditorDialogNgComponent, 'ID:157271511202');
 
-        const component = componentRef.instance as DepthGridLayoutsEditorDialogNgComponent;
+        const component = componentRef.instance;
 
         return component.open(allowedFieldsAndLayoutDefinitions);
     }

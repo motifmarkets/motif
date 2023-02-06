@@ -74,7 +74,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     // private _commandBarUiAction: CommandBarUiAction;
 
     constructor(
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         configNgService: ConfigNgService,
         settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,

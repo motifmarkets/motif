@@ -17,10 +17,10 @@ export class WatchlistNgComponent extends GridSourceNgComponent {
         contentNgService: ContentNgService,
     ) {
         super(cdr, contentNgService);
-
-        this.watchlistFrame = contentNgService.createWatchlistFrame(this);
+        this.watchlistFrame = this.frame as WatchlistFrame;
     }
-    protected override createGridSourceFrame() {
-        return this.watchlistFrame;
+
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return  contentNgService.createWatchlistFrame(this);
     }
 }

@@ -83,7 +83,7 @@ export class FeedsFrame extends ContentFrame {
             this._recordSource = table.recordSource as FeedTableRecordSource;
             this._recordList = this._recordSource.recordList;
             this._recordListBadnessChangeSubscriptionId = this._recordList.subscribeBadnessChangeEvent(
-                () => this.handleRecordListBadnessChangeEvent
+                () => this.handleRecordListBadnessChangeEvent()
             );
         }
         this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);

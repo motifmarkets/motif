@@ -27,9 +27,7 @@ export class WorkspaceService {
             throw new AssertInternalError('WSSLDF22293546');
         } else {
             this._localDesktopFrame = value;
-            if (this._localDesktopFrameLoadedMultiEvent !== undefined) {
-                this.notifyLocalDesktopFrameLoaded();
-            }
+            this.notifyLocalDesktopFrameLoaded();
         }
     }
 

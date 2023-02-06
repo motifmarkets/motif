@@ -25,7 +25,7 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,

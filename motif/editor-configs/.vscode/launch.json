@@ -5,17 +5,19 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "type": "pwa-chrome",
+      "type": "chrome",
       "request": "launch",
       "name": "Attach to Chrome",
       "url": "http://localhost:4200",
       "webRoot": "${workspaceFolder}",
       "sourceMaps": true,
       "sourceMapPathOverrides": {
-        "webpack:///./*": "${webRoot}/*",
+        "webpack:///./node_modules/@motifmarkets/motif-core/src/*": "${webRoot}/../../motif-core/src/*",
         "webpack:///./node_modules/revgrid/src/*": "${webRoot}/../../revgrid/src/*",
         "webpack:///./node_modules/golden-layout/src/ts/*": "${webRoot}/../../golden-layout/src/ts/*",
         "webpack://website-embed/./src/*": "${webRoot}/../extensions/website-embed/src/*",
+        "webpack:///./node_modules/oidc-client-ts/src/": "${webRoot}/../../oidc-client-ts/src/*",
+        "webpack:///./*": "${webRoot}/*",
       }
     },
   ]

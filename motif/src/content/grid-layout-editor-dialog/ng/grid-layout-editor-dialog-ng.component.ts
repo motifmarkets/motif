@@ -133,7 +133,7 @@ export namespace GridLayoutEditorDialogNgComponent {
         const componentRef = container.createComponent(GridLayoutEditorDialogNgComponent);
         assert(componentRef.instance instanceof GridLayoutEditorDialogNgComponent, 'ID:157271511202');
 
-        const component = componentRef.instance as GridLayoutEditorDialogNgComponent;
+        const component = componentRef.instance;
 
         return component.open(allowedFieldsAndLayoutDefinition);
     }

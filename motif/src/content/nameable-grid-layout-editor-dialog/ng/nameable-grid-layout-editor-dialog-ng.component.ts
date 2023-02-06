@@ -135,7 +135,7 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
     ): ClosePromise {
         container.clear();
         const componentRef = container.createComponent(NameableGridLayoutEditorDialogNgComponent);
-        const component = componentRef.instance as NameableGridLayoutEditorDialogNgComponent;
+        const component = componentRef.instance;
 
         return component.open(allowedFieldsAndLayoutDefinition);
     }

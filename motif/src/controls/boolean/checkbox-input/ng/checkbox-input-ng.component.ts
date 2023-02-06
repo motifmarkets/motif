@@ -10,17 +10,16 @@ import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
 @Component({
-  selector: 'app-checkbox-input', // should be xxx-checkbox
-  templateUrl: './checkbox-input-ng.component.html',
-  styleUrls: ['./checkbox-input-ng.component.scss'],
-
-  changeDetection: ChangeDetectionStrategy.OnPush
+    selector: 'app-checkbox-input', // should be xxx-checkbox
+    templateUrl: './checkbox-input-ng.component.html',
+    styleUrls: ['./checkbox-input-ng.component.scss'],
+    changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective implements OnInit {
     @Input() checked = false;
     @Input() inputId: string;
 
-    @ViewChild('checkboxInput', { static: true }) private _checkboxInput: ElementRef;
+    @ViewChild('checkboxInput', { static: true }) private _checkboxInput: ElementRef<HTMLInputElement>;
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 

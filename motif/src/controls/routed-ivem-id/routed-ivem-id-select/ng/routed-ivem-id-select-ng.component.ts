@@ -15,6 +15,7 @@ import {
     ComparisonResult,
     ExchangeId,
     ExchangeInfo,
+    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -134,7 +135,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 let result = `${Strings[StringId.Exchange]}: ${ExchangeInfo.idToAbbreviatedDisplay(item.routedIvemId.ivemId.exchangeId)}`;
 
                 if (nameIncluded) {
-                    result = `${this.getItemDisplayName}\n` + result;
+                    result = `${this.getItemDisplayName(item)}\n` + result;
                 }
 
                 return result;
@@ -195,7 +196,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         super.finalise();
     }
 
-    protected override async applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    protected override async applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: RoutedIvemIdSelectNgComponent.Item | null;
@@ -559,7 +560,11 @@ export namespace RoutedIvemIdSelectNgComponent {
                 this.emitItems();
 
                 if (exists === undefined) {
-                    this.fetchTermDetailAndEmit(termRoutedIvemId);
+                    const fetchTermDetailAndEmitPromise = this.fetchTermDetailAndEmit(termRoutedIvemId);
+                    fetchTermDetailAndEmitPromise.then(
+                        () => {/**/},
+                        (error) => { throw new AssertInternalError('RIISNCIAOSF34344', getErrorMessage(error)); }
+                    )
                 }
             }
 
@@ -586,17 +591,15 @@ export namespace RoutedIvemIdSelectNgComponent {
         private async fetchTermDetailAndEmit(routedIvemId: RoutedIvemId) {
             this._termIvemIdFetching = true;
             const cacheDetail = await symbolDetailCache.getIvemId(routedIvemId.ivemId);
-            if (this._termIvemIdFetching) {
-                this._termIvemIdFetching = false;
-                if (cacheDetail !== undefined) {
-                    this._termItem.exists = cacheDetail.exists;
-                    this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail, this._symbolsService);
-                    this.emitItems();
-                }
+            this._termIvemIdFetching = false;
+            if (cacheDetail !== undefined) {
+                this._termItem.exists = cacheDetail.exists;
+                this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail, this._symbolsService);
+                this.emitItems();
+            }
 
-                if (this._searchDelaySetTimeoutHandle === undefined) {
-                    this.complete();
-                }
+            if (this._searchDelaySetTimeoutHandle === undefined) {
+                this.complete();
             }
         }
 

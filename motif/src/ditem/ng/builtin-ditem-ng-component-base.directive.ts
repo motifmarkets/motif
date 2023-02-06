@@ -24,7 +24,7 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         private readonly _container: ComponentContainer,
-        private readonly _elRef: ElementRef,
+        private readonly _elRef: ElementRef<HTMLElement>,
         private readonly _settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
     ) {

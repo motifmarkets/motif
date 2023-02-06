@@ -120,9 +120,9 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
             const elementProperties: EnumUiAction.ElementProperties = {
-                element: i,
-                caption: OrderType.idToDisplay(i),
-                title: OrderType.idToDisplay(i),
+                element: id,
+                caption: OrderType.idToDisplay(id),
+                title: OrderType.idToDisplay(id),
             };
             elementPropertiesArray[idx++] = elementProperties;
         }
@@ -152,9 +152,9 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
             const elementProperties: EnumUiAction.ElementProperties = {
-                element: i,
-                caption: TimeInForce.idToDisplay(i),
-                title: TimeInForce.idToDisplay(i),
+                element: id,
+                caption: TimeInForce.idToDisplay(id),
+                title: TimeInForce.idToDisplay(id),
             };
             elementPropertiesArray[idx++] = elementProperties;
         }
@@ -205,6 +205,6 @@ export namespace OrderPadSettingsNgComponent {
     export function create(container: ViewContainerRef) {
         container.clear();
         const componentRef = container.createComponent(OrderPadSettingsNgComponent);
-        return componentRef.instance as OrderPadSettingsNgComponent;
+        return componentRef.instance;
     }
 }

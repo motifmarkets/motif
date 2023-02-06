@@ -23,6 +23,7 @@ import {
     ComparisonResult,
     ExchangeId,
     ExchangeInfo,
+    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -232,7 +233,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
     protected override pushSettings() {
         super.pushSettings();
-        this.applyValue(this.uiAction.value, this.uiAction.edited, false);
+        this.applyValueWithoutWait(this.uiAction.value, this.uiAction.edited, false);
     }
 
     protected override setUiAction(action: LitIvemIdUiAction) {
@@ -246,7 +247,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
             pushEventHandlersInterface
         );
 
-        this.applyValue(action.value, action.edited);
+        this.applyValueWithoutWait(action.value, action.edited);
     }
 
     protected override finalise() {
@@ -309,7 +310,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     }
 
     private handleValuePushEvent(value: LitIvemId | undefined, edited: boolean, selectAll: boolean) {
-        this.applyValue(value, edited, selectAll);
+        this.applyValueWithoutWait(value, edited, selectAll);
     }
 
     private handleSearchTermNotExchangedMarketProcessedToggleUiActionSignal() {
@@ -430,7 +431,15 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         this._ngSelectOverlayNgService.setFirstColumnWidth(widths.firstColumn, widenOnly);
     }
 
-    private async applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    private applyValueWithoutWait(value: LitIvemId | undefined, edited: boolean, selectAll = true) {
+        const applyPromise = this.applyValue(value, edited, selectAll);
+        applyPromise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'RIISNCIAOSF34344'); }
+        )
+    }
+
+    private async applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean) {
         if (!edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: LitIvemIdSelectNgComponent.Item | null;
@@ -544,7 +553,7 @@ export namespace LitIvemIdSelectNgComponent {
     ) {
         const exists = cacheDetail.exists;
         let name: string;
-        if (exists === true) {
+        if (exists) {
             name = symbolsService.calculateSymbolName(
                 cacheDetail.exchangeId,
                 cacheDetail.name,
@@ -661,7 +670,11 @@ export namespace LitIvemIdSelectNgComponent {
                 this.emitItems();
 
                 if (detail === undefined) {
-                    this.fetchTermDetailAndEmit(termLitIvemId);
+                    const fetchTermDetailAndEmitPromise = this.fetchTermDetailAndEmit(termLitIvemId);
+                    fetchTermDetailAndEmitPromise.then(
+                        () => {/**/},
+                        (error) => { throw new AssertInternalError('LIISNCIAOSF34344', getErrorMessage(error)); }
+                    )
                 }
             }
 
@@ -688,16 +701,14 @@ export namespace LitIvemIdSelectNgComponent {
         private async fetchTermDetailAndEmit(litIvemId: LitIvemId) {
             this._termLitIvemIdFetching = true;
             const cachedDetail = await this._symbolDetailCacheService.getLitIvemId(litIvemId);
-            if (this._termLitIvemIdFetching) {
-                this._termLitIvemIdFetching = false;
-                if (cachedDetail !== undefined) {
-                    this._termItem = LitIvemIdSelectNgComponent.createItemFromCacheDetail(litIvemId, cachedDetail, this._symbolsService);
-                    this.emitItems();
-                }
+            this._termLitIvemIdFetching = false;
+            if (cachedDetail !== undefined) {
+                this._termItem = LitIvemIdSelectNgComponent.createItemFromCacheDetail(litIvemId, cachedDetail, this._symbolsService);
+                this.emitItems();
+            }
 
-                if (this._searchDelaySetTimeoutHandle === undefined) {
-                    this.complete();
-                }
+            if (this._searchDelaySetTimeoutHandle === undefined) {
+                this.complete();
             }
         }
 

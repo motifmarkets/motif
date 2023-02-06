@@ -165,7 +165,7 @@ export namespace AdaptedRevgrid {
         // scrollbarHorizontalThumbHeight,
         // scrollbarVerticalThumbWidth,
         // scrollbarThumbInactiveOpacity,
-        const scrollbarMargin = core.grid_ScrollbarMargin;
+        // const scrollbarMargin = core.grid_ScrollbarMargin;
         const fontFamily = core.grid_FontFamily;
         if (fontFamily !== '') {
             const fontSize = core.grid_FontSize;

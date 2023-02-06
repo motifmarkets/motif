@@ -19,7 +19,7 @@ export class DelayedBadnessComponentImplementation extends ContentComponentImple
         super(componentRef);
     }
 
-    get delayTimeSpan() { return this._actual.delayTimeSpan as TimeSpanApi; }
+    get delayTimeSpan() { return this._actual.delayTimeSpan; }
     set delayTimeSpan(value: TimeSpanApi) { this._actual.delayTimeSpan = value; }
 
     public setBadness(value: BadnessApi) {

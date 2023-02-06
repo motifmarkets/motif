@@ -310,7 +310,7 @@ export namespace ParidepthGridLayoutsEditorDialogNgComponent {
         const componentRef = container.createComponent(ParidepthGridLayoutsEditorDialogNgComponent);
         assert(componentRef.instance instanceof ParidepthGridLayoutsEditorDialogNgComponent, 'ID:157271511202');
 
-        const component = componentRef.instance as ParidepthGridLayoutsEditorDialogNgComponent;
+        const component = componentRef.instance;
 
         return component.open(allowedFieldsAndLayoutDefinition);
     }

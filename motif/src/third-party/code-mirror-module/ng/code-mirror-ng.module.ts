@@ -7,6 +7,7 @@ import { CodeMirrorNgComponent } from '../code-mirror/ng/code-mirror-ng.componen
     imports: [CommonModule],
     bootstrap: [CodeMirrorNgComponent],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class CodeMirrorNgModule {
 
 }

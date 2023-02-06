@@ -94,7 +94,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(value, edited, selectAll);
     }
 
-    private applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    private applyValue(value: LitIvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             let symbol: string;
             if (value === undefined) {

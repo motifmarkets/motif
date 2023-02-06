@@ -27,7 +27,7 @@ export class ReviewOrderRequestComponentNgDirective extends ContentComponentBase
     public zenithMessageTitle = '';
 
     private _zenithMessageActive = false;
-    private _zenithMessageText: string;
+    private _zenithMessageText: string | undefined;
 
     constructor(private readonly _cdr: ChangeDetectorRef,
         private readonly _orderPad: OrderPad,

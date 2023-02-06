@@ -185,12 +185,13 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
             this.applyValueAsNamedGroup(undefined, edited);
         } else {
             switch (value.typeId) {
-                case BrokerageAccountGroup.TypeId.Single:
+                case BrokerageAccountGroup.TypeId.Single: {
                     const singleGroup = value as SingleBrokerageAccountGroup;
                     const keyNamedGroup = this.createKeyNamedGroup(singleGroup.accountKey);
                     this.applyValueAsNamedGroup(keyNamedGroup, edited);
                     break;
-                case BrokerageAccountGroup.TypeId.All:
+                }
+                case BrokerageAccountGroup.TypeId.All: {
                     if (this.uiAction.options.allAllowed) {
                         const allNamedGroup = this.createAllNamedGroup();
                         this.applyValueAsNamedGroup(allNamedGroup, edited);
@@ -198,6 +199,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
                         this.applyValueAsNamedGroup(undefined, edited);
                     }
                     break;
+                }
                 default:
                     throw new UnreachableCaseError('BAGCBDAV77763439', value.typeId);
             }

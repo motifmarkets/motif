@@ -16,7 +16,7 @@ import { RecordGridCellPainter } from '../record-grid-cell-painter';
 export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, RecordGrid.ComponentAccess {
     private readonly _cellPainter: RecordGridCellPainter;
 
-    private _grid: RecordGrid;
+    private _grid: RecordGrid | undefined;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
@@ -29,8 +29,6 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
         this.applySettings();
     }
-
-    get grid() { return this._grid; }
 
     ngOnDestroy() {
         if (this.destroyEventer !== undefined) {
@@ -54,7 +52,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
             ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
         };
 
-        this._grid = new RecordGrid(
+        const grid = new RecordGrid(
             this,
             this._settingsService,
             this._hostElement,
@@ -63,9 +61,11 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
             gridProperties,
         );
 
-        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(this._grid, frameGridProperties);
+        this._grid = grid;
 
-        return this._grid;
+        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridProperties);
+
+        return grid;
     }
 
     override destroyGrid() {
@@ -77,4 +77,4 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     }
 }
 
-let recordGridCellPainter: RecordGridCellPainter; // singleton shared with all RecordGrid instantiations
+let recordGridCellPainter: RecordGridCellPainter | undefined; // singleton shared with all RecordGrid instantiations

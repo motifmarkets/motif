@@ -34,10 +34,10 @@ export class GridSourceFrame extends ContentFrame {
     keepPreviousLayoutIfPossible = false;
     keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
 
-    gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer;
-    recordFocusedEventer: GridSourceFrame.RecordFocusedEventer;
-    gridClickEventer: GridSourceFrame.GridClickEventer;
-    gridDblClickEventer: GridSourceFrame.GridDblClickEventer;
+    gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer | undefined;
+    recordFocusedEventer: GridSourceFrame.RecordFocusedEventer | undefined;
+    gridClickEventer: GridSourceFrame.GridClickEventer | undefined;
+    gridDblClickEventer: GridSourceFrame.GridDblClickEventer | undefined;
     // requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
     // tableOpenEvent: GridSourceFrame.TableOpenEvent;
     // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
@@ -46,13 +46,12 @@ export class GridSourceFrame extends ContentFrame {
     private readonly _opener: LockOpenListItem.Opener;
 
     private _lockedGridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
-    private _openedGridSource: GridSource;
-    private _openedTable: Table;
+    private _openedGridSource: GridSource | undefined;
+    private _openedTable: Table | undefined;
 
     private _grid: RecordGrid;
     private _gridPrepared = false;
 
-    private _table: Table | undefined;
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
     private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
     private _keptGridRowAnchor: RecordGrid.ViewAnchor | undefined;
@@ -75,20 +74,25 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     get isNamed() {
-        const gridSourceOrNamedReference = this._lockedGridSourceOrNamedReference;
-        return gridSourceOrNamedReference !== undefined && gridSourceOrNamedReference.lockedNamedGridSource !== undefined;
+        return this._lockedGridSourceOrNamedReference?.lockedNamedGridSource !== undefined;
     }
 
     get recordStore() { return this._recordStore; }
-    get openedTable() { return this._openedTable; }
+    get openedTable() {
+        if (this._openedTable === undefined) {
+            throw new AssertInternalError('GSFGOT32072');
+        } else {
+            return this._openedTable;
+        }
+    }
     get gridRowHeight() { return this._grid.rowHeight; }
     get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
 
     // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
     // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
     // get table(): Table | undefined { return this._table; }
-    get recordCount(): Integer { return this._table === undefined ? 0 : this._table.recordCount; }
-    get opened(): boolean { return this._table !== undefined; }
+    get recordCount(): Integer { return this._openedTable === undefined ? 0 : this._openedTable.recordCount; }
+    get opened(): boolean { return this._openedTable !== undefined; }
 
     get isFiltered(): boolean { return this._grid.isFiltered; }
     get recordFocused() {return this._grid.recordFocused; }
@@ -185,7 +189,7 @@ export class GridSourceFrame extends ContentFrame {
                             });
                         }
 
-                        this.gridLayoutSetEventer(layout);
+                        this.notifyGridLayoutSet(layout);
                         return gridSourceOrNamedReference;
                     }
                 }
@@ -195,12 +199,12 @@ export class GridSourceFrame extends ContentFrame {
 
     closeGridSource(keepView: boolean) {
         if (this._lockedGridSourceOrNamedReference !== undefined) {
-            if (this._table === undefined) {
+            if (this._openedTable === undefined || this._openedGridSource === undefined) {
                 throw new AssertInternalError('GSF22209');
             } else {
-                this._table.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
+                this._openedTable.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
                 this._tableFieldsChangedSubscriptionId = undefined;
-                this._table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
+                this._openedTable.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
                 this._tableFirstUsableSubscriptionId = undefined;
                 this._tableFieldsChangedSubscriptionId = undefined;
                 this._openedGridSource.unsubscribeGridLayoutSetEvent(this._gridSourceGridLayoutSetSubscriptionId);
@@ -220,7 +224,7 @@ export class GridSourceFrame extends ContentFrame {
                 this._openedGridSource.closeLocked(this._opener);
                 this._lockedGridSourceOrNamedReference.unlock(this._opener);
                 this._lockedGridSourceOrNamedReference = undefined;
-                this._table = undefined;
+                this._openedTable = undefined;
             }
         }
     }
@@ -235,7 +239,11 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     createGridLayoutOrNamedReferenceDefinition() {
-        return this._openedGridSource.createGridLayoutOrNamedReferenceDefinition();
+        if (this._openedGridSource === undefined) {
+            throw new AssertInternalError('GSFCCGLONRD22209');
+        } else {
+            return this._openedGridSource.createGridLayoutOrNamedReferenceDefinition();
+        }
     }
 
     createTableRecordSourceDefinition(): TableRecordSourceDefinition {
@@ -251,11 +259,19 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
-        this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
+        if (this._openedGridSource === undefined) {
+            throw new AssertInternalError('GSFOGLONRD22209');
+        } else {
+            this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
+        }
     }
 
     applyGridLayoutDefinition(definition: GridLayoutOrNamedReferenceDefinition) {
-        this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
+        if (this._openedGridSource === undefined) {
+            throw new AssertInternalError('GSFAGLD22209');
+        } else {
+            this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
+        }
     }
 
 
@@ -333,7 +349,11 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     createRecordDefinition(index: Integer) {
-        return this._openedTable.createRecordDefinition(index);
+        if (this._openedTable === undefined) {
+            throw new AssertInternalError('GSFCRD89981');
+        } else {
+            return this._openedTable.createRecordDefinition(index);
+        }
     }
 
     handleRecordFocusedEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
@@ -372,10 +392,10 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     notifyTableBadnessChange() {
-        if (this._table === undefined) {
+        if (this._openedTable === undefined) {
             throw new AssertInternalError('TFHDIBCE1994448333');
         } else {
-            this._componentAccess.setBadness(this._table.badness);
+            this._componentAccess.setBadness(this._openedTable.badness);
         }
     }
 
@@ -866,16 +886,28 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     protected applySettings() {
-        this._table?.clearRendering();
+        if (this._openedTable !== undefined) {
+            this._openedTable.clearRendering();
+        }
     }
 
     private handleGridSourceGridLayoutSetEvent() {
-        const newLayout = this._openedGridSource.lockedGridLayout;
-        if (newLayout === undefined) {
-            throw new AssertInternalError('GSFHGSGLCE22202');
+        if (this._openedGridSource === undefined) {
+            throw new AssertInternalError('GSFHGSGLSE22209');
         } else {
-            this._grid.updateGridLayout(newLayout);
-            this.gridLayoutSetEventer(newLayout);
+            const newLayout = this._openedGridSource.lockedGridLayout;
+            if (newLayout === undefined) {
+                throw new AssertInternalError('GSFHGSGLCE22202');
+            } else {
+                this._grid.updateGridLayout(newLayout);
+                this.notifyGridLayoutSet(newLayout);
+            }
+        }
+    }
+
+    private notifyGridLayoutSet(layout: GridLayout) {
+        if (this.gridLayoutSetEventer !== undefined) {
+            this.gridLayoutSetEventer(layout);
         }
     }
 
@@ -883,7 +915,11 @@ export class GridSourceFrame extends ContentFrame {
         let rowOrderDefinition = this._keptRowOrderDefinition;
         this._keptRowOrderDefinition = undefined;
         if (rowOrderDefinition === undefined) {
-            rowOrderDefinition = this._openedGridSource.initialRowOrderDefinition;
+            if (this._openedGridSource === undefined) {
+                throw new AssertInternalError('GSFAFU22209');
+            } else {
+                rowOrderDefinition = this._openedGridSource.initialRowOrderDefinition;
+            }
         }
         const viewAnchor = this._keptGridRowAnchor;
         this._keptGridRowAnchor = undefined;
@@ -1160,7 +1196,7 @@ export namespace GridSourceFrame {
         let existsInLayoutConfigLoaded: boolean;
         do {
             nextNewPrivateNameSuffixId++;
-            existsInLayoutConfigLoaded = layoutConfigLoadedNewPrivateNameSuffixIds.indexOf(nextNewPrivateNameSuffixId) >= 0;
+            existsInLayoutConfigLoaded = layoutConfigLoadedNewPrivateNameSuffixIds.includes(nextNewPrivateNameSuffixId);
         } while (existsInLayoutConfigLoaded);
         return nextNewPrivateNameSuffixId;
     }

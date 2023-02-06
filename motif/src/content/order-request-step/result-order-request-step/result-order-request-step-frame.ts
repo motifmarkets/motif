@@ -5,18 +5,25 @@
  */
 
 import {
-    AdiService, AssertInternalError,
+    AdiService,
+    AssertInternalError,
     Badness,
     EnumInfoOutOfOrderError,
     Integer,
-    JsonElement,
-    MultiEvent, Order, OrderPad, OrderRequestDataDefinition, OrderRequestDataItem,
+    MultiEvent,
+    Order,
+    OrderPad,
+    OrderRequestDataDefinition,
+    OrderRequestDataItem,
     OrderRequestError,
     OrderRequestErrorCode,
     OrderRequestErrorCodeId,
     OrderRequestResultId,
     OrderRequestTypeId,
-    OrdersDataMessage, StringId, Strings, UnreachableCaseError
+    OrdersDataMessage,
+    StringId,
+    Strings,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -48,12 +55,6 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
     override finalise() {
         this.checkUnsubscribeDataItem();
         super.finalise();
-    }
-
-    loadLayoutConfig(element: JsonElement | undefined) {
-    }
-
-    saveLayoutConfig(element: JsonElement) {
     }
 
     send(orderPad: OrderPad, definition: OrderRequestDataDefinition) {

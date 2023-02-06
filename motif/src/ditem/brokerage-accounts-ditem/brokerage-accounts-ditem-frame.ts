@@ -7,6 +7,7 @@
 import {
     Account,
     AdiService,
+    AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountId,
     BrokerageAccountTableRecordSource,
@@ -24,7 +25,7 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
-    private _gridSourceFrame: GridSourceFrame;
+    private _gridSourceFrame: GridSourceFrame | undefined;
     private _recordSource: BrokerageAccountTableRecordSource;
     private _recordList: KeyedCorrectnessList<Account>;
 
@@ -82,8 +83,13 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         const contentElement = element.newElement(BrokerageAccountsDitemFrame.JsonName.content);
-        const definition = this._gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
-        definition.saveToJson(contentElement);
+        const gridSourceFrame = this._gridSourceFrame;
+        if (gridSourceFrame === undefined) {
+            throw new AssertInternalError('BADFS50789');
+        } else {
+            const definition = gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
+            definition.saveToJson(contentElement);
+        }
     }
 
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean { // override
@@ -108,8 +114,13 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
                     if (index === -1) {
                         return false;
                     } else {
-                        this._gridSourceFrame.focusItem(index);
-                        return super.applyBrokerageAccountGroup(group, selfInitiated);
+                        const gridSourceFrame = this._gridSourceFrame;
+                        if (gridSourceFrame === undefined) {
+                            throw new AssertInternalError('BADFABAG50789');
+                        } else {
+                            gridSourceFrame.focusItem(index);
+                            return super.applyBrokerageAccountGroup(group, selfInitiated);
+                        }
                     }
                 } finally {
                     this._accountGroupApplying = false;
@@ -137,25 +148,28 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
     }
 
     private tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition) {
-        const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(definition, false);
-        if (gridSourceOrNamedReference !== undefined) {
-            const table = this._gridSourceFrame.openedTable;
-            this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
-            this._recordList = this._recordSource.recordList;
-            this._gridSourceOpenedEventer();
+        const gridSourceFrame = this._gridSourceFrame;
+        if (gridSourceFrame === undefined) {
+            throw new AssertInternalError('BADFTOGS50789');
+        } else {
+            const gridSourceOrNamedReference = gridSourceFrame.tryOpenGridSource(definition, false);
+            if (gridSourceOrNamedReference !== undefined) {
+                const table = gridSourceFrame.openedTable;
+                this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
+                this._recordList = this._recordSource.recordList;
+                this._gridSourceOpenedEventer();
+            }
         }
     }
 
     private processAccountFocusChange(newFocusedAccount: Account) {
         if (!this._accountGroupApplying) {
-            if (newFocusedAccount !== undefined) {
-                this._currentFocusedAccountIdSetting = true;
-                try {
-                    const key = newFocusedAccount.createKey();
-                    this.applyDitemBrokerageAccountGroupFocus(BrokerageAccountGroup.createSingle(key), true);
-                } finally {
-                    this._currentFocusedAccountIdSetting = false;
-                }
+            this._currentFocusedAccountIdSetting = true;
+            try {
+                const key = newFocusedAccount.createKey();
+                this.applyDitemBrokerageAccountGroupFocus(BrokerageAccountGroup.createSingle(key), true);
+            } finally {
+                this._currentFocusedAccountIdSetting = false;
             }
         }
     }

@@ -57,7 +57,11 @@
         "src/sys/mumurhash3.ts",
         "e2e/app.po.ts",
         "e2e/app.e2e-spec.ts",
-        "webpack.config.dev.ts"
+        "webpack.config.dev.ts",
+        "src/content/scan/properties/section/criteria-scan-properties-section/view/scan-criteria-view-ng.directive.ts",
+        "src/controls/command/ng/ng-api.ts",
+        "src/third-party/code-mirror-module/ng/code-mirror-ng.module.ts",
+        "src/third-party/internal-api.ts"
     ],
     "types": [
         "highcharts",

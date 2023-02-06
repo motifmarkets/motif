@@ -130,26 +130,34 @@ export class MarketsFrame extends ContentFrame {
 
     private processMarketsListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
         switch (listChangeTypeId) {
-            case UsableListChangeTypeId.Unusable:
+            case UsableListChangeTypeId.Unusable: {
                 const UnusableBadness = this.calculateBadness();
                 this._componentAccess.setBadness(UnusableBadness);
                 return true;
-            case UsableListChangeTypeId.PreUsableClear:
+            }
+            case UsableListChangeTypeId.PreUsableClear: {
                 return this.clearMarkets();
-            case UsableListChangeTypeId.PreUsableAdd:
+            }
+            case UsableListChangeTypeId.PreUsableAdd: {
                 return this.insertMarkets(index, count);
-            case UsableListChangeTypeId.Usable:
+            }
+            case UsableListChangeTypeId.Usable: {
                 const Usablebadness = this.calculateBadness();
                 this._componentAccess.setBadness(Usablebadness);
                 return true;
-            case UsableListChangeTypeId.Insert:
+            }
+            case UsableListChangeTypeId.Insert: {
                 return this.insertMarkets(index, count);
-            case UsableListChangeTypeId.Replace:
+            }
+            case UsableListChangeTypeId.Replace: {
                 throw new AssertInternalError('CIDFPMLCRP09134');
-            case UsableListChangeTypeId.Remove:
+            }
+            case UsableListChangeTypeId.Remove: {
                 return this.removeMarkets(index, count);
-            case UsableListChangeTypeId.Clear:
+            }
+            case UsableListChangeTypeId.Clear: {
                 return this.clearMarkets();
+            }
             default:
                 throw new UnreachableCaseError('CIDFPMLCU09134', listChangeTypeId);
         }

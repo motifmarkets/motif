@@ -332,7 +332,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExplicitSearchFieldsEnabled]);
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExplicitSearchFieldsEnabled]);
         action.commitEvent = () => {
-            this.coreSettings.symbol_ExplicitSearchFieldsEnabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
+            this._symbolsService.explicitSearchFieldsEnabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
             this.updateExplicitSearchFieldsUiActionEnabled();
         };
         return action;
@@ -357,7 +357,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this.coreSettings.symbol_ExplicitSearchFieldIds = this._explicitSymbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
+            this._symbolsService.explicitSearchFieldIds = this._explicitSymbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
         };
         return action;
     }
@@ -434,8 +434,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._minimumPriceFractionDigitsCountUiAction.pushValue(this.coreSettings.format_MinimumPriceFractionDigitsCount);
         this._24HourUiAction.pushValue(this.coreSettings.format_24Hour);
         this._dateTimeTimezoneModeUiAction.pushValue(this.coreSettings.format_DateTimeTimezoneModeId);
-        this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldsEnabled);
-        this._explicitSymbolSearchFieldsUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldIds);
+        this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this._symbolsService.explicitSearchFieldsEnabled);
+        this._explicitSymbolSearchFieldsUiAction.pushValue(this._symbolsService.explicitSearchFieldIds);
         this.updateExplicitSearchFieldsUiActionEnabled();
         this._settingsProfileUiAction.pushValue(this._masterSettings.applicationEnvironmentSelectorId);
 
@@ -475,6 +475,6 @@ export namespace GeneralSettingsNgComponent {
         container.clear();
         const componentRef = container.createComponent(GeneralSettingsNgComponent);
         assert(componentRef.instance instanceof GeneralSettingsNgComponent, 'ASCC2288532');
-        return componentRef.instance as GeneralSettingsNgComponent;
+        return componentRef.instance;
     }
 }

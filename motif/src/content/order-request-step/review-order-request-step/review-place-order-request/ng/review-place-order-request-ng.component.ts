@@ -163,10 +163,10 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
                     const triggerValueText = triggerValue === undefined ? '' : textFormatterService.formatPrice(triggerValue);
                     const triggerExtraParamsText = orderTrigger.extraParamsText;
                     let trigger = triggerTypeText;
-                    if (triggerValueText !== undefined && triggerValueText !== '') {
+                    if (triggerValueText !== '') {
                         trigger += ': ' + triggerValueText;
                     }
-                    if (triggerExtraParamsText !== '') {
+                    if (triggerExtraParamsText !== undefined && triggerExtraParamsText !== '') {
                         trigger += ' ' + '(' + triggerExtraParamsText + ')';
                     }
                     this.trigger = trigger;

@@ -228,7 +228,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     public get litIvemIdChangedEvent(): DesktopFrame.TLitIvemIdChangedEvent { return this._litIvemIdChangedEvent; }
     public set litIvemIdChangedEvent(value: DesktopFrame.TLitIvemIdChangedEvent) { this._litIvemIdChangedEvent = value; }
 
-    async initialise(goldenLayoutHostFrame: GoldenLayoutHostFrame) {
+    initialise(goldenLayoutHostFrame: GoldenLayoutHostFrame) {
         this._goldenLayoutHostFrame = goldenLayoutHostFrame;
 
         this.connectMenuBarItems();
@@ -449,8 +449,12 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     async resetLayout() {
         // this._activeLayoutName = undefined;
         // this._goldenLayoutHostFrame.resetLayout();
-        await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName);
-        this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
+        const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName);
+        if (result.isErr()) {
+            Logger.logError(`DesktopService save layout error: ${result.error}`);
+        } else {
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
+        }
     }
 
     createExtensionComponent(extensionHandle: ExtensionHandle, frameTypeName: string, initialState: JsonValue | undefined,
@@ -531,6 +535,8 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         } else {
             goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
         }
+        // remove eslint disable when can save with different names
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._activeLayoutName !== undefined) {
             layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
         }
@@ -539,11 +545,15 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
         const layoutStr = JSON.stringify(layoutElement.json);
         try {
-            await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr);
-            this._layoutSaveRequired = false;
+            const result = await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr);
+            if (result.isErr()) {
+                Logger.logError(`DesktopService save layout error: ${result.error}`);
+            } else {
+                this._layoutSaveRequired = false;
+            }
         } catch (e) {
-            Logger.logError(`DesktopService save layout error: ${e}`);
-            throw(e);
+            const errorText = getErrorMessage(e);
+            Logger.logError(`DesktopService save layout error: ${errorText}`);
         }
     }
 
@@ -568,7 +578,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             if (!(primaryFrame instanceof OrderRequestDitemFrame)) {
                 throw new AssertInternalError('GLHFEOR233884324');
             } else {
-                const orderRequestFrame = primaryFrame as OrderRequestDitemFrame;
+                const orderRequestFrame = primaryFrame;
                 orderRequestFrame.setOrderPad(pad);
                 primaryFrame.focus();
             }
@@ -620,11 +630,27 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     private handleSaveLayoutUiActionSignal() {
-        this.saveLayout();
+        const saveLayoutPromise = this.saveLayout();
+        saveLayoutPromise.then(
+            () => {
+                // nothing to do
+            },
+            (error) => {
+                throw new AssertInternalError('DFHSLUAS69333', getErrorMessage(error)); // should never occur
+            }
+        )
     }
 
     private handleResetLayoutUiActionSignal() {
-        this.resetLayout();
+        const resetLayoutPromise = this.resetLayout();
+        resetLayoutPromise.then(
+            () => {
+                // nothing to do
+            },
+            (error) => {
+                throw new AssertInternalError('DFHSLUAS69334', getErrorMessage(error)); // should never occur
+            }
+        )
     }
 
     private handleSignOutUiActionSignal() {
@@ -934,7 +960,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         let result: Result<void>;
         let layoutJson: Json | undefined;
         try {
-            layoutJson = JSON.parse(layoutAsStr);
+            layoutJson = JSON.parse(layoutAsStr) as Json;
             result = new Ok(undefined);
         } catch (e) {
             const errorText = `${Strings[StringId.Layout_InvalidJson]}: "${getErrorMessage(e)}": ${layoutAsStr}`;
@@ -946,7 +972,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         if (layoutJson !== undefined) {
             const layoutElement = new JsonElement(layoutJson);
             this._activeLayoutName = layoutName;
-            const name = this._activeLayoutName ?? 'Unnamed';
+            const name = this._activeLayoutName;
             const schemaVersionResult = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
             if (schemaVersionResult.isErr()) {
                 Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
@@ -954,7 +980,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             } else {
                 if (schemaVersionResult.value !== DesktopFrame.layoutStateSchemaVersion) {
                     Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
-                        `${schemaVersionResult}, ${DesktopFrame.layoutStateSchemaVersion}`);
+                        `${schemaVersionResult.value}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
                     const goldenResult = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);

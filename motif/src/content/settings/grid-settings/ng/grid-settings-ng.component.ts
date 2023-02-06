@@ -458,6 +458,6 @@ export namespace GridSettingsNgComponent {
         container.clear();
         const componentRef = container.createComponent(GridSettingsNgComponent);
         assert(componentRef.instance instanceof GridSettingsNgComponent, 'GSCC39399987');
-        return componentRef.instance as GridSettingsNgComponent;
+        return componentRef.instance;
     }
 }

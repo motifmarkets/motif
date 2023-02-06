@@ -315,14 +315,16 @@ export class DepthSideFrame extends ContentFrame {
     private activateStore(styleId: DepthStyleId) {
         this._activeStore = this._styleCache[styleId].store;
         switch (this._activeStore.styleId) {
-            case DepthStyleId.Full:
+            case DepthStyleId.Full: {
                 const fullDataStore = this._activeStore as FullDepthSideGridRecordStore;
                 this.setGrid(fullDataStore);
                 break;
-            case DepthStyleId.Short:
+            }
+            case DepthStyleId.Short: {
                 const shortDataStore = this._activeStore as ShortDepthSideGridRecordStore;
                 this.setGrid(shortDataStore);
                 break;
+            }
             default:
                 throw new UnreachableCaseError('DSFDSFAS333387', this._activeStore.styleId);
         }

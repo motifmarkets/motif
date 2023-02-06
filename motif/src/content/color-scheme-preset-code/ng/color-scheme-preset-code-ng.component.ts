@@ -185,7 +185,7 @@ export namespace ColorSchemePresetCodeNgComponent {
         const componentRef = container.createComponent(ColorSchemePresetCodeNgComponent);
         assert(componentRef.instance instanceof ColorSchemePresetCodeNgComponent, 'CSPCCO232324');
 
-        const component = componentRef.instance as ColorSchemePresetCodeNgComponent;
+        const component = componentRef.instance;
 
         return component.open(colorSettings);
     }

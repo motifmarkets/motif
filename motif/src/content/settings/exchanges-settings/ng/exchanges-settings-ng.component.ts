@@ -67,6 +67,6 @@ export namespace ExchangesSettingsNgComponent {
     export function create(container: ViewContainerRef) {
         container.clear();
         const componentRef = container.createComponent(ExchangesSettingsNgComponent);
-        return componentRef.instance as ExchangesSettingsNgComponent;
+        return componentRef.instance;
     }
 }

@@ -16,7 +16,7 @@ import { SimpleGridCellPainter } from '../simple-grid-cell-painter';
 export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, SimpleGrid.ComponentAccess {
     private readonly _cellPainter: SimpleGridCellPainter;
 
-    private _grid: SimpleGrid;
+    private _grid: SimpleGrid | undefined;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
@@ -29,8 +29,6 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
         this.applySettings();
     }
-
-    get grid() { return this._grid; }
 
     ngOnDestroy() {
         if (this.destroyEventer !== undefined) {
@@ -55,7 +53,7 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
             ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
         };
 
-        this._grid = new SimpleGrid(
+        const grid = new SimpleGrid(
             this,
             this._settingsService,
             this._hostElement,
@@ -63,9 +61,11 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
             gridProperties,
         );
 
-        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(this._grid, frameGridProperties);
+        this._grid = grid;
 
-        return this._grid;
+        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridProperties);
+
+        return grid;
     }
 
     override destroyGrid() {

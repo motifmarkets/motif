@@ -370,8 +370,7 @@ export class DepthFrame extends ContentFrame {
     }
 
     private subscribeSecurityDataItem(litIvemId: LitIvemId) {
-        const definition = new SecurityDataDefinition();
-        definition.litIvemId = litIvemId;
+        const definition = new SecurityDataDefinition(litIvemId);
         this._securityDataItem = this._adi.subscribe(definition) as SecurityDataItem;
         this._securityDataItemDefined = true;
         this._securityDataItemFieldValuesChangedSubscriptionId = this._securityDataItem.subscribeFieldValuesChangedEvent(
@@ -388,7 +387,7 @@ export class DepthFrame extends ContentFrame {
     private processUsableSecurityDataItem() {
         const resolvedDepthStyleId = this.resolveDepthStyleId();
         switch (resolvedDepthStyleId) {
-            case DepthStyleId.Full:
+            case DepthStyleId.Full: {
                 const depthDefinition = new DepthDataDefinition();
                 depthDefinition.litIvemId = this._litIvemId;
                 this._depthDataItem = this._adi.subscribe(depthDefinition) as DepthDataItem;
@@ -398,7 +397,8 @@ export class DepthFrame extends ContentFrame {
                     this._depthDataItem.subscribeBadnessChangeEvent(() => this.handleDepthBadnessChangeEvent());
                 this.openFull();
                 break;
-            case DepthStyleId.Short:
+            }
+            case DepthStyleId.Short: {
                 const levelDefinition = new DepthLevelsDataDefinition();
                 levelDefinition.litIvemId = this._litIvemId;
                 this._levelDataItem = this._adi.subscribe(levelDefinition) as DepthLevelsDataItem;
@@ -408,6 +408,7 @@ export class DepthFrame extends ContentFrame {
                     this._levelDataItem.subscribeBadnessChangeEvent(() => this.handleLevelBadnessChangeEvent());
                 this.openShort();
                 break;
+            }
             default:
                 throw new UnreachableCaseError('DFPGSDIR44476', resolvedDepthStyleId);
         }

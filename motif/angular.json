@@ -68,7 +68,9 @@
             ],
             "baseHref": "/",
             "allowedCommonJsDependencies": [
-              "crypto-js"
+              "crypto-js",
+              "decimal.js-light",
+              "rollbar"
             ]
           },
           "configurations": {

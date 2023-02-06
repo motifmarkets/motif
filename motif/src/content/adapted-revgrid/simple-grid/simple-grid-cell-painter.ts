@@ -50,7 +50,7 @@ export class SimpleGridCellPainter extends CellPainter {
                 return new BigIntRenderValue(configValue);
             case 'object': {
                 if (configValue instanceof RenderValue) {
-                    return configValue as RenderValue;
+                    return configValue;
                 } else {
                     if (Object.prototype.toString.call(configValue) === '[object Date]') {
                         return new DateTimeRenderValue(configValue as Date);
@@ -67,6 +67,7 @@ export class SimpleGridCellPainter extends CellPainter {
 
 export namespace SimpleGridCellPainter {
     export type DataValue = DataModel.DataValue | string | RenderValue;
+    // eslint-disable-next-line @typescript-eslint/consistent-indexed-object-style
     export interface DataRow extends RevSimpleAdapterSet.DataRow {
         [columnName: string]: DataValue;
     }

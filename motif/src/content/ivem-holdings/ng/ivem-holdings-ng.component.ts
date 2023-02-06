@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -14,10 +14,5 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class IvemHoldingsNgComponent extends ContentComponentBaseNgDirective implements OnInit {
-    constructor() {
-        super();
-    }
-
-    ngOnInit() {}
+export class IvemHoldingsNgComponent extends ContentComponentBaseNgDirective {
 }

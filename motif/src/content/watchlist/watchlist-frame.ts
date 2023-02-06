@@ -32,7 +32,7 @@ import {
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class WatchlistFrame extends GridSourceFrame {
-    saveRequiredEventer: WatchlistFrame.SaveRequiredEventer;
+    saveRequiredEventer: WatchlistFrame.SaveRequiredEventer | undefined;
 
     private _litIvemIdList: RankedLitIvemIdList;
     private _recordSource: RankedLitIvemIdListTableRecordSource;

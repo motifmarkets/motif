@@ -17,7 +17,9 @@ import { NgModule } from '@angular/core';
     ],
 })
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class WorkspaceNgModule {
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor
     constructor() {
         // StaticInitialise.initialise();
     }

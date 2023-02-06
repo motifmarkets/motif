@@ -94,7 +94,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(value, edited, selectAll);
     }
 
-    private applyValue(value: IvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    private applyValue(value: IvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             let symbol: string;
             if (value === undefined) {

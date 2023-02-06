@@ -36,7 +36,7 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
         }
     ];
 
-    constructor(elRef: ElementRef) {
+    constructor(elRef: ElementRef<HTMLElement>) {
         super();
 
         this._hostElement = elRef.nativeElement;
