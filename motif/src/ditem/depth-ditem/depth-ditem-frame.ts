@@ -27,6 +27,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     get filterActive() { return this._depthFrame.filterActive; }
     get filterXrefs() { return this._depthFrame.filterXrefs; }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._depthFrame !== undefined; }
 
     initialise(depthFrame: DepthFrame, frameElement: JsonElement | undefined): void {

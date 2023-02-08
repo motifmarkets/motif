@@ -276,22 +276,20 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (allowedFieldsAndLayoutDefinition !== undefined) {
-            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
-            closePromise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
-                    }
-                    this.closeDialog();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`Orders Ditem Layout Dialog error: ${errorText}`);
-                    this.closeDialog();
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                 }
-            );
-        }
+                this.closeDialog();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`Orders Ditem Layout Dialog error: ${errorText}`);
+                this.closeDialog();
+            }
+        );
 
         this.markForCheck();
     }

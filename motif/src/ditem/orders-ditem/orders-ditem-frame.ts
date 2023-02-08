@@ -61,6 +61,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._gridSourceFrame !== undefined; }
     get focusedRecordIndex() { return this._gridSourceFrame.getFocusedRecordIndex(); }
 

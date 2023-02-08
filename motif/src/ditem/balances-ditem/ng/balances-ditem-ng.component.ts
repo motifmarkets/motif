@@ -15,7 +15,6 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     delay1Tick,
@@ -103,8 +102,6 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
-        assert(this._gridSourceComponent !== undefined, 'BDCNAVI22953');
-
         delay1Tick(() => this.initialise());
     }
 

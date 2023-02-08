@@ -568,46 +568,44 @@ function renderSingleLineText(
         }
     }
 
-    if (val !== null) {
-        // the position for x need to be relocated.
-        // for canvas to print text, when textAlign is 'end' or 'right'
-        // it will start with position x and print the text on the left
-        // so the exact position for x need to increase by the acutal width - rightPadding
-        x += halign === 'right'
-            ? width - rightPadding
-            : Math.max(leftPadding, halignOffset);
-        y += Math.floor(config.bounds.height / 2);
+    // the position for x need to be relocated.
+    // for canvas to print text, when textAlign is 'end' or 'right'
+    // it will start with position x and print the text on the left
+    // so the exact position for x need to increase by the acutal width - rightPadding
+    x += halign === 'right'
+        ? width - rightPadding
+        : Math.max(leftPadding, halignOffset);
+    y += Math.floor(config.bounds.height / 2);
 
-        if (config.isUserDataArea) {
-            if (config.link) {
-                if (config.isCellHovered || !config.linkOnHover) {
-                    if (config.linkColor) {
-                        gc.cache.strokeStyle = config.linkColor;
-                    }
-                    gc.beginPath();
-                    underline(config, gc, val, x, y, 1);
-                    gc.stroke();
-                    gc.closePath();
+    if (config.isUserDataArea) {
+        if (config.link) {
+            if (config.isCellHovered || !config.linkOnHover) {
+                if (config.linkColor) {
+                    gc.cache.strokeStyle = config.linkColor;
                 }
-                if (config.linkColor && (config.isCellHovered || !config.linkColorOnHover)) {
-                    gc.cache.fillStyle = config.linkColor;
-                }
-            }
-
-            if (config.strikeThrough === true) {
                 gc.beginPath();
-                strikeThrough(config, gc, val, x, y, 1);
+                underline(config, gc, val, x, y, 1);
                 gc.stroke();
                 gc.closePath();
             }
+            if (config.linkColor && (config.isCellHovered || !config.linkColorOnHover)) {
+                gc.cache.fillStyle = config.linkColor;
+            }
         }
 
-        gc.cache.textAlign = halign === 'right'
-            ? 'right'
-            : 'left';
-        gc.cache.textBaseline = 'middle';
-        gc.fillText(val, x, y);
+        if (config.strikeThrough) {
+            gc.beginPath();
+            strikeThrough(config, gc, val, x, y, 1);
+            gc.stroke();
+            gc.closePath();
+        }
     }
+
+    gc.cache.textAlign = halign === 'right'
+        ? 'right'
+        : 'left';
+    gc.cache.textBaseline = 'middle';
+    gc.fillText(val, x, y);
 
     return minWidth;
 }

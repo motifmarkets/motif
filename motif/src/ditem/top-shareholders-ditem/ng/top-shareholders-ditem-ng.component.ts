@@ -446,13 +446,11 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private isHistoryValid() {
-        return this._symbolUiAction !== undefined &&
-            this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk();
+        return this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk();
     }
 
     private isCompareValid() {
-        return this._symbolUiAction !== undefined &&
-            this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk() && this._compareDateUiAction.isValueOk();
+        return this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk() && this._compareDateUiAction.isValueOk();
     }
 
     private isHistoryCompareValid() {

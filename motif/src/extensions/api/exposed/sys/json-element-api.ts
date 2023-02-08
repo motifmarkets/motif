@@ -17,19 +17,19 @@ export interface JsonElement {
     deepExtend(other: Json): void;
 
     stringify(): string;
-    parse(jsonText: string): Result<void, string>;
+    parse(jsonText: string): Result<void>;
 
-    tryGetElement(name: string): Result<JsonElement, string>;
+    tryGetElement(name: string): Result<JsonElement>;
     tryGetJsonValue(name: string): JsonValue | undefined;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    tryGetNativeObject(name: string): Result<object, string>;
-    tryGetJsonObject(name: string): Result<Json, string>;
+    tryGetNativeObject(name: string): Result<object>;
+    tryGetJsonObject(name: string): Result<Json>;
 
-    tryGetString(name: string): Result<string, string>;
+    tryGetString(name: string): Result<string>;
     getString(name: string, defaultValue: string): string;
-    tryGetNumber(name: string): Result<number, string>;
+    tryGetNumber(name: string): Result<number>;
     getNumber(name: string, defaultValue: number): number;
-    tryGetBoolean(name: string): Result<boolean, string>;
+    tryGetBoolean(name: string): Result<boolean>;
     getBoolean(name: string, defaultValue: boolean): boolean;
 
     tryGetElementArray(name: string): Result<JsonElement[], Integer>;
@@ -39,15 +39,15 @@ export interface JsonElement {
     tryGetBooleanArray(name: string): Result<boolean[], Integer>;
     tryGetAnyJsonValueTypeArray(name: string): Result<JsonValue[], Integer>;
 
-    tryGetInteger(name: string): Result<Integer, string>;
+    tryGetInteger(name: string): Result<Integer>;
     getInteger(name: string, defaultValue: Integer): Integer;
-    tryGetDate(name: string): Result<Date, string>;
+    tryGetDate(name: string): Result<Date>;
     getDate(name: string, defaultValue: Date): Date;
-    tryGetDateTime(name: string): Result<Date, string>;
+    tryGetDateTime(name: string): Result<Date>;
     getDateTime(name: string, defaultValue: Date): Date;
-    tryGetGuid(name: string): Result<Guid, string>;
+    tryGetGuid(name: string): Result<Guid>;
     getGuid(name: string, defaultValue: Guid): Guid;
-    tryGetDecimal(name: string): Result<Decimal, string>;
+    tryGetDecimal(name: string): Result<Decimal>;
     getDecimal(name: string, defaultValue: Decimal): Decimal;
 
     newElement(name: string): JsonElement;

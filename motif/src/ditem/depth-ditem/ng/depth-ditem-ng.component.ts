@@ -373,12 +373,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private pushFilterEditValue() {
         const filterXrefs = this._frame.filterXrefs;
-        let value: string;
-        if (filterXrefs === undefined) {
-            value = '';
-        } else {
-            value = CommaText.fromStringArray(filterXrefs);
-        }
+        const value = CommaText.fromStringArray(filterXrefs);
         this._filterEditUiAction.pushValue(value);
     }
 

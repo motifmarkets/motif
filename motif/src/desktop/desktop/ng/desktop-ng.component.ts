@@ -52,7 +52,7 @@ import { DesktopFrame } from '../desktop-frame';
 })
 export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
-    @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent;
+    @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent | undefined;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;
     @ViewChild('layoutHost', { static: true }) private _layoutHostComponent: GoldenLayoutHostNgComponent;
@@ -69,7 +69,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
 
     private readonly _desktopFrame: DesktopFrame;
 
-    private readonly _aboutAdvertisingUiAction: ButtonUiAction;
+    private readonly _aboutAdvertisingUiAction: ButtonUiAction | undefined;
     private readonly _signOutUiAction: ButtonUiAction;
     // private _commandBarUiAction: CommandBarUiAction;
 

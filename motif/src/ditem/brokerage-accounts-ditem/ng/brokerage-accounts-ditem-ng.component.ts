@@ -105,13 +105,9 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         this.pushAccountLinkButtonState();
     }
 
-    public handleSymbolChange(value: string) {
+    // public setFilter(value: string) {
 
-    }
-
-    public setFilter(value: string) {
-
-    }
+    // }
 
     protected override initialise() {
         assert(assigned(this._contentComponent), 'ID:53255332');

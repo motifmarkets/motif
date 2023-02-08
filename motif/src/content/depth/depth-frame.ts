@@ -88,7 +88,7 @@ export class DepthFrame extends ContentFrame {
                 if (commaTextResult.isErr()) {
                     this._filterActive = false;
                     this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: ${asStrResult} (${commaTextResult.error})`);
+                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${commaTextResult.error})`);
                 } else {
                     this._filterXrefs = commaTextResult.value;
                 }
@@ -433,7 +433,7 @@ export class DepthFrame extends ContentFrame {
         const subscriptionData = this._securityDataItem.subscriptionData;
         let resolvedDepthStyleId: DepthStyleId;
         if (subscriptionData === undefined) {
-            Logger.logWarning(`Security ${this._litIvemId} does not have Subscription Data`);
+            Logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
             resolvedDepthStyleId = this._preferredDepthStyleId; // try this
         } else {
             switch (this._preferredDepthStyleId) {
@@ -447,7 +447,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionData.includes(ZenithSubscriptionDataId.DepthShort)) {
                                 resolvedDepthStyleId = DepthStyleId.Short;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId} does not have any Depth`);
+                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Full; // try this - probably wont work
                             }
                         }
@@ -464,7 +464,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionData.includes(ZenithSubscriptionDataId.DepthFull)) {
                                 resolvedDepthStyleId = DepthStyleId.Full;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId} does not have any Depth`);
+                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Short; // try this - probably wont work
                             }
                         }

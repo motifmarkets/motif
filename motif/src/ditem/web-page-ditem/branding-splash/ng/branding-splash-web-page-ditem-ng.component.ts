@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
@@ -15,7 +15,7 @@ import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-dit
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
-    implements OnInit, BrandingSplashWebPageDitemFrame.ComponentAccess {
+    implements BrandingSplashWebPageDitemFrame.ComponentAccess {
 
     public safeResourceUrl: SafeResourceUrl;
 
@@ -41,8 +41,6 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
 
     get ditemFrame() { return this._frame; }
     protected get stateSchemaVersion() { return BrandingSplashWebPageDitemNgComponent.stateSchemaVersion; }
-
-    ngOnInit(): void {}
 
     loadPage(safeResourceUrl: SafeResourceUrl) {
         this.safeResourceUrl = safeResourceUrl;

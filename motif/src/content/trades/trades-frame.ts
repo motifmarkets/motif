@@ -15,7 +15,6 @@ import {
     DayTradesGridRecordStore,
     GridLayout,
     GridLayoutDefinition,
-    Integer,
     JsonElement,
     LitIvemId,
     MultiEvent
@@ -46,9 +45,9 @@ export class TradesFrame extends ContentFrame {
     initialise(element: JsonElement | undefined) {
         this._grid = this._componentAccess.createGrid(this._recordStore);
         this._grid.rowOrderReversed = true;
-        this._grid.recordFocusedEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
-        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
+        // this._grid.recordFocusedEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
+        // this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
+        // this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
 
         let gridLayout: GridLayout;
         if (element === undefined) {
@@ -130,14 +129,14 @@ export class TradesFrame extends ContentFrame {
         this._grid.autoSizeAllColumnWidths();
     }
 
-    handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
-    }
+    // private handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+    // }
 
-    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-    }
+    // private handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+    // }
 
-    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-    }
+    // private handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+    // }
 
     // adviseColumnWidthChanged(columnIndex: Integer) {
     //     if (this.activeWidthChangedEvent !== undefined) {

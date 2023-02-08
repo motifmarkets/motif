@@ -431,22 +431,20 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         this._modeId = SearchSymbolsDitemNgComponent.ModeId.LayoutEditor;
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (allowedFieldsAndLayoutDefinition !== undefined) {
-            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
-            closePromise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`Symbols Layout Editor error: ${errorText}`);
-                    this.closeLayoutEditor();
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                 }
-            );
-        }
+                this.closeLayoutEditor();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`Symbols Layout Editor error: ${errorText}`);
+                this.closeLayoutEditor();
+            }
+        );
 
         this.markForCheck();
     }
