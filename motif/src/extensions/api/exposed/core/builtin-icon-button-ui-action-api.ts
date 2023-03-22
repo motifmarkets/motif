@@ -8,7 +8,7 @@ import { ButtonUiAction } from './button-ui-action-api';
 
 /** @public */
 export interface BuiltinIconButtonUiAction extends ButtonUiAction {
-    readonly iconId: BuiltinIconButtonUiAction.IconId;
+    readonly iconId: BuiltinIconButtonUiAction.IconId | undefined;
 
     pushIcon(iconId: BuiltinIconButtonUiAction.IconId): void;
 }

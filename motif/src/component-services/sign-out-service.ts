@@ -7,10 +7,10 @@
 import { AssertInternalError } from '@motifmarkets/motif-core';
 
 export class SignOutService {
-    signOutEvent: SignOutService.SignOutEvent;
+    signOutEvent: SignOutService.SignOutEvent | undefined;
 
     signOut() {
-        if (!this.signOutEvent === undefined) {
+        if (this.signOutEvent === undefined) {
             throw new AssertInternalError('SOSSO3386200');
         } else {
             this.signOutEvent();

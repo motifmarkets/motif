@@ -29,12 +29,14 @@ import {
 import { ContentFrame } from '../content-frame';
 
 export class MarketsFrame extends ContentFrame {
-    marketCountChangedEvent: MarketsFrame.MarketsCountChangedEventHandler;
-    tradingMarketBoardCountChangedEvent: MarketsFrame.TradingMarketBoardCountChangedEventHandler;
+    marketCountChangedEvent: MarketsFrame.MarketsCountChangedEventHandler | undefined;
+    tradingMarketBoardCountChangedEvent: MarketsFrame.TradingMarketBoardCountChangedEventHandler | undefined;
 
-    private _marketsDataItem: MarketsDataItem;
+    private _marketsDataItem: MarketsDataItem | undefined;
     private _marketsListChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _marketsBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
+
+    private _markets: Market[];
 
     private _marketWrappers: MarketsFrame.MarketWrapper[] = [];
     private _displayRecords: MarketsFrame.DisplayRecord[] = [];
@@ -60,6 +62,7 @@ export class MarketsFrame extends ContentFrame {
     initialise() {
         const dataDefinition = new MarketsDataDefinition();
         this._marketsDataItem = this._adi.subscribe(dataDefinition) as MarketsDataItem;
+        this._markets = this._marketsDataItem.records;
         this._marketsListChangeSubscriptionId = this._marketsDataItem.subscribeListChangeEvent(
             (listChangeTypeId, index, count) => this.handleMarketsListChangeEvent(listChangeTypeId, index, count)
         );
@@ -90,6 +93,8 @@ export class MarketsFrame extends ContentFrame {
             this._marketsDataItem.unsubscribeBadnessChangeEvent(this._marketsBadnessChangeSubscriptionId);
             this._marketsBadnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._marketsDataItem);
+            this._markets = undefined as unknown as Market[];
+            this._marketsDataItem = undefined;
         }
 
         super.finalise();
@@ -125,7 +130,11 @@ export class MarketsFrame extends ContentFrame {
     }
 
     private calculateBadness() {
-        return this._marketsDataItem.badness;
+        if (this._marketsDataItem === undefined) {
+            throw new AssertInternalError('MFCB03298');
+        } else {
+            return this._marketsDataItem.badness;
+        }
     }
 
     private processMarketsListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
@@ -183,7 +192,7 @@ export class MarketsFrame extends ContentFrame {
             const newMarketWrappers = new Array<MarketsFrame.MarketWrapper>(count);
             let recordIdx = index;
             for (let i = 0; i < count; i++) {
-                const market = this._marketsDataItem.records[recordIdx++];
+                const market = this._markets[recordIdx++];
                 const wrapper = new MarketsFrame.MarketWrapper(market);
                 wrapper.changeEvent = () => this.handleMarketChangeEvent();
                 newMarketWrappers[i] = wrapper;
@@ -211,7 +220,7 @@ export class MarketsFrame extends ContentFrame {
     }
 
     private updateDisplayRecordsAndCounts() {
-        const markets = this._marketsDataItem.records;
+        const markets = this._markets;
 
         const marketCount = markets.length;
         let offlineMarketCount = 0;

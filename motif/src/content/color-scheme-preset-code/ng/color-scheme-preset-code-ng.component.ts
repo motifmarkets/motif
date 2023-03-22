@@ -88,7 +88,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
         const listener = (e: ClipboardEvent) => {
             const clipboard = e.clipboardData;
             if (clipboard === null) {
-
+                // show some type of warning in future
             } else {
                 clipboard.setData('text/plain', this.presetCode);
                 e.preventDefault();

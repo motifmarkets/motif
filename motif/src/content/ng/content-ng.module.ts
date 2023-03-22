@@ -35,9 +35,13 @@ import {
 } from '../extensions/ng-api';
 import { FeedsNgComponent } from '../feeds/ng-api';
 import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
-import { GridLayoutEditorDialogNgComponent } from '../grid-layout-editor-dialog/ng-api';
-import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-api';
-import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
+import {
+    GridLayoutEditorAllowedFieldsGridNgComponent,
+    GridLayoutEditorDefinitionColumnPropertiesNgComponent,
+    GridLayoutEditorDefinitionGridNgComponent,
+    GridLayoutEditorDialogNgComponent,
+    GridLayoutEditorNgComponent
+} from '../grid-layout-dialog/ng-api';
 import { GridSourceNgComponent } from '../grid-source/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
@@ -102,7 +106,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         FeedsNgComponent,
         GridColumnPropertiesNgComponent,
         GridLayoutEditorNgComponent,
-        GridLayoutEditorGridNgComponent,
+        GridLayoutEditorAllowedFieldsGridNgComponent,
+        GridLayoutEditorDefinitionColumnPropertiesNgComponent,
+        GridLayoutEditorDefinitionGridNgComponent,
         IvemHoldingsNgComponent,
         MarketsNgComponent,
         PadOrderRequestStepNgComponent,
@@ -192,6 +198,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         WatchlistNgComponent,
     ]
 })
+
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ContentNgModule {
     constructor() {
         StaticInitialise.initialise();

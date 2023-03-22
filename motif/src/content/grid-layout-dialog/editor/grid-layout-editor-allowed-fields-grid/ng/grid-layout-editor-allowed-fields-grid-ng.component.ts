@@ -18,22 +18,23 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
-import { RecordGridNgComponent } from '../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
-import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { AdaptedRevgrid, RecordGrid } from '../../../../adapted-revgrid/internal-api';
+import { RecordGridNgComponent } from '../../../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
+import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
+import { ColumnFilterId } from '../../grid-layout-editor-types';
 
 @Component({
-    selector: 'app-grid-layout-editor-grid',
-    templateUrl: './grid-layout-editor-grid-ng.component.html',
-    styleUrls: ['./grid-layout-editor-grid-ng.component.scss'],
+    selector: 'app-grid-layout-editor-allowed-fields-grid',
+    templateUrl: './grid-layout-editor-allowed-fields-grid-ng.component.html',
+    styleUrls: ['./grid-layout-editor-allowed-fields-grid-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: GridLayoutEditorGridNgComponent.RecordFocusEventer;
-    gridClickEventer: GridLayoutEditorGridNgComponent.GridClickEventer;
+    recordFocusEventer: GridLayoutEditorAllowedFieldsGridNgComponent.RecordFocusEventer | undefined;
+    gridClickEventer: GridLayoutEditorAllowedFieldsGridNgComponent.GridClickEventer | undefined;
 
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
@@ -43,7 +44,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
 
-    private _columnFilterId: GridLayoutEditorGridNgComponent.ColumnFilterId = GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll;
+    private _columnFilterId = ColumnFilterId.ShowAll;
 
     constructor() {
         super();
@@ -54,8 +55,8 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     get gridLayoutDefinition() { return this._recordStore.getLayout().createDefinition(); }
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
-    public get columnFilterId(): GridLayoutEditorGridNgComponent.ColumnFilterId { return this._columnFilterId; }
-    public set columnFilterId(value: GridLayoutEditorGridNgComponent.ColumnFilterId) {
+    public get columnFilterId() { return this._columnFilterId; }
+    public set columnFilterId(value: ColumnFilterId) {
         this._columnFilterId = value;
         this.applyColumnFilter();
     }
@@ -65,7 +66,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorGridNgComponent.frameGridProperties);
+        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorAllowedFieldsGridNgComponent.frameGridProperties);
         this._grid.recordFocusedEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
         this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
 
@@ -82,13 +83,13 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     }
 
     handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
-        if (this.recordFocusEventer) {
+        if (this.recordFocusEventer !== undefined) {
             this.recordFocusEventer(recordIndex);
         }
     }
 
     handleGridClickEvent(fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex): void {
-        if (this.gridClickEventer) {
+        if (this.gridClickEventer !== undefined) {
             this.gridClickEventer(fieldIndex, recordIndex);
         }
     }
@@ -194,11 +195,8 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
             prevMatchRowIdx = 0;
         } else {
             const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
-            if (focusedRowIdx === undefined) {
-                prevMatchRowIdx = 0;
-            } else {
-                prevMatchRowIdx = focusedRowIdx;
-            }
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            prevMatchRowIdx = focusedRowIdx;
         }
     }
 
@@ -207,15 +205,15 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
 
         const value = this._columnFilterId;
         switch (value) {
-            case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll:
+            case ColumnFilterId.ShowAll:
                 this._grid.applyFilter((record) => showAllFilter(record));
                 break;
 
-            case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible:
+            case ColumnFilterId.ShowVisible:
                 this._grid.applyFilter((record) => showVisibleFilter(record));
                 break;
 
-            case GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden:
+            case ColumnFilterId.ShowHidden:
                 this._grid.applyFilter((record) => showHiddenFilter(record));
                 break;
 
@@ -225,6 +223,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     }
 
     private prepareGrid() {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._grid !== undefined) {
             if (this._gridPrepared) {
                 this._grid.reset();
@@ -260,7 +259,7 @@ export class GridLayoutEditorGridNgComponent extends ContentComponentBaseNgDirec
     }
 }
 
-export namespace GridLayoutEditorGridNgComponent {
+export namespace GridLayoutEditorAllowedFieldsGridNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 
@@ -268,12 +267,6 @@ export namespace GridLayoutEditorGridNgComponent {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };
-
-    export const enum ColumnFilterId {
-        ShowAll = 1,
-        ShowVisible = 2,
-        ShowHidden = 3,
-    }
 
     export namespace ColumnFilter {
         export function getEnumUiActionElementProperties(id: ColumnFilterId): EnumUiAction.ElementProperties {

@@ -445,10 +445,8 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
                 color = this._colorSettings.getColor(this._enabledItemId, otherBkgdForeId);
             }
 
-            if (color !== undefined) {
-                const newColor = this.setUiColor(new TinyColor(color));
-                this.setItemColor(this._enabledItemId, newColor);
-            }
+            const newColor = this.setUiColor(new TinyColor(color));
+            this.setItemColor(this._enabledItemId, newColor);
         }
     }
 

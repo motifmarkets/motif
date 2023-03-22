@@ -4,7 +4,7 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="inputDiv" [style.display]="!isLayoutEditorVisible ? null : 'none'">
+<div id="inputDiv" [style.display]="!isDialogVisible ? null : 'none'">
     <div id="mainToolbarDiv">
         <app-lit-ivem-id-select #symbolInput id="symbolInput"></app-lit-ivem-id-select>
         <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
@@ -25,6 +25,6 @@
 
     <app-trades #tradesContent id="table"></app-trades>
 </div>
-<div id="layoutEditorDiv" [style.display]="isLayoutEditorVisible ? null : 'none'">
-    <ng-template #layoutEditorContainer></ng-template>
+<div id="dialogDiv" [style.display]="isDialogVisible ? null : 'none'">
+    <ng-template #dialogContainer></ng-template>
 </div>

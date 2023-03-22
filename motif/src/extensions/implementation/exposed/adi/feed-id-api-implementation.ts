@@ -18,8 +18,10 @@ export namespace FeedIdImplementation {
             case FeedId.Null: return FeedIdEnumApi.Null;
             case FeedId.Authority_Trading: return FeedIdEnumApi.Authority_Trading;
             case FeedId.Authority_Watchlist: return FeedIdEnumApi.Authority_Watchlist;
+            case FeedId.Trading_Oms: return FeedIdEnumApi.Trading_Oms;
             case FeedId.Trading_Motif: return FeedIdEnumApi.Trading_Motif;
             case FeedId.Trading_Malacca: return FeedIdEnumApi.Trading_Malacca;
+            case FeedId.Trading_Finplex: return FeedIdEnumApi.Trading_Finplex;
             case FeedId.Market_AsxBookBuild: throw new AssertInternalError('FIAITAABB5662349843');
             case FeedId.Market_AsxPureMatch: throw new AssertInternalError('FIAITAAPM5662349843');
             case FeedId.Market_AsxTradeMatch: return FeedIdEnumApi.Market_AsxTradeMatch;
@@ -62,8 +64,10 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.Null: return FeedId.Null;
             case FeedIdEnumApi.Authority_Trading: return FeedId.Authority_Trading;
             case FeedIdEnumApi.Authority_Watchlist: return FeedId.Authority_Watchlist;
+            case FeedIdEnumApi.Trading_Oms: return FeedId.Trading_Oms;
             case FeedIdEnumApi.Trading_Motif: return FeedId.Trading_Motif;
             case FeedIdEnumApi.Trading_Malacca: return FeedId.Trading_Malacca;
+            case FeedIdEnumApi.Trading_Finplex: return FeedId.Trading_Finplex;
             case FeedIdEnumApi.Market_AsxTradeMatch: return FeedId.Market_AsxTradeMatch;
             case FeedIdEnumApi.Market_AsxCentrePoint: return FeedId.Market_AsxCentrePoint;
             case FeedIdEnumApi.Market_MyxNormal: return FeedId.Market_MyxNormal;

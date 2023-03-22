@@ -172,7 +172,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this.applyValue(value, edited);
     }
 
-    private handleIconPushEvent(iconId: IconButtonUiAction.IconId) {
+    private handleIconPushEvent(iconId: IconButtonUiAction.IconId | undefined) {
         this.applyIcon(iconId);
     }
 
@@ -181,16 +181,20 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this.updateButtonClass();
     }
 
-    private applyIcon(iconId: IconButtonUiAction.IconId) {
-        this.sprite = SvgButtonNgComponent.Lookup.idToSprite(iconId);
-        this.markForCheck();
+    private applyIcon(iconId: IconButtonUiAction.IconId | undefined) {
+        const newSprite = iconId === undefined ? '' : SvgButtonNgComponent.Lookup.idToSprite(iconId);
+
+        if (newSprite !== this.sprite) {
+            this.sprite = newSprite;
+            this.markForCheck();
+        }
     }
 
     private calculateSelectedDisabledClass() {
         if (this.stateId === UiAction.StateId.Disabled) {
             return SvgButtonNgComponent.SelectedDisabledClass.disabled;
         } else {
-            if (this._value === undefined || this._value === false) {
+            if (this._value === undefined || !this._value) {
                 return SvgButtonNgComponent.SelectedDisabledClass.unselected;
             } else {
                 return SvgButtonNgComponent.SelectedDisabledClass.selected;

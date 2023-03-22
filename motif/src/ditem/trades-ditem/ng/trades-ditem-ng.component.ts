@@ -55,17 +55,17 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('tradesContent', { static: true }) private _contentComponent: TradesNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     // public statusText: string | undefined;
-    public isLayoutEditorVisible = false;
+    public isDialogVisible = false;
 
-    private _symbolEditUiAction: LitIvemIdUiAction;
-    private _symbolApplyUiAction: IconButtonUiAction;
-    private _toggleSymbolLinkingUiAction: IconButtonUiAction;
-    private _historicalDateUiAction: DateUiAction;
-    private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
-    private _columnsUiAction: IconButtonUiAction;
+    private readonly _symbolEditUiAction: LitIvemIdUiAction;
+    private readonly _symbolApplyUiAction: IconButtonUiAction;
+    private readonly _toggleSymbolLinkingUiAction: IconButtonUiAction;
+    private readonly _historicalDateUiAction: DateUiAction;
+    private readonly _autoSizeColumnWidthsUiAction: IconButtonUiAction;
+    private readonly _columnsUiAction: IconButtonUiAction;
 
     private _frame: TradesDitemFrame;
 
@@ -313,11 +313,11 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private showLayoutEditor() {
-        this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinition();
+        this.isDialogVisible = true;
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = GridLayoutEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+        if (allowedFieldsAndLayoutDefinition !== undefined) {
+            const closePromise = GridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
             closePromise.then(
                 (layoutDefinition) => {
                     if (layoutDefinition !== undefined) {
@@ -337,8 +337,8 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
-        this.isLayoutEditorVisible = false;
+        this._dialogContainer.clear();
+        this.isDialogVisible = false;
         this.markForCheck();
     }
 }

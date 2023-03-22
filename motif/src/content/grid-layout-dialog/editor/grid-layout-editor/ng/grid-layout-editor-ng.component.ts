@@ -9,13 +9,10 @@ import {
     assigned,
     BooleanUiAction,
     CommandRegisterService,
-    defined,
     delay1Tick,
-    EnumUiAction,
     ExplicitElementsEnumUiAction,
     GridField,
     GridLayout,
-    GridLayoutChange,
     GridLayoutDefinition,
     IconButtonUiAction,
     Integer,
@@ -32,8 +29,7 @@ import {
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
-import { GridLayoutEditorGridNgComponent } from '../../grid-layout-editor-grid/ng-api';
-import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-grid-layout-editor',
@@ -57,7 +53,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     @ViewChild('showHiddenRadio', { static: true }) private _showHiddenRadioComponent: RadioInputNgComponent;
     @ViewChild('showHiddenLabel', { static: true }) private _showHiddenLabelComponent: EnumElementCaptionNgComponent;
     @ViewChild('fieldVisibleCheckbox', { static: true }) private _fieldVisibleCheckboxComponent: CaptionedCheckboxNgComponent;
-    @ViewChild('grid', { static: true }) private _gridComponent: GridLayoutEditorGridNgComponent;
+    // @ViewChild('grid', { static: true }) private _gridComponent: GridLayoutEditorGridNgComponent;
 
     public readonly showRadioName: string;
     public readonly showLegend: string;
@@ -96,15 +92,16 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._moveBottomUiAction = this.createMoveBottomUiAction();
 
         this._filterUiAction = new ExplicitElementsEnumUiAction();
-        const filterIds = [GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll,
-            GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible,
-            GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden,
-        ];
-        const elementPropertiesArray = filterIds.map<EnumUiAction.ElementProperties>(
-            (filterId) => GridLayoutEditorGridNgComponent.ColumnFilter.getEnumUiActionElementProperties(filterId)
-        );
-        this._filterUiAction.pushElements(elementPropertiesArray);
-        this._filterUiAction.commitEvent = () => this.handleShowCommitEvent();
+        // const filterIds = [
+        //     ColumnFilterId.ShowAll,
+        //     ColumnFilterId.ShowVisible,
+        //     ColumnFilterId.ShowHidden,
+        // ];
+        // const elementPropertiesArray = filterIds.map<EnumUiAction.ElementProperties>(
+        //     (filterId) => GridLayoutEditorGridNgComponent.ColumnFilter.getEnumUiActionElementProperties(filterId)
+        // );
+        // this._filterUiAction.pushElements(elementPropertiesArray);
+        // this._filterUiAction.commitEvent = () => this.handleShowCommitEvent();
 
         this._fieldVisibleUiAction = new BooleanUiAction();
         this._fieldVisibleUiAction.pushCaption(Strings[StringId.Visible]);
@@ -113,15 +110,16 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     getGridLayoutDefinition(): GridLayoutDefinition {
-        return this._gridComponent.gridLayoutDefinition;
+        // return this._gridComponent.gridLayoutDefinition;
+        return new GridLayoutDefinition([]);
     }
 
     setAllowedFieldsAndLayoutDefinition(allowedFields: readonly GridField[], layoutDefinition: GridLayoutDefinition) {
-        this._gridComponent.setAllowedFieldsAndLayoutDefinition(allowedFields, layoutDefinition);
+        // this._gridComponent.setAllowedFieldsAndLayoutDefinition(allowedFields, layoutDefinition);
     }
 
     ngAfterViewInit() {
-        this._gridComponent.recordFocusEventer = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
+        // this._gridComponent.recordFocusEventer = (recordIndex) => this.handleGridRecordFocusEvent(recordIndex);
         this.updateColumnFilterRadioInput();
 
         delay1Tick(() => this.initialiseComponentsAndMarkForCheck());
@@ -224,24 +222,24 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private updateFieldProperties(): void {
-        if (assigned(this._currentRecordIndex)) {
-            const column = this._gridComponent.getColumn(this._currentRecordIndex);
-            this._fieldVisibleUiAction.pushValue(column.visible);
-            this.fieldName = this._gridComponent.getColumnHeading(this._currentRecordIndex);
-            if (this._currentRecordIndex === 0) {
-                this._moveUpUiAction.pushDisabled();
-            } else {
-                this._moveUpUiAction.pushUnselected();
-            }
+        // if (assigned(this._currentRecordIndex)) {
+        //     const column = this._gridComponent.getColumn(this._currentRecordIndex);
+        //     this._fieldVisibleUiAction.pushValue(column.visible);
+        //     this.fieldName = this._gridComponent.getColumnHeading(this._currentRecordIndex);
+        //     if (this._currentRecordIndex === 0) {
+        //         this._moveUpUiAction.pushDisabled();
+        //     } else {
+        //         this._moveUpUiAction.pushUnselected();
+        //     }
 
-        } else {
-            this.fieldName = undefined;
-        }
+        // } else {
+        //     this.fieldName = undefined;
+        // }
         this._cdr.markForCheck();
     }
 
     private updateColumnFilterRadioInput(): void {
-        this._filterUiAction.pushValue(this._gridComponent.columnFilterId);
+        // this._filterUiAction.pushValue(this._gridComponent.columnFilterId);
     }
 
     /*private handleGetSearchButtonStateEvent() {
@@ -260,19 +258,19 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._moveTopButtonComponent.initialise(this._moveTopUiAction);
         this._moveDownButtonComponent.initialise(this._moveDownUiAction);
         this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
-        this._showAllRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
-        this._showAllLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
-        this._showVisibleRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
-        this._showVisibleLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
-        this._showHiddenRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
-        this._showHiddenLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
+        // this._showAllRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
+        // this._showAllLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
+        // this._showVisibleRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
+        // this._showVisibleLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
+        // this._showHiddenRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
+        // this._showHiddenLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
         this._fieldVisibleCheckboxComponent.initialise(this._fieldVisibleUiAction);
 
         this._cdr.markForCheck();
     }
 
     private handleCancelSearchButtonClickEvent() {
-
+        //
     }
 
     private handleSearchNextButtonClickEvent() {
@@ -291,61 +289,61 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private handleMoveUpButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-                id: GridLayoutChange.ActionId.MoveUp,
-                columnIndex: this._currentRecordIndex,
-            });
-            if (defined(focusedIndex)) {
-                this.updateCurrentRecordIndex(focusedIndex);
-            }
+            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
+            //     id: GridLayoutChange.ActionId.MoveUp,
+            //     columnIndex: this._currentRecordIndex,
+            // });
+            // if (defined(focusedIndex)) {
+            //     this.updateCurrentRecordIndex(focusedIndex);
+            // }
         }
     }
 
     private handleMoveTopButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-                id: GridLayoutChange.ActionId.MoveTop,
-                columnIndex: this._currentRecordIndex,
-            });
-            if (defined(focusedIndex)) {
-                this.updateCurrentRecordIndex(focusedIndex);
-            }
+            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
+            //     id: GridLayoutChange.ActionId.MoveTop,
+            //     columnIndex: this._currentRecordIndex,
+            // });
+            // if (defined(focusedIndex)) {
+            //     this.updateCurrentRecordIndex(focusedIndex);
+            // }
         }
     }
 
     private handleMoveDownButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-                id: GridLayoutChange.ActionId.MoveDown,
-                columnIndex: this._currentRecordIndex,
-            });
-            if (defined(focusedIndex)) {
-                this.updateCurrentRecordIndex(focusedIndex);
-            }
+            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
+            //     id: GridLayoutChange.ActionId.MoveDown,
+            //     columnIndex: this._currentRecordIndex,
+            // });
+            // if (defined(focusedIndex)) {
+            //     this.updateCurrentRecordIndex(focusedIndex);
+            // }
         }
     }
 
     private handleMoveBottomButtonClickEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-                id: GridLayoutChange.ActionId.MoveBottom,
-                columnIndex: this._currentRecordIndex,
-            });
-            if (defined(focusedIndex)) {
-                this.updateCurrentRecordIndex(focusedIndex);
-            }
+            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
+            //     id: GridLayoutChange.ActionId.MoveBottom,
+            //     columnIndex: this._currentRecordIndex,
+            // });
+            // if (defined(focusedIndex)) {
+            //     this.updateCurrentRecordIndex(focusedIndex);
+            // }
         }
     }
 
     private handleShowCommitEvent() {
-        this._gridComponent.columnFilterId = this._filterUiAction.definedValue;
+        // this._gridComponent.columnFilterId = this._filterUiAction.definedValue;
     }
 
     private handleFieldVisibleCommitEvent() {
         if (assigned(this._currentRecordIndex)) {
-            const column = this._gridComponent.getColumn(this._currentRecordIndex);
-            column.visible = this._fieldVisibleUiAction.definedValue;
-            this._gridComponent.invalidateVisibleValue(this._currentRecordIndex);
+            // const column = this._gridComponent.getColumn(this._currentRecordIndex);
+            // column.visible = this._fieldVisibleUiAction.definedValue;
+            // this._gridComponent.invalidateVisibleValue(this._currentRecordIndex);
         } else {
             this.fieldName = undefined;
         }
@@ -357,15 +355,15 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     private handleColumnChangeEvent(column: GridLayout.Column) {
-
+        //
     }
 
     private handleColumnPositionChangeEvent(column: GridLayout.Column, position: Integer) {
-
+        //
     }
 
     private searchNext() {
-        this._gridComponent.focusNextSearchMatch(this._searchEditUiAction.definedValue);
+        // this._gridComponent.focusNextSearchMatch(this._searchEditUiAction.definedValue);
 
     }
 }

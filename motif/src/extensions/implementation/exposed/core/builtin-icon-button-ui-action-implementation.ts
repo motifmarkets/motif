@@ -26,8 +26,9 @@ export class BuiltinIconButtonUiActionImplementation extends ButtonUiActionImple
 
 export namespace BuiltinIconButtonUiActionImplementation {
     export namespace IconId {
-        export function toApi(value: IconButtonUiAction.IconId): BuiltinIconButtonUiActionApi.IconId {
+        export function toApi(value: IconButtonUiAction.IconId | undefined): BuiltinIconButtonUiActionApi.IconId | undefined {
             switch (value) {
+                case undefined: return undefined;
                 case IconButtonUiAction.IconId.Blankest: return BuiltinIconButtonUiActionApi.IconIdEnum.Blankest;
                 case IconButtonUiAction.IconId.PrimaryDitemFrame: return BuiltinIconButtonUiActionApi.IconIdEnum.PrimaryDitemFrame;
                 case IconButtonUiAction.IconId.SymbolLink: return BuiltinIconButtonUiActionApi.IconIdEnum.SymbolLink;

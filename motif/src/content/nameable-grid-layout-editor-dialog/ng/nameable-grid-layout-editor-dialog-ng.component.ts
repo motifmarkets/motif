@@ -24,7 +24,7 @@ import {
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
-import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
+import { GridLayoutEditorNgComponent } from '../../grid-layout-dialog/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

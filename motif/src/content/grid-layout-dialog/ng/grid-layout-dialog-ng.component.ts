@@ -14,7 +14,6 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
     CommandRegisterService,
     delay1Tick, GridLayoutDefinition, IconButtonUiAction,
     InternalCommand,
@@ -23,13 +22,13 @@ import {
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
-import { GridLayoutEditorNgComponent } from '../../grid-layout-editor/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { GridLayoutEditorNgComponent } from '../editor/grid-layout-editor/ng-api';
 
 @Component({
-    selector: 'app-grid-layout-editor-dialog',
-    templateUrl: './grid-layout-editor-dialog-ng.component.html',
-    styleUrls: ['./grid-layout-editor-dialog-ng.component.scss'],
+    selector: 'app-grid-layout-dialog',
+    templateUrl: './grid-layout-dialog-ng.component.html',
+    styleUrls: ['./grid-layout-dialog-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -131,8 +130,6 @@ export namespace GridLayoutEditorDialogNgComponent {
     ): ClosePromise {
         container.clear();
         const componentRef = container.createComponent(GridLayoutEditorDialogNgComponent);
-        assert(componentRef.instance instanceof GridLayoutEditorDialogNgComponent, 'ID:157271511202');
-
         const component = componentRef.instance;
 
         return component.open(allowedFieldsAndLayoutDefinition);

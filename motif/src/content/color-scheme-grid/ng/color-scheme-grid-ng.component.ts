@@ -30,9 +30,9 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer;
-    gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer;
-    columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer;
+    recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer | undefined;
+    gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer | undefined;
+    columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer | undefined;
 
     private _recordStore: ColorSchemeGridRecordStore;
     private _grid: RecordGrid;
