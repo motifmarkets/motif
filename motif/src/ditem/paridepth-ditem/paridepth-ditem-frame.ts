@@ -94,14 +94,20 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     override save(element: JsonElement) {
         super.save(element);
 
-        const watchlistElement = element.newElement(ParidepthDitemFrame.JsonName.watchlist);
-        this._watchlistFrame.saveLayout(watchlistElement);
+        if (this._watchlistFrame.opened) {
+            const watchlistElement = element.newElement(ParidepthDitemFrame.JsonName.watchlist);
+            this._watchlistFrame.saveLayout(watchlistElement);
+        }
 
-        const depthElement = element.newElement(ParidepthDitemFrame.JsonName.depth);
-        this._depthFrame.save(depthElement);
+        if (this._depthFrame.opened) {
+            const depthElement = element.newElement(ParidepthDitemFrame.JsonName.depth);
+            this._depthFrame.save(depthElement);
+        }
 
-        const tradesElement = element.newElement(ParidepthDitemFrame.JsonName.trades);
-        this._tradesFrame.saveLayoutToConfig(tradesElement);
+        if (this._tradesFrame.opened) {
+            const tradesElement = element.newElement(ParidepthDitemFrame.JsonName.trades);
+            this._tradesFrame.saveLayoutToConfig(tradesElement);
+        }
     }
 
     async open() {

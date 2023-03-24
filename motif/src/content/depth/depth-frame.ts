@@ -62,6 +62,7 @@ export class DepthFrame extends ContentFrame {
         super();
     }
 
+    get opened() { return this._securityDataItemDefined; }
     get filterActive() { return this._filterActive; }
     get filterXrefs() { return this._filterXrefs; }
 

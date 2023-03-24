@@ -401,8 +401,11 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     }
 
     private unbindOrderPad() {
-        this._orderPad.unsubscribeFieldsChangedEvent(this._orderPadFieldsChangedSubscriptionId);
-        this._orderPadFieldsChangedSubscriptionId = undefined;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._orderPad !== undefined) {
+            this._orderPad.unsubscribeFieldsChangedEvent(this._orderPadFieldsChangedSubscriptionId);
+            this._orderPadFieldsChangedSubscriptionId = undefined;
+        }
     }
 }
 

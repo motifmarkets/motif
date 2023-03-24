@@ -42,6 +42,8 @@ export class TradesFrame extends ContentFrame {
         this._recordStore = new DayTradesGridRecordStore();
     }
 
+    get opened() { return this._dataItem !== undefined; }
+
     initialise(element: JsonElement | undefined) {
         this._grid = this._componentAccess.createGrid(this._recordStore);
         this._grid.rowOrderReversed = true;

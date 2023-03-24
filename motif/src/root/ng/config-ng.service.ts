@@ -106,34 +106,41 @@ export namespace ConfigNgService {
             }
         }
 
-        export function parseJson(json: EnvironmentJson, serviceName: string) {
+        export function parseJson(json: unknown, serviceName: string) {
             if (json === undefined) {
                 throw new ConfigError(ErrorCode.ConfigMissingEnvironment, serviceName, '');
             } else {
-                const defaultDataEnvironment = json.defaultDataEnvironment;
-                if (defaultDataEnvironment === undefined) {
-                    throw new ConfigError(ErrorCode.ConfigEnvironmentMissingDefaultData, serviceName, '');
+                const jsonType = typeof json;
+                if (jsonType !== 'object') {
+                    throw new ConfigError(ErrorCode.ConfigEnvironmentInvalidType, serviceName, jsonType);
                 } else {
-                    const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
-                    if (defaultDataEnvironmentId === undefined) {
-                        throw new ConfigError(ErrorCode.CSEPJET9072322185564, serviceName, defaultDataEnvironment);
+                    const environmentJson = json as EnvironmentJson;
+                    const defaultDataEnvironment = environmentJson.defaultDataEnvironment;
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    if (defaultDataEnvironment === undefined) {
+                        throw new ConfigError(ErrorCode.ConfigEnvironmentMissingDefaultData, serviceName, '');
                     } else {
-                        let bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
-                        const bannerOverrideDataEnvironment = json.bannerOverrideDataEnvironment;
-                        if (bannerOverrideDataEnvironment === undefined || bannerOverrideDataEnvironment === '') {
-                            bannerOverrideDataEnvironmentId = undefined;
+                        const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
+                        if (defaultDataEnvironmentId === undefined) {
+                            throw new ConfigError(ErrorCode.CSEPJET9072322185564, serviceName, defaultDataEnvironment);
                         } else {
-                            bannerOverrideDataEnvironmentId = tryDataEnvironmentToId(bannerOverrideDataEnvironment);
+                            let bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
+                            const bannerOverrideDataEnvironment = environmentJson.bannerOverrideDataEnvironment;
+                            if (bannerOverrideDataEnvironment === undefined || bannerOverrideDataEnvironment === '') {
+                                bannerOverrideDataEnvironmentId = undefined;
+                            } else {
+                                bannerOverrideDataEnvironmentId = tryDataEnvironmentToId(bannerOverrideDataEnvironment);
 
-                            if (bannerOverrideDataEnvironmentId === undefined) {
-                                throw new ConfigError(ErrorCode.CSEPJOE9072322185564, serviceName, defaultDataEnvironment);
+                                if (bannerOverrideDataEnvironmentId === undefined) {
+                                    throw new ConfigError(ErrorCode.CSEPJOE9072322185564, serviceName, defaultDataEnvironment);
+                                }
                             }
+                            const environment: Config.Environment = {
+                                defaultDataEnvironmentId,
+                                bannerOverrideDataEnvironmentId,
+                            };
+                            return environment;
                         }
-                        const environment: Config.Environment = {
-                            defaultDataEnvironmentId,
-                            bannerOverrideDataEnvironmentId,
-                        };
-                        return environment;
                     }
                 }
             }
@@ -388,11 +395,16 @@ export namespace ConfigNgService {
                     const result = new Array<BundledExtension>(maxCount);
                     let count = 0;
                     for (let i = 0; i < maxCount; i++) {
-                        const bundledExtensionJson = json[i];
-                        const bundledExtensionJsonElement = new JsonElement(bundledExtensionJson);
-                        const bundledExtension = parseBundledExtensionJson(bundledExtensionJsonElement, serviceName);
-                        if (bundledExtension !== undefined) {
-                            result[count++] = bundledExtension;
+                        const bundledExtensionJson = json[i] as Json;
+                        const bundledExtensionJsonType = typeof bundledExtensionJson;
+                        if (bundledExtensionJsonType !== 'object') {
+                            Logger.logConfigError('CNSDEPJBE23300', `${serviceName}: ${bundledExtensionJsonType}`);
+                        } else {
+                            const bundledExtensionJsonElement = new JsonElement(bundledExtensionJson);
+                            const bundledExtension = parseBundledExtensionJson(bundledExtensionJsonElement, serviceName);
+                            if (bundledExtension !== undefined) {
+                                result[count++] = bundledExtension;
+                            }
                         }
                     }
                     result.length = count;

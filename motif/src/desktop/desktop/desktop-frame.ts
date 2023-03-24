@@ -498,7 +498,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
                     return Promise.resolve(false);
                 } else {
                     const layoutConfigAsStr = getResult.value;
-                    if (layoutConfigAsStr === undefined) {
+                    if (layoutConfigAsStr === undefined || layoutConfigAsStr === '') {
                         return Promise.resolve(false);
                     } else {
                         let loadResult: Result<void>;

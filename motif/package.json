@@ -1,6 +1,6 @@
 {
   "name": "motif",
-  "version": "2.4.8",
+  "version": "2.4.10",
   "license": "SEE LICENSE IN license.txt",
   "homepage": "https://motionite.trade/motif",
   "author": {
@@ -27,11 +27,13 @@
     "copy:config:fnsx_demo-dev": "copy src\\config\\config.fnsx_demo-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
     "copy:config:em2_cte-dev": "copy src\\config\\config.em2_cte-dev.json dev_static\\_config-do-not-delete\\config.json",
     "copy:config:em2_prod-dev": "copy src\\config\\config.em2_production-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
+    "copy:config:finplex_prod-dev": "copy src\\config\\config.finplex_production-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
     "start:paritech_staging-dev": "npm run file:info && npm run copy:config:paritech_staging-dev && ng serve",
     "start:trading-retailer_production-dev": "npm run file:info && npm run copy:config:trading-retailer_production-dev && ng serve",
     "start:fnsx_demo-dev": "npm run file:info && npm run copy:config:fnsx_demo-dev && ng serve",
     "start:em2_cte-dev": "npm run file:info && npm run copy:config:em2_cte-dev && ng serve",
     "start:em2_prod-dev": "npm run file:info && npm run copy:config:em2_prod-dev && ng serve",
+    "start:finplex_prod-dev": "npm run file:info && npm run copy:config:finplex_prod-dev && ng serve",
     "startSourceMaps": "ng serve --vendorSourceMap",
     "build:dev": "npm run file:info && ng build -c=development",
     "build:prod": "npm run file:info && node --max-old-space-size=4096 ./node_modules/@angular/cli/bin/ng build",
