@@ -449,7 +449,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     async resetLayout() {
         // this._activeLayoutName = undefined;
         // this._goldenLayoutHostFrame.resetLayout();
-        const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName);
+        const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName, true);
         if (result.isErr()) {
             Logger.logError(`DesktopService save layout error: ${result.error}`);
         } else {

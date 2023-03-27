@@ -27,6 +27,7 @@ import {
     SymbolsDataItem,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
+    UnexpectedUndefinedError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
@@ -37,7 +38,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
     private _symbolsDataItem: SymbolsDataItem;
-    private _gridSourceFrame: GridSourceFrame;
+    private _gridSourceFrame: GridSourceFrame | undefined;
     private _recordSource: LitIvemIdFromSearchSymbolsTableRecordSource;
     private _recordList: LitIvemDetail[];
 
@@ -111,7 +112,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         if (index === undefined) {
             return SearchSymbolsDitemFrame.IndicesInclusionId.Include;
         } else {
-            if (index === true) {
+            if (index) {
                 return SearchSymbolsDitemFrame.IndicesInclusionId.Only;
             } else {
                 return SearchSymbolsDitemFrame.IndicesInclusionId.Exclude;
@@ -174,29 +175,44 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     executeRequest() {
-        const dataDefinition = this._uiDataDefinition.createCopy();
-        this._gridSourceFrame.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
-        this._showFull = dataDefinition.fullSymbol;
+        const gridSourceFrame = this._gridSourceFrame;
+        if (gridSourceFrame === undefined) {
+            throw new UnexpectedUndefinedError('SSDFER13133');
+        } else {
+            const dataDefinition = this._uiDataDefinition.createCopy();
+            gridSourceFrame.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
+            this._showFull = dataDefinition.fullSymbol;
 
-        const gridSourceOrNamedReferenceDefinition = this.createGridSourceOrNamedReferenceDefinition(dataDefinition);
+            const gridSourceOrNamedReferenceDefinition = this.createGridSourceOrNamedReferenceDefinition(dataDefinition);
 
-        const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-        if (gridSourceOrNamedReference !== undefined) {
-            const table = this._gridSourceFrame.openedTable;
-            this._recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
-            this._recordList = this._recordSource.recordList;
+            const gridSourceOrNamedReference = gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+            if (gridSourceOrNamedReference !== undefined) {
+                const table = gridSourceFrame.openedTable;
+                this._recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
+                this._recordList = this._recordSource.recordList;
 
-            const description = this.generateQueryDescription(dataDefinition);
-            this._componentAccess.processQueryTableOpen(description);
+                const description = this.generateQueryDescription(dataDefinition);
+                this._componentAccess.processQueryTableOpen(description);
+            }
         }
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
-        this._gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        const gridSourceFrame = this._gridSourceFrame;
+        if (gridSourceFrame === undefined) {
+            throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
+        } else {
+            gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
     }
 
     createAllowedFieldsAndLayoutDefinition() {
-        return this._gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
+        const gridSourceFrame = this._gridSourceFrame;
+        if (gridSourceFrame === undefined) {
+            throw new UnexpectedUndefinedError('SSDFCAFALD13133');
+        } else {
+            return gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
+        }
     }
 
     private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
