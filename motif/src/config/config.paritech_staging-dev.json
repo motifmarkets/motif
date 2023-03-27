@@ -2,6 +2,7 @@
   "configFormatVersion": "2",
   "configComment": "",
   "service": {
+    "group": "Paritech",
     "name": "Paritech Staging (Development)",
     "description": "Paritech Staging (Development)"
   },

@@ -366,23 +366,23 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Master_SettingsProfile]);
         action.pushTitle(Strings[StringId.SettingTitle_Master_SettingsProfile]);
-        const selectorIds: MasterSettings.ApplicationEnvironmentSelector.SelectorId[] = [
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.Default,
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.DataEnvironment,
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.Test,
+        const selectorIds: MasterSettings.ApplicationUserEnvironmentSelector.SelectorId[] = [
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.Default,
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.DataEnvironment,
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.Test,
         ];
         const elementPropertiesArray = selectorIds.map<EnumUiAction.ElementProperties>(
             (selectorId) => (
                 {
                     element: selectorId,
-                    caption: MasterSettings.ApplicationEnvironmentSelector.idToDisplay(selectorId),
-                    title: MasterSettings.ApplicationEnvironmentSelector.idToDescription(selectorId),
+                    caption: MasterSettings.ApplicationUserEnvironmentSelector.idToDisplay(selectorId),
+                    title: MasterSettings.ApplicationUserEnvironmentSelector.idToDescription(selectorId),
                 }
             )
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._masterSettings.applicationEnvironmentSelectorId = this._settingsProfileUiAction.definedValue;
+            this._masterSettings.applicationUserEnvironmentSelectorId = this._settingsProfileUiAction.definedValue;
         };
         return action;
     }
@@ -437,7 +437,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this._symbolsService.explicitSearchFieldsEnabled);
         this._explicitSymbolSearchFieldsUiAction.pushValue(this._symbolsService.explicitSearchFieldIds);
         this.updateExplicitSearchFieldsUiActionEnabled();
-        this._settingsProfileUiAction.pushValue(this._masterSettings.applicationEnvironmentSelectorId);
+        this._settingsProfileUiAction.pushValue(this._masterSettings.applicationUserEnvironmentSelectorId);
 
         if (this.settingsService.restartRequired !== this.restartRequired) {
             this.restartRequired = this.settingsService.restartRequired;

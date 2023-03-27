@@ -171,7 +171,7 @@ export class SessionService {
                 storageTypeId = AppStorageService.TypeId.MotifServices;
             }
         }
-        this._appStorageService.initialise(storageTypeId);
+        this._appStorageService.initialise(storageTypeId, config.service.groupId);
 
         await this.processLoadSettings();
         await this.processLoadExtensions();

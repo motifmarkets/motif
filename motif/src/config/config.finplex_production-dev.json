@@ -3,7 +3,8 @@
     "configComment": "",
     "service": {
         "name": "Finplex production",
-        "description": "Finplex production"
+        "description": "Finplex production",
+        "group": "Fpsx"
     },
     "environment": {
         "defaultDataEnvironment": "production"

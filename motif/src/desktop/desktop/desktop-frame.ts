@@ -491,7 +491,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
     loadLayout(name: string): Promise<boolean> {
         // return Promise.resolve(false); // uncomment to force default layout
-        const getPromise = this._storage.getSubNamedItem(KeyValueStore.Key.Layout, name);
+        const getPromise = this._storage.getSubNamedItem(KeyValueStore.Key.Layout, name, true);
         return getPromise.then(
             (getResult) => {
                 if (getResult.isErr()) {
@@ -545,7 +545,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
         const layoutStr = JSON.stringify(layoutElement.json);
         try {
-            const result = await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr);
+            const result = await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
             if (result.isErr()) {
                 Logger.logError(`DesktopService save layout error: ${result.error}`);
             } else {

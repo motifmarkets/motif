@@ -8,6 +8,8 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
     ConfigError,
+    ConfigServiceGroup,
+    ConfigServiceGroupId,
     createRandomUrlSearch,
     DataEnvironment,
     DataEnvironmentId,
@@ -151,6 +153,7 @@ export namespace ConfigNgService {
         export interface ServiceJson {
             readonly name: string;
             readonly description?: string;
+            readonly group?: string;
         }
 
         export function parseJson(json: ServiceJson, jsonText: string) {
@@ -163,8 +166,20 @@ export namespace ConfigNgService {
                 } else {
                     const description = json.description;
 
+                    const group = json.group;
+                    let groupId: ConfigServiceGroupId | undefined;
+                    if (group === undefined) {
+                        groupId = undefined;
+                    } else {
+                        groupId = ConfigServiceGroup.tryJsonValueToId(group);
+                        if (groupId === undefined) {
+                            throw new ConfigError(ErrorCode.ConfigServiceInvalidGroup, name, group);
+                        }
+                    }
+
                     const service: Config.Service = {
                         name,
+                        groupId,
                         description,
                     };
 
