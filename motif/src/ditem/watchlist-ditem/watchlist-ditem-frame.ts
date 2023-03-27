@@ -49,6 +49,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._watchlistFrame !== undefined; }
     get recordFocused() { return this._watchlistFrame.recordFocused; }
 
@@ -238,13 +239,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     private processLitIvemIdFocusChange(newFocusedLitIvemId: LitIvemId) {
         if (!this._litIvemIdApplying) {
-            if (newFocusedLitIvemId !== undefined) {
-                this._currentFocusedLitIvemIdSetting = true;
-                try {
-                    this.applyDitemLitIvemIdFocus(newFocusedLitIvemId, true);
-                } finally {
-                    this._currentFocusedLitIvemIdSetting = false;
-                }
+            this._currentFocusedLitIvemIdSetting = true;
+            try {
+                this.applyDitemLitIvemIdFocus(newFocusedLitIvemId, true);
+            } finally {
+                this._currentFocusedLitIvemIdSetting = false;
             }
         }
     }

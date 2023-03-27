@@ -12,7 +12,7 @@
     height: 100%;
 }
 
-#layoutSelectorDiv {
+#toolBarDiv {
     @include centeredToolbarGroupMixin;
 
     #cancelButton {
@@ -20,7 +20,7 @@
     }
 }
 
-#editorDiv {
+#subDialog {
     flex-grow: 1;
     min-height: 0;
 }

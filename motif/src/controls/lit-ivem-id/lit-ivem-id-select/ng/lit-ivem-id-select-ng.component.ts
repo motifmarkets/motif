@@ -175,7 +175,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
                 if (nameIncluded) {
                     const name = this._symbolsService.calculateSymbolNameFromLitIvemDetail(detail);
-                    result = `${name === undefined ? '' : name}\n` + result;
+                    result = `${name}\n${result}`;
                 }
 
                 return result;
@@ -611,8 +611,8 @@ export namespace LitIvemIdSelectNgComponent {
         private _observer: Observer<Item[]>;
         private _termLitIvemIdFetching = false;
         private _searchDelaySetTimeoutHandle: ReturnType<typeof setTimeout> | undefined;
-        private _termItem: Item;
-        private _searchItems: Item[];
+        private _termItem: Item | undefined;
+        private _searchItems: Item[] | undefined;
 
         constructor(
             private readonly _adiService: AdiService,
@@ -848,7 +848,7 @@ export namespace LitIvemIdSelectNgComponent {
     }
 
     export class SelectedObservable extends Observable<Observable<Item[]>> {
-        private _observer: Observer<Observable<Item[]>>;
+        private _observer: Observer<Observable<Item[]>> | undefined;
         private _selected: Item | null;
 
         constructor() {

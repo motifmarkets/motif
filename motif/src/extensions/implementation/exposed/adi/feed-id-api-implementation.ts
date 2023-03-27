@@ -44,6 +44,7 @@ export namespace FeedIdImplementation {
             case FeedId.Market_MyxBuyIn: return FeedIdEnumApi.Market_MyxBuyIn;
             case FeedId.Market_Ptx: return FeedIdEnumApi.Market_Ptx;
             case FeedId.Market_Fnsx: return FeedIdEnumApi.Market_Fnsx;
+            case FeedId.Market_Fpsx: return FeedIdEnumApi.Market_Fpsx;
             case FeedId.Market_Calastone: throw new AssertInternalError('FIAITACLS5662349843');
             case FeedId.Market_AsxCxa: throw new AssertInternalError('FIAITAASC5662349843');
             case FeedId.News_Asx: return FeedIdEnumApi.News_Asx;
@@ -77,6 +78,7 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.Market_MyxBuyIn: return FeedId.Market_MyxBuyIn;
             case FeedIdEnumApi.Market_Ptx: return FeedId.Market_Ptx;
             case FeedIdEnumApi.Market_Fnsx: return FeedId.Market_Fnsx;
+            case FeedIdEnumApi.Market_Fpsx: return FeedId.Market_Fpsx;
             case FeedIdEnumApi.News_Asx: return FeedId.News_Asx;
             case FeedIdEnumApi.News_Nsx: return FeedId.News_Nsx;
             case FeedIdEnumApi.News_Nzx: return FeedId.News_Nzx;

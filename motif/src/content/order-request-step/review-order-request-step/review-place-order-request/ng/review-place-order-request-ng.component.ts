@@ -60,8 +60,8 @@ export class ReviewPlaceOrderRequestNgComponent extends ReviewOrderRequestCompon
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
-        @Inject(ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken) orderPad: OrderPad,
-        @Inject(ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken) definition: OrderRequestDataDefinition
+        @Inject(ReviewOrderRequestComponentNgDirective.orderPadInjectionToken) orderPad: OrderPad,
+        @Inject(ReviewOrderRequestComponentNgDirective.definitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
         super(cdr, orderPad, definition);
 

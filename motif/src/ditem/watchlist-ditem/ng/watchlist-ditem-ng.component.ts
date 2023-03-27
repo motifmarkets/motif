@@ -78,7 +78,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('gridSource', { static: true }) private _watchlistComponent: WatchlistNgComponent;
-    @ViewChild('layoutDialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public watchlistCaption: string;
     public watchlistAbbreviatedDescription: string;
@@ -467,22 +467,20 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._modeId = WatchlistDitemNgComponent.ModeId.LayoutDialog;
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (allowedFieldsAndLayoutDefinition !== undefined) {
-            const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
-            closePromise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
-                    }
-                    this.closeDialog();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`Watchlist Layout Editor error: ${errorText}`);
-                    this.closeDialog();
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                 }
-            );
-        }
+                this.closeDialog();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`Watchlist Layout Editor error: ${errorText}`);
+                this.closeDialog();
+            }
+        );
 
         this.markForCheck();
     }

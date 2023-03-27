@@ -18,7 +18,10 @@ import {
     ButtonUiAction,
     CommandRegisterService,
     delay1Tick,
-    GridField, GridLayoutDefinition, GridLayoutOrNamedReferenceDefinition, IconButtonUiAction,
+    GridField,
+    GridLayoutDefinition,
+    GridLayoutOrNamedReferenceDefinition,
+    IconButtonUiAction,
     InternalCommand,
     ModifierKey,
     StringId,
@@ -27,8 +30,8 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { ParidepthAllowedFieldsAndLayoutDefinitions, ParidepthGridLayoutDefinitions } from '../../grid-layout-editor-dialog-definition';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-dialog/ng-api';
+import { ParidepthAllowedFieldsAndLayoutDefinitions, ParidepthGridLayoutDefinitions } from '../../grid-layout-editor-dialog-definition';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

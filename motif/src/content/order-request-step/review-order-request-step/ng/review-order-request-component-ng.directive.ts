@@ -88,7 +88,7 @@ export class ReviewOrderRequestComponentNgDirective extends ContentComponentBase
 
 export namespace ReviewOrderRequestComponentNgDirective {
     const orderPadTokenName = 'orderPad';
-    export const OrderPadInjectionToken = new InjectionToken<OrderPad>(orderPadTokenName);
+    export const orderPadInjectionToken = new InjectionToken<OrderPad>(orderPadTokenName);
     const definitionTokenName = 'definition';
-    export const DefinitionInjectionToken = new InjectionToken<OrderRequestDataDefinition>(definitionTokenName);
+    export const definitionInjectionToken = new InjectionToken<OrderRequestDataDefinition>(definitionTokenName);
 }

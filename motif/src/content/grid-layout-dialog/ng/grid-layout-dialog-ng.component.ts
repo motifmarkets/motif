@@ -9,21 +9,23 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    Inject,
+    InjectionToken,
+    Injector,
     OnDestroy,
+    StaticProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     CommandRegisterService,
-    delay1Tick, GridLayoutDefinition, IconButtonUiAction,
+    delay1Tick, GridField, GridLayoutDefinition, IconButtonUiAction,
     InternalCommand,
     StringId
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
-import { GridLayoutEditorNgComponent } from '../editor/grid-layout-editor/ng-api';
 
 @Component({
     selector: 'app-grid-layout-dialog',
@@ -32,8 +34,8 @@ import { GridLayoutEditorNgComponent } from '../editor/grid-layout-editor/ng-api
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
-    @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
+export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    @ViewChild('subDialog', { static: true, read: ViewContainerRef }) private _subDialogContainer: ViewContainerRef;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
 
@@ -50,12 +52,19 @@ export class GridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDir
     constructor(
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        @Inject(GridLayoutDialogNgComponent.allowedFieldsInjectionToken) private readonly _allowedFields: readonly GridField[],
+        @Inject(GridLayoutDialogNgComponent.layoutDefinitionInjectionToken) private readonly _layoutDefinition: GridLayoutDefinition,
     ) {
         super();
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();
+
+        // this._subDialogContainer.setAllowedFieldsAndLayoutDefinition(
+        //     allowedFieldsAndLayoutDefinition.allowedFields,
+        //     allowedFieldsAndLayoutDefinition.layoutDefinition,
+        // );
     }
 
     ngAfterViewInit() {
@@ -67,12 +76,7 @@ export class GridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDir
         this._cancelUiAction.finalise();
     }
 
-    open(allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition): GridLayoutEditorDialogNgComponent.ClosePromise {
-        this._editorComponent.setAllowedFieldsAndLayoutDefinition(
-            allowedFieldsAndLayoutDefinition.allowedFields,
-            allowedFieldsAndLayoutDefinition.layoutDefinition,
-        );
-
+    waitClose(): GridLayoutDialogNgComponent.ClosePromise {
         return new Promise<GridLayoutDefinition | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
             this._closeReject = reject;
@@ -114,24 +118,43 @@ export class GridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDir
 
     private close(ok: boolean) {
         if (ok) {
-            this._closeResolve(this._editorComponent.getGridLayoutDefinition());
+            // this._closeResolve(this._subDialogContainer.getGridLayoutDefinition());
         } else {
             this._closeResolve(undefined);
         }
     }
 }
 
-export namespace GridLayoutEditorDialogNgComponent {
+export namespace GridLayoutDialogNgComponent {
+    const allowedFieldsTokenName = 'allowedFields';
+    export const allowedFieldsInjectionToken = new InjectionToken<readonly GridField[]>(allowedFieldsTokenName);
+    const layoutDefinitionTokenName = 'layoutDefinition';
+    export const layoutDefinitionInjectionToken = new InjectionToken<GridLayoutDefinition>(layoutDefinitionTokenName);
+
     export type ClosePromise = Promise<GridLayoutDefinition | undefined>;
 
-    export function open(
+    export function create(
         container: ViewContainerRef,
-        allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition,
-    ): ClosePromise {
+        allowedFields: readonly GridField[],
+        layoutDefinition: GridLayoutDefinition,
+    ): GridLayoutDialogNgComponent {
         container.clear();
-        const componentRef = container.createComponent(GridLayoutEditorDialogNgComponent);
+
+        const allowedFieldsProvider: StaticProvider = {
+            provide: GridLayoutDialogNgComponent.allowedFieldsInjectionToken,
+            useValue: allowedFields,
+        };
+        const layoutDefinitionProvider: StaticProvider = {
+            provide: GridLayoutDialogNgComponent.layoutDefinitionInjectionToken,
+            useValue: layoutDefinition,
+        };
+        const injector = Injector.create({
+            providers: [allowedFieldsProvider, layoutDefinitionProvider],
+        });
+
+        const componentRef = container.createComponent(GridLayoutDialogNgComponent, { injector });
         const component = componentRef.instance;
 
-        return component.open(allowedFieldsAndLayoutDefinition);
+        return component;
     }
 }

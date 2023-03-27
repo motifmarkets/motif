@@ -75,11 +75,11 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
         this._reviewContainer.clear();
 
         const orderPadProvider: StaticProvider = {
-            provide: ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken,
+            provide: ReviewOrderRequestComponentNgDirective.orderPadInjectionToken,
             useValue: orderPad,
         };
         const definitionProvider: StaticProvider = {
-            provide: ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken,
+            provide: ReviewOrderRequestComponentNgDirective.definitionInjectionToken,
             useValue: definition,
         };
         const injector = Injector.create({

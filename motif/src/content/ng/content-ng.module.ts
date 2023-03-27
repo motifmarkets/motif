@@ -36,11 +36,9 @@ import {
 import { FeedsNgComponent } from '../feeds/ng-api';
 import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
 import {
-    GridLayoutEditorAllowedFieldsGridNgComponent,
+    GridLayoutDialogNgComponent, GridLayoutEditorAllowedFieldsGridNgComponent,
     GridLayoutEditorDefinitionColumnPropertiesNgComponent,
-    GridLayoutEditorDefinitionGridNgComponent,
-    GridLayoutEditorDialogNgComponent,
-    GridLayoutEditorNgComponent
+    GridLayoutEditorDefinitionGridNgComponent, GridLayoutEditorNgComponent
 } from '../grid-layout-dialog/ng-api';
 import { GridSourceNgComponent } from '../grid-source/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
@@ -97,7 +95,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSchemePresetCodeNgComponent,
         ColorControlsNgComponent,
         GridLayoutEditorNgComponent,
-        GridLayoutEditorDialogNgComponent,
+        GridLayoutDialogNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
@@ -177,7 +175,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ExtensionDetailNgComponent,
         FeedsNgComponent,
         GridLayoutEditorNgComponent,
-        GridLayoutEditorDialogNgComponent,
+        GridLayoutDialogNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
         PadOrderRequestStepNgComponent,

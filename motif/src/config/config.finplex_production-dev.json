@@ -9,7 +9,7 @@
         "defaultDataEnvironment": "production"
     },
     "exchange": {
-        "defaultDefault": "Ptx"
+        "defaultDefault": "Fpsx"
     },
     "endpoints": {
         "motifServices": [

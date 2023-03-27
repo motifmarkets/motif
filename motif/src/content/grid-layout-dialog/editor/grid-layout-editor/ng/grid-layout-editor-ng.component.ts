@@ -251,20 +251,20 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }*/
 
     private initialiseComponentsAndMarkForCheck() {
-        this._cancelSearchButtonComponent.initialise(this._cancelSearchUiAction);
-        this._searchNextButtonComponent.initialise(this._searchNextUiAction);
-        this._searchInputComponent.initialise(this._searchEditUiAction);
-        this._moveUpButtonComponent.initialise(this._moveUpUiAction);
-        this._moveTopButtonComponent.initialise(this._moveTopUiAction);
-        this._moveDownButtonComponent.initialise(this._moveDownUiAction);
-        this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
+        // this._cancelSearchButtonComponent.initialise(this._cancelSearchUiAction);
+        // this._searchNextButtonComponent.initialise(this._searchNextUiAction);
+        // this._searchInputComponent.initialise(this._searchEditUiAction);
+        // this._moveUpButtonComponent.initialise(this._moveUpUiAction);
+        // this._moveTopButtonComponent.initialise(this._moveTopUiAction);
+        // this._moveDownButtonComponent.initialise(this._moveDownUiAction);
+        // this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
         // this._showAllRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
         // this._showAllLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
         // this._showVisibleRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
         // this._showVisibleLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);
         // this._showHiddenRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
         // this._showHiddenLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowHidden);
-        this._fieldVisibleCheckboxComponent.initialise(this._fieldVisibleUiAction);
+        // this._fieldVisibleCheckboxComponent.initialise(this._fieldVisibleUiAction);
 
         this._cdr.markForCheck();
     }

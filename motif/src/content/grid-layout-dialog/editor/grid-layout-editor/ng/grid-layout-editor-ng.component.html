@@ -4,21 +4,14 @@
     License: motionite.trade/license/motif
 -->
 
-<section id="availableFieldsSection">
+<app-grid-layout-editor-allowed-fields-grid #allowedFieldsGrid id="allowedFieldsGrid"></app-grid-layout-editor-allowed-fields-grid>
+<section #fieldsSelectControls id="fieldsSelectControls">
 
 </section>
+<app-grid-layout-editor-definition-grid #definitionGrid id="definitionGrid"></app-grid-layout-editor-definition-grid>
+<app-grid-layout-editor-definition-column-properties #definitionColumnProperties id="definitionColumnProperties"></app-grid-layout-editor-definition-column-properties>
 
-<div id="leftDiv">
-    <!-- TODO:MED Add serch functionality. -->
-    <div id="searchDiv">
-        <app-text-input #searchInput id="searchInput"></app-text-input>
-        <app-svg-button #searchNextButton id="searchNextButton"></app-svg-button>
-        <app-svg-button #cancelSearchButton id="cancelSearchButton"></app-svg-button>
-    </div>
-
-    <!-- <app-grid-layout-editor-grid #grid id="grid"></app-grid-layout-editor-grid> -->
-</div>
-<div id="rightDiv">
+<!-- <div id="rightDiv">
     <div id="moveButtonsDiv">
         <app-svg-button #moveUpButton id="moveUpButton"></app-svg-button>
         <app-svg-button #moveTopButton id="moveTopButton"></app-svg-button>
@@ -45,4 +38,4 @@
 </div>
 <div id="leftAndRightExtraSpaceDiv">
 
-</div>
+</div> -->

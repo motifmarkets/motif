@@ -24,6 +24,7 @@ export const enum FeedIdEnum {
     Market_MyxBuyIn = 'Market_MyxBuyIn',
     Market_Ptx = 'Market_Ptx',
     Market_Fnsx = 'Market_Fnsx',
+    Market_Fpsx = 'Market_Fpsx',
     News_Asx = 'News_Asx',
     News_Nsx = 'News_Nsx',
     News_Nzx = 'News_Nzx',

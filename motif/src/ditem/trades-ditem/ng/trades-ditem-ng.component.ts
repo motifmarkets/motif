@@ -17,21 +17,18 @@ import {
 } from '@angular/core';
 import {
     assert,
+    AssertInternalError,
     assigned,
     DateUiAction,
-    delay1Tick,
-    getErrorMessage,
-    IconButtonUiAction,
+    delay1Tick, IconButtonUiAction,
     InternalCommand,
     JsonElement,
     LitIvemId,
-    LitIvemIdUiAction,
-    Logger,
-    StringId,
+    LitIvemIdUiAction, StringId,
     Strings
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { GridLayoutEditorDialogNgComponent, TradesNgComponent } from 'content-ng-api';
+import { GridLayoutDialogNgComponent, TradesNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -204,7 +201,12 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private handleColumnsUiActionSignalEvent() {
-        this.showLayoutEditor();
+        const dialogPromise = this.showGridLayoutDialog();
+
+        dialogPromise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'TDNCHCUASE34009'); }
+        )
     }
 
     private createSymbolEditUiAction() {
@@ -312,28 +314,26 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         }
     }
 
-    private showLayoutEditor() {
-        this.isDialogVisible = true;
+    private async showGridLayoutDialog() {
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
         if (allowedFieldsAndLayoutDefinition !== undefined) {
-            const closePromise = GridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
-            closePromise.then(
-                (layoutDefinition) => {
-                    if (layoutDefinition !== undefined) {
-                        this._frame.applyGridLayoutDefinition(layoutDefinition);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`TradesInput Layout Editor error: ${errorText}`);
-                    this.closeLayoutEditor();
-                }
+            const component = GridLayoutDialogNgComponent.create(
+                this._dialogContainer,
+                allowedFieldsAndLayoutDefinition.allowedFields,
+                allowedFieldsAndLayoutDefinition.layoutDefinition,
             );
-        }
 
-        this.markForCheck();
+            this.isDialogVisible = true;
+            this.markForCheck();
+
+            const newLayoutDefinition = await component.waitClose();
+            if (newLayoutDefinition !== undefined) {
+                this._frame.applyGridLayoutDefinition(newLayoutDefinition);
+            }
+
+            this.closeLayoutEditor();
+        }
     }
 
     private closeLayoutEditor() {

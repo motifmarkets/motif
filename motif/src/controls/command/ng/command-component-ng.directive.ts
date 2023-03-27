@@ -4,10 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, Input } from '@angular/core';
+import { Directive, Input } from '@angular/core';
 import {
-    Command, MultiEvent,
-    SettingsService
+    Command, MultiEvent
 } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
@@ -16,14 +15,6 @@ export abstract class CommandComponentNgDirective extends ControlComponentBaseNg
     @Input() inputId: string;
 
     private _pushCommandEventsSubscriptionId: MultiEvent.SubscriptionId;
-
-    constructor(
-        cdr: ChangeDetectorRef,
-        settingsService: SettingsService,
-        stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
-    ) {
-        super(cdr, settingsService, stateColorItemIdArray);
-    }
 
     // protected override get uiAction() {
     //     return super.uiAction as ProcessorCommandUiAction;

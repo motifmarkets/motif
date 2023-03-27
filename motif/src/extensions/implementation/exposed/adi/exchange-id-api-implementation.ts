@@ -19,6 +19,7 @@ export namespace ExchangeIdImplementation {
             case ExchangeId.Calastone: throw new AssertInternalError('EIAITACLS98887722');
             case ExchangeId.Ptx: return ExchangeIdEnumApi.Ptx;
             case ExchangeId.Fnsx: return ExchangeIdEnumApi.Fnsx;
+            case ExchangeId.Fpsx: return ExchangeIdEnumApi.Fpsx;
             case ExchangeId.AsxCxa: throw new AssertInternalError('EIAITAASC98887722');
             default: throw new UnreachableCaseError('EIAITADEF98887722', value);
         }
@@ -33,6 +34,7 @@ export namespace ExchangeIdImplementation {
             case ExchangeIdEnumApi.Nzx: return ExchangeId.Nzx;
             case ExchangeIdEnumApi.Ptx: return ExchangeId.Ptx;
             case ExchangeIdEnumApi.Fnsx: return ExchangeId.Fnsx;
+            case ExchangeIdEnumApi.Fpsx: return ExchangeId.Fpsx;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidExchangeId, enumValue);
         }
     }

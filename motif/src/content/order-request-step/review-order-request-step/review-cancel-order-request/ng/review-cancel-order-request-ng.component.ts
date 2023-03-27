@@ -11,7 +11,7 @@ import {
     MultiEvent, OrderExtendedSideId, OrderPad,
     OrderRequestDataDefinition,
     SettingsService, StringId,
-    Strings,
+    Strings
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
@@ -57,8 +57,8 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
-        @Inject(ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken) orderPad: OrderPad,
-        @Inject(ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken) definition: OrderRequestDataDefinition
+        @Inject(ReviewOrderRequestComponentNgDirective.orderPadInjectionToken) orderPad: OrderPad,
+        @Inject(ReviewOrderRequestComponentNgDirective.definitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
         super(cdr, orderPad, definition);
 
