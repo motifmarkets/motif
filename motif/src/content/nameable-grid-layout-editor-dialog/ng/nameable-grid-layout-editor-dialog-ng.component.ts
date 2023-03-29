@@ -23,8 +23,8 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { GridLayoutEditorNgComponent } from '../../grid-layout-dialog/ng-api';
+import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -91,7 +91,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     }
 
     private createOkUiAction() {
-        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.GridLayoutDialog_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -101,7 +101,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     }
 
     private createCancelUiAction() {
-        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Cancel;
+        const commandName = InternalCommand.Id.GridLayoutDialog_Cancel;
         const displayId = StringId.Cancel;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

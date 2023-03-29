@@ -56,8 +56,7 @@ export class GridSourceNgComponent
     // Component Access members
 
     get id(): string {
-        return '';
-        // todo - needs to return a unique id for this component
+        return this.componentInstanceId;
     }
 
     get gridHorizontalScrollbarMarginedHeight() {

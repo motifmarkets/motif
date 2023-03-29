@@ -4,11 +4,28 @@
     License: motionite.trade/license/motif
 -->
 
-<app-grid-layout-editor-allowed-fields-grid #allowedFieldsGrid id="allowedFieldsGrid"></app-grid-layout-editor-allowed-fields-grid>
-<section #fieldsSelectControls id="fieldsSelectControls">
-
-</section>
-<app-grid-layout-editor-definition-grid #definitionGrid id="definitionGrid"></app-grid-layout-editor-definition-grid>
+<app-grid-layout-editor-allowed-fields #allowedFieldsGrid id="allowedFieldsGrid"></app-grid-layout-editor-allowed-fields>
+<div #fieldsSelectControls id="fieldsControls">
+    <div id="moveFieldsUpControls">
+        <app-svg-button #moveTopButton id="moveTopButton"></app-svg-button>
+        <app-svg-button #moveUpButton id="moveUpButton"></app-svg-button>
+    </div>
+    <div id="insertRemoveFieldsControls">
+        <div id="insertFieldsControls">
+            <app-svg-button #insertButton id="insertButton"></app-svg-button>
+            <app-svg-button #insertAllButton id="insertAllButton"></app-svg-button>
+        </div>
+        <div id="removeFieldsControls">
+            <app-svg-button #removeButton id="removeButton"></app-svg-button>
+            <app-svg-button #removeAllButton id="removeAllButton"></app-svg-button>
+        </div>
+    </div>
+    <div id="moveFieldsDownControls">
+        <app-svg-button #moveDownButton id="moveDownButton"></app-svg-button>
+        <app-svg-button #moveBottomButton id="moveBottomButton"></app-svg-button>
+    </div>
+</div>
+<app-grid-layout-editor-definition #definitionGrid id="definitionGrid"></app-grid-layout-editor-definition>
 <app-grid-layout-editor-definition-column-properties #definitionColumnProperties id="definitionColumnProperties"></app-grid-layout-editor-definition-column-properties>
 
 <!-- <div id="rightDiv">

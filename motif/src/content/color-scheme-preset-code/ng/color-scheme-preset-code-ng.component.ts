@@ -105,7 +105,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
     }
 
     private createReturnUiAction() {
-        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.GridLayoutDialog_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);

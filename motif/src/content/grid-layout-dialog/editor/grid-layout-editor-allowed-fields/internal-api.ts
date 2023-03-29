@@ -4,5 +4,4 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/grid-layout-editor-allowed-fields-grid-ng.component';
-
+export * from './grid-layout-editor-allowed-fields-frame';

@@ -21,20 +21,19 @@ import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { AdaptedRevgrid, RecordGrid } from '../../../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
-import { ColumnFilterId } from '../../grid-layout-editor-types';
 
 @Component({
-    selector: 'app-grid-layout-editor-allowed-fields-grid',
-    templateUrl: './grid-layout-editor-allowed-fields-grid-ng.component.html',
-    styleUrls: ['./grid-layout-editor-allowed-fields-grid-ng.component.scss'],
+    selector: 'app-grid-layout-editor-definition',
+    templateUrl: './grid-layout-editor-definition-ng.component.html',
+    styleUrls: ['./grid-layout-editor-definition-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+export class GridLayoutEditorDefinitionNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: GridLayoutEditorAllowedFieldsGridNgComponent.RecordFocusEventer | undefined;
-    gridClickEventer: GridLayoutEditorAllowedFieldsGridNgComponent.GridClickEventer | undefined;
+    recordFocusEventer: GridLayoutEditorDefinitionNgComponent.RecordFocusEventer | undefined;
+    gridClickEventer: GridLayoutEditorDefinitionNgComponent.GridClickEventer | undefined;
 
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
@@ -44,7 +43,7 @@ export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentCompone
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
 
-    private _columnFilterId = ColumnFilterId.ShowAll;
+    private _columnFilterId: GridLayoutEditorDefinitionNgComponent.ColumnFilterId = GridLayoutEditorDefinitionNgComponent.ColumnFilterId.ShowAll;
 
     constructor() {
         super();
@@ -55,8 +54,8 @@ export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentCompone
     get gridLayoutDefinition() { return this._recordStore.getLayout().createDefinition(); }
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
-    public get columnFilterId() { return this._columnFilterId; }
-    public set columnFilterId(value: ColumnFilterId) {
+    public get columnFilterId(): GridLayoutEditorDefinitionNgComponent.ColumnFilterId { return this._columnFilterId; }
+    public set columnFilterId(value: GridLayoutEditorDefinitionNgComponent.ColumnFilterId) {
         this._columnFilterId = value;
         this.applyColumnFilter();
     }
@@ -66,7 +65,7 @@ export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentCompone
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorAllowedFieldsGridNgComponent.frameGridProperties);
+        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorDefinitionNgComponent.frameGridProperties);
         this._grid.recordFocusedEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
         this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
 
@@ -205,15 +204,15 @@ export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentCompone
 
         const value = this._columnFilterId;
         switch (value) {
-            case ColumnFilterId.ShowAll:
+            case GridLayoutEditorDefinitionNgComponent.ColumnFilterId.ShowAll:
                 this._grid.applyFilter((record) => showAllFilter(record));
                 break;
 
-            case ColumnFilterId.ShowVisible:
+            case GridLayoutEditorDefinitionNgComponent.ColumnFilterId.ShowVisible:
                 this._grid.applyFilter((record) => showVisibleFilter(record));
                 break;
 
-            case ColumnFilterId.ShowHidden:
+            case GridLayoutEditorDefinitionNgComponent.ColumnFilterId.ShowHidden:
                 this._grid.applyFilter((record) => showHiddenFilter(record));
                 break;
 
@@ -259,7 +258,7 @@ export class GridLayoutEditorAllowedFieldsGridNgComponent extends ContentCompone
     }
 }
 
-export namespace GridLayoutEditorAllowedFieldsGridNgComponent {
+export namespace GridLayoutEditorDefinitionNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 
@@ -268,26 +267,32 @@ export namespace GridLayoutEditorAllowedFieldsGridNgComponent {
         gridRightAligned: false,
     };
 
+    export const enum ColumnFilterId {
+        ShowAll = 1,
+        ShowVisible = 2,
+        ShowHidden = 3,
+    }
+
     export namespace ColumnFilter {
         export function getEnumUiActionElementProperties(id: ColumnFilterId): EnumUiAction.ElementProperties {
             switch (id) {
                 case ColumnFilterId.ShowAll:
                     return {
                         element: ColumnFilterId.ShowAll,
-                        caption: Strings[StringId.GridLayoutEditorShowAllRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowAllRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowAllRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowAllRadioTitle],
                     };
                 case ColumnFilterId.ShowVisible:
                     return {
                         element: ColumnFilterId.ShowVisible,
-                        caption: Strings[StringId.GridLayoutEditorShowVisibleRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowVisibleRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowVisibleRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowVisibleRadioTitle],
                     };
                 case ColumnFilterId.ShowHidden:
                     return {
                         element: ColumnFilterId.ShowHidden,
-                        caption: Strings[StringId.GridLayoutEditorShowHiddenRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowHiddenRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowHiddenRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowHiddenRadioTitle],
                     };
                 default:
                     throw new UnreachableCaseError('GLEGCCFGEUAEP0098233', id);

@@ -42,6 +42,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     @ViewChild('cancelSearchButton', { static: true }) private _cancelSearchButtonComponent: SvgButtonNgComponent;
     @ViewChild('searchNextButton', { static: true }) private _searchNextButtonComponent: SvgButtonNgComponent;
     @ViewChild('searchInput', { static: true }) private _searchInputComponent: TextInputNgComponent;
+    @ViewChild('insertButton', { static: true }) private _insertButtonComponent: SvgButtonNgComponent;
+    @ViewChild('insertAllButton', { static: true }) private _insertAllButtonComponent: SvgButtonNgComponent;
+    @ViewChild('removeButton', { static: true }) private _removeButtonComponent: SvgButtonNgComponent;
+    @ViewChild('removeAllButton', { static: true }) private _removeAllButtonComponent: SvgButtonNgComponent;
     @ViewChild('moveUpButton', { static: true }) private _moveUpButtonComponent: SvgButtonNgComponent;
     @ViewChild('moveTopButton', { static: true }) private _moveTopButtonComponent: SvgButtonNgComponent;
     @ViewChild('moveDownButton', { static: true }) private _moveDownButtonComponent: SvgButtonNgComponent;
@@ -64,6 +68,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     private readonly _cancelSearchUiAction: IconButtonUiAction;
     private readonly _searchNextUiAction: IconButtonUiAction;
     private readonly _searchEditUiAction: StringUiAction;
+    private readonly _insertUiAction: IconButtonUiAction;
+    private readonly _insertAllUiAction: IconButtonUiAction;
+    private readonly _removeUiAction: IconButtonUiAction;
+    private readonly _removeAllUiAction: IconButtonUiAction;
     private readonly _moveUpUiAction: IconButtonUiAction;
     private readonly _moveTopUiAction: IconButtonUiAction;
     private readonly _moveDownUiAction: IconButtonUiAction;
@@ -74,7 +82,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     private _currentRecordIndex: Integer | undefined = undefined;
     // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
 
-    constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+    constructor(private readonly _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
         super();
 
         this._commandRegisterService = commandRegisterNgService.service;
@@ -86,6 +94,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._cancelSearchUiAction = this.createCancelSearchUiAction();
         this._searchNextUiAction = this.createSearchNextUiAction();
         this._searchEditUiAction = this.createSearchEditUiAction();
+        this._insertUiAction = this.createInsertUiAction();
+        this._insertAllUiAction = this.createInsertAllUiAction();
+        this._removeUiAction = this.createRemoveUiAction();
+        this._removeAllUiAction = this.createRemoveAllUiAction();
         this._moveUpUiAction = this.createMoveUpUiAction();
         this._moveTopUiAction = this.createMoveTopUiAction();
         this._moveDownUiAction = this.createMoveDownUiAction();
@@ -129,6 +141,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._cancelSearchUiAction.finalise();
         this._searchNextUiAction.finalise();
         this._searchEditUiAction.finalise();
+        this._insertUiAction.finalise();
+        this._insertAllUiAction.finalise();
+        this._removeUiAction.finalise();
+        this._removeAllUiAction.finalise();
         this._moveUpUiAction.finalise();
         this._moveTopUiAction.finalise();
         this._moveDownUiAction.finalise();
@@ -139,10 +155,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createCancelSearchUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_CancelSearch;
-        const displayId = StringId.GridLayoutEditorCancelSearchCaption;
+        const displayId = StringId.GridLayoutEditor_CancelSearchCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorCancelSearchTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_CancelSearchTitle]);
         action.pushIcon(IconButtonUiAction.IconId.CancelSearch);
         action.signalEvent = () => this.handleCancelSearchButtonClickEvent();
         return action;
@@ -150,10 +166,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createSearchNextUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_SearchNext;
-        const displayId = StringId.GridLayoutEditorSearchNextCaption;
+        const displayId = StringId.GridLayoutEditor_SearchNextCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorSearchNextTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_SearchNextTitle]);
         action.pushIcon(IconButtonUiAction.IconId.SearchNext);
         action.signalEvent = () => this.handleSearchNextButtonClickEvent();
         return action;
@@ -161,17 +177,65 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createSearchEditUiAction() {
         const action = new StringUiAction();
-        action.pushTitle(Strings[StringId.GridLayoutEditorSearchInputTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_SearchInputTitle]);
         action.inputEvent = () => this.handleSearchInputInputEvent();
+        return action;
+    }
+
+    private createInsertUiAction() {
+        const commandName = InternalCommand.Id.GridLayoutEditor_Insert;
+        const displayId = StringId.GridLayoutEditor_InsertCaption;
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_InsertTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.RightArrow);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleInsertButtonClickEvent();
+        return action;
+    }
+
+    private createInsertAllUiAction() {
+        const commandName = InternalCommand.Id.GridLayoutEditor_InsertAll;
+        const displayId = StringId.GridLayoutEditor_InsertAllCaption;
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_InsertAllTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.DoubleRightArrow);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleInsertAllButtonClickEvent();
+        return action;
+    }
+
+    private createRemoveUiAction() {
+        const commandName = InternalCommand.Id.GridLayoutEditor_Remove;
+        const displayId = StringId.GridLayoutEditor_RemoveCaption;
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_RemoveTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.RightArrow);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleRemoveButtonClickEvent();
+        return action;
+    }
+
+    private createRemoveAllUiAction() {
+        const commandName = InternalCommand.Id.GridLayoutEditor_RemoveAll;
+        const displayId = StringId.GridLayoutEditor_RemoveAllCaption;
+        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_RemoveAllTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.DoubleRightArrow);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleRemoveAllButtonClickEvent();
         return action;
     }
 
     private createMoveUpUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_MoveUp;
-        const displayId = StringId.GridLayoutEditorMoveUpCaption;
+        const displayId = StringId.GridLayoutEditor_MoveUpCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorMoveUpTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveUpTitle]);
         action.pushIcon(IconButtonUiAction.IconId.MoveUp);
         action.pushUnselected();
         action.signalEvent = () => this.handleMoveUpButtonClickEvent();
@@ -180,10 +244,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createMoveTopUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_MoveTop;
-        const displayId = StringId.GridLayoutEditorMoveTopCaption;
+        const displayId = StringId.GridLayoutEditor_MoveTopCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorMoveTopTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveTopTitle]);
         action.pushIcon(IconButtonUiAction.IconId.MoveToTop);
         action.pushUnselected();
         action.signalEvent = () => this.handleMoveTopButtonClickEvent();
@@ -192,10 +256,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createMoveDownUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_MoveDown;
-        const displayId = StringId.GridLayoutEditorMoveDownCaption;
+        const displayId = StringId.GridLayoutEditor_MoveDownCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorMoveDownTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveDownTitle]);
         action.pushIcon(IconButtonUiAction.IconId.MoveDown);
         action.pushUnselected();
         action.signalEvent = () => this.handleMoveDownButtonClickEvent();
@@ -204,10 +268,10 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 
     private createMoveBottomUiAction() {
         const commandName = InternalCommand.Id.GridLayoutEditor_MoveBottom;
-        const displayId = StringId.GridLayoutEditorMoveBottomCaption;
+        const displayId = StringId.GridLayoutEditor_MoveBottomCaption;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditorMoveBottomTitle]);
+        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveBottomTitle]);
         action.pushIcon(IconButtonUiAction.IconId.MoveToBottom);
         action.pushUnselected();
         action.signalEvent = () => this.handleMoveBottomButtonClickEvent();
@@ -254,10 +318,14 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         // this._cancelSearchButtonComponent.initialise(this._cancelSearchUiAction);
         // this._searchNextButtonComponent.initialise(this._searchNextUiAction);
         // this._searchInputComponent.initialise(this._searchEditUiAction);
-        // this._moveUpButtonComponent.initialise(this._moveUpUiAction);
-        // this._moveTopButtonComponent.initialise(this._moveTopUiAction);
-        // this._moveDownButtonComponent.initialise(this._moveDownUiAction);
-        // this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
+        this._insertButtonComponent.initialise(this._insertUiAction);
+        this._insertAllButtonComponent.initialise(this._insertAllUiAction);
+        this._removeButtonComponent.initialise(this._removeUiAction);
+        this._removeAllButtonComponent.initialise(this._removeAllUiAction);
+        this._moveUpButtonComponent.initialise(this._moveUpUiAction);
+        this._moveTopButtonComponent.initialise(this._moveTopUiAction);
+        this._moveDownButtonComponent.initialise(this._moveDownUiAction);
+        this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
         // this._showAllRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
         // this._showAllLabelComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowAll);
         // this._showVisibleRadioComponent.initialiseEnum(this._filterUiAction, GridLayoutEditorGridNgComponent.ColumnFilterId.ShowVisible);

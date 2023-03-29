@@ -279,20 +279,20 @@ export namespace GridLayoutEditorDefinitionColumnPropertiesNgComponent {
                 case ColumnFilterId.ShowAll:
                     return {
                         element: ColumnFilterId.ShowAll,
-                        caption: Strings[StringId.GridLayoutEditorShowAllRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowAllRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowAllRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowAllRadioTitle],
                     };
                 case ColumnFilterId.ShowVisible:
                     return {
                         element: ColumnFilterId.ShowVisible,
-                        caption: Strings[StringId.GridLayoutEditorShowVisibleRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowVisibleRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowVisibleRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowVisibleRadioTitle],
                     };
                 case ColumnFilterId.ShowHidden:
                     return {
                         element: ColumnFilterId.ShowHidden,
-                        caption: Strings[StringId.GridLayoutEditorShowHiddenRadioCaption],
-                        title: Strings[StringId.GridLayoutEditorShowHiddenRadioTitle],
+                        caption: Strings[StringId.GridLayoutEditor_ShowHiddenRadioCaption],
+                        title: Strings[StringId.GridLayoutEditor_ShowHiddenRadioTitle],
                     };
                 default:
                     throw new UnreachableCaseError('GLEGCCFGEUAEP0098233', id);

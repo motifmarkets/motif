@@ -62,7 +62,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
 
-    private _frame: BalancesDitemFrame;
+    private readonly _frame: BalancesDitemFrame;
 
     constructor(
         cdr: ChangeDetectorRef,

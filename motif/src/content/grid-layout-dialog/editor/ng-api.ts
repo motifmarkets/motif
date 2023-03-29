@@ -5,8 +5,8 @@
  */
 
 
-export * from './grid-layout-editor-allowed-fields-grid/ng-api';
+export * from './grid-layout-editor-allowed-fields/ng-api';
 export * from './grid-layout-editor-definition-column-properties/ng-api';
-export * from './grid-layout-editor-definition-grid/ng-api';
+export * from './grid-layout-editor-definition/ng-api';
 export * from './grid-layout-editor/ng-api';
 
