@@ -4,13 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
 import {
+    BooleanUiAction,
     EnumUiAction,
-    GridField,
     GridLayout,
     GridLayoutChange,
-    GridLayoutDefinition,
     GridLayoutRecordStore,
     Integer,
     StringId,
@@ -23,39 +22,44 @@ import { RecordGridNgComponent } from '../../../../adapted-revgrid/record-grid/n
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
 @Component({
-    selector: 'app-grid-layout-editor-definition-column-properties',
-    templateUrl: './grid-layout-editor-definition-column-properties-ng.component.html',
-    styleUrls: ['./grid-layout-editor-definition-column-properties-ng.component.scss'],
+    selector: 'app-grid-layout-editor-column-properties',
+    templateUrl: './grid-layout-editor-column-properties-ng.component.html',
+    styleUrls: ['./grid-layout-editor-column-properties-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorDefinitionColumnPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+export class GridLayoutEditorColumnPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
-    recordFocusEventer: GridLayoutEditorDefinitionColumnPropertiesNgComponent.RecordFocusEventer | undefined;
-    gridClickEventer: GridLayoutEditorDefinitionColumnPropertiesNgComponent.GridClickEventer | undefined;
+    recordFocusEventer: GridLayoutEditorColumnPropertiesNgComponent.RecordFocusEventer | undefined;
+    gridClickEventer: GridLayoutEditorColumnPropertiesNgComponent.GridClickEventer | undefined;
 
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
     private _gridPrepared = false;
-    private _allowedFields: readonly GridField[];
-    private _layoutDefinition: GridLayoutDefinition;
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
+    public fieldName: string | undefined = undefined;
 
-    private _columnFilterId: GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId = GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId.ShowAll;
+    private _columnFilterId: GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId = GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId.ShowAll;
+    private readonly _fieldVisibleUiAction: BooleanUiAction;
 
     constructor() {
         super();
 
         this._recordStore = new GridLayoutRecordStore();
+
+        this._fieldVisibleUiAction = new BooleanUiAction();
+        this._fieldVisibleUiAction.pushCaption(Strings[StringId.Visible]);
+        this._fieldVisibleUiAction.pushValue(false);
+        this._fieldVisibleUiAction.commitEvent = () => this.handleFieldVisibleCommitEvent();
     }
 
     get gridLayoutDefinition() { return this._recordStore.getLayout().createDefinition(); }
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
 
-    public get columnFilterId(): GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId { return this._columnFilterId; }
-    public set columnFilterId(value: GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId) {
+    public get columnFilterId(): GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId { return this._columnFilterId; }
+    public set columnFilterId(value: GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId) {
         this._columnFilterId = value;
         this.applyColumnFilter();
     }
@@ -65,21 +69,21 @@ export class GridLayoutEditorDefinitionColumnPropertiesNgComponent extends Conte
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorDefinitionColumnPropertiesNgComponent.frameGridProperties);
+        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorColumnPropertiesNgComponent.frameGridProperties);
         this._grid.recordFocusedEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
         this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
 
         this.prepareGrid();
+
+        // this._fieldVisibleCheckboxComponent.initialise(this._fieldVisibleUiAction);
+    }
+
+    ngOnDestroy() {
+        this._fieldVisibleUiAction.finalise();
     }
 
     // private initialise() {
     // }
-
-    setAllowedFieldsAndLayoutDefinition(allowedFields: readonly GridField[], layoutDefinition: GridLayoutDefinition) {
-        this._allowedFields = allowedFields;
-        this._layoutDefinition = layoutDefinition;
-        this.prepareGrid();
-    }
 
     handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {
         if (this.recordFocusEventer !== undefined) {
@@ -199,20 +203,31 @@ export class GridLayoutEditorDefinitionColumnPropertiesNgComponent extends Conte
         }
     }
 
+    private handleFieldVisibleCommitEvent() {
+        // if (this._currentRecordIndex !== undefined) {
+        //     const column = this._gridComponent.getColumn(this._currentRecordIndex);
+        //     column.visible = this._fieldVisibleUiAction.definedValue;
+        //     this._gridComponent.invalidateVisibleValue(this._currentRecordIndex);
+        // } else {
+        //     this.fieldName = undefined;
+        // }
+        // this.updateFieldProperties();
+    }
+
     private applyColumnFilter(): void {
         this._grid.clearFilter();
 
         const value = this._columnFilterId;
         switch (value) {
-            case GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId.ShowAll:
+            case GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId.ShowAll:
                 this._grid.applyFilter((record) => showAllFilter(record));
                 break;
 
-            case GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId.ShowVisible:
+            case GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId.ShowVisible:
                 this._grid.applyFilter((record) => showVisibleFilter(record));
                 break;
 
-            case GridLayoutEditorDefinitionColumnPropertiesNgComponent.ColumnFilterId.ShowHidden:
+            case GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId.ShowHidden:
                 this._grid.applyFilter((record) => showHiddenFilter(record));
                 break;
 
@@ -258,7 +273,7 @@ export class GridLayoutEditorDefinitionColumnPropertiesNgComponent extends Conte
     }
 }
 
-export namespace GridLayoutEditorDefinitionColumnPropertiesNgComponent {
+export namespace GridLayoutEditorColumnPropertiesNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 

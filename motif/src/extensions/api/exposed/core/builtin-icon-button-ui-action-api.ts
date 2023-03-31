@@ -62,6 +62,9 @@ export namespace BuiltinIconButtonUiAction {
         ExpandVertically = 'ExpandVertically',
         RestoreVertically = 'RestoreVertically',
         CollapseVertically ='CollapseVertically',
+        MarkAll = 'MarkAll',
+        InsertIntoListFromLeft = 'InsertIntoListFromLeft',
+        RemoveFromListToLeft = 'RemoveFromListToLeft',
     }
 
     export type IconId = keyof typeof IconIdEnum;

@@ -20,6 +20,8 @@ import {
     ButtonUiAction,
     CommandRegisterService,
     delay1Tick,
+    EditableGridLayoutDefinitionColumn,
+    EditableGridLayoutDefinitionColumnList,
     GridField,
     GridLayoutDefinition,
     IconButtonUiAction,
@@ -31,7 +33,7 @@ import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { GridLayoutEditorNgComponent } from '../editor/ng-api';
-import { allowedFieldsInjectionToken, oldLayoutDefinitionInjectionToken } from '../grid-layout-dialog-injection-tokens';
+import { allowedFieldsInjectionToken, oldLayoutDefinitionInjectionToken } from './grid-layout-dialog-ng-injection-tokens';
 
 @Component({
     selector: 'app-grid-layout-dialog',
@@ -57,10 +59,12 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     private _closeResolve: (value: GridLayoutDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
+    private _columnList: EditableGridLayoutDefinitionColumnList;
+
     constructor(
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        @Inject(allowedFieldsInjectionToken) private readonly _allowedFields: readonly GridField[],
+        @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
         @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
     ) {
         super();
@@ -70,10 +74,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         this._cancelUiAction = this.createCancelUiAction();
         this._editorUiAction = this.createEditorUiAction();
 
-        // this._subDialogContainer.setAllowedFieldsAndLayoutDefinition(
-        //     allowedFieldsAndLayoutDefinition.allowedFields,
-        //     allowedFieldsAndLayoutDefinition.layoutDefinition,
-        // );
+        this._columnList = this.createColumnListFromDefinition(allowedFields, this._oldLayoutDefinition);
     }
 
     ngAfterViewInit() {
@@ -147,9 +148,29 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         }
     }
 
+    private createColumnListFromDefinition(allowedFields: readonly GridField[], definition: GridLayoutDefinition) {
+        const definitionColumns = definition.columns;
+        const maxCount = definitionColumns.length;
+        const editableColumns = new Array<EditableGridLayoutDefinitionColumn>(maxCount);
+        let count = 0;
+        for (let i = 0; i < maxCount; i++) {
+            const definitionColumn = definitionColumns[i];
+            const fieldName = definitionColumn.fieldName;
+            const field = allowedFields.find((value) => value.name === fieldName);
+            if (field !== undefined) {
+                const editableColumn = new EditableGridLayoutDefinitionColumn(field, count++);
+                editableColumn.visible = definitionColumn.visible ?? true;
+                editableColumn.width = definitionColumn.width;
+                editableColumns[count++] = editableColumn;
+            }
+        }
+        editableColumns.length = count;
+        return new EditableGridLayoutDefinitionColumnList(editableColumns);
+    }
+
     private showEditor() {
         this._subDialogContainer.clear();
-        this._subDialogContainer.createComponent(GridLayoutEditorNgComponent);
+        GridLayoutEditorNgComponent.create(this._subDialogContainer, this._columnList);
     }
 }
 

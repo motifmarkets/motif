@@ -11,22 +11,16 @@
         <app-svg-button #moveUpButton id="moveUpButton"></app-svg-button>
     </div>
     <div id="insertRemoveFieldsControls">
-        <div id="insertFieldsControls">
-            <app-svg-button #insertButton id="insertButton"></app-svg-button>
-            <app-svg-button #insertAllButton id="insertAllButton"></app-svg-button>
-        </div>
-        <div id="removeFieldsControls">
-            <app-svg-button #removeButton id="removeButton"></app-svg-button>
-            <app-svg-button #removeAllButton id="removeAllButton"></app-svg-button>
-        </div>
+        <app-svg-button #insertButton id="insertButton"></app-svg-button>
+        <app-svg-button #removeButton id="removeButton"></app-svg-button>
     </div>
     <div id="moveFieldsDownControls">
         <app-svg-button #moveDownButton id="moveDownButton"></app-svg-button>
         <app-svg-button #moveBottomButton id="moveBottomButton"></app-svg-button>
     </div>
 </div>
-<app-grid-layout-editor-definition #definitionGrid id="definitionGrid"></app-grid-layout-editor-definition>
-<app-grid-layout-editor-definition-column-properties #definitionColumnProperties id="definitionColumnProperties"></app-grid-layout-editor-definition-column-properties>
+<app-grid-layout-editor-columns #columnsGrid id="columnsGrid"></app-grid-layout-editor-columns>
+<app-grid-layout-editor-column-properties #columnProperties id="columnProperties"></app-grid-layout-editor-column-properties>
 
 <!-- <div id="rightDiv">
     <div id="moveButtonsDiv">

@@ -19,6 +19,7 @@ import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import './svg/noun-collapse-vertical-2439339.svg';
 import './svg/noun-expand-vertical-2439362.svg';
+import './svg/noun-mark-all-3067122.svg';
 import './svg/noun-minimize-4143571.svg';
 import './svg/noun_blank_1667007.svg';
 import './svg/noun_bolt_3396896.svg';
@@ -42,13 +43,9 @@ import './svg/noun_Light-Bulb_3019480.svg';
 import './svg/noun_link_1096675.svg';
 import './svg/noun_link_2220043.svg';
 import './svg/noun_List_1242568.svg';
-import './svg/noun_Lower-Selection-One-Step_2831002.svg';
-import './svg/noun_Lower-Selection-To-Bottom_2830977.svg';
 import './svg/noun_mirror_26874.svg';
 import './svg/noun_next-file_1669433.svg';
 import './svg/noun_No-Tint_120407.svg';
-import './svg/noun_Raise-Selection-One-Step_2831009.svg';
-import './svg/noun_Raise-Selection-To-Top_2830983.svg';
 import './svg/noun_remove-event_515462.svg';
 import './svg/noun_return_1651212.svg';
 import './svg/noun_Save_3141427.svg';
@@ -302,13 +299,13 @@ export namespace SvgButtonNgComponent {
             CancelSearch: { id: IconButtonUiAction.IconId.CancelSearch,
                 spriteId: 'noun_Cancel-Search_677094' }, // falTimes
             MoveUp: { id: IconButtonUiAction.IconId.MoveUp,
-                spriteId: 'noun_Raise-Selection-One-Step_2831009' }, // falArrowAltUp
+                spriteId: 'noun-up-70478' }, // falArrowAltUp
             MoveToTop: { id: IconButtonUiAction.IconId.MoveToTop,
-                spriteId: 'noun_Raise-Selection-To-Top_2830983' }, // falArrowAltToTop
+                spriteId: 'noun-move-to-top-269054.svg' }, // falArrowAltToTop
             MoveDown: { id: IconButtonUiAction.IconId.MoveDown,
-                spriteId: 'noun_Lower-Selection-One-Step_2831002', }, // falArrowAltDown
+                spriteId: 'noun-arrow-down-70422', }, // falArrowAltDown
             MoveToBottom: { id: IconButtonUiAction.IconId.MoveToBottom,
-                spriteId: 'noun_Lower-Selection-To-Bottom_2830977' }, // falArrowAltToBottom
+                spriteId: 'noun-move-to-bottom-269053.svg' }, // falArrowAltToBottom
             NotHistorical: { id: IconButtonUiAction.IconId.NotHistorical,
                 spriteId: 'noun_remove-event_515462' }, // falCalendarTimes
             Historical: { id: IconButtonUiAction.IconId.Historical,
@@ -325,6 +322,12 @@ export namespace SvgButtonNgComponent {
                 spriteId: 'noun-minimize-4143571' },
             CollapseVertically: { id: IconButtonUiAction.IconId.CollapseVertically,
                 spriteId: 'noun-collapse-vertical-2439339' },
+            MarkAll: { id: IconButtonUiAction.IconId.MarkAll,
+                spriteId: 'noun-mark-all-3067122' },
+            InsertIntoListFromLeft: { id: IconButtonUiAction.IconId.InsertIntoListFromLeft,
+                spriteId: 'noun-login-4123950' },
+            RemoveFromListToLeft: { id: IconButtonUiAction.IconId.RemoveFromListToLeft,
+                spriteId: 'noun-logout-4124631' },
         };
 
         export const idCount = Object.keys(infosObject).length;

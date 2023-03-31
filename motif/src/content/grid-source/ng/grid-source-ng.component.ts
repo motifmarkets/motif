@@ -37,7 +37,7 @@ export class GridSourceNgComponent
     @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
-    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
+    @ViewChild(RecordGridNgComponent, { static: true }) private _recordGridComponent: RecordGridNgComponent;
 
     private readonly _frame: GridSourceFrame;
 
@@ -52,6 +52,8 @@ export class GridSourceNgComponent
 
     get frame(): GridSourceFrame { return this._frame; }
     get gridRowHeight() { return this._frame.gridRowHeight; }
+    get recordGridComponent() { return this._recordGridComponent; }
+    get recordGrid() { return this._recordGridComponent.recordGrid; }
 
     // Component Access members
 
@@ -60,7 +62,7 @@ export class GridSourceNgComponent
     }
 
     get gridHorizontalScrollbarMarginedHeight() {
-        return this._gridComponent.horizontalScrollbarMarginedHeight;
+        return this._recordGridComponent.horizontalScrollbarMarginedHeight;
     }
 
     ngOnDestroy() {
@@ -68,12 +70,12 @@ export class GridSourceNgComponent
     }
 
     ngAfterViewInit() {
-        this._gridComponent.destroyEventer = () => {
+        this._recordGridComponent.destroyEventer = () => {
             this.frame.finalise();
-            this._gridComponent.destroyGrid();
+            this._recordGridComponent.destroyGrid();
         };
 
-        const grid = this._gridComponent.createGrid(this._frame.recordStore, this.frameGridProperties);
+        const grid = this._recordGridComponent.createGrid(this._frame.recordStore, this.frameGridProperties);
         this._frame.setGrid(grid);
     }
 

@@ -4,5 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/grid-layout-editor-definition-ng.component';
+:host {
+    display: flex;
 
+    #searchInput {
+        width: 8em;
+    }
+}

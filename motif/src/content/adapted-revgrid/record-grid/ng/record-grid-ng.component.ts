@@ -16,7 +16,7 @@ import { RecordGridCellPainter } from '../record-grid-cell-painter';
 export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, RecordGrid.ComponentAccess {
     private readonly _cellPainter: RecordGridCellPainter;
 
-    private _grid: RecordGrid | undefined;
+    private _grid: RecordGrid;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.settingsService;
@@ -29,6 +29,8 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
         this.applySettings();
     }
+
+    get recordGrid() { return this._grid; }
 
     ngOnDestroy() {
         if (this.destroyEventer !== undefined) {
@@ -71,6 +73,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     override destroyGrid() {
         super.destroyGrid();
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._grid !== undefined) {
             this._grid.destroy();
         }
