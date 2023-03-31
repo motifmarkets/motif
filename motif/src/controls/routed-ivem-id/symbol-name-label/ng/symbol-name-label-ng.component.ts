@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
-import { RoutedIvemId, symbolDetailCache } from '@motifmarkets/motif-core';
-import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { AssertInternalError, RoutedIvemId, SymbolDetailCacheService } from '@motifmarkets/motif-core';
+import { SettingsNgService, SymbolDetailCacheNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-component-base-ng.directive';
 
@@ -20,14 +20,18 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
 export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirective implements OnDestroy {
     @Input() for: string;
 
+    private readonly _symbolDetailCacheService: SymbolDetailCacheService;
     private activePromiseId = 0;
 
     constructor(
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        symbolsNgService: SymbolsNgService
+        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsNgService);
+
+        this._symbolDetailCacheService = symbolDetailCacheNgService.service;
     }
 
     override ngOnDestroy() {
@@ -40,7 +44,11 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         if (value === undefined) {
             this.checkApplyCaption('');
         } else {
-            this.applyRoutedIvemId(value);
+            const promise = this.applyRoutedIvemId(value);
+            promise.then(
+                () => {/**/},
+                (error) => { throw AssertInternalError.createIfNotError(error, 'SNLNCAVA43344'); }
+            );
         }
     }
 
@@ -54,7 +62,7 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         this.checkApplyCaption('');
         const litIvemId = this.symbolsService.getBestLitIvemIdFromRoutedIvemId(value);
         const promiseId = ++this.activePromiseId;
-        const detail = await symbolDetailCache.getLitIvemId(litIvemId);
+        const detail = await this._symbolDetailCacheService.getLitIvemId(litIvemId);
         if (detail !== undefined && promiseId === this.activePromiseId) {
             const caption = detail.valid && detail.exists ? detail.name : '';
             this.checkApplyCaption(caption);
