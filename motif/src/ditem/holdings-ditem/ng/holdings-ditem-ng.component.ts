@@ -18,14 +18,14 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
@@ -62,7 +62,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

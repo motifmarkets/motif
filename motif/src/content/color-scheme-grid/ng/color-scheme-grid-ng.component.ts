@@ -9,14 +9,18 @@ import {
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
+    GridField,
     GridLayout,
     GridLayoutDefinition,
     Integer,
-    PickEnum
+    PickEnum,
+    SettingsService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
-import { SettingsNgService } from 'component-services-ng-api';
-import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { AdaptedRevgrid, RecordGrid } from '../../adapted-revgrid/internal-api';
+import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
+import { AdaptedRevgridBehavioredColumnSettings, RevRecord, RevRecordFieldIndex, RevRecordIndex, StandardHeaderTextCellPainter } from 'revgrid';
+import { RenderValueTextCellPainter } from '../../adapted-revgrid/cell-painters/render-value-text-cell-painter';
+import { AdaptedRevgrid, AdaptedRevgridBehavioredGridSettings, AdaptedRevgridGridSettings, RecordGrid } from '../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -34,15 +38,26 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer | undefined;
     columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer | undefined;
 
+    private readonly _settingsService: SettingsService;
+    private readonly _textFormatterService: TextFormatterService;
+
     private _recordStore: ColorSchemeGridRecordStore;
+    private _gridSettings: AdaptedRevgridBehavioredGridSettings;
     private _grid: RecordGrid;
+    private _mainCellPainter: RenderValueTextCellPainter;
+    private _headerCellPainter: StandardHeaderTextCellPainter<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField>;
 
     private _filterActive = false;
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
 
-    constructor(settingsNgService: SettingsNgService) {
+    constructor(
+        settingsNgService: SettingsNgService,
+        textFormatterNgService: TextFormatterNgService,
+    ) {
         super();
-        this._recordStore = new ColorSchemeGridRecordStore(settingsNgService.settingsService);
+        this._settingsService = settingsNgService.settingsService;
+        this._textFormatterService = textFormatterNgService.service;
+        this._recordStore = new ColorSchemeGridRecordStore(this._settingsService);
     }
 
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
@@ -60,13 +75,36 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, ColorSchemeGridNgComponent.frameGridProperties);
-        this._grid.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        this._grid.columnsViewWidthsChangedEventer =
+        const customGridSettings: Partial<AdaptedRevgridGridSettings> = {
+            mouseColumnSelection: false,
+            mouseRowSelection: false,
+            mouseRectangleSelection: false,
+            multipleSelectionAreas: false,
+            sortOnDoubleClick: false,
+            visibleColumnWidthAdjust: true,
+            fixedColumnCount: 1,
+            gridRightAligned: false,
+        };
+
+        this._gridSettings = AdaptedRevgrid.createGridSettings(this._settingsService, customGridSettings);
+
+        const grid = this._gridComponent.createGrid(
+            this._recordStore,
+            this._gridSettings,
+            () => this.getSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+        );
+        this._grid = grid;
+        grid.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        grid.columnsViewWidthsChangedEventer =
             (fixedChanged, nonFixedChanged, allChanged) => this.handleColumnsViewWidthsChangedEvent(
                 fixedChanged, nonFixedChanged, allChanged
             );
+
+        this._mainCellPainter = new RenderValueTextCellPainter(grid, grid.mainDataServer, this._settingsService, this._textFormatterService);
+        this._headerCellPainter = new StandardHeaderTextCellPainter(grid, grid.mainDataServer);
 
         this.dataResetGrid();
 
@@ -148,6 +186,18 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         const gridLayout = new GridLayout(gridLayoutDefinition);
         this._grid.fieldsLayoutReset(fields, gridLayout);
     }
+
+    private getSettingsForNewColumn() {
+        return AdaptedRevgrid.createColumnSettings(this._gridSettings);
+    }
+
+    private getMainCellPainter() {
+        return this._mainCellPainter;
+    }
+
+    private getHeaderCellPainter() {
+        return this._headerCellPainter;
+    }
 }
 
 export namespace ColorSchemeGridNgComponent {
@@ -155,11 +205,6 @@ export namespace ColorSchemeGridNgComponent {
     export type RecordFocusEventer = (recordIndex: RevRecordIndex | undefined) => void;
     export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ColumnsViewWithsChangedEventer = (this: void) => void;
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 1,
-        gridRightAligned: false,
-    };
 
     export type FieldName = PickEnum<ColorSchemeGridField.FieldName,
         ColorSchemeGridField.FieldName.Display |

@@ -20,13 +20,11 @@ import {
     AllowedMarketsEnumArrayUiAction,
     ArrayUiAction,
     BooleanUiAction,
-    delay1Tick,
     EnumUiAction,
     ExchangeId,
     ExchangeInfo,
     ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
-    getErrorMessage,
     IconButtonUiAction,
     Integer,
     IntegerUiAction,
@@ -35,11 +33,13 @@ import {
     Logger,
     MarketId,
     StringId,
-    Strings,
     StringUiAction,
+    Strings,
     SymbolField,
     SymbolFieldId,
-    SymbolsService
+    SymbolsService,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -52,10 +52,10 @@ import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
+    CaptionLabelNgComponent,
     CaptionedCheckboxNgComponent,
     CaptionedEnumArrayCheckboxNgComponent,
     CaptionedRadioNgComponent,
-    CaptionLabelNgComponent,
     EnumArrayInputNgComponent,
     EnumInputNgComponent,
     IntegerLabelNgComponent,
@@ -131,7 +131,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

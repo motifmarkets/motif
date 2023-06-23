@@ -1,10 +1,11 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
+import { GridField } from '@motifmarkets/motif-core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
-import { GridProperties, RevRecordStore } from 'revgrid';
-import { AdaptedRevgrid } from '../../adapted-revgrid';
+import { AdaptedRevgridBehavioredColumnSettings, RevRecordStore, Revgrid, Subgrid } from 'revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
+import { AdaptedRevgridBehavioredGridSettings } from '../../settings/content-adapted-revgrid-settings-internal-api';
 import { RecordGrid } from '../record-grid';
-import { RecordGridCellPainter } from '../record-grid-cell-painter';
+import { RecordGridMainTextCellPainter } from '../record-grid-main-text-cell-painter';
 
 @Component({
     selector: 'app-record-grid',
@@ -14,7 +15,7 @@ import { RecordGridCellPainter } from '../record-grid-cell-painter';
     encapsulation: ViewEncapsulation.None,
 })
 export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, RecordGrid.ComponentAccess {
-    private readonly _cellPainter: RecordGridCellPainter;
+    private readonly _cellPainter: RecordGridMainTextCellPainter;
 
     private _grid: RecordGrid;
 
@@ -23,7 +24,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
         super(elRef.nativeElement, settingsService);
 
         if (recordGridCellPainter === undefined) {
-            recordGridCellPainter = new RecordGridCellPainter(settingsService, textFormatterNgService.service);
+            recordGridCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterNgService.service);
         }
         this._cellPainter = recordGridCellPainter;
 
@@ -38,34 +39,30 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
         }
     }
 
-    createGrid(recordStore: RevRecordStore, frameGridProperties: AdaptedRevgrid.FrameGridProperties) {
+    createGrid(
+        recordStore: RevRecordStore,
+        gridSettings: AdaptedRevgridBehavioredGridSettings,
+        getSettingsForNewColumnEventer: Revgrid.GetSettingsForNewColumnEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    ) {
         this.destroyGrid(); // Can only have one grid so destroy previous one if it exists
-
-        const gridProperties: Partial<GridProperties> = {
-            renderFalsy: true,
-            autoSelectRows: false,
-            singleRowSelectionMode: false,
-            columnSelection: false,
-            rowSelection: false,
-            restoreColumnSelections: false,
-            multipleSelections: false,
-            sortOnDoubleClick: false,
-            visibleColumnWidthAdjust: true,
-            ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
-        };
 
         const grid = new RecordGrid(
             this,
             this._settingsService,
             this._hostElement,
             recordStore,
-            this._cellPainter,
-            gridProperties,
+            // this._cellPainter,
+            gridSettings,
+            getSettingsForNewColumnEventer,
+            getMainCellPainterEventer,
+            getHeaderCellPainterEventer,
         );
 
         this._grid = grid;
 
-        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridProperties);
+        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridSettings);
 
         return grid;
     }
@@ -80,4 +77,4 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     }
 }
 
-let recordGridCellPainter: RecordGridCellPainter | undefined; // singleton shared with all RecordGrid instantiations
+let recordGridCellPainter: RecordGridMainTextCellPainter | undefined; // singleton shared with all RecordGrid instantiations

@@ -11,13 +11,13 @@ import {
 } from '@angular/core';
 import {
     ButtonUiAction,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
     StringId,
+    StringUiAction,
     Strings,
-    StringUiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
@@ -80,7 +80,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.pushSymbolLinkSelectState();
     }
 
-    public get frameGridProperties(): AdaptedRevgrid.FrameGridProperties {
+    public get frameGridProperties(): AdaptedRevgrid.FrameGridSettings {
         return {
             fixedColumnCount: 1,
             gridRightAligned: false,

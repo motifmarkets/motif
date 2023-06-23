@@ -6,9 +6,9 @@ import {
     CorrectnessId,
     DepthRecord,
     DepthRecordRenderValue,
+    GridField,
     HigherLowerId,
     IndexSignatureHack,
-    Integer,
     OrderSideId,
     RenderValue,
     SettingsService,
@@ -16,59 +16,73 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
-    CanvasRenderingContext2DEx,
-    CellPaintConfig, Halign,
+    CellPainter,
+    DatalessViewCell,
+    RevRecordMainDataServer,
     RevRecordRecentChangeTypeId,
-    RevRecordValueRecentChangeTypeId
+    RevRecordValueRecentChangeTypeId,
+    StandardTextCellPainter
 } from 'revgrid';
+import { AdaptedRevgrid } from '../adapted-revgrid';
+import { RecordGridMainDataServer } from '../record-grid/internal-api';
+import { AdaptedRevgridBehavioredColumnSettings, AdaptedRevgridBehavioredGridSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
 
-const WHITESPACE = /\s\s+/g;
+export abstract class RenderValueTextCellPainter
+    extends StandardTextCellPainter<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField>
+    implements CellPainter<AdaptedRevgridBehavioredColumnSettings, GridField> {
 
-// export const defaultGridCellRendererName = 'default';
+    protected declare readonly _dataServer: RevRecordMainDataServer<GridField>;
 
-export class AdaptedRevgridCellPainter {
     private _coreSettings: CoreSettings;
     private _colorSettings: ColorSettings;
 
-    constructor(settingsService: SettingsService, private readonly _textFormatterService: TextFormatterService) {
+    constructor(settingsService: SettingsService, private readonly _textFormatterService: TextFormatterService, grid: AdaptedRevgrid, dataServer: RecordGridMainDataServer) {
+        super(grid, dataServer);
         this._coreSettings = settingsService.core;
         this._colorSettings = settingsService.color;
     }
 
-    paint(
-        gc: CanvasRenderingContext2DEx,
-        config: CellPaintConfig,
-        renderValue: RenderValue,
-        recordRecentChangeTypeId: RevRecordRecentChangeTypeId | undefined,
-        valueRecentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined,
-    ): void {
-        const rowIndex = config.dataCell.y;
-        const altRow = rowIndex % 2 === 1;
+    paintValue(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, prefillColor: string | undefined, renderValue: RenderValue): number | undefined {
+    //     gc: CanvasRenderingContext2D,
+    //     renderValue: RenderValue,
+    //     recordRecentChangeTypeId: RevRecordRecentChangeTypeId | undefined,
+    //     valueRecentChangeTypeId: RevRecordValueRecentChangeTypeId | undefined,
+    // ): void {
+        const grid = this._grid;
 
-        let halign = config.halign;
+        const columnSettings = cell.columnSettings;
+        this.setColumnSettings(columnSettings);
 
-        let foreColor: string;
+        const gc = this._renderingContext;
+        const subgridRowIndex = cell.viewLayoutRow.subgridRowIndex;
+
+        const altRow = subgridRowIndex % 2 === 1;
+
         let bkgdColor: string;
-
-        const rowFocused = config.isRowFocused;
-        if (rowFocused && this._coreSettings.grid_FocusedRowColored) {
-            bkgdColor = this._colorSettings.getBkgd(
-                ColorScheme.ItemId.Grid_FocusedRow
-            );
+        const subgrid = cell.subgrid;
+        const isMainSubgrid = subgrid.isMain;
+        const rowFocused = isMainSubgrid && grid.focus.isMainSubgridRowFocused(subgridRowIndex);
+        if (rowFocused) {
+            bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_FocusedRow);
         } else {
+            //  bkgdColor = config.backgroundColor;
             bkgdColor = altRow
                 ? this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_BaseAlt)
                 : this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Base);
         }
 
+
+        let foreColor: string;
         if (altRow) {
             foreColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_BaseAlt);
         } else {
             foreColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_Base);
         }
 
+        let horizontalAlign = columnSettings.horizontalAlign;
         let graphicId = GraphicId.None;
         let proportionBarGraphic: ProportionBarGraphic | undefined;
+        const field = cell.viewLayoutColumn.column.field;
 
         const attributes = renderValue.attributes;
 
@@ -160,9 +174,9 @@ export class AdaptedRevgridCellPainter {
                 case RenderValue.AttributeId.DepthCountXRefField: {
                     const depthCountXRefFieldAttribute = attribute as RenderValue.DepthCountXRefFieldAttribute;
                     if (depthCountXRefFieldAttribute.isCountAndXrefs) {
-                        halign = 'right';
+                        horizontalAlign = 'right';
                     } else {
-                        halign = 'left';
+                        horizontalAlign = 'left';
                     }
                     break;
                 }
@@ -214,10 +228,11 @@ export class AdaptedRevgridCellPainter {
         }
 
         const foreText = this._textFormatterService.formatRenderValue(renderValue);
-        const foreFont = config.font;
+        const foreFont = this._gridSettings.font;
         let internalBorderRowOnly: boolean;
 
         let internalBorderColor: string | undefined;
+        const valueRecentChangeTypeId = this._dataServer.getValueRecentChangeTypeId(field, subgridRowIndex);
         if (valueRecentChangeTypeId !== undefined) {
             internalBorderRowOnly = false;
             switch (valueRecentChangeTypeId) {
@@ -234,6 +249,7 @@ export class AdaptedRevgridCellPainter {
                     throw new UnreachableCaseError('GCPPRVCTU02775', valueRecentChangeTypeId);
             }
         } else {
+            const recordRecentChangeTypeId = this._dataServer.getRecordRecentChangeTypeId(subgridRowIndex);
             if (recordRecentChangeTypeId !== undefined) {
                 internalBorderRowOnly = true;
 
@@ -260,32 +276,30 @@ export class AdaptedRevgridCellPainter {
         let bkgdRenderingRequired: boolean;
         let textProcessingRequired: boolean;
         let internalBorderProcessingRequired: boolean;
-        const prefillColor = config.prefillColor;
         if (prefillColor !== undefined) {
             bkgdRenderingRequired = prefillColor !== bkgdColor;
             textProcessingRequired = true;
             internalBorderProcessingRequired = true;
         } else {
-            const configSnapshot = config.snapshot;
-            if (configSnapshot === undefined) {
+            const fingerprint = cell.paintFingerprint as PaintFingerprint | undefined;
+            if (fingerprint === undefined) {
                 bkgdRenderingRequired = true;
                 textProcessingRequired = true;
                 internalBorderProcessingRequired = true;
             } else {
-                const existingSnapshot = configSnapshot as BeingPaintedCellSnapshot;
-                if (existingSnapshot.bkgdColor !== bkgdColor) {
+                if (fingerprint.bkgdColor !== bkgdColor) {
                     bkgdRenderingRequired = true;
                     textProcessingRequired = true;
                     internalBorderProcessingRequired = true;
                 } else {
                     bkgdRenderingRequired = false;
                     textProcessingRequired =
-                        existingSnapshot.foreColor !== foreColor
-                        || existingSnapshot.foreText !== foreText
+                        fingerprint.foreColor !== foreColor
+                        || fingerprint.foreText !== foreText
                         || graphicId !== GraphicId.None;
                     internalBorderProcessingRequired =
-                        existingSnapshot.internalBorderColor !== internalBorderColor
-                        || existingSnapshot.internalBorderRowOnly !== internalBorderRowOnly
+                        fingerprint.internalBorderColor !== internalBorderColor
+                        || fingerprint.internalBorderRowOnly !== internalBorderRowOnly
                         || graphicId !== GraphicId.None;
                 }
             }
@@ -298,7 +312,7 @@ export class AdaptedRevgridCellPainter {
         ) {
             return undefined;
         } else {
-            const newSnapshot: BeingPaintedCellSnapshot = {
+            const newFingerprint: PaintFingerprint = {
                 bkgdColor,
                 foreColor,
                 internalBorderColor,
@@ -306,9 +320,9 @@ export class AdaptedRevgridCellPainter {
                 foreText,
             };
 
-            config.snapshot = newSnapshot;
+            cell.paintFingerprint = newFingerprint;
 
-            const bounds = config.bounds;
+            const bounds = cell.bounds;
             const x = bounds.x;
             const y = bounds.y;
             const width = bounds.width;
@@ -319,7 +333,7 @@ export class AdaptedRevgridCellPainter {
                 gc.fillRect(x, y, width, height);
             }
 
-            if (config.isRowSelected && this._coreSettings.grid_FocusedRowBordered) {
+            if (rowFocused && this._coreSettings.grid_FocusedRowBordered) {
                 const borderWidth = this._coreSettings.grid_FocusedRowBorderWidth;
                 gc.cache.strokeStyle = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_FocusedRowBorder);
                 gc.cache.lineWidth = borderWidth;
@@ -422,20 +436,13 @@ export class AdaptedRevgridCellPainter {
                 }
             }
 
-            let valWidth: Integer;
-
-            if (textProcessingRequired && foreText === '') {
-                valWidth = 0;
+            if (!textProcessingRequired) {
+                return undefined;
             } else {
                 gc.cache.fillStyle = foreColor;
                 gc.cache.font = foreFont;
-                valWidth = config.isHeaderRow && config.headerTextWrapping
-                    ? renderMultiLineText(gc, config, foreText, cellPadding, cellPadding, halign)
-                    : renderSingleLineText(gc, config, foreText, cellPadding, cellPadding, halign);
+                return this.renderSingleLineText(bounds, foreText, cellPadding, cellPadding, horizontalAlign);
             }
-
-            const contentWidth = cellPadding + valWidth + cellPadding;
-            config.minWidth = contentWidth;
         }
     }
 }
@@ -448,7 +455,7 @@ const enum GraphicId {
     LineThrough,
 }
 
-interface CellPaintSnapshot {
+interface PaintFingerprintInterface {
     bkgdColor: string;
     foreColor: string;
     internalBorderColor: string | undefined;
@@ -456,250 +463,12 @@ interface CellPaintSnapshot {
     foreText: string;
 }
 
-type BeingPaintedCellSnapshot = IndexSignatureHack<CellPaintSnapshot>;
+type PaintFingerprint = IndexSignatureHack<PaintFingerprintInterface>;
 
 interface ProportionBarGraphic {
     color: string;
     proportion: number;
 }
-
-function renderMultiLineText(
-    gc: CanvasRenderingContext2DEx,
-    config: CellPaintConfig,
-    val: string,
-    leftPadding: number,
-    rightPadding: number,
-    halign: Halign,
-) {
-    const x = config.bounds.x;
-    const y = config.bounds.y;
-    const width = config.bounds.width;
-    const height = config.bounds.height;
-    const cleanVal = (val + '').trim().replace(WHITESPACE, ' '); // trim and squeeze whitespace
-    const lines = findLines(gc, config, cleanVal.split(' '), width);
-
-    if (lines.length === 1) {
-        return renderSingleLineText(
-            gc,
-            config,
-            cleanVal,
-            leftPadding,
-            rightPadding,
-            halign,
-        );
-    }
-
-    let halignOffset = leftPadding;
-    let valignOffset = config.voffset;
-    const textHeight = gc.getTextHeight(config.font).height;
-
-    switch (halign) {
-        case 'right':
-            halignOffset = width - rightPadding;
-            break;
-        case 'center':
-            halignOffset = width / 2;
-            break;
-    }
-
-    const hMin = 0;
-    const vMin = Math.ceil(textHeight / 2);
-
-    valignOffset += Math.ceil((height - (lines.length - 1) * textHeight) / 2);
-
-    halignOffset = Math.max(hMin, halignOffset);
-    valignOffset = Math.max(vMin, valignOffset);
-
-    gc.cache.save(); // define a clipping region for cell
-    gc.beginPath();
-    gc.rect(x, y, width, height);
-    gc.clip();
-
-    gc.cache.textAlign = halign;
-    gc.cache.textBaseline = 'middle';
-
-    for (let i = 0; i < lines.length; i++) {
-        gc.fillText(
-            lines[i],
-            x + halignOffset,
-            y + valignOffset + (i * textHeight)
-        );
-    }
-
-    gc.cache.restore(); // discard clipping region
-
-    return width;
-}
-
-function renderSingleLineText(
-    gc: CanvasRenderingContext2DEx,
-    config: CellPaintConfig,
-    val: string,
-    leftPadding: number,
-    rightPadding: number,
-    halign: Halign,
-) {
-    let x = config.bounds.x;
-    let y = config.bounds.y;
-    const width = config.bounds.width;
-    let halignOffset = leftPadding;
-    let minWidth: number;
-    const rightHaligned = halign === 'right';
-    const truncateWidth = width - rightPadding - leftPadding;
-
-    if (config.columnAutosizing) {
-        const truncatedResult = gc.getTextWidthTruncated(val, truncateWidth, config.textTruncateType, false, rightHaligned);
-        minWidth = truncatedResult.textWidth;
-        val = truncatedResult.text ?? val;
-        if (halign === 'center') {
-            halignOffset = (width - truncatedResult.textWidth) / 2;
-        }
-    } else {
-        const truncatedResult = gc.getTextWidthTruncated(val, truncateWidth, config.textTruncateType, true, rightHaligned);
-        minWidth = 0;
-        if (truncatedResult.text !== undefined) {
-            // not enough space to show the extire text, the text is truncated to fit for the width
-            val = truncatedResult.text;
-        } else {
-            // enought space to show the entire text
-            if (halign === 'center') {
-                halignOffset = (width - truncatedResult.textWidth) / 2;
-            }
-        }
-    }
-
-    // the position for x need to be relocated.
-    // for canvas to print text, when textAlign is 'end' or 'right'
-    // it will start with position x and print the text on the left
-    // so the exact position for x need to increase by the acutal width - rightPadding
-    x += halign === 'right'
-        ? width - rightPadding
-        : Math.max(leftPadding, halignOffset);
-    y += Math.floor(config.bounds.height / 2);
-
-    if (config.isUserDataArea) {
-        if (config.link) {
-            if (config.isCellHovered || !config.linkOnHover) {
-                if (config.linkColor) {
-                    gc.cache.strokeStyle = config.linkColor;
-                }
-                gc.beginPath();
-                underline(config, gc, val, x, y, 1);
-                gc.stroke();
-                gc.closePath();
-            }
-            if (config.linkColor && (config.isCellHovered || !config.linkColorOnHover)) {
-                gc.cache.fillStyle = config.linkColor;
-            }
-        }
-
-        if (config.strikeThrough) {
-            gc.beginPath();
-            strikeThrough(config, gc, val, x, y, 1);
-            gc.stroke();
-            gc.closePath();
-        }
-    }
-
-    gc.cache.textAlign = halign === 'right'
-        ? 'right'
-        : 'left';
-    gc.cache.textBaseline = 'middle';
-    gc.fillText(val, x, y);
-
-    return minWidth;
-}
-
-function findLines(gc: CanvasRenderingContext2DEx, config: CellPaintConfig, words: string[], width: number) {
-
-    if (words.length <= 1) {
-        return words;
-    } else {
-        // starting with just the first word...
-        let stillFits: boolean;
-        let line = [words.shift() as string]; // cannot be undefined as has at least one entry
-        while (
-            // so long as line still fits within current column...
-            (stillFits = gc.getTextWidth(line.join(' ')) < width)
-            // ...AND there are more words available...
-            && words.length > 0
-        ) {
-            // ...add another word to end of line and retest
-            line.push(words.shift() as string); // cannot be undefined as words has at least one entry
-        }
-
-        if (
-            !stillFits && // if line is now too long...
-            line.length > 1 // ...AND is multiple words...
-        ) {
-            words.unshift(line.pop() as string); // ...back off by (i.e., remove) one word
-        }
-
-        line = [line.join(' ')];
-
-        if (words.length) {
-            // if there's anything left...
-            line = line.concat(findLines(gc, config, words, width)); // ...break it up as well
-        }
-
-        return line;
-    }
-}
-
-function strikeThrough(
-    config: CellPaintConfig,
-    gc: CanvasRenderingContext2DEx,
-    text: string,
-    x: number,
-    y: number,
-    thickness: number
-) {
-    const textWidth = gc.getTextWidth(text);
-
-    switch (gc.cache.textAlign) {
-        case 'center':
-            x -= textWidth / 2;
-            break;
-        case 'right':
-            x -= textWidth;
-            break;
-    }
-
-    y = Math.round(y) + 0.5;
-
-    gc.cache.lineWidth = thickness;
-    gc.moveTo(x - 1, y);
-    gc.lineTo(x + textWidth + 1, y);
-}
-
-function underline(
-    config: CellPaintConfig,
-    gc: CanvasRenderingContext2DEx,
-    text: string,
-    x: number,
-    y: number,
-    thickness: number
-) {
-    const textHeight = gc.getTextHeight(config.font).height;
-    const textWidth = gc.getTextWidth(text);
-
-    switch (gc.cache.textAlign) {
-        case 'center':
-            x -= textWidth / 2;
-            break;
-        case 'right':
-            x -= textWidth;
-            break;
-    }
-
-    y = Math.ceil(y) + Math.round(textHeight / 2) - 0.5;
-
-    // gc.beginPath();
-    gc.cache.lineWidth = thickness;
-    gc.moveTo(x, y);
-    gc.lineTo(x + textWidth, y);
-}
-
 export function calculateDepthRecordBidAskOrderPriceLevelColorSchemeItemId(
     sideId: OrderSideId,
     typeId: DepthRecord.TypeId,

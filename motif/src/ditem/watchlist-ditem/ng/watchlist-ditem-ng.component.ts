@@ -16,11 +16,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
-    assigned,
-    delay1Tick,
     ExplicitElementsArrayUiAction,
-    getErrorMessage,
     GridLayout,
     IconButtonUiAction,
     Integer,
@@ -36,7 +32,11 @@ import {
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    assert,
+    assigned,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -153,7 +153,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
 
     get ditemFrame() { return this._frame; }
-    public get frameGridProperties(): AdaptedRevgrid.FrameGridProperties {
+    public get frameGridProperties(): AdaptedRevgrid.FrameGridSettings {
         return {
             fixedColumnCount: 1,
             gridRightAligned: false,

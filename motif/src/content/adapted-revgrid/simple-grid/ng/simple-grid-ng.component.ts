@@ -1,10 +1,10 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
-import { GridProperties } from 'revgrid';
+import { GridSettings } from 'revgrid';
 import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
 import { SimpleGrid } from '../simple-grid';
-import { SimpleGridCellPainter } from '../simple-grid-cell-painter';
+import { SimpleGridTextCellPainter } from '../simple-grid-text-cell-painter';
 
 @Component({
     selector: 'app-simple-grid',
@@ -14,7 +14,7 @@ import { SimpleGridCellPainter } from '../simple-grid-cell-painter';
     encapsulation: ViewEncapsulation.None,
 })
 export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, SimpleGrid.ComponentAccess {
-    private readonly _cellPainter: SimpleGridCellPainter;
+    private readonly _cellPainter: SimpleGridTextCellPainter;
 
     private _grid: SimpleGrid | undefined;
 
@@ -23,7 +23,7 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
         super(elRef.nativeElement, settingsService);
 
         if (simpleGridCellPainter === undefined) {
-            simpleGridCellPainter = new SimpleGridCellPainter(settingsService, textFormatterNgService.service);
+            simpleGridCellPainter = new SimpleGridTextCellPainter(settingsService, textFormatterNgService.service);
         }
         this._cellPainter = simpleGridCellPainter;
 
@@ -36,10 +36,10 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
         }
     }
 
-    createGrid(frameGridProperties: AdaptedRevgrid.FrameGridProperties) {
+    createGrid(frameGridSettings: AdaptedRevgrid.FrameGridSettings) {
         this.destroyGrid(); // Can only have one grid so destroy previous one if it exists
 
-        const gridProperties: Partial<GridProperties> = {
+        const gridSettings: Partial<GridSettings> = {
             renderFalsy: true,
             autoSelectRows: false,
             singleRowSelectionMode: false,
@@ -50,7 +50,8 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
             sortOnDoubleClick: false,
             visibleColumnWidthAdjust: true,
             halign: 'left',
-            ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
+            ...frameGridSettings,
+            ...AdaptedRevgrid.createSettingsServiceGridSettings(this._settingsService, frameGridSettings, undefined),
         };
 
         const grid = new SimpleGrid(
@@ -58,12 +59,12 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
             this._settingsService,
             this._hostElement,
             this._cellPainter,
-            gridProperties,
+            gridSettings,
         );
 
         this._grid = grid;
 
-        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridProperties);
+        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridSettings);
 
         return grid;
     }
@@ -78,4 +79,4 @@ export class SimpleGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
 }
 
-let simpleGridCellPainter: SimpleGridCellPainter | undefined; // singleton shared with all RecordGrid instantiations
+let simpleGridCellPainter: SimpleGridTextCellPainter | undefined; // singleton shared with all RecordGrid instantiations

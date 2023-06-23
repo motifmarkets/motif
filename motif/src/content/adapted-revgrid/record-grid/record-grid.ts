@@ -18,24 +18,28 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
-    CellEvent, Column, ColumnNameWidth, EventDetail,
-    GridProperties,
+    Column,
+    DatalessSubgrid,
+    EventDetail,
+    GridSettings,
     ListChangedTypeId,
-    Revgrid,
-    RevRecordCellAdapter,
     RevRecordField,
-    RevRecordFieldAdapter,
     RevRecordFieldIndex,
     RevRecordIndex,
-    RevRecordMainAdapter,
+    RevRecordMainDataServer,
     RevRecordStore,
-    SelectionDetail,
-    Subgrid
+    Revgrid,
+    SchemaServer,
+    Subgrid,
+    ViewCell
 } from 'revgrid';
 import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { AdaptedRevgrid } from '../adapted-revgrid';
-import { RecordGridCellPainter } from './record-grid-cell-painter';
-import { RecordGridHeaderAdapter } from './record-grid-header-adapter';
+import { AdaptedRevgridBehavioredGridSettings } from '../settings/adapted-revgrid-behaviored-grid-settings';
+import { AdaptedRevgridBehavioredColumnSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
+import { RecordGridHeaderDataServer } from './record-grid-header-data-server';
+import { RecordGridMainDataServer } from './record-grid-main-data-server';
+import { RecordGridSchemaServer } from './record-grid-schema-server';
 
 /**
  * Implements a Grid Adapter over the Hypergrid control
@@ -43,6 +47,9 @@ import { RecordGridHeaderAdapter } from './record-grid-header-adapter';
  * @public
  */
 export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeInitiator {
+    declare mainDataServer: RecordGridMainDataServer;
+    declare headerDataServer: RecordGridHeaderDataServer;
+
     recordFocusedEventer: RecordGrid.RecordFocusEventer | undefined;
     mainClickEventer: RecordGrid.MainClickEventer | undefined;
     mainDblClickEventer: RecordGrid.MainDblClickEventer | undefined;
@@ -50,9 +57,9 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
     private readonly _componentAccess: RecordGrid.ComponentAccess;
 
-    private readonly _fieldAdapter: RevRecordFieldAdapter;
-    private readonly _headerRecordAdapter: RecordGridHeaderAdapter;
-    private readonly _mainRecordAdapter: RevRecordMainAdapter;
+    private readonly _fieldAdapter: SchemaServer<GridField>;
+    private readonly _headerRecordAdapter: RecordGridHeaderDataServer;
+    private readonly _mainRecordAdapter: RevRecordMainDataServer<GridField>;
 
     private _gridLayout: GridLayout | undefined;
     private _allowedFields: readonly GridField[] | undefined;
@@ -71,40 +78,38 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         settingsService: SettingsService,
         gridElement: HTMLElement,
         recordStore: RevRecordStore,
-        mainCellPainter: RecordGridCellPainter,
-        gridProperties: Partial<GridProperties>
+        gridSettings: AdaptedRevgridBehavioredGridSettings,
+        getSettingsForNewColumnEventer: Revgrid.GetSettingsForNewColumnEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
     ) {
-        const fieldAdapter = new RevRecordFieldAdapter(recordStore);
-        const headerRecordAdapter = new RecordGridHeaderAdapter();
-        const mainRecordAdapter = new RevRecordMainAdapter(fieldAdapter, recordStore);
-        const recordCellAdapter = new RevRecordCellAdapter(mainRecordAdapter, mainCellPainter);
+        const schemaServer = new RecordGridSchemaServer();
+        const headerDataServer = new RecordGridHeaderDataServer();
+        const mainDataServer = new RecordGridMainDataServer(schemaServer, recordStore);
+        const recordCellAdapter = new RevRecordCellAdapter(mainDataServer, mainCellPainter);
+        const definition: Revgrid.Definition<AdaptedRevgridBehavioredColumnSettings, GridField> = {
+            schemaServer,
+            subgrids: [
+                {
+                    role: DatalessSubgrid.RoleEnum.header,
+                    dataServer: headerDataServer,
+                    getCellPainterEventer: getHeaderCellPainterEventer,
+                },
+                {
+                    role: DatalessSubgrid.RoleEnum.main,
+                    dataServer: mainDataServer,
+                    getCellPainterEventer: getMainCellPainterEventer,
+                },
+            ],
+        }
 
-        const options: Revgrid.Options = {
-            adapterSet: {
-                schemaModel: fieldAdapter,
-                subgrids: [
-                    {
-                        role: Subgrid.RoleEnum.header,
-                        dataModel: headerRecordAdapter,
-                    },
-                    {
-                        role: Subgrid.RoleEnum.main,
-                        dataModel: mainRecordAdapter,
-                        cellModel: recordCellAdapter,
-                    },
-                ],
-            },
-            gridProperties,
-            loadBuiltinFinbarStylesheet: false,
-        };
-
-        super(settingsService, gridElement, options);
+        super(settingsService, gridElement, definition, gridSettings, getSettingsForNewColumnEventer);
 
         this._componentAccess = componentAccess;
 
-        this._fieldAdapter = fieldAdapter;
-        this._headerRecordAdapter = headerRecordAdapter;
-        this._mainRecordAdapter = mainRecordAdapter;
+        this._fieldAdapter = schemaServer;
+        this._headerRecordAdapter = headerDataServer;
+        this._mainRecordAdapter = mainDataServer;
 
         this.applySettings();
         // this.applySettingsToMainRecordAdapter();
@@ -116,14 +121,14 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     get fieldNames() { return this._fieldAdapter.getFieldNames(); }
 
     get recordFocused() {
-        return this.selections.length > 0;
+        return this.focus.currentSubgridPoint !== undefined;
     }
 
     get sortable(): boolean {
-        return this.properties.sortable;
+        return this.settings.sortable;
     }
     set sortable(value: boolean) {
-        this.properties.sortable = value;
+        this.settings.sortable = value;
     }
 
     // eslint-disable-next-line @typescript-eslint/member-ordering
@@ -233,28 +238,26 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this._mainRecordAdapter.destroy();
     }
 
-    override fireSyntheticColumnSortEvent(eventDetail: EventDetail.ColumnSort): boolean {
+    override descendantProcessColumnSort(eventDetail: EventDetail.ColumnSort): boolean {
         const fieldIndex = eventDetail.column.schemaColumn.index;
         this.sortBy(fieldIndex);
-
-        return super.fireSyntheticColumnSortEvent(eventDetail);
     }
 
-    override fireSyntheticClickEvent(cellEvent: CellEvent): boolean {
-        const gridY = cellEvent.gridCell.y;
+    override descendantProcessMouseClick(mouseEvent: MouseEvent, cell: ViewCell): boolean {
+        const gridY = cell.isHeaderRow;
         if (gridY !== 0) {
             // Skip clicks to the column headers
             if (this.mainClickEventer !== undefined) {
-                const rowIndex = cellEvent.dataCell.y;
+                const rowIndex = cell.dataCell.y;
                 const recordIndex = this._mainRecordAdapter.getRecordIndexFromRowIndex(rowIndex);
-                const fieldIndex = cellEvent.dataCell.x;
+                const fieldIndex = cell.dataCell.x;
                 this.mainClickEventer(fieldIndex, recordIndex);
             }
         }
-        return super.fireSyntheticClickEvent(cellEvent);
+        return super.fireSyntheticClickEvent(cell);
     }
 
-    override fireSyntheticDoubleClickEvent(cellEvent: CellEvent): boolean {
+    override fireSyntheticDoubleClickEvent(cellEvent: ViewCell): boolean {
         if (cellEvent.gridCell.y !== 0) {
             // Skip clicks to the column headers
             if (this.mainDblClickEventer !== undefined) {
@@ -536,7 +539,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     //     };
     // }
 
-    getSortSpecifier(index: number): RevRecordMainAdapter.SortFieldSpecifier {
+    getSortSpecifier(index: number): RevRecordMainDataServer.SortFieldSpecifier {
         return this._mainRecordAdapter.getSortSpecifier(index);
     }
 
@@ -649,7 +652,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this.moveActiveColumn(fromColumnIndex, toColumnIndex);
     }
 
-    override reset(adapterSet?: GridProperties.AdapterSet): void {
+    override reset(adapterSet?: GridSettings.AdapterSet): void {
         this._fieldAdapter.reset();
         this._mainRecordAdapter.reset();
         super.reset(adapterSet, undefined, false);
@@ -846,7 +849,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
                         } else {
                             const fieldDefinition = field.definition;
                             column.setWidth(fieldDefinition.defaultWidth);
-                            column.properties.halign = fieldDefinition.defaultTextAlign;
+                            column.settings.halign = fieldDefinition.defaultTextAlign;
                         }
                     }
                     break;

@@ -16,12 +16,8 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
-    assigned,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
-    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -30,7 +26,11 @@ import {
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    assert,
+    assigned,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -70,7 +70,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

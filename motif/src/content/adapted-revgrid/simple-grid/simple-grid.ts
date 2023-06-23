@@ -2,17 +2,16 @@ import { Integer, SettingsService, UnexpectedUndefinedError } from '@motifmarket
 import {
     CellEvent,
     GridProperties,
-    Revgrid,
     RevSimpleAdapterSet,
     RevSimpleHeaderAdapter,
     RevSimpleMainAdapter,
     RevSimpleSchemaAdapter,
-    SelectionDetail,
-    Subgrid
+    Revgrid,
+    SelectionDetail
 } from 'revgrid';
 import { AdaptedRevgrid } from '../adapted-revgrid';
 import { SimpleGridCellAdapter } from './simple-grid-cell-adapter';
-import { SimpleGridCellPainter } from './simple-grid-cell-painter';
+import { SimpleGridTextCellPainter } from './simple-grid-text-cell-painter';
 
 export class SimpleGrid extends AdaptedRevgrid {
     private readonly _componentAccess: SimpleGrid.ComponentAccess;
@@ -36,7 +35,7 @@ export class SimpleGrid extends AdaptedRevgrid {
         componentAccess: SimpleGrid.ComponentAccess,
         settingsService: SettingsService,
         gridElement: HTMLElement,
-        cellPainter: SimpleGridCellPainter,
+        cellPainter: SimpleGridTextCellPainter,
         gridProperties: Partial<GridProperties>
     ) {
         const adapterSet = new RevSimpleAdapterSet();

@@ -15,15 +15,15 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
-    assigned,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
     StringId,
-    Strings
+    Strings,
+    assert,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -51,7 +51,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

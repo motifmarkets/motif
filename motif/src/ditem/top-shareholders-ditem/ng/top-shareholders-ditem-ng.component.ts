@@ -15,10 +15,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
-    assigned,
     DateUiAction,
-    delay1Tick,
     EnumInfoOutOfOrderError,
     ExchangeId,
     IconButtonUiAction,
@@ -34,7 +31,10 @@ import {
     Strings,
     UiAction,
     UnexpectedCaseError,
-    UnreachableCaseError
+    UnreachableCaseError,
+    assert,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -72,7 +72,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

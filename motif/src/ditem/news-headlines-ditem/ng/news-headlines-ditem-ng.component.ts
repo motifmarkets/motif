@@ -16,7 +16,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    DateTimeRenderValue, delay1Tick,
+    DateTimeRenderValue,
     IconButtonUiAction,
     IndexSignatureHack,
     Integer,
@@ -27,8 +27,9 @@ import {
     RenderValue,
     StringId,
     StringRenderValue,
+    StringUiAction,
     Strings,
-    StringUiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
@@ -238,7 +239,7 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 export namespace NewsHeadlinesDitemNgComponent {
     export const stateSchemaVersion = '2';
 
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

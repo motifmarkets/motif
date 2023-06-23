@@ -10,16 +10,17 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    ButtonUiAction, delay1Tick,
+    ButtonUiAction,
     IconButtonUiAction,
     IndexSignatureHack,
     Integer, InternalCommand,
     JsonElement, RenderValue,
     StringId,
     StringRenderValue,
-    Strings,
     StringUiAction,
-    TimeRenderValue
+    Strings,
+    TimeRenderValue,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
@@ -232,7 +233,7 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 export namespace AlertsDitemNgComponent {
     export const stateSchemaVersion = '2';
 
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

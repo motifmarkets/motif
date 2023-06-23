@@ -6,10 +6,10 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
 import {
-    delay1Tick,
     GridField,
     StringId,
-    Strings
+    Strings,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
 import { AdaptedRevgrid } from '../../../../adapted-revgrid/internal-api';
@@ -30,7 +30,7 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends ContentComponentBa
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
     @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

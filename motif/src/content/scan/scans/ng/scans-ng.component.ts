@@ -17,7 +17,7 @@ import { ScansFrame } from '../scans-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScansNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, ScansFrame.ComponentAccess {
-    @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
+    @Input() frameGridProperties: AdaptedRevgrid.FrameGridSettings;
     @ViewChild('grid', { static: true }) private _gridComponent: RecordGridNgComponent;
     @ViewChild('scanProperties', { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
 
@@ -127,7 +127,7 @@ export namespace ScansNgComponent {
     export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ColumnsViewWithsChangedEventer = (this: void) => void;
 
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 1,
         gridRightAligned: false,
     };

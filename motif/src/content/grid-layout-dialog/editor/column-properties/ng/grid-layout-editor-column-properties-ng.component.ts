@@ -277,7 +277,7 @@ export namespace GridLayoutEditorColumnPropertiesNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
 
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

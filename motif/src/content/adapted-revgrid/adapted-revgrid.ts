@@ -1,7 +1,16 @@
-import { ColorScheme, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
-import { EventDetail, GridProperties, Revgrid } from 'revgrid';
+import { ColorScheme, GridField, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { EventDetail, GridSettings, Revgrid } from 'revgrid';
+import {
+    AdaptedRevgridBehavioredColumnSettings,
+    AdaptedRevgridBehavioredGridSettings,
+    AdaptedRevgridGridSettings,
+    InMemoryAdaptedRevgridBehavioredColumnSettings,
+    InMemoryAdaptedRevgridBehavioredGridSettings,
+    defaultAdaptedRevgridColumnSettings,
+    defaultAdaptedRevgridGridSettings,
+} from './settings/content-adapted-revgrid-settings-internal-api';
 
-export abstract class AdaptedRevgrid extends Revgrid {
+export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField> {
     resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
     renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
     ctrlKeyMouseMoveEventer: AdaptedRevgrid.CtrlKeyMouseMoveEventer | undefined;
@@ -10,29 +19,28 @@ export abstract class AdaptedRevgrid extends Revgrid {
 
     protected readonly _settingsService: SettingsService;
 
-    private readonly _ctrlKeyMousemoveListener: (event: MouseEvent) => void;
-
-
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         settingsService: SettingsService,
         gridElement: HTMLElement,
-        options: Revgrid.Options,
+        definition: Revgrid.Definition<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        gridSettings: AdaptedRevgridBehavioredGridSettings,
+        getSettingsForNewColumnEventer: Revgrid.GetSettingsForNewColumnEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
     ) {
-        super(gridElement, options);
+        const options: Revgrid.Options<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField> = {
+            canvasRenderingContext2DSettings: {
+                alpha: false,
+            }
+        }
+        super(gridElement, definition, gridSettings, getSettingsForNewColumnEventer, options);
 
         this._settingsService = settingsService;
-
-        this._ctrlKeyMousemoveListener = (event) => this.handleHypegridCtrlKeyMousemoveEvent(event.ctrlKey);
-
-        this.canvas.canvas.addEventListener('mousemove', this._ctrlKeyMousemoveListener);
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 
     override destroy(): void {
-        this.canvas.canvas.removeEventListener('mousemove', this._ctrlKeyMousemoveListener );
         this._settingsService.unsubscribeSettingsChangedEvent(
             this._settingsChangedSubscriptionId
         );
@@ -88,10 +96,10 @@ export abstract class AdaptedRevgrid extends Revgrid {
     }
 
     protected applySettings() {
-        const updatedProperties = AdaptedRevgrid.createGridPropertiesFromSettings(
+        const updatedProperties = AdaptedRevgrid.createSettingsServiceGridSettings(
             this._settingsService,
             undefined,
-            this.properties
+            this.settings,
         );
 
         const updatedPropertiesCount = Object.keys(updatedProperties).length;
@@ -135,32 +143,30 @@ export namespace AdaptedRevgrid {
         allChanged: boolean
     ) => void;
 
-    export type FrameGridProperties = Pick<
-        GridProperties,
+    export type FrameGridSettings = Pick<
+        GridSettings,
         'gridRightAligned' | 'fixedColumnCount'
     >;
 
-    export function createGridPropertiesFromSettings(
-        settings: SettingsService,
-        frameGridProperties: FrameGridProperties | undefined,
-        existingGridProperties: GridProperties | undefined
-    ): Partial<GridProperties> {
-        const properties: Partial<GridProperties> = {};
-        const core = settings.core;
-        const color = settings.color;
+    export function createGridSettings(settingsService: SettingsService, customSettings: Partial<AdaptedRevgridGridSettings>): AdaptedRevgridBehavioredGridSettings {
+        const settingsServiceGridSettings = createSettingsServiceGridSettings(settingsService);
+        const gridSettings = new InMemoryAdaptedRevgridBehavioredGridSettings();
+        gridSettings.merge(defaultAdaptedRevgridGridSettings);
+        gridSettings.merge(customSettings);
+        gridSettings.merge(settingsServiceGridSettings);
+        return gridSettings;
+    }
 
-        if (frameGridProperties !== undefined) {
-            const { fixedColumnCount, gridRightAligned } = frameGridProperties;
-            if (
-                fixedColumnCount >= 0 &&
-                fixedColumnCount !== existingGridProperties?.fixedColumnCount
-            ) {
-                properties.fixedColumnCount = fixedColumnCount;
-            }
-            if (gridRightAligned !== existingGridProperties?.gridRightAligned) {
-                properties.gridRightAligned = gridRightAligned;
-            }
-        }
+    export function createColumnSettings(gridSettings: AdaptedRevgridBehavioredGridSettings): AdaptedRevgridBehavioredColumnSettings {
+        const columnSettings = new InMemoryAdaptedRevgridBehavioredColumnSettings(gridSettings);
+        columnSettings.merge(defaultAdaptedRevgridColumnSettings);
+        return columnSettings;
+    }
+
+    export function createSettingsServiceGridSettings(settingsService: SettingsService) {
+        const gridSettings: Partial<AdaptedRevgridGridSettings> = {};
+        const core = settingsService.core;
+        const color = settingsService.color;
 
         // scrollbarHorizontalThumbHeight,
         // scrollbarVerticalThumbWidth,
@@ -171,168 +177,54 @@ export namespace AdaptedRevgrid {
             const fontSize = core.grid_FontSize;
             if (fontSize !== '') {
                 const font = fontSize + ' ' + fontFamily;
-                if (font !== existingGridProperties?.font) {
-                    properties.font = font;
-                    properties.foregroundSelectionFont = font;
-                }
+                gridSettings.font = font;
             }
 
             const columnHeaderFontSize = core.grid_ColumnHeaderFontSize;
             if (columnHeaderFontSize !== '') {
                 const font = columnHeaderFontSize + ' ' + fontFamily;
-                if (font !== existingGridProperties?.columnHeaderFont) {
-                    properties.columnHeaderFont = font;
-                }
-                if (
-                    font !==
-                    existingGridProperties?.columnHeaderForegroundSelectionFont
-                ) {
-                    properties.columnHeaderForegroundSelectionFont = font;
-                }
-                if (font !== existingGridProperties?.filterFont) {
-                    properties.filterFont = font;
-                }
+                gridSettings.columnHeaderFont = font;
+                gridSettings.filterFont = font;
             }
         }
 
-        const defaultRowHeight = core.grid_RowHeight;
-        if (
-            defaultRowHeight > 0 &&
-            defaultRowHeight !== existingGridProperties?.defaultRowHeight
-        ) {
-            properties.defaultRowHeight = defaultRowHeight;
-        }
+        gridSettings.defaultRowHeight = core.grid_RowHeight;
+        gridSettings.cellPadding = core.grid_CellPadding;
 
-        const cellPadding = core.grid_CellPadding;
-        if (
-            cellPadding >= 0 &&
-            cellPadding !== existingGridProperties?.cellPadding
-        ) {
-            properties.cellPadding = cellPadding;
-        }
-
-        const gridLinesH = core.grid_HorizontalLinesVisible;
-        if (gridLinesH !== existingGridProperties?.gridLinesH) {
-            properties.gridLinesH = gridLinesH;
-        }
-
-        let gridLinesHWidth: number;
-        if (gridLinesH) {
-            gridLinesHWidth = core.grid_HorizontalLineWidth;
+        const horizontalLinesVisible = core.grid_HorizontalLinesVisible;
+        gridSettings.horizontalGridLinesVisible = horizontalLinesVisible;
+        if (horizontalLinesVisible) {
+            gridSettings.horizontalGridLinesWidth = core.grid_HorizontalLineWidth;
         } else {
-            gridLinesHWidth = 0;
-        }
-        if (
-            gridLinesHWidth !== existingGridProperties?.gridLinesHWidth &&
-            gridLinesHWidth >= 0
-        ) {
-            properties.gridLinesHWidth = gridLinesHWidth;
+            gridSettings.horizontalGridLinesWidth = 0;
         }
 
-        const gridLinesV = core.grid_VerticalLinesVisible;
-        if (gridLinesV !== existingGridProperties?.gridLinesV) {
-            properties.gridLinesV = gridLinesV;
-        }
-
-        let gridLinesVWidth: number;
-        if (gridLinesV) {
-            gridLinesVWidth = core.grid_VerticalLineWidth;
+        const verticalLinesVisible = core.grid_VerticalLinesVisible;
+        gridSettings.verticalGridLinesVisible = verticalLinesVisible;
+        if (verticalLinesVisible) {
+            gridSettings.verticalGridLinesWidth = core.grid_VerticalLineWidth;
         } else {
-            gridLinesVWidth = 0;
-        }
-        if (
-            gridLinesVWidth !== existingGridProperties?.gridLinesVWidth &&
-            gridLinesVWidth >= 0
-        ) {
-            properties.gridLinesVWidth = gridLinesVWidth;
+            gridSettings.verticalGridLinesWidth = 0;
         }
 
-        const scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
-        if (
-            scrollHorizontallySmoothly !==
-            existingGridProperties?.scrollHorizontallySmoothly
-        ) {
-            properties.scrollHorizontallySmoothly = scrollHorizontallySmoothly;
-        }
+        gridSettings.scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
 
-        const bkgdBase = color.getBkgd(ColorScheme.ItemId.Grid_Base);
-        if (bkgdBase !== existingGridProperties?.backgroundColor) {
-            properties.backgroundColor = bkgdBase;
-        }
-        const foreBase = color.getFore(ColorScheme.ItemId.Grid_Base);
-        if (foreBase !== existingGridProperties?.color) {
-            properties.color = foreBase;
-        }
-        const bkgdColumnHeader = color.getBkgd(
-            ColorScheme.ItemId.Grid_ColumnHeader
-        );
-        if (
-            bkgdColumnHeader !==
-            existingGridProperties?.columnHeaderBackgroundColor
-        ) {
-            properties.columnHeaderBackgroundColor = bkgdColumnHeader;
-        }
-        const foreColumnHeader = color.getFore(
-            ColorScheme.ItemId.Grid_ColumnHeader
-        );
-        if (foreColumnHeader !== existingGridProperties?.columnHeaderColor) {
-            properties.columnHeaderColor = foreColumnHeader;
-        }
-        const bkgdSelection = color.getBkgd(
-            ColorScheme.ItemId.Grid_FocusedCell
-        );
-        if (
-            bkgdSelection !== existingGridProperties?.backgroundSelectionColor
-        ) {
-            properties.backgroundSelectionColor = bkgdSelection;
-        }
-        const foreSelection = color.getFore(
-            ColorScheme.ItemId.Grid_FocusedCell
-        );
-        if (
-            foreSelection !== existingGridProperties?.foregroundSelectionColor
-        ) {
-            properties.foregroundSelectionColor = foreSelection;
-        }
-        if (
-            bkgdColumnHeader !==
-            existingGridProperties?.columnHeaderBackgroundSelectionColor
-        ) {
-            properties.columnHeaderBackgroundSelectionColor = bkgdColumnHeader;
-        }
-        if (
-            foreColumnHeader !==
-            existingGridProperties?.columnHeaderForegroundSelectionColor
-        ) {
-            properties.columnHeaderForegroundSelectionColor = foreColumnHeader;
-        }
-        const foreFocusedCellBorder = color.getFore(
-            ColorScheme.ItemId.Grid_FocusedCellBorder
-        );
-        if (
-            foreFocusedCellBorder !==
-            existingGridProperties?.selectionRegionOutlineColor
-        ) {
-            properties.selectionRegionOutlineColor = foreFocusedCellBorder;
-        }
-        const foreVerticalLine = color.getFore(
-            ColorScheme.ItemId.Grid_VerticalLine
-        );
-        if (foreVerticalLine !== existingGridProperties?.gridLinesHColor) {
-            properties.gridLinesHColor = foreVerticalLine;
-        }
-        const foreHorizontalLine = color.getFore(
-            ColorScheme.ItemId.Grid_HorizontalLine
-        );
-        if (foreHorizontalLine !== existingGridProperties?.gridLinesVColor) {
-            properties.gridLinesVColor = foreHorizontalLine;
-        }
-        if (foreVerticalLine !== existingGridProperties?.fixedLinesHColor) {
-            properties.fixedLinesHColor = foreVerticalLine;
-        }
-        if (foreHorizontalLine !== existingGridProperties?.fixedLinesVColor) {
-            properties.fixedLinesVColor = foreHorizontalLine;
-        }
+        gridSettings.backgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_Base);
+        gridSettings.color = color.getFore(ColorScheme.ItemId.Grid_Base);
+        const columnHeaderBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
+        gridSettings.columnHeaderBackgroundColor = columnHeaderBackgroundColor;
+        const columnHeaderForegroundColor = color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
+        gridSettings.columnHeaderForegroundColor = columnHeaderForegroundColor;
+        gridSettings.focusedRowBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell);
+        gridSettings.columnHeaderSelectionBackgroundColor = columnHeaderBackgroundColor;
+        gridSettings.columnHeaderSelectionForegroundColor = columnHeaderForegroundColor;
+        gridSettings.cellFocusedBorderColor = color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
+        const horizontalGridLinesColor = color.getFore(ColorScheme.ItemId.Grid_HorizontalLine);
+        gridSettings.horizontalGridLinesColor = horizontalGridLinesColor;
+        gridSettings.horizontalFixedLineColor = horizontalGridLinesColor;
+        const verticalGridLinesColor = color.getFore(ColorScheme.ItemId.Grid_VerticalLine);
+        gridSettings.verticalGridLinesColor = verticalGridLinesColor;
+        gridSettings.verticalFixedLineColor = verticalGridLinesColor;
         // uncomment below when row stripes are working
         // const bkgdBaseAlt = color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt);
         // properties.rowStripes = [
@@ -344,6 +236,6 @@ export namespace AdaptedRevgrid {
         //     }
         // ];
 
-        return properties;
+        return gridSettings;
     }
 }

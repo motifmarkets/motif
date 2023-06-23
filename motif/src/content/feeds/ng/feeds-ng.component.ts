@@ -33,7 +33,7 @@ export class FeedsNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

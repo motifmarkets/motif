@@ -19,9 +19,6 @@ import {
     AssertInternalError,
     CommaText,
     DateUiAction,
-    defined,
-    delay1Tick,
-    getErrorMessage,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -31,10 +28,13 @@ import {
     ModifierKey,
     ModifierKeyId,
     StringId,
-    Strings,
     StringUiAction,
+    Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    defined,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { IOutputData } from 'angular-split/lib/interface';
@@ -88,7 +88,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;
 
-    public readonly watchListFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly watchListFrameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 1,
         gridRightAligned: false,
     };

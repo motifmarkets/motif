@@ -17,14 +17,14 @@ import {
 import {
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -54,7 +54,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

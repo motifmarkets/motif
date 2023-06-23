@@ -27,11 +27,11 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
     @ViewChild('askSide', { static: true }) private _askComponent: DepthSideNgComponent;
 
-    public readonly bidFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly bidFrameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         gridRightAligned: true,
         fixedColumnCount: 0,
     };
-    public readonly askFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly askFrameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         gridRightAligned: false,
         fixedColumnCount: 0,
     };

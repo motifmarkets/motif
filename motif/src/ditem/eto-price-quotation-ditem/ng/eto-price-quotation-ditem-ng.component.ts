@@ -15,14 +15,14 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
     LitIvemIdUiAction,
     ModifierKey,
     StringId,
-    Strings
+    Strings,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { AdaptedRevgrid } from 'content-internal-api';
@@ -50,7 +50,7 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

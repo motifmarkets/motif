@@ -93,7 +93,7 @@ export class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDi
 
     protected initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(
         grid: AdaptedRevgrid,
-        frameGridProperties: AdaptedRevgrid.FrameGridProperties
+        frameGridProperties: AdaptedRevgrid.FrameGridSettings
     ) {
         grid.ctrlKeyMouseMoveEventer = () => this.handleCtrlKeyMouseMoveEvent();
 

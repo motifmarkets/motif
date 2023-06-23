@@ -34,7 +34,7 @@ export class GridSourceNgComponent
     implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
-    @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
+    @Input() frameGridProperties: AdaptedRevgrid.FrameGridSettings;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(RecordGridNgComponent, { static: true }) private _recordGridComponent: RecordGridNgComponent;

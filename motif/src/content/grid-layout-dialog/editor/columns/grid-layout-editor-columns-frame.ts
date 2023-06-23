@@ -34,7 +34,7 @@ export class GridLayoutEditorColumnsFrame extends ContentFrame {
         super();
     }
 
-    get selectedCount() { return 0; }
+    get selectedCount() { return this._recordGrid.getSelectedRowCount(); }
 
     initialise(gridSourceFrame: GridSourceFrame, recordGrid: RecordGrid) {
         this._gridSourceFrame = gridSourceFrame;

@@ -76,7 +76,7 @@ export namespace TradesNgComponent {
         export const frame = 'frame';
     }
 
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
+    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
         fixedColumnCount: 0,
         gridRightAligned: false,
     };

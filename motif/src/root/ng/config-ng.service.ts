@@ -673,7 +673,7 @@ export namespace ConfigNgService {
                 if (startupSplashWebPageUrl === undefined) {
                     startupSplashWebPageSafeResourceUrl = undefined;
                 } else {
-                    if (startupSplashWebPageUrl.indexOf('http://') !== 0 && startupSplashWebPageUrl.indexOf('https://') !== 0) {
+                    if (!startupSplashWebPageUrl.startsWith('http://') || !startupSplashWebPageUrl.startsWith('https://')) {
                         startupSplashWebPageUrl = '/' + configFolderPath + '/' + startupSplashWebPageUrl;
                     }
                     startupSplashWebPageSafeResourceUrl = sanitizer.bypassSecurityTrustResourceUrl(startupSplashWebPageUrl);
@@ -681,7 +681,7 @@ export namespace ConfigNgService {
 
                 let desktopBarLeftImageUrl = json.desktopBarLeftImageUrl;
                 if (desktopBarLeftImageUrl !== undefined) {
-                    if (desktopBarLeftImageUrl.indexOf('http://') !== 0 && desktopBarLeftImageUrl.indexOf('https://') !== 0) {
+                    if (!desktopBarLeftImageUrl.startsWith('http://') || !desktopBarLeftImageUrl.startsWith('https://')) {
                         desktopBarLeftImageUrl = '/' + configFolderPath + '/' + desktopBarLeftImageUrl;
                     }
                 }

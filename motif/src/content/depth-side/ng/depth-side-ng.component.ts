@@ -20,7 +20,7 @@ import { DepthSideFrame } from '../depth-side-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepthSideNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthSideFrame.ComponentAccess {
-    @Input() frameGridProperties: AdaptedRevgrid.FrameGridProperties;
+    @Input() frameGridProperties: AdaptedRevgrid.FrameGridSettings;
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
     private readonly _frame: DepthSideFrame;
