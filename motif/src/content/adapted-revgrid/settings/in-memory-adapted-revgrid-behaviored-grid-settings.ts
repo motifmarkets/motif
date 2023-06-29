@@ -31,7 +31,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
         if (value !== this._font) {
             this.beginChange();
             this._font = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -40,7 +40,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
         if (value !== this._horizontalAlign) {
             this.beginChange();
             this._horizontalAlign = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -49,7 +49,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
         if (value !== this._columnHeaderFont) {
             this.beginChange();
             this._columnHeaderFont = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -58,7 +58,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
         if (value !== this._columnHeaderHorizontalAlign) {
             this.beginChange();
             this._columnHeaderHorizontalAlign = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -67,7 +67,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._focusedRowBorderWidth) {
     //         this.beginChange();
     //         this._focusedRowBorderWidth = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -77,7 +77,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._alternateBackgroundColor) {
     //         this.beginChange();
     //         this._alternateBackgroundColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -87,7 +87,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._grayedOutForegroundColor) {
     //         this.beginChange();
     //         this._grayedOutForegroundColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -97,7 +97,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._focusedRowBackgroundColor) {
     //         this.beginChange();
     //         this._focusedRowBackgroundColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -107,7 +107,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._focusedRowBorderColor) {
     //         this.beginChange();
     //         this._focusedRowBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -117,7 +117,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._valueRecentlyModifiedBorderColor) {
     //         this.beginChange();
     //         this._valueRecentlyModifiedBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -127,7 +127,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._valueRecentlyModifiedUpBorderColor) {
     //         this.beginChange();
     //         this._valueRecentlyModifiedUpBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -137,7 +137,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._valueRecentlyModifiedDownBorderColor) {
     //         this.beginChange();
     //         this._valueRecentlyModifiedDownBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -147,7 +147,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._recordRecentlyUpdatedBorderColor) {
     //         this.beginChange();
     //         this._recordRecentlyUpdatedBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
@@ -157,12 +157,12 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     //     if (value !== this._recordRecentlyInsertedBorderColor) {
     //         this.beginChange();
     //         this._recordRecentlyInsertedBorderColor = value;
-    //         this.notifyChangedViewRender();
+    //         this.flagChangedViewRender();
     //         this.endChange();
     //     }
     // }
 
-    override merge(settings: Partial<AdaptedRevgridGridSettings>) {
+    override merge(settings: Partial<AdaptedRevgridGridSettings>): boolean {
         this.beginChange();
 
         super.merge(settings);
@@ -221,7 +221,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
             }
         }
 
-        this.endChange();
+        return this.endChange();
     }
 
     override clone() {

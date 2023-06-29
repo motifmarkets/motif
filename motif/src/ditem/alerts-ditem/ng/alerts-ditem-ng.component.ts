@@ -23,8 +23,8 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
-import { SimpleGridNgComponent } from 'content-ng-api';
+import { AdaptedRevgrid, RowDataArrayGrid } from 'content-internal-api';
+import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -44,13 +44,13 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: ButtonInputNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild(SimpleGridNgComponent, { static: true }) private _gridComponent: SimpleGridNgComponent;
+    @ViewChild(RowDataArrayGridNgComponent, { static: true }) private _gridComponent: RowDataArrayGridNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
     public isMainMode = true;
     public isLayoutEditorMode = false;
 
-    private _grid: SimpleGrid;
+    private _grid: RowDataArrayGrid;
     private _frame: AlertsDitemFrame;
 
     private _filterEditUiAction: StringUiAction;

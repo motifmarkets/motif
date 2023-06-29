@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/simple-grid-ng.component';
+export * from './ng/row-data-array-grid-ng.component';
 

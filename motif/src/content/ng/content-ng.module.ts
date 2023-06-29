@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
-import { RecordGridNgComponent, SimpleGridNgComponent } from '../adapted-revgrid/ng-api';
+import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
     AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
 } from '../advert/ng-api';
@@ -65,10 +65,10 @@ import {
     NotifiersScanPropertiesSectionNgComponent,
     ScanNewNgComponent,
     ScanPropertiesNgComponent,
-    ScansNgComponent,
     ScanTypeDescriptionNgComponent,
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
+    ScansNgComponent,
     TargetsScanPropertiesNgComponent,
     ZenithScanCriteriaViewNgComponent
 } from '../scan/ng-api';
@@ -146,7 +146,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         AdvertWebPageNgComponent,
         AdvertTickerNgComponent,
-        SimpleGridNgComponent,
+        RowDataArrayGridNgComponent,
         ScansNgComponent,
         ScanPropertiesNgComponent,
         GeneralScanPropertiesSectionNgComponent,
@@ -193,7 +193,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridSourceNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
-        SimpleGridNgComponent,
+        RowDataArrayGridNgComponent,
         ScansNgComponent,
         OpenWatchlistDialogNgComponent,
         SaveWatchlistDialogNgComponent,

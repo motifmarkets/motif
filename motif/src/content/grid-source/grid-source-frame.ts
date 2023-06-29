@@ -24,7 +24,7 @@ import {
     TableRecordSourceDefinition,
     TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
-import { RevRecordMainAdapter } from 'revgrid';
+import { RevRecordMainDataServer } from 'revgrid';
 import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
@@ -109,8 +109,8 @@ export class GridSourceFrame extends ContentFrame {
         this._componentAccess.setStyleFlexBasis(value);
     }
 
-    getHeaderPlusFixedLineHeight() {
-        return this._grid.getHeaderPlusFixedLineHeight();
+    calculateHeaderPlusFixedRowsHeight() {
+        return this._grid.calculateHeaderPlusFixedRowsHeight();
     }
 
     // grid functions used by Component
@@ -843,8 +843,8 @@ export class GridSourceFrame extends ContentFrame {
         }
     }*/
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     // loadDefaultLayout() {
@@ -881,7 +881,7 @@ export class GridSourceFrame extends ContentFrame {
         this._grid.applyFilter(undefined);
     }
 
-    applyFilter(filter?: RevRecordMainAdapter.RecordFilterCallback): void {
+    applyFilter(filter?: RevRecordMainDataServer.RecordFilterCallback): void {
         this._grid.applyFilter(filter);
     }
 

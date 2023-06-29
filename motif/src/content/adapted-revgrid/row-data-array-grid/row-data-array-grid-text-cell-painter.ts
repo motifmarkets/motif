@@ -1,3 +1,9 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
 import {
     BigIntRenderValue,
     DateTimeRenderValue,
@@ -8,10 +14,10 @@ import {
     TrueFalseRenderValue
 } from '@motifmarkets/motif-core';
 import { DataServer, DatalessViewCell } from 'revgrid';
-import { RenderValueTextCellPainter } from '../cell-painters/render-value-text-cell-painter';
+import { RenderValueTextCellPainter } from '../cell-painters/content-adapted-revgrid-cell-painters-internal-api';
 import { AdaptedRevgridBehavioredColumnSettings } from '../settings/adapted-revgrid-behaviored-column-settings';
 
-export class SimpleGridTextCellPainter extends RenderValueTextCellPainter {
+export class RowDataArrayGridTextCellPainter extends RenderValueTextCellPainter {
     override paint(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, prefillColor: string | undefined) {
         const field = cell.viewLayoutColumn.column.field;
         const subgridRowIndex = cell.viewLayoutRow.subgridRowIndex;

@@ -9,6 +9,6 @@ import { AdaptedRevgridGridSettings } from './adapted-revgrid-grid-settings';
 
 /** @public */
 export interface AdaptedRevgridBehavioredGridSettings extends AdaptedRevgridGridSettings, BehavioredGridSettings {
-    merge(settings: Partial<AdaptedRevgridGridSettings>): void;
+    merge(settings: Partial<AdaptedRevgridGridSettings>): boolean;
     clone(): AdaptedRevgridBehavioredGridSettings;
 }

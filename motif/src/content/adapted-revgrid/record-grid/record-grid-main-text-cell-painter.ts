@@ -1,7 +1,13 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
 import { GridField, RenderValue } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { RenderValueTextCellPainter } from '../cell-painters/render-value-text-cell-painter';
-import { AdaptedRevgridBehavioredColumnSettings } from '../settings/adapted-revgrid-behaviored-column-settings';
+import { RenderValueTextCellPainter } from '../cell-painters/content-adapted-revgrid-cell-painters-internal-api';
+import { AdaptedRevgridBehavioredColumnSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
 
 export class RecordGridMainTextCellPainter extends RenderValueTextCellPainter {
     override paint(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, prefillColor: string | undefined) {

@@ -24,8 +24,8 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
-import { SimpleGridNgComponent } from 'content-ng-api';
+import { AdaptedRevgrid, AdaptedRevgridGridSettings, RowDataArrayGrid } from 'content-internal-api';
+import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionLabelNgComponent,
@@ -44,7 +44,7 @@ import { SearchDitemFrame } from '../search-ditem-frame';
     styleUrls: ['./search-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
     @ViewChild('searchButtonControl', { static: true }) private _searchButtonControlComponent: ButtonInputNgComponent;
     @ViewChild('detailsButtonControl', { static: true }) private _detailsButtonControlComponent: ButtonInputNgComponent;
@@ -55,13 +55,13 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
     @ViewChild('keywordsControl') private _keywordsControlComponent: TextInputNgComponent;
     @ViewChild('searchDescriptionLabel', { static: true }) private _searchDescriptionLabelComponent: CaptionLabelNgComponent;
     @ViewChild('alertButtonControl', { static: true }) private _alertButtonControlComponent: ButtonInputNgComponent;
-    @ViewChild(SimpleGridNgComponent, { static: true }) private _gridComponent: SimpleGridNgComponent;
+    @ViewChild(RowDataArrayGridNgComponent, { static: true }) private _gridComponent: RowDataArrayGridNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
     public isMainMode = true;
     public isLayoutEditorMode = false;
 
-    private _grid: SimpleGrid;
+    private _grid: RowDataArrayGrid;
     private _frame: SearchDitemFrame;
 
     private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
@@ -125,7 +125,23 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
         // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         // this._frame.initialise(this._contentComponent.frame, frameElement);
 
-        this._grid = this._gridComponent.createGrid(SearchDitemNgComponent.frameGridProperties);
+        const customGridSettings: Partial<AdaptedRevgridGridSettings> = {
+            mouseColumnSelection: false,
+            mouseRowSelection: false,
+            mouseRectangleSelection: false,
+            multipleSelectionAreas: false,
+            sortOnDoubleClick: false,
+            visibleColumnWidthAdjust: true,
+            fixedColumnCount: 0,
+        };
+
+        this._grid = this._gridComponent.createGrid(
+            customGridSettings,
+            (index, key, heading) => this._frame.createGridField(index, key, heading),
+            (columnSettings) => this._frame.customiseSettingsForNewColumn(columnSettings),
+            (viewCell) => this._frame.getMainCellPainter(viewCell),
+            (viewCell) => this._frame.getHeaderCellPainter(viewCell),
+        );
         this._grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
         this._grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
 

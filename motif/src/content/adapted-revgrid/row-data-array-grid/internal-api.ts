@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './simple-grid';
+export * from './row-data-array-grid';
 

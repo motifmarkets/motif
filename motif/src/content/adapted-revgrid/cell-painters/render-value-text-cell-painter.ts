@@ -1,3 +1,9 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
 import {
     ColorRenderValue,
     ColorScheme,
@@ -17,6 +23,7 @@ import {
 } from '@motifmarkets/motif-core';
 import {
     CellPainter,
+    DataServer,
     DatalessViewCell,
     RevRecordMainDataServer,
     RevRecordRecentChangeTypeId,
@@ -24,7 +31,6 @@ import {
     StandardTextCellPainter
 } from 'revgrid';
 import { AdaptedRevgrid } from '../adapted-revgrid';
-import { RecordGridMainDataServer } from '../record-grid/internal-api';
 import { AdaptedRevgridBehavioredColumnSettings, AdaptedRevgridBehavioredGridSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
 
 export abstract class RenderValueTextCellPainter
@@ -36,7 +42,7 @@ export abstract class RenderValueTextCellPainter
     private _coreSettings: CoreSettings;
     private _colorSettings: ColorSettings;
 
-    constructor(settingsService: SettingsService, private readonly _textFormatterService: TextFormatterService, grid: AdaptedRevgrid, dataServer: RecordGridMainDataServer) {
+    constructor(settingsService: SettingsService, private readonly _textFormatterService: TextFormatterService, grid: AdaptedRevgrid, dataServer: DataServer<GridField>) {
         super(grid, dataServer);
         this._coreSettings = settingsService.core;
         this._colorSettings = settingsService.color;
@@ -65,10 +71,11 @@ export abstract class RenderValueTextCellPainter
         if (rowFocused) {
             bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_FocusedRow);
         } else {
-            //  bkgdColor = config.backgroundColor;
-            bkgdColor = altRow
-                ? this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_BaseAlt)
-                : this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Base);
+            if (prefillColor === undefined) {
+                bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Base);
+            } else {
+                bkgdColor = prefillColor;
+            }
         }
 
 

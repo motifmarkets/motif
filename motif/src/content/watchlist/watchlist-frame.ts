@@ -231,7 +231,7 @@ export class WatchlistFrame extends GridSourceFrame {
         if (this._fixedRowCount !== undefined) {
             // process settings change here to ensure grid has been updated
             const rowHeight = this.gridRowHeight * this._fixedRowCount;
-            const headerHeight = this.getHeaderPlusFixedLineHeight();
+            const headerHeight = this.calculateHeaderPlusFixedRowsHeight();
             const gridHorizontalScrollbarMarginedHeight = this.gridHorizontalScrollbarMarginedHeight;
             const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
             this.setFlexBasis(height);

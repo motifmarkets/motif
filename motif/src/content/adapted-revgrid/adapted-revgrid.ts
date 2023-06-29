@@ -1,5 +1,11 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
 import { ColorScheme, GridField, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
-import { EventDetail, GridSettings, Revgrid } from 'revgrid';
+import { GridSettings, Revgrid, ViewLayout } from 'revgrid';
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AdaptedRevgridBehavioredGridSettings,
@@ -11,9 +17,8 @@ import {
 } from './settings/content-adapted-revgrid-settings-internal-api';
 
 export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField> {
-    resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
-    renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
-    ctrlKeyMouseMoveEventer: AdaptedRevgrid.CtrlKeyMouseMoveEventer | undefined;
+    // resizedEventer: AdaptedRevgrid.ResizedEventer | undefined;
+    // renderedEventer: AdaptedRevgrid.RenderedEventer | undefined;
     columnsViewWidthsChangedEventer: AdaptedRevgrid.ColumnsViewWidthsChangedEventer | undefined;
     // columnWidthChangedEventer: AdaptedRevgrid.ColumnWidthChangedEventer | undefined;
 
@@ -25,15 +30,23 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
         settingsService: SettingsService,
         gridElement: HTMLElement,
         definition: Revgrid.Definition<AdaptedRevgridBehavioredColumnSettings, GridField>,
-        gridSettings: AdaptedRevgridBehavioredGridSettings,
-        getSettingsForNewColumnEventer: Revgrid.GetSettingsForNewColumnEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        customGridSettings: Partial<AdaptedRevgridGridSettings>,
+        private readonly _customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
     ) {
+        const gridSettings = AdaptedRevgrid.createGridSettings(settingsService, customGridSettings);
+
         const options: Revgrid.Options<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField> = {
             canvasRenderingContext2DSettings: {
                 alpha: false,
             }
         }
-        super(gridElement, definition, gridSettings, getSettingsForNewColumnEventer, options);
+        super(
+            gridElement,
+            definition,
+            gridSettings,
+            (field) => this.getSettingsForNewColumn(field),
+            options
+        );
 
         this._settingsService = settingsService;
 
@@ -48,64 +61,47 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
         super.destroy();
     }
 
-    override fireSyntheticColumnsViewWidthsChangedEvent(eventDetail: EventDetail.ColumnsViewWidthsChanged): boolean {
-        if (this.columnsViewWidthsChangedEventer !== undefined) {
-            this.columnsViewWidthsChangedEventer(
-                eventDetail.fixedChanged,
-                eventDetail.nonFixedChanged,
-                eventDetail.activeChanged
-            );
-        }
-        return super.fireSyntheticColumnsViewWidthsChangedEvent(eventDetail);
-    }
-
-    override fireSyntheticGridResizedEvent(detail: EventDetail.Resize): boolean {
-        if (this.resizedEventer !== undefined) {
-            this.resizedEventer(detail);
-        }
-        return super.fireSyntheticGridResizedEvent(detail);
-    }
-
-    override fireSyntheticGridRenderedEvent(): boolean {
-        if (this.renderedEventer !== undefined) {
-            this.renderedEventer();
-        }
-        return super.fireSyntheticGridRenderedEvent();
-    }
-
     // autoSizeColumnWidth(columnIndex: number): void {
     //     this.autosizeColumn(columnIndex);
     // }
 
-    autoSizeAllColumnWidths(): void {
-        this.autosizeAllColumns();
+    autoSizeAllColumnWidths(widenOnly: boolean): void {
+        this.autoSizeActiveColumnWidths(widenOnly);
     }
 
-    getHeaderPlusFixedLineHeight(): number {
-        const gridProps = this.properties;
-        const rowHeight = gridProps.defaultRowHeight;
-        let lineWidth = gridProps.fixedLinesHWidth;
-        if (lineWidth === undefined) {
-            lineWidth = gridProps.gridLinesHWidth;
+    calculateHeaderPlusFixedRowsHeight(): number {
+        return this.subgridsManager.calculatePreMainPlusFixedRowsHeight();
+    }
+
+    protected override descendantProcessColumnsViewWidthsChanged(changeds: ViewLayout.ColumnsViewWidthChangeds) {
+        if (this.columnsViewWidthsChangedEventer !== undefined) {
+            this.columnsViewWidthsChangedEventer(
+                changeds.fixedChanged,
+                changeds.scrollableChanged,
+                changeds.visibleChanged
+            );
         }
-        return rowHeight + lineWidth;
     }
 
-    moveActiveColumn(fromColumnIndex: number, toColumnIndex: number): void {
-        this.showColumns(true, fromColumnIndex, toColumnIndex, false);
-    }
+    // protected override descendantProcessResized() {
+    //     if (this.resizedEventer !== undefined) {
+    //         this.resizedEventer();
+    //     }
+    // }
+
+    // protected override descendantProcessRendered() {
+    //     if (this.renderedEventer !== undefined) {
+    //         this.renderedEventer();
+    //     }
+    // }
 
     protected applySettings() {
-        const updatedProperties = AdaptedRevgrid.createSettingsServiceGridSettings(
-            this._settingsService,
-            undefined,
-            this.settings,
-        );
+        const settingsServicePartialGridSettings = AdaptedRevgrid.createSettingsServicePartialGridSettings(this._settingsService);
 
-        const updatedPropertiesCount = Object.keys(updatedProperties).length;
+        const settingCount = Object.keys(settingsServicePartialGridSettings).length;
         let result: boolean;
-        if (updatedPropertiesCount > 0) {
-            result = this.addProperties(updatedProperties);
+        if (settingCount > 0) {
+            result = this.settings.merge(settingsServicePartialGridSettings);
         } else {
             result = false;
         }
@@ -122,10 +118,19 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
         }
     }
 
-    private handleHypegridCtrlKeyMousemoveEvent(ctrlKey: boolean) {
-        if (ctrlKey && this.ctrlKeyMouseMoveEventer !== undefined) {
-            this.ctrlKeyMouseMoveEventer();
+    private getSettingsForNewColumn(field: GridField) {
+        const columnSettings = new InMemoryAdaptedRevgridBehavioredColumnSettings(this.settings);
+        columnSettings.merge(defaultAdaptedRevgridColumnSettings);
+        const fieldDefinition = field.definition;
+        const defaultWidth = fieldDefinition.defaultWidth;
+        const defaultColumnAutoSizing = defaultWidth === undefined;
+        columnSettings.defaultColumnAutoSizing = defaultColumnAutoSizing;
+        if (!defaultColumnAutoSizing) {
+            columnSettings.defaultColumnWidth = defaultWidth;
         }
+        columnSettings.horizontalAlign = fieldDefinition.defaultTextAlign;
+        this._customiseSettingsForNewColumnEventer(columnSettings);
+        return columnSettings;
     }
 
     protected abstract invalidateAll(): void;
@@ -133,9 +138,9 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
 
 export namespace AdaptedRevgrid {
     export type SettingsChangedEventer = (this: void) => void;
-    export type CtrlKeyMouseMoveEventer = (this: void) => void;
-    export type ResizedEventer = (this: void, detail: EventDetail.Resize) => void;
-    export type RenderedEventer = (this: void /*, detail: Hypergrid.GridEventDetail*/) => void;
+    export type CustomiseSettingsForNewColumnEventer = (this: void, columnSettings: AdaptedRevgridBehavioredColumnSettings) => void;
+    // export type ResizedEventer = (this: void) => void;
+    // export type RenderedEventer = (this: void /*, detail: Hypergrid.GridEventDetail*/) => void;
     export type ColumnsViewWidthsChangedEventer = (
         this: void,
         fixedChanged: boolean,
@@ -149,7 +154,7 @@ export namespace AdaptedRevgrid {
     >;
 
     export function createGridSettings(settingsService: SettingsService, customSettings: Partial<AdaptedRevgridGridSettings>): AdaptedRevgridBehavioredGridSettings {
-        const settingsServiceGridSettings = createSettingsServiceGridSettings(settingsService);
+        const settingsServiceGridSettings = createSettingsServicePartialGridSettings(settingsService);
         const gridSettings = new InMemoryAdaptedRevgridBehavioredGridSettings();
         gridSettings.merge(defaultAdaptedRevgridGridSettings);
         gridSettings.merge(customSettings);
@@ -163,7 +168,7 @@ export namespace AdaptedRevgrid {
         return columnSettings;
     }
 
-    export function createSettingsServiceGridSettings(settingsService: SettingsService) {
+    export function createSettingsServicePartialGridSettings(settingsService: SettingsService) {
         const gridSettings: Partial<AdaptedRevgridGridSettings> = {};
         const core = settingsService.core;
         const color = settingsService.color;
@@ -189,7 +194,7 @@ export namespace AdaptedRevgrid {
         }
 
         gridSettings.defaultRowHeight = core.grid_RowHeight;
-        gridSettings.cellPadding = core.grid_CellPadding;
+        // gridSettings.cellPadding = core.grid_CellPadding;
 
         const horizontalLinesVisible = core.grid_HorizontalLinesVisible;
         gridSettings.horizontalGridLinesVisible = horizontalLinesVisible;
@@ -209,16 +214,19 @@ export namespace AdaptedRevgrid {
 
         gridSettings.scrollHorizontallySmoothly = core.grid_ScrollHorizontallySmoothly;
 
-        gridSettings.backgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_Base);
+        const backgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_Base);
+        gridSettings.backgroundColor = backgroundColor;
+        const rowStripeBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_BaseAlt);
+        gridSettings.rowStripeBackgroundColor = (rowStripeBackgroundColor === backgroundColor) ? undefined : rowStripeBackgroundColor;
         gridSettings.color = color.getFore(ColorScheme.ItemId.Grid_Base);
-        const columnHeaderBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
-        gridSettings.columnHeaderBackgroundColor = columnHeaderBackgroundColor;
-        const columnHeaderForegroundColor = color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
-        gridSettings.columnHeaderForegroundColor = columnHeaderForegroundColor;
-        gridSettings.focusedRowBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell);
-        gridSettings.columnHeaderSelectionBackgroundColor = columnHeaderBackgroundColor;
-        gridSettings.columnHeaderSelectionForegroundColor = columnHeaderForegroundColor;
-        gridSettings.cellFocusedBorderColor = color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
+        // const columnHeaderBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
+        // gridSettings.columnHeaderBackgroundColor = columnHeaderBackgroundColor;
+        // const columnHeaderForegroundColor = color.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
+        // gridSettings.columnHeaderForegroundColor = columnHeaderForegroundColor;
+        // gridSettings.focusedRowBackgroundColor = color.getBkgd(ColorScheme.ItemId.Grid_FocusedCell);
+        // gridSettings.columnHeaderSelectionBackgroundColor = columnHeaderBackgroundColor;
+        // gridSettings.columnHeaderSelectionForegroundColor = columnHeaderForegroundColor;
+        // gridSettings.cellFocusedBorderColor = color.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
         const horizontalGridLinesColor = color.getFore(ColorScheme.ItemId.Grid_HorizontalLine);
         gridSettings.horizontalGridLinesColor = horizontalGridLinesColor;
         gridSettings.horizontalFixedLineColor = horizontalGridLinesColor;

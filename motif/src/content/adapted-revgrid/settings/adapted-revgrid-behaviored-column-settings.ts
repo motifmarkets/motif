@@ -9,6 +9,6 @@ import { AdaptedRevgridColumnSettings } from './adapted-revgrid-column-settings'
 
 /** @public */
 export interface AdaptedRevgridBehavioredColumnSettings extends AdaptedRevgridColumnSettings, BehavioredColumnSettings {
-    merge(settings: Partial<AdaptedRevgridColumnSettings>): void;
+    merge(settings: Partial<AdaptedRevgridColumnSettings>): boolean;
     clone(): AdaptedRevgridBehavioredColumnSettings;
 }

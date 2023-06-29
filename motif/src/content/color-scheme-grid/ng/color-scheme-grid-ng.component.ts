@@ -9,7 +9,6 @@ import {
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
-    GridField,
     GridLayout,
     GridLayoutDefinition,
     Integer,
@@ -18,9 +17,8 @@ import {
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
-import { AdaptedRevgridBehavioredColumnSettings, RevRecord, RevRecordFieldIndex, RevRecordIndex, StandardHeaderTextCellPainter } from 'revgrid';
-import { RenderValueTextCellPainter } from '../../adapted-revgrid/cell-painters/render-value-text-cell-painter';
-import { AdaptedRevgrid, AdaptedRevgridBehavioredGridSettings, AdaptedRevgridGridSettings, RecordGrid } from '../../adapted-revgrid/internal-api';
+import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
+import { AdaptedRevgrid, AdaptedRevgridGridSettings, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -42,10 +40,9 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     private readonly _textFormatterService: TextFormatterService;
 
     private _recordStore: ColorSchemeGridRecordStore;
-    private _gridSettings: AdaptedRevgridBehavioredGridSettings;
     private _grid: RecordGrid;
-    private _mainCellPainter: RenderValueTextCellPainter;
-    private _headerCellPainter: StandardHeaderTextCellPainter<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField>;
+    private _mainCellPainter: RecordGridMainTextCellPainter;
+    private _headerCellPainter: HeaderTextCellPainter;
 
     private _filterActive = false;
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
@@ -86,11 +83,10 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             gridRightAligned: false,
         };
 
-        this._gridSettings = AdaptedRevgrid.createGridSettings(this._settingsService, customGridSettings);
 
         const grid = this._gridComponent.createGrid(
             this._recordStore,
-            this._gridSettings,
+            customGridSettings,
             () => this.getSettingsForNewColumn(),
             () => this.getMainCellPainter(),
             () => this.getHeaderCellPainter(),
@@ -103,8 +99,8 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
                 fixedChanged, nonFixedChanged, allChanged
             );
 
-        this._mainCellPainter = new RenderValueTextCellPainter(grid, grid.mainDataServer, this._settingsService, this._textFormatterService);
-        this._headerCellPainter = new StandardHeaderTextCellPainter(grid, grid.mainDataServer);
+        this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
+        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.mainDataServer);
 
         this.dataResetGrid();
 
@@ -117,7 +113,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 
     calculateFixedColumnsWidth() {
-        return this._grid.calculateFixedColumnsWidth();
+        return this._grid.columnsManager.calculateFixedColumnsWidth();
     }
 
     waitRendered() {
@@ -188,7 +184,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private getSettingsForNewColumn() {
-        return AdaptedRevgrid.createColumnSettings(this._gridSettings);
+        return AdaptedRevgrid.createColumnSettings(this._grid.settings);
     }
 
     private getMainCellPainter() {

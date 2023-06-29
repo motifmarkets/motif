@@ -24,7 +24,7 @@ export class InMemoryAdaptedRevgridBehavioredColumnSettings extends InMemoryText
         if (value !== this._font) {
             this.beginChange();
             this._font = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -33,7 +33,7 @@ export class InMemoryAdaptedRevgridBehavioredColumnSettings extends InMemoryText
         if (value !== this._horizontalAlign) {
             this.beginChange();
             this._horizontalAlign = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -42,7 +42,7 @@ export class InMemoryAdaptedRevgridBehavioredColumnSettings extends InMemoryText
         if (value !== this._columnHeaderFont) {
             this.beginChange();
             this._columnHeaderFont = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -53,7 +53,7 @@ export class InMemoryAdaptedRevgridBehavioredColumnSettings extends InMemoryText
         if (value !== this._columnHeaderHorizontalAlign) {
             this.beginChange();
             this._columnHeaderHorizontalAlign = value;
-            this.notifyChangedViewRender();
+            this.flagChangedViewRender();
             this.endChange();
         }
     }
@@ -86,7 +86,7 @@ export class InMemoryAdaptedRevgridBehavioredColumnSettings extends InMemoryText
             }
         }
 
-        this.endChange();
+        return this.endChange();
     }
 
     override clone() {

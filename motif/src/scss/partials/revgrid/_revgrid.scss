@@ -1,0 +1,24 @@
+.revgrid-container > .revgrid-horizontal,
+.revgrid-container > .revgrid-vertical {
+    margin: 3px;
+}
+.revgrid-container > .revgrid-horizontal > .thumb,
+.revgrid-container > .revgrid-vertical > .thumb {
+    border-radius: 4px;
+    margin: 2px;
+    transition: opacity 0.5s;
+}
+.revgrid-container > .revgrid-vertical {
+    width: 11px;
+}
+.revgrid-container > .revgrid-vertical > .thumb {
+    right: 0;
+    width: 7px;
+}
+.revgrid-container > .revgrid-horizontal {
+    height: 11px;
+}
+.revgrid-container > .revgrid-horizontal > .thumb {
+    bottom: 0;
+    height: 7px;
+}

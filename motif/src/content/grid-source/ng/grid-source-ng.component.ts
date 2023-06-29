@@ -82,7 +82,7 @@ export class GridSourceNgComponent
     // Component Access members
 
     getHeaderPlusFixedLineHeight() {
-        return this._frame.getHeaderPlusFixedLineHeight();
+        return this._frame.calculateHeaderPlusFixedRowsHeight();
     }
 
     setStyleFlexBasis(value: number) {
