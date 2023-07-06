@@ -32,8 +32,9 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new BrandingSplashWebPageDitemFrame(this, this.commandRegisterService,
+        const settingsService = settingsNgService.service;
+        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        this._frame = new BrandingSplashWebPageDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());

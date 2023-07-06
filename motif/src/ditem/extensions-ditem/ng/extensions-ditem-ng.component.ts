@@ -16,7 +16,7 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { AssertInternalError, ColorScheme, delay1Tick, ExtensionId, ExtensionInfo, JsonElement } from '@motifmarkets/motif-core';
+import { AssertInternalError, ColorScheme, ExtensionId, ExtensionInfo, JsonElement, delay1Tick } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ExtensionsSidebarNgComponent } from 'content-ng-api';
@@ -58,9 +58,9 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new ExtensionsDitemFrame(this, this.commandRegisterService,
+        this._frame = new ExtensionsDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         elRef.nativeElement.style.position = 'absolute';
@@ -132,9 +132,7 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     }
 
     protected override processShown() {
-        if (this._splitterComponent !== undefined) {
-            this.checkSetSidebarPixelWidth();
-        }
+        this.checkSetSidebarPixelWidth();
     }
 
     private checkSetSidebarPixelWidth() {

@@ -16,16 +16,18 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
     AssertInternalError,
-    assigned,
     DateUiAction,
-    delay1Tick, IconButtonUiAction,
+    IconButtonUiAction,
     InternalCommand,
     JsonElement,
     LitIvemId,
-    LitIvemIdUiAction, StringId,
-    Strings
+    LitIvemIdUiAction, ModifierKey, ModifierKeyId, StringId,
+    Strings,
+    UiAction,
+    assert,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { GridLayoutDialogNgComponent, TradesNgComponent } from 'content-ng-api';
@@ -76,9 +78,10 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        const settingsService = settingsNgService.service;
+        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
 
-        this._frame = new TradesDitemFrame(this, this.commandRegisterService,
+        this._frame = new TradesDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
@@ -106,7 +109,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     autoSizeAllColumnWidths() {
-        this._frame.autoSizeAllColumnWidths();
+        this._frame.autoSizeAllColumnWidths(true);
     }
 
     // TradesDitemFrame.ComponentAccess methods
@@ -196,8 +199,9 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         // this.pushValid();
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -256,7 +260,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
         action.pushUnselected();
-        action.signalEvent = () => this.handleAutoSizeColumnWidthsUiActionSignalEvent();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 

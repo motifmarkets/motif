@@ -21,6 +21,6 @@ export class MenuBarOverlayDividerItemNgComponent extends MenuBarRenderItemCompo
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
         super(cdr, menuBarNgService);
-        this.lineBkgdColor = settingsNgService.settingsService.color.getFore(ColorScheme.ItemId.MenuBar_OverlayItem_Disabled);
+        this.lineBkgdColor = settingsNgService.service.color.getFore(ColorScheme.ItemId.MenuBar_OverlayItem_Disabled);
     }
 }

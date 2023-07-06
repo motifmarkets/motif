@@ -1,8 +1,10 @@
 import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    ArrayUiAction, delay1Tick, EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
+    ArrayUiAction,
+    EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
     ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId
+    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
@@ -35,7 +37,7 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     constructor(settingsNgService: SettingsNgService) {
         super();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubsciptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 

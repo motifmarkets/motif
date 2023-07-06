@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { concatenateElementToArrayUniquely, Integer, subtractElementFromArrayUniquely, UiAction } from '@motifmarkets/motif-core';
+import { Integer, UiAction, concatenateElementToArrayUniquely, subtractElementFromArrayUniquely } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-element-component-base-ng.directive';
@@ -23,7 +23,7 @@ export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementCompo
     public checkboxDisabled = true;
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
         this.inputId = 'CaptionedEnumArrayCheckbox' + this.componentInstanceId;
     }
 

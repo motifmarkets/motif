@@ -25,7 +25,7 @@
             <span id="watchlistDescriptonSpan" [title]="watchListFullDescription">{{watchlistAbbreviatedDescription}}</span>
         </div>
     </div>
-    <app-watchlist #gridSource id="gridSource" [frameGridProperties]="frameGridProperties" ></app-watchlist>
+    <app-watchlist #gridSource id="gridSource"></app-watchlist>
 </div>
 <div id="dialogDiv" [style.display]="!isDialogMode() ? 'none' : null">
     <ng-template #dialogContainer></ng-template>

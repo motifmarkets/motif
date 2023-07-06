@@ -143,7 +143,7 @@ export class ControlsNgModule {
         settingsNgService: SettingsNgService
     ) {
         ngSelectConfig.appendTo = '#paritechMotifNgSelectOverlay';
-        NgSelectUtilsModule.setColorSettings(settingsNgService.settingsService.color);
+        NgSelectUtilsModule.setColorSettings(settingsNgService.service.color);
 
         StaticInitialise.initialise();
     }

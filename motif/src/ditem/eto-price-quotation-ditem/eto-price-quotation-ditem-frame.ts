@@ -10,6 +10,7 @@ import {
     GridLayoutOrNamedReferenceDefinition,
     Integer,
     JsonElement,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from 'content-internal-api';
@@ -22,16 +23,18 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.EtoPriceQuotation,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._callPutGridSourceFrame !== undefined; }
 
     initialise(watchFrame: GridSourceFrame, callPutFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {

@@ -58,19 +58,19 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private readonly _componentAccess: OrderRequestDitemFrame.ComponentAccess,
-        private readonly _settingsService: SettingsService,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
     ) {
-        super(BuiltinDitemFrame.BuiltinTypeId.OrderRequest, _componentAccess, commandRegisterService, desktopAccessService,
+        super(BuiltinDitemFrame.BuiltinTypeId.OrderRequest, _componentAccess, settingsService, commandRegisterService, desktopAccessService,
             symbolsService, adiService
         );
 
-        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
-        this._reviewEnabled = this._settingsService.core.orderPad_ReviewEnabled;
+        this._settingsChangedSubscriptionId = this.settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
+        this._reviewEnabled = this.settingsService.core.orderPad_ReviewEnabled;
     }
 
     get initialised() { return this._initialised; }
@@ -118,7 +118,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
     }
 
     override finalise() {
-        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+        this.settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
 
         this.finaliseOrderPad();
         super.finalise();
@@ -135,9 +135,9 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
     }
 
     newOrderPad() {
-        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
         orderPad.loadPlace();
-        orderPad.applySettingsDefaults(this._settingsService.core);
+        orderPad.applySettingsDefaults(this.settingsService.core);
         if (this.brokerageAccountGroupLinked) {
             const group = this.brokerageAccountGroup;
             if (group !== undefined) {
@@ -162,7 +162,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         if (this._orderPad === undefined) {
             throw new AssertInternalError('ORDFNPOIPFP583288822');
         } else {
-            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
             orderPad.beginChanges();
             try {
                 orderPad.loadPlace(this._orderPad.accountId);
@@ -193,16 +193,16 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
                 if (this._lastResultOrderKey !== undefined) {
                     const mapKey = this._lastResultOrderKey.mapKey;
                     const definition = new AllOrdersDataDefinition();
-                    const ordersDataItem = this.adi.subscribe(definition) as AllOrdersDataItem;
+                    const ordersDataItem = this.adiService.subscribe(definition) as AllOrdersDataItem;
                     try {
                         const order = ordersDataItem.getRecordByMapKey(mapKey);
                         if (order !== undefined && order.canAmend()) {
-                            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+                            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
                             orderPad.loadAmendFromOrder(order);
                             this.applyOrderPad(orderPad, false);
                         }
                     } finally {
-                        this.adi.unsubscribe(ordersDataItem);
+                        this.adiService.unsubscribe(ordersDataItem);
                     }
                 }
             }
@@ -219,7 +219,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     review() {
         if (this._stepId !== OrderRequestStepFrame.StepId.Pad ||
-            !this._settingsService.core.orderPad_ReviewEnabled ||
+            !this.settingsService.core.orderPad_ReviewEnabled ||
             !this._reviewEnabled ||
             this._padFrame === undefined
         ) {
@@ -491,7 +491,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     private canSendFromStep() {
         switch (this._stepId) {
-            case OrderRequestStepFrame.StepId.Pad: return !this._reviewEnabled && !this._settingsService.core.orderPad_ReviewEnabled;
+            case OrderRequestStepFrame.StepId.Pad: return !this._reviewEnabled && !this.settingsService.core.orderPad_ReviewEnabled;
             case OrderRequestStepFrame.StepId.Review: return this._reviewEnabled;
             case OrderRequestStepFrame.StepId.Result: return false;
             default: throw new UnreachableCaseError('ORDFCSFS4344499321', this._stepId);
@@ -502,8 +502,8 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         if (this._stepId !== OrderRequestStepFrame.StepId.Pad) {
             throw new AssertInternalError('ORDFCPPRE121299535');
         } else {
-            if (this._settingsService.core.orderPad_ReviewEnabled !== this._reviewEnabled || force) {
-                this._reviewEnabled = this._settingsService.core.orderPad_ReviewEnabled;
+            if (this.settingsService.core.orderPad_ReviewEnabled !== this._reviewEnabled || force) {
+                this._reviewEnabled = this.settingsService.core.orderPad_ReviewEnabled;
                 if (this._reviewEnabled) {
                     this._componentAccess.pushReviewEnabled(this._orderPadSendable);
                     this._componentAccess.pushSendEnabled(false);

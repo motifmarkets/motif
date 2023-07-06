@@ -24,7 +24,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, AdaptedRevgridGridSettings, RowDataArrayGrid } from 'content-internal-api';
+import { AdaptedRevgrid, RowDataArrayGrid } from 'content-internal-api';
 import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
@@ -85,7 +85,7 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new SearchDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service
@@ -125,7 +125,7 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         // this._frame.initialise(this._contentComponent.frame, frameElement);
 
-        const customGridSettings: Partial<AdaptedRevgridGridSettings> = {
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
             mouseColumnSelection: false,
             mouseRowSelection: false,
             mouseRectangleSelection: false,

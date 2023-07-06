@@ -58,7 +58,7 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
     ) {
         super();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         this._extensionsAccessService = extensionsAccessNgService.service;

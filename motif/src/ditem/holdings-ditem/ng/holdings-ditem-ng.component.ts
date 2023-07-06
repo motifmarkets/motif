@@ -12,6 +12,7 @@ import {
     ElementRef,
     Inject,
     OnDestroy,
+    Self,
     ViewChild
 } from '@angular/core';
 import {
@@ -35,9 +36,10 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
+import { GridSourceFrameGridParametersService } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -50,6 +52,7 @@ import { HoldingsDitemFrame } from '../holdings-ditem-frame';
     selector: 'app-holdings-ditem',
     templateUrl: './holdings-ditem-ng.component.html',
     styleUrls: ['./holdings-ditem-ng.component.scss'],
+    providers: [ { provide: GridSourceFrameGridParametersService.injectionToken, useValue: {}}],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -61,11 +64,6 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     public splitterGutterSize = 3;
     public balancesVisible = false;
@@ -88,10 +86,12 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Self() @Inject(GridSourceFrameGridParametersService.injectionToken) gridParametersService: GridSourceFrameGridParametersService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new HoldingsDitemFrame(
             this,
@@ -100,8 +100,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            textFormatterNgService.service,
             symbolDetailCacheNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
+            gridParametersService,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex),
         );

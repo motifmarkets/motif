@@ -16,7 +16,9 @@ import {
 } from '@angular/core';
 import {
     ColorScheme,
-    ColorSettings, Line, MultiEvent, numberToPixels, SettingsService
+    ColorSettings, Line, MultiEvent,
+    SettingsService,
+    numberToPixels
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarService } from '../../menu-bar-service';
@@ -53,7 +55,7 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
     ) {
         super(cdr, menuBarNgService);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.handleSettingsChangedEvent()

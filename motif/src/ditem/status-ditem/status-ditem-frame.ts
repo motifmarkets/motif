@@ -4,23 +4,25 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, CommandRegisterService, SymbolsService } from '@motifmarkets/motif-core';
+import { AdiService, CommandRegisterService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class StatusDitemFrame extends BuiltinDitemFrame {
+    readonly initialised = true;
+
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Status,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
-    get initialised() { return true; }
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Status; }
 }

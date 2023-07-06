@@ -18,10 +18,10 @@
     </div>
     <as-split unit="pixel" direction="vertical" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">
         <as-split-area [size]="balancesHeight">
-            <app-grid-source #balancesTable id="balancesTable" [style.visibility]="balancesVisible ? 'visible' : 'hidden'" [frameGridProperties]="frameGridProperties"></app-grid-source>
+            <app-grid-source #balancesTable id="balancesTable" [style.visibility]="balancesVisible ? 'visible' : 'hidden'"></app-grid-source>
         </as-split-area>
         <as-split-area [size]="null">
-            <app-grid-source #holdingsTable id="holdingsTable" [frameGridProperties]="frameGridProperties"></app-grid-source>
+            <app-grid-source #holdingsTable id="holdingsTable"></app-grid-source>
         </as-split-area>
     </as-split>
 </div>

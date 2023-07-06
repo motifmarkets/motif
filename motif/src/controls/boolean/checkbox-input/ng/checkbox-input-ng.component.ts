@@ -24,7 +24,7 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
         this.inputId = 'Checkbox' + this.componentInstanceId;
     }
 

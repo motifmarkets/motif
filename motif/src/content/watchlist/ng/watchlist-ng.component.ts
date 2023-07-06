@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { GridSourceNgComponent } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { WatchlistFrame } from '../watchlist-frame';
@@ -10,17 +10,9 @@ import { WatchlistFrame } from '../watchlist-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class WatchlistNgComponent extends GridSourceNgComponent {
-    readonly watchlistFrame: WatchlistFrame;
+    declare frame: WatchlistFrame;
 
-    constructor(
-        cdr: ChangeDetectorRef,
-        contentNgService: ContentNgService,
-    ) {
-        super(cdr, contentNgService);
-        this.watchlistFrame = this.frame as WatchlistFrame;
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return  contentNgService.createWatchlistFrame(this);
+    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
+        return  contentNgService.createWatchlistFrame(this, hostElement);
     }
 }

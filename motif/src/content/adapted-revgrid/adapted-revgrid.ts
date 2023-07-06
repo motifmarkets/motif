@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { InjectionToken } from '@angular/core';
 import { ColorScheme, GridField, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
-import { GridSettings, Revgrid, ViewLayout } from 'revgrid';
+import { Revgrid, ViewLayout } from 'revgrid';
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AdaptedRevgridBehavioredGridSettings,
@@ -28,10 +29,10 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
 
     constructor(
         settingsService: SettingsService,
-        gridElement: HTMLElement,
+        gridHostElement: HTMLElement,
         definition: Revgrid.Definition<AdaptedRevgridBehavioredColumnSettings, GridField>,
-        customGridSettings: Partial<AdaptedRevgridGridSettings>,
-        private readonly _customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        public customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
     ) {
         const gridSettings = AdaptedRevgrid.createGridSettings(settingsService, customGridSettings);
 
@@ -41,7 +42,7 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
             }
         }
         super(
-            gridElement,
+            gridHostElement,
             definition,
             gridSettings,
             (field) => this.getSettingsForNewColumn(field),
@@ -129,7 +130,7 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
             columnSettings.defaultColumnWidth = defaultWidth;
         }
         columnSettings.horizontalAlign = fieldDefinition.defaultTextAlign;
-        this._customiseSettingsForNewColumnEventer(columnSettings);
+        this.customiseSettingsForNewColumnEventer(columnSettings);
         return columnSettings;
     }
 
@@ -148,10 +149,12 @@ export namespace AdaptedRevgrid {
         allChanged: boolean
     ) => void;
 
-    export type FrameGridSettings = Pick<
-        GridSettings,
-        'gridRightAligned' | 'fixedColumnCount'
-    >;
+    export type CustomGridSettings = Partial<AdaptedRevgridGridSettings>;
+
+    export namespace CustomGridSettings {
+        const tokenName = 'customGridSettings';
+        export const injectionToken = new InjectionToken<CustomGridSettings>(tokenName);
+    }
 
     export function createGridSettings(settingsService: SettingsService, customSettings: Partial<AdaptedRevgridGridSettings>): AdaptedRevgridBehavioredGridSettings {
         const settingsServiceGridSettings = createSettingsServicePartialGridSettings(settingsService);

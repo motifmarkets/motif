@@ -14,7 +14,6 @@ import {
     ColorScheme,
     DateUiAction,
     DecimalUiAction,
-    delay1Tick,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
@@ -22,8 +21,6 @@ import {
     Movement,
     MovementId,
     MultiEvent,
-    newUndefinableDate,
-    newUndefinableDecimal,
     Order,
     OrderExtendedSide,
     OrderExtendedSideId,
@@ -41,18 +38,21 @@ import {
     SettingsService,
     SingleBrokerageAccountGroup,
     StringId,
-    Strings,
     StringUiAction,
+    Strings,
     TimeInForce,
     TimeInForceId, UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick,
+    newUndefinableDate,
+    newUndefinableDecimal
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     BrokerageAccountGroupInputNgComponent,
     BrokerageAccountGroupNameLabelNgComponent,
-    CaptionedRadioNgComponent,
     CaptionLabelNgComponent,
+    CaptionedRadioNgComponent,
     DateInputNgComponent,
     DecimalInputNgComponent,
     EnumCaptionNgComponent,
@@ -170,7 +170,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
         super(cdr);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         this.sideRadioName = this.generateInstancedRadioName('side');

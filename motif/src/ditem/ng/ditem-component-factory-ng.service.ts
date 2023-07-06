@@ -10,8 +10,8 @@ import {
     createEnvironmentInjector,
     EnvironmentInjector,
     Injectable,
-    StaticProvider,
-    Type
+    Type,
+    ValueProvider
 } from '@angular/core';
 import { ComponentContainer } from 'golden-layout';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
@@ -33,7 +33,7 @@ export class DitemComponentFactoryNgService {
         const count = this._componentTypeMapByName.size;
         const result = new Array<string>(count);
         let idx = 0;
-        for (const [key, value] of this._componentTypeMapByName) {
+        for (const [key] of this._componentTypeMapByName) {
             result[idx++] = key;
         }
         return result;
@@ -45,7 +45,7 @@ export class DitemComponentFactoryNgService {
             componentType = PlaceholderDitemNgComponent;
         }
 
-        const provider: StaticProvider = {
+        const provider: ValueProvider = {
             provide: BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken,
             useValue: container,
         };

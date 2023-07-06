@@ -5,6 +5,8 @@
  */
 
 export * from './adapted-revgrid/internal-api';
+export * from './balances/internal-api';
+export * from './brokerage-accounts/internal-api';
 export * from './content-component';
 export * from './content-frame';
 export * from './delayed-badness/internal-api';

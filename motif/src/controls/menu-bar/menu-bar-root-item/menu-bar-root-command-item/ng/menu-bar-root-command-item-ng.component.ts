@@ -19,7 +19,7 @@ import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
 })
 export class MenuBarRootCommandItemNgComponent extends MenuBarCommandItemComponentNgDirective implements OnInit, OnDestroy {
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
-        super(cdr, settingsNgService.settingsService, menuBarNgService);
+        super(cdr, settingsNgService.service, menuBarNgService);
     }
 
     ngOnInit() {

@@ -55,7 +55,7 @@ export class SessionNgService implements OnDestroy {
         this._session = new SessionService(
             telemetryNgService.telemetry,
             userAlertNgService.service,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             openIdNgService.service,
             capabilitiesNgService.service,
             motifServicesNgService.service,

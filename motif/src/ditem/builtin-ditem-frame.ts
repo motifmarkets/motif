@@ -12,6 +12,7 @@ import {
     ExtensionHandle,
     InternalCommand,
     LockOpenListItem,
+    SettingsService,
     StringId,
     Strings,
     SymbolsService
@@ -24,13 +25,14 @@ export abstract class BuiltinDitemFrame extends DitemFrame {
 
     constructor(private readonly _builtinDitemTypeId: BuiltinDitemFrame.BuiltinTypeId,
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
         super(BuiltinDitemFrame.createBuiltinDitemTypeId(commandRegisterService.internalExtensionHandle, _builtinDitemTypeId),
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
 
         this.opener = {

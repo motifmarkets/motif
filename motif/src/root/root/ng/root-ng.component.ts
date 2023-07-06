@@ -11,13 +11,14 @@ import {
     CapabilitiesService,
     ColorScheme,
     CommandContext,
-    CoreSettings, delay1Tick,
+    CoreSettings,
     KeyboardService,
     MultiEvent,
     SessionStateId,
     SettingsService,
     StringId,
-    UserAlertService
+    UserAlertService,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
@@ -79,7 +80,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         this._sessionStateChangeSubscriptionId =
             this._session.subscribeStateChangeEvent((stateId) => this.handleSessionStateChangeEvent(stateId));
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._coreSettings = this._settingsService.core;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 

@@ -5,6 +5,8 @@
  */
 
 export * from './adapted-revgrid/ng-api';
+export * from './balances/ng-api';
+export * from './brokerage-accounts/ng-api';
 export * from './cash-holdings/ng-api';
 export * from './color-controls/ng-api';
 export * from './color-scheme-grid/ng-api';

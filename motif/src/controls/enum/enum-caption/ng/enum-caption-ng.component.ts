@@ -22,7 +22,7 @@ export class EnumCaptionNgComponent extends EnumComponentBaseNgDirective impleme
     @Input() for: string;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
     override ngOnDestroy() {

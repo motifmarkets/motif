@@ -17,11 +17,11 @@ import {
     ButtonUiAction,
     ColorScheme,
     CommandRegisterService,
-    delay1Tick,
     InternalCommand,
     MultiEvent,
     SettingsService,
-    StringId
+    StringId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SignOutService } from 'component-services-internal-api';
@@ -92,7 +92,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         super();
 
         this._commandRegisterService = commandRegisterNgService.service;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 
         const signOutService = signOutNgService.service;

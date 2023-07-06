@@ -78,7 +78,7 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
         this.userFullName = this._sessionInfoService.userFullName;
         this.processUserAccessTokenExpiryTimeChange();
 
-        this._frame = contentService.createStatusSummaryFrame(this, this._sessionInfoService);
+        this._frame = contentService.createStatusSummaryFrame(this._sessionInfoService, this);
     }
 
     ngOnInit() {

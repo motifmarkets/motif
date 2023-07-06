@@ -12,6 +12,7 @@ import {
     GridSourceOrNamedReferenceDefinition,
     JsonElement,
     LitIvemId,
+    SettingsService,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
     TopShareholder,
@@ -32,6 +33,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private readonly _componentAccess: TopShareholdersDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
@@ -39,10 +41,11 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.TopShareholders, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._gridSourceFrame !== undefined; }
 
     initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {

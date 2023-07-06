@@ -21,13 +21,15 @@ import {
     Integer,
     JsonElement,
     OrderSideId,
+    SettingsService,
     ShortDepthSideField,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
+    TextFormatterService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { RevRecordStore } from 'revgrid';
-import { RecordGrid } from '../adapted-revgrid/internal-api';
+import { AssertError, RevRecordStore } from 'revgrid';
+import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {
@@ -38,12 +40,19 @@ export class DepthSideFrame extends ContentFrame {
     private _gridPrepared = false;
     private _sideId: OrderSideId;
     private _dataItem: DataItem;
-    private _activeStore: DepthSideGridRecordStore;
+    private _activeStore: DepthSideGridRecordStore | undefined;
     private _styleCache = new Array<DepthSideFrame.StyleCacheElement>(DepthStyle.idCount);
     private _filterXrefs: string[] = [];
     // private _activeWidth = 0;
 
-    constructor(private readonly _componentAccess: DepthSideFrame.ComponentAccess) {
+    private _gridHeaderCellPainter: HeaderTextCellPainter;
+    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+
+    constructor(
+        private readonly _settingsService: SettingsService,
+        private readonly _textFormatterService: TextFormatterService,
+        private readonly _hostElement: HTMLElement,
+    ) {
         super();
     }
 
@@ -105,7 +114,10 @@ export class DepthSideFrame extends ContentFrame {
     }
 
     close() {
-        this._activeStore.close();
+        if (this._activeStore !== undefined) {
+            this._activeStore.close();
+            this._activeStore = undefined;
+        }
     }
 
     save(element: JsonElement) {
@@ -128,7 +140,11 @@ export class DepthSideFrame extends ContentFrame {
     }
 
     waitOpenPopulated() {
-        return this._activeStore.waitOpenPopulated();
+        if (this._activeStore === undefined) {
+            throw new AssertError('DSFWOP20987');
+        } else {
+            return this._activeStore.waitOpenPopulated();
+        }
     }
 
     waitRendered() {
@@ -189,14 +205,16 @@ export class DepthSideFrame extends ContentFrame {
         this._grid.continuousFiltering = false;
     }
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+        // not yet implemented
     }
 
     handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        // not yet implemented
     }
 
     handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
@@ -333,11 +351,38 @@ export class DepthSideFrame extends ContentFrame {
         this.prepareGrid(styleCacheElement);
     }
 
-    private setGrid(dataStore: RevRecordStore) {
-        this._grid = this._componentAccess.createGrid(dataStore);
-        this._grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
-        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+    private setGrid(
+        recordStore: RevRecordStore,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._grid !== undefined) {
+            this._grid.destroy();
+        }
+
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            sortOnClick: false,
+            sortOnDoubleClick: false,
+            gridRightAligned: this._sideId === OrderSideId.Ask,
+        };
+
+        const grid = new RecordGrid(
+            this._settingsService,
+            this._hostElement,
+            recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+        );
+
+        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+
+        this._grid = grid;
+
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
     }
 
     private prepareGrid(element: DepthSideFrame.StyleCacheElement) {
@@ -348,10 +393,21 @@ export class DepthSideFrame extends ContentFrame {
         const gridLayout = new GridLayout(element.lastLayoutDefinition);
         this._grid.fieldsLayoutReset(element.gridFields, gridLayout);
 
-        this. _grid.sortable = false;
         this. _grid.continuousFiltering = true;
 
         this._gridPrepared = true;
+    }
+
+    private customiseSettingsForNewColumn() {
+        // no customisation required
+    }
+
+    private getMainCellPainter() {
+        return this._gridMainCellPainter;
+    }
+
+    private getHeaderCellPainter() {
+        return this._gridHeaderCellPainter;
     }
 }
 
@@ -365,13 +421,8 @@ export namespace DepthSideFrame {
         gridFields: readonly DepthSideGridField[];
         // defaultGridFieldStates: readonly GridRecordFieldState[];
         // defaultGridFieldVisibles: readonly boolean[];
-        lastLayoutDefinition: GridLayoutDefinition;
+        lastLayoutDefinition: GridLayoutDefinition | undefined;
         store: DepthSideGridRecordStore;
-    }
-
-    export interface ComponentAccess {
-        readonly id: string;
-        createGrid(dataStore: RevRecordStore): RecordGrid;
     }
 
     export namespace JsonName {

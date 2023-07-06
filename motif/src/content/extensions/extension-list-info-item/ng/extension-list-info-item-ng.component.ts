@@ -56,7 +56,7 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     ) {
         super();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );

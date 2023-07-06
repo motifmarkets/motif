@@ -10,14 +10,12 @@ import {
     Component,
     Injector,
     OnDestroy,
-    StaticProvider,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
-    assigned,
     CommandRegisterService,
-    delay1Tick,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     GridLayoutDefinition,
@@ -25,7 +23,9 @@ import {
     Integer,
     InternalCommand,
     StringId,
-    Strings
+    Strings,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import {
@@ -344,7 +344,7 @@ export namespace GridLayoutEditorNgComponent {
         container: ViewContainerRef,
         columnList: EditableGridLayoutDefinitionColumnList,
     ) {
-        const columnListProvider: StaticProvider = {
+        const columnListProvider: ValueProvider = {
             provide: columnListInjectionToken,
             useValue: columnList,
         };

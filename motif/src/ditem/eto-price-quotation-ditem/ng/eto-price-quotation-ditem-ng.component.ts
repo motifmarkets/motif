@@ -25,7 +25,6 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
 import { GridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -50,11 +49,6 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgComponent;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
-
     private _symbolEditUiAction: LitIvemIdUiAction;
     private _applySymbolUiAction: IconButtonUiAction;
     private _selectColumnsUiAction: IconButtonUiAction;
@@ -72,9 +66,9 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
         desktopAccessNgService: DesktopAccessNgService,
         pulseService: CoreNgService
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new EtoPriceQuotationDitemFrame(this, this.commandRegisterService,
+        this._frame = new EtoPriceQuotationDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();

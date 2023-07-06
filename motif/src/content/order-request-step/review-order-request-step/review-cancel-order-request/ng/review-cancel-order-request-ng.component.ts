@@ -62,7 +62,7 @@ export class ReviewCancelOrderRequestNgComponent extends ReviewOrderRequestCompo
     ) {
         super(cdr, orderPad, definition);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         const symbolsService = symbolsNgService.service;

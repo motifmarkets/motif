@@ -11,7 +11,6 @@ import { SingleHeadingDataRowArrayServerSet, Subgrid } from 'revgrid';
 import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
 import { AdaptedRevgridBehavioredColumnSettings } from '../../settings/adapted-revgrid-behaviored-column-settings';
-import { AdaptedRevgridGridSettings } from '../../settings/content-adapted-revgrid-settings-internal-api';
 import { RowDataArrayGrid } from '../row-data-array-grid';
 
 @Component({
@@ -25,7 +24,7 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
     private _grid: RowDataArrayGrid | undefined;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
-        const settingsService = settingsNgService.settingsService;
+        const settingsService = settingsNgService.service;
         super(elRef.nativeElement, settingsService);
     }
 
@@ -36,7 +35,7 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
     }
 
     createGrid(
-        customGridSettings: Partial<AdaptedRevgridGridSettings>,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
         createFieldEventer: SingleHeadingDataRowArrayServerSet.CreateFieldEventer<GridField>,
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,

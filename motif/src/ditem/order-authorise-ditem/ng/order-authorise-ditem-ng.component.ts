@@ -93,7 +93,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new OrderAuthoriseDitemFrame(
             this,

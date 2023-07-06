@@ -17,15 +17,15 @@ import {
     GridLayoutDefinition,
     JsonElement,
     LitIvemId,
-    MultiEvent
+    MultiEvent,
+    SettingsService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from '../adapted-revgrid/internal-api';
+import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 import { AllowedFieldsAndLayoutDefinition } from '../grid-layout-editor-dialog-definition';
 
 export class TradesFrame extends ContentFrame {
-    // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
-
     private _grid: RecordGrid;
     private _recordStore: DayTradesGridRecordStore;
 
@@ -34,23 +34,45 @@ export class TradesFrame extends ContentFrame {
     private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
+    private _gridHeaderCellPainter: HeaderTextCellPainter;
+    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+
     constructor(
+        settingsService: SettingsService,
+        protected readonly adiService: AdiService,
+        textFormatterService: TextFormatterService,
         private readonly _componentAccess: TradesFrame.ComponentAccess,
-        protected readonly adi: AdiService
+        hostElement: HTMLElement,
     ) {
         super();
         this._recordStore = new DayTradesGridRecordStore();
+
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            sortOnClick: false,
+            sortOnDoubleClick: false,
+        }
+
+        const grid = new RecordGrid(
+            settingsService,
+            hostElement,
+            this._recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+        );
+
+        this._grid.rowOrderReversed = true;
+
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
+
+        this._grid.activate();
     }
 
     get opened() { return this._dataItem !== undefined; }
 
     initialise(element: JsonElement | undefined) {
-        this._grid = this._componentAccess.createGrid(this._recordStore);
-        this._grid.rowOrderReversed = true;
-        // this._grid.recordFocusedEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        // this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
-        // this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
-
         let gridLayout: GridLayout;
         if (element === undefined) {
             gridLayout = this.createDefaultGridLayout();
@@ -77,13 +99,13 @@ export class TradesFrame extends ContentFrame {
         }
 
         this._grid.fieldsLayoutReset(fields, gridLayout);
-        this._grid.sortable = false;
 
         this._recordStore.recordsLoaded();
     }
 
     override finalise() {
         if (!this.finalised) {
+            this._grid.destroy();
             this.checkClose();
             super.finalise();
         }
@@ -101,7 +123,7 @@ export class TradesFrame extends ContentFrame {
         const definition = new DayTradesDataDefinition();
         definition.litIvemId = litIvemId;
         definition.date = historicalDate;
-        this._dataItem = this.adi.subscribe(definition) as DayTradesDataItem;
+        this._dataItem = this.adiService.subscribe(definition) as DayTradesDataItem;
         this._recordStore.setDataItem(this._dataItem);
 
         this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
@@ -127,8 +149,8 @@ export class TradesFrame extends ContentFrame {
         this._grid.applyGridLayoutDefinition(layoutDefinition);
     }
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     // private handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
@@ -195,16 +217,26 @@ export class TradesFrame extends ContentFrame {
             this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
             this._recordStore.clearDataItem();
-            this.adi.unsubscribe(this._dataItem);
+            this.adiService.unsubscribe(this._dataItem);
             this._dataItem = undefined;
             this._dataItemDataCorrectnessId = CorrectnessId.Suspect;
         }
     }
+
+    private customiseSettingsForNewColumn() {
+        // no customisation required
+    }
+
+    private getMainCellPainter() {
+        return this._gridMainCellPainter;
+    }
+
+    private getHeaderCellPainter() {
+        return this._gridHeaderCellPainter;
+    }
 }
 
 export namespace TradesFrame {
-    // export type ActiveWidthChangedEventHandler = (this: void) => void;
-
     export class TradesSubscriptionIds {
         beginChanges: MultiEvent.SubscriptionId;
         endChanges: MultiEvent.SubscriptionId;
@@ -215,7 +247,6 @@ export namespace TradesFrame {
     export interface ComponentAccess {
         readonly id: string;
 
-        createGrid(dataStore: DayTradesGridRecordStore): RecordGrid;
         setBadness(value: Badness): void;
         hideBadnessWithVisibleDelay(badness: Badness): void;
     }

@@ -14,7 +14,7 @@ import {
     InjectionToken,
     OnDestroy
 } from '@angular/core';
-import { ColorScheme, delay1Tick, JsonElement, StringId, Strings } from '@motifmarkets/motif-core';
+import { ColorScheme, JsonElement, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -52,7 +52,7 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
         this._frame = new PlaceholderDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 

@@ -25,12 +25,12 @@ import {
     Json,
     JsonElement,
     MultiEvent,
-    numberToPixels,
     Result,
     SettingsService,
     StringId,
     Strings,
-    UnreachableCaseError
+    UnreachableCaseError,
+    numberToPixels
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
@@ -96,7 +96,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         super();
 
         this._componentsParentHtmlElement = this._elRef.nativeElement;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
         this._extensionsAccessService = extensionsAccessNgService.service as FrameExtensionsAccessService;
 

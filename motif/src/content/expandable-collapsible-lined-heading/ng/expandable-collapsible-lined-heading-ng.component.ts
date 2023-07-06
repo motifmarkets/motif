@@ -64,7 +64,7 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
         this._restoreUiAction = this.createRestoreUiAction();
         this._collapseUiAction = this.createCollapseUiAction();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.updateColors());

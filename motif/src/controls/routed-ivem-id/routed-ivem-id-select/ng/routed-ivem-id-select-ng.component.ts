@@ -6,16 +6,13 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
-    addToGrow15ArrayUniquely,
     AdiService,
     AssertInternalError,
     BooleanUiAction,
     CommandRegisterService,
-    compareString,
     ComparisonResult,
     ExchangeId,
     ExchangeInfo,
-    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -32,7 +29,10 @@ import {
     SymbolsDataItem,
     SymbolsService,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    addToGrow15ArrayUniquely,
+    compareString,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import {
@@ -42,7 +42,7 @@ import {
     SymbolDetailCacheNgService,
     SymbolsNgService
 } from 'component-services-ng-api';
-import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
+import { Observable, Observer, Subject, Unsubscribable, distinctUntilChanged, map, merge, of, switchAll, tap } from 'rxjs';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -96,7 +96,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     ) {
         super(
             cdr,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
             symbolsNgService,
         );

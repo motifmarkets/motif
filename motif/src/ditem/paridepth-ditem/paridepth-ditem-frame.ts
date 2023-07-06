@@ -13,6 +13,7 @@ import {
     JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
+    SettingsService,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
@@ -38,6 +39,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private _componentAccess: ParidepthDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
@@ -45,10 +47,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         private readonly _textFormatterService: TextFormatterService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._depthFrame !== undefined; }
 
     get filterActive() { return this._depthFrame.filterActive; }
@@ -179,10 +182,10 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this.openTrades();
     }
 
-    autoSizeAllColumnWidths() {
-        this._watchlistFrame.autoSizeAllColumnWidths();
-        this._depthFrame.autoSizeAllColumnWidths();
-        this._tradesFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._watchlistFrame.autoSizeAllColumnWidths(widenOnly);
+        this._depthFrame.autoSizeAllColumnWidths(widenOnly);
+        this._tradesFrame.autoSizeAllColumnWidths(widenOnly );
     }
 
     createAllowedFieldsAndLayoutDefinition(): ParidepthAllowedFieldsAndLayoutDefinitions {

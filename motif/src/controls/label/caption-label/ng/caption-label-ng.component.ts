@@ -21,7 +21,7 @@ export class CaptionLabelNgComponent extends LabelComponentBaseNgDirective imple
     @Input() for: string;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
     override ngOnDestroy() {

@@ -11,6 +11,7 @@ import {
     BrokerageAccountGroup, BrokerageAccountGroupRecordList,
     CommandRegisterService,
     CoreSettings,
+    GridField,
     GridSourceDefinition, GridSourceOrNamedReferenceDefinition,
     Holding,
     HoldingTableRecordSource,
@@ -22,9 +23,11 @@ import {
     SingleBrokerageAccountGroup,
     SymbolDetailCacheService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService
+    TableRecordSourceDefinitionFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
-import { GridSourceFrame } from 'content-internal-api';
+import { AdaptedRevgridBehavioredColumnSettings, GridSourceFrame, GridSourceFrameGridParametersService, HeaderTextCellPainter, RecordGridMainTextCellPainter } from 'content-internal-api';
+import { DatalessViewCell } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -38,9 +41,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     private _holdingsGridSourceFrame: GridSourceFrame;
     private _holdingsRecordSource: HoldingTableRecordSource;
     private _holdingsRecordList: BrokerageAccountGroupRecordList<Holding>;
+    private _holdingsGridHeaderCellPainter: HeaderTextCellPainter;
+    private _holdingsGridMainCellPainter: RecordGridMainTextCellPainter;
 
     private _balancesGridSourceFrame: GridSourceFrame;
     private _balancesSingleGroup: BrokerageAccountGroup | undefined;
+    private _balancesGridHeaderCellPainter: HeaderTextCellPainter;
+    private _balancesGridMainCellPainter: RecordGridMainTextCellPainter;
 
     private _currentFocusedAccountIdSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
@@ -52,14 +59,17 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        gridParametersService: GridSourceFrameGridParametersService,
         private readonly _gridSourceOpenedEventer: HoldingsDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: HoldingsDitemFrame.RecordFocusedEventer,
     ) {
         super(
             BuiltinDitemFrame.BuiltinTypeId.Holdings,
             _componentAccess,
+            settingsService,
             commandRegisterService,
             desktopAccessService,
             symbolsService,
@@ -67,8 +77,15 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         );
 
         this._coreSettings = settingsService.core;
+
+        // The values set with these parameters will be overwritten in initialise function
+        gridParametersService.customGridSettings = {};
+        gridParametersService.customiseSettingsForNewColumnEventer = (columnSettings) => this.customiseSettingsForNewInvalidGridColumn(columnSettings);
+        gridParametersService.getHeaderCellPainterEventer = (viewCell) => this.getInvalidGridHeaderCellPainter(viewCell);
+        gridParametersService.getMainCellPainterEventer = (viewCell) => this.getInvalidGridMainCellPainter(viewCell);
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._holdingsGridSourceFrame !== undefined; }
     get focusedRecordIndex() { return this._holdingsGridSourceFrame.getFocusedRecordIndex(); }
 
@@ -77,50 +94,78 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         this._holdingsGridSourceFrame.opener = this.opener;
         this._holdingsGridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleHoldingsRecordFocusEvent(newRecordIndex);
 
-        this._balancesGridSourceFrame = balancesGridSourceFrame;
-        this._balancesGridSourceFrame.opener = this.opener;
-
-        let holdingsGridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
-        let balancesGridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
-        if (frameElement === undefined) {
-            holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
-            balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
+        const holdingsGrid = this._holdingsGridSourceFrame.grid;
+        this._holdingsGridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, holdingsGrid, holdingsGrid.headerDataServer);
+        this._holdingsGridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this._textFormatterService, holdingsGrid, holdingsGrid.mainDataServer);
+        holdingsGrid.customiseSettingsForNewColumnEventer = (columnSettings) => this.customiseSettingsForNewHoldingsGridColumn(columnSettings);
+        holdingsGrid.mainSubgrid.getCellPainterEventer = (viewCell) => this.getHoldingsGridHeaderCellPainter(viewCell);
+        const holdingsHeaderSubgrid = holdingsGrid.subgridsManager.headerSubgrid;
+        if (holdingsHeaderSubgrid === undefined) {
+            throw new AssertInternalError('HDFIHH33363');
         } else {
-            const holdingsElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.holdings);
-            if (holdingsElementResult.isErr()) {
-                holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
+            holdingsHeaderSubgrid.getCellPainterEventer = (viewCell) => this.getHoldingsGridMainCellPainter(viewCell);
+
+            this._balancesGridSourceFrame = balancesGridSourceFrame;
+            this._balancesGridSourceFrame.opener = this.opener;
+
+            const balancesGrid = this._balancesGridSourceFrame.grid;
+            this._balancesGridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, balancesGrid, balancesGrid.headerDataServer);
+            this._balancesGridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this._textFormatterService, balancesGrid, balancesGrid.mainDataServer);
+            balancesGrid.customiseSettingsForNewColumnEventer = (columnSettings) => this.customiseSettingsForNewBalancesGridColumn(columnSettings);
+            balancesGrid.mainSubgrid.getCellPainterEventer = (viewCell) => this.getBalancesGridHeaderCellPainter(viewCell);
+            const balancesHeaderSubgrid = balancesGrid.subgridsManager.headerSubgrid;
+            if (balancesHeaderSubgrid === undefined) {
+                throw new AssertInternalError('HDFIBH33363');
             } else {
-                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService,
-                    holdingsElementResult.value,
-                );
-                if (definitionResult.isOk()) {
-                    holdingsGridSourceOrNamedReferenceDefinition = definitionResult.value;
-                } else {
+                balancesHeaderSubgrid.getCellPainterEventer = (viewCell) => this.getBalancesGridMainCellPainter(viewCell);
+
+                let holdingsGridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
+                let balancesGridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
+                if (frameElement === undefined) {
                     holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
-                    // Temporary error toast
-                }
-            }
-            const balancesElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.balances);
-            if (balancesElementResult.isErr()) {
-                balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
-            } else {
-                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService,
-                    balancesElementResult.value,
-                );
-                if (definitionResult.isOk()) {
-                    balancesGridSourceOrNamedReferenceDefinition = definitionResult.value;
-                } else {
                     balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
-                    // Temporary error toast
+                } else {
+                    const holdingsElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.holdings);
+                    if (holdingsElementResult.isErr()) {
+                        holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
+                    } else {
+                        const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+                            this._tableRecordSourceDefinitionFactoryService,
+                            holdingsElementResult.value,
+                        );
+                        if (definitionResult.isOk()) {
+                            holdingsGridSourceOrNamedReferenceDefinition = definitionResult.value;
+                        } else {
+                            holdingsGridSourceOrNamedReferenceDefinition = this.createDefaultHoldingsGridSourceOrNamedReferenceDefinition();
+                            // Temporary error toast
+                        }
+                    }
+                    const balancesElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.balances);
+                    if (balancesElementResult.isErr()) {
+                        balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
+                    } else {
+                        const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+                            this._tableRecordSourceDefinitionFactoryService,
+                            balancesElementResult.value,
+                        );
+                        if (definitionResult.isOk()) {
+                            balancesGridSourceOrNamedReferenceDefinition = definitionResult.value;
+                        } else {
+                            balancesGridSourceOrNamedReferenceDefinition = this.createDefaultBalancesGridSourceOrNamedReferenceDefinition();
+                            // Temporary error toast
+                        }
+                    }
                 }
+
+                holdingsGrid.activate();
+                balancesGrid.activate();
+
+                this.tryOpenHoldingsGridSource(holdingsGridSourceOrNamedReferenceDefinition);
+                this.tryOpenBalancesGridSource(balancesGridSourceOrNamedReferenceDefinition);
+
+                this.applyLinked();
             }
         }
-        this.tryOpenHoldingsGridSource(holdingsGridSourceOrNamedReferenceDefinition);
-        this.tryOpenBalancesGridSource(balancesGridSourceOrNamedReferenceDefinition);
-
-        this.applyLinked();
     }
 
     override finalise(): void {
@@ -142,7 +187,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
 
     sellFocused() {
         const focusedIndex = this._holdingsGridSourceFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
         if (focusedIndex !== undefined) {
             const holding = this._holdingsRecordList.records[focusedIndex];
             orderPad.loadSellFromHolding(holding);
@@ -194,6 +239,42 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         this._recordFocusedEventer(newRecordIndex);
     }
 
+    private customiseSettingsForNewInvalidGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getInvalidGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._holdingsGridHeaderCellPainter;
+    }
+
+    private getInvalidGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._holdingsGridMainCellPainter;
+    }
+
+    private customiseSettingsForNewHoldingsGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getHoldingsGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._holdingsGridHeaderCellPainter;
+    }
+
+    private getHoldingsGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._holdingsGridMainCellPainter;
+    }
+
+    private customiseSettingsForNewBalancesGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getBalancesGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._balancesGridHeaderCellPainter;
+    }
+
+    private getBalancesGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._balancesGridMainCellPainter;
+    }
+
     private checkApplyBalancesSingleGroup(group: SingleBrokerageAccountGroup) {
         if (this._balancesSingleGroup === undefined || !this._balancesSingleGroup.isEqualTo(group)) {
             this._balancesSingleGroup = group;
@@ -232,15 +313,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         if (!this._brokerageAccountGroupApplying) {
             this._currentFocusedAccountIdSetting = true;
             try {
-                let litIvemId = newFocusedHolding.defaultLitIvemId;
-                if (litIvemId !== undefined) {
-                    this.applyDitemLitIvemIdFocus(litIvemId, true);
-                } else {
-                    const ivemId = newFocusedHolding.ivemId;
-                    litIvemId = this.symbolsService.getBestLitIvemIdFromIvemId(ivemId);
-                    this.applyDitemLitIvemIdFocus(litIvemId, true);
-                }
-
+                this.applyDitemLitIvemIdFocus(newFocusedHolding.defaultLitIvemId, true);
                 this.applyDitemBrokerageAccountGroupFocus(singleGroup, true);
             } finally {
                 this._currentFocusedAccountIdSetting = false;
@@ -285,8 +358,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
                     this.closeAndHideBalances();
                 } else {
 
-                    if (!BrokerageAccountGroup.isSingle(group)) {
-                    } else {
+                    if (BrokerageAccountGroup.isSingle(group)) {
                         this.checkApplyBalancesSingleGroup(group);
                     }
                 }

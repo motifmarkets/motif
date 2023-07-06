@@ -19,19 +19,19 @@ import {
     BooleanUiAction,
     ButtonUiAction,
     ColorScheme,
-    delay1Tick,
     HtmlTypes,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
     ModifierKey,
     ModifierKeyId,
-    numberToPixels,
     OrderPad,
     OrderRequestType,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    delay1Tick,
+    numberToPixels
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -113,7 +113,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new OrderRequestDitemFrame(
             this,

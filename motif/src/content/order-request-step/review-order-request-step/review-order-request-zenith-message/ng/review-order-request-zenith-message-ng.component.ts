@@ -29,7 +29,7 @@ export class ReviewOrderRequestZenithMessageNgComponent extends ContentComponent
     constructor(settingsNgService: SettingsNgService) {
         super();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.updateColors());

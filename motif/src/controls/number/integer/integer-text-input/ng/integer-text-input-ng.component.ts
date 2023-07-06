@@ -30,7 +30,7 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
     private _oldSelectionEnd: Integer | null;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'IntegerInput' + this.componentInstanceId;
     }
 

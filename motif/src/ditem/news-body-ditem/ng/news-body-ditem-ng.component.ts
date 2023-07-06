@@ -32,9 +32,9 @@ export class NewsBodyDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new NewsBodyDitemFrame(this, this.commandRegisterService,
+        this._frame = new NewsBodyDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());

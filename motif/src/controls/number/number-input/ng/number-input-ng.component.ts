@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Integer, isPartialIntlFormattedNumber, StringId, Strings } from '@motifmarkets/motif-core';
+import { Integer, StringId, Strings, isPartialIntlFormattedNumber } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
@@ -30,7 +30,7 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
     private _oldSelectionEnd: Integer | null;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'NumberInput' + this.componentInstanceId;
     }
 

@@ -11,30 +11,31 @@ import {
     JsonElement,
     JsonValue,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { DitemFrame } from './ditem-frame';
 
 export class ExtensionDitemFrame extends DitemFrame {
+    readonly initialised = false;
     persistStateRequestEventer: ExtensionDitemFrame.PersistStateRequestEventHandler;
 
     constructor(
         ditemTypeId: DitemFrame.TypeId,
         private readonly _componentAccess: ExtensionDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
         super(ditemTypeId, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
     get extensionHandle() { return this.ditemTypeId.extensionHandle; }
     get typeName() { return this.ditemTypeId.name; }
-
-    get initialised() { return false; }
 
     getPersistState() {
         const jsonElement = new JsonElement();

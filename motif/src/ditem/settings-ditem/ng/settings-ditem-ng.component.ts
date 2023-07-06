@@ -15,7 +15,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { delay1Tick, JsonElement } from '@motifmarkets/motif-core';
+import { JsonElement, delay1Tick } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
     ColorSettingsNgComponent,
@@ -60,7 +60,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
         this._frame = new SettingsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 

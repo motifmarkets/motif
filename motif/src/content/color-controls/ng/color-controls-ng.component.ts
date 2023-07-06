@@ -19,17 +19,21 @@ import {
     BooleanUiAction,
     ColorScheme,
     ColorSettings,
-    CommandRegisterService, delay1Tick, EnumInfoOutOfOrderError, EnumUiAction,
+    CommandRegisterService,
+    EnumInfoOutOfOrderError, EnumUiAction,
     ExplicitElementsEnumUiAction, HtmlTypes, IconButtonUiAction,
     IntegerUiAction,
-    InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId, Strings, StringUiAction,
-    UiAction, UnreachableCaseError
+    InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId,
+    StringUiAction,
+    Strings,
+    UiAction, UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import {
+    CaptionLabelNgComponent,
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
-    CaptionLabelNgComponent,
     IntegerTextInputNgComponent,
     NumberInputNgComponent,
     SvgButtonNgComponent,
@@ -121,8 +125,8 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         super();
 
         this._commandRegisterService = commandRegisterNgService.service;
-        this._settingsService = settingsNgService.settingsService;
-        this._colorSettings = settingsNgService.settingsService.color;
+        this._settingsService = settingsNgService.service;
+        this._colorSettings = settingsNgService.service.color;
 
         this._hideInPickerUiAction = this.createHideInPickerUiAction();
         this._itemColorTypeUiAction = this.createItemColorTypeUiAction();

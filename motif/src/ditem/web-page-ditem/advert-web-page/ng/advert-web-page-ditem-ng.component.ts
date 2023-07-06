@@ -1,6 +1,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
-import { delay1Tick, JsonElement } from '@motifmarkets/motif-core';
+import { JsonElement, delay1Tick } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { AdvertWebPageNgComponent } from 'src/content/advert/ng-api';
@@ -33,8 +33,9 @@ export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNg
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new AdvertWebPageDitemFrame(this, this.commandRegisterService,
+        const settingsService = settingsNgService.service;
+        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        this._frame = new AdvertWebPageDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());

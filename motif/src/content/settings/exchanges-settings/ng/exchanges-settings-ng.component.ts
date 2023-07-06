@@ -33,7 +33,7 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
     ) {
-        super(cdr, settingsNgService.settingsService);
+        super(cdr, settingsNgService.service);
 
         this._exchangesSettings = this.settingsService.exchanges;
         this.exchanges = this._exchangesSettings.exchanges;

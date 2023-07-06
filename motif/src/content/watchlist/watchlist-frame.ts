@@ -7,6 +7,7 @@
 import {
     AssertInternalError,
     compareInteger,
+    GridField,
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
@@ -27,8 +28,11 @@ import {
     RankedLitIvemIdListTableRecordSource,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService
+    TableRecordSourceFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
+import { DatalessViewCell } from 'revgrid';
+import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class WatchlistFrame extends GridSourceFrame {
@@ -38,16 +42,37 @@ export class WatchlistFrame extends GridSourceFrame {
     private _recordSource: RankedLitIvemIdListTableRecordSource;
     private _fixedRowCount: Integer | undefined;
 
+    private _gridHeaderCellPainter: HeaderTextCellPainter;
+    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+
     constructor(
-        componentAccess: GridSourceFrame.ComponentAccess,
         settingsService: SettingsService,
         private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
+        textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
+        componentAccess: GridSourceFrame.ComponentAccess,
+        hostElement: HTMLElement,
     ) {
-        super(componentAccess, settingsService, namedGridLayoutsService, tableRecordSourceFactoryService, namedGridSourcesService);
+        super(
+            settingsService,
+            namedGridLayoutsService,
+            tableRecordSourceFactoryService,
+            namedGridSourcesService,
+            componentAccess,
+            hostElement,
+            { fixedColumnCount: 1 },
+            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
+            (viewCell) => this.getGridMainCellPainter(viewCell),
+        );
+
+        const grid = this.grid;
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
+
     }
 
     get userCanAdd() { return this._litIvemIdList.userCanAdd; }
@@ -242,6 +267,18 @@ export class WatchlistFrame extends GridSourceFrame {
         if (this.saveRequiredEventer !== undefined) {
             this.saveRequiredEventer();
         }
+    }
+
+    private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridHeaderCellPainter;
+    }
+
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridMainCellPainter;
     }
 
     private indexOfRecordByLitIvemId(litIvemId: LitIvemId): Integer {

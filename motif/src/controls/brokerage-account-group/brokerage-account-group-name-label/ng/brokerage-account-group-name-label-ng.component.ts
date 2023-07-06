@@ -22,7 +22,7 @@ export class BrokerageAccountGroupNameLabelNgComponent extends BrokerageAccountG
     public override caption = '';
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, pulseService: CoreNgService) {
-        super(cdr, settingsNgService.settingsService, pulseService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, pulseService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
     }
 
     override ngOnDestroy() {

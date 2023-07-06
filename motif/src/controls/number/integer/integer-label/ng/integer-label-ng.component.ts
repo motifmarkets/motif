@@ -21,7 +21,7 @@ export class IntegerLabelNgComponent extends IntegerUiActionComponentBaseNgDirec
     @Input() for: string;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
     }
 
     protected override applyValue(_value: number | undefined, _edited: boolean) {

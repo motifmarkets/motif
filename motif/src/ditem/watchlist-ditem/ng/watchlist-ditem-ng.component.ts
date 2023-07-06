@@ -16,6 +16,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     ExplicitElementsArrayUiAction,
     GridLayout,
     IconButtonUiAction,
@@ -41,12 +42,13 @@ import {
 import {
     AdiNgService,
     CommandRegisterNgService,
+    FavouriteNamedGridLayoutDefinitionReferencesNgService,
     NamedJsonRankedLitIvemIdListsNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
 import {
     NameableGridLayoutEditorDialogNgComponent,
     OpenWatchlistDialogNgComponent,
@@ -55,7 +57,6 @@ import {
 } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { FavouriteNamedGridLayoutDefinitionReferencesNgService } from '../../../component-services/ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
 import { WatchlistDitemFrame } from '../watchlist-ditem-frame';
@@ -102,25 +103,28 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _forceOnNextCommit = false;
 
     constructor(cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
+        elRef: ElementRef<HTMLElement>,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new WatchlistDitemFrame(
             this,
+            settingsNgService.service,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            textFormatterNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
             (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
@@ -153,12 +157,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
 
     get ditemFrame() { return this._frame; }
-    public get frameGridProperties(): AdaptedRevgrid.FrameGridSettings {
-        return {
-            fixedColumnCount: 1,
-            gridRightAligned: false,
-        };
-    }
 
     protected get stateSchemaVersion() { return WatchlistDitemNgComponent.stateSchemaVersion; }
 
@@ -210,7 +208,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._watchlistComponent.watchlistFrame, frameElement);
+        this._frame.initialise(this._watchlistComponent.frame, frameElement);
 
         this._symbolEditComponent.focus();
 
@@ -279,24 +277,33 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
-        const keepCurrentLayout = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        this._frame.newEmpty(/*keepCurrentLayout*/);
+        const keepView = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.newEmpty(keepView);
     }
 
     private handleOpenUiActionSignalEvent() {
-        this.showOpenDialog();
+        const promise = this.showOpenDialog();
+        promise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'WDNCHOUASE11109'); }
+        );
     }
 
     private handleSaveUiActionEvent() {
-        this.showSaveDialog();
+        const promise = this.showSaveDialog();
+        promise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'WDNCHSUAE11109'); }
+        );
     }
 
     private handleColumnsUiActionSignalEvent() {
         this.showLayoutEditor();
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleSymbolLinkUiActionSignalEvent() {
@@ -317,7 +324,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             this.watchlistAbbreviatedDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToAbbreviation(typeId)})`;
             this.watchListFullDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToDisplay(typeId)})`;
         }
-        this.setTitle(baseTabDisplay, rankedLitIvemIdListName);
+        this.setTitle(tabTitle, rankedLitIvemIdListName);
         this.markForCheck();
     }
 
@@ -327,7 +334,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleGridLayoutSetEvent(layout: GridLayout) {
-
+        // not implemented
     }
 
     private createSymbolEditUiAction() {
@@ -418,7 +425,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
         action.pushUnselected();
-        action.signalEvent = () => this.handleAutoSizeColumnWidthsUiActionSignalEvent();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 

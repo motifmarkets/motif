@@ -34,7 +34,7 @@ import {
 } from 'revgrid';
 import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { AdaptedRevgrid } from '../adapted-revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, AdaptedRevgridGridSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
+import { AdaptedRevgridBehavioredColumnSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
 import { RecordGridHeaderDataServer } from './record-grid-header-data-server';
 import { RecordGridMainDataServer } from './record-grid-main-data-server';
 import { RecordGridSchemaServer } from './record-grid-schema-server';
@@ -72,9 +72,9 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     constructor(
         // componentAccess: RecordGrid.ComponentAccess,
         settingsService: SettingsService,
-        gridElement: HTMLElement,
+        gridHostElement: HTMLElement,
         recordStore: RevRecordStore,
-        customGridSettings: Partial<AdaptedRevgridGridSettings>,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
         getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
@@ -98,7 +98,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
             ],
         }
 
-        super(settingsService, gridElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
+        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
 
         this._schemaServer = schemaServer;
         this._headerDataServer = headerDataServer;

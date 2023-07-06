@@ -25,9 +25,9 @@ export class ScansFrame extends ContentFrame {
     // private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
     constructor(
-        private readonly _componentAccess: ScansFrame.ComponentAccess,
-        private readonly _scansService: ScansService,
         private readonly _adiService: AdiService,
+        private readonly _scansService: ScansService,
+        private readonly _componentAccess: ScansFrame.ComponentAccess,
     ) {
         super();
         this.recordStore = new ScansGridRecordStore(_scansService);
@@ -123,8 +123,8 @@ export class ScansFrame extends ContentFrame {
 
     }
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     handleRecordFocusEvent(

@@ -44,7 +44,7 @@ export class CaptionedCheckboxNgComponent
     ) {
         super(
             cdr,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
         );
         this.inputId = 'CaptionedCheckbox' + this.componentInstanceId;

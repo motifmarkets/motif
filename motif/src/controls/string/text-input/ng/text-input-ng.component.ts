@@ -27,7 +27,7 @@ export class TextInputNgComponent extends ControlComponentBaseNgDirective {
     private _pushTextEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'TextInput' + this.componentInstanceId;
     }
 

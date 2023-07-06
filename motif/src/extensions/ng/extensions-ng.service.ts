@@ -9,6 +9,7 @@ import {
     AdiNgService,
     AppStorageNgService,
     CommandRegisterNgService,
+    SettingsNgService,
     SymbolsNgService
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
@@ -27,6 +28,7 @@ export class ExtensionsNgService implements OnDestroy {
     constructor(
         extensionsAccessNgService: ExtensionsAccessNgService,
         adiNgService: AdiNgService,
+        settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         storageNgService: AppStorageNgService,
         symbolsNgService: SymbolsNgService,
@@ -37,6 +39,7 @@ export class ExtensionsNgService implements OnDestroy {
     ) {
         this._service = new ExtensionsService(
             adiNgService.service,
+            settingsNgService.service,
             commandRegisterNgService.service,
             storageNgService.service,
             symbolsNgService.service,

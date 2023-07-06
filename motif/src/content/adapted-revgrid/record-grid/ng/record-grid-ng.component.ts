@@ -10,7 +10,7 @@ import { SettingsNgService, TextFormatterNgService } from 'component-services-ng
 import { RevRecordStore, Subgrid } from 'revgrid';
 import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
-import { AdaptedRevgridBehavioredColumnSettings, AdaptedRevgridGridSettings } from '../../settings/content-adapted-revgrid-settings-internal-api';
+import { AdaptedRevgridBehavioredColumnSettings } from '../../settings/content-adapted-revgrid-settings-internal-api';
 import { RecordGrid } from '../record-grid';
 
 @Component({
@@ -24,7 +24,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     private _grid: RecordGrid;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
-        const settingsService = settingsNgService.settingsService;
+        const settingsService = settingsNgService.service;
         super(elRef.nativeElement, settingsService);
     }
 
@@ -38,7 +38,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     createGrid(
         recordStore: RevRecordStore,
-        customGridSettings: Partial<AdaptedRevgridGridSettings>,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
         getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,

@@ -31,7 +31,7 @@ export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirectiv
     constructor(private readonly _elRef: ElementRef, settingsNgService: SettingsNgService) {
         super();
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
         this.applySettings();

@@ -37,7 +37,7 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'EnumArrayInput' + this.componentInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(

@@ -18,11 +18,10 @@ import {
     TableRecordSourceFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
+import { BalancesFrame } from '../balances/internal-api';
 import { ContentService } from '../content-service';
-import { DepthSideFrame } from '../depth-side/internal-api';
 import { DepthFrame } from '../depth/internal-api';
 import { FeedsFrame } from '../feeds/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
 import { ScansFrame } from '../scan/internal-api';
@@ -50,7 +49,7 @@ export class ContentNgService {
         namedGridSourcesNgService: NamedGridSourcesNgService,
     ) {
         this._content = new ContentService(
-            settingsNgService.settingsService,
+            settingsNgService.service,
             symbolsNgService.service,
             appStorageNgService.service,
             adiNgService.service,
@@ -75,32 +74,54 @@ export class ContentNgService {
         return this._content.createMarketsFrame(componentAccess);
     }
 
-    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createGridSourceFrame(componentAccess);
+    // createGridSourceFrame(
+    //     componentAccess: GridSourceFrame.ComponentAccess,
+    //     hostElement: HTMLElement,
+    //     customGridSettings: AdaptedRevgrid.CustomGridSettings,
+    //     customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+    //     getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    //     getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    // ) {
+    //     return this._content.createGridSourceFrame(
+    //         componentAccess,
+    //         hostElement,
+    //         customGridSettings,
+    //         customiseSettingsForNewColumnEventer,
+    //         getMainCellPainterEventer,
+    //         getHeaderCellPainterEventer,
+    //     );
+    // }
+
+    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createWatchlistFrame(componentAccess, hostElement);
     }
 
-    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess) {
-        return this._content.createWatchlistFrame(componentAccess);
+    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createBalancesFrame(componentAccess, hostElement);
     }
 
-    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {
-        return this._content.createStatusSummaryFrame(componentAccess, sessionInfoService);
+    createBrokerageAccountsFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createBrokerageAccountsFrame(componentAccess, hostElement);
     }
 
-    createDepthSideFrame(componentAccess: DepthSideFrame.ComponentAccess) {
-        return this._content.createDepthSideFrame(componentAccess);
+    createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
+        return this._content.createStatusSummaryFrame(sessionInfoService, componentAccess);
+    }
+
+    createDepthSideFrame(hostElement: HTMLElement) {
+        return this._content.createDepthSideFrame(hostElement);
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return this._content.createDepthFrame(componentAccess);
     }
 
-    createScansFrame(componentAccess: ScansFrame.ComponentAccess, scansService: ScansService) {
-        return this._content.createScansFrame(componentAccess, scansService);
+    createScansFrame(scansService: ScansService, componentAccess: ScansFrame.ComponentAccess) {
+        return this._content.createScansFrame(scansService, componentAccess);
     }
 
-    createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
-        return this._content.createTradesFrame(componentAccess);
+    createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createTradesFrame(componentAccess, hostElement);
     }
 
     createPadOrderRequestStepFrame(componentAccess: PadOrderRequestStepFrame.ComponentAccess) {

@@ -12,6 +12,7 @@ import {
     JsonElement,
     LitIvemId,
     OrderPad,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { Frame } from 'component-internal-api';
@@ -54,14 +55,15 @@ export abstract class DitemFrame extends Frame {
 
     constructor(private readonly _ditemTypeId: DitemFrame.TypeId,
         private readonly _ditemComponentAccess: DitemFrame.ComponentAccess,
+        protected readonly settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
-        private readonly _desktopAccessService: DitemFrame.DesktopAccessService,
-        private readonly _symbolsService: SymbolsService,
-        private readonly _adiService: AdiService
+        protected readonly desktopAccessService: DitemFrame.DesktopAccessService,
+        protected readonly symbolsService: SymbolsService,
+        protected readonly adiService: AdiService,
     ) {
         super();
 
-        this._desktopAccessService.registerFrame(this);
+        this.desktopAccessService.registerFrame(this);
         this._ditemCommandProcessor = new DitemCommandProcessor(this._commandRegisterService);
     }
 
@@ -82,22 +84,17 @@ export abstract class DitemFrame extends Frame {
 
     get litIvemIdLinkable() { return this._litIvemIdLinkable; }
     set litIvemIdLinkable(value: boolean) { this._litIvemIdLinkable = value; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get litIvemIdLinked() { return this._litIvemIdLinked; }
     set litIvemIdLinked(value: boolean) { this.setLitIvemIdLinked(value); }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get allBrokerageAccountGroupSupported() { return this._allBrokerageAccountGroupSupported; }
     set allBrokerageAccountGroupSupported(value: boolean) { this._allBrokerageAccountGroupSupported = value; }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get brokerageAccountGroupLinkable() { return this._brokerageAccountGroupLinkable; }
     set brokerageAccountGroupLinkable(value: boolean) { this._brokerageAccountGroupLinkable = value; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get brokerageAccountGroupLinked() { return this._brokerageAccountGroupLinked; }
     set brokerageAccountGroupLinked(value: boolean) { this.setBrokerageAccountGroupLinked(value); }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     get primary() { return this._primary; }
     set primary(value: boolean) {
         if (value !== this._primary) {
@@ -106,32 +103,18 @@ export abstract class DitemFrame extends Frame {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    protected get desktopAccessService() { return this._desktopAccessService; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    protected get symbolsService() { return this._symbolsService; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    protected get adi() { return this._adiService; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
-    protected get currentFocusedLitIvemId() { return this._currentFocusedLitIvemId; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get lastFocusedLitIvemId() { return this._lastFocusedLitIvemId; }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get currentFocusedBrokerageAccountGroup() { return this._currentFocusedBrokerageAccountGroup; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get lastFocusedBrokerageAccountGroup() { return this._lastFocusedBrokerageAccountGroup; }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get selectAllWhenFrameSymbolAndSourceApplied(): boolean { return this._selectAllWhenFrameSymbolAndSourceApplied; }
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     protected set selectAllWhenFrameSymbolAndSourceApplied(value: boolean) { this._selectAllWhenFrameSymbolAndSourceApplied = value; }
 
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     abstract get initialised(): boolean;
 
     finalise() {
-        this._desktopAccessService.deleteFrame(this);
+        this.desktopAccessService.deleteFrame(this);
     }
 
     constructLoad(element: JsonElement | undefined) {
@@ -267,19 +250,19 @@ export abstract class DitemFrame extends Frame {
     }
 
     protected flagSaveRequired() {
-        this._desktopAccessService.flagLayoutSaveRequired();
+        this.desktopAccessService.flagLayoutSaveRequired();
     }
 
     protected applyLinked() {
         if (this._litIvemIdLinked) {
-            const desktopLitIvemId = this._desktopAccessService.litIvemId;
+            const desktopLitIvemId = this.desktopAccessService.litIvemId;
             if (desktopLitIvemId !== undefined) {
                 this.setLitIvemIdFromDesktop(desktopLitIvemId, undefined);
             }
         }
 
         if (this._brokerageAccountGroupLinked) {
-            const brokerageAccountGroup = this._desktopAccessService.brokerageAccountGroup;
+            const brokerageAccountGroup = this.desktopAccessService.brokerageAccountGroup;
             if (brokerageAccountGroup !== undefined) {
                 this.setBrokerageAccountGroupFromDesktop(brokerageAccountGroup, undefined);
             }
@@ -347,7 +330,7 @@ export abstract class DitemFrame extends Frame {
         this._currentFocusedLitIvemId = litIvemId;
         this._lastFocusedLitIvemId = this._currentFocusedLitIvemId;
         if (this._ditemComponentAccess.focused) {
-            this._desktopAccessService.setLastFocusedLitIvemId(this.lastFocusedLitIvemId);
+            this.desktopAccessService.setLastFocusedLitIvemId(this.lastFocusedLitIvemId);
         }
     }
 
@@ -365,12 +348,12 @@ export abstract class DitemFrame extends Frame {
                 &&
                 !this.layoutConfigLoading
                 &&
-                !this._desktopAccessService.brokerageAccountGroupOrLitIvemIdSetting
+                !this.desktopAccessService.brokerageAccountGroupOrLitIvemIdSetting
                 &&
                 litIvemId !== undefined
                 &&
-                !LitIvemId.isUndefinableEqual(litIvemId, this._desktopAccessService.litIvemId)) {
-            this._desktopAccessService.setLitIvemId(litIvemId, this);
+                !LitIvemId.isUndefinableEqual(litIvemId, this.desktopAccessService.litIvemId)) {
+            this.desktopAccessService.setLitIvemId(litIvemId, this);
             return true;
         } else {
             return false;
@@ -385,7 +368,7 @@ export abstract class DitemFrame extends Frame {
                 const same = LitIvemId.isUndefinableEqual(desktopLitIvemId, this._litIvemId);
                 if (!same) {
                     if (desktopLitIvemId === undefined) {
-                        this._desktopAccessService.setLitIvemId(this._litIvemId, this);
+                        this.desktopAccessService.setLitIvemId(this._litIvemId, this);
                     } else {
                         this.setLitIvemId(desktopLitIvemId, undefined);
                     }
@@ -406,7 +389,7 @@ export abstract class DitemFrame extends Frame {
         this._currentFocusedBrokerageAccountGroup = group;
         this._lastFocusedBrokerageAccountGroup = this._currentFocusedBrokerageAccountGroup;
         if (this._ditemComponentAccess.focused) {
-            this._desktopAccessService.setLastFocusedBrokerageAccountGroup(this._lastFocusedBrokerageAccountGroup);
+            this.desktopAccessService.setLastFocusedBrokerageAccountGroup(this._lastFocusedBrokerageAccountGroup);
         }
     }
 
@@ -423,12 +406,12 @@ export abstract class DitemFrame extends Frame {
                 &&
                 !this.layoutConfigLoading
                 &&
-                !this._desktopAccessService.brokerageAccountGroupOrLitIvemIdSetting
+                !this.desktopAccessService.brokerageAccountGroupOrLitIvemIdSetting
                 &&
                 group !== undefined
                 &&
-                !BrokerageAccountGroup.isUndefinableEqual(group, this._desktopAccessService.brokerageAccountGroup)) {
-            this._desktopAccessService.setBrokerageAccountGroup(group, this);
+                !BrokerageAccountGroup.isUndefinableEqual(group, this.desktopAccessService.brokerageAccountGroup)) {
+            this.desktopAccessService.setBrokerageAccountGroup(group, this);
             return true;
         } else {
             return false;
@@ -442,14 +425,14 @@ export abstract class DitemFrame extends Frame {
                 const desktopGroup = this.desktopAccessService.brokerageAccountGroup;
                 if (!BrokerageAccountGroup.isUndefinableEqual(this._brokerageAccountGroup, desktopGroup)) {
                     if (desktopGroup === undefined) {
-                        this._desktopAccessService.setBrokerageAccountGroup(this._brokerageAccountGroup, this);
+                        this.desktopAccessService.setBrokerageAccountGroup(this._brokerageAccountGroup, this);
                     } else {
                         if (desktopGroup.isSingle() || this._allBrokerageAccountGroupSupported) {
                             this.setBrokerageAccountGroup(desktopGroup, this);
                         } else {
-                            const lastSingleBrokerageAccountGroup = this._desktopAccessService.lastSingleBrokerageAccountGroup;
+                            const lastSingleBrokerageAccountGroup = this.desktopAccessService.lastSingleBrokerageAccountGroup;
                             if (lastSingleBrokerageAccountGroup !== undefined) {
-                                this.setBrokerageAccountGroup(this._desktopAccessService.lastSingleBrokerageAccountGroup, undefined);
+                                this.setBrokerageAccountGroup(this.desktopAccessService.lastSingleBrokerageAccountGroup, undefined);
                             }
                         }
                     }

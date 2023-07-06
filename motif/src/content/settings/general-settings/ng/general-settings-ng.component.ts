@@ -16,9 +16,7 @@ import {
 } from '@angular/core';
 import {
     ArrayUiAction,
-    assert,
     BooleanUiAction,
-    delay1Tick,
     EnumUiAction,
     ExchangeInfo,
     ExplicitElementsEnumArrayUiAction,
@@ -28,17 +26,19 @@ import {
     MultiEvent,
     SourceTzOffsetDateTime,
     StringId,
-    Strings,
     StringUiAction,
+    Strings,
     SymbolField,
     SymbolFieldId,
-    SymbolsService
+    SymbolsService,
+    assert,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
+    CaptionLabelNgComponent,
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
-    CaptionLabelNgComponent,
     CheckboxInputNgComponent,
     EnumArrayInputNgComponent,
     EnumInputNgComponent,
@@ -123,8 +123,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
-        super(cdr, settingsNgService.settingsService);
-        this._masterSettings = settingsNgService.settingsService.master;
+        super(cdr, settingsNgService.service);
+        this._masterSettings = settingsNgService.service.master;
         this._symbolsService = symbolsNgService.service;
 
         this.dateTimeTimezoneModeRadioName = this.generateInstancedRadioName('dateTimeTimezoneMode');

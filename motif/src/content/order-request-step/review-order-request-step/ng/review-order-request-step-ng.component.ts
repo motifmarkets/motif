@@ -9,8 +9,8 @@ import {
     ChangeDetectorRef,
     Component,
     Injector,
-    StaticProvider,
     Type,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -74,11 +74,11 @@ export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponent
     ) {
         this._reviewContainer.clear();
 
-        const orderPadProvider: StaticProvider = {
+        const orderPadProvider: ValueProvider = {
             provide: ReviewOrderRequestComponentNgDirective.orderPadInjectionToken,
             useValue: orderPad,
         };
-        const definitionProvider: StaticProvider = {
+        const definitionProvider: ValueProvider = {
             provide: ReviewOrderRequestComponentNgDirective.definitionInjectionToken,
             useValue: definition,
         };

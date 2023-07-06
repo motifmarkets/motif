@@ -5,17 +5,15 @@
  */
 
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostBinding,
-    Input,
     OnDestroy,
     ViewChild
 } from '@angular/core';
 import { Badness, numberToPixels } from '@motifmarkets/motif-core';
-import { AdaptedRevgrid } from 'content-internal-api';
 import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -29,29 +27,28 @@ import { GridSourceFrame } from '../grid-source-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridSourceNgComponent
+export abstract class GridSourceNgComponent
     extends ContentComponentBaseNgDirective
-    implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
+    implements OnDestroy, GridSourceFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
-    @Input() frameGridProperties: AdaptedRevgrid.FrameGridSettings;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(RecordGridNgComponent, { static: true }) private _recordGridComponent: RecordGridNgComponent;
 
-    private readonly _frame: GridSourceFrame;
+    readonly frame: GridSourceFrame;
 
     constructor(
-        private readonly _cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
+        private readonly _cdr: ChangeDetectorRef,
+        elRef: ElementRef<HTMLElement>,
     ) {
         super();
 
-        this._frame = this.createGridSourceFrame(contentNgService);
+        this.frame = this.createGridSourceFrame(contentNgService, elRef.nativeElement);
     }
 
-    get frame(): GridSourceFrame { return this._frame; }
-    get gridRowHeight() { return this._frame.gridRowHeight; }
+    get gridRowHeight() { return this.frame.gridRowHeight; }
     get recordGridComponent() { return this._recordGridComponent; }
     get recordGrid() { return this._recordGridComponent.recordGrid; }
 
@@ -69,20 +66,10 @@ export class GridSourceNgComponent
         this.frame.finalise();
     }
 
-    ngAfterViewInit() {
-        this._recordGridComponent.destroyEventer = () => {
-            this.frame.finalise();
-            this._recordGridComponent.destroyGrid();
-        };
-
-        const grid = this._recordGridComponent.createGrid(this._frame.recordStore, this.frameGridProperties);
-        this._frame.setGrid(grid);
-    }
-
     // Component Access members
 
     getHeaderPlusFixedLineHeight() {
-        return this._frame.calculateHeaderPlusFixedRowsHeight();
+        return this.frame.calculateHeaderPlusFixedRowsHeight();
     }
 
     setStyleFlexBasis(value: number) {
@@ -101,9 +88,7 @@ export class GridSourceNgComponent
         this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 
-    protected createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createGridSourceFrame(this);
-    }
+    protected abstract createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement): GridSourceFrame;
 }
 
 export namespace GridSourceNgComponent {

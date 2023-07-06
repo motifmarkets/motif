@@ -14,9 +14,12 @@ import {
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     StringUiAction,
     Strings,
+    UiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
@@ -65,7 +68,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new ScansDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
@@ -146,8 +149,9 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._frame.filterText = this._filterEditUiAction.definedValue;
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent() {

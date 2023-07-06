@@ -16,13 +16,10 @@ import {
 } from '@angular/core';
 import {
     IconButtonUiAction,
-    Integer,
     InternalCommand,
     JsonElement,
     StringId,
     Strings,
-    assert,
-    assigned,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import {
@@ -30,10 +27,10 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { GridSourceNgComponent } from 'content-ng-api';
+import { BrokerageAccountsNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -48,39 +45,35 @@ import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('table', { static: true }) private _contentComponent: GridSourceNgComponent;
+    @ViewChild('brokerage-accounts', { static: true }) private _brokerageAccountsComponent: BrokerageAccountsNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     private _frame: BrokerageAccountsDitemFrame;
     private _toggleAccountLinkingUiAction: IconButtonUiAction;
 
     constructor(
         cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
         elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new BrokerageAccountsDitemFrame(
             this,
+            this.settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            textFormatterNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
-            () => this.handleGridSourceOpenedEvent(),
-            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();
@@ -110,11 +103,9 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
     // }
 
     protected override initialise() {
-        assert(assigned(this._contentComponent), 'ID:53255332');
-
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        this._frame.initialise(this._brokerageAccountsComponent.frame, frameElement);
 
         this.initialiseChildComponents(); // was previously delay1Tick
 
@@ -147,14 +138,6 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         action.pushIcon(IconButtonUiAction.IconId.AccountGroupLink);
         action.signalEvent = () => this.handleAccountLinkButtonSignalEvent();
         return action;
-    }
-
-    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
-        //
-    }
-
-    private handleGridSourceOpenedEvent() {
-        //
     }
 
     private handleAccountLinkButtonSignalEvent() {

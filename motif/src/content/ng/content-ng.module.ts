@@ -12,6 +12,8 @@ import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-r
 import {
     AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
 } from '../advert/ng-api';
+import { BalancesNgComponent } from '../balances/ng-api';
+import { BrokerageAccountsNgComponent } from '../brokerage-accounts/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
@@ -43,7 +45,6 @@ import {
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
 } from '../grid-layout-dialog/ng-api';
-import { GridSourceNgComponent } from '../grid-source/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
@@ -92,6 +93,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
 
 @NgModule({
     declarations: [
+        BalancesNgComponent,
+        BrokerageAccountsNgComponent,
         CashHoldingsNgComponent,
         ColorSchemeGridNgComponent,
         ColorSchemeItemPropertiesNgComponent,
@@ -120,7 +123,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        GridSourceNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
         OrderPadSettingsNgComponent,
@@ -172,6 +174,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         AdvertTickerNgComponent,
         AdvertWebPageNgComponent,
         BannerAdvertNgComponent,
+        BalancesNgComponent,
+        BrokerageAccountsNgComponent,
         GridLayoutEditorNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorDialogNgComponent,
@@ -190,7 +194,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        GridSourceNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
         RowDataArrayGridNgComponent,

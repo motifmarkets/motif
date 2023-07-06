@@ -271,9 +271,9 @@ export class DepthFrame extends ContentFrame {
         }
     }
 
-    autoSizeAllColumnWidths() {
-        this._bidDepthSideFrame.autoSizeAllColumnWidths();
-        this._askDepthSideFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widthOnly: boolean) {
+        this._bidDepthSideFrame.autoSizeAllColumnWidths(widthOnly);
+        this._askDepthSideFrame.autoSizeAllColumnWidths(widthOnly);
     }
 
     createAllowedFieldsAndLayoutDefinitions(): BidAskAllowedFieldsAndLayoutDefinitions {

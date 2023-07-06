@@ -36,7 +36,7 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService, pulseService: CoreNgService
     ) {
-        super(cdr, settingsNgService.settingsService, pulseService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, pulseService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureBoldCanvasContext = this._ngSelectOverlayNgService.measureBoldCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(

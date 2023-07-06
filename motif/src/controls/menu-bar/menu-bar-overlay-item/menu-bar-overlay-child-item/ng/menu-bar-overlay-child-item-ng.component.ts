@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { ColorScheme, getElementDocumentPositionRect, Line, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ColorScheme, Line, UnreachableCaseError, getElementDocumentPositionRect } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarChildItemComponentNgDirective } from '../../../ng/menu-bar-child-item-component-ng.directive';
 import { MenuBarMenuItemComponentNgDirective } from '../../../ng/menu-bar-menu-item-component-ng.directive';
@@ -23,7 +23,7 @@ export class MenuBarOverlayChildItemNgComponent extends MenuBarChildItemComponen
         settingsNgService: SettingsNgService,
         menuBarNgService: MenuBarNgService
     ) {
-        super(cdr, settingsNgService.settingsService, menuBarNgService);
+        super(cdr, settingsNgService.service, menuBarNgService);
     }
 
     @HostListener('click', []) handleClickEvent() {

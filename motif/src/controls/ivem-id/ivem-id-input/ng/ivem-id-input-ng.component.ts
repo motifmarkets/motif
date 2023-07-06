@@ -38,7 +38,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._symbolsService = symbolsNgService.service;
         this.inputId = 'IvemIdInput' + this.componentInstanceId;
     }

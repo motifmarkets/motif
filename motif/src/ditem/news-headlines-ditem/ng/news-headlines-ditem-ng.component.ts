@@ -79,9 +79,9 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new NewsHeadlinesDitemFrame(this, this.commandRegisterService,
+        this._frame = new NewsHeadlinesDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
+import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { BidAskGridLayoutDefinitions, DepthFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -14,13 +14,14 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private _componentAccess: DepthDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopInterface: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Depth, _componentAccess,
-            commandRegisterService, desktopInterface, symbolsMgr, adi
+            settingsService, commandRegisterService, desktopInterface, symbolsMgr, adi
         );
     }
 
@@ -88,8 +89,8 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         this._depthFrame.rollup(newRecordsOnly);
     }
 
-    autoSizeAllColumnWidths() {
-        this._depthFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._depthFrame.autoSizeAllColumnWidths(widenOnly);
     }
 
     createAllowedFieldsAndLayoutDefinitions() {

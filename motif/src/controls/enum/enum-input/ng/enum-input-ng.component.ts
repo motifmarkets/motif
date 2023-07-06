@@ -37,7 +37,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'EnumInput' + this.componentInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
@@ -53,7 +53,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     public customSearchFtn(term: string, item: Entry) {
         term = term.toUpperCase();
-        return item.upperCaption.indexOf(term) > -1;
+        return item.upperCaption.includes(term);
     }
 
     public handleSelectChangeEvent(event: unknown) {

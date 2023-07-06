@@ -7,16 +7,17 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
     AssertInternalError,
-    calculateIntlNumberFormatCharParts,
-    createNumberGroupCharRemoveRegex,
     DecimalUiAction,
     Integer,
-    IntlNumberFormatCharParts, isPartialIntlFormattedNumber,
-    newDecimal,
+    IntlNumberFormatCharParts,
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    calculateIntlNumberFormatCharParts,
+    createNumberGroupCharRemoveRegex,
+    isPartialIntlFormattedNumber,
+    newDecimal
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { Decimal } from 'decimal.js-light';
@@ -48,7 +49,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     private _oldSelectionEnd: Integer | null;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'DecimalInput' + this.componentInstanceId;
     }
 

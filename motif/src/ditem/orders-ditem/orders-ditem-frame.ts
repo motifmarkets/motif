@@ -134,7 +134,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
     buyFocused() {
         const focusedIndex = this._gridSourceFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
         if (focusedIndex !== undefined) {
             const order = this._recordList.records[focusedIndex];
             orderPad.loadBuyFromOrder(order);
@@ -147,7 +147,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
     sellFocused() {
         const focusedIndex = this._gridSourceFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+        const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
         if (focusedIndex !== undefined) {
             const order = this._recordList.records[focusedIndex];
             orderPad.loadSellFromOrder(order);
@@ -162,7 +162,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         const focusedIndex = this._gridSourceFrame.getFocusedRecordIndex();
         if (focusedIndex !== undefined) {
             const order = this._recordList.records[focusedIndex];
-            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
             orderPad.loadAmendFromOrder(order);
             this.desktopAccessService.editOrderRequest(orderPad);
         }
@@ -172,7 +172,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         const focusedIndex = this._gridSourceFrame.getFocusedRecordIndex();
         if (focusedIndex !== undefined) {
             const order = this._recordList.records[focusedIndex];
-            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
             orderPad.loadCancelFromOrder(order);
             this.desktopAccessService.editOrderRequest(orderPad);
         }
@@ -182,7 +182,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         const focusedIndex = this._gridSourceFrame.getFocusedRecordIndex();
         if (focusedIndex !== undefined) {
             const order = this._recordList.records[focusedIndex];
-            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adi);
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
             orderPad.loadMoveFromOrder(order);
             this.desktopAccessService.editOrderRequest(orderPad);
         }

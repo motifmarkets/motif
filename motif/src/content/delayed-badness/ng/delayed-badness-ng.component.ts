@@ -10,9 +10,9 @@ import {
     CorrectnessId,
     HtmlTypes,
     Integer,
-    mSecsPerSec,
     MultiEvent, SettingsService, TimeSpan,
-    UnreachableCaseError
+    UnreachableCaseError,
+    mSecsPerSec
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -44,7 +44,7 @@ export class DelayedBadnessNgComponent extends ContentComponentBaseNgDirective i
 
     constructor(private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super();
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
 
         this._settingsChangeSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(

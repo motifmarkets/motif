@@ -10,6 +10,7 @@ import {
     GridLayoutDefinition,
     JsonElement,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { AllowedFieldsAndLayoutDefinition, TradesFrame } from 'content-internal-api';
@@ -21,16 +22,18 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Trades, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adi
+            settingsService, commandRegisterService, desktopAccessService, symbolsMgr, adi
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._tradesFrame !== undefined; }
 
     initialise(tradesContentFrame: TradesFrame, frameElement: JsonElement | undefined): void {
@@ -76,8 +79,8 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    autoSizeAllColumnWidths() {
-        this._tradesFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._tradesFrame.autoSizeAllColumnWidths(widenOnly);
     }
 
     createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition | undefined {
@@ -85,10 +88,12 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
     }
 
     applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (!this._tradesFrame) {
             throw new Error('Condition not handled [ID:5326171853]');
+        } else {
+            this._tradesFrame.applyGridLayoutDefinition(layoutDefinition);
         }
-        this._tradesFrame.applyGridLayoutDefinition(layoutDefinition);
     }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {

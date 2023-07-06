@@ -16,13 +16,13 @@ import {
 } from '@angular/core';
 import {
     BooleanUiAction,
-    delay1Tick,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     OrderType,
     StringId,
     Strings,
-    TimeInForce
+    TimeInForce,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
@@ -47,7 +47,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     private _defaultTimeInForceIdUiAction: ExplicitElementsEnumUiAction;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService);
+        super(cdr, settingsNgService.service);
 
         this._reviewEnabledUiAction = this.createReviewEnabledUiAction();
         this._defaultOrderTypeIdUiAction = this.createDefaultOrderTypeIdUiAction();

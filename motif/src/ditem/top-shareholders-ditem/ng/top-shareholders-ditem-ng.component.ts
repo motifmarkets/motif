@@ -116,7 +116,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new TopShareholdersDitemFrame(
             this,

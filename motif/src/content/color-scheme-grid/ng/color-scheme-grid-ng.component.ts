@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
 import {
     ColorScheme,
     ColorSchemeGridField,
@@ -18,8 +18,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { AdaptedRevgrid, AdaptedRevgridGridSettings, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
-import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
+import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -29,9 +28,7 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
-    @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
-
+export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
     recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer | undefined;
     gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer | undefined;
     columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer | undefined;
@@ -48,13 +45,24 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
         super();
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._textFormatterService = textFormatterNgService.service;
         this._recordStore = new ColorSchemeGridRecordStore(this._settingsService);
+        this._grid = this.createGrid(elRef.nativeElement,);
+
+        const grid = this._grid;
+        this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, this._grid, grid.mainDataServer);
+        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.mainDataServer);
+
+        this.dataResetGrid();
+
+        this._recordStore.recordsInserted(0, this._recordStore.recordCount);
+        this.applyFilter();
     }
 
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
@@ -67,45 +75,8 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this.applyFilter();
     }
 
-    ngAfterViewInit() {
-        this._gridComponent.destroyEventer = () => {
-            this._gridComponent.destroyGrid();
-        };
-
-        const customGridSettings: Partial<AdaptedRevgridGridSettings> = {
-            mouseColumnSelection: false,
-            mouseRowSelection: false,
-            mouseRectangleSelection: false,
-            multipleSelectionAreas: false,
-            sortOnDoubleClick: false,
-            visibleColumnWidthAdjust: true,
-            fixedColumnCount: 1,
-            gridRightAligned: false,
-        };
-
-
-        const grid = this._gridComponent.createGrid(
-            this._recordStore,
-            customGridSettings,
-            () => this.getSettingsForNewColumn(),
-            () => this.getMainCellPainter(),
-            () => this.getHeaderCellPainter(),
-        );
-        this._grid = grid;
-        grid.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        grid.columnsViewWidthsChangedEventer =
-            (fixedChanged, nonFixedChanged, allChanged) => this.handleColumnsViewWidthsChangedEvent(
-                fixedChanged, nonFixedChanged, allChanged
-            );
-
-        this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
-        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.mainDataServer);
-
-        this.dataResetGrid();
-
-        this._recordStore.recordsInserted(0, this._recordStore.recordCount);
-        this.applyFilter();
+    ngOnDestroy() {
+        this._grid.destroy();
     }
 
     calculateActiveColumnsWidth() {
@@ -146,6 +117,39 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this._recordStore.invalidateRecord(recordIndex);
     }
 
+    private createGrid(gridHostElement: HTMLElement) {
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            mouseColumnSelection: false,
+            mouseRowSelection: false,
+            mouseRectangleSelection: false,
+            multipleSelectionAreas: false,
+            sortOnDoubleClick: false,
+            visibleColumnWidthAdjust: true,
+            fixedColumnCount: 1,
+            gridRightAligned: false,
+        };
+
+        const grid = new RecordGrid(
+            this._settingsService,
+            gridHostElement,
+            this._recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+        );
+
+
+        grid.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        grid.columnsViewWidthsChangedEventer =
+            (fixedChanged, nonFixedChanged, allChanged) => this.handleColumnsViewWidthsChangedEvent(
+                fixedChanged, nonFixedChanged, allChanged
+            );
+
+        return grid;
+    }
+
     private filterItems(record: RevRecord) {
         if (!this._filterActive) {
             return true;
@@ -183,8 +187,8 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this._grid.fieldsLayoutReset(fields, gridLayout);
     }
 
-    private getSettingsForNewColumn() {
-        return AdaptedRevgrid.createColumnSettings(this._grid.settings);
+    private customiseSettingsForNewColumn() {
+        // no customisation required
     }
 
     private getMainCellPainter() {

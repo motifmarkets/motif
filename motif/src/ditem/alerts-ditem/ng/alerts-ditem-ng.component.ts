@@ -70,7 +70,7 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new AlertsDitemFrame(this, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);

@@ -31,10 +31,10 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { GridSourceNgComponent } from 'content-ng-api';
+import { BalancesNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -50,14 +50,9 @@ import { BalancesDitemFrame } from '../balances-ditem-frame';
 })
 export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
 
-    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgComponent;
+    @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
@@ -66,23 +61,26 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     constructor(
         cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
         elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new BalancesDitemFrame(
             this,
+            this.settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            textFormatterNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
@@ -119,7 +117,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._gridSourceComponent.frame, frameElement);
+        this._frame.initialise(this._balancesComponent.frame, frameElement);
 
         super.initialise();
     }
@@ -151,7 +149,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 
-    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(_recordIndex: Integer | undefined) {
         //
     }
 

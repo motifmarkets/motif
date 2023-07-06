@@ -35,7 +35,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
         scansNgService: ScansNgService
     ) {
         super();
-        this.frame = contentService.createScansFrame(this, scansNgService.service);
+        this.frame = contentService.createScansFrame(scansNgService.service, this);
     }
 
     get gridSize() { return 540; }

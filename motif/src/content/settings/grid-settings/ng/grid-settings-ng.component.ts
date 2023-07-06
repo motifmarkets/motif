@@ -13,7 +13,7 @@ import {
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { assert, BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
+import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, StringUiAction, Strings, assert } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
@@ -105,7 +105,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     private readonly _scrollbarThumbInactiveOpacityUiAction: NumberUiAction;
 
     constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService);
+        super(cdr, settingsNgService.service);
 
         this._fontFamilyUiAction = this.createFontFamilyUiAction();
         this._fontSizeUiAction = this.createFontSizeUiAction();

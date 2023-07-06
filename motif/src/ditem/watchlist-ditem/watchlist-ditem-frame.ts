@@ -8,6 +8,7 @@ import {
     AdiService,
     CommandRegisterService,
     FavouriteNamedGridLayoutDefinitionReferencesService,
+    GridField,
     GridLayout,
     GridLayoutOrNamedReferenceDefinition,
     GridSourceOrNamedReferenceDefinition,
@@ -16,10 +17,19 @@ import {
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
     RankedLitIvemIdList,
+    SettingsService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService
+    TableRecordSourceDefinitionFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
-import { GridSourceFrame, WatchlistFrame } from 'content-internal-api';
+import {
+    AdaptedRevgridBehavioredColumnSettings,
+    GridSourceFrame,
+    HeaderTextCellPainter,
+    RecordGridMainTextCellPainter,
+    WatchlistFrame
+} from 'content-internal-api';
+import { DatalessViewCell } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -31,12 +41,17 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     private _litIvemIdApplying = false;
     private _currentFocusedLitIvemIdSetting = false;
 
+    private _gridHeaderCellPainter: HeaderTextCellPainter;
+    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+
     constructor(
         componentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
         private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteNamedGridLayoutDefinitionReferencesService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
@@ -45,7 +60,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         private readonly _litIvemIdAcceptedEventer: WatchlistDitemFrame.LitIvemIdAcceptedEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Watchlist, componentAccess,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
@@ -59,11 +74,15 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
         this._watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
 
+        const grid = gridSourceFrame.grid;
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this._textFormatterService, grid, grid.mainDataServer);
+
         let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
         } else {
-            const contentElementResult = frameElement.tryGetElement(WatchlistDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (contentElementResult.isErr()) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
             } else {
@@ -88,7 +107,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     override save(element: JsonElement) {
         super.save(element);
 
-        const contentElement = element.newElement(WatchlistDitemFrame.JsonName.content);
+        const contentElement = element.newElement(WatchlistDitemFrame.JsonName.watchlistFrame);
         const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinition();
         definition.saveToJson(contentElement);
     }
@@ -114,9 +133,9 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         return this._watchlistFrame.createAllowedFieldsAndLayoutDefinition();
     }
 
-    newEmpty() {
+    newEmpty(keepView: boolean) {
         const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
-        this.tryOpenGridSource(definition, false);
+        this.tryOpenGridSource(definition, keepView);
     }
 
     // saveAsPrivate() {
@@ -149,8 +168,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     //     this._gridSourceFrame.saveAsGridSource(definition);
     // }
 
-    autoSizeAllColumnWidths() {
-        this._watchlistFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._watchlistFrame.autoSizeAllColumnWidths(widenOnly);
     }
 
     tryIncludeLitIvemIds(litIvemIds: LitIvemId[], focusFirst: boolean) {
@@ -225,6 +244,18 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._litIvemIdAcceptedEventer(litIvemId);
     }
 
+    private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridHeaderCellPainter;
+    }
+
+    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridMainCellPainter;
+    }
+
     private createDefaultGridSourceOrNamedReferenceDefinition() {
         const litIvemIds: readonly LitIvemId[] = this.defaultLitIvemIds ?? [];
         const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
@@ -268,7 +299,7 @@ export namespace WatchlistDitemFrame {
     export type TableDescription = GridSourceFrame.Description;
 
     export namespace JsonName {
-        export const content = 'content';
+        export const watchlistFrame = 'watchlistFrame';
     }
 
     export type NotifySaveLayoutConfigEventHandler = (this: void) => void;

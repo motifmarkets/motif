@@ -20,6 +20,7 @@ import {
     MarketId,
     MarketInfo,
     SearchSymbolsDataDefinition,
+    SettingsService,
     StringId,
     Strings,
     SymbolField,
@@ -49,6 +50,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
@@ -56,7 +58,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsMgr, adiService
         );
 
         const defaultExchangeId = this.symbolsService.defaultExchangeId;

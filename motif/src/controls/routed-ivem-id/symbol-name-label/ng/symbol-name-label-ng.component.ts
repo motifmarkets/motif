@@ -29,7 +29,7 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsNgService);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsNgService);
 
         this._symbolDetailCacheService = symbolDetailCacheNgService.service;
     }

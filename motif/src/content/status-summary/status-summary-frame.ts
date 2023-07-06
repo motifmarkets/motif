@@ -30,8 +30,10 @@ export class StatusSummaryFrame extends ContentFrame {
     private _serverInfoFieldValuesChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _componentAccess: StatusSummaryFrame.ComponentAccess, private _adi: AdiService,
-        public readonly _sessionInfoService: SessionInfoService
+    constructor(
+        private readonly _adiService: AdiService,
+        public readonly _sessionInfoService: SessionInfoService,
+        private readonly _componentAccess: StatusSummaryFrame.ComponentAccess,
     ) {
         super();
 
@@ -86,7 +88,7 @@ export class StatusSummaryFrame extends ContentFrame {
         const dataDefinition = new ZenithExtConnectionDataDefinition();
         dataDefinition.zenithWebsocketEndpoints = this._sessionInfoService.zenithEndpoints;
 
-        this._extConnectionDataItem = this._adi.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
+        this._extConnectionDataItem = this._adiService.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
         this._extConnectionPublisherOnlineChangeSubscriptionId = this._extConnectionDataItem.subscribePublisherOnlineChangeEvent(
             () => { this.handleExtConnectionPublisherOnlineChangeEvent(); }
         );
@@ -100,12 +102,12 @@ export class StatusSummaryFrame extends ContentFrame {
         this._extConnectionPublisherOnlineChangeSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribePublisherStateChangeEvent(this._extConnectionPublisherStateChangeSubscriptionId);
         this._extConnectionPublisherStateChangeSubscriptionId = undefined;
-        this._adi.unsubscribe(this._extConnectionDataItem);
+        this._adiService.unsubscribe(this._extConnectionDataItem);
     }
 
     private subscribeZenithServerInfo() {
         const dataDefinition = new ZenithServerInfoDataDefinition();
-        this._serverInfoDataItem = this._adi.subscribe(dataDefinition) as ZenithServerInfoDataItem;
+        this._serverInfoDataItem = this._adiService.subscribe(dataDefinition) as ZenithServerInfoDataItem;
         this._serverInfoFieldValuesChangedSubscriptionId = this._serverInfoDataItem.subscribeFieldValuesChangedEvent(
             () => { this.handleServerInfoFieldValuesChangedEvent(); }
         );
@@ -120,7 +122,7 @@ export class StatusSummaryFrame extends ContentFrame {
             this._serverInfoFieldValuesChangedSubscriptionId = undefined;
             this._serverInfoDataItem.unsubscribeBadnessChangeEvent(this._serverInfoCorrectnessChangeSubscriptionId);
             this._serverInfoCorrectnessChangeSubscriptionId = undefined;
-            this._adi.unsubscribe(this._serverInfoDataItem);
+            this._adiService.unsubscribe(this._serverInfoDataItem);
             this._serverInfoDataItem = undefined;
         }
     }

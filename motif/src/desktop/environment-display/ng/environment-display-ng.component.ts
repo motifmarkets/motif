@@ -54,7 +54,7 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     ) {
         super();
 
-        this._colorSettings = settingsNgService.settingsService.color;
+        this._colorSettings = settingsNgService.service.color;
 
         this._sessionInfoService = sessionInfoNgService.service;
         this._publisherSessionTerminatedEventSubscriptionId = this._sessionInfoService.subscribePublisherSessionTerminatedChangedEvent(

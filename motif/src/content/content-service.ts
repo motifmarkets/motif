@@ -17,11 +17,11 @@ import {
     TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
-import { ContentFrame } from './content-frame';
+import { BalancesFrame } from './balances/internal-api';
+import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
-import { GridSourceFrame } from './grid-source/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { ScansFrame } from './scan/internal-api';
@@ -60,46 +60,88 @@ export class ContentService {
         return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
     }
 
-    createGridSourceFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return new GridSourceFrame(
-            componentAccess,
-            this._settingsService,
-            this._namedGridLayoutDefinitionsService,
-            this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
-        );
-    }
+    // createGridSourceFrame(
+    //     componentAccess: GridSourceFrame.ComponentAccess,
+    //     hostElement: HTMLElement,
+    //     customGridSettings: AdaptedRevgrid.CustomGridSettings,
+    //     customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+    //     getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    //     getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    // ) {
+    //     return new GridSourceFrame(
+    //         this._settingsService,
+    //         this._namedGridLayoutDefinitionsService,
+    //         this._tableRecordSourceFactoryService,
+    //         this._namedGridSourcesService,
+    //         componentAccess,
+    //         hostElement,
+    //         customGridSettings,
+    //         customiseSettingsForNewColumnEventer,
+    //         getMainCellPainterEventer,
+    //         getHeaderCellPainterEventer,
+    //     );
+    // }
 
-    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess) {
+    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
         return new WatchlistFrame(
-            componentAccess,
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
+            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
         );
     }
 
-    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {
-        return new StatusSummaryFrame(componentAccess, this._adiService, sessionInfoService);
+    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new BalancesFrame(
+            this._settingsService,
+            this._namedJsonRankedLitIvemIdListsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
+        );
     }
 
-    createDepthSideFrame(componentAccess: DepthSideFrame.ComponentAccess) {
-        return new DepthSideFrame(componentAccess);
+    createBrokerageAccountsFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new BrokerageAccountsFrame(
+            this._settingsService,
+            this._namedJsonRankedLitIvemIdListsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
+        );
+    }
+
+    createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
+        return new StatusSummaryFrame(this._adiService, sessionInfoService, componentAccess,);
+    }
+
+    createDepthSideFrame(hostElement: HTMLElement) {
+        return new DepthSideFrame(this._settingsService, this._textFormatterService, hostElement);
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return new DepthFrame(componentAccess, this._adiService);
     }
 
-    createScansFrame(componentAccess: ScansFrame.ComponentAccess, scansService: ScansService) {
-        return new ScansFrame(componentAccess, scansService, this._adiService);
+    createScansFrame(scansService: ScansService, componentAccess: ScansFrame.ComponentAccess) {
+        return new ScansFrame(this._adiService, scansService, componentAccess);
     }
 
-    createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
-        return new TradesFrame(componentAccess, this._adiService);
+    createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new TradesFrame(this._settingsService, this._adiService, this._textFormatterService, componentAccess, hostElement);
     }
 
     createPadOrderRequestStepFrame(componentAccess: PadOrderRequestStepFrame.ComponentAccess) {
@@ -112,9 +154,5 @@ export class ContentService {
 
     createReviewOrderRequestStepFrame(componentAccess: ReviewOrderRequestStepFrame.ComponentAccess) {
         return new ReviewOrderRequestStepFrame(componentAccess);
-    }
-
-    finaliseContentFrame(contentFrame: ContentFrame): void {
-        contentFrame.finalise();
     }
 }

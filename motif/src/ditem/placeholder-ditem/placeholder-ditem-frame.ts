@@ -13,6 +13,7 @@ import {
     Ok,
     PublisherId,
     Result,
+    SettingsService,
     StringId,
     Strings,
     SymbolsService
@@ -22,23 +23,25 @@ import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';
 
 export class PlaceholderDitemFrame extends BuiltinDitemFrame {
+    readonly initialised = true;
+
     private _placeheldDefinition: PlaceholderDitemFrame.Placeheld;
     private _invalidReason: string | undefined;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Placeholder,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Placeholder; }
-    get initialised() { return true; }
 
     get placeheld() { return this._placeheldDefinition; }
 

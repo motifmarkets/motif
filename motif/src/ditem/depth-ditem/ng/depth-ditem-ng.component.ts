@@ -17,8 +17,6 @@ import {
 } from '@angular/core';
 import {
     CommaText,
-    delay1Tick,
-    getErrorMessage,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -28,9 +26,11 @@ import {
     ModifierKey,
     ModifierKeyId,
     StringId,
-    Strings,
     StringUiAction,
-    UiAction
+    Strings,
+    UiAction,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsEditorDialogNgComponent, DepthNgComponent } from 'content-ng-api';
@@ -86,9 +86,9 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new DepthDitemFrame(this, this.commandRegisterService,
+        this._frame = new DepthDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
@@ -229,8 +229,9 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         }
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
@@ -389,22 +390,20 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.isLayoutEditorVisible = true;
         const layoutWithHeadings = this._frame.createAllowedFieldsAndLayoutDefinitions();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = DepthGridLayoutsEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
-            closePromise.then(
-                (layouts) => {
-                    if (layouts !== undefined) {
-                        this._frame.applyGridLayoutDefinitions(layouts);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`DepthInput Layout Editor error: ${errorText}`);
-                    this.closeLayoutEditor();
+        const closePromise = DepthGridLayoutsEditorDialogNgComponent.open(this._layoutEditorContainer, layoutWithHeadings);
+        closePromise.then(
+            (layouts) => {
+                if (layouts !== undefined) {
+                    this._frame.applyGridLayoutDefinitions(layouts);
                 }
-            );
-        }
+                this.closeLayoutEditor();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`DepthInput Layout Editor error: ${errorText}`);
+                this.closeLayoutEditor();
+            }
+        );
 
         this.markForCheck();
     }

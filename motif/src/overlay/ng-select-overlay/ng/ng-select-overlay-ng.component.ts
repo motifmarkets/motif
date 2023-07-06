@@ -9,11 +9,11 @@ import {
     AssertInternalError,
     ColorScheme,
     ColorSettings,
-    delay1Tick,
     HtmlTypes,
     MultiEvent,
-    numberToPixels,
     SettingsService,
+    delay1Tick,
+    numberToPixels,
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from 'controls-internal-api';
@@ -51,7 +51,7 @@ export class NgSelectOverlayNgComponent extends OverlayComponentBaseNgDirective 
         super();
 
         this._element = elementRef.nativeElement;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
         this._colorSettings = this._settingsService.color;
         this._ngSelectOverlayNgService.dropDownPanelClientWidthEvent =

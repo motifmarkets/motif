@@ -50,9 +50,11 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        const settingsService = settingsNgService.service;
+        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
         this._frame = new StatusDitemFrame(
             this,
+            settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,

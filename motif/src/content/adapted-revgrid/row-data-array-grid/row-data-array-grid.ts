@@ -16,7 +16,7 @@ import {
     Subgrid
 } from 'revgrid';
 import { AdaptedRevgrid } from '../adapted-revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, AdaptedRevgridGridSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
+import { AdaptedRevgridBehavioredColumnSettings } from '../settings/content-adapted-revgrid-settings-internal-api';
 import { RowDataArrayGridField } from './row-data-array-grid-field';
 
 export class RowDataArrayGrid extends AdaptedRevgrid {
@@ -31,8 +31,8 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
 
     constructor(
         settingsService: SettingsService,
-        gridElement: HTMLElement,
-        customGridSettings: Partial<AdaptedRevgridGridSettings>,
+        gridHostElement: HTMLElement,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
         createFieldEventer: SingleHeadingDataRowArrayServerSet.CreateFieldEventer<GridField>,
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
@@ -58,7 +58,7 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
                 },
             ],
         }
-        super(settingsService, gridElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
+        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
 
         this._serverSet = serverSet;
         this._schemaServer = schemaServer;

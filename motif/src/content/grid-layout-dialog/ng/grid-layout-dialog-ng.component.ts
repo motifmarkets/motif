@@ -12,14 +12,13 @@ import {
     Inject,
     Injector,
     OnDestroy,
-    StaticProvider,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     ButtonUiAction,
     CommandRegisterService,
-    delay1Tick,
     EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     GridField,
@@ -27,7 +26,8 @@ import {
     IconButtonUiAction,
     InternalCommand,
     StringId,
-    Strings
+    Strings,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -184,11 +184,11 @@ export namespace GridLayoutDialogNgComponent {
     ): GridLayoutDialogNgComponent {
         container.clear();
 
-        const allowedFieldsProvider: StaticProvider = {
+        const allowedFieldsProvider: ValueProvider = {
             provide: allowedFieldsInjectionToken,
             useValue: allowedFields,
         };
-        const layoutDefinitionProvider: StaticProvider = {
+        const layoutDefinitionProvider: ValueProvider = {
             provide: oldLayoutDefinitionInjectionToken,
             useValue: layoutDefinition,
         };

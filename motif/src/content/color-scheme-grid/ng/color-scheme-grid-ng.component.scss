@@ -4,20 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-:host {
-    height: 100%;
-    flex: 1 1 0;
-    min-height: 0;
-    width: 100%;
-}
+ @import './partials/revgrid/_revgrid-host';
 
-#grid {
-    // required because MotifGrid component uses ViewEncapsulation.None
-    display: block;
-    position: relative;
-    height: 100%;
-    width: 100%;
-    min-width: 0;
-    min-height: 0;
-    overflow-y: clip;
+:host {
+    flex: 1 1 0;
+    @include revgridHost;
 }

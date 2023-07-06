@@ -11,7 +11,7 @@ import {
     createComponent,
     createEnvironmentInjector,
     EnvironmentInjector,
-    StaticProvider,
+    ValueProvider,
     ViewChild,
     ViewContainerRef,
     ViewRef
@@ -46,11 +46,11 @@ export class MenuBarOverlayNgComponent {
     }
 
     private handleAddOverlayChildMenuEvent(childMenu: MenuBarService.ChildMenu, parentItemContactDocumentLine: Line) {
-        const childMenuProvider: StaticProvider = {
+        const childMenuProvider: ValueProvider = {
             provide: MenuBarOverlayMenuNgComponent.ChildMenuInjectionToken,
             useValue: childMenu,
         };
-        const parentItemContactDocumentLineProvider: StaticProvider = {
+        const parentItemContactDocumentLineProvider: ValueProvider = {
             provide: MenuBarOverlayMenuNgComponent.ParentItemContactDocumentLineInjectionToken,
             useValue: parentItemContactDocumentLine,
         };

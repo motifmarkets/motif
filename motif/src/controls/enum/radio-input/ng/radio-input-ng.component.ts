@@ -25,7 +25,7 @@ export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
     public radioDisabled = true;
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
         this.inputId = 'Radio' + this.componentInstanceId;
     }
 

@@ -28,6 +28,7 @@ import {
     PublisherId,
     RegisteredExtension,
     Result,
+    SettingsService,
     StringId,
     Strings,
     SymbolsService,
@@ -76,6 +77,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     constructor(
         private readonly _adiService: AdiService,
+        private readonly _settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
         private readonly _storageService: AppStorageService,
         private readonly _symbolsService: SymbolsService,
@@ -234,6 +236,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                         registration.handle,
                         frameTypeName,
                         container,
+                        this._settingsService,
                         this._commandRegisterService,
                         localDesktopFrame, // LocalDesktopAccessService
                         this._symbolsService,

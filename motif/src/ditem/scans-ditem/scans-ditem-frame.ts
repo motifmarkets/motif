@@ -8,6 +8,7 @@ import {
     AdiService,
     CommandRegisterService, JsonElement,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { ScansFrame } from 'content-internal-api';
@@ -19,16 +20,18 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     constructor(
         private _componentAccess: ScansDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopInterface: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Scans, _componentAccess,
-            commandRegisterService, desktopInterface, symbolsService, adiService
+            settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
         );
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._scansFrame !== undefined; }
 
     get filterText() { return this._scansFrame.filterText; }
@@ -72,8 +75,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     //     super.loadConstructLayoutConfig();
     // }
 
-    autoSizeAllColumnWidths() {
-        this._scansFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._scansFrame.autoSizeAllColumnWidths(widenOnly);
     }
 
 

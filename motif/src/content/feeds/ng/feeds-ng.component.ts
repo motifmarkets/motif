@@ -10,7 +10,7 @@ import {
     Component,
     inject, Injector,
     OnDestroy,
-    StaticProvider,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -70,7 +70,7 @@ export namespace FeedsNgComponent {
     export function create(container: ViewContainerRef, opener: LockOpenListItem.Opener) {
         container.clear();
 
-        const openerProvider: StaticProvider = {
+        const openerProvider: ValueProvider = {
             provide: CoreInjectionTokens.lockOpenListItemOpener,
             useValue: opener,
         };

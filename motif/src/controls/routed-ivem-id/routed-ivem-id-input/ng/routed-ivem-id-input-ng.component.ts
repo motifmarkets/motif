@@ -29,7 +29,7 @@ export class RoutedIvemIdInputNgComponent extends RoutedIvemIdComponentBaseNgDir
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
             symbolsNgService);
     }
 

@@ -4,9 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
+import { ValueProvider as AngularValueProvider, InjectionToken } from '@angular/core';
 import {
     AssertInternalError,
     Badness,
+    GridField,
     GridLayout,
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
@@ -24,11 +26,13 @@ import {
     TableRecordSourceDefinition,
     TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
-import { RevRecordMainDataServer } from 'revgrid';
-import { RecordGrid } from '../adapted-revgrid/internal-api';
+import { RevRecordMainDataServer, Subgrid } from 'revgrid';
+import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class GridSourceFrame extends ContentFrame {
+    readonly grid: RecordGrid;
+
     opener: LockOpenListItem.Opener;
     dragDropAllowed: boolean;
     keepPreviousLayoutIfPossible = false;
@@ -49,9 +53,6 @@ export class GridSourceFrame extends ContentFrame {
     private _openedGridSource: GridSource | undefined;
     private _openedTable: Table | undefined;
 
-    private _grid: RecordGrid;
-    private _gridPrepared = false;
-
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
     private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
     private _keptGridRowAnchor: RecordGrid.ViewAnchor | undefined;
@@ -64,13 +65,20 @@ export class GridSourceFrame extends ContentFrame {
     private _gridSourceGridLayoutSetSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
-        private readonly _componentAccess: GridSourceFrame.ComponentAccess,
         private readonly _settingsService: SettingsService,
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
+        private readonly _componentAccess: GridSourceFrame.ComponentAccess,
+        hostElement: HTMLElement,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
     ) {
         super();
+
+        this.grid = this.createGrid(hostElement, customGridSettings, customiseSettingsForNewColumnEventer, getMainCellPainterEventer, getHeaderCellPainterEventer);
     }
 
     get isNamed() {
@@ -85,7 +93,7 @@ export class GridSourceFrame extends ContentFrame {
             return this._openedTable;
         }
     }
-    get gridRowHeight() { return this._grid.rowHeight; }
+    get gridRowHeight() { return this.grid.rowHeight; }
     get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
 
     // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
@@ -94,13 +102,14 @@ export class GridSourceFrame extends ContentFrame {
     get recordCount(): Integer { return this._openedTable === undefined ? 0 : this._openedTable.recordCount; }
     get opened(): boolean { return this._openedTable !== undefined; }
 
-    get isFiltered(): boolean { return this._grid.isFiltered; }
-    get recordFocused() {return this._grid.recordFocused; }
+    get isFiltered(): boolean { return this.grid.isFiltered; }
+    get recordFocused() {return this.grid.recordFocused; }
 
     override finalise() {
         if (!this.finalised) {
             this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
             this.closeGridSource(false);
+            this.grid.destroy();
             super.finalise();
         }
     }
@@ -110,22 +119,22 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     calculateHeaderPlusFixedRowsHeight() {
-        return this._grid.calculateHeaderPlusFixedRowsHeight();
+        return this.grid.calculateHeaderPlusFixedRowsHeight();
     }
 
     // grid functions used by Component
 
-    setGrid(value: RecordGrid) {
-        this._grid = value;
-        this._grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
-        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+    // setGrid(value: RecordGrid) {
+    //     this.grid = value;
+    //     this.grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
+    //     this.grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+    //     this.grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
 
-        this._settingsChangedSubscriptionId =
-            this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
+    //     this._settingsChangedSubscriptionId =
+    //         this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
-        this.applySettings();
-    }
+    //     this.applySettings();
+    // }
 
     tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
         this.closeGridSource(keepView);
@@ -175,10 +184,10 @@ export class GridSourceFrame extends ContentFrame {
 
                         this._recordStore.setTable(table);
                         this._tableFieldsChangedSubscriptionId = table.subscribeFieldsChangedEvent(
-                            () => this._grid.updateAllowedFields(table.fields)
+                            () => this.grid.updateAllowedFields(table.fields)
                         );
 
-                        this._grid.fieldsLayoutReset(table.fields, layout);
+                        this.grid.fieldsLayoutReset(table.fields, layout);
 
                         if (table.beenUsable) {
                             this.applyFirstUsable();
@@ -215,8 +224,8 @@ export class GridSourceFrame extends ContentFrame {
                     this.keptGridLayoutOrNamedReferenceDefinition = undefined;
                 }
                 if (keepView) {
-                    this._keptRowOrderDefinition = this._grid.getRowOrderDefinition();
-                    this._keptGridRowAnchor = this._grid.getViewAnchor();
+                    this._keptRowOrderDefinition = this.grid.getRowOrderDefinition();
+                    this._keptGridRowAnchor = this.grid.getViewAnchor();
                 } else {
                     this._keptRowOrderDefinition = undefined;
                     this._keptGridRowAnchor = undefined;
@@ -233,7 +242,7 @@ export class GridSourceFrame extends ContentFrame {
         if (this._lockedGridSourceOrNamedReference === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
-            const rowOrderDefinition = this._grid.getRowOrderDefinition();
+            const rowOrderDefinition = this.grid.getRowOrderDefinition();
             return this._lockedGridSourceOrNamedReference.createDefinition(rowOrderDefinition);
         }
     }
@@ -255,7 +264,7 @@ export class GridSourceFrame extends ContentFrame {
     }
 
     createRowOrderDefinition() {
-        return this._grid.getRowOrderDefinition();
+        return this.grid.getRowOrderDefinition();
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
@@ -515,11 +524,11 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     getFocusedRecordIndex() {
-        return this._grid.focusedRecordIndex;
+        return this.grid.focusedRecordIndex;
     }
 
     getOrderedGridRecIndices(): Integer[] {
-        return this._grid.rowRecIndices;
+        return this.grid.rowRecIndices;
     }
 
     // end IOpener members
@@ -533,7 +542,7 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     focusItem(itemIdx: Integer) {
-        this._grid.focusedRecordIndex = itemIdx;
+        this.grid.focusedRecordIndex = itemIdx;
     }
 
     // clearRecordDefinitions() {
@@ -844,7 +853,7 @@ export class GridSourceFrame extends ContentFrame {
     }*/
 
     autoSizeAllColumnWidths(widenOnly: boolean) {
-        this._grid.autoSizeAllColumnWidths(widenOnly);
+        this.grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     // loadDefaultLayout() {
@@ -854,7 +863,7 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     createAllowedFieldsAndLayoutDefinition() {
-        return this._grid.createAllowedFieldsAndLayoutDefinition();
+        return this.grid.createAllowedFieldsAndLayoutDefinition();
     }
 
     // getGridLayout(): GridLayout {
@@ -878,11 +887,11 @@ export class GridSourceFrame extends ContentFrame {
     // }
 
     clearFilter(): void {
-        this._grid.applyFilter(undefined);
+        this.grid.applyFilter(undefined);
     }
 
     applyFilter(filter?: RevRecordMainDataServer.RecordFilterCallback): void {
-        this._grid.applyFilter(filter);
+        this.grid.applyFilter(filter);
     }
 
     protected applySettings() {
@@ -899,7 +908,7 @@ export class GridSourceFrame extends ContentFrame {
             if (newLayout === undefined) {
                 throw new AssertInternalError('GSFHGSGLCE22202');
             } else {
-                this._grid.updateGridLayout(newLayout);
+                this.grid.updateGridLayout(newLayout);
                 this.notifyGridLayoutSet(newLayout);
             }
         }
@@ -910,6 +919,41 @@ export class GridSourceFrame extends ContentFrame {
             this.gridLayoutSetEventer(layout);
         }
     }
+
+    private createGrid(
+        hostElement: HTMLElement,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    ) {
+        const grid = new RecordGrid(
+            this._settingsService,
+            hostElement,
+            this._recordStore,
+            customGridSettings,
+            customiseSettingsForNewColumnEventer,
+            getMainCellPainterEventer,
+            getHeaderCellPainterEventer,
+        );
+
+        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+
+        this._settingsChangedSubscriptionId =
+            this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
+
+        this.applySettings();
+
+        // this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridSettings);
+
+        grid.activate();
+
+        return grid;
+    }
+
+
 
     private applyFirstUsable() {
         let rowOrderDefinition = this._keptRowOrderDefinition;
@@ -923,7 +967,7 @@ export class GridSourceFrame extends ContentFrame {
         }
         const viewAnchor = this._keptGridRowAnchor;
         this._keptGridRowAnchor = undefined;
-        this._grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
+        this.grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
     }
 
     // private closeTable() {
@@ -1199,6 +1243,22 @@ export namespace GridSourceFrame {
             existsInLayoutConfigLoaded = layoutConfigLoadedNewPrivateNameSuffixIds.includes(nextNewPrivateNameSuffixId);
         } while (existsInLayoutConfigLoaded);
         return nextNewPrivateNameSuffixId;
+    }
+
+    export interface GridCreationParameters {
+        gridHostElement: HTMLElement,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    }
+
+    export namespace GridCreationParameters {
+        const tokenName = 'gridCreationParameters';
+        export const injectionToken = new InjectionToken<GridCreationParameters>(tokenName);
+        export interface ValueProvider extends AngularValueProvider {
+            useValue: GridCreationParameters;
+        }
     }
 
     export interface ComponentAccess {

@@ -5,7 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { Badness, ColorScheme, delay1Tick, MultiEvent, SettingsService, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
+import { Badness, ColorScheme, MultiEvent, SettingsService, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { DelayedBadnessNgComponent } from '../../../delayed-badness/ng-api';
@@ -53,7 +53,7 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
     ) {
         super(cdr);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );

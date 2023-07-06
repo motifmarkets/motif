@@ -12,6 +12,7 @@ import {
     JsonElement,
     JsonValue,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { DitemFrame, ExtensionDitemFrame } from 'ditem-internal-api';
@@ -54,6 +55,7 @@ export class FrameSvcImplementation implements FrameSvc, FrameApi.SvcProxy, Exte
         extensionHandle: ExtensionHandle,
         frameTypeName: string,
         private readonly _container: ComponentContainer,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
@@ -63,7 +65,7 @@ export class FrameSvcImplementation implements FrameSvc, FrameApi.SvcProxy, Exte
     ) {
         const ditemTypeId = DitemFrame.TypeId.create(extensionHandle, frameTypeName);
         this._ditemFrame = new ExtensionDitemFrame(ditemTypeId, this,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
 
         this._container.addEventListener('show', this._containerShowEventListener);

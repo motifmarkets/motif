@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { isArrayEqualUniquely, MultiEvent, OrderRoute, OrderRouteUiAction, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import { MultiEvent, OrderRoute, OrderRouteUiAction, StringId, Strings, UiAction, isArrayEqualUniquely } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
@@ -30,7 +30,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
     private _pushOrderRouteEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
     }
 
     public override get uiAction() { return super.uiAction as OrderRouteUiAction; }

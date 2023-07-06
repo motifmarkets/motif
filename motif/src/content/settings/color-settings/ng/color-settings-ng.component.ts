@@ -15,11 +15,8 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
     ColorScheme,
     CommandRegisterService,
-    delay1Tick,
-    getErrorMessage,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -28,7 +25,10 @@ import {
     ModifierKeyId,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    assert,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -72,7 +72,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService,
     ) {
-        super(cdr, settingsNgService.settingsService);
+        super(cdr, settingsNgService.service);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

@@ -62,7 +62,7 @@ export class InstalledExtensionListNgComponent extends ContentComponentBaseNgDir
         super();
 
         this._extensionsAccessService = extensionsAccessNgService.service;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );
