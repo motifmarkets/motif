@@ -136,8 +136,8 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._contentComponent.frame);
 
         this.pushFilterSelectState();
         this.pushFilterEditValue();

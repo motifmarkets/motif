@@ -30,9 +30,7 @@ import {
     AdiNgService,
     CommandRegisterNgService,
     SettingsNgService,
-    SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
-    TextFormatterNgService
+    SymbolsNgService
 } from 'component-services-ng-api';
 import { BalancesNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -67,8 +65,6 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        textFormatterNgService: TextFormatterNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
@@ -80,8 +76,6 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            textFormatterNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
@@ -116,8 +110,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._accountLinkButtonComponent.initialise(this._toggleAccountGroupLinkingUiAction);
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._balancesComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._balancesComponent.frame);
 
         super.initialise();
     }

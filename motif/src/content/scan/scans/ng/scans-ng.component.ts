@@ -21,6 +21,10 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('grid', { static: true }) private _gridComponent: RecordGridNgComponent;
     @ViewChild('scanProperties', { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
 
+    readonly gridSize = 540;
+    readonly gridMinSize = 50;
+    readonly splitterGutterSize = 3;
+
     recordFocusEventer: ScansNgComponent.RecordFocusEventer;
     gridClickEventer: ScansNgComponent.GridClickEventer;
     columnsViewWithsChangedEventer: ScansNgComponent.ColumnsViewWithsChangedEventer;
@@ -37,10 +41,6 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
         super();
         this.frame = contentService.createScansFrame(scansNgService.service, this);
     }
-
-    get gridSize() { return 540; }
-    get gridMinSize() { return 50; }
-    get splitterGutterSize() { return 3; }
 
     // get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
     // get fixedColumnsViewWidth() { return this._grid.fixedColumnsViewWidth; }

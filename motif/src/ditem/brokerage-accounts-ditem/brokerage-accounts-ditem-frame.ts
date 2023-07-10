@@ -14,9 +14,7 @@ import {
     Integer,
     JsonElement,
     SettingsService,
-    SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
-    TextFormatterService
+    SymbolsService
 } from '@motifmarkets/motif-core';
 import { BrokerageAccountsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -35,8 +33,6 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        private readonly _textFormatterService: TextFormatterService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts,
             ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -45,27 +41,44 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
     get initialised() { return this._brokerageAccountsFrame !== undefined; }
 
-    initialise(brokerageAccountsFrame: BrokerageAccountsFrame, frameElement: JsonElement | undefined) {
+    initialise(ditemFrameElement: JsonElement | undefined, brokerageAccountsFrame: BrokerageAccountsFrame) {
         this._brokerageAccountsFrame = brokerageAccountsFrame;
+
+        brokerageAccountsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex)
+
+        let brokerageAccountsFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const brokerageAccountsFrameElementResult = ditemFrameElement.tryGetElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
+            if (brokerageAccountsFrameElementResult.isOk()) {
+                brokerageAccountsFrameElement = brokerageAccountsFrameElementResult.value;
+            }
+        }
+
         brokerageAccountsFrame.initialise(
-            frameElement,
             this.opener,
-            (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex)
+            brokerageAccountsFrameElement,
+            false,
         );
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
+    override finalise() {
+        if (this._brokerageAccountsFrame !== undefined) {
+            this._brokerageAccountsFrame.finalise();
+        }
+        super.finalise();
+    }
 
-        const contentElement = element.newElement(BrokerageAccountsDitemFrame.JsonName.content);
-        const gridSourceFrame = this._brokerageAccountsFrame;
-        if (gridSourceFrame === undefined) {
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        const brokerageAccountsFrame = this._brokerageAccountsFrame;
+        if (brokerageAccountsFrame === undefined) {
             throw new AssertInternalError('BADFS50789');
         } else {
-            const definition = gridSourceFrame.createGridSourceOrNamedReferenceDefinition();
-            definition.saveToJson(contentElement);
+            const brokerageAccountsFrameElement = ditemFrameElement.newElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
+            brokerageAccountsFrame.save(brokerageAccountsFrameElement);
         }
     }
 
@@ -134,6 +147,6 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
 export namespace BrokerageAccountsDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const brokerageAccountsFrame = 'brokerageAccountsFrame';
     }
 }

@@ -28,8 +28,7 @@ import {
     UiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { SplitComponent } from 'angular-split';
-import { IOutputData } from 'angular-split/lib/interface';
+import { IOutputData, SplitComponent } from 'angular-split';
 import {
     AdiNgService,
     CommandRegisterNgService,
@@ -40,7 +39,7 @@ import {
     TextFormatterNgService
 } from 'component-services-ng-api';
 import { GridSourceFrameGridParametersService } from 'content-internal-api';
-import { GridSourceNgComponent } from 'content-ng-api';
+import { BalancesNgComponent, HoldingsNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -52,13 +51,12 @@ import { HoldingsDitemFrame } from '../holdings-ditem-frame';
     selector: 'app-holdings-ditem',
     templateUrl: './holdings-ditem-ng.component.html',
     styleUrls: ['./holdings-ditem-ng.component.scss'],
-    providers: [ { provide: GridSourceFrameGridParametersService.injectionToken, useValue: {}}],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
-    @ViewChild('balancesTable', { static: true }) private _balancesTableComponent: GridSourceNgComponent;
-    @ViewChild('holdingsTable', { static: true }) private _holdingsTableComponent: GridSourceNgComponent;
+    @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
+    @ViewChild('holdings', { static: true }) private _holdingsComponent: HoldingsNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
@@ -103,7 +101,6 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             textFormatterNgService.service,
             symbolDetailCacheNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
-            gridParametersService,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex),
         );
@@ -174,12 +171,12 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._holdingsTableComponent.frame, this._balancesTableComponent.frame, frameElement);
+        this._frame.initialise(this._holdingsComponent.frame, this._balancesComponent.frame, frameElement);
 
         if (!this._explicitBalancesHeight) {
-            const gridRowHeight = this._balancesTableComponent.gridRowHeight;
-            const gridHeaderHeight = this._balancesTableComponent.getHeaderPlusFixedLineHeight();
-            const gridHorizontalScrollbarMarginedHeight = this._balancesTableComponent.gridHorizontalScrollbarMarginedHeight;
+            const gridRowHeight = this._balancesComponent.gridRowHeight;
+            const gridHeaderHeight = this._balancesComponent.getHeaderPlusFixedLineHeight();
+            const gridHorizontalScrollbarMarginedHeight = this._balancesComponent.gridHorizontalScrollbarMarginedHeight;
             this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarMarginedHeight;
             this.markForCheck();
         }

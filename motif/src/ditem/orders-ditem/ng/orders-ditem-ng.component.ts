@@ -40,8 +40,7 @@ import {
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
+import { NameableGridLayoutEditorDialogNgComponent, OrdersNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -57,7 +56,7 @@ import { OrdersDitemFrame } from '../orders-ditem-frame';
 })
 export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
 
-    @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
+    @ViewChild('orders', { static: true }) private _ordersComponent: OrdersNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('buyButton', { static: true }) private _buyButtonComponent: SvgButtonNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
@@ -69,11 +68,6 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _buyUiAction: IconButtonUiAction;
@@ -141,7 +135,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     protected get stateSchemaVersion() { return OrdersDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
-        assert(assigned(this._tableComponent), 'OICNAVI33885');
+        assert(assigned(this._ordersComponent), 'OICNAVI33885');
 
         delay1Tick(() => this.initialise());
     }
@@ -187,7 +181,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._tableComponent.frame, frameElement);
+        this._frame.initialise(frameElement, this._ordersComponent.frame);
 
         this.pushAmendCancelButtonState(this._frame.focusedRecordIndex);
 

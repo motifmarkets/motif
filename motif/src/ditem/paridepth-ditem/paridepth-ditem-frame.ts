@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
@@ -64,16 +65,18 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._depthFrame = depthFrame;
         this._tradesFrame = tradesFrame;
 
+        this._watchlistFrame.fixedRowCount = 1;
+
         if (frameElement === undefined) {
-            this._watchlistFrame.initialise(undefined, true, 1);
+            this._watchlistFrame.initialise(this.opener, undefined, true);
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
         } else {
             const watchlistElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isErr()) {
-                this._watchlistFrame.initialise(undefined, true, 1);
+                this._watchlistFrame.initialise(this.opener, undefined, true);
             } else {
-                this._watchlistFrame.initialise(watchlistElementResult.value, true, 1);
+                this._watchlistFrame.initialise(this.opener, watchlistElementResult.value, true);
             }
 
             const tradesElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);
@@ -143,7 +146,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this._componentAccess.notifyOpenedClosed(litIvemId, undefined);
 
             const [bidOpePopulatedSuccess, askOpenPopulatedSuccess] = await this._depthFrame.waitOpenPopulated();
-            if (bidOpePopulatedSuccess === true && askOpenPopulatedSuccess === true) {
+            if (bidOpePopulatedSuccess && askOpenPopulatedSuccess) {
                 const [bidModelUpdateId, askModelUpdateId] = await this._depthFrame.waitRendered();
                 if (bidModelUpdateId >= lowestValidModelUpdateId && askModelUpdateId >= lowestValidModelUpdateId) {
                     this.checkAutoAdjustOpenWidths();
@@ -212,7 +215,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             return false;
         } else {
             this._componentAccess.pushSymbol(litIvemId);
-            this.open();
+            const promise = this.open();
+            promise.then(
+                () => {/**/},
+                (error) => { throw AssertInternalError.createIfNotError(error, 'PDFALII22297'); }
+            )
             return true;
         }
     }

@@ -15,6 +15,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     ColorScheme,
     CommandRegisterService,
     IconButtonUiAction,
@@ -47,7 +48,7 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('leftAndRightDiv', { static: true }) private _leftAndRightDiv: ElementRef;
+    @ViewChild('leftAndRightDiv', { static: true }) private _leftAndRightDiv: ElementRef<HTMLElement>;
     @ViewChild('grid', { static: true }) private _gridComponent: ColorSchemeGridNgComponent;
     @ViewChild('saveSchemeButton', { static: true }) private _saveSchemeButton: SvgButtonNgComponent;
     @ViewChild('itemProperties', { static: true }) private _itemPropertiesComponent: ColorSchemeItemPropertiesNgComponent;
@@ -150,11 +151,14 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
         this._resizeObserver.observe(this._leftAndRightDiv.nativeElement);
-        this._gridComponent.waitRendered().then((success) => {
-            if (success) {
-                this.updateWidths();
-            }
-        });
+        this._gridComponent.waitRendered().then(
+            (success) => {
+                if (success) {
+                    this.updateWidths();
+                }
+            },
+            (error) => { throw AssertInternalError.createIfNotError(error, 'CSNCI21199'); }
+        );
 
         this.processSettingsChanged();
     }
@@ -216,6 +220,6 @@ export namespace ColorSettingsNgComponent {
         container.clear();
         const componentRef = container.createComponent(ColorSettingsNgComponent);
         assert(componentRef.instance instanceof ColorSettingsNgComponent, 'CSCC909553');
-        return componentRef.instance as ColorSettingsNgComponent;
+        return componentRef.instance;
     }
 }

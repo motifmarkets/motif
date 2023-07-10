@@ -72,8 +72,6 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            textFormatterNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
         );
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();
@@ -104,8 +102,8 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
 
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._brokerageAccountsComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._brokerageAccountsComponent.frame);
 
         this.initialiseChildComponents(); // was previously delay1Tick
 

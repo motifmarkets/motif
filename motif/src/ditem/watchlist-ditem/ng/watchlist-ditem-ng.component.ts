@@ -208,7 +208,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._watchlistComponent.frame, frameElement);
+        this._frame.initialise(frameElement, this._watchlistComponent.frame);
 
         this._symbolEditComponent.focus();
 

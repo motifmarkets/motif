@@ -16,6 +16,7 @@ import {
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
+    JsonElement,
     LockOpenListItem,
     MultiEvent,
     NamedGridLayoutsService,
@@ -24,13 +25,14 @@ import {
     Table,
     TableGridRecordStore,
     TableRecordSourceDefinition,
+    TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
 import { RevRecordMainDataServer, Subgrid } from 'revgrid';
 import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
-export class GridSourceFrame extends ContentFrame {
+export abstract class GridSourceFrame extends ContentFrame {
     readonly grid: RecordGrid;
 
     opener: LockOpenListItem.Opener;
@@ -39,12 +41,6 @@ export class GridSourceFrame extends ContentFrame {
     keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
 
     gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer | undefined;
-    recordFocusedEventer: GridSourceFrame.RecordFocusedEventer | undefined;
-    gridClickEventer: GridSourceFrame.GridClickEventer | undefined;
-    gridDblClickEventer: GridSourceFrame.GridDblClickEventer | undefined;
-    // requireDefaultTableDefinitionEvent: GridSourceFrame.RequireDefaultTableDefinitionEvent;
-    // tableOpenEvent: GridSourceFrame.TableOpenEvent;
-    // tableOpenChangeEvent: TableFrame.TableOpenChangeEvent;
 
     private readonly _recordStore = new TableGridRecordStore();
     private readonly _opener: LockOpenListItem.Opener;
@@ -67,6 +63,7 @@ export class GridSourceFrame extends ContentFrame {
     constructor(
         private readonly _settingsService: SettingsService,
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
+        protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
         private readonly _componentAccess: GridSourceFrame.ComponentAccess,
@@ -79,6 +76,8 @@ export class GridSourceFrame extends ContentFrame {
         super();
 
         this.grid = this.createGrid(hostElement, customGridSettings, customiseSettingsForNewColumnEventer, getMainCellPainterEventer, getHeaderCellPainterEventer);
+        this.applySettings();
+        this.grid.activate();
     }
 
     get isNamed() {
@@ -104,6 +103,50 @@ export class GridSourceFrame extends ContentFrame {
 
     get isFiltered(): boolean { return this.grid.isFiltered; }
     get recordFocused() {return this.grid.recordFocused; }
+
+    initialise(
+        opener: LockOpenListItem.Opener,
+        frameElement: JsonElement | undefined,
+        keepPreviousLayoutIfPossible: boolean,
+    ) {
+        this.opener = opener;
+
+        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
+        if (frameElement === undefined) {
+            gridSourceOrNamedReferenceDefinition = this.getDefaultGridSourceOrNamedReferenceDefinition();
+        } else {
+            // If definition exists, load that
+            const definitionElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
+            if (definitionElementResult.isOk()) {
+                const definition = this.tryCreateGridSourceOrNamedReferenceDefinitionFromJson(definitionElementResult.value);
+                if (definition === undefined) {
+                    gridSourceOrNamedReferenceDefinition = this.getDefaultGridSourceOrNamedReferenceDefinition();
+                } else {
+                    gridSourceOrNamedReferenceDefinition = definition;
+                }
+            } else {
+                // If layout exists, then create default and load layout
+                gridSourceOrNamedReferenceDefinition = this.getDefaultGridSourceOrNamedReferenceDefinition();
+                if (gridSourceOrNamedReferenceDefinition.canUpdateGridLayoutDefinitionOrNamedReference()) {
+                    const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
+                    if (layoutElementResult.isOk()) {
+                        const layoutDefinitionResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(layoutElementResult.value);
+                        if (layoutDefinitionResult.isOk()) {
+                            gridSourceOrNamedReferenceDefinition.updateGridLayoutDefinitionOrNamedReference(layoutDefinitionResult.value);
+                        }
+                    }
+                }
+            }
+        }
+
+        this.keepPreviousLayoutIfPossible = keepPreviousLayoutIfPossible;
+        if (keepPreviousLayoutIfPossible) {
+            this.keptGridLayoutOrNamedReferenceDefinition = gridSourceOrNamedReferenceDefinition.gridSourceDefinition?.gridLayoutOrNamedReferenceDefinition;
+        }
+
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+    }
+
 
     override finalise() {
         if (!this.finalised) {
@@ -135,6 +178,19 @@ export class GridSourceFrame extends ContentFrame {
 
     //     this.applySettings();
     // }
+
+    save(frameElement: JsonElement) {
+        const definitionElement = frameElement.newElement(GridSourceFrame.JsonName.definition);
+        const definition = this.createGridSourceOrNamedReferenceDefinition();
+        definition.saveToJson(definitionElement);
+    }
+
+    saveLayout(element: JsonElement) {
+        const keptLayoutElement = element.newElement(GridSourceFrame.JsonName.layout);
+        const layoutDefinition = this.createGridLayoutOrNamedReferenceDefinition();
+        layoutDefinition.saveToJson(keptLayoutElement);
+    }
+
 
     tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
         this.closeGridSource(keepView);
@@ -199,6 +255,9 @@ export class GridSourceFrame extends ContentFrame {
                         }
 
                         this.notifyGridLayoutSet(layout);
+
+                        this.processGridSourceOpenedEvent(gridSourceOrNamedReference)
+
                         return gridSourceOrNamedReference;
                     }
                 }
@@ -362,24 +421,6 @@ export class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFCRD89981');
         } else {
             return this._openedTable.createRecordDefinition(index);
-        }
-    }
-
-    handleRecordFocusedEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
-        if (this.recordFocusedEventer !== undefined) {
-            this.recordFocusedEventer(newRecordIndex, oldRecordIndex);
-        }
-    }
-
-    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-        if (this.gridClickEventer !== undefined) {
-            this.gridClickEventer(fieldIndex, recordIndex);
-        }
-    }
-
-    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-        if (this.gridDblClickEventer !== undefined) {
-            this.gridDblClickEventer(fieldIndex, recordIndex);
         }
     }
 
@@ -894,6 +935,22 @@ export class GridSourceFrame extends ContentFrame {
         this.grid.applyFilter(filter);
     }
 
+    protected processGridSourceOpenedEvent(gridSourceOrNamedReference: GridSourceOrNamedReference) {
+        // can be overridden by descendants
+    }
+
+    protected processRecordFocusedEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+        // can be overridden by descendants
+    }
+
+    protected processGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        // can be overridden by descendants
+    }
+
+    protected processGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        // can be overridden by descendants
+    }
+
     protected applySettings() {
         if (this._openedTable !== undefined) {
             this._openedTable.clearRendering();
@@ -920,6 +977,19 @@ export class GridSourceFrame extends ContentFrame {
         }
     }
 
+    private tryCreateGridSourceOrNamedReferenceDefinitionFromJson(definitionElement: JsonElement): GridSourceOrNamedReferenceDefinition | undefined {
+        const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
+            this.tableRecordSourceDefinitionFactoryService,
+            definitionElement,
+        );
+        if (definitionResult.isErr()) {
+            // show error toast
+            return undefined;
+        } else {
+            return definitionResult.value;
+        }
+    }
+
     private createGrid(
         hostElement: HTMLElement,
         customGridSettings: AdaptedRevgrid.CustomGridSettings,
@@ -937,18 +1007,12 @@ export class GridSourceFrame extends ContentFrame {
             getHeaderCellPainterEventer,
         );
 
-        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
-        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.processRecordFocusedEvent(newRecordIndex, oldRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.processGridClickEvent(fieldIndex, recordIndex);
+        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.processGridDblClickEvent(fieldIndex, recordIndex);
 
         this._settingsChangedSubscriptionId =
             this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
-
-        this.applySettings();
-
-        // this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridSettings);
-
-        grid.activate();
 
         return grid;
     }
@@ -1182,14 +1246,14 @@ export class GridSourceFrame extends ContentFrame {
     //         }
     //     }
     // }
+
+    protected abstract getDefaultGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition;
 }
 
 export namespace GridSourceFrame {
     export type SettingsApplyEventer = (this: void) => void;
+    export type GetDefaultGridSourceOrNamedReferenceDefinitionEventer = (this: void) => GridSourceOrNamedReferenceDefinition;
     export type GridLayoutSetEventer = (this: void, layout: GridLayout) => void;
-    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) => void;
-    export type GridClickEventer = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
-    export type GridDblClickEventer = (this: void, fieldIndex: Integer, recordIndex: Integer) => void;
     // export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
     // export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
     // export type TableOpenChangeEvent = (this: void, opened: boolean) => void;
@@ -1206,6 +1270,8 @@ export namespace GridSourceFrame {
     export type FirstUsableEventer = (this: void) => void;
 
     export namespace JsonName {
+        export const definition = 'definition';
+        export const layout = 'layout';
         export const table = 'table';
         export const tableId = 'tableId';
         export const privateTable = 'privateTable';

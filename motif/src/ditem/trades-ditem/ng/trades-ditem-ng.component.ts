@@ -136,8 +136,15 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         assert(assigned(this._contentComponent), 'ID:4817161157');
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        let tradesFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
+            if (tradesFrameElementResult.isOk()) {
+                tradesFrameElement = tradesFrameElementResult.value;
+            }
+        }
+        this._frame.initialise(tradesFrameElement, this._contentComponent.frame);
 
         this.initialiseComponents();
 

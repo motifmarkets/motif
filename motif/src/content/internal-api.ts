@@ -14,6 +14,8 @@ export * from './depth-side/internal-api';
 export * from './depth/internal-api';
 export * from './extensions/internal-api';
 export * from './feeds/internal-api';
+export * from './holdings/internal-api';
+export * from './orders/internal-api';
 // export * from './grid-layout-dialog/internal-api';
 export * from './grid-layout-editor-dialog-definition';
 export * from './grid-source/internal-api';

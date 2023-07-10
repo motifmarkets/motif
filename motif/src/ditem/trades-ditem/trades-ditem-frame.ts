@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     GridLayoutDefinition,
     JsonElement,
@@ -18,7 +19,7 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class TradesDitemFrame extends BuiltinDitemFrame {
-    private _tradesFrame: TradesFrame;
+    private _tradesFrame: TradesFrame | undefined;
 
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
@@ -36,40 +37,53 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._tradesFrame !== undefined; }
 
-    initialise(tradesContentFrame: TradesFrame, frameElement: JsonElement | undefined): void {
-        this._tradesFrame = tradesContentFrame;
+    initialise(ditemFrameElement: JsonElement | undefined, tradesFrame: TradesFrame): void {
+        this._tradesFrame = tradesFrame;
 
-        if (frameElement === undefined) {
-            this._tradesFrame.initialise(undefined);
-        } else {
-            const contentElementResult = frameElement.tryGetElement(TradesDitemFrame.JsonName.content);
-            if (contentElementResult.isErr()) {
-                this._tradesFrame.initialise(undefined);
-            } else {
-                this._tradesFrame.initialise(contentElementResult.value);
+        let tradesFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
+            if (tradesFrameElementResult.isOk()) {
+                tradesFrameElement = tradesFrameElementResult.value;
             }
         }
+        this._tradesFrame.initialise(tradesFrameElement);
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
+    override finalise() {
+        if (this._tradesFrame !== undefined) {
+            this._tradesFrame.finalise();
+        }
+        super.finalise();
+    }
 
-        const contentElement = element.newElement(TradesDitemFrame.JsonName.content);
-        this._tradesFrame.saveLayoutToConfig(contentElement);
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFS44407');
+        } else {
+            const tradesFrameElement = ditemFrameElement.newElement(TradesDitemFrame.JsonName.tradesFrame);
+            this._tradesFrame.saveLayoutToConfig(tradesFrameElement);
+        }
     }
 
     open() {
-        const litIvemId = this.litIvemId;
-        if (litIvemId === undefined) {
-            this._tradesFrame.close();
-            this._componentAccess.notifyOpenedClosed(undefined, undefined);
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFO44407');
         } else {
-            const historicalDate = this._componentAccess.getHistoricalDate();
-            this._tradesFrame.open(litIvemId, historicalDate);
+            const litIvemId = this.litIvemId;
+            if (litIvemId === undefined) {
+                this._tradesFrame.close();
+                this._componentAccess.notifyOpenedClosed(undefined, undefined);
+            } else {
+                const historicalDate = this._componentAccess.getHistoricalDate();
+                this._tradesFrame.open(litIvemId, historicalDate);
 
-            this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
+                this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
+            }
         }
     }
 
@@ -80,16 +94,23 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
     }
 
     autoSizeAllColumnWidths(widenOnly: boolean) {
-        this._tradesFrame.autoSizeAllColumnWidths(widenOnly);
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFASACW44407');
+        } else {
+            this._tradesFrame.autoSizeAllColumnWidths(widenOnly);
+        }
     }
 
     createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition | undefined {
-        return this._tradesFrame?.createAllowedFieldsAndLayoutDefinition();
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFCAFALD44407');
+        } else {
+            return this._tradesFrame.createAllowedFieldsAndLayoutDefinition();
+        }
     }
 
     applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (!this._tradesFrame) {
+        if (this._tradesFrame === undefined) {
             throw new Error('Condition not handled [ID:5326171853]');
         } else {
             this._tradesFrame.applyGridLayoutDefinition(layoutDefinition);
@@ -110,7 +131,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
 
 export namespace TradesDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const tradesFrame = 'tradesFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;

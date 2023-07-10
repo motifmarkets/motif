@@ -45,6 +45,7 @@ import {
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
 } from '../grid-layout-dialog/ng-api';
+import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
@@ -59,6 +60,7 @@ import {
     ReviewOrderRequestZenithMessageNgComponent,
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
+import { OrdersNgComponent } from '../orders/ng-api';
 import { ParidepthGridLayoutsEditorDialogNgComponent } from '../paridepth-grid-layouts-editor-dialog/ng-api';
 import {
     CriteriaScanPropertiesSectionNgComponent,
@@ -114,8 +116,10 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorColumnPropertiesNgComponent,
         GridLayoutEditorColumnsNgComponent,
         GridLayoutEditorSearchGridNgComponent,
+        HoldingsNgComponent,
         IvemHoldingsNgComponent,
         MarketsNgComponent,
+        OrdersNgComponent,
         PadOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
         ParidepthGridLayoutsEditorDialogNgComponent,
@@ -184,8 +188,10 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         FeedsNgComponent,
         GridLayoutEditorNgComponent,
         GridLayoutDialogNgComponent,
+        HoldingsNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
+        OrdersNgComponent,
         PadOrderRequestStepNgComponent,
         ReviewOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,

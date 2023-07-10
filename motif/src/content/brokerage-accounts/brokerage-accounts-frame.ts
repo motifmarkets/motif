@@ -9,11 +9,10 @@ import {
     BrokerageAccountTableRecordSource,
     GridField,
     GridSourceDefinition,
+    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    JsonElement,
     KeyedCorrectnessList,
-    LockOpenListItem,
     NamedGridLayoutsService,
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListsService,
@@ -27,7 +26,7 @@ import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGr
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class BrokerageAccountsFrame extends GridSourceFrame {
-    gridSourceOpenedEventer: BrokerageAccountsFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: BrokerageAccountsFrame.RecordFocusedEventer | undefined
 
     private _recordSource: BrokerageAccountTableRecordSource;
     private _recordList: KeyedCorrectnessList<Account>;
@@ -40,7 +39,7 @@ export class BrokerageAccountsFrame extends GridSourceFrame {
         private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
         componentAccess: GridSourceFrame.ComponentAccess,
@@ -49,6 +48,7 @@ export class BrokerageAccountsFrame extends GridSourceFrame {
         super(
             settingsService,
             namedGridLayoutsService,
+            tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
             componentAccess,
@@ -66,50 +66,24 @@ export class BrokerageAccountsFrame extends GridSourceFrame {
 
     get recordList() { return this._recordList; }
 
-    initialise(element: JsonElement | undefined, opener: LockOpenListItem.Opener, recordFocusedEventer: GridSourceFrame.RecordFocusedEventer) {
-        this.opener = opener;
-        this.recordFocusedEventer = recordFocusedEventer;
-
-        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
-        if (element === undefined) {
-            gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-        } else {
-            const contentElementResult = element.tryGetElement(BrokerageAccountsFrameJsonName.brokerageAccountsFrame);
-            if (contentElementResult.isErr()) {
-                gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-            } else {
-                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService,
-                    contentElementResult.value,
-                );
-                if (definitionResult.isOk()) {
-                    gridSourceOrNamedReferenceDefinition = definitionResult.value;
-                } else {
-                    gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-                    // Temporary error toast
-                }
-            }
-        }
-        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-
-        this.applySettings();
+    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
     }
 
-    override tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
-        const gridSourceOrNamedReference = super.tryOpenGridSource(definition, keepView);
-        if (gridSourceOrNamedReference !== undefined) {
-            const table = this.openedTable;
-            this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
-            this._recordList = this._recordSource.recordList;
-            if (this.gridSourceOpenedEventer !== undefined) {
-                this.gridSourceOpenedEventer();
-            }
-        }
-        return gridSourceOrNamedReference;
+    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+        const table = this.openedTable;
+        this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
+        this._recordList = this._recordSource.recordList;
     }
 
-    private createDefaultGridSourceOrNamedReferenceDefinition() {
-        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createBrokerageAccount();
+    protected override processRecordFocusedEvent(newRecordIndex: Integer | undefined, _oldRecordIndex: Integer | undefined) {
+        if (this.recordFocusedEventer !== undefined) {
+            this.recordFocusedEventer(newRecordIndex);
+        }
+    }
+
+    private createDefaultLayoutGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBrokerageAccount();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
@@ -135,9 +109,5 @@ export namespace BrokerageAccountsFrame {
     export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
 
     }
-}
-
-namespace BrokerageAccountsFrameJsonName {
-    export const brokerageAccountsFrame = 'brokerageAccountsFrame';
 }
 

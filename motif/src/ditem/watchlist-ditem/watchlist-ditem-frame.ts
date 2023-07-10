@@ -6,15 +6,14 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     FavouriteNamedGridLayoutDefinitionReferencesService,
-    GridField,
     GridLayout,
     GridLayoutOrNamedReferenceDefinition,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
-    JsonRankedLitIvemIdListDefinition,
     LitIvemId,
     RankedLitIvemIdList,
     SettingsService,
@@ -23,26 +22,19 @@ import {
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import {
-    AdaptedRevgridBehavioredColumnSettings,
     GridSourceFrame,
-    HeaderTextCellPainter,
-    RecordGridMainTextCellPainter,
     WatchlistFrame
 } from 'content-internal-api';
-import { DatalessViewCell } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class WatchlistDitemFrame extends BuiltinDitemFrame {
     defaultLitIvemIds: readonly LitIvemId[] | undefined;
 
-    private _watchlistFrame: WatchlistFrame;
+    private _watchlistFrame: WatchlistFrame | undefined;
 
     private _litIvemIdApplying = false;
     private _currentFocusedLitIvemIdSetting = false;
-
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
     constructor(
         componentAccess: DitemFrame.ComponentAccess,
@@ -64,78 +56,92 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         );
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._watchlistFrame !== undefined; }
-    get recordFocused() { return this._watchlistFrame.recordFocused; }
+    // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+    get recordFocused() { return this._watchlistFrame !== undefined && this._watchlistFrame.recordFocused; }
 
-    initialise(gridSourceFrame: WatchlistFrame, frameElement: JsonElement | undefined): void {
-        this._watchlistFrame = gridSourceFrame;
-        this._watchlistFrame.opener = this.opener;
-        this._watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
+    initialise(ditemFrameElement: JsonElement | undefined, watchlistFrame: WatchlistFrame): void {
+        this._watchlistFrame = watchlistFrame;
+        watchlistFrame.defaultLitIvemIds = this.defaultLitIvemIds;
+        watchlistFrame.gridSourceOpenedEventer = this._gridSourceOpenedEventer;
+        watchlistFrame.gridLayoutSetEventer = this._gridLayoutSetEventer;
+        watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
+        watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
 
-        const grid = gridSourceFrame.grid;
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this._textFormatterService, grid, grid.mainDataServer);
 
-        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
-        if (frameElement === undefined) {
-            gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-        } else {
-            const contentElementResult = frameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
-            if (contentElementResult.isErr()) {
-                gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-            } else {
-                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService,
-                    contentElementResult.value,
-                );
-                if (definitionResult.isOk()) {
-                    gridSourceOrNamedReferenceDefinition = definitionResult.value;
-                } else {
-                    gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-                    // Temporary error toast
-                }
+        let watchlistFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+            if (watchlistFrameElementResult.isOk()) {
+                watchlistFrameElement = watchlistFrameElementResult.value;
             }
         }
 
-        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        watchlistFrame.initialise(
+            this.opener,
+            watchlistFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
+    override finalise() {
+        if (this._watchlistFrame !== undefined) {
+            this._watchlistFrame.finalise();
+        }
+        super.finalise();
+    }
 
-        const contentElement = element.newElement(WatchlistDitemFrame.JsonName.watchlistFrame);
-        const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinition();
-        definition.saveToJson(contentElement);
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFS10174');
+        } else {
+            const watchlistFrameElement = ditemFrameElement.newElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+            this._watchlistFrame.save(watchlistFrameElement);
+        }
     }
 
     tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
-        const gridSourceOrNamedReference = this._watchlistFrame.tryOpenGridSource(definition, keepView);
-        if (gridSourceOrNamedReference !== undefined) {
-            const rankedLitIvemIdListName = this._watchlistFrame.lockedNamedRankedLitIvemIdList?.name;
-            this.updateLockerName(rankedLitIvemIdListName ?? '');
-            this._gridSourceOpenedEventer(this._watchlistFrame.lockedRankedLitIvemIdList, rankedLitIvemIdListName);
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFTOGS10174');
+        } else {
+            this._watchlistFrame.tryOpenGridSource(definition, keepView);
         }
     }
 
     saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
-        this._watchlistFrame.saveGridSourceAs(as);
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFSGSA10174');
+        } else {
+            this._watchlistFrame.saveGridSourceAs(as);
+        }
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
-        this._watchlistFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFOGLONRD10174');
+        } else {
+            this._watchlistFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
     }
 
     createAllowedFieldsAndLayoutDefinition() {
-        return this._watchlistFrame.createAllowedFieldsAndLayoutDefinition();
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFCAFALD10174');
+        } else {
+            return this._watchlistFrame.createAllowedFieldsAndLayoutDefinition();
+        }
     }
 
     newEmpty(keepView: boolean) {
-        const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
-        this.tryOpenGridSource(definition, keepView);
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFNE10174');
+        } else {
+            return this._watchlistFrame.newEmpty(keepView);
+        }
     }
 
     // saveAsPrivate() {
@@ -169,7 +175,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     // }
 
     autoSizeAllColumnWidths(widenOnly: boolean) {
-        this._watchlistFrame.autoSizeAllColumnWidths(widenOnly);
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFASACW10174');
+        } else {
+            this._watchlistFrame.autoSizeAllColumnWidths(widenOnly);
+        }
     }
 
     tryIncludeLitIvemIds(litIvemIds: LitIvemId[], focusFirst: boolean) {
@@ -181,7 +191,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             } else {
                 this._litIvemIdApplying = true;
                 try {
-                    return this._watchlistFrame.addLitIvemIds(litIvemIds, focusFirst);
+                    if (this._watchlistFrame === undefined) {
+                        throw new AssertInternalError('WDFTILII10174');
+                    } else {
+                        return this._watchlistFrame.addLitIvemIds(litIvemIds, focusFirst);
+                    }
                 } finally {
                     this._litIvemIdApplying = false;
                 }
@@ -190,11 +204,19 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     }
 
     canDeleteRecord() {
-        return this._watchlistFrame.userCanRemove;
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFCDR10174');
+        } else {
+            return this._watchlistFrame.userCanRemove;
+        }
     }
 
     deleteFocusedRecord() {
-        this._watchlistFrame.deleteFocusedRecord();
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFDFR10174');
+        } else {
+            this._watchlistFrame.deleteFocusedRecord();
+        }
     }
 
 
@@ -205,16 +227,20 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             let result: boolean;
             this._litIvemIdApplying = true;
             try {
-                const focused = this._watchlistFrame.tryFocus(litIvemId, selfInitiated);
-
-                if (focused) {
-                    result = super.applyLitIvemId(litIvemId, selfInitiated);
+                if (this._watchlistFrame === undefined) {
+                    throw new AssertInternalError('WDFALI10174');
                 } else {
-                    result = false;
-                }
+                    const focused = this._watchlistFrame.tryFocus(litIvemId, selfInitiated);
 
-                if (result && selfInitiated) {
-                    this.notifyLitIvemIdAccepted(litIvemId);
+                    if (focused) {
+                        result = super.applyLitIvemId(litIvemId, selfInitiated);
+                    } else {
+                        result = false;
+                    }
+
+                    if (result && selfInitiated) {
+                        this.notifyLitIvemIdAccepted(litIvemId);
+                    }
                 }
             } finally {
                 this._litIvemIdApplying = false;
@@ -224,10 +250,19 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
+    private handleGridSourceOpenedEvent(rankedLitIvemIdList: RankedLitIvemIdList, rankedLitIvemIdListName: string | undefined) {
+        this.updateLockerName(rankedLitIvemIdListName ?? '');
+        this._gridSourceOpenedEventer(rankedLitIvemIdList, rankedLitIvemIdListName);
+    }
+
+    private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const litIvemId = this._watchlistFrame.getAt(newRecordIndex).litIvemId;
-            this.processLitIvemIdFocusChange(litIvemId);
+            if (this._watchlistFrame === undefined) {
+                throw new AssertInternalError('WDFHRFE10174');
+            } else {
+                const litIvemId = this._watchlistFrame.getAt(newRecordIndex).litIvemId;
+                this.processLitIvemIdFocusChange(litIvemId);
+            }
         }
         this._recordFocusedEventer(newRecordIndex);
     }
@@ -244,30 +279,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         this._litIvemIdAcceptedEventer(litIvemId);
     }
 
-    private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
-        // no customisation
-    }
-
-    private getGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
-        return this._gridHeaderCellPainter;
-    }
-
-    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
-        return this._gridMainCellPainter;
-    }
-
-    private createDefaultGridSourceOrNamedReferenceDefinition() {
-        const litIvemIds: readonly LitIvemId[] = this.defaultLitIvemIds ?? [];
-        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
-        return this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
-    }
-
-    private createEmptyGridSourceOrNamedReferenceDefinition() {
-        const litIvemIds: readonly LitIvemId[] = [];
-        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
-        return this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
-    }
-
     private processLitIvemIdFocusChange(newFocusedLitIvemId: LitIvemId) {
         if (!this._litIvemIdApplying) {
             this._currentFocusedLitIvemIdSetting = true;
@@ -279,14 +290,14 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private checkConfirmPrivateWatchListCanBeDiscarded(): boolean {
-        if (this._watchlistFrame.isNamed || this._watchlistFrame.recordCount === 0) {
-            return true;
-        } else {
-            return true;
-            // todo
-        }
-    }
+    // private checkConfirmPrivateWatchListCanBeDiscarded(): boolean {
+    //     if (this._watchlistFrame.isNamed || this._watchlistFrame.recordCount === 0) {
+    //         return true;
+    //     } else {
+    //         return true;
+    //         // todo
+    //     }
+    // }
 
     // private openRecordDefinitionList(listId: Guid, keepCurrentLayout: boolean) {
     //     const portfolioTableDefinition = this._tablesService.definitionFactory.createPortfolioFromId(listId);

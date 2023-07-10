@@ -36,8 +36,7 @@ import {
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
-import { SplitComponent } from 'angular-split';
-import { IOutputData } from 'angular-split/lib/interface';
+import { IOutputData, SplitComponent } from 'angular-split';
 import {
     AdiNgService,
     CommandRegisterNgService,
@@ -45,7 +44,6 @@ import {
     SymbolsNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
 import { DepthNgComponent, ParidepthGridLayoutsEditorDialogNgComponent, TradesNgComponent, WatchlistNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import {
@@ -80,18 +78,13 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('historicalDateInput', { static: true }) private _historicalTradesDateInput: DateInputNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('depthTradesDiv', { static: true }) private _depthTradesDiv: ElementRef;
+    @ViewChild('depthTradesDiv', { static: true }) private _depthTradesDiv: ElementRef<HTMLElement>;
     @ViewChild('depth', { static: true }) private _depthComponent: DepthNgComponent;
     @ViewChild('trades', { static: true }) private _tradesComponent: TradesNgComponent;
     @ViewChild('watchlist', { static: true }) private _watchlistComponent: WatchlistNgComponent;
     @ViewChild(SplitComponent) private _depthTradesSplitComponent: SplitComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;
-
-    public readonly watchListFrameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 1,
-        gridRightAligned: false,
-    };
 
     public splitterGutterSize = 3;
     public depthWidth: AngularSplitTypes.AreaSize.Html = 200; // pushed
@@ -131,6 +124,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
         this._frame = new ParidepthDitemFrame(
             this,
+            this.settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,
@@ -496,7 +490,11 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         // this._commandBarComponent.addCommandProcessor(this._frame.depthCommandProcessor);
         // this._commandBarComponent.addCommandProcessor(this._frame.dayTradesCommandProcessor);
 
-        this._frame.open();
+        const promise = this._frame.open();
+        promise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'PDNCICC49677'); }
+        );
     }
 
     private commitSymbol(typeId: UiAction.CommitTypeId) {
@@ -525,12 +523,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private pushFilterEditValue() {
         const filterXrefs = this._frame.filterXrefs;
-        let value: string;
-        if (filterXrefs === undefined) {
-            value = '';
-        } else {
-            value = CommaText.fromStringArray(filterXrefs);
-        }
+        const value = CommaText.fromStringArray(filterXrefs);
         this._filterEditUiAction.pushValue(value);
     }
 
@@ -552,22 +545,20 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._modeId = ParidepthDitemNgComponent.ModeId.LayoutDialog;
         const allowedFieldsAndLayoutDefinitions = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        if (allowedFieldsAndLayoutDefinitions !== undefined) {
-            const closePromise = ParidepthGridLayoutsEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinitions);
-            closePromise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._frame.applyGridLayoutDefinitions(layoutOrReferenceDefinition);
-                    }
-                    this.closeDialog();
-                },
-                (reason) => {
-                    const errorText = getErrorMessage(reason);
-                    Logger.logError(`ParidepthInput Layout Editor error: ${errorText}`);
-                    this.closeDialog();
+        const closePromise = ParidepthGridLayoutsEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinitions);
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.applyGridLayoutDefinitions(layoutOrReferenceDefinition);
                 }
-            );
-        }
+                this.closeDialog();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`ParidepthInput Layout Editor error: ${errorText}`);
+                this.closeDialog();
+            }
+        );
 
 
         this.markForCheck();

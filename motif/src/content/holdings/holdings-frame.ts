@@ -5,13 +5,13 @@
  */
 
 import {
-    Balances,
-    BalancesTableRecordSource,
     BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
+    Holding,
+    HoldingTableRecordSource,
     Integer,
     KeyedCorrectnessList,
     NamedGridLayoutsService,
@@ -26,12 +26,12 @@ import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
-export class BalancesFrame extends GridSourceFrame {
-    gridSourceOpenedEventer: BalancesFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: BalancesFrame.RecordFocusedEventer | undefined
+export class HoldingsFrame extends GridSourceFrame {
+    gridSourceOpenedEventer: HoldingsFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: HoldingsFrame.RecordFocusedEventer | undefined
 
-    private _recordSource: BalancesTableRecordSource;
-    private _recordList: KeyedCorrectnessList<Balances>;
+    private _recordSource: HoldingTableRecordSource;
+    private _recordList: KeyedCorrectnessList<Holding>;
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
@@ -75,18 +75,18 @@ export class BalancesFrame extends GridSourceFrame {
     }
 
     createDefaultLayoutGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBalances(brokerageAccountGroup);
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createHolding(brokerageAccountGroup);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(BalancesFrame.defaultBrokerageAccountGroup);
+        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(HoldingsFrame.defaultBrokerageAccountGroup);
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
         const table = this.openedTable;
-        this._recordSource = table.recordSource as BalancesTableRecordSource;
+        this._recordSource = table.recordSource as HoldingTableRecordSource;
         this._recordList = this._recordSource.recordList;
         const brokerageAccountGroup = this._recordSource.brokerageAccountGroup;
         if (this.gridSourceOpenedEventer !== undefined) {
@@ -114,7 +114,7 @@ export class BalancesFrame extends GridSourceFrame {
 }
 
 
-export namespace BalancesFrame {
+export namespace HoldingsFrame {
     export type GridSourceOpenedEventer = (this: void, brokerageAccountGroup: BrokerageAccountGroup) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 
@@ -124,4 +124,3 @@ export namespace BalancesFrame {
 
     export const defaultBrokerageAccountGroup = BrokerageAccountGroup.createAll();
 }
-

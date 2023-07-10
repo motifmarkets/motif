@@ -22,8 +22,10 @@ import { BalancesFrame } from '../balances/internal-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
 import { FeedsFrame } from '../feeds/internal-api';
+import { HoldingsFrame } from '../holdings/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
+import { OrdersFrame } from '../orders/internal-api';
 import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
@@ -38,9 +40,9 @@ export class ContentNgService {
 
     constructor(
         settingsNgService: SettingsNgService,
-        symbolsNgService: SymbolsNgService,
         appStorageNgService: AppStorageNgService,
         adiNgService: AdiNgService,
+        symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
         namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
@@ -50,9 +52,9 @@ export class ContentNgService {
     ) {
         this._content = new ContentService(
             settingsNgService.service,
-            symbolsNgService.service,
             appStorageNgService.service,
             adiNgService.service,
+            symbolsNgService.service,
             textFormatterNgService.service,
             namedJsonRankedLitIvemIdListsNgService.service,
             namedGridLayoutDefinitionsNgService.service,
@@ -96,12 +98,20 @@ export class ContentNgService {
         return this._content.createWatchlistFrame(componentAccess, hostElement);
     }
 
-    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createBalancesFrame(componentAccess, hostElement);
-    }
-
     createBrokerageAccountsFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createBrokerageAccountsFrame(componentAccess, hostElement);
+    }
+
+    createOrdersFrame(componentAccess: OrdersFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createOrdersFrame(componentAccess, hostElement);
+    }
+
+    createHoldingsFrame(componentAccess: HoldingsFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createHoldingsFrame(componentAccess, hostElement);
+    }
+
+    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createBalancesFrame(componentAccess, hostElement);
     }
 
     createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {

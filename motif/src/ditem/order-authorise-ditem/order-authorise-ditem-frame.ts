@@ -31,8 +31,6 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
-    private static readonly defaultActiveAccountGroup = BrokerageAccountGroup.createAll();
-
     private readonly _coreSettings: CoreSettings;
 
     private _gridSourceFrame: GridSourceFrame;
@@ -78,15 +76,11 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             if (contentElementResult.isErr()) {
                 gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
             } else {
-                const definitionResult = GridSourceOrNamedReferenceDefinition.tryCreateFromJson(
-                    this._tableRecordSourceDefinitionFactoryService,
-                    contentElementResult.value,
-                );
-                if (definitionResult.isOk()) {
-                    gridSourceOrNamedReferenceDefinition = definitionResult.value;
-                } else {
+                const definition = this.tryCreateGridSourceOrNamedReferenceDefinitionFromJson(element);
+                if (definition === undefined) {
                     gridSourceOrNamedReferenceDefinition = this.createDefaultGridSourceOrNamedReferenceDefinition();
-                    // Temporary error toast
+                } else {
+                    gridSourceOrNamedReferenceDefinition = definition;
                 }
             }
         }

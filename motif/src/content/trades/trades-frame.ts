@@ -72,12 +72,12 @@ export class TradesFrame extends ContentFrame {
 
     get opened() { return this._dataItem !== undefined; }
 
-    initialise(element: JsonElement | undefined) {
+    initialise(tradesFrameElement: JsonElement | undefined) {
         let gridLayout: GridLayout;
-        if (element === undefined) {
+        if (tradesFrameElement === undefined) {
             gridLayout = this.createDefaultGridLayout();
         } else {
-            const tryGetElementResult = element.tryGetElement(TradesFrame.JsonName.layout);
+            const tryGetElementResult = tradesFrameElement.tryGetElement(TradesFrame.JsonName.layout);
             if (tryGetElementResult.isErr()) {
                 gridLayout = this.createDefaultGridLayout();
             } else {

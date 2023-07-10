@@ -11,9 +11,9 @@ import {
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
+    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
     NamedGridLayoutsService,
@@ -36,6 +36,10 @@ import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGr
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class WatchlistFrame extends GridSourceFrame {
+    defaultLitIvemIds: readonly LitIvemId[] | undefined;
+
+    gridSourceOpenedEventer: WatchlistFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: WatchlistFrame.RecordFocusedEventer | undefined
     saveRequiredEventer: WatchlistFrame.SaveRequiredEventer | undefined;
 
     private _litIvemIdList: RankedLitIvemIdList;
@@ -50,7 +54,7 @@ export class WatchlistFrame extends GridSourceFrame {
         private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
         componentAccess: GridSourceFrame.ComponentAccess,
@@ -59,6 +63,7 @@ export class WatchlistFrame extends GridSourceFrame {
         super(
             settingsService,
             namedGridLayoutsService,
+            tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
             componentAccess,
@@ -80,23 +85,17 @@ export class WatchlistFrame extends GridSourceFrame {
     get userCanRemove() { return this._litIvemIdList.userCanRemove; }
     get lockedNamedRankedLitIvemIdList() { return this._recordSource.lockedNamedRankedLitIvemIdList; }
     get lockedRankedLitIvemIdList() { return this._recordSource.lockedRankedLitIvemIdList; }
-
-    initialise(element: JsonElement | undefined, keepPreviousLayoutIfPossible: boolean, fixedRowCount: Integer | undefined) {
-        if (element !== undefined) {
-            const keptLayoutElementResult = element.tryGetElement(WatchlistFrame.WatchlistJsonName.keptLayout);
-            if (keptLayoutElementResult.isOk()) {
-                const keptLayoutElement = keptLayoutElementResult.value;
-                const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
-                if (keptLayoutResult.isOk()) {
-                    this.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
-                }
-            }
+    get fixedRowCount() { return this._fixedRowCount; }
+    set fixedRowCount(value: Integer | undefined) {
+        if (value !== this._fixedRowCount) {
+            this._fixedRowCount = value;
+            this.updateFlexBasis();
         }
-        this.keepPreviousLayoutIfPossible = keepPreviousLayoutIfPossible;
+    }
 
-        this._fixedRowCount = fixedRowCount;
-
-        this.applySettings();
+    newEmpty(keepView: boolean) {
+        const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
+        this.tryOpenGridSource(definition, keepView);
     }
 
     createGridSourceOrNamedReferenceDefinitionFromList(
@@ -105,7 +104,7 @@ export class WatchlistFrame extends GridSourceFrame {
         rowOrderDefinition: GridRowOrderDefinition | undefined,
     ) {
         const listOrNamedReferenceDefinition = new RankedLitIvemIdListOrNamedReferenceDefinition(listDefinition);
-        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
             listOrNamedReferenceDefinition
         );
         const gridSourceDefinition = new GridSourceDefinition(
@@ -114,16 +113,6 @@ export class WatchlistFrame extends GridSourceFrame {
             rowOrderDefinition,
         );
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-    }
-
-    override tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
-        const gridSourceOrNamedReference = super.tryOpenGridSource(definition, keepView);
-        if (gridSourceOrNamedReference !== undefined) {
-            const table = this.openedTable;
-            this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
-            this._litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
-        }
-        return gridSourceOrNamedReference;
     }
 
     saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
@@ -175,12 +164,6 @@ export class WatchlistFrame extends GridSourceFrame {
         );
 
         this.tryOpenGridSource(definition, true);
-    }
-
-    saveLayout(element: JsonElement) {
-        const keptLayoutElement = element.newElement(WatchlistFrame.WatchlistJsonName.keptLayout);
-        const layoutDefinition = this.createGridLayoutOrNamedReferenceDefinition();
-        layoutDefinition.saveToJson(keptLayoutElement);
     }
 
     getAt(index: Integer) {
@@ -253,13 +236,26 @@ export class WatchlistFrame extends GridSourceFrame {
     protected override applySettings() {
         super.applySettings();
 
-        if (this._fixedRowCount !== undefined) {
-            // process settings change here to ensure grid has been updated
-            const rowHeight = this.gridRowHeight * this._fixedRowCount;
-            const headerHeight = this.calculateHeaderPlusFixedRowsHeight();
-            const gridHorizontalScrollbarMarginedHeight = this.gridHorizontalScrollbarMarginedHeight;
-            const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
-            this.setFlexBasis(height);
+        this.updateFlexBasis();
+    }
+
+    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createGridSourceOrNamedReferenceDefinitionFromLitIvemIds(this.defaultLitIvemIds);
+    }
+
+    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+        const table = this.openedTable;
+        this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
+        const litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
+        this._litIvemIdList = litIvemIdList;
+        if (this.gridSourceOpenedEventer !== undefined) {
+            this.gridSourceOpenedEventer(litIvemIdList, this._recordSource.lockedNamedRankedLitIvemIdList?.name);
+        }
+    }
+
+    protected override processRecordFocusedEvent(newRecordIndex: Integer | undefined, _oldRecordIndex: Integer | undefined) {
+        if (this.recordFocusedEventer !== undefined) {
+            this.recordFocusedEventer(newRecordIndex);
         }
     }
 
@@ -267,6 +263,21 @@ export class WatchlistFrame extends GridSourceFrame {
         if (this.saveRequiredEventer !== undefined) {
             this.saveRequiredEventer();
         }
+    }
+
+    private createGridSourceOrNamedReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[] | undefined) {
+        if (litIvemIds === undefined) {
+            return this.createEmptyGridSourceOrNamedReferenceDefinition();
+        } else {
+            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
+            return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
+        }
+    }
+
+    private createEmptyGridSourceOrNamedReferenceDefinition() {
+        const litIvemIds: readonly LitIvemId[] = [];
+        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(litIvemIds);
+        return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
@@ -279,6 +290,17 @@ export class WatchlistFrame extends GridSourceFrame {
 
     private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
+    }
+
+    private updateFlexBasis() {
+        if (this._fixedRowCount !== undefined) {
+            // process settings change here to ensure grid has been updated
+            const rowHeight = this.gridRowHeight * this._fixedRowCount;
+            const headerHeight = this.calculateHeaderPlusFixedRowsHeight();
+            const gridHorizontalScrollbarMarginedHeight = this.gridHorizontalScrollbarMarginedHeight;
+            const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
+            this.setFlexBasis(height);
+        }
     }
 
     private indexOfRecordByLitIvemId(litIvemId: LitIvemId): Integer {
@@ -296,6 +318,12 @@ export class WatchlistFrame extends GridSourceFrame {
 
 
 export namespace WatchlistFrame {
+    export type GridSourceOpenedEventer = (
+        this: void,
+        rankedLitIvemIdList: RankedLitIvemIdList,
+        rankedLitIvemIdListName: string | undefined
+    ) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
     export type SaveRequiredEventer = (this: void) => void;
 
     export namespace WatchlistJsonName {
