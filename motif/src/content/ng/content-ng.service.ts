@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { LockOpenListItem, ScansService, SessionInfoService } from '@motifmarkets/motif-core';
+import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -18,18 +18,14 @@ import {
     TableRecordSourceFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
-import { BalancesFrame } from '../balances/internal-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
-import { FeedsFrame } from '../feeds/internal-api';
-import { HoldingsFrame } from '../holdings/internal-api';
+import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
-import { OrdersFrame } from '../orders/internal-api';
 import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
-import { WatchlistFrame } from '../watchlist/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
 @Injectable({
@@ -68,8 +64,8 @@ export class ContentNgService {
         return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
-        return this._content.createFeedsFrame(componentAccess, opener);
+    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createFeedsFrame(componentAccess, hostElement);
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -94,23 +90,23 @@ export class ContentNgService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createWatchlistFrame(componentAccess, hostElement);
     }
 
-    createBrokerageAccountsFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createBrokerageAccountsFrame(componentAccess, hostElement);
     }
 
-    createOrdersFrame(componentAccess: OrdersFrame.ComponentAccess, hostElement: HTMLElement) {
+    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createOrdersFrame(componentAccess, hostElement);
     }
 
-    createHoldingsFrame(componentAccess: HoldingsFrame.ComponentAccess, hostElement: HTMLElement) {
+    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createHoldingsFrame(componentAccess, hostElement);
     }
 
-    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createBalancesFrame(componentAccess, hostElement);
     }
 

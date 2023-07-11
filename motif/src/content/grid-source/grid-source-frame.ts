@@ -60,6 +60,8 @@ export abstract class GridSourceFrame extends ContentFrame {
     private _tableFirstUsableSubscriptionId: MultiEvent.SubscriptionId;
     private _gridSourceGridLayoutSetSubscriptionId: MultiEvent.SubscriptionId;
 
+    private _openedTableBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
+
     constructor(
         private readonly _settingsService: SettingsService,
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
@@ -254,9 +256,14 @@ export abstract class GridSourceFrame extends ContentFrame {
                             });
                         }
 
+                        this._openedTableBadnessChangeSubscriptionId = this._openedTable.subscribeBadnessChangeEvent(
+                            () => this.handleOpenedTableBadnessChangeEvent()
+                        );
+                        this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);
+
                         this.notifyGridLayoutSet(layout);
 
-                        this.processGridSourceOpenedEvent(gridSourceOrNamedReference)
+                        this.processGridSourceOpenedEvent(gridSourceOrNamedReference);
 
                         return gridSourceOrNamedReference;
                     }
@@ -267,12 +274,17 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     closeGridSource(keepView: boolean) {
         if (this._lockedGridSourceOrNamedReference !== undefined) {
-            if (this._openedTable === undefined || this._openedGridSource === undefined) {
+            const openedTable = this._openedTable;
+            if (openedTable === undefined || this._openedGridSource === undefined) {
                 throw new AssertInternalError('GSF22209');
             } else {
-                this._openedTable.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
+                if (this._openedTableBadnessChangeSubscriptionId !== undefined) {
+                    openedTable.unsubscribeBadnessChangeEvent(this._openedTableBadnessChangeSubscriptionId);
+                    this._openedTableBadnessChangeSubscriptionId = undefined;
+                }
+                openedTable.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
                 this._tableFieldsChangedSubscriptionId = undefined;
-                this._openedTable.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
+                openedTable.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId); // may not be subscribed
                 this._tableFirstUsableSubscriptionId = undefined;
                 this._tableFieldsChangedSubscriptionId = undefined;
                 this._openedGridSource.unsubscribeGridLayoutSetEvent(this._gridSourceGridLayoutSetSubscriptionId);
@@ -957,6 +969,15 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
+    private handleOpenedTableBadnessChangeEvent() {
+        if (this._openedTable === undefined) {
+            throw new AssertInternalError('GSFHOTBCE11109');
+        } else {
+            const badness = this._openedTable.badness;
+            this._componentAccess.setBadness(badness);
+        }
+    }
+
     private handleGridSourceGridLayoutSetEvent() {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFHGSGLSE22209');
@@ -1016,8 +1037,6 @@ export abstract class GridSourceFrame extends ContentFrame {
 
         return grid;
     }
-
-
 
     private applyFirstUsable() {
         let rowOrderDefinition = this._keptRowOrderDefinition;

@@ -329,8 +329,4 @@ export namespace WatchlistFrame {
     export namespace WatchlistJsonName {
         export const keptLayout = 'keptLayout';
     }
-
-    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
-
-    }
 }

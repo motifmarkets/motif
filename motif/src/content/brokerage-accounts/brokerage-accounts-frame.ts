@@ -105,9 +105,5 @@ export class BrokerageAccountsFrame extends GridSourceFrame {
 export namespace BrokerageAccountsFrame {
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
     export type GridSourceOpenedEventer = (this: void) => void;
-
-    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
-
-    }
 }
 

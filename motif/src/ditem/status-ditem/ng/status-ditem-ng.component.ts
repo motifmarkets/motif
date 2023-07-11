@@ -100,6 +100,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     // component access methods
     public loadConstructLayoutConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
+            // no code
         }
     }
 
@@ -146,7 +147,8 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = true;
         this.zenithActive = false;
-        FeedsNgComponent.create(this._statusContainer, this._frame.opener);
+        const component = FeedsNgComponent.create(this._statusContainer);
+        component.frame.initialise(this._frame.opener, undefined, true);
         this.markForCheck();
     }
 

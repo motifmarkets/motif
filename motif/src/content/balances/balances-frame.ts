@@ -118,10 +118,6 @@ export namespace BalancesFrame {
     export type GridSourceOpenedEventer = (this: void, brokerageAccountGroup: BrokerageAccountGroup) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 
-    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
-
-    }
-
     export const defaultBrokerageAccountGroup = BrokerageAccountGroup.createAll();
 }
 

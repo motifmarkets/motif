@@ -6,7 +6,8 @@
 
 import {
     AdiService,
-    AppStorageService, LockOpenListItem, NamedGridLayoutsService,
+    AppStorageService,
+    NamedGridLayoutsService,
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListsService,
     ScansService,
@@ -22,6 +23,7 @@ import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
+import { GridSourceFrame } from './grid-source/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
@@ -50,11 +52,16 @@ export class ContentService {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess, opener: LockOpenListItem.Opener) {
+    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new FeedsFrame(
-            componentAccess,
+            this._settingsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
-            opener
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
         );
     }
 
@@ -84,7 +91,7 @@ export class ContentService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new WatchlistFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -98,7 +105,7 @@ export class ContentService {
         );
     }
 
-    createBrokerageAccountsFrame(componentAccess: WatchlistFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new BrokerageAccountsFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -112,7 +119,7 @@ export class ContentService {
         );
     }
 
-    createOrdersFrame(componentAccess: OrdersFrame.ComponentAccess, hostElement: HTMLElement) {
+    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new OrdersFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -126,7 +133,7 @@ export class ContentService {
         );
     }
 
-    createHoldingsFrame(componentAccess: HoldingsFrame.ComponentAccess, hostElement: HTMLElement) {
+    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new HoldingsFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -140,7 +147,7 @@ export class ContentService {
         );
     }
 
-    createBalancesFrame(componentAccess: BalancesFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new BalancesFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
