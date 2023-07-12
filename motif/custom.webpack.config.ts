@@ -139,9 +139,9 @@ function updateRules(config: webpack.WebpackOptionsNormalized, development: bool
     }
 }
 
-function excludeSvgButtonIconFolderFromModuleRules(rules: (webpack.RuleSetRule | '...')[]) {
+function excludeSvgButtonIconFolderFromModuleRules(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     rules.forEach((rule) => {
-        if (typeof rule !== 'string') {
+        if (typeof rule === 'object' && rule !== null) {
             const test = rule.test;
             if (test !== undefined) {
                 if (!test.toString().includes('svg')) {
@@ -168,7 +168,7 @@ function excludeSvgButtonIconFolderFromModuleRule(rule: webpack.RuleSetRule) {
     rule.exclude = [rule.exclude, svgButtonIconsFolderPath];
 }
 
-function addIconSpriteModuleRule(rules: (webpack.RuleSetRule | '...')[]) {
+function addIconSpriteModuleRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     const rule: webpack.RuleSetRule = {
         test: /\.svg$/,
         loader: 'svg-sprite-loader',
@@ -180,7 +180,7 @@ function addIconSpriteModuleRule(rules: (webpack.RuleSetRule | '...')[]) {
     rules.push(rule);
 }
 
-function addSourceMapLoaderRule(rules: (webpack.RuleSetRule | '...')[]) {
+function addSourceMapLoaderRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     const rule: webpack.RuleSetRule = {
         test: /\.js$/,
         enforce: 'pre',

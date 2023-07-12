@@ -5,7 +5,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { NgModule, forwardRef } from '@angular/core';
+import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
 import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
@@ -215,8 +215,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
     imports: [
         CommonModule,
         AngularSplitModule,
-        ControlsNgModule,
-        forwardRef(() => ContentNgModule)
+        ControlsNgModule
     ]
 })
 
