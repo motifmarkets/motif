@@ -7,9 +7,7 @@
 <app-delayed-badness #delayedBadness></app-delayed-badness>
 <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
     <as-split-area id="gridArea" [size]="gridSize" [minSize]="gridMinSize">
-        <div id="gridDiv">
-            <app-record-grid #grid id="grid"></app-record-grid>
-        </div>
+        <app-scan-list #scanList id="scanList"></app-scan-list>
     </as-split-area>
     <as-split-area id="propertiesArea" [size]="null"> <!-- was size="*"-->
         <app-scan-properties #scanProperties id="scanProperties"></app-scan-properties>

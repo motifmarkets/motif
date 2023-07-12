@@ -48,8 +48,7 @@ import {
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { GridSourceNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
+import { NameableGridLayoutEditorDialogNgComponent, SearchSymbolsNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionLabelNgComponent,
@@ -120,7 +119,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     @ViewChild('topNextButton', { static: true }) private _topNextButtonComponent: ButtonInputNgComponent;
 
     // Query Search results
-    @ViewChild('table', { static: true }) private _tableComponent: GridSourceNgComponent;
+    @ViewChild('searchSymbols', { static: true }) private _searchSymbolsComponent: SearchSymbolsNgComponent;
 
     // Bottom Query page indicator
     @ViewChild('bottomPageLabel', { static: true }) private _bottomPageLabel: CaptionLabelNgComponent;
@@ -130,11 +129,6 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     @ViewChild('bottomNextButton', { static: true }) private _bottomNextButtonComponent: ButtonInputNgComponent;
 
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     public readonly exchangeRadioName: string;
     public readonly indicesRadioName: string;
@@ -194,6 +188,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
         this._frame = new SearchSymbolsDitemFrame(
             this,
+            this.settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             symbolsNgService.service,
@@ -324,7 +319,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._tableComponent.frame, frameElement);
+        this._frame.initialise(frameElement, this._searchSymbolsComponent.frame);
 
         super.initialise();
     }

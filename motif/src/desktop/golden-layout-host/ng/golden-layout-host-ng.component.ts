@@ -435,6 +435,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     }
 
     private parseGoldenLayoutComponentType(value: JsonValue): Result<DitemComponent.Definition> {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (value === undefined) {
             throw new AssertInternalError('GLHCPGLCTU98983333');
         } else {
@@ -442,7 +443,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 if (value === null) {
                     throw new AssertInternalError('GLHCPGLCTN98983333');
                 } else {
-                    throw new AssertInternalError('GLHCPGLCTJ98983333', value.toString());
+                    throw new AssertInternalError('GLHCPGLCTJ98983333', JSON.stringify(value).toString());
                 }
             } else {
                 const jsonElement = new JsonElement(value);
@@ -474,6 +475,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         const componentTypeName = componentDefinition.componentTypeName;
         const componentRef = this._ditemComponentFactoryNgService.createComponent(componentTypeName, container);
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
             this._componentsViewContainerRef.insert(componentRef.hostView);
         } else {
@@ -489,6 +491,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective>) {
         const hostView = componentRef.hostView;
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
             const viewRefIndex = this._componentsViewContainerRef.indexOf(hostView);
             if (viewRefIndex < 0) {

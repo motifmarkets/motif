@@ -5,6 +5,7 @@
  */
 
 export * from './properties/ng-api';
+export * from './scan-list/ng-api';
 export * from './scan-new/ng-api';
 export * from './scan-type-description/ng-api';
 export * from './scan-types-controls/ng-api';

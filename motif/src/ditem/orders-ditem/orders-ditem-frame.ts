@@ -9,7 +9,6 @@ import {
     AdiService,
     AssertInternalError,
     BrokerageAccountGroup,
-    BrokerageAccountGroupRecordList,
     CommandRegisterService,
     CoreSettings,
     GridLayoutOrNamedReferenceDefinition,
@@ -31,7 +30,6 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     private readonly _coreSettings: CoreSettings;
 
     private _ordersFrame: OrdersFrame | undefined;
-    private _recordList: BrokerageAccountGroupRecordList<Order>;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
@@ -55,7 +53,6 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
-    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._ordersFrame !== undefined; }
     get focusedRecordIndex() { return this._ordersFrame?.getFocusedRecordIndex(); }
 
@@ -243,7 +240,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
     private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
             if (this._ordersFrame === undefined) {
-                throw new AssertInternalError('BDFHGSOE29974');
+                throw new AssertInternalError('ODFHGSOE29974');
             } else {
                 const order = this._ordersFrame.recordList.getAt(newRecordIndex);
                 this.processOrderFocusChange(order);

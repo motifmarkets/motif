@@ -5,8 +5,6 @@
  */
 
 import {
-    Balances,
-    BalancesTableRecordSource,
     BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
@@ -17,6 +15,8 @@ import {
     NamedGridLayoutsService,
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListsService,
+    Order,
+    OrderTableRecordSource,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
@@ -26,12 +26,12 @@ import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
-export class BalancesFrame extends GridSourceFrame {
-    gridSourceOpenedEventer: BalancesFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: BalancesFrame.RecordFocusedEventer | undefined
+export class OrderAuthoriseFrame extends GridSourceFrame {
+    gridSourceOpenedEventer: OrderAuthoriseFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: OrderAuthoriseFrame.RecordFocusedEventer | undefined
 
-    private _recordSource: BalancesTableRecordSource;
-    private _recordList: KeyedCorrectnessList<Balances>;
+    private _recordSource: OrderTableRecordSource;
+    private _recordList: KeyedCorrectnessList<Order>;
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
@@ -64,9 +64,37 @@ export class BalancesFrame extends GridSourceFrame {
         const grid = this.grid;
         this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
+
     }
 
     get recordList() { return this._recordList; }
+
+    getFocusedOrder() {
+        const focusedIndex = this.getFocusedRecordIndex();
+        if (focusedIndex === undefined) {
+            return undefined;
+        } else {
+            return this._recordList.getAt(focusedIndex);
+        }
+    }
+
+    canAmendFocusedOrder() {
+        const focusedOrder = this.getFocusedOrder();
+        if (focusedOrder === undefined) {
+            return false;
+        } else {
+            return focusedOrder.canAmend();
+        }
+    }
+
+    canCancelFocusedOrder() {
+        const focusedOrder = this.getFocusedOrder();
+        if (focusedOrder === undefined) {
+            return false;
+        } else {
+            return focusedOrder.canCancel();
+        }
+    }
 
     tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(group);
@@ -74,18 +102,18 @@ export class BalancesFrame extends GridSourceFrame {
     }
 
     createDefaultLayoutGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBalances(brokerageAccountGroup);
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createOrder(brokerageAccountGroup);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(BalancesFrame.defaultBrokerageAccountGroup);
+        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(OrderAuthoriseFrame.defaultBrokerageAccountGroup);
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
         const table = this.openedTable;
-        this._recordSource = table.recordSource as BalancesTableRecordSource;
+        this._recordSource = table.recordSource as OrderTableRecordSource;
         this._recordList = this._recordSource.recordList;
         const brokerageAccountGroup = this._recordSource.brokerageAccountGroup;
         if (this.gridSourceOpenedEventer !== undefined) {
@@ -107,12 +135,13 @@ export class BalancesFrame extends GridSourceFrame {
         return this._gridHeaderCellPainter;
     }
 
-    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
     }
 }
 
-export namespace BalancesFrame {
+
+export namespace OrderAuthoriseFrame {
     export type GridSourceOpenedEventer = (this: void, brokerageAccountGroup: BrokerageAccountGroup) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 

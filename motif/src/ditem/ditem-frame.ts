@@ -33,7 +33,7 @@ export abstract class DitemFrame extends Frame {
     private _primary: boolean;
 
     private _litIvemId: LitIvemId | undefined;
-    private _oldLitIvemId: LitIvemId;
+    private _oldLitIvemId: LitIvemId | undefined;
     private _litIvemIdLinkable = true;
     private _litIvemIdLinked: boolean;
 

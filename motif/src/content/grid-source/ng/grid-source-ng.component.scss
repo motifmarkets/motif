@@ -13,11 +13,3 @@
 #delayedBadness {
     flex: 0 0 auto;
 }
-
-#grid {
-    // required because MotifGrid component uses ViewEncapsulation.None
-    position: relative;
-    min-height: 0;
-    flex: 1 1 0;
-    overflow-y: clip;
-}

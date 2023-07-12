@@ -160,7 +160,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
             if (field !== undefined) {
                 const editableColumn = new EditableGridLayoutDefinitionColumn(field, count++);
                 editableColumn.visible = definitionColumn.visible ?? true;
-                editableColumn.width = definitionColumn.width;
+                editableColumn.width = definitionColumn.autoSizableWidth;
                 editableColumns[count++] = editableColumn;
             }
         }

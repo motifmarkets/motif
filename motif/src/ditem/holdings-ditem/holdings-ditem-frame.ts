@@ -66,7 +66,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     get initialised() { return this._holdingsFrame !== undefined; }
     get focusedRecordIndex() { return this._holdingsFrame?.getFocusedRecordIndex(); }
 
-    initialise(holdingsFrame: HoldingsFrame, balancesFrame: BalancesFrame, frameElement: JsonElement | undefined) {
+    initialise(frameElement: JsonElement | undefined, holdingsFrame: HoldingsFrame, balancesFrame: BalancesFrame) {
         this._holdingsFrame = holdingsFrame;
         this._balancesFrame = balancesFrame;
 

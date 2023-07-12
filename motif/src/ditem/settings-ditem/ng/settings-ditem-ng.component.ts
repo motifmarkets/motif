@@ -61,7 +61,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         adiNgService: AdiNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
-        this._frame = new SettingsDitemFrame(this, this.commandRegisterService,
+        this._frame = new SettingsDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());

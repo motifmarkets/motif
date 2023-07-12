@@ -171,13 +171,15 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._holdingsComponent.frame, this._balancesComponent.frame, frameElement);
+        const holdingsFrame = this._holdingsComponent.frame;
+        const balancesFrame = this._balancesComponent.frame;
+        this._frame.initialise(frameElement, holdingsFrame, balancesFrame);
 
         if (!this._explicitBalancesHeight) {
             const gridRowHeight = this._balancesComponent.gridRowHeight;
             const gridHeaderHeight = this._balancesComponent.getHeaderPlusFixedLineHeight();
-            const gridHorizontalScrollbarMarginedHeight = this._balancesComponent.gridHorizontalScrollbarMarginedHeight;
-            this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarMarginedHeight;
+            const gridHorizontalScrollbarInsideOverlap = balancesFrame.gridHorizontalScrollbarInsideOverlap;
+            this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarInsideOverlap;
             this.markForCheck();
         }
 

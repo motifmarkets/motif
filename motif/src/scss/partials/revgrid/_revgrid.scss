@@ -1,24 +1,24 @@
 .revgrid-container > .revgrid-horizontal,
 .revgrid-container > .revgrid-vertical {
-    margin: 3px;
+    margin: 0;
 }
 .revgrid-container > .revgrid-horizontal > .thumb,
 .revgrid-container > .revgrid-vertical > .thumb {
     border-radius: 4px;
-    margin: 2px;
+    margin: 0;
     transition: opacity 0.5s;
 }
 .revgrid-container > .revgrid-vertical {
-    width: 11px;
-}
-.revgrid-container > .revgrid-vertical > .thumb {
-    right: 0;
     width: 7px;
 }
+.revgrid-container > .revgrid-vertical > .thumb {
+    left: 0;
+    right: 0;
+}
 .revgrid-container > .revgrid-horizontal {
-    height: 11px;
+    height: 7px;
 }
 .revgrid-container > .revgrid-horizontal > .thumb {
+    top: 0;
     bottom: 0;
-    height: 7px;
 }

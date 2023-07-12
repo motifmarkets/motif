@@ -14,7 +14,6 @@ import {
     ViewChild
 } from '@angular/core';
 import { Badness, numberToPixels } from '@motifmarkets/motif-core';
-import { RecordGridNgComponent } from '../../adapted-revgrid/ng-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
@@ -34,7 +33,6 @@ export abstract class GridSourceNgComponent
     @HostBinding('style.flex-basis') styleFlexBasis = '';
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
-    @ViewChild(RecordGridNgComponent, { static: true }) private _recordGridComponent: RecordGridNgComponent;
 
     readonly frame: GridSourceFrame;
 
@@ -49,18 +47,8 @@ export abstract class GridSourceNgComponent
     }
 
     get gridRowHeight() { return this.frame.gridRowHeight; }
-    get recordGridComponent() { return this._recordGridComponent; }
-    get recordGrid() { return this._recordGridComponent.recordGrid; }
 
     // Component Access members
-
-    get id(): string {
-        return this.componentInstanceId;
-    }
-
-    get gridHorizontalScrollbarMarginedHeight() {
-        return this._recordGridComponent.horizontalScrollbarMarginedHeight;
-    }
 
     ngOnDestroy() {
         this.frame.finalise();

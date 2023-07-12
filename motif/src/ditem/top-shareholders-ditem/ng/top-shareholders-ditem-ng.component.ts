@@ -43,7 +43,6 @@ import {
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
 import { GridSourceNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -71,11 +70,6 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     @ViewChild('historicalDateInput', { static: true }) private _historicalDateInputComponent: DateInputNgComponent;
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     public caption = '';
     public details: TopShareholdersDitemNgComponent.Details = {
@@ -120,6 +114,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
 
         this._frame = new TopShareholdersDitemFrame(
             this,
+            this.settingsService,
             this.commandRegisterService,
             desktopAccessNgService.service,
             this._symbolsNgService.service,

@@ -10,7 +10,6 @@ import {
     NamedGridLayoutsService,
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListsService,
-    ScansService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
@@ -26,9 +25,11 @@ import { FeedsFrame } from './feeds/internal-api';
 import { GridSourceFrame } from './grid-source/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { MarketsFrame } from './markets/internal-api';
+import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { OrdersFrame } from './orders/internal-api';
-import { ScansFrame } from './scan/internal-api';
+import { ScanListFrame } from './scan/internal-api';
+import { SearchSymbolsFrame } from './search-symbols/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TradesFrame } from './trades/internal-api';
 import { WatchlistFrame } from './watchlist/internal-api';
@@ -133,6 +134,20 @@ export class ContentService {
         );
     }
 
+    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new OrderAuthoriseFrame(
+            this._settingsService,
+            this._namedJsonRankedLitIvemIdListsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
+        );
+    }
+
     createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return new HoldingsFrame(
             this._settingsService,
@@ -161,6 +176,19 @@ export class ContentService {
         );
     }
 
+    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new SearchSymbolsFrame(
+            this._settingsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
+        );
+    }
+
     createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
         return new StatusSummaryFrame(this._adiService, sessionInfoService, componentAccess,);
     }
@@ -173,8 +201,17 @@ export class ContentService {
         return new DepthFrame(componentAccess, this._adiService);
     }
 
-    createScansFrame(scansService: ScansService, componentAccess: ScansFrame.ComponentAccess) {
-        return new ScansFrame(this._adiService, scansService, componentAccess);
+    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return new ScanListFrame(
+            this._settingsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            hostElement,
+        );
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {

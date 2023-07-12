@@ -20,14 +20,15 @@ import { AdaptedRevgridBehavioredColumnSettings } from '../settings/content-adap
 import { RowDataArrayGridField } from './row-data-array-grid-field';
 
 export class RowDataArrayGrid extends AdaptedRevgrid {
+    declare schemaServer: DataRowArraySchemaServer<GridField>;
+    readonly headerDataServer: SingleHeadingDataRowArrayHeaderDataServer<GridField>;
+    declare mainDataServer: DataRowArrayMainDataServer<GridField>;
+
     rowFocusEventer: RowDataArrayGrid.RowFocusEventer | undefined;
     mainClickEventer: RowDataArrayGrid.MainClickEventer | undefined;
     mainDblClickEventer: RowDataArrayGrid.MainDblClickEventer | undefined;
 
     private readonly _serverSet: SingleHeadingDataRowArrayServerSet<GridField>;
-    private readonly _schemaServer: DataRowArraySchemaServer<GridField>;
-    private readonly _headerDataServer: SingleHeadingDataRowArrayHeaderDataServer<GridField>;
-    private readonly _mainDataServer: DataRowArrayMainDataServer<GridField>;
 
     constructor(
         settingsService: SettingsService,
@@ -61,9 +62,7 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
         super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
 
         this._serverSet = serverSet;
-        this._schemaServer = schemaServer;
-        this._headerDataServer = headerDataServer;
-        this._mainDataServer = mainDataServer;
+        this.headerDataServer = headerDataServer;
 
         this.applySettings();
     }
@@ -78,8 +77,8 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
     }
 
     override reset(): void {
-        this._schemaServer.reset();
-        this._mainDataServer.reset();
+        this.schemaServer.reset();
+        this.mainDataServer.reset();
         super.reset();
     }
 
@@ -120,7 +119,7 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
     }
 
     protected override invalidateAll() {
-        this._mainDataServer.invalidateAll();
+        this.mainDataServer.invalidateAll();
     }
 }
 

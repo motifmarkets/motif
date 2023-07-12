@@ -14,17 +14,15 @@ import {
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
-    IndexSignatureHack,
-    Integer, InternalCommand,
-    JsonElement, RenderValue,
+    InternalCommand,
+    JsonElement,
     StringId,
-    StringRenderValue,
     StringUiAction,
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, RowDataArrayGrid } from 'content-internal-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
+import { RowDataArrayGrid } from 'content-internal-api';
 import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
@@ -84,11 +82,13 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new SearchDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service
+        this._frame = new SearchDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,
+            this.rootHtmlElement,
         );
 
         this._categoryUiAction = this.createCategoryUiAction();
@@ -121,34 +121,7 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     protected override initialise() {
-        // const componentStateElement = this.getInitialComponentStateJsonElement();
-        // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        // this._frame.initialise(this._contentComponent.frame, frameElement);
-
-        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
-            mouseColumnSelection: false,
-            mouseRowSelection: false,
-            mouseRectangleSelection: false,
-            multipleSelectionAreas: false,
-            sortOnDoubleClick: false,
-            visibleColumnWidthAdjust: true,
-            fixedColumnCount: 0,
-        };
-
-        this._grid = this._gridComponent.createGrid(
-            customGridSettings,
-            (index, key, heading) => this._frame.createGridField(index, key, heading),
-            (columnSettings) => this._frame.customiseSettingsForNewColumn(columnSettings),
-            (viewCell) => this._frame.getMainCellPainter(viewCell),
-            (viewCell) => this._frame.getHeaderCellPainter(viewCell),
-        );
-        this._grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
-        this._grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
-
-        this.prepareGrid();
-
         this.initialiseComponents();
-
         super.initialise();
     }
 
@@ -174,18 +147,6 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     protected save(element: JsonElement) {
         // nothing to save
-    }
-
-    private prepareGrid() {
-        this._grid.setData(demoSearchResults.slice(), 1);
-    }
-
-    private handleRowFocusEvent(newRowIndex: Integer | undefined) {
-        //
-    }
-
-    private handleGridClickEvent(columnIndex: Integer, rowIndex: Integer) {
-        //
     }
 
     private createCategoryUiAction() {
@@ -332,49 +293,4 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
 export namespace SearchDitemNgComponent {
     export const stateSchemaVersion = '2';
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
-}
-
-interface SearchResult {
-    code: string | StringRenderValue;
-    company: string | StringRenderValue;
-    product: string  | StringRenderValue;
-    price: string | StringRenderValue;
-}
-
-const demoSearchResults: IndexSignatureHack<readonly SearchResult[]> = [
-    {
-        code: 'Code',
-        company: 'Company',
-        product: 'Product',
-        price: 'Price',
-    },
-    {
-        code: createAdvertStringRenderValue('trav1.ad'),
-        company: createAdvertStringRenderValue('Example Travel Company 1'),
-        product: createAdvertStringRenderValue('See Arizona in style'),
-        price: createAdvertStringRenderValue('18,000'),
-    },
-    {
-        code: createAdvertStringRenderValue('spc.ad'),
-        company: createAdvertStringRenderValue('Spectaculix Travel'),
-        product: createAdvertStringRenderValue('Magical Arizona'),
-        price: createAdvertStringRenderValue('11,999'),
-    },
-    {
-        code: createAdvertStringRenderValue('trav2.ad'),
-        company: createAdvertStringRenderValue('Example Travel Company 1'),
-        product: createAdvertStringRenderValue('The best of Arizona'),
-        price: createAdvertStringRenderValue('10,500'),
-    },
-] as const;
-
-function createAdvertStringRenderValue(text: string) {
-    const result = new StringRenderValue(text);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
 }

@@ -53,7 +53,7 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
         adiNgService: AdiNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
-        this._frame = new PlaceholderDitemFrame(this, this.commandRegisterService,
+        this._frame = new PlaceholderDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());

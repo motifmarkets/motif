@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
+import { SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -23,7 +23,6 @@ import { DepthFrame } from '../depth/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
-import { ScansFrame } from '../scan/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
@@ -102,6 +101,10 @@ export class ContentNgService {
         return this._content.createOrdersFrame(componentAccess, hostElement);
     }
 
+    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createOrderAuthoriseFrame(componentAccess, hostElement);
+    }
+
     createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
         return this._content.createHoldingsFrame(componentAccess, hostElement);
     }
@@ -114,6 +117,10 @@ export class ContentNgService {
         return this._content.createStatusSummaryFrame(sessionInfoService, componentAccess);
     }
 
+    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createSearchSymbolsFrame(componentAccess, hostElement);
+    }
+
     createDepthSideFrame(hostElement: HTMLElement) {
         return this._content.createDepthSideFrame(hostElement);
     }
@@ -122,8 +129,8 @@ export class ContentNgService {
         return this._content.createDepthFrame(componentAccess);
     }
 
-    createScansFrame(scansService: ScansService, componentAccess: ScansFrame.ComponentAccess) {
-        return this._content.createScansFrame(scansService, componentAccess);
+    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+        return this._content.createScanListFrame(componentAccess, hostElement);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {

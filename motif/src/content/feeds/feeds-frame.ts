@@ -85,7 +85,7 @@ export class FeedsFrame extends GridSourceFrame {
 
     protected override processRecordFocusedEvent(newRecordIndex: Integer | undefined, _oldRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const feed = this._recordList.records[newRecordIndex];
+            const feed = this._recordList.getAt(newRecordIndex);
             this.processFeedFocusChange(feed);
         }
     }
@@ -104,10 +104,5 @@ export class FeedsFrame extends GridSourceFrame {
 
     private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
-    }
-}
-
-export namespace FeedsFrame {
-    export interface ComponentAccess {
     }
 }

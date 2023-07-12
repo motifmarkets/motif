@@ -5,7 +5,7 @@
  */
 
 import { CommonModule } from '@angular/common';
-import { NgModule } from '@angular/core';
+import { NgModule, forwardRef } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
 import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
@@ -50,6 +50,7 @@ import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
+import { OrderAuthoriseNgComponent } from '../order-authorise/ng-api';
 import {
     PadOrderRequestStepNgComponent,
     ResultOrderRequestStepNgComponent,
@@ -66,6 +67,7 @@ import {
     CriteriaScanPropertiesSectionNgComponent,
     GeneralScanPropertiesSectionNgComponent,
     NotifiersScanPropertiesSectionNgComponent,
+    ScanListNgComponent,
     ScanNewNgComponent,
     ScanPropertiesNgComponent,
     ScanTypeDescriptionNgComponent,
@@ -76,6 +78,7 @@ import {
     ZenithScanCriteriaViewNgComponent
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
+import { SearchSymbolsNgComponent } from '../search-symbols/ng-api';
 import { ExchangesSettingsNgComponent } from '../settings/exchanges-settings/ng-api';
 import {
     ColorSettingsNgComponent,
@@ -120,6 +123,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         IvemHoldingsNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,
+        OrderAuthoriseNgComponent,
         PadOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
         ParidepthGridLayoutsEditorDialogNgComponent,
@@ -136,6 +140,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ReviewCancelOrderRequestNgComponent,
         ReviewMoveOrderRequestNgComponent,
         ReviewOrderRequestZenithMessageNgComponent,
+        SearchSymbolsNgComponent,
         ExtensionsSidebarNgComponent,
         ExtensionListsNgComponent,
         InstalledExtensionListNgComponent,
@@ -157,6 +162,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanPropertiesNgComponent,
         GeneralScanPropertiesSectionNgComponent,
         ScanNewNgComponent,
+        ScanListNgComponent,
         ScanTypesGridNgComponent,
         ScanTypesControlsNgComponent,
         ScanTypeDescriptionNgComponent,
@@ -169,11 +175,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SaveWatchlistDialogNgComponent,
         WatchlistNgComponent,
     ],
-    imports: [
-        CommonModule,
-        AngularSplitModule,
-        ControlsNgModule,
-    ],
     exports: [
         AdvertTickerNgComponent,
         AdvertWebPageNgComponent,
@@ -181,6 +182,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BalancesNgComponent,
         BrokerageAccountsNgComponent,
         GridLayoutEditorNgComponent,
+        DelayedBadnessNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorDialogNgComponent,
         ExtensionsSidebarNgComponent,
@@ -192,9 +194,11 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,
+        OrderAuthoriseNgComponent,
         PadOrderRequestStepNgComponent,
         ReviewOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
+        SearchSymbolsNgComponent,
         ParidepthGridLayoutsEditorDialogNgComponent,
         ColorSettingsNgComponent,
         GeneralSettingsNgComponent,
@@ -207,6 +211,12 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         OpenWatchlistDialogNgComponent,
         SaveWatchlistDialogNgComponent,
         WatchlistNgComponent,
+    ],
+    imports: [
+        CommonModule,
+        AngularSplitModule,
+        ControlsNgModule,
+        forwardRef(() => ContentNgModule)
     ]
 })
 

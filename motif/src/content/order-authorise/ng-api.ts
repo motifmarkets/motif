@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './scans-frame';
+export * from './ng/order-authorise-ng.component';
 

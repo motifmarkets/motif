@@ -12,18 +12,14 @@ import {
 import {
     ButtonUiAction,
     IconButtonUiAction,
-    IndexSignatureHack,
-    Integer, InternalCommand,
-    JsonElement, RenderValue,
+    InternalCommand,
+    JsonElement,
     StringId,
-    StringRenderValue,
     StringUiAction,
     Strings,
-    TimeRenderValue,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, RowDataArrayGrid } from 'content-internal-api';
+import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -50,7 +46,6 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     public isMainMode = true;
     public isLayoutEditorMode = false;
 
-    private _grid: RowDataArrayGrid;
     private _frame: AlertsDitemFrame;
 
     private _filterEditUiAction: StringUiAction;
@@ -69,11 +64,13 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
     ) {
         super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new AlertsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new AlertsDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,
+            this.rootHtmlElement);
 
         this._filterEditUiAction = this.createFilterEditUiAction();
         this._detailsUiAction = this.createDetailsUiAction();
@@ -105,12 +102,6 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         // this._frame.initialise(this._contentComponent.frame, frameElement);
 
-        this._grid = this._gridComponent.createGrid(AlertsDitemNgComponent.frameGridProperties);
-        this._grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
-        this._grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
-
-        this.prepareGrid();
-
         this.initialiseComponents();
 
         super.initialise();
@@ -134,18 +125,6 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     protected save(element: JsonElement) {
         // nothing to save
-    }
-
-    private prepareGrid() {
-        this._grid.setData(demoAlerts.slice(), 1);
-    }
-
-    private handleRowFocusEvent(newRowIndex: Integer | undefined) {
-        //
-    }
-
-    private handleGridClickEvent(columnIndex: Integer, rowIndex: Integer) {
-        //
     }
 
     private createFilterEditUiAction() {
@@ -232,50 +211,4 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
 export namespace AlertsDitemNgComponent {
     export const stateSchemaVersion = '2';
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
-}
-
-interface Alert {
-    code: string | StringRenderValue;
-    time: Date | string  | TimeRenderValue;
-    eventText: string | StringRenderValue;
-}
-
-const demoAlerts: IndexSignatureHack<readonly Alert[]> = [
-    {
-        code: 'Code',
-        time: 'Time',
-        eventText: 'Event',
-    },
-    {
-        code: 'BHP.AX',
-        time: new TimeRenderValue(new Date(2022, 1, 31, 12, 43)),
-        eventText: 'BHP.AX last price dropped below 45',
-    },
-    {
-        code: createAdvertStringRenderValue('SPC.AD'),
-        time: createAdvertTimeRenderValue(new Date(2022, 1, 31, 11, 48)),
-        eventText: createAdvertStringRenderValue('New Arizona holiday package under $12000 announced'),
-    },
-    {
-        code: 'CBA.AX',
-        time: new TimeRenderValue(new Date(2022, 1, 31, 11, 10)),
-        eventText: 'CBA.AX moving average crossing',
-    },
-] as const;
-
-function createAdvertStringRenderValue(text: string) {
-    const result = new StringRenderValue(text);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
-}
-
-function createAdvertTimeRenderValue(value: Date) {
-    const result = new TimeRenderValue(value);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
 }

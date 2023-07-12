@@ -95,7 +95,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
     get gridRowHeight() { return this.grid.rowHeight; }
-    get gridHorizontalScrollbarMarginedHeight() { return this._componentAccess.gridHorizontalScrollbarMarginedHeight; }
+    get gridHorizontalScrollbarInsideOverlap() { return this.grid.horizontalScroller.insideOverlap; }
 
     // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
     // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
@@ -113,7 +113,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     ) {
         this.opener = opener;
 
-        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition;
+        let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition | undefined;
         if (frameElement === undefined) {
             gridSourceOrNamedReferenceDefinition = this.getDefaultGridSourceOrNamedReferenceDefinition();
         } else {
@@ -129,12 +129,14 @@ export abstract class GridSourceFrame extends ContentFrame {
             } else {
                 // If layout exists, then create default and load layout
                 gridSourceOrNamedReferenceDefinition = this.getDefaultGridSourceOrNamedReferenceDefinition();
-                if (gridSourceOrNamedReferenceDefinition.canUpdateGridLayoutDefinitionOrNamedReference()) {
-                    const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
-                    if (layoutElementResult.isOk()) {
-                        const layoutDefinitionResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(layoutElementResult.value);
-                        if (layoutDefinitionResult.isOk()) {
-                            gridSourceOrNamedReferenceDefinition.updateGridLayoutDefinitionOrNamedReference(layoutDefinitionResult.value);
+                if (gridSourceOrNamedReferenceDefinition !== undefined) {
+                    if (gridSourceOrNamedReferenceDefinition.canUpdateGridLayoutDefinitionOrNamedReference()) {
+                        const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
+                        if (layoutElementResult.isOk()) {
+                            const layoutDefinitionResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(layoutElementResult.value);
+                            if (layoutDefinitionResult.isOk()) {
+                                gridSourceOrNamedReferenceDefinition.updateGridLayoutDefinitionOrNamedReference(layoutDefinitionResult.value);
+                            }
                         }
                     }
                 }
@@ -142,11 +144,14 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
 
         this.keepPreviousLayoutIfPossible = keepPreviousLayoutIfPossible;
-        if (keepPreviousLayoutIfPossible) {
-            this.keptGridLayoutOrNamedReferenceDefinition = gridSourceOrNamedReferenceDefinition.gridSourceDefinition?.gridLayoutOrNamedReferenceDefinition;
-        }
 
-        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        if (gridSourceOrNamedReferenceDefinition !== undefined) {
+            if (keepPreviousLayoutIfPossible) {
+                this.keptGridLayoutOrNamedReferenceDefinition = gridSourceOrNamedReferenceDefinition.gridSourceDefinition?.gridLayoutOrNamedReferenceDefinition;
+            }
+
+            this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        }
     }
 
 
@@ -216,7 +221,7 @@ export abstract class GridSourceFrame extends ContentFrame {
                 reasonId: Badness.ReasonId.LockError,
                 reasonExtra: lockResult.error,
             };
-            this._componentAccess.setBadness(badness);
+            this.setBadness(badness);
             return undefined;
         } else {
             const gridSource = gridSourceOrNamedReference.lockedGridSource;
@@ -259,7 +264,7 @@ export abstract class GridSourceFrame extends ContentFrame {
                         this._openedTableBadnessChangeSubscriptionId = this._openedTable.subscribeBadnessChangeEvent(
                             () => this.handleOpenedTableBadnessChangeEvent()
                         );
-                        this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);
+                        this.hideBadnessWithVisibleDelay(Badness.notBad);
 
                         this.notifyGridLayoutSet(layout);
 
@@ -440,7 +445,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     if (this._table === undefined) {
     //         throw new AssertInternalError('TFNTO533955482');
     //     } else {
-    //         this._componentAccess.hideBadnessWithVisibleDelay(this._table.badness);
+    //         this.hideBadnessWithVisibleDelay(this._table.badness);
     //     }
     //     if (this.tableOpenEvent !== undefined) {
     //         this.tableOpenEvent(recordDefinitionList);
@@ -457,7 +462,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._openedTable === undefined) {
             throw new AssertInternalError('TFHDIBCE1994448333');
         } else {
-            this._componentAccess.setBadness(this._openedTable.badness);
+            this.setBadness(this._openedTable.badness);
         }
     }
 
@@ -947,6 +952,16 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid.applyFilter(filter);
     }
 
+    // descendants can override to use with their own badness display
+    protected setBadness(value: Badness) {
+        this._componentAccess.setBadness(value);
+    }
+
+    // descendants can override to use with their own badness display
+    protected hideBadnessWithVisibleDelay(badness: Badness) {
+        this._componentAccess.hideBadnessWithVisibleDelay(badness);
+    }
+
     protected processGridSourceOpenedEvent(gridSourceOrNamedReference: GridSourceOrNamedReference) {
         // can be overridden by descendants
     }
@@ -974,7 +989,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFHOTBCE11109');
         } else {
             const badness = this._openedTable.badness;
-            this._componentAccess.setBadness(badness);
+            this.setBadness(badness);
         }
     }
 
@@ -1266,7 +1281,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
-    protected abstract getDefaultGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition;
+    protected abstract getDefaultGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition | undefined;
 }
 
 export namespace GridSourceFrame {
@@ -1347,9 +1362,6 @@ export namespace GridSourceFrame {
     }
 
     export interface ComponentAccess {
-        readonly id: string;
-        readonly gridHorizontalScrollbarMarginedHeight: number;
-
         setBadness(value: Badness): void;
         hideBadnessWithVisibleDelay(badness: Badness): void;
         setStyleFlexBasis(value: number): void;

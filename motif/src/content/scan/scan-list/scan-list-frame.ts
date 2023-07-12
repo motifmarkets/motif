@@ -1,44 +1,43 @@
-/**
- * @license Motif
- * (c) 2021 Paritech Wealth Technology
- * License: motionite.trade/license/motif
- */
-
 import {
-    Balances,
-    BalancesTableRecordSource,
-    BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    KeyedCorrectnessList,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    NamedJsonRankedLitIvemIdListsService,
+    Scan,
+    ScanTableRecordSource,
+    ScansService,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
+import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
+import { GridSourceFrame } from '../../grid-source/internal-api';
 
-export class BalancesFrame extends GridSourceFrame {
-    gridSourceOpenedEventer: BalancesFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: BalancesFrame.RecordFocusedEventer | undefined
+export class ScanListFrame extends GridSourceFrame {
+    gridSourceOpenedEventer: ScanListFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: ScanListFrame.RecordFocusedEventer | undefined
 
-    private _recordSource: BalancesTableRecordSource;
-    private _recordList: KeyedCorrectnessList<Balances>;
+    private _recordSource: ScanTableRecordSource;
+    private _scansService: ScansService;
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
+    private _filterText = '';
+    private _uppercaseFilterText = '';
+
+    // private _dataItem: DayTradesDataItem | undefined;
+    // private _dataItemBadnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
+    // private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
+    // private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
+
     constructor(
         settingsService: SettingsService,
-        private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
@@ -55,7 +54,7 @@ export class BalancesFrame extends GridSourceFrame {
             namedGridSourcesService,
             componentAccess,
             hostElement,
-            {},
+            { fixedColumnCount: 1 },
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
             (viewCell) => this.getGridMainCellPainter(viewCell),
@@ -66,30 +65,43 @@ export class BalancesFrame extends GridSourceFrame {
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
     }
 
-    get recordList() { return this._recordList; }
+    get recordList() { return this._scansService; }
 
-    tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(group);
+    public get filterText() { return this._filterText; }
+    public set filterText(value: string) {
+        if (value !== this._filterText) {
+            this._filterText = value;
+            this._uppercaseFilterText = value.toLocaleUpperCase();
+
+            if (this._uppercaseFilterText.length > 0) {
+                this.applyFilter((record) => this.filterItems(record as Scan));
+            } else {
+                this.clearFilter();
+            }
+        }
+    }
+
+    tryOpenWithDefaultLayout(keepView: boolean) {
+        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    createDefaultLayoutGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBalances(brokerageAccountGroup);
+    createDefaultLayoutGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(BalancesFrame.defaultBrokerageAccountGroup);
+        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
         const table = this.openedTable;
-        this._recordSource = table.recordSource as BalancesTableRecordSource;
-        this._recordList = this._recordSource.recordList;
-        const brokerageAccountGroup = this._recordSource.brokerageAccountGroup;
+        this._recordSource = table.recordSource as ScanTableRecordSource;
+        this._scansService = this._recordSource.recordList;
         if (this.gridSourceOpenedEventer !== undefined) {
-            this.gridSourceOpenedEventer(brokerageAccountGroup);
+            this.gridSourceOpenedEventer();
         }
     }
 
@@ -110,11 +122,17 @@ export class BalancesFrame extends GridSourceFrame {
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
     }
+
+    private filterItems(scan: Scan) {
+        if (this._uppercaseFilterText.length === 0) {
+            return true;
+        } else {
+            return scan.upperCaseName.includes(this._uppercaseFilterText) || scan.upperCaseDescription.includes(this._uppercaseFilterText);
+        }
+    }
 }
 
-export namespace BalancesFrame {
-    export type GridSourceOpenedEventer = (this: void, brokerageAccountGroup: BrokerageAccountGroup) => void;
+export namespace ScanListFrame {
+    export type GridSourceOpenedEventer = (this: void) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
-
-    export const defaultBrokerageAccountGroup = BrokerageAccountGroup.createAll();
 }

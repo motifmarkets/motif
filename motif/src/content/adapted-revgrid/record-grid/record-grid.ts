@@ -45,8 +45,9 @@ import { RecordGridSchemaServer } from './record-grid-schema-server';
  * @public
  */
 export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeInitiator {
+    declare schemaServer: RecordGridSchemaServer;
     declare mainDataServer: RecordGridMainDataServer;
-    declare headerDataServer: RecordGridHeaderDataServer;
+    readonly headerDataServer: RecordGridHeaderDataServer;
 
     recordFocusedEventer: RecordGrid.RecordFocusEventer | undefined;
     mainClickEventer: RecordGrid.MainClickEventer | undefined;
@@ -54,10 +55,6 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     // fieldSortedEventer: RecordGrid.FieldSortedEventer | undefined;
 
     // private readonly _componentAccess: RecordGrid.ComponentAccess;
-
-    private readonly _schemaServer: RecordGridSchemaServer;
-    private readonly _headerDataServer: RecordGridHeaderDataServer;
-    private readonly _mainDataServer: RecordGridMainDataServer;
 
     private _gridLayout: GridLayout | undefined;
     private _allowedFields: readonly GridField[] | undefined;
@@ -100,35 +97,33 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
         super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
 
-        this._schemaServer = schemaServer;
-        this._headerDataServer = headerDataServer;
-        this._mainDataServer = mainDataServer;
+        this.headerDataServer = headerDataServer;
 
         this.applySettings();
     }
 
-    get fieldCount() { return this._schemaServer.fieldCount; }
-    get fieldNames() { return this._schemaServer.getFields(); }
+    get fieldCount() { return this.schemaServer.fieldCount; }
+    get fieldNames() { return this.schemaServer.getFields(); }
 
     get recordFocused() { return this.focus.current !== undefined; }
 
-    get continuousFiltering(): boolean { return this._mainDataServer.continuousFiltering; }
+    get continuousFiltering(): boolean { return this.mainDataServer.continuousFiltering; }
     set continuousFiltering(value: boolean) {
         const oldContinuousFiltering =
-            this._mainDataServer.continuousFiltering;
+            this.mainDataServer.continuousFiltering;
         if (value !== oldContinuousFiltering) {
-            this._mainDataServer.continuousFiltering = value;
+            this.mainDataServer.continuousFiltering = value;
 
             if (value) {
                 // Continuous filtering was just turned on, apply if necessary
-                this._mainDataServer.recordsLoaded();
+                this.mainDataServer.recordsLoaded();
             }
         }
     }
 
-    get rowOrderReversed() { return this._mainDataServer.rowOrderReversed; }
+    get rowOrderReversed() { return this.mainDataServer.rowOrderReversed; }
     set rowOrderReversed(value: boolean) {
-        this._mainDataServer.rowOrderReversed = value;
+        this.mainDataServer.rowOrderReversed = value;
     }
 
     get focusedRecordIndex(): RevRecordIndex | undefined {
@@ -136,7 +131,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         if (focusedSubgridRowIndex === undefined) {
             return undefined;
         } else {
-            return this._mainDataServer.getRecordIndexFromRowIndex(focusedSubgridRowIndex);
+            return this.mainDataServer.getRecordIndexFromRowIndex(focusedSubgridRowIndex);
         }
     }
 
@@ -144,7 +139,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         if (recordIndex === undefined) {
             this.focus.clear();
         } else {
-            const rowIndex = this._mainDataServer.getRowIndexFromRecordIndex(recordIndex);
+            const rowIndex = this.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
             if (rowIndex === undefined) {
                 this.focus.clear();
             } else {
@@ -153,8 +148,8 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         }
     }
 
-    get headerRowCount(): number { return this._headerDataServer.getRowCount(); }
-    get isFiltered(): boolean { return this._mainDataServer.isFiltered; }
+    get headerRowCount(): number { return this.headerDataServer.getRowCount(); }
+    get isFiltered(): boolean { return this.mainDataServer.isFiltered; }
     get gridRightAligned(): boolean { return this.settings.gridRightAligned; }
     get rowHeight(): number { return this.settings.defaultRowHeight; }
 
@@ -165,7 +160,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
 
     override destroy(): void {
         super.destroy();
-        this._mainDataServer.destroy();
+        this.mainDataServer.destroy();
     }
 
     fieldsLayoutReset(fields: readonly GridField[], gridLayout: GridLayout) {
@@ -254,7 +249,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     getSortFields(): GridSortDefinition.Field[] | undefined {
-        const specifiers = this._mainDataServer.sortFieldSpecifiers;
+        const specifiers = this.mainDataServer.sortFieldSpecifiers;
         const count = specifiers.length;
         if (count === 0) {
             return undefined;
@@ -293,7 +288,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     applyFilter(filter?: RevRecordMainDataServer.RecordFilterCallback): void {
-        this._mainDataServer.filterCallback = filter;
+        this.mainDataServer.filterCallback = filter;
     }
 
     // beginChange() {
@@ -311,7 +306,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     clearSort() {
-        this._mainDataServer.clearSort();
+        this.mainDataServer.clearSort();
     }
 
     getRowOrderDefinition(): GridRowOrderDefinition {
@@ -320,7 +315,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     getFieldByName(fieldName: string): RevRecordField {
-        return this._schemaServer.getFieldByName(fieldName);
+        return this.schemaServer.getFieldByName(fieldName);
     }
 
     // getFieldNameToHeaderMap(): GridLayoutRecordStore.FieldNameToHeaderMap {
@@ -335,15 +330,15 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     // }
 
     getField(fieldIndex: RevRecordFieldIndex): RevRecordField {
-        return this._schemaServer.getField(fieldIndex);
+        return this.schemaServer.getField(fieldIndex);
     }
 
     getFieldSortPriority(field: RevRecordFieldIndex | GridField): number | undefined {
-        return this._mainDataServer.getFieldSortPriority(field);
+        return this.mainDataServer.getFieldSortPriority(field);
     }
 
     getFieldSortAscending(field: RevRecordFieldIndex | GridField): boolean | undefined {
-        return this._mainDataServer.getFieldSortAscending(field);
+        return this.mainDataServer.getFieldSortAscending(field);
     }
 
     // getFieldState(field: RevRecordFieldIndex | RevRecordField): GridRecordFieldState {
@@ -380,7 +375,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     // }
 
     getSortSpecifier(index: number): RevRecordMainDataServer.SortFieldSpecifier {
-        return this._mainDataServer.getSortSpecifier(index);
+        return this.mainDataServer.getSortSpecifier(index);
     }
 
     // getVisibleFields(): RevRecordFieldIndex[] {
@@ -474,14 +469,14 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     // }
 
     override reset(): void {
-        this._schemaServer.reset();
-        this._mainDataServer.reset();
+        this.schemaServer.reset();
+        this.mainDataServer.reset();
         super.reset();
     }
 
     recordToRowIndex(recIdx: RevRecordIndex): number {
         const rowIdx =
-            this._mainDataServer.getRowIndexFromRecordIndex(recIdx);
+            this.mainDataServer.getRowIndexFromRecordIndex(recIdx);
         if (rowIdx === undefined) {
             throw new UnexpectedUndefinedError('DMIRTRI34449');
         } else {
@@ -496,7 +491,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     rowToRecordIndex(rowIdx: number): Integer {
-        return this._mainDataServer.getRecordIndexFromRowIndex(rowIdx);
+        return this.mainDataServer.getRecordIndexFromRowIndex(rowIdx);
     }
 
     // saveLayoutDefinition() {
@@ -635,11 +630,11 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     // }
 
     sortBy(fieldIndex?: number, isAscending?: boolean): boolean {
-        return this._mainDataServer.sortBy(fieldIndex, isAscending);
+        return this.mainDataServer.sortBy(fieldIndex, isAscending);
     }
 
     sortByMany(specifiers: RevRecordMainDataServer.SortFieldSpecifier[]): boolean {
-        return this._mainDataServer.sortByMany(specifiers);
+        return this.mainDataServer.sortByMany(specifiers);
     }
 
     protected override descendantProcessColumnSort(_event: MouseEvent, headerOrFixedRowCell: ViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
@@ -652,7 +647,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;
-                    const recordIndex = this._mainDataServer.getRecordIndexFromRowIndex(rowIndex);
+                    const recordIndex = this.mainDataServer.getRecordIndexFromRowIndex(rowIndex);
                     const fieldIndex = cell.viewLayoutColumn.column.field.index;
                     this.mainClickEventer(fieldIndex, recordIndex);
                 }
@@ -666,7 +661,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;
-                    const recordIndex = this._mainDataServer.getRecordIndexFromRowIndex(rowIndex);
+                    const recordIndex = this.mainDataServer.getRecordIndexFromRowIndex(rowIndex);
                     const fieldIndex = cell.viewLayoutColumn.column.field.index;
                     this.mainDblClickEventer(fieldIndex, recordIndex);
                 }
@@ -751,10 +746,10 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         const result = super.applySettings();
 
         const coreSettings = this._settingsService.core;
-        this._mainDataServer.allChangedRecentDuration = coreSettings.grid_AllChangedRecentDuration;
-        this._mainDataServer.recordInsertedRecentDuration = coreSettings.grid_RecordInsertedRecentDuration;
-        this._mainDataServer.recordUpdatedRecentDuration = coreSettings.grid_RecordUpdatedRecentDuration;
-        this._mainDataServer.valueChangedRecentDuration = coreSettings.grid_ValueChangedRecentDuration;
+        this.mainDataServer.allChangedRecentDuration = coreSettings.grid_AllChangedRecentDuration;
+        this.mainDataServer.recordInsertedRecentDuration = coreSettings.grid_RecordInsertedRecentDuration;
+        this.mainDataServer.recordUpdatedRecentDuration = coreSettings.grid_RecordUpdatedRecentDuration;
+        this.mainDataServer.valueChangedRecentDuration = coreSettings.grid_ValueChangedRecentDuration;
 
         // this._componentAccess.applySettings();
 
@@ -762,22 +757,22 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     protected override invalidateAll() {
-        this._mainDataServer.invalidateAll();
+        this.mainDataServer.invalidateAll();
     }
 
     private applySortFields(sortFields: GridSortDefinition.Field[] | undefined) {
         if (sortFields === undefined) {
-            this._mainDataServer.clearSort();
+            this.mainDataServer.clearSort();
         } else {
             const maxCount = sortFields.length;
             if (maxCount === 0) {
-                this._mainDataServer.clearSort();
+                this.mainDataServer.clearSort();
             } else {
                 const specifiers = new Array<RevRecordMainDataServer.SortFieldSpecifier>(maxCount);
                 let count = 0;
                 for (let i = 0; i < maxCount; i++) {
                     const field = sortFields[i];
-                    const fieldIndex = this._schemaServer.getFieldIndexByName(field.name);
+                    const fieldIndex = this.schemaServer.getFieldIndexByName(field.name);
                     if (fieldIndex >= 0) {
                         specifiers[count++] = {
                             fieldIndex,
@@ -786,10 +781,10 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
                     }
                 }
                 if (count === 0) {
-                    this._mainDataServer.clearSort();
+                    this.mainDataServer.clearSort();
                 } else {
                     specifiers.length = count;
-                    this._mainDataServer.sortByMany(specifiers);
+                    this.mainDataServer.sortByMany(specifiers);
                 }
             }
         }
@@ -819,7 +814,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         if (this._gridLayout === undefined) {
             throw new AssertInternalError('RGCCNW56678');
         } else {
-            const schemaFieldNames = this._schemaServer.getFieldNames();
+            const schemaFieldNames = this.schemaServer.getFieldNames();
             const columns = this._gridLayout.columns;
             const maxCount = columns.length;
             const columnNameWidths = new Array<ColumnsManager.FieldNameAndAutoSizableWidth>(maxCount);
@@ -854,7 +849,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
             }
         }
         schemaFields.length = count;
-        this._schemaServer.setFields(schemaFields);
+        this.schemaServer.setFields(schemaFields);
     }
 
     // /** @internal */

@@ -31,7 +31,7 @@ import {
     UnexpectedUndefinedError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { GridSourceFrame } from 'content-internal-api';
+import { SearchSymbolsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -39,7 +39,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
     private _symbolsDataItem: SymbolsDataItem;
-    private _gridSourceFrame: GridSourceFrame | undefined;
+    private _searchSymbolsFrame: SearchSymbolsFrame | undefined;
     private _recordSource: LitIvemIdFromSearchSymbolsTableRecordSource;
     private _recordList: LitIvemDetail[];
 
@@ -70,7 +70,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         this.setUiConditions();
     }
 
-    get initialised() { return this._gridSourceFrame !== undefined; }
+    get initialised() { return this._searchSymbolsFrame !== undefined; }
 
     get searchText() { return this._uiConditions[0].text; }
     set searchText(value: string) { this._uiConditions[0].text = value; }
@@ -164,10 +164,25 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     get count() { return this._uiDataDefinition.count; }
     set count(value: Integer | undefined) { this._uiDataDefinition.count = value; }
 
-    initialise(queryTableFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
-        this._gridSourceFrame = queryTableFrame;
-        this._gridSourceFrame.opener = this.opener;
-        this._gridSourceFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
+    initialise(ditemFrameElement: JsonElement | undefined, searchSymbolsFrame: SearchSymbolsFrame): void {
+        this._searchSymbolsFrame = searchSymbolsFrame;
+
+        searchSymbolsFrame.gridSourceOpenedEventer = (dataDefinition) => this.handleGridSourceOpenedEvent(dataDefinition);
+        searchSymbolsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
+
+        let searchSymbolsFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const searchSymbolsFrameElementResult = ditemFrameElement.tryGetElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
+            if (searchSymbolsFrameElementResult.isOk()) {
+                searchSymbolsFrameElement = searchSymbolsFrameElementResult.value;
+            }
+        }
+
+        searchSymbolsFrame.initialise(
+            this.opener,
+            searchSymbolsFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
@@ -177,30 +192,17 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     executeRequest() {
-        const gridSourceFrame = this._gridSourceFrame;
-        if (gridSourceFrame === undefined) {
+        const searchSymbolsFrame = this._searchSymbolsFrame;
+        if (searchSymbolsFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFER13133');
         } else {
             const dataDefinition = this._uiDataDefinition.createCopy();
-            gridSourceFrame.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
-            this._showFull = dataDefinition.fullSymbol;
-
-            const gridSourceOrNamedReferenceDefinition = this.createGridSourceOrNamedReferenceDefinition(dataDefinition);
-
-            const gridSourceOrNamedReference = gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-            if (gridSourceOrNamedReference !== undefined) {
-                const table = gridSourceFrame.openedTable;
-                this._recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
-                this._recordList = this._recordSource.recordList;
-
-                const description = this.generateQueryDescription(dataDefinition);
-                this._componentAccess.processQueryTableOpen(description);
-            }
+            searchSymbolsFrame.executeRequest(dataDefinition);
         }
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
-        const gridSourceFrame = this._gridSourceFrame;
+        const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
         } else {
@@ -209,12 +211,17 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     }
 
     createAllowedFieldsAndLayoutDefinition() {
-        const gridSourceFrame = this._gridSourceFrame;
+        const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFCAFALD13133');
         } else {
             return gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
         }
+    }
+
+    private handleGridSourceOpenedEvent(dataDefinition: SearchSymbolsDataDefinition) {
+        const description = this.generateQueryDescription(dataDefinition);
+        this._componentAccess.processQueryTableOpen(description);
     }
 
     private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
@@ -318,7 +325,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
 export namespace SearchSymbolsDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const searchSymbolsFrame = 'searchSymbolsFrame';
     }
 
     export type TargetFieldId = SymbolFieldId;

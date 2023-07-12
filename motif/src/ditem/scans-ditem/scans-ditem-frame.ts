@@ -6,91 +6,93 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService, JsonElement,
-    LitIvemId,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { ScansFrame } from 'content-internal-api';
+import { ScanListFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
-    private _scansFrame: ScansFrame;
+    private _scanListFrame: ScanListFrame | undefined;
 
     constructor(
-        private _componentAccess: ScansDitemFrame.ComponentAccess,
+        ditemComponentAccess: DitemFrame.ComponentAccess,
         settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopInterface: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
-        super(BuiltinDitemFrame.BuiltinTypeId.Scans, _componentAccess,
+        super(BuiltinDitemFrame.BuiltinTypeId.Scans, ditemComponentAccess,
             settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
         );
     }
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    get initialised() { return this._scansFrame !== undefined; }
+    get initialised() { return this._scanListFrame !== undefined; }
 
-    get filterText() { return this._scansFrame.filterText; }
-    set filterText(value: string) { this._scansFrame.filterText = value; }
-
-    initialise(contentFrame: ScansFrame, frameElement: JsonElement | undefined): void {
-        this._scansFrame = contentFrame;
-
-        if (frameElement === undefined) {
-            this._scansFrame.initialise(undefined);
+    get filterText() {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFGFT49471');
         } else {
-            const contentElementResult = frameElement.tryGetElement(ScansDitemFrame.JsonName.content);
-            if (contentElementResult.isErr()) {
-                this._scansFrame.initialise(undefined);
-            } else {
-                this._scansFrame.initialise(contentElementResult.value);
+            return this._scanListFrame.filterText;
+        }
+    }
+    set filterText(value: string) {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFSFT49471');
+        } else {
+            this._scanListFrame.filterText = value;
+        }
+    }
+
+    initialise(ditemFrameElement: JsonElement | undefined, scanListFrame: ScanListFrame): void {
+        this._scanListFrame = scanListFrame;
+
+        let scanListFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const scanListFrameElementResult = ditemFrameElement.tryGetElement(ScansDitemFrame.JsonName.scanListFrame);
+            if (scanListFrameElementResult.isOk()) {
+                scanListFrameElement = scanListFrameElementResult.value;
             }
         }
+
+        scanListFrame.initialise(
+            this.opener,
+            scanListFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
-
-        const contentElement = element.newElement(ScansDitemFrame.JsonName.content);
-        this._scansFrame.save(contentElement);
+    override finalise() {
+        if (this._scanListFrame !== undefined) {
+            this._scanListFrame.finalise();
+        }
+        super.finalise();
     }
 
-    // open() {
-    //     const litIvemId = this.litIvemId;
-    //     if (litIvemId === undefined) {
-    //         this._contentFrame.close();
-    //     } else {
-    //         this._contentFrame.open(litIvemId, DepthStyleId.Full);
-    //     }
-    //     this._componentAccess.notifyOpenedClosed(litIvemId);
-    // }
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
 
-    // loadConstructLayoutConfig() {
-    //     super.loadConstructLayoutConfig();
-    // }
+        const scanListFrame = this._scanListFrame;
+        if (scanListFrame === undefined) {
+            throw new AssertInternalError('SDFS29974');
+        } else {
+            const scanListFrameElement = ditemFrameElement.newElement(ScansDitemFrame.JsonName.scanListFrame);
+            scanListFrame.save(scanListFrameElement);
+        }
+    }
 
     autoSizeAllColumnWidths(widenOnly: boolean) {
-        this._scansFrame.autoSizeAllColumnWidths(widenOnly);
-    }
-
-
-    // adviseShown() {
-    //     setTimeout(() => this._contentFrame.initialiseWidths(), 200);
-    // }
-
-    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
-        super.applyLitIvemId(litIvemId, selfInitiated);
-        if (litIvemId === undefined) {
-            return false;
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFASACW49471');
         } else {
-            // this.open();
-            return true;
+            this._scanListFrame.autoSizeAllColumnWidths(widenOnly);
         }
     }
 }
@@ -98,12 +100,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
 export namespace ScansDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const scanListFrame = 'scanListFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;
-
-
-    export interface ComponentAccess extends DitemFrame.ComponentAccess {
-    }
 }

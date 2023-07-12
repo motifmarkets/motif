@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './scan-list/internal-api';
+export * from './search-symbols-frame';
 

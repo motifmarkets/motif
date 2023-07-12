@@ -5,18 +5,16 @@
  */
 
 import {
-    Balances,
-    BalancesTableRecordSource,
-    BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    KeyedCorrectnessList,
+    LitIvemDetail,
+    LitIvemIdFromSearchSymbolsTableRecordSource,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    NamedJsonRankedLitIvemIdListsService,
+    SearchSymbolsDataDefinition,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
@@ -26,19 +24,19 @@ import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
-export class BalancesFrame extends GridSourceFrame {
-    gridSourceOpenedEventer: BalancesFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: BalancesFrame.RecordFocusedEventer | undefined
+export class SearchSymbolsFrame extends GridSourceFrame {
+    gridSourceOpenedEventer: SearchSymbolsFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: SearchSymbolsFrame.RecordFocusedEventer | undefined
 
-    private _recordSource: BalancesTableRecordSource;
-    private _recordList: KeyedCorrectnessList<Balances>;
+    private _recordList: LitIvemDetail[];
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
+    private _showFull: boolean;
+
     constructor(
         settingsService: SettingsService,
-        private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
         textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
@@ -68,28 +66,26 @@ export class BalancesFrame extends GridSourceFrame {
 
     get recordList() { return this._recordList; }
 
-    tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(group);
-        return this.tryOpenGridSource(definition, keepView);
-    }
+    executeRequest(dataDefinition: SearchSymbolsDataDefinition) {
+        this.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
+        this._showFull = dataDefinition.fullSymbol;
 
-    createDefaultLayoutGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBalances(brokerageAccountGroup);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        const gridSourceOrNamedReferenceDefinition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(dataDefinition);
+
+        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(BalancesFrame.defaultBrokerageAccountGroup);
+        return undefined;
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
         const table = this.openedTable;
-        this._recordSource = table.recordSource as BalancesTableRecordSource;
-        this._recordList = this._recordSource.recordList;
-        const brokerageAccountGroup = this._recordSource.brokerageAccountGroup;
+        const recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
+        this._recordList = recordSource.recordList;
+        const dataDefinition = recordSource.dataDefinition;
         if (this.gridSourceOpenedEventer !== undefined) {
-            this.gridSourceOpenedEventer(brokerageAccountGroup);
+            this.gridSourceOpenedEventer(dataDefinition);
         }
     }
 
@@ -97,6 +93,12 @@ export class BalancesFrame extends GridSourceFrame {
         if (this.recordFocusedEventer !== undefined) {
             this.recordFocusedEventer(newRecordIndex);
         }
+    }
+
+    private createDefaultLayoutGridSourceOrNamedReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdFromSearchSymbols(dataDefinition);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
@@ -107,14 +109,12 @@ export class BalancesFrame extends GridSourceFrame {
         return this._gridHeaderCellPainter;
     }
 
-    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
     }
 }
 
-export namespace BalancesFrame {
-    export type GridSourceOpenedEventer = (this: void, brokerageAccountGroup: BrokerageAccountGroup) => void;
+export namespace SearchSymbolsFrame {
+    export type GridSourceOpenedEventer = (this: void, dataDefinition: SearchSymbolsDataDefinition) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
-
-    export const defaultBrokerageAccountGroup = BrokerageAccountGroup.createAll();
 }
