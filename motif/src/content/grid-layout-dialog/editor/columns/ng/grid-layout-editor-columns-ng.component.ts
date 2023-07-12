@@ -10,7 +10,6 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
-import { AdaptedRevgrid } from '../../../../adapted-revgrid/internal-api';
 import { GridSourceNgComponent } from '../../../../grid-source/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 import { columnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
@@ -27,11 +26,6 @@ import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-fram
 export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
     @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     private readonly _frame: GridLayoutEditorColumnsFrame;
 
@@ -53,7 +47,7 @@ export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDi
     }
 
     private initialise() {
-        this._frame.initialise(this._gridSourceComponent.frame, this._gridSourceComponent.recordGrid);
+        this._frame.initialise(this._gridSourceComponent.frame/* , this._gridSourceComponent.recordGrid*/);
 
         this._searchComponent.selectAllEventer = () => this._frame.selectAll();
         this._searchComponent.searchTextChangedEventer = (searchText) => this._frame.tryFocusFirstSearchMatch(searchText);

@@ -36,9 +36,9 @@ export class GridLayoutEditorColumnsFrame extends ContentFrame {
 
     get selectedCount() { return this._recordGrid.getSelectedRowCount(); }
 
-    initialise(gridSourceFrame: GridSourceFrame, recordGrid: RecordGrid) {
+    initialise(gridSourceFrame: GridSourceFrame/*, recordGrid: RecordGrid*/) {
         this._gridSourceFrame = gridSourceFrame;
-        this._recordGrid = recordGrid;
+        // this._recordGrid = recordGrid;
 
         const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createEditableGridLayoutDefinitionColumn(this._columnList);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
@@ -47,7 +47,7 @@ export class GridLayoutEditorColumnsFrame extends ContentFrame {
     }
 
     insertFields(fields: GridField[]) {
-
+        // todo
     }
 
     getAllFieldNames() {
@@ -59,19 +59,19 @@ export class GridLayoutEditorColumnsFrame extends ContentFrame {
     }
 
     moveSelectedUp() {
-
+        // todo
     }
 
     moveSelectedToTop() {
-
+        // todo
     }
 
     moveSelectedDown() {
-
+        // todo
     }
 
     moveSelectedToBottom() {
-
+        // todo
     }
 
     selectAll() {
@@ -112,7 +112,7 @@ export class GridLayoutEditorColumnsFrame extends ContentFrame {
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
-        const rowCount = this._recordGrid.getRowCount();
+        const rowCount = 0; //this._recordGrid.getRowCount();
 
         while (rowIndex >= 0 && rowIndex < rowCount) {
             const recordIndex = this._recordGrid.rowToRecordIndex(rowIndex);

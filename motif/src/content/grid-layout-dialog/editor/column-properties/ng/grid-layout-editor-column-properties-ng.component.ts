@@ -17,7 +17,7 @@ import {
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { AdaptedRevgrid, RecordGrid } from '../../../../adapted-revgrid/internal-api';
+import { RecordGrid } from '../../../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 
@@ -69,7 +69,7 @@ export class GridLayoutEditorColumnPropertiesNgComponent extends ContentComponen
             this._gridComponent.destroyGrid();
         };
 
-        this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorColumnPropertiesNgComponent.frameGridProperties);
+        // this._grid = this._gridComponent.createGrid(this._recordStore, GridLayoutEditorColumnPropertiesNgComponent.frameGridProperties);
         this._grid.recordFocusedEventer = (recIdx) => this.handleRecordFocusEvent(recIdx);
         this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
 
@@ -276,11 +276,6 @@ export class GridLayoutEditorColumnPropertiesNgComponent extends ContentComponen
 export namespace GridLayoutEditorColumnPropertiesNgComponent {
     export type RecordFocusEventer = (recordIndex: Integer | undefined) => void;
     export type GridClickEventer = (fieldIndex: Integer, recordIndex: Integer) => void;
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridSettings = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     export const enum ColumnFilterId {
         ShowAll = 1,

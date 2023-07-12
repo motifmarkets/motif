@@ -34,9 +34,9 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
     get selectedCount() { return 0; }
     get selectedFields() { return new Array<GridField>(0); }
 
-    initialise(gridSourceFrame: GridSourceFrame, recordGrid: RecordGrid) {
+    initialise(gridSourceFrame: GridSourceFrame) {
         this._gridSourceFrame = gridSourceFrame;
-        this._recordGrid = recordGrid;
+        // this._recordGrid = recordGrid;
 
         const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
@@ -45,7 +45,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
     }
 
     setUsedFieldNames(names: string[]) {
-
+        // to do
     }
 
     selectAll() {
@@ -78,7 +78,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
-        const rowCount = this._recordGrid.getRowCount();
+        const rowCount = 0; //this._recordGrid.getRowCount();
 
         while (rowIndex >= 0 && rowIndex < rowCount) {
             const recordIndex = this._recordGrid.rowToRecordIndex(rowIndex);
