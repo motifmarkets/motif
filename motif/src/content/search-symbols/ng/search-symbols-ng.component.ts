@@ -8,17 +8,17 @@ import {
     ChangeDetectionStrategy,
     Component
 } from '@angular/core';
-import { GridSourceNgComponent } from '../../grid-source/ng-api';
+import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { SearchSymbolsFrame } from '../search-symbols-frame';
 
 @Component({
     selector: 'app-search-symbols',
-    templateUrl: '../../grid-source/ng/grid-source-ng.component.html',
-    styleUrls: ['../../grid-source/ng/grid-source-ng.component.scss'],
+    templateUrl: './search-symbols-ng.component.html',
+    styleUrls: ['./search-symbols-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchSymbolsNgComponent extends GridSourceNgComponent {
+export class SearchSymbolsNgComponent extends GridSourceNgDirective {
     declare frame: SearchSymbolsFrame;
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {

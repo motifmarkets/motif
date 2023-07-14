@@ -383,6 +383,9 @@ export class DepthSideFrame extends ContentFrame {
 
         this._gridHeaderCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
+
+        grid.activate();
+
     }
 
     private prepareGrid(element: DepthSideFrame.StyleCacheElement) {

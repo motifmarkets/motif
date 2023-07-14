@@ -10,17 +10,17 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import { AssertInternalError } from '@motifmarkets/motif-core';
-import { GridSourceNgComponent } from '../../grid-source/ng-api';
+import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { FeedsFrame } from '../feeds-frame';
 
 @Component({
     selector: 'app-feeds',
-    templateUrl: '../../grid-source/ng/grid-source-ng.component.html',
-    styleUrls: ['../../grid-source/ng/grid-source-ng.component.scss'],
+    templateUrl: './feeds-ng.component.html',
+    styleUrls: ['./feeds-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FeedsNgComponent extends GridSourceNgComponent {
+export class FeedsNgComponent extends GridSourceNgDirective {
     declare frame: FeedsFrame;
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {

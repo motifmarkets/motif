@@ -641,9 +641,12 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         this.sortBy(headerOrFixedRowCell.viewLayoutColumn.column.field.index);
     }
 
-    protected override descendantProcessClick(_event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    protected override descendantProcessClick(event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField> | null | undefined) {
         if (this.mainClickEventer !== undefined) {
-            if (!LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
+            if (hoverCell === null) {
+                hoverCell = this.findLinedHoverCellAtCanvasOffset(event.offsetX, event.offsetY);
+            }
+            if (hoverCell !== undefined && !LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;
@@ -655,9 +658,12 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         }
     }
 
-    protected override descendantProcessDblClick(_event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    protected override descendantProcessDblClick(event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField> | null | undefined) {
         if (this.mainDblClickEventer !== undefined) {
-            if (!LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
+            if (hoverCell === null) {
+                hoverCell = this.findLinedHoverCellAtCanvasOffset(event.offsetX, event.offsetY);
+            }
+            if (hoverCell !== undefined && !LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;
@@ -670,8 +676,17 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
     }
 
     protected override descendantProcessRowFocusChanged(newSubgridRowIndex: number | undefined, oldSubgridRowIndex: number | undefined) {
+        let newRecordIndex: Integer | undefined;
+        if (newSubgridRowIndex !== undefined) {
+            newRecordIndex = this.mainDataServer.getRecordIndexFromRowIndex(newSubgridRowIndex);
+        }
+        let oldRecordIndex: Integer | undefined;
+        if (oldSubgridRowIndex !== undefined) {
+            oldRecordIndex = this.mainDataServer.getRecordIndexFromRowIndex(oldSubgridRowIndex);
+        }
+
         if (this.recordFocusedEventer !== undefined) {
-            this.recordFocusedEventer(newSubgridRowIndex, oldSubgridRowIndex);
+            this.recordFocusedEventer(newRecordIndex, oldRecordIndex);
         }
     }
 

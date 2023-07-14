@@ -10,7 +10,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
-import { GridSourceNgComponent } from '../../../../grid-source/ng-api';
+import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 import { columnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorSearchGridNgComponent } from '../../search-grid/ng-api';
@@ -25,7 +25,7 @@ import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-fram
 })
 export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
-    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgComponent;
+    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgDirective;
 
     private readonly _frame: GridLayoutEditorColumnsFrame;
 

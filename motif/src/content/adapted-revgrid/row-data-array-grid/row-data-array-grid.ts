@@ -86,9 +86,12 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
         this._serverSet.setData(data, keyIsHeading);
     }
 
-    protected override descendantProcessClick(_event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    protected override descendantProcessClick(event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField> | null | undefined) {
         if (this.mainClickEventer !== undefined) {
-            if (!LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
+            if (hoverCell === null) {
+                hoverCell = this.findLinedHoverCellAtCanvasOffset(event.offsetX, event.offsetY);
+            }
+            if (hoverCell !== undefined && !LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;
@@ -99,9 +102,12 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
         }
     }
 
-    protected override descendantProcessDblClick(_event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    protected override descendantProcessDblClick(event: MouseEvent, hoverCell: LinedHoverCell<AdaptedRevgridBehavioredColumnSettings, GridField> | null | undefined) {
         if (this.mainDblClickEventer !== undefined) {
-            if (!LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
+            if (hoverCell === null) {
+                hoverCell = this.findLinedHoverCellAtCanvasOffset(event.offsetX, event.offsetY);
+            }
+            if (hoverCell !== undefined && !LinedHoverCell.isMouseOverLine(hoverCell)) { // skip clicks on grid lines
                 const cell = hoverCell.viewCell;
                 if (!cell.isHeaderOrRowFixed) { // Skip clicks to the column headers
                     const rowIndex = cell.viewLayoutRow.subgridRowIndex;

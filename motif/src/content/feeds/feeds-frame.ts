@@ -51,8 +51,8 @@ export class FeedsFrame extends GridSourceFrame {
             hostElement,
             {},
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
-            (viewCell) => this.getGridHeaderCellPainter(viewCell),
             (viewCell) => this.getGridMainCellPainter(viewCell),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
         const grid = this.grid;

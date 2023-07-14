@@ -5,9 +5,8 @@
  */
 
 import {
-    ChangeDetectionStrategy,
     ChangeDetectorRef,
-    Component,
+    Directive,
     ElementRef,
     HostBinding,
     OnDestroy,
@@ -19,14 +18,10 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 import { ContentNgService } from '../../ng/content-ng.service';
 import { GridSourceFrame } from '../grid-source-frame';
 
-@Component({
-    selector: 'app-grid-source',
-    templateUrl: './grid-source-ng.component.html',
-    styleUrls: ['./grid-source-ng.component.scss'],
-
-    changeDetection: ChangeDetectionStrategy.OnPush
+@Directive({
+    selector: '[appGridSource]'
 })
-export abstract class GridSourceNgComponent
+export abstract class GridSourceNgDirective
     extends ContentComponentBaseNgDirective
     implements OnDestroy, GridSourceFrame.ComponentAccess {
 
@@ -79,7 +74,7 @@ export abstract class GridSourceNgComponent
     protected abstract createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement): GridSourceFrame;
 }
 
-export namespace GridSourceNgComponent {
+export namespace GridSourceNgDirective {
     export namespace JsonName {
         export const frame = 'frame';
     }

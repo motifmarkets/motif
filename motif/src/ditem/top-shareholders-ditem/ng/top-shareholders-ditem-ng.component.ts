@@ -43,7 +43,7 @@ import {
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService
 } from 'component-services-ng-api';
-import { GridSourceNgComponent } from 'content-ng-api';
+import { GridSourceNgDirective } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -65,7 +65,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     @ViewChild('compareModeButton', { static: true }) private _compareModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('detailsModeButton', { static: true }) private _detailsModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('historyCompareButton', { static: true }) private _historyCompareButtonInputComponent: SvgButtonNgComponent;
-    @ViewChild('topShareholdersTableContent', { static: true }) private _contentComponent: GridSourceNgComponent;
+    @ViewChild('topShareholdersTableContent', { static: true }) private _contentComponent: GridSourceNgDirective;
     @ViewChild('symbolInput', { static: true }) private _symbolEditComponent: IvemIdInputNgComponent;
     @ViewChild('historicalDateInput', { static: true }) private _historicalDateInputComponent: DateInputNgComponent;
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;

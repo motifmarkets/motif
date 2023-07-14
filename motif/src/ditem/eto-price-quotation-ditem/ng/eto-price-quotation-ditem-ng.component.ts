@@ -25,7 +25,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { GridLayoutEditorNgComponent, GridSourceNgComponent } from 'content-ng-api';
+import { GridLayoutEditorNgComponent, GridSourceNgDirective } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -45,8 +45,8 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('watchGridSource', { static: true }) private _watchGridSourceComponent: GridSourceNgComponent;
-    @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgComponent;
+    @ViewChild('watchGridSource', { static: true }) private _watchGridSourceComponent: GridSourceNgDirective;
+    @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgDirective;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
     private _symbolEditUiAction: LitIvemIdUiAction;

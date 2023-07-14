@@ -4,9 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/normalize';
-@import './partials/app';
-@import './partials/golden-layout/goldenlayout-var-theme';
+@use './partials/normalize';
+@use './partials/app';
+@use './partials/golden-layout/goldenlayout-var-theme';
+@use './partials/revgrid/revgrid-scroller';
 
 // fonts - check out https://fonts.google.com/ for more
 @import url('https://fonts.googleapis.com/css?family=Archivo+Narrow');

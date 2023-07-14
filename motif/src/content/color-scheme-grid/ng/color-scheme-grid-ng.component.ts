@@ -57,7 +57,9 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
 
         const grid = this._grid;
         this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, this._grid, grid.mainDataServer);
-        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.mainDataServer);
+        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
+
+        grid.activate();
 
         this.dataResetGrid();
 

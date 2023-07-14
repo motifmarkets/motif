@@ -32,8 +32,7 @@ export class HeaderTextCellPainter extends StandardTextCellPainter<AdaptedRevgri
         const textFont = columnSettings.columnHeaderFont;
 
         const textColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_ColumnHeader);
-
-        const backgroundColor = columnSettings.backgroundColor;
+        const backgroundColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_ColumnHeader);
 
         const fingerprint = cell.paintFingerprint as PaintFingerprint | undefined;
 

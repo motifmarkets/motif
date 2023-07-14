@@ -61,13 +61,14 @@ export class TradesFrame extends ContentFrame {
             () => this.getMainCellPainter(),
             () => this.getHeaderCellPainter(),
         );
-
-        this._grid.rowOrderReversed = true;
+        this._grid = grid;
 
         this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
 
-        this._grid.activate();
+        grid.activate();
+
+        grid.rowOrderReversed = true;
     }
 
     get opened() { return this._dataItem !== undefined; }

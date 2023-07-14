@@ -1,15 +1,15 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { GridSourceNgComponent } from '../../grid-source/ng-api';
+import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { OrdersFrame } from '../orders-frame';
 
 @Component({
     selector: 'app-orders',
-    templateUrl: '../../grid-source/ng/grid-source-ng.component.html',
-    styleUrls: ['../../grid-source/ng/grid-source-ng.component.scss'],
+    templateUrl: './orders-ng.component.html',
+    styleUrls: ['./orders-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrdersNgComponent extends GridSourceNgComponent {
+export class OrdersNgComponent extends GridSourceNgDirective {
     declare frame: OrdersFrame;
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {

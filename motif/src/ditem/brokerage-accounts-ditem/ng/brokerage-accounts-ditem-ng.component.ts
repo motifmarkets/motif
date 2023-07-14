@@ -45,7 +45,7 @@ import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('brokerage-accounts', { static: true }) private _brokerageAccountsComponent: BrokerageAccountsNgComponent;
+    @ViewChild('brokerageAccounts', { static: true }) private _brokerageAccountsComponent: BrokerageAccountsNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
     private _frame: BrokerageAccountsDitemFrame;
