@@ -47,6 +47,7 @@ import { BalancesDitemFrame } from '../balances-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
@@ -58,8 +59,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private readonly _frame: BalancesDitemFrame;
 
     constructor(
-        cdr: ChangeDetectorRef,
         elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -67,7 +68,15 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         adiNgService: AdiNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++BalancesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new BalancesDitemFrame(
             this,

@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -55,6 +56,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('fontFamilyLabel', { static: true }) private _fontFamilyLabelComponent: CaptionLabelNgComponent;
     @ViewChild('fontFamilyControl', { static: true }) private _fontFamilyControlComponent: TextInputNgComponent;
     @ViewChild('fontSizeLabel', { static: true }) private _fontSizeLabelComponent: CaptionLabelNgComponent;
@@ -122,8 +125,8 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
-        super(cdr, settingsNgService.service);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
+        super(elRef, ++GeneralSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
         this._masterSettings = settingsNgService.service.master;
         this._symbolsService = symbolsNgService.service;
 

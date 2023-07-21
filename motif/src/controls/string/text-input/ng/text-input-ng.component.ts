@@ -17,18 +17,20 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TextInputNgComponent extends ControlComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
     @Input() size = '20'; // same as HTML default
 
-    @ViewChild('textInput', { static: true }) private _textInput: ElementRef;
+    @ViewChild('textInput', { static: true }) private _textInput: ElementRef<HTMLInputElement>;
 
     public displayValue = '';
 
     private _pushTextEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'TextInput' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++TextInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        this.inputId = 'TextInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as StringUiAction; }

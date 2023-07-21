@@ -2,7 +2,7 @@ import { ChangeDetectionStrategy, Component, ElementRef, HostBinding } from '@an
 import { IroColor } from '@irojs/iro-core';
 import iro from '@jaames/iro';
 import { ColorPickerProps, ColorPickerState, IroColorPicker } from '@jaames/iro/dist/ColorPicker';
-import { AssertInternalError, ColorScheme, compareInteger, Integer, RGB, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { AssertInternalError, ColorScheme, Integer, RGB, UnreachableCaseError, compareInteger } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -12,12 +12,13 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('class.hidden') public hidden = true;
 
     activeChangedEventer: MultiColorPickerNgComponent.ActiveChangedEventer;
     inputChangeEventer: MultiColorPickerNgComponent.InputChangeEventer;
 
-    private readonly _hostElement: HTMLElement;
     private readonly _colorPicker: IroColorPicker;
     private _pickerType = MultiColorPickerNgComponent.PickerTypeId.HueSaturation;
 
@@ -37,9 +38,8 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
     ];
 
     constructor(elRef: ElementRef<HTMLElement>) {
-        super();
+        super(elRef, ++MultiColorPickerNgComponent.typeInstanceCreateCount);
 
-        this._hostElement = elRef.nativeElement;
         this._colorPicker = this.createColorPicker();
     }
 
@@ -144,7 +144,7 @@ export class MultiColorPickerNgComponent extends ContentComponentBaseNgDirective
             activeHandleRadius: 10,
         };
 
-        const picker = iro.ColorPicker(this._hostElement, pickerProps);
+        const picker = iro.ColorPicker(this.rootHtmlElement, pickerProps);
         picker.on('input:change', this._inputChangeListener);
         picker.on('color:setActive', this._activeChangedListener);
         return picker;

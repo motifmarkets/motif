@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostBinding,
     HostListener,
     OnDestroy,
@@ -50,6 +51,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorControlsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.flex-direction') public flexDirection: string;
 
     @ViewChild('hideInPickerControl', { static: true }) private _hideInPickerControl: CaptionedCheckboxNgComponent;
@@ -118,11 +121,13 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++ColorControlsNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._settingsService = settingsNgService.service;

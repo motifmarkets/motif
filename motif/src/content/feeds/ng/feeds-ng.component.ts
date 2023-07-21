@@ -6,7 +6,9 @@
 
 import {
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
+    ElementRef,
     ViewContainerRef
 } from '@angular/core';
 import { AssertInternalError } from '@motifmarkets/motif-core';
@@ -21,7 +23,17 @@ import { FeedsFrame } from '../feeds-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class FeedsNgComponent extends GridSourceNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     declare frame: FeedsFrame;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+    ) {
+        super(elRef, ++FeedsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
+    }
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
         return contentNgService.createFeedsFrame(this, hostElement);

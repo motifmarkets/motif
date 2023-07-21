@@ -8,15 +8,9 @@
     margin: 0;
     transition: opacity 0.5s;
 }
-.revgrid-host > .vertical-scroller {
-    width: 7px;
-}
 .revgrid-host > .vertical-scroller > .thumb {
     left: 0;
     right: 0;
-}
-.revgrid-host > .horizontal-scroller {
-    height: 7px;
 }
 .revgrid-host > .horizontal-scroller > .thumb {
     top: 0;

@@ -75,6 +75,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
         getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        externalParent: unknown,
     ) {
         const schemaServer = new RecordGridSchemaServer();
         const headerDataServer = new RecordGridHeaderDataServer();
@@ -95,7 +96,7 @@ export class RecordGrid extends AdaptedRevgrid implements GridLayout.ChangeIniti
             ],
         }
 
-        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
+        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer, externalParent);
 
         this.headerDataServer = headerDataServer;
 

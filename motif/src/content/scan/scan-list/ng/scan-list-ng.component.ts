@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
 import { GridSourceNgDirective } from '../../../grid-source/ng-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { ScanListFrame } from '../scan-list-frame';
@@ -11,7 +11,17 @@ import { ScanListFrame } from '../scan-list-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanListNgComponent extends GridSourceNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     declare frame: ScanListFrame;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+    ) {
+        super(elRef, ++ScanListNgComponent.typeInstanceCreateCount, cdr, contentNgService);
+    }
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
         return contentNgService.createScanListFrame(this, hostElement);

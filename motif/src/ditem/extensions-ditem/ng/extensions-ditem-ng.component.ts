@@ -34,9 +34,11 @@ import { ExtensionsDitemFrame } from '../extensions-ditem-frame';
     encapsulation: ViewEncapsulation.None,
 })
 export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--splitter-background-color') splitterBackgroundColor: string;
 
-    @ViewChild('splitter') private _splitterComponent: SplitComponent;
+    @ViewChild('splitter') private _splitterComponent: SplitComponent | undefined;
     @ViewChild('sidebar') private _sideBarComponent: ExtensionsSidebarNgComponent;
 
     public splitterGutterSize = 3;
@@ -49,16 +51,24 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     private _listTransitioningInfo: ExtensionInfo | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++ExtensionsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new ExtensionsDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
@@ -136,11 +146,13 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     }
 
     private checkSetSidebarPixelWidth() {
-        if (this._splitterComponent.unit !== AngularSplitTypes.Unit.pixel) {
-            const width = this._sideBarComponent.width;
-            if (width > 0) {
-                this._splitterComponent.unit = AngularSplitTypes.Unit.pixel;
-                this._splitterComponent.setVisibleAreaSizes([width, '*']);
+        if (this._splitterComponent !== undefined) {
+            if (this._splitterComponent.unit !== AngularSplitTypes.Unit.pixel) {
+                const width = this._sideBarComponent.width;
+                if (width > 0) {
+                    this._splitterComponent.unit = AngularSplitTypes.Unit.pixel;
+                    this._splitterComponent.setVisibleAreaSizes([width, '*']);
+                }
             }
         }
     }

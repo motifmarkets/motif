@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { AssertInternalError, RoutedIvemId, SymbolDetailCacheService } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolDetailCacheNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -18,18 +18,28 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() for: string;
 
     private readonly _symbolDetailCacheService: SymbolDetailCacheService;
     private activePromiseId = 0;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsNgService);
+        super(
+            elRef,
+            ++SymbolNameLabelNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray,
+            symbolsNgService
+        );
 
         this._symbolDetailCacheService = symbolDetailCacheNgService.service;
     }

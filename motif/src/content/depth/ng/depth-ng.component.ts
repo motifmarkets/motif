@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
@@ -21,6 +21,8 @@ import { DepthFrame } from '../depth-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(SplitComponent) private _split: SplitComponent;
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
@@ -34,8 +36,8 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
 
     private readonly _frame: DepthFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        super(elRef, ++DepthNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createDepthFrame(this);
     }

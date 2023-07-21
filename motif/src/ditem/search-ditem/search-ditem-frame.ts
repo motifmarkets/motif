@@ -55,6 +55,7 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
             (viewCell) => this.getGridMainCellPainter(viewCell),
+            this,
         );
         this._grid = grid;
 

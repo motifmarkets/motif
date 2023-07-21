@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { ColorScheme, ColorSettings, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
@@ -16,6 +16,8 @@ import { ContentComponentBaseNgDirective } from '../../../../ng/content-componen
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewOrderRequestZenithMessageNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() zenithMessageTitle = '';
     @Input() zenithMessageText = '';
 
@@ -26,8 +28,8 @@ export class ReviewOrderRequestZenithMessageNgComponent extends ContentComponent
     private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
+        super(elRef, ++ReviewOrderRequestZenithMessageNgComponent.typeInstanceCreateCount);
 
         this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;

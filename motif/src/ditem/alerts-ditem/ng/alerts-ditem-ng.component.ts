@@ -34,6 +34,8 @@ import { AlertsDitemFrame } from '../alerts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('filterInput') private _filterEditComponent: TextInputNgComponent;
     @ViewChild('detailsButton', { static: true }) private _detailsButtonComponent: ButtonInputNgComponent;
     @ViewChild('acknowledgeButton', { static: true }) private _acknowledgeButtonComponent: ButtonInputNgComponent;
@@ -56,9 +58,9 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _columnsUiAction: IconButtonUiAction;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -66,7 +68,14 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++AlertsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
         this._frame = new AlertsDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,

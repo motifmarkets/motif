@@ -60,6 +60,7 @@ export class TradesFrame extends ContentFrame {
             () => this.customiseSettingsForNewColumn(),
             () => this.getMainCellPainter(),
             () => this.getHeaderCellPainter(),
+            this,
         );
         this._grid = grid;
 

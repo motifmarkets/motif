@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     Injector,
     Type,
     ValueProvider,
@@ -33,14 +34,16 @@ import { ReviewOrderRequestComponentNgDirective } from './review-order-request-c
 export class ReviewOrderRequestStepNgComponent extends OrderRequestStepComponentNgDirective
     implements ReviewOrderRequestStepFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('reviewContainer', { read: ViewContainerRef }) private _reviewContainer: ViewContainerRef;
 
     private readonly _frame: ReviewOrderRequestStepFrame;
 
     private _requestTypeComponent: ReviewOrderRequestComponentNgDirective;
 
-    constructor(cdr: ChangeDetectorRef, private readonly _contentService: ContentNgService) {
-        super(cdr);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, private readonly _contentService: ContentNgService) {
+        super(elRef, ++ReviewOrderRequestStepNgComponent.typeInstanceCreateCount, cdr);
         this._frame = this._contentService.createReviewOrderRequestStepFrame(this);
     }
 

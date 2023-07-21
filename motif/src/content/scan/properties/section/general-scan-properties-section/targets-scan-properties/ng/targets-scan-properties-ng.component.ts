@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
@@ -18,8 +18,8 @@ import {
 } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
 import {
-    CaptionedRadioNgComponent,
     CaptionLabelNgComponent,
+    CaptionedRadioNgComponent,
     EnumArrayInputNgComponent,
     EnumInputNgComponent, IntegerTextInputNgComponent,
     LitIvemIdSelectNgComponent
@@ -33,6 +33,8 @@ import { ContentComponentBaseNgDirective } from '../../../../../../ng/content-co
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('singleSymbolTargetSubTypeControl', { static: true })
         private _singleSymbolTargetSubTypeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('multiSymbolTargetSubTypeControl', { static: true })
@@ -70,8 +72,8 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
     private _scan: Scan | undefined;
     private _targetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
 
-    constructor(private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
+        super(elRef, ++TargetsScanPropertiesNgComponent.typeInstanceCreateCount);
 
         this.targetSubTypeRadioName = this.generateInstancedRadioName('targetSubType');
 

@@ -40,6 +40,8 @@ import { NewsHeadlinesDitemFrame } from '../news-headlines-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('filterInput') private _filterEditComponent: TextInputNgComponent;
@@ -62,9 +64,9 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private _columnsUiAction: IconButtonUiAction;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -72,7 +74,15 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++NewsHeadlinesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new NewsHeadlinesDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,

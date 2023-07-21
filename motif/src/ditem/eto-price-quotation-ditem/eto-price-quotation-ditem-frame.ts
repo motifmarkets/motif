@@ -13,12 +13,12 @@ import {
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { GridSourceFrame } from 'content-internal-api';
+import { GridSourceFrame, WatchlistFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
-    private _watchGridSourceFrame: GridSourceFrame;
+    private _watchGridSourceFrame: WatchlistFrame;
     private _callPutGridSourceFrame: GridSourceFrame;
 
     constructor(
@@ -37,7 +37,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._callPutGridSourceFrame !== undefined; }
 
-    initialise(watchFrame: GridSourceFrame, callPutFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
+    initialise(watchFrame: WatchlistFrame, callPutFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._watchGridSourceFrame = watchFrame;
         this._callPutGridSourceFrame = callPutFrame;
 

@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -35,6 +36,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('reviewEnabledLabel', { static: true }) private _reviewEnabledComponent: CaptionLabelNgComponent;
     @ViewChild('reviewEnabledControl', { static: true }) private _reviewEnabledControlComponent: CheckboxInputNgComponent;
     @ViewChild('defaultOrderTypeIdLabel', { static: true }) private _defaultOrderTypeIdLabelComponent: CaptionLabelNgComponent;
@@ -46,8 +49,8 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     private _defaultOrderTypeIdUiAction: ExplicitElementsEnumUiAction;
     private _defaultTimeInForceIdUiAction: ExplicitElementsEnumUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++OrderPadSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._reviewEnabledUiAction = this.createReviewEnabledUiAction();
         this._defaultOrderTypeIdUiAction = this.createDefaultOrderTypeIdUiAction();

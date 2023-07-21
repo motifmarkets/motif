@@ -25,7 +25,7 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.service;
-        super(elRef.nativeElement, settingsService);
+        super(elRef, 1, settingsService);
     }
 
     ngOnDestroy() {
@@ -60,12 +60,13 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
 
         const grid = new RowDataArrayGrid(
             this._settingsService,
-            this._hostElement,
+            this.rootHtmlElement,
             customGridSettings,
             createFieldEventer,
             customiseSettingsForNewColumnEventer,
             getMainCellPainterEventer,
             getHeaderCellPainterEventer,
+            this,
         );
 
         this._grid = grid;

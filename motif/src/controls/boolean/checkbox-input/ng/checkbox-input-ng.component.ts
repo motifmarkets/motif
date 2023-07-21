@@ -16,6 +16,8 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() checked = false;
     @Input() inputId: string;
 
@@ -23,9 +25,9 @@ export class CheckboxInputNgComponent extends ControlComponentBaseNgDirective im
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'Checkbox' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++CheckboxInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        this.inputId = 'Checkbox' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as BooleanUiAction; }

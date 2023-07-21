@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef } from '@angular/core';
 import {
+    Integer,
     MultiEvent,
     RoutedIvemId,
     RoutedIvemIdUiAction,
@@ -26,12 +27,14 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
     private _pushRoutedIvemIdEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
         stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsService, stateColorItemIdArray);
+        super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);
         this._symbolsService = symbolsNgService.service;
     }
 

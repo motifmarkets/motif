@@ -12,7 +12,6 @@ import {
     ElementRef,
     Inject,
     OnDestroy,
-    Self,
     ViewChild
 } from '@angular/core';
 import {
@@ -38,7 +37,6 @@ import {
     TableRecordSourceDefinitionFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
-import { GridSourceFrameGridParametersService } from 'content-internal-api';
 import { BalancesNgComponent, HoldingsNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -55,6 +53,8 @@ import { HoldingsDitemFrame } from '../holdings-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
     @ViewChild('holdings', { static: true }) private _holdingsComponent: HoldingsNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
@@ -76,20 +76,27 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private _frame: HoldingsDitemFrame;
 
     constructor(
-        cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
         elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        @Self() @Inject(GridSourceFrameGridParametersService.injectionToken) gridParametersService: GridSourceFrameGridParametersService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++HoldingsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new HoldingsDitemFrame(
             this,

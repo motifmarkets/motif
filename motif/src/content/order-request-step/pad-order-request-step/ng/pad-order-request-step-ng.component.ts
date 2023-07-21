@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import {
     Account,
     AssertInternalError,
@@ -77,6 +77,8 @@ import { PadOrderRequestStepFrame } from '../pad-order-request-step-frame';
 })
 export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgDirective
     implements OnDestroy, AfterViewInit, PadOrderRequestStepFrame.ComponentAccess {
+
+    private static typeInstanceCreateCount = 0;
 
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
@@ -167,8 +169,8 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     private readonly _errorCountUiAction: IntegerUiAction;
     private readonly _errorsUiAction: StringUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
-        super(cdr);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
+        super(elRef, ++PadOrderRequestStepNgComponent.typeInstanceCreateCount, cdr);
 
         this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());

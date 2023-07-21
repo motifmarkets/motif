@@ -20,19 +20,29 @@ import { NewsBodyDitemFrame } from '../news-body-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsBodyDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     private _frame: NewsBodyDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++NewsBodyDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new NewsBodyDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);

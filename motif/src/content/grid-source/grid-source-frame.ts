@@ -1041,6 +1041,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             customiseSettingsForNewColumnEventer,
             getMainCellPainterEventer,
             getHeaderCellPainterEventer,
+            this,
         );
 
         grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.processRecordFocusedEvent(newRecordIndex, oldRecordIndex);

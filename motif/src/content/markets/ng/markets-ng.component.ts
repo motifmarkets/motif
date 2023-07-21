@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -26,14 +27,16 @@ import { MarketsFrame } from '../markets-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MarketsNgComponent extends ContentComponentBaseNgDirective implements MarketsFrame.ComponentAccess, OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     public displayRecords: MarketsFrame.DisplayRecord[];
 
     private _frame: MarketsFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        super(elRef, ++MarketsNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createMarketsFrame(this);
         this.displayRecords = this._frame.displayRecords;

@@ -15,6 +15,8 @@ import { ComponentBaseNgDirective } from 'component-ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class UserAlertNgComponent extends ComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     public restartCaption = Strings[StringId.Restart];
     public restartReasonsText = '';
     public restartReasonCount = 0;
@@ -28,8 +30,8 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
     private _notCancellableCount = 0;
     private _errorCount = 0;
 
-    constructor(private readonly _cdr: ChangeDetectorRef, private readonly _elRef: ElementRef<HTMLElement>) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
+        super(elRef, ++UserAlertNgComponent.typeInstanceCreateCount);
     }
 
     pushAlerts(alerts: UserAlertService.Alert[]) {
@@ -87,7 +89,7 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
 
         this.hideButtonDisplay = this._notCancellableCount > 0 ? HtmlTypes.Display.None : HtmlTypes.Display.Flex;
 
-        this._elRef.nativeElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.Flex);
+        this.rootHtmlElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.Flex);
         this._cdr.markForCheck();
     }
 
@@ -99,6 +101,6 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
         for (const alert of this._alerts) {
             alert.hide();
         }
-        this._elRef.nativeElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.None);
+        this.rootHtmlElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.None);
     }
 }

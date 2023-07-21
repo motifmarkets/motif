@@ -25,7 +25,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { GridLayoutEditorNgComponent, GridSourceNgDirective } from 'content-ng-api';
+import { GridLayoutEditorNgComponent, GridSourceNgDirective, WatchlistNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -40,12 +40,13 @@ import { EtoPriceQuotationDitemFrame } from '../eto-price-quotation-ditem-frame'
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('symbolInput', { static: true }) private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('watchGridSource', { static: true }) private _watchGridSourceComponent: GridSourceNgDirective;
+    @ViewChild('watchGridSource', { static: true }) private _watchGridSourceComponent: WatchlistNgComponent;
     @ViewChild('callPutGridSource', { static: true }) private _callPutGridSourceComponent: GridSourceNgDirective;
     @ViewChild('layoutEditor', { static: true }) private _layoutEditorComponent: GridLayoutEditorNgComponent;
 
@@ -58,15 +59,23 @@ export class EtoPriceQuotationDitemNgComponent extends BuiltinDitemNgComponentBa
     private _frame: EtoPriceQuotationDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         pulseService: CoreNgService
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++EtoPriceQuotationDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new EtoPriceQuotationDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, pulseService.symbolsService, pulseService.adiService);

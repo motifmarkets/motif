@@ -9,23 +9,24 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
 import {
-    assert,
     ColorScheme,
     ColorSettings,
     CommandRegisterService,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     ModifierKey,
     StringBuilder,
     StringId,
-    UiAction
+    UiAction,
+    assert,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -39,6 +40,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     private static readonly _tabs2 = ' '.repeat(8);
     private static readonly _tabs3 = ' '.repeat(12);
 
@@ -56,8 +59,8 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
     private _closeResolve: () => void;
     private _closeReject: (reason: unknown) => void;
 
-    constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++ColorSchemePresetCodeNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

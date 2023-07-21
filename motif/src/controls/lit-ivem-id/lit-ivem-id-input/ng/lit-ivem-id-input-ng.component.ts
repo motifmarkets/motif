@@ -24,6 +24,8 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('litivemidInput', { static: true }) private symbolInput: ElementRef;
@@ -34,13 +36,14 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(elRef, ++LitIvemIdInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._symbolsService = symbolsNgService.service;
-        this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
+        this.inputId = 'LitIvemIdInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as LitIvemIdUiAction; }

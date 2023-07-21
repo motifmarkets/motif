@@ -50,6 +50,8 @@ import { DepthDitemFrame } from '../depth-ditem-frame';
 export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, DepthDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolEdit') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -77,16 +79,24 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     private _frame: DepthDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++DepthDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new DepthDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);

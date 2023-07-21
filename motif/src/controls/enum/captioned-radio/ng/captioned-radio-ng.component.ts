@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { Integer, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -18,14 +18,26 @@ import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-compo
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CaptionedRadioNgComponent extends EnumElementComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() name = '';
     @Input() checked = false;
 
     public radioDisabled = true;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'CaptionedRadio' + this.componentInstanceId;
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService
+    ) {
+        super(
+            elRef,
+            ++CaptionedRadioNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
+        );
+        this.inputId = 'CaptionedRadio' + this.typeInstanceId;
     }
 
     onChange(checked: boolean) {

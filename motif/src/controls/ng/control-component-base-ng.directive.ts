@@ -4,18 +4,19 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, HostBinding, Input, OnDestroy } from '@angular/core';
 import {
     ColorScheme,
     ColorSettings,
     CoreSettings,
-    delay1Tick,
     ExchangeSettings,
     HtmlTypes,
+    Integer,
     MultiEvent,
     SettingsService,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 
@@ -24,7 +25,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     @HostBinding('style.display') displayPropertyNoneOverride = ''; // no override
 
     initialiseReady = false;
-    initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler;
+    initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler | undefined;
 
     public disabled = true;
     public readonly = true;
@@ -49,11 +50,14 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     private _readonlyAlways = false;
 
-    constructor(private _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
-        private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
+        private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
     ) {
-        super();
+        super(elRef, typeInstanceCreateId);
         this._coreSettings = this._settingsService.core;
         this._colorSettings = this._settingsService.color;
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
@@ -113,6 +117,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     protected finalise() {
         const action = this._uiAction;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (action !== undefined) {
             this._uiAction.unsubscribePushEvents(this._pushEventsSubscriptionId);
         }
@@ -337,7 +342,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     private handleRequiredChangePushEvent() {
-
+        //
     }
 }
 

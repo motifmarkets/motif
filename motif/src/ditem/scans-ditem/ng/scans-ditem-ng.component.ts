@@ -37,6 +37,7 @@ import { ScansDitemFrame } from '../scans-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('newButton', { static: true }) private _newButtonComponent: ButtonInputNgComponent;
     @ViewChild('filterEdit') private _filterEditComponent: TextInputNgComponent;
@@ -57,16 +58,24 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     private _frame: ScansDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++ScansDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new ScansDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);

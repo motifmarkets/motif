@@ -47,6 +47,8 @@ import { TradesDitemFrame } from '../trades-ditem-frame';
 export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, TradesDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -69,9 +71,9 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: TradesDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -79,7 +81,14 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
     ) {
         const settingsService = settingsNgService.service;
-        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++TradesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
 
         this._frame = new TradesDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);

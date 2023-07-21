@@ -68,6 +68,8 @@ import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
     encapsulation: ViewEncapsulation.None,
 })
 export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implements OnDestroy, GoldenLayoutHostFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('componentsViewContainer', { read: ViewContainerRef, static: true }) private _componentsViewContainerRef: ViewContainerRef;
 
     private readonly _frame: GoldenLayoutHostFrame;
@@ -84,8 +86,8 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     private _componentsParentBoundingClientRect: DOMRect = new DOMRect();
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
         private readonly _appRef: ApplicationRef,
         private readonly _ditemComponentFactoryNgService: DitemComponentFactoryNgService,
         sessionNgService: SessionInfoNgService,
@@ -93,9 +95,9 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
     ) {
-        super();
+        super(elRef, ++GoldenLayoutHostNgComponent.typeInstanceCreateCount);
 
-        this._componentsParentHtmlElement = this._elRef.nativeElement;
+        this._componentsParentHtmlElement = this.rootHtmlElement;
         this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
         this._extensionsAccessService = extensionsAccessNgService.service as FrameExtensionsAccessService;
@@ -423,12 +425,12 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             if (ColorScheme.Item.idHasBkgd(itemId)) {
                 const varName = ColorScheme.Item.idToBkgdCssVariableName(itemId);
                 const color = this._colorSettings.getBkgd(itemId);
-                this._elRef.nativeElement.style.setProperty(varName, color);
+                this.rootHtmlElement.style.setProperty(varName, color);
             }
             if (ColorScheme.Item.idHasFore(itemId)) {
                 const varName = ColorScheme.Item.idToForeCssVariableName(itemId);
                 const color = this._colorSettings.getFore(itemId);
-                this._elRef.nativeElement.style.setProperty(varName, color);
+                this.rootHtmlElement.style.setProperty(varName, color);
             }
         }
         this._cdr.markForCheck();

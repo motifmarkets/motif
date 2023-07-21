@@ -55,6 +55,7 @@ import { OrdersDitemFrame } from '../orders-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('orders', { static: true }) private _ordersComponent: OrdersNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
@@ -84,9 +85,9 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: OrdersDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -95,7 +96,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++OrdersDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new OrdersDitemFrame(
             this,

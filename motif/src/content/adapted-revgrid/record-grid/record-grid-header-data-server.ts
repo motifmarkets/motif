@@ -5,7 +5,24 @@
  */
 
 import { GridField } from '@motifmarkets/motif-core';
-import { RevRecordHeaderDataServer } from 'revgrid';
+import { DataServer } from 'revgrid';
 
-export class RecordGridHeaderDataServer extends RevRecordHeaderDataServer<GridField> {
+export class RecordGridHeaderDataServer implements DataServer<GridField> {
+    private _dataCallbackListener: DataServer.NotificationsClient;
+
+    subscribeDataNotifications(value: DataServer.NotificationsClient): void {
+        this._dataCallbackListener = value;
+    }
+
+    getViewValue(field: GridField, _rowCount: number): string {
+        return field.heading;
+    }
+
+    getRowCount() {
+        return 1;
+    }
+
+    invalidateCell(schemaColumnIndex: number, rowIndex = 0) {
+        this._dataCallbackListener.invalidateCell(schemaColumnIndex, rowIndex);
+    }
 }

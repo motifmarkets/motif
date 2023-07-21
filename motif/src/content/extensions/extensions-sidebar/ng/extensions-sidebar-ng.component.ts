@@ -16,6 +16,8 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.background-color') bkgdColor: string;
 
     @Output() infoFocusEmitter = new EventEmitter<ExtensionInfo>();
@@ -28,8 +30,8 @@ export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private readonly _elRef: ElementRef, settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
+        super(elRef, ++ExtensionsSidebarNgComponent.typeInstanceCreateCount);
 
         this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
@@ -38,7 +40,7 @@ export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     get width() {
-        const domRect = (this._elRef.nativeElement as HTMLElement).getBoundingClientRect();
+        const domRect = (this.rootHtmlElement).getBoundingClientRect();
         return Math.round(domRect.width);
     }
 

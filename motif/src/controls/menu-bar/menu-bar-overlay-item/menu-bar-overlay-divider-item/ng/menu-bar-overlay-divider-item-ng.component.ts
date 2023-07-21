@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
 import { ColorScheme } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
@@ -17,10 +17,12 @@ import { MenuBarRenderItemComponentNgDirective } from '../../../ng/menu-bar-rend
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarOverlayDividerItemNgComponent extends MenuBarRenderItemComponentNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     public lineBkgdColor: string;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
-        super(cdr, menuBarNgService);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
+        super(elRef, ++MenuBarOverlayDividerItemNgComponent.typeInstanceCreateCount, cdr, menuBarNgService);
         this.lineBkgdColor = settingsNgService.service.color.getFore(ColorScheme.ItemId.MenuBar_OverlayItem_Disabled);
     }
 }

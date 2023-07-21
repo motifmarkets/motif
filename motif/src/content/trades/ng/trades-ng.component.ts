@@ -19,18 +19,20 @@ import { TradesFrame } from '../trades-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TradesNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, TradesFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     private readonly _frame: TradesFrame;
 
     constructor(elRef: ElementRef<HTMLElement>, contentService: ContentNgService) {
-        super();
+        super(elRef, ++TradesNgComponent.typeInstanceCreateCount);
 
-        this._frame = contentService.createTradesFrame(this, elRef.nativeElement);
+        this._frame = contentService.createTradesFrame(this, this.rootHtmlElement);
     }
 
     get frame(): TradesFrame { return this._frame; }
-    get id(): string { return this.componentInstanceId; }
+    get id(): string { return this.typeInstanceId; }
 
 
     ngOnDestroy() {

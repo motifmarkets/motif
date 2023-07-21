@@ -9,17 +9,18 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     CommandRegisterService,
-    delay1Tick,
     GridLayoutOrNamedReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
-    StringId
+    StringId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -35,6 +36,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
@@ -50,10 +53,11 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     private _closeReject: (reason: unknown) => void;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
     ) {
-        super();
+        super(elRef, ++NameableGridLayoutEditorDialogNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();

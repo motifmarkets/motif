@@ -68,6 +68,8 @@ import './svg/noun_world_2593665.svg';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() sprite: string;
     @Input() inputId: string;
 
@@ -85,14 +87,14 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
 
     private _value: boolean | undefined;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++SvgButtonNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._bkgdColorCssVarName = this.getBkgdColorCssVariableName(SvgButtonNgComponent.buttonColorItemId);
         this._foreColorCssVarName = this.getForeColorCssVariableName(SvgButtonNgComponent.buttonColorItemId);
         this._selectedBorderForeColorCssVarName = this.getForeColorCssVariableName(SvgButtonNgComponent.selectedBorderColorItemId);
         this._hoverBkgdColorCssVarName = this.getBkgdColorCssVariableName(SvgButtonNgComponent.hoverColorItemId);
 
-        this.inputId = 'SvgButton' + this.componentInstanceId;
+        this.inputId = 'SvgButton' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as IconButtonUiAction; }

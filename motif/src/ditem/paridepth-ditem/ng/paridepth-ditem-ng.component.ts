@@ -68,6 +68,8 @@ import { ParidepthDitemFrame } from '../paridepth-ditem-frame';
 export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, ParidepthDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton') private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -110,9 +112,9 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _frame: ParidepthDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -120,7 +122,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(elRef, ++ParidepthDitemNgComponent.typeInstanceCreateCount, cdr, container, settingsNgService.service, commandRegisterNgService.service);
 
         this._frame = new ParidepthDitemFrame(
             this,

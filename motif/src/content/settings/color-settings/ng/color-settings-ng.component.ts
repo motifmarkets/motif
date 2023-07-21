@@ -48,6 +48,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('leftAndRightDiv', { static: true }) private _leftAndRightDiv: ElementRef<HTMLElement>;
     @ViewChild('grid', { static: true }) private _gridComponent: ColorSchemeGridNgComponent;
     @ViewChild('saveSchemeButton', { static: true }) private _saveSchemeButton: SvgButtonNgComponent;
@@ -69,11 +71,12 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     private _currentRecordIndex: Integer | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService,
     ) {
-        super(cdr, settingsNgService.service);
+        super(elRef, ++ColorSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

@@ -4,9 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import {
-    delay1Tick,
     Integer,
     Logger,
     MultiEvent,
@@ -15,10 +14,10 @@ import {
     SessionStateId,
     StringId,
     Strings,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
-import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
 
@@ -30,6 +29,8 @@ import { SessionService } from '../../session-service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StartupNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     public logTextAreaDisplayed = false;
     public log = 'Startup Log';
 
@@ -40,15 +41,13 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
     private _logTextAreaDisplayedSetTimeoutId: ReturnType<typeof setInterval> | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
-        configNgService: ConfigNgService,
         private _sessionService: SessionNgService,
     ) {
-        super();
+        super(elRef, ++StartupNgComponent.typeInstanceCreateCount);
 
         this._session = this._sessionService.session;
-
-        const config = configNgService.config;
 
         this._publisherSessionTerminatedSubscriptionId = this._session.subscribePublisherSessionTerminatedEvent(
             (reasonId, reasonCode, defaultReasonText) => this.handlePublisherSessionTerminatedEvent(reasonId, reasonCode, defaultReasonText)

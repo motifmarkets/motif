@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     isDevMode,
     OnDestroy,
     OnInit,
@@ -37,6 +38,8 @@ import { StatusSummaryFrame } from '../status-summary-frame';
 export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     implements OnInit, OnDestroy, StatusSummaryFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     public serviceName: string;
@@ -59,11 +62,12 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
     private readonly _sessionInfoService: SessionInfoService;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         sessionInfoNgService: SessionInfoNgService,
         contentService: ContentNgService,
     ) {
-        super();
+        super(elRef, ++StatusSummaryNgComponent.typeInstanceCreateCount);
 
         this._sessionInfoService = sessionInfoNgService.service;
 

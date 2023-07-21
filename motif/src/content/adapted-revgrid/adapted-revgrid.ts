@@ -33,10 +33,12 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
         definition: Revgrid.Definition<AdaptedRevgridBehavioredColumnSettings, GridField>,
         customGridSettings: AdaptedRevgrid.CustomGridSettings,
         public customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        externalParent: unknown,
     ) {
         const gridSettings = AdaptedRevgrid.createGridSettings(settingsService, customGridSettings);
 
         const options: Revgrid.Options<AdaptedRevgridBehavioredGridSettings, AdaptedRevgridBehavioredColumnSettings, GridField> = {
+            externalParent,
             canvasRenderingContext2DSettings: {
                 alpha: false,
             }

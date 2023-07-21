@@ -29,6 +29,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     recordFocusEventer: ColorSchemeGridNgComponent.RecordFocusEventer | undefined;
     gridClickEventer: ColorSchemeGridNgComponent.GridClickEventer | undefined;
     columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer | undefined;
@@ -49,11 +51,11 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         settingsNgService: SettingsNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super();
+        super(elRef, ++ColorSchemeGridNgComponent.typeInstanceCreateCount);
         this._settingsService = settingsNgService.service;
         this._textFormatterService = textFormatterNgService.service;
         this._recordStore = new ColorSchemeGridRecordStore(this._settingsService);
-        this._grid = this.createGrid(elRef.nativeElement,);
+        this._grid = this.createGrid(this.rootHtmlElement,);
 
         const grid = this._grid;
         this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, this._grid, grid.mainDataServer);
@@ -139,6 +141,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
             () => this.customiseSettingsForNewColumn(),
             () => this.getMainCellPainter(),
             () => this.getHeaderCellPainter(),
+            this,
         );
 
 

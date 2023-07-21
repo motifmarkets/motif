@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Account, Command, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
@@ -21,6 +21,8 @@ import { CommandComponentNgDirective } from '../../ng/command-component-ng.direc
     encapsulation: ViewEncapsulation.None,
 })
 export class CommandSelectNgComponent extends CommandComponentNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
 
     // public selected: ProcessorCommandUiAction.Item | undefined;
@@ -30,12 +32,12 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _ngSelectDropDownPanelWidth: number | undefined;
 
-    constructor(private _ngSelectOverlayNgService: NgSelectOverlayNgService,
+    constructor(elRef: ElementRef<HTMLElement>, private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'EnumInput' + this.componentInstanceId;
+        super(elRef, ++CommandSelectNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        this.inputId = 'EnumInput' + this.typeInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
             () => this.handleMeasureCanvasContextsEvent()
@@ -50,11 +52,11 @@ export class CommandSelectNgComponent extends CommandComponentNgDirective {
 
     public customSearchFtn(term: string, item: Entry) {
         term = term.toUpperCase();
-        return item.upperCaption.indexOf(term) > -1;
+        return item.upperCaption.includes(term);
     }
 
-    public handleSelectChangeEvent(event: unknown) {
-        const changeEvent = event as ChangeEvent;
+    public handleSelectChangeEvent(_event: unknown) {
+        // const changeEvent = event as ChangeEvent;
 
         // if (changeEvent === undefined || changeEvent === null) {
         //     this.commitValue(undefined);
@@ -174,4 +176,4 @@ interface SearchEvent {
     items: Account[];
 }
 
-type ChangeEvent = Entry | undefined | null;
+// type ChangeEvent = Entry | undefined | null;

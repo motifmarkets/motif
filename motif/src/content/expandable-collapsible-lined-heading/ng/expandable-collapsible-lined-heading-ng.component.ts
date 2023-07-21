@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import {
     ColorScheme,
     ColorSettings,
@@ -28,6 +28,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() public headingText: string;
     @Input() public genericSelectorWidth: string;
     @Input() public genericSelectorCaption: string;
@@ -55,8 +57,8 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
 
     private _stateId: ExpandableCollapsibleLinedHeadingNgComponent.StateId;
 
-    constructor(settingsNgService: SettingsNgService, commandRegisterNgService: CommandRegisterNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++ExpandableCollapsibleLinedHeadingNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

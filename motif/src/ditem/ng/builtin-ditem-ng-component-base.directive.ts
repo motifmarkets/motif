@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
-import { ColorScheme, CommandRegisterService, Json, JsonElement, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ColorScheme, CommandRegisterService, Integer, Json, JsonElement, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -16,21 +16,19 @@ import { DitemFrame } from '../ditem-frame';
 export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBaseNgDirective
     implements DitemFrame.ComponentAccess, DitemComponent {
 
-    readonly rootHtmlElement: HTMLElement;
-
     private _focused = false;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
         private readonly _cdr: ChangeDetectorRef,
         readonly container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         protected readonly settingsService: SettingsService,
         protected readonly commandRegisterService: CommandRegisterService,
+        generateUniqueId = true
     ) {
-        super();
-
-        this.rootHtmlElement = elRef.nativeElement;
+        super(elRef, typeInstanceCreateId, generateUniqueId);
 
         this.container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
 

@@ -51,6 +51,8 @@ import { DesktopFrame } from '../desktop-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
     @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent | undefined;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
@@ -89,7 +91,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         commandRegisterNgService: CommandRegisterNgService,
         keyboardNgService: KeyboardNgService,
     ) {
-        super();
+        super(elRef, ++DesktopNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._settingsService = settingsNgService.service;
@@ -112,7 +114,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         this.advertisingEnabled = capabilitiesService.advertisingEnabled;
 
         this._desktopFrame = new DesktopFrame(
-            elRef.nativeElement,
+            this.rootHtmlElement,
             this._settingsService,
             appStorageNgService.service,
             userAlertNgService.service,

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, Inject, OnDestroy } from '@angular/core';
 import {
     AssertInternalError,
     ColorScheme,
@@ -23,6 +23,8 @@ import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-re
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestComponentNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
     @HostBinding('style.--color-grid-order-side') gridOrderSideColor: string;
@@ -56,14 +58,16 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
 
     private readonly _sideId: OrderExtendedSideId;
 
-    constructor(cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
         @Inject(ReviewOrderRequestComponentNgDirective.orderPadInjectionToken) orderPad: OrderPad,
         @Inject(ReviewOrderRequestComponentNgDirective.definitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
-        super(cdr, orderPad, definition);
+        super(elRef, ++ReviewMoveOrderRequestNgComponent.typeInstanceCreateCount, cdr, orderPad, definition);
 
         this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());

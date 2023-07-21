@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { CoreNgService, SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { BrokerageAccountGroupComponentBaseNgDirective } from '../../ng/brokerage-account-group-component-base-ng.directive';
@@ -17,12 +17,21 @@ import { BrokerageAccountGroupComponentBaseNgDirective } from '../../ng/brokerag
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountGroupNameLabelNgComponent extends BrokerageAccountGroupComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() for: string;
 
     public override caption = '';
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, pulseService: CoreNgService) {
-        super(cdr, settingsNgService.service, pulseService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, pulseService: CoreNgService) {
+        super(
+            elRef,
+            ++BrokerageAccountGroupNameLabelNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            pulseService,
+            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
+        );
     }
 
     override ngOnDestroy() {

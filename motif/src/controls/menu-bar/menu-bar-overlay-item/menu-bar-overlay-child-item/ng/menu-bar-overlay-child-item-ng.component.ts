@@ -18,12 +18,15 @@ import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarOverlayChildItemNgComponent extends MenuBarChildItemComponentNgDirective implements OnInit, OnDestroy {
-    constructor(cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
+    private static typeInstanceCreateCount = 0;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         menuBarNgService: MenuBarNgService
     ) {
-        super(cdr, settingsNgService.service, menuBarNgService);
+        super(elRef, ++MenuBarOverlayChildItemNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, menuBarNgService);
     }
 
     @HostListener('click', []) handleClickEvent() {
@@ -67,7 +70,7 @@ export class MenuBarOverlayChildItemNgComponent extends MenuBarChildItemComponen
     }
 
     private calculateChildMenuContactDocumentLine(): Line {
-        const documentRect = getElementDocumentPositionRect(this._elRef.nativeElement);
+        const documentRect = getElementDocumentPositionRect(this.rootHtmlElement);
         const y = documentRect.top + documentRect.height;
         return {
             beginX: documentRect.left,

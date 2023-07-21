@@ -4,17 +4,17 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild } from '@angular/core';
 import {
     CommandRegisterService,
-    delay1Tick,
     GridField,
     IconButtonUiAction,
     InternalCommand,
     ModifierKey,
     StringId,
+    StringUiAction,
     Strings,
-    StringUiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from '../../../../../component-services/ng-api';
 import { SvgButtonNgComponent, TextInputNgComponent } from '../../../../../controls/ng-api';
@@ -29,6 +29,8 @@ import { allowedFieldsInjectionToken } from '../../../ng/grid-layout-dialog-ng-i
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorSearchGridNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('searchInput', { static: true }) private _searchInputComponent: TextInputNgComponent;
     @ViewChild('searchNextButton', { static: true }) private _searchNextButtonComponent: SvgButtonNgComponent;
     @ViewChild('selectAllButton', { static: true }) private _selectAllButtonComponent: SvgButtonNgComponent;
@@ -46,11 +48,12 @@ export class GridLayoutEditorSearchGridNgComponent extends ContentComponentBaseN
     private _searchEnabled = true;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
     ) {
-        super();
+        super(elRef, ++GridLayoutEditorSearchGridNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

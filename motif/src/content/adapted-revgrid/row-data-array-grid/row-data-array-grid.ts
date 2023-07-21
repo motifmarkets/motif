@@ -38,6 +38,7 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
         customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
         getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
         getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        externalParent: unknown,
     ) {
         const serverSet = new SingleHeadingDataRowArrayServerSet<GridField>(createFieldEventer);
         const schemaServer = serverSet.schemaServer;
@@ -59,7 +60,7 @@ export class RowDataArrayGrid extends AdaptedRevgrid {
                 },
             ],
         }
-        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer);
+        super(settingsService, gridHostElement, definition, customGridSettings, customiseSettingsForNewColumnEventer, externalParent);
 
         this._serverSet = serverSet;
         this.headerDataServer = headerDataServer;

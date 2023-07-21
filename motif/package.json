@@ -28,7 +28,7 @@
     "copy:config:em2_cte-dev": "copy src\\config\\config.em2_cte-dev.json dev_static\\_config-do-not-delete\\config.json",
     "copy:config:em2_prod-dev": "copy src\\config\\config.em2_production-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
     "copy:config:finplex_prod-dev": "copy src\\config\\config.finplex_production-dev.json dev_static\\_config-do-not-delete\\config.json > $null",
-    "start:paritech_staging-dev": "npm run file:info && npm run copy:config:paritech_staging-dev && ng serve",
+    "start:paritech_staging-dev": "npm run file:info && npm run copy:config:paritech_staging-dev && ng serve --host=127.0.0.1",
     "start:trading-retailer_production-dev": "npm run file:info && npm run copy:config:trading-retailer_production-dev && ng serve",
     "start:fnsx_demo-dev": "npm run file:info && npm run copy:config:fnsx_demo-dev && ng serve",
     "start:em2_cte-dev": "npm run file:info && npm run copy:config:em2_cte-dev && ng serve",

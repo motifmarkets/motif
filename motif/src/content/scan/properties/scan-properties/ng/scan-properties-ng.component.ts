@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild } from '@angular/core';
 import {
     Scan
 } from '@motifmarkets/motif-core';
@@ -22,6 +22,8 @@ import {
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('generalSection', { static: true }) private _generalSectionComponent: GeneralScanPropertiesSectionNgComponent;
     @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: CriteriaScanPropertiesSectionNgComponent;
     // @ViewChild('rankSection', { static: true }) private _rankSectionComponent: RankScanPropertiesSectionNgComponent;
@@ -30,9 +32,10 @@ export class ScanPropertiesNgComponent extends ContentComponentBaseNgDirective {
     private _scan: Scan | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
     ) {
-        super();
+        super(elRef, ++ScanPropertiesNgComponent.typeInstanceCreateCount);
     }
 
 

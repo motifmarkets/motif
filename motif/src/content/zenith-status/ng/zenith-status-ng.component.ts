@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -28,6 +29,8 @@ import { ZenithStatusFrame } from '../zenith-status-frame';
 })
 export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
     implements ZenithStatusFrame.ComponentAccess, OnInit, OnDestroy {
+
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
@@ -69,8 +72,8 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 
     private readonly _frame: ZenithStatusFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
+        super(elRef, ++ZenithStatusNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createZenithStatusFrame(this, sessionInfoNgService.service.zenithEndpoints);
     }

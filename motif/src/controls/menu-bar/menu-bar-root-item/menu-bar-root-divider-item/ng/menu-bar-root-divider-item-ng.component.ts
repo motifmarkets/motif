@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
 import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
 import { MenuBarRenderItemComponentNgDirective } from '../../../ng/menu-bar-render-item-component-ng.directive';
 
@@ -15,7 +15,9 @@ import { MenuBarRenderItemComponentNgDirective } from '../../../ng/menu-bar-rend
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarRootDividerItemNgComponent extends MenuBarRenderItemComponentNgDirective {
-    constructor(cdr: ChangeDetectorRef, menuBarNgService: MenuBarNgService) {
-        super(cdr, menuBarNgService);
+    private static typeInstanceCreateCount = 0;
+
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, menuBarNgService: MenuBarNgService) {
+        super(elRef, ++MenuBarRootDividerItemNgComponent.typeInstanceCreateCount, cdr, menuBarNgService);
     }
 }

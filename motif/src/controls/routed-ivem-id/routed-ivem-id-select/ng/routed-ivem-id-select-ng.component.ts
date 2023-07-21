@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
     AdiService,
     AssertInternalError,
@@ -57,6 +57,8 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
     encapsulation: ViewEncapsulation.None,
 })
 export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
@@ -86,6 +88,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         private readonly _ngSelectOverlayNgService: NgSelectOverlayNgService,
@@ -95,6 +98,8 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(
+            elRef,
+            ++RoutedIvemIdSelectNgComponent.typeInstanceCreateCount,
             cdr,
             settingsNgService.service,
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
@@ -102,7 +107,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         );
         this._adiService = adiNgService.service;
         this._symbolDetailCacheService = symbolDetailCacheNgService.service;
-        this.inputId = 'RoutedIvemIdInput' + this.componentInstanceId;
+        this.inputId = 'RoutedIvemIdInput' + this.typeInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;

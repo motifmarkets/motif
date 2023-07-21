@@ -40,6 +40,7 @@ import { UserAlertNgComponent } from '../../user-alert/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RootNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('userAlert', { static: true }) private _userAlertComponent: UserAlertNgComponent;
     @ViewChild('overlayOrigin', { static: true }) private _overlayOriginComponent: OverlayOriginNgComponent;
@@ -63,9 +64,9 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     private _measureFontSize: string;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _router: Router,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
         private readonly _titleService: Title,
         private readonly _sessionNgService: SessionNgService,
         settingsNgService: SettingsNgService,
@@ -74,7 +75,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
         keyboardNgService: KeyboardNgService,
         userAlertNgService: UserAlertNgService,
     ) {
-        super();
+        super(elRef, ++RootNgComponent.typeInstanceCreateCount);
 
         this._session = this._sessionNgService.session;
         this._sessionStateChangeSubscriptionId =
@@ -88,7 +89,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
         this._capabilitiesService = capabilitiesNgService.service;
         this._keyboardService = keyboardNgService.service;
-        this._commandContext = this.createCommandContext(this._elRef.nativeElement, extensionsNgService.service);
+        this._commandContext = this.createCommandContext(this.rootHtmlElement, extensionsNgService.service);
         this._keyboardService.registerCommandContext(this._commandContext, true);
         this._userAlertService = userAlertNgService.service;
     }
@@ -127,15 +128,15 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     }
 
     private applySettings() {
-        this._elRef.nativeElement.style.setProperty('font-family', this._settingsService.core.fontFamily);
-        this._elRef.nativeElement.style.setProperty('font-size', this._settingsService.core.fontSize);
+        this.rootHtmlElement.style.setProperty('font-family', this._settingsService.core.fontFamily);
+        this.rootHtmlElement.style.setProperty('font-size', this._settingsService.core.fontSize);
 
         const panelItemId = ColorScheme.ItemId.Panel;
         const bkgdPanelColor = this._settingsService.color.getBkgd(panelItemId);
-        this._elRef.nativeElement.style.setProperty('background-color', bkgdPanelColor);
+        this.rootHtmlElement.style.setProperty('background-color', bkgdPanelColor);
 
         const color = this._settingsService.color.getFore(panelItemId);
-        this._elRef.nativeElement.style.setProperty('color', color);
+        this.rootHtmlElement.style.setProperty('color', color);
 
         // const borderItemId = ColorScheme.ItemId.Text_ControlBorder;
 

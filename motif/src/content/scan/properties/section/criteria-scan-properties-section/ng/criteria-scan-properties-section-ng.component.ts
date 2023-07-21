@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     EnumInfoOutOfOrderError,
     EnumUiAction,
@@ -25,6 +25,9 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
 })
 export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
     implements OnInit, OnDestroy, AfterViewInit {
+
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
 
     public readonly sectionHeadingText = Strings[StringId.Criteria];
@@ -32,8 +35,8 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
 
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
-    constructor(private readonly _cdr: ChangeDetectorRef) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
+        super(elRef, ++CriteriaScanPropertiesSectionNgComponent.typeInstanceCreateCount);
 
         this._viewUiAction = this.createViewUiAction();
     }

@@ -4,13 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, Input } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, Input } from '@angular/core';
 import {
     Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountsDataDefinition,
     BrokerageAccountsDataItem,
     DataItemIncubator,
-    getErrorMessage,
-    MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
+    Integer,
+    MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { CoreNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
@@ -26,10 +27,10 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private _dataItem: BrokerageAccountsDataItem;
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
-    constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
+    constructor(elRef: ElementRef<HTMLElement>, typeInstanceCreateId: Integer, cdr: ChangeDetectorRef, settingsService: SettingsService,
         pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
     ) {
-        super(cdr, settingsService, stateColorItemIdArray);
+        super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);
         this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adiService);
     }
 

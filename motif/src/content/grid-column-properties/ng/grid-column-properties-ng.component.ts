@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
 import { GridLayout, Integer } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -16,6 +16,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridColumnPropertiesNgComponent extends ContentComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     columnChangeEvent: GridColumnPropertiesComponent.ColumnChangeEvent;
     positionChangeEvent: GridColumnPropertiesComponent.PositionChangeEvent;
 
@@ -23,6 +25,10 @@ export class GridColumnPropertiesNgComponent extends ContentComponentBaseNgDirec
 
     private _column: GridLayout.Column;
     private _position: Integer;
+
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++GridColumnPropertiesNgComponent.typeInstanceCreateCount);
+    }
 
     get column() { return this._column; }
     get position() { return this._position; }

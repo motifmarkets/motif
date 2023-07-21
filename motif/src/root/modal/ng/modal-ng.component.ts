@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnInit } from '@angular/core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ModalNgService } from '../../ng/modal-ng.service';
 
@@ -16,17 +16,18 @@ import { ModalNgService } from '../../ng/modal-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 
-export class ModalNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
+export class ModalNgComponent extends ComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() id: string;
     // private element: any;
 
-    constructor(private modalService: ModalNgService, private el: ElementRef) {
-        super();
-        // this.element = el.nativeElement;
+    constructor(elRef: ElementRef<HTMLElement>, private modalService: ModalNgService) {
+        super(elRef, ++ModalNgComponent.typeInstanceCreateCount);
     }
 
     ngOnInit(): void {
-        const modal = this;
+        // const modal = this;
 
         // ensure id attribute exists
         if (!this.id) {
@@ -46,12 +47,6 @@ export class ModalNgComponent extends ComponentBaseNgDirective implements OnInit
 
         // add self (this modal instance) to the modal service so it's accessible from controllers
         // this.modalService.add(this);
-    }
-
-    // remove self from modal service when directive is destroyed
-    ngOnDestroy(): void {
-        // this.modalService.remove(this.id);
-        // this.element.remove();
     }
 
     // open modal

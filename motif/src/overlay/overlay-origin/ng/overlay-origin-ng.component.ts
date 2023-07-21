@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { NgSelectOverlayNgComponent } from '../../ng-select-overlay/ng-api';
 import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base-ng.directive';
 
@@ -15,10 +15,12 @@ import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OverlayOriginNgComponent extends OverlayComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('ngSelectOverlay', { static: true }) private _ngSelectOverlayComponent: NgSelectOverlayNgComponent;
 
-    constructor() {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++OverlayOriginNgComponent.typeInstanceCreateCount);
     }
 
     updateMeasure(fontFamily: string, fontSize: string) {

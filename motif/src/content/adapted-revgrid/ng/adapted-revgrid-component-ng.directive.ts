@@ -1,9 +1,9 @@
-import { Directive } from '@angular/core';
-import { SettingsService } from '@motifmarkets/motif-core';
+import { Directive, ElementRef } from '@angular/core';
+import { Integer, SettingsService } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Directive()
-export class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDirective {
+export abstract class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDirective {
     destroyEventer: AdaptedRevgridComponentNgDirective.DestroyEventer | undefined;
 
     private _horizontalScrollbarWidth: number;
@@ -17,8 +17,8 @@ export class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDi
     // private _scrollbarThumbInactiveOpaqueSetTimeoutId: ReturnType<typeof setInterval> | undefined;
     // private _scrollbarThumbInactiveOpaqueExtended = false;
 
-    constructor(protected readonly _hostElement: HTMLElement, protected readonly _settingsService: SettingsService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, typeInstanceCreateId: Integer, protected readonly _settingsService: SettingsService) {
+        super(elRef, typeInstanceCreateId);
     }
 
     get horizontalScrollbarHeight() { return this._horizontalScrollbarWidth; }

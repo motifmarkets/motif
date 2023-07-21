@@ -77,6 +77,8 @@ import { SearchSymbolsDitemFrame } from '../search-symbols-ditem-frame';
 export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnInit, OnDestroy, SearchSymbolsDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('toolbarExecuteButton', { static: true }) private _toolbarExecuteButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
@@ -169,9 +171,9 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private _modeId = SearchSymbolsDitemNgComponent.ModeId.Main;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -179,7 +181,15 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++SearchSymbolsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._symbolsService = symbolsNgService.service;
 

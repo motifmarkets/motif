@@ -31,6 +31,8 @@ import { StatusDitemFrame } from '../status-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('statusContainer', { read: ViewContainerRef, static: true }) private _statusContainer: ViewContainerRef;
 
     public summaryActive = false;
@@ -41,9 +43,9 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: StatusDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -51,7 +53,14 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
     ) {
         const settingsService = settingsNgService.service;
-        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++StatusDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
         this._frame = new StatusDitemFrame(
             this,
             settingsService,

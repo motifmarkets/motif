@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive } from '@angular/core';
-import { ColorSettings, CoreSettings, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ChangeDetectorRef, Directive, ElementRef } from '@angular/core';
+import { ColorSettings, CoreSettings, Integer, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Directive()
@@ -15,10 +15,12 @@ export abstract class SettingsComponentBaseNgDirective extends ContentComponentB
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
         private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
     ) {
-        super();
+        super(elRef, typeInstanceCreateId);
 
         this._coreSettings = this._settingsService.core;
         this._colorSettings = this._settingsService.color;

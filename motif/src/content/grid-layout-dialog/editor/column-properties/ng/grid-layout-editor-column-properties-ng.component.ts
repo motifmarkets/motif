@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
     EnumUiAction,
@@ -29,23 +29,26 @@ import { ContentComponentBaseNgDirective } from '../../../../ng/content-componen
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorColumnPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild(RecordGridNgComponent, { static: true }) private _gridComponent: RecordGridNgComponent;
 
     recordFocusEventer: GridLayoutEditorColumnPropertiesNgComponent.RecordFocusEventer | undefined;
     gridClickEventer: GridLayoutEditorColumnPropertiesNgComponent.GridClickEventer | undefined;
+
+    public fieldName: string | undefined = undefined;
 
     private _recordStore: GridLayoutRecordStore;
     private _grid: RecordGrid;
     private _gridPrepared = false;
 
     private _visibleField: GridLayoutRecordStore.VisibleField;
-    public fieldName: string | undefined = undefined;
 
     private _columnFilterId: GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId = GridLayoutEditorColumnPropertiesNgComponent.ColumnFilterId.ShowAll;
     private readonly _fieldVisibleUiAction: BooleanUiAction;
 
-    constructor() {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++GridLayoutEditorColumnPropertiesNgComponent.typeInstanceCreateCount);
 
         this._recordStore = new GridLayoutRecordStore();
 

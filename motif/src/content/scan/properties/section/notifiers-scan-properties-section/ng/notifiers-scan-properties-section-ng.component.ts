@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
     ExplicitElementsEnumArrayUiAction,
@@ -8,8 +8,8 @@ import {
     Strings
 } from '@motifmarkets/motif-core';
 import {
-    CaptionedCheckboxNgComponent,
     CaptionLabelNgComponent,
+    CaptionedCheckboxNgComponent,
     EnumArrayInputNgComponent, IntegerTextInputNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
@@ -23,6 +23,8 @@ import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-
 })
 export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
     implements  OnInit, OnDestroy, AfterViewInit {
+
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('mobileNotifierControl', { static: true }) private _mobileNotifierControlComponent: CaptionedCheckboxNgComponent;
@@ -47,8 +49,8 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
     private readonly _minimumStableTimeUiAction: IntegerUiAction;
     private readonly _minimumElapsedTimeUiAction: IntegerUiAction;
 
-    constructor() {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++NotifiersScanPropertiesSectionNgComponent.typeInstanceCreateCount);
 
         this._mobileNotifierUiAction = this.createMobileNotifierUiAction();
         this._smsNotifierUiAction = this.createSmsNotifierUiAction();

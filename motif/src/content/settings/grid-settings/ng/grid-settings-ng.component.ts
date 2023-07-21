@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     ViewChild,
     ViewContainerRef
@@ -32,6 +33,7 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('fontFamilyLabel', { static: true }) private _fontFamilyLabelComponent: CaptionLabelNgComponent;
     @ViewChild('fontFamilyControl', { static: true }) private _fontFamilyControlComponent: TextInputNgComponent;
@@ -104,8 +106,8 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     private readonly _scrollbarMarginUiAction: IntegerUiAction;
     private readonly _scrollbarThumbInactiveOpacityUiAction: NumberUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++GridSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._fontFamilyUiAction = this.createFontFamilyUiAction();
         this._fontSizeUiAction = this.createFontSizeUiAction();

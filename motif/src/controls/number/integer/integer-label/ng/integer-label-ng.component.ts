@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-action-component-base-ng.directive';
@@ -17,11 +17,18 @@ import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-act
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IntegerLabelNgComponent extends IntegerUiActionComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
 
     @Input() for: string;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++IntegerLabelNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray
+        );
     }
 
     protected override applyValue(_value: number | undefined, _edited: boolean) {

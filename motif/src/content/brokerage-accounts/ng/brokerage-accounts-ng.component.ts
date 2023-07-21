@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
 import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { BrokerageAccountsFrame } from '../brokerage-accounts-frame';
@@ -10,7 +10,17 @@ import { BrokerageAccountsFrame } from '../brokerage-accounts-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BrokerageAccountsNgComponent extends GridSourceNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     declare frame: BrokerageAccountsFrame;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+    ) {
+        super(elRef, ++BrokerageAccountsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
+    }
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
         return  contentNgService.createBrokerageAccountsFrame(this, hostElement);

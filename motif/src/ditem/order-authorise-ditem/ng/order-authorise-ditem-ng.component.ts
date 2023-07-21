@@ -47,6 +47,7 @@ import { OrderAuthoriseDitemFrame } from '../order-authorise-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('orderAuthorise', { static: true }) private _orderAuthoriseComponent: OrderAuthoriseNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
@@ -76,9 +77,9 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
     private _frame: OrderAuthoriseDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -87,7 +88,15 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++OrderAuthoriseDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new OrderAuthoriseDitemFrame(
             this,

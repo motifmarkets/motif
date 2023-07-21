@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, HostBinding, Input } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, HostBinding, Input } from '@angular/core';
 import { ColorSettings, CommandUiAction, EnumInfoOutOfOrderError, Integer, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { MenuBarService } from '../menu-bar-service';
 import { MenuBarNgService } from './menu-bar-ng.service';
@@ -28,8 +28,14 @@ export abstract class MenuBarMenuItemComponentNgDirective extends MenuBarRenderI
 
     private _stateColorId: MenuBarMenuItemComponentNgDirective.StateColorId;
 
-    constructor(cdr: ChangeDetectorRef, private readonly _settingsService: SettingsService, menuBarNgService: MenuBarNgService) {
-        super(cdr, menuBarNgService);
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        cdr: ChangeDetectorRef,
+        private readonly _settingsService: SettingsService,
+        menuBarNgService: MenuBarNgService
+    ) {
+        super(elRef, typeInstanceCreateId, cdr, menuBarNgService);
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }

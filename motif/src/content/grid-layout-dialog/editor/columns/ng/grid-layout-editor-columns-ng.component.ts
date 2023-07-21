@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     EditableGridLayoutDefinitionColumnList,
     delay1Tick
@@ -24,16 +24,19 @@ import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-fram
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
     @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgDirective;
 
     private readonly _frame: GridLayoutEditorColumnsFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(columnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
-        super();
+        super(elRef, ++GridLayoutEditorColumnsNgComponent.typeInstanceCreateCount);
 
         this._frame = new GridLayoutEditorColumnsFrame(
             this,

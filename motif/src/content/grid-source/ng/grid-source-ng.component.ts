@@ -12,15 +12,13 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { Badness, numberToPixels } from '@motifmarkets/motif-core';
+import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { GridSourceFrame } from '../grid-source-frame';
 
-@Directive({
-    selector: '[appGridSource]'
-})
+@Directive()
 export abstract class GridSourceNgDirective
     extends ContentComponentBaseNgDirective
     implements OnDestroy, GridSourceFrame.ComponentAccess {
@@ -32,11 +30,12 @@ export abstract class GridSourceNgDirective
     readonly frame: GridSourceFrame;
 
     constructor(
-        contentNgService: ContentNgService,
-        private readonly _cdr: ChangeDetectorRef,
         elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        private readonly _cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
     ) {
-        super();
+        super(elRef, typeInstanceCreateId);
 
         this.frame = this.createGridSourceFrame(contentNgService, elRef.nativeElement);
     }

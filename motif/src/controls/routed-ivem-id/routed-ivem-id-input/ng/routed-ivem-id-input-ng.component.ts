@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, Renderer2, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild } from '@angular/core';
 import { RoutedIvemId, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -18,19 +18,27 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RoutedIvemIdInputNgComponent extends RoutedIvemIdComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
     @Input() size = '12';
 
     @ViewChild('routedIvemIdInput', { static: true }) private symbolInput: ElementRef;
 
     constructor(
-        private _renderer: Renderer2,
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
-            symbolsNgService);
+        super(
+            elRef,
+            ++RoutedIvemIdInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
+            symbolsNgService
+        );
     }
 
     focus() {

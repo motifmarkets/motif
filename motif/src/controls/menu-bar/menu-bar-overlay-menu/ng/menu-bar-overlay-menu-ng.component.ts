@@ -32,6 +32,8 @@ import { MenuBarNgService } from '../../ng/menu-bar-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.left') left: string;
     @HostBinding('style.top') top: string;
     @HostBinding('style.background-color') bkgdColor: string;
@@ -42,8 +44,8 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
         @Inject(MenuBarOverlayMenuNgComponent.ChildMenuInjectionToken)
         private readonly _menu: MenuBarService.ChildMenu,
         @Inject(
@@ -53,7 +55,7 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
         settingsNgService: SettingsNgService,
         menuBarNgService: MenuBarNgService
     ) {
-        super(cdr, menuBarNgService);
+        super(elRef, ++MenuBarOverlayMenuNgComponent.typeInstanceCreateCount, cdr, menuBarNgService);
 
         this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
@@ -106,7 +108,7 @@ export class MenuBarOverlayMenuNgComponent extends MenuBarMenuComponentNgDirecti
         mouseClientX: number,
         mouseClientY: number
     ) {
-        const domRect = this._elRef.nativeElement.getBoundingClientRect();
+        const domRect = this.rootHtmlElement.getBoundingClientRect();
         return (
             mouseClientX >= domRect.left &&
             mouseClientX < domRect.right &&

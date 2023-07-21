@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy
 } from '@angular/core';
 import {
@@ -36,6 +37,8 @@ import { Integer } from 'public-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     public showEnvironmentText = true;
     public environmentText = '?';
     public environmentBkgdColor = 'yellow';
@@ -48,11 +51,12 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     private _kickedOff = false;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         sessionInfoNgService: SessionInfoNgService
     ) {
-        super();
+        super(elRef, ++EnvironmentDisplayNgComponent.typeInstanceCreateCount);
 
         this._colorSettings = settingsNgService.service.color;
 

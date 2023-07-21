@@ -9,21 +9,23 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
-    assert, ButtonUiAction,
+    ButtonUiAction,
     CommandRegisterService,
-    delay1Tick,
     GridField,
     GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     ModifierKey, OrderSideId, StringId,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    assert,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -39,6 +41,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepthGridLayoutsEditorDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('bidDepthButton', { static: true }) private _bidDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('askDepthButton', { static: true }) private _askDepthButtonComponent: ButtonInputNgComponent;
@@ -60,10 +64,10 @@ export class DepthGridLayoutsEditorDialogNgComponent extends ContentComponentBas
     private _askAllowedFields: readonly GridField[];
     private _askLayoutDefinition: GridLayoutDefinition;
     private _allowedFieldsAndLayoutDefinitions: BidAskAllowedFieldsAndLayoutDefinitions;
-    private _sideId: OrderSideId;
+    private _sideId: OrderSideId | undefined;
 
-    constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++DepthGridLayoutsEditorDialogNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 

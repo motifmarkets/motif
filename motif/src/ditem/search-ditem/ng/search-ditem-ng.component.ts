@@ -43,6 +43,8 @@ import { SearchDitemFrame } from '../search-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
     @ViewChild('searchButtonControl', { static: true }) private _searchButtonControlComponent: ButtonInputNgComponent;
     @ViewChild('detailsButtonControl', { static: true }) private _detailsButtonControlComponent: ButtonInputNgComponent;
@@ -74,9 +76,9 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private readonly _alertUiAction: ButtonUiAction;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -84,7 +86,15 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++SearchDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new SearchDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,

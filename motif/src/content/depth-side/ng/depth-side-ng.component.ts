@@ -17,10 +17,12 @@ import { DepthSideFrame } from '../depth-side-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DepthSideNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     private readonly _frame: DepthSideFrame;
 
     constructor(elRef: ElementRef<HTMLElement>, private _contentService: ContentNgService) {
-        super();
+        super(elRef, ++DepthSideNgComponent.typeInstanceCreateCount);
 
         this._frame = this._contentService.createDepthSideFrame(elRef.nativeElement);
     }

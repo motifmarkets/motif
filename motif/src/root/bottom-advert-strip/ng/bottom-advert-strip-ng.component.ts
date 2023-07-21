@@ -10,6 +10,4 @@ import { AdvertTickerNgComponent, BannerAdvertNgComponent } from 'src/content/ad
 export class BottomAdvertStripNgComponent {
     @ViewChild('advertTicker', { static: true }) private _advertTickerComponent: AdvertTickerNgComponent;
     @ViewChild('bannerAdvert', { static: true }) private _bannerAdvertComponent: BannerAdvertNgComponent;
-
-    constructor() {}
 }

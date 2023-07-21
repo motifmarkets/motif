@@ -24,6 +24,8 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ivemidInput') private ivemidInput: ElementRef;
@@ -34,13 +36,14 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     private _pushIvemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(elRef, ++IvemIdInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this._symbolsService = symbolsNgService.service;
-        this.inputId = 'IvemIdInput' + this.componentInstanceId;
+        this.inputId = 'IvemIdInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as IvemIdUiAction; }

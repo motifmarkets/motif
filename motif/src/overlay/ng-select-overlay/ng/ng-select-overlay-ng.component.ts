@@ -13,7 +13,7 @@ import {
     MultiEvent,
     SettingsService,
     delay1Tick,
-    numberToPixels,
+    numberToPixels
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from 'controls-internal-api';
@@ -28,6 +28,8 @@ import { OverlayComponentBaseNgDirective } from '../../ng/overlay-component-base
     encapsulation: ViewEncapsulation.None,
 })
 export class NgSelectOverlayNgComponent extends OverlayComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('measureCanvas', { static: true }) private _measureCanvas: ElementRef<HTMLCanvasElement>;
     @ViewChild('measureBoldCanvas', { static: true }) private _measureBoldCanvas: ElementRef<HTMLCanvasElement>;
 
@@ -44,13 +46,13 @@ export class NgSelectOverlayNgComponent extends OverlayComponentBaseNgDirective 
     private _scrollHostCollection: HTMLCollectionOf<Element> | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _ngSelectOverlayNgService: NgSelectOverlayNgService,
-        elementRef: ElementRef,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++NgSelectOverlayNgComponent.typeInstanceCreateCount);
 
-        this._element = elementRef.nativeElement;
+        this._element = this.rootHtmlElement;
         this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
         this._colorSettings = this._settingsService.color;
@@ -152,6 +154,6 @@ export class NgSelectOverlayNgComponent extends OverlayComponentBaseNgDirective 
 }
 
 export namespace NgSelectOverlayNgComponent {
-    export let scrollbarWidth: number;
+    export let scrollbarWidth: number | undefined;
     export const dropDownBordersWidth = 4;
 }

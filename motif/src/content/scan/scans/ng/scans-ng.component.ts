@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ScanPropertiesNgComponent } from '../../properties/ng-api';
@@ -13,6 +13,8 @@ import { ScanListNgComponent } from '../../scan-list/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScansNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('scanList', { static: true }) private _listComponent: ScanListNgComponent;
     @ViewChild('scanProperties', { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
 
@@ -25,6 +27,10 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     columnsViewWithsChangedEventer: ScansNgComponent.ColumnsViewWithsChangedEventer;
 
     private _listFrame: ScanListFrame;
+
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++ScansNgComponent.typeInstanceCreateCount);
+    }
 
     get listFrame() { return this._listFrame; }
 

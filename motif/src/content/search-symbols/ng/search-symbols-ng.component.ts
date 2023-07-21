@@ -6,7 +6,9 @@
 
 import {
     ChangeDetectionStrategy,
-    Component
+    ChangeDetectorRef,
+    Component,
+    ElementRef
 } from '@angular/core';
 import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
@@ -19,7 +21,17 @@ import { SearchSymbolsFrame } from '../search-symbols-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SearchSymbolsNgComponent extends GridSourceNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     declare frame: SearchSymbolsFrame;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+    ) {
+        super(elRef, ++SearchSymbolsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
+    }
 
     protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
         return contentNgService.createSearchSymbolsFrame(this, hostElement);

@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy,
     ViewContainerRef
 } from '@angular/core';
@@ -22,6 +23,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     public exchanges: ExchangeSettings[];
 
     private _exchangesSettings: ExchangesSettings;
@@ -29,11 +32,12 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
     ) {
-        super(cdr, settingsNgService.service);
+        super(elRef, ++ExchangesSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._exchangesSettings = this.settingsService.exchanges;
         this.exchanges = this._exchangesSettings.exchanges;

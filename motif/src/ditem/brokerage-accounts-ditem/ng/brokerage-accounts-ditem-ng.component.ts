@@ -45,6 +45,8 @@ import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('brokerageAccounts', { static: true }) private _brokerageAccountsComponent: BrokerageAccountsNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
@@ -63,7 +65,15 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++BrokerageAccountsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new BrokerageAccountsDitemFrame(
             this,

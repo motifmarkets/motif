@@ -11,8 +11,6 @@ import {
     ExchangeId,
     ExchangeInfo,
     GridLayoutOrNamedReferenceDefinition,
-    GridSourceDefinition,
-    GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemDetail,
@@ -25,7 +23,6 @@ import {
     Strings,
     SymbolField,
     SymbolFieldId,
-    SymbolsDataItem,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
     UnexpectedUndefinedError,
@@ -38,15 +35,9 @@ import { DitemFrame } from '../ditem-frame';
 export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     private _uiConditions: SearchSymbolsDataDefinition.Condition[];
     private _uiDataDefinition: SearchSymbolsDataDefinition;
-    private _symbolsDataItem: SymbolsDataItem;
     private _searchSymbolsFrame: SearchSymbolsFrame | undefined;
-    private _recordSource: LitIvemIdFromSearchSymbolsTableRecordSource;
-    private _recordList: LitIvemDetail[];
 
-    private _currentFocusedSymbolSetting: boolean;
     private _symbolApplying: boolean;
-
-    private _showFull: boolean;
 
     constructor(
         private readonly _componentAccess: SearchSymbolsDitemFrame.ComponentAccess,
@@ -226,29 +217,21 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
     private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const record = this._symbolsDataItem.records[newRecordIndex];
-            this.processRecordFocusChange(record);
-            this._componentAccess.processQueryRecordFocusChange(newRecordIndex);
+            const searchSymbolsFrame = this._searchSymbolsFrame;
+            if (searchSymbolsFrame === undefined) {
+                throw new UnexpectedUndefinedError('SSDHGSOE13133');
+            } else {
+                const record = searchSymbolsFrame.recordList[newRecordIndex];
+                this.processRecordFocusChange(record);
+                this._componentAccess.processQueryRecordFocusChange(newRecordIndex);
+            }
         }
     }
 
-    private createGridSourceOrNamedReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
-        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createLitIvemIdFromSearchSymbols(
-            dataDefinition
-        );
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-    }
-
-    private processRecordFocusChange(newFocusedRecord: SymbolsDataItem.Record) {
+    private processRecordFocusChange(newFocusedRecord: LitIvemDetail) {
         if (!this._symbolApplying) {
-            this._currentFocusedSymbolSetting = true;
-            try {
-                const litIvemId = newFocusedRecord.litIvemId;
-                this.applyDitemLitIvemIdFocus(litIvemId, true);
-            } finally {
-                this._currentFocusedSymbolSetting = false;
-            }
+            const litIvemId = newFocusedRecord.litIvemId;
+            this.applyDitemLitIvemIdFocus(litIvemId, true);
         }
     }
 

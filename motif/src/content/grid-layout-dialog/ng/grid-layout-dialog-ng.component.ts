@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     Inject,
     Injector,
     OnDestroy,
@@ -43,6 +44,8 @@ import { allowedFieldsInjectionToken, oldLayoutDefinitionInjectionToken } from '
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('subDialog', { static: true, read: ViewContainerRef }) private _subDialogContainer: ViewContainerRef;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
@@ -62,12 +65,13 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     private _columnList: EditableGridLayoutDefinitionColumnList;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
         @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
     ) {
-        super();
+        super(elRef, ++GridLayoutDialogNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();

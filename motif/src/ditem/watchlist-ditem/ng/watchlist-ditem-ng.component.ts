@@ -69,6 +69,8 @@ import { WatchlistDitemFrame } from '../watchlist-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput', { static: true }) private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: SvgButtonNgComponent;
@@ -102,7 +104,9 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _frame: WatchlistDitemFrame;
     private _forceOnNextCommit = false;
 
-    constructor(cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -113,9 +117,16 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++WatchlistDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new WatchlistDitemFrame(
             this,

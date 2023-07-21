@@ -18,15 +18,17 @@ import { AdvertWebPageDitemFrame } from '../advert-web-page-ditem-frame';
 export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
     implements AfterViewInit, AdvertWebPageDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('page', { static: true }) private _pageComponent: AdvertWebPageNgComponent;
 
     private _frame: AdvertWebPageDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -34,7 +36,14 @@ export class AdvertWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNg
         adiNgService: AdiNgService,
     ) {
         const settingsService = settingsNgService.service;
-        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++AdvertWebPageDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
         this._frame = new AdvertWebPageDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 

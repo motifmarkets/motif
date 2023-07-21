@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     EventEmitter,
     HostBinding,
     HostListener,
@@ -35,6 +36,8 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Output() installSignalEmitter = new EventEmitter();
     @Output() focusEmitter = new EventEmitter();
 
@@ -51,10 +54,11 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     private _installedExtensionLoadedChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++ExtensionListInfoItemNgComponent.typeInstanceCreateCount);
 
         this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
@@ -62,6 +66,12 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
         );
 
         this.applySettings();
+    }
+
+    @Input() set info(value: ExtensionInfo) {
+        if (value !== this._info) {
+            this.setInfo(value);
+        }
     }
 
     public get abbreviatedPublisherTypeDisplay() {
@@ -81,12 +91,6 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     }
     public get installCaption() {
         return Strings[StringId.Extensions_ExtensionInstallCaption];
-    }
-
-    @Input() set info(value: ExtensionInfo) {
-        if (value !== this._info) {
-            this.setInfo(value);
-        }
     }
 
     @HostListener('click', []) handleHostClick() {

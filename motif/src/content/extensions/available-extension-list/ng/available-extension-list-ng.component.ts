@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     EventEmitter,
     HostBinding,
     OnDestroy,
@@ -37,6 +38,8 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     encapsulation: ViewEncapsulation.None,
 })
 export class AvailableExtensionListNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
     @HostBinding('style.border-color') borderColor: string;
@@ -54,11 +57,12 @@ export class AvailableExtensionListNgComponent extends ContentComponentBaseNgDir
     private _uninstalledBundledListChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         extensionsAccessNgService: ExtensionsAccessNgService,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++AvailableExtensionListNgComponent.typeInstanceCreateCount);
 
         this._extensionsAccessService = extensionsAccessNgService.service;
         this._settingsService = settingsNgService.service;

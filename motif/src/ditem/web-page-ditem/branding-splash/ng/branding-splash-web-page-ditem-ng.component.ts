@@ -17,15 +17,17 @@ import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-dit
 export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
     implements BrandingSplashWebPageDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     public safeResourceUrl: SafeResourceUrl;
 
     private _frame: BrandingSplashWebPageDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -33,7 +35,14 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
         adiNgService: AdiNgService,
     ) {
         const settingsService = settingsNgService.service;
-        super(cdr, container, elRef, settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++BrandingSplashWebPageDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
         this._frame = new BrandingSplashWebPageDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 

@@ -1,10 +1,10 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
     Scan,
     StringId,
-    Strings,
-    StringUiAction
+    StringUiAction,
+    Strings
 } from '@motifmarkets/motif-core';
 import {
     CaptionLabelNgComponent, CheckboxInputNgComponent, TextInputNgComponent
@@ -20,6 +20,8 @@ import { TargetsScanPropertiesNgComponent } from '../targets-scan-properties/ng-
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('enabledLabel', { static: true }) private _enabledLabelComponent: CaptionLabelNgComponent;
     @ViewChild('enabledControl', { static: true }) private _enabledControlComponent: CheckboxInputNgComponent;
@@ -42,8 +44,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     // private readonly _typeUiAction: ExplicitElementsEnumUiAction;
     private readonly _symbolListUiAction: BooleanUiAction;
 
-    constructor() {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++GeneralScanPropertiesSectionNgComponent.typeInstanceCreateCount);
 
         this._enabledUiAction = this.createEnabledUiAction();
         this._nameUiAction = this.createNameUiAction();

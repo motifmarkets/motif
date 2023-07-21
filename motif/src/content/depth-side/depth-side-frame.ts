@@ -373,6 +373,7 @@ export class DepthSideFrame extends ContentFrame {
             () => this.customiseSettingsForNewColumn(),
             () => this.getMainCellPainter(),
             () => this.getHeaderCellPainter(),
+            this,
         );
 
         grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);

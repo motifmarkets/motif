@@ -25,7 +25,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
         const settingsService = settingsNgService.service;
-        super(elRef.nativeElement, settingsService);
+        super(elRef, 1, settingsService);
     }
 
     get recordGrid() { return this._grid; }
@@ -47,12 +47,13 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
 
         const grid = new RecordGrid(
             this._settingsService,
-            this._hostElement,
+            this.rootHtmlElement,
             recordStore,
             customGridSettings,
             customiseSettingsForNewColumnEventer,
             getMainCellPainterEventer,
             getHeaderCellPainterEventer,
+            this,
         );
 
         this._grid = grid;

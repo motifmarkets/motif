@@ -33,6 +33,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('bkgdControls', { static: true }) private _bkgdControls: ColorControlsNgComponent;
     @ViewChild('multiPicker', { static: true }) private _multiPicker: MultiColorPickerNgComponent;
     @ViewChild('foreControls', { static: true }) private _foreControls: ColorControlsNgComponent;
@@ -53,8 +55,8 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
     private _itemId: ColorScheme.ItemId | undefined;
     private _width: Integer;
 
-    constructor(private _cdr: ChangeDetectorRef, private readonly _hostElementRef: ElementRef, settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++ColorSchemeItemPropertiesNgComponent.typeInstanceCreateCount);
 
         this._colorSettings = settingsNgService.service.color;
 

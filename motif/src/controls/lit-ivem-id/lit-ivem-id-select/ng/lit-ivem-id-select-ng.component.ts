@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     Input,
     OnInit,
     ViewChild,
@@ -64,6 +65,8 @@ import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.servi
     encapsulation: ViewEncapsulation.None,
 })
 export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
@@ -98,6 +101,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
@@ -107,6 +111,8 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(
+            elRef,
+            ++LitIvemIdSelectNgComponent.typeInstanceCreateCount,
             cdr,
             settingsNgService.service,
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray
@@ -114,7 +120,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         this._adiService = adiNgService.service;
         this._symbolsService = symbolsNgService.service;
         this._symbolDetailCacheService = symbolDetailCacheNgService.service;
-        this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
+        this.inputId = 'LitIvemIdInput' + this.typeInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;

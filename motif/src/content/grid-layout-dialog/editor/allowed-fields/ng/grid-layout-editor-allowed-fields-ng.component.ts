@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     GridField,
     StringId,
@@ -26,6 +26,8 @@ import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-editor-allowe
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorAllowedFieldsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
     @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgDirective;
 
@@ -34,10 +36,11 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends ContentComponentBa
     private readonly _frame: GridLayoutEditorAllowedFieldsFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
     ) {
-        super();
+        super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount);
 
         this._frame = new GridLayoutEditorAllowedFieldsFrame(
             this,

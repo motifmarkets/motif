@@ -19,6 +19,8 @@ import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-act
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
     @Input() size = '12';
 
@@ -29,9 +31,15 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'IntegerInput' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++IntegerTextInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
+        this.inputId = 'IntegerInput' + this.typeInstanceId;
     }
 
     ngOnInit() {

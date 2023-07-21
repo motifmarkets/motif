@@ -60,6 +60,8 @@ import { TopShareholdersDitemFrame } from '../top-shareholders-ditem-frame';
 export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, TopShareholdersDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('todayModeButton', { static: true }) private _todayModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('historicalModeButton', { static: true }) private _historicalModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('compareModeButton', { static: true }) private _compareModeButtonInputComponent: SvgButtonNgComponent;
@@ -100,9 +102,9 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     private _frame: TopShareholdersDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -110,7 +112,15 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++TopShareholdersDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new TopShareholdersDitemFrame(
             this,

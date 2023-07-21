@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewContainerRef } from '@angular/core';
 import { GridSourceOrNamedReferenceDefinition, Result } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
@@ -16,10 +16,12 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SaveWatchlistDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     private _closeResolve: (value: Result<GridSourceOrNamedReferenceDefinition.SaveAsDefinition>) => void;
 
-    constructor() {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++SaveWatchlistDialogNgComponent.typeInstanceCreateCount);
     }
 
     ngAfterViewInit() {

@@ -59,6 +59,8 @@ import { OrderRequestDitemFrame } from '../order-request-ditem-frame';
 export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, OrderRequestDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('pad', { static: true }) private _padElementRef: ElementRef<HTMLDivElement>;
     @ViewChild('primaryButton', { static: true }) private _primaryButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -103,9 +105,9 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     private _padHtmlElement: HTMLDivElement;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -113,7 +115,15 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.service, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++OrderRequestDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
 
         this._frame = new OrderRequestDitemFrame(
             this,

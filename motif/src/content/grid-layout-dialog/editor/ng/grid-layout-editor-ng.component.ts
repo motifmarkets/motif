@@ -8,6 +8,7 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
+    ElementRef,
     Injector,
     OnDestroy,
     ValueProvider,
@@ -43,6 +44,8 @@ import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridLayoutEditorFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('insertButton', { static: true }) private _insertButtonComponent: SvgButtonNgComponent;
     @ViewChild('removeButton', { static: true }) private _removeButtonComponent: SvgButtonNgComponent;
     @ViewChild('moveUpButton', { static: true }) private _moveUpButtonComponent: SvgButtonNgComponent;
@@ -63,8 +66,8 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     private _currentRecordIndex: Integer | undefined = undefined;
     // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
 
-    constructor(commandRegisterNgService: CommandRegisterNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++GridLayoutEditorNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 
