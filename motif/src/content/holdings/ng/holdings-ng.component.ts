@@ -22,7 +22,7 @@ export class HoldingsNgComponent extends GridSourceNgDirective {
         super(elRef, ++HoldingsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return contentNgService.createHoldingsFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createHoldingsFrame(this);
     }
 }

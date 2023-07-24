@@ -347,6 +347,8 @@ export namespace GridLayoutEditorNgComponent {
         container: ViewContainerRef,
         columnList: EditableGridLayoutDefinitionColumnList,
     ) {
+        container.clear();
+
         const columnListProvider: ValueProvider = {
             provide: columnListInjectionToken,
             useValue: columnList,

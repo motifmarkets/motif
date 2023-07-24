@@ -154,7 +154,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
         this._resizeObserver.observe(this._leftAndRightDiv.nativeElement);
-        this._gridComponent.waitRendered().then(
+        this._gridComponent.waitLastServerNotificationRendered().then(
             (success) => {
                 if (success) {
                     this.updateWidths();

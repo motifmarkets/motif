@@ -4,12 +4,19 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/revgrid';
+
 :host {
     display: flex;
     flex-direction: column;
     height: 100%;
-}
 
-#delayedBadness {
-    flex: 0 0 auto;
+    #delayedBadness {
+        flex: 0 0 auto;
+    }
+
+    #ordersGridHost {
+        @include revgrid.hostAsColumnFlexItem;
+        flex: 1 1 0;
+    }
 }

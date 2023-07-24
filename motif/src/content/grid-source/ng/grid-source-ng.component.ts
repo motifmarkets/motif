@@ -5,6 +5,7 @@
  */
 
 import {
+    AfterViewInit,
     ChangeDetectorRef,
     Directive,
     ElementRef,
@@ -21,10 +22,11 @@ import { GridSourceFrame } from '../grid-source-frame';
 @Directive()
 export abstract class GridSourceNgDirective
     extends ContentComponentBaseNgDirective
-    implements OnDestroy, GridSourceFrame.ComponentAccess {
+    implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
 
     @HostBinding('style.flex-basis') styleFlexBasis = '';
 
+    @ViewChild('gridHost', { static: true }) protected _gridHost: ElementRef<HTMLElement>;
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     readonly frame: GridSourceFrame;
@@ -37,7 +39,7 @@ export abstract class GridSourceNgDirective
     ) {
         super(elRef, typeInstanceCreateId);
 
-        this.frame = this.createGridSourceFrame(contentNgService, elRef.nativeElement);
+        this.frame = this.createGridSourceFrame(contentNgService);
     }
 
     get gridRowHeight() { return this.frame.gridRowHeight; }
@@ -46,6 +48,10 @@ export abstract class GridSourceNgDirective
 
     ngOnDestroy() {
         this.frame.finalise();
+    }
+
+    ngAfterViewInit(): void {
+        this.setupGrid();
     }
 
     // Component Access members
@@ -70,7 +76,11 @@ export abstract class GridSourceNgDirective
         this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 
-    protected abstract createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement): GridSourceFrame;
+    protected setupGrid() {
+        this.frame.setupGrid(this._gridHost.nativeElement);
+    }
+
+    protected abstract createGridSourceFrame(contentNgService: ContentNgService): GridSourceFrame;
 }
 
 export namespace GridSourceNgDirective {

@@ -54,6 +54,8 @@ export abstract class AdaptedRevgrid extends Revgrid<AdaptedRevgridBehavioredGri
         this._settingsService = settingsService;
 
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
+        this.verticalScroller.setAfterInsideOffset(0);
+        this.horizontalScroller.setAfterInsideOffset(0);
     }
 
     override destroy(): void {

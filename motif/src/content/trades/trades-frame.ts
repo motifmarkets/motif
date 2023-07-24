@@ -38,41 +38,23 @@ export class TradesFrame extends ContentFrame {
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
     constructor(
-        settingsService: SettingsService,
+        private readonly _settingsService: SettingsService,
         protected readonly adiService: AdiService,
-        textFormatterService: TextFormatterService,
+        private readonly _textFormatterService: TextFormatterService,
         private readonly _componentAccess: TradesFrame.ComponentAccess,
-        hostElement: HTMLElement,
     ) {
         super();
         this._recordStore = new DayTradesGridRecordStore();
-
-        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
-            sortOnClick: false,
-            sortOnDoubleClick: false,
-        }
-
-        const grid = new RecordGrid(
-            settingsService,
-            hostElement,
-            this._recordStore,
-            customGridSettings,
-            () => this.customiseSettingsForNewColumn(),
-            () => this.getMainCellPainter(),
-            () => this.getHeaderCellPainter(),
-            this,
-        );
-        this._grid = grid;
-
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
-
-        grid.activate();
-
-        grid.rowOrderReversed = true;
     }
 
     get opened() { return this._dataItem !== undefined; }
+
+    setupGrid(gridHost: HTMLElement) {
+        this._grid = this.createGridAndCellPainters(gridHost);
+        // this.applySettings();
+        this._grid.activate();
+        this._grid.rowOrderReversed = true;
+    }
 
     initialise(tradesFrameElement: JsonElement | undefined) {
         let gridLayout: GridLayout;
@@ -192,6 +174,35 @@ export class TradesFrame extends ContentFrame {
 
     private handleGetDataItemCorrectnessIdEvent() {
         return this._dataItemDataCorrectnessId;
+    }
+
+    private createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(gridHostElement);
+
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
+
+        return grid;
+    }
+
+    private createGrid(gridHostElement: HTMLElement) {
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            sortOnClick: false,
+            sortOnDoubleClick: false,
+        }
+
+        const grid = new RecordGrid(
+            this._settingsService,
+            gridHostElement,
+            this._recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+            this,
+        );
+
+        return grid;
     }
 
     private createDefaultGridLayout() {

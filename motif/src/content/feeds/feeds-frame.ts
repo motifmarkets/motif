@@ -12,13 +12,7 @@ import {
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    KeyedCorrectnessList,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
-    SettingsService,
-    TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
-    TextFormatterService
+    KeyedCorrectnessList
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
@@ -31,36 +25,22 @@ export class FeedsFrame extends GridSourceFrame {
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
-    constructor(
-        settingsService: SettingsService,
-        textFormatterService: TextFormatterService,
-        namedGridLayoutsService: NamedGridLayoutsService,
-        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        namedGridSourcesService: NamedGridSourcesService,
-        componentAccess: GridSourceFrame.ComponentAccess,
-        hostElement: HTMLElement,
-    ) {
-        super(
-            settingsService,
-            namedGridLayoutsService,
-            tableRecordSourceDefinitionFactoryService,
-            tableRecordSourceFactoryService,
-            namedGridSourcesService,
-            componentAccess,
-            hostElement,
+    get recordList() { return this._recordList; }
+
+    override createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(
+            gridHostElement,
             {},
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridMainCellPainter(viewCell),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
-        const grid = this.grid;
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
-    }
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
 
-    get recordList() { return this._recordList; }
+        return grid;
+    }
 
     tryOpenWithDefaultLayout(keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();

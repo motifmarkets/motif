@@ -22,7 +22,7 @@ export class WatchlistNgComponent extends GridSourceNgDirective {
         super(elRef, ++WatchlistNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return  contentNgService.createWatchlistFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return  contentNgService.createWatchlistFrame(this);
     }
 }

@@ -26,21 +26,22 @@ import {
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService
+    TableRecordSourceFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 import { RevRecordMainDataServer, Subgrid } from 'revgrid';
 import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {
-    readonly grid: RecordGrid;
-
     opener: LockOpenListItem.Opener;
     dragDropAllowed: boolean;
     keepPreviousLayoutIfPossible = false;
     keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
 
     gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer | undefined;
+
+    protected grid: RecordGrid;
 
     private readonly _recordStore = new TableGridRecordStore();
     private readonly _opener: LockOpenListItem.Opener;
@@ -63,23 +64,15 @@ export abstract class GridSourceFrame extends ContentFrame {
     private _openedTableBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
-        private readonly _settingsService: SettingsService,
+        protected readonly settingsService: SettingsService,
+        protected readonly textFormatterService: TextFormatterService,
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
         private readonly _componentAccess: GridSourceFrame.ComponentAccess,
-        hostElement: HTMLElement,
-        customGridSettings: AdaptedRevgrid.CustomGridSettings,
-        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
-        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
-        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
     ) {
         super();
-
-        this.grid = this.createGrid(hostElement, customGridSettings, customiseSettingsForNewColumnEventer, getMainCellPainterEventer, getHeaderCellPainterEventer);
-        this.applySettings();
-        this.grid.activate();
     }
 
     get isNamed() {
@@ -154,14 +147,19 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-
     override finalise() {
         if (!this.finalised) {
-            this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+            this.settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
             this.closeGridSource(false);
             this.grid.destroy();
             super.finalise();
         }
+    }
+
+    setupGrid(gridHost: HTMLElement) {
+        this.grid = this.createGridAndCellPainters(gridHost);
+        this.applySettings();
+        this.grid.activate();
     }
 
     setFlexBasis(value: number) {
@@ -952,6 +950,35 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid.applyFilter(filter);
     }
 
+    protected createGrid(
+        hostElement: HTMLElement,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    ) {
+        const grid = new RecordGrid(
+            this.settingsService,
+            hostElement,
+            this._recordStore,
+            customGridSettings,
+            customiseSettingsForNewColumnEventer,
+            getMainCellPainterEventer,
+            getHeaderCellPainterEventer,
+            this,
+        );
+        this.grid = grid;
+
+        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.processRecordFocusedEvent(newRecordIndex, oldRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.processGridClickEvent(fieldIndex, recordIndex);
+        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.processGridDblClickEvent(fieldIndex, recordIndex);
+
+        this._settingsChangedSubscriptionId =
+            this.settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
+
+        return grid;
+    }
+
     // descendants can override to use with their own badness display
     protected setBadness(value: Badness) {
         this._componentAccess.setBadness(value);
@@ -1024,34 +1051,6 @@ export abstract class GridSourceFrame extends ContentFrame {
         } else {
             return definitionResult.value;
         }
-    }
-
-    private createGrid(
-        hostElement: HTMLElement,
-        customGridSettings: AdaptedRevgrid.CustomGridSettings,
-        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
-        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
-        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
-    ) {
-        const grid = new RecordGrid(
-            this._settingsService,
-            hostElement,
-            this._recordStore,
-            customGridSettings,
-            customiseSettingsForNewColumnEventer,
-            getMainCellPainterEventer,
-            getHeaderCellPainterEventer,
-            this,
-        );
-
-        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.processRecordFocusedEvent(newRecordIndex, oldRecordIndex);
-        grid.mainClickEventer = (fieldIndex, recordIndex) => this.processGridClickEvent(fieldIndex, recordIndex);
-        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.processGridDblClickEvent(fieldIndex, recordIndex);
-
-        this._settingsChangedSubscriptionId =
-            this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
-
-        return grid;
     }
 
     private applyFirstUsable() {
@@ -1282,6 +1281,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
+    protected abstract createGridAndCellPainters(gridHost: HTMLElement): RecordGrid;
     protected abstract getDefaultGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition | undefined;
 }
 

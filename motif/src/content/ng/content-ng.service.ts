@@ -63,8 +63,8 @@ export class ContentNgService {
         return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createFeedsFrame(componentAccess, hostElement);
+    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createFeedsFrame(componentAccess);
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -89,36 +89,36 @@ export class ContentNgService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createWatchlistFrame(componentAccess, hostElement);
+    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createWatchlistFrame(componentAccess);
     }
 
-    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createBrokerageAccountsFrame(componentAccess, hostElement);
+    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createBrokerageAccountsFrame(componentAccess);
     }
 
-    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createOrdersFrame(componentAccess, hostElement);
+    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createOrdersFrame(componentAccess);
     }
 
-    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createOrderAuthoriseFrame(componentAccess, hostElement);
+    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createOrderAuthoriseFrame(componentAccess);
     }
 
-    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createHoldingsFrame(componentAccess, hostElement);
+    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createHoldingsFrame(componentAccess);
     }
 
-    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createBalancesFrame(componentAccess, hostElement);
+    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createBalancesFrame(componentAccess);
     }
 
     createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
         return this._content.createStatusSummaryFrame(sessionInfoService, componentAccess);
     }
 
-    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createSearchSymbolsFrame(componentAccess, hostElement);
+    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createSearchSymbolsFrame(componentAccess);
     }
 
     createDepthSideFrame(hostElement: HTMLElement) {
@@ -129,12 +129,12 @@ export class ContentNgService {
         return this._content.createDepthFrame(componentAccess);
     }
 
-    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createScanListFrame(componentAccess, hostElement);
+    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createScanListFrame(componentAccess);
     }
 
-    createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {
-        return this._content.createTradesFrame(componentAccess, hostElement);
+    createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
+        return this._content.createTradesFrame(componentAccess);
     }
 
     createPadOrderRequestStepFrame(componentAccess: PadOrderRequestStepFrame.ComponentAccess) {

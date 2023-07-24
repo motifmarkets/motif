@@ -91,8 +91,8 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         return this._grid.columnsManager.calculateFixedColumnsWidth();
     }
 
-    waitRendered() {
-        return this._grid.waitModelRendered();
+    waitLastServerNotificationRendered() {
+        return this._grid.renderer.waitLastServerNotificationRendered();
     }
 
     handleRecordFocusEvent(recordIndex: RevRecordIndex | undefined) {

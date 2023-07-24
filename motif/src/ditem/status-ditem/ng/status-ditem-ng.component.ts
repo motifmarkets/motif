@@ -156,8 +156,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = true;
         this.zenithActive = false;
-        const component = FeedsNgComponent.create(this._statusContainer);
-        component.frame.initialise(this._frame.opener, undefined, true);
+        FeedsNgComponent.create(this._statusContainer, this._frame.opener);
         this.markForCheck();
     }
 

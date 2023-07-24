@@ -27,11 +27,13 @@ import {
     UnreachableCaseError,
     ZenithSubscriptionDataId
 } from '@motifmarkets/motif-core';
+import { ServerNotificationId } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 import { BidAskAllowedFieldsAndLayoutDefinitions, BidAskGridLayoutDefinitions } from '../grid-layout-editor-dialog-definition';
 
 export class DepthFrame extends ContentFrame {
+    public openedPopulatedAndRenderedEvent: DepthFrame.OpenedPopulatedAndRenderedEvent | undefined;
     public openExpand = false;
     // public activeWidthChangedEvent: DepthFrame.ActiveWidthChangedEventHandler;
 
@@ -69,6 +71,9 @@ export class DepthFrame extends ContentFrame {
     initialise(element: JsonElement | undefined) {
         this._bidDepthSideFrame = this._componentAccess.bidDepthSideFrame;
         this._askDepthSideFrame = this._componentAccess.askDepthSideFrame;
+
+        this._bidDepthSideFrame.openedPopulatedAndRenderedEvent = () => this.handleDepthSideFrameOpenedPopulatedAndRenderedEvent();
+        this._askDepthSideFrame.openedPopulatedAndRenderedEvent = () => this.handleDepthSideFrameOpenedPopulatedAndRenderedEvent();
 
         if (element === undefined) {
             this.openExpand = DepthFrame.JsonDefault.openExpand;
@@ -220,13 +225,6 @@ export class DepthFrame extends ContentFrame {
         // this._beenUsable = false;
     }
 
-    waitOpenPopulated() {
-        return Promise.all([this._bidDepthSideFrame.waitOpenPopulated(), this._bidDepthSideFrame.waitOpenPopulated()]);
-    }
-    waitRendered() {
-        return Promise.all([this._bidDepthSideFrame.waitRendered(), this._bidDepthSideFrame.waitRendered()]);
-    }
-
     getSymetricActiveWidth() {
         const bidActiveColumnsWidth = this._bidDepthSideFrame.calculateActiveColumnsWidth();
         const askActiveColumnsWidth = this._askDepthSideFrame.calculateActiveColumnsWidth();
@@ -360,6 +358,14 @@ export class DepthFrame extends ContentFrame {
             throw new AssertInternalError('DFHLBCE2219035378');
         } else {
             this._componentAccess.setBadness(this._levelDataItem.badness);
+        }
+    }
+
+    private handleDepthSideFrameOpenedPopulatedAndRenderedEvent() {
+        if (this.openedPopulatedAndRenderedEvent !== undefined) {
+            if ( this._bidDepthSideFrame.openedPopulatedAndRendered && this._askDepthSideFrame.openedPopulatedAndRendered) {
+                this.openedPopulatedAndRenderedEvent(this._bidDepthSideFrame.lastServerNotificationId, this._askDepthSideFrame.lastServerNotificationId);
+            }
         }
     }
 
@@ -542,6 +548,8 @@ export namespace DepthFrame {
     export type ActiveWidthChangedEventHandler = (
         this: void, bidActiveWidth: Integer | undefined, askActiveWidth: Integer | undefined
     ) => void;
+
+    export type OpenedPopulatedAndRenderedEvent = (this: void, lastBidServerNotificationId: ServerNotificationId, lastAskServerNotificationId: ServerNotificationId) => void;
 
     // type RenderedActiveWidthResolveFtn = (width: number) => void;
     // export type NextRenderedActiveWidthResolveFtns = RenderedActiveWidthResolveFtn[];

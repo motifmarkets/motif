@@ -6,7 +6,6 @@
 
 import {
     AdiService,
-    AssertInternalError,
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
@@ -25,7 +24,7 @@ import {
     TradesFrame,
     WatchlistFrame
 } from 'content-internal-api';
-import { lowestValidModelUpdateId } from 'revgrid';
+import { lowestValidServerNotificationId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -64,6 +63,12 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame = watchlistFrame;
         this._depthFrame = depthFrame;
         this._tradesFrame = tradesFrame;
+
+        this._depthFrame.openedPopulatedAndRenderedEvent = (lastBidServerNotificationId, lastAskServerNotificationId) => {
+            if (lastBidServerNotificationId >= lowestValidServerNotificationId && lastAskServerNotificationId >= lowestValidServerNotificationId) {
+                this.checkAutoAdjustOpenWidths();
+            }
+        }
 
         this._watchlistFrame.fixedRowCount = 1;
 
@@ -116,7 +121,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    async open() {
+    open() {
         const litIvemId = this.litIvemId;
         if (litIvemId === undefined) {
             this.close();
@@ -144,14 +149,6 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this._tradesFrame.open(litIvemId, undefined);
 
             this._componentAccess.notifyOpenedClosed(litIvemId, undefined);
-
-            const [bidOpePopulatedSuccess, askOpenPopulatedSuccess] = await this._depthFrame.waitOpenPopulated();
-            if (bidOpePopulatedSuccess && askOpenPopulatedSuccess) {
-                const [bidModelUpdateId, askModelUpdateId] = await this._depthFrame.waitRendered();
-                if (bidModelUpdateId >= lowestValidModelUpdateId && askModelUpdateId >= lowestValidModelUpdateId) {
-                    this.checkAutoAdjustOpenWidths();
-                }
-            }
         }
     }
 
@@ -215,11 +212,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             return false;
         } else {
             this._componentAccess.pushSymbol(litIvemId);
-            const promise = this.open();
-            promise.then(
-                () => {/**/},
-                (error) => { throw AssertInternalError.createIfNotError(error, 'PDFALII22297'); }
-            )
+            this.open();
             return true;
         }
     }

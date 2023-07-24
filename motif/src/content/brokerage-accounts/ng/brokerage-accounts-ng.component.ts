@@ -22,7 +22,7 @@ export class BrokerageAccountsNgComponent extends GridSourceNgDirective {
         super(elRef, ++BrokerageAccountsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return  contentNgService.createBrokerageAccountsFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return  contentNgService.createBrokerageAccountsFrame(this);
     }
 }

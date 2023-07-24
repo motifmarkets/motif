@@ -4,18 +4,19 @@
  * License: motionite.trade/license/motif
  */
 
- @use './partials/revgrid/revgrid-host';
+@use './partials/revgrid';
 
- :host {
-    @include revgrid-host.revgridHost;
+:host {
     display: flex;
     flex-direction: column;
-}
+    height: 100%;
 
-// #grid {
-//     // required because MotifGrid component uses ViewEncapsulation.None
-//     flex: 1 1 0;
-//     position: relative;
-//     min-height: 0;
-//     overflow-y: clip;
-// }
+    #delayedBadness {
+        flex: 0 0 auto;
+    }
+
+    #tradesGridHost {
+        @include revgrid.hostAsColumnFlexItem;
+        flex: 1 1 0;
+    }
+}

@@ -1,6 +1,7 @@
-@use './partials/revgrid/revgrid-host';
+@use './partials/revgrid';
 
 :host {
-    display: block;
-    @include revgrid-host.revgridHost;
+    display: flex;
+    flex-direction: column;
+    @include revgrid.hostAsColumnFlexItem;
 }

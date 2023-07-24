@@ -53,7 +53,7 @@ export class ContentService {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new FeedsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -62,7 +62,6 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
@@ -92,7 +91,7 @@ export class ContentService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new WatchlistFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -102,81 +101,70 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new BrokerageAccountsFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
             this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new OrdersFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
             this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new OrderAuthoriseFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
             this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new HoldingsFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
             this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new BalancesFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
             this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new SearchSymbolsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -185,7 +173,6 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
@@ -201,7 +188,7 @@ export class ContentService {
         return new DepthFrame(componentAccess, this._adiService);
     }
 
-    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess, hostElement: HTMLElement) {
+    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new ScanListFrame(
             this._settingsService,
             this._textFormatterService,
@@ -210,12 +197,11 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
             componentAccess,
-            hostElement,
         );
     }
 
-    createTradesFrame(componentAccess: TradesFrame.ComponentAccess, hostElement: HTMLElement) {
-        return new TradesFrame(this._settingsService, this._adiService, this._textFormatterService, componentAccess, hostElement);
+    createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
+        return new TradesFrame(this._settingsService, this._adiService, this._textFormatterService, componentAccess);
     }
 
     createPadOrderRequestStepFrame(componentAccess: PadOrderRequestStepFrame.ComponentAccess) {

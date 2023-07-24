@@ -33,8 +33,8 @@ export class SearchSymbolsNgComponent extends GridSourceNgDirective {
         super(elRef, ++SearchSymbolsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return contentNgService.createSearchSymbolsFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createSearchSymbolsFrame(this);
     }
 }
 

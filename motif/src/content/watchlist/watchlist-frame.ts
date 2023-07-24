@@ -58,26 +58,16 @@ export class WatchlistFrame extends GridSourceFrame {
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
         componentAccess: GridSourceFrame.ComponentAccess,
-        hostElement: HTMLElement,
     ) {
         super(
             settingsService,
+            textFormatterService,
             namedGridLayoutsService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
             componentAccess,
-            hostElement,
-            { fixedColumnCount: 1 },
-            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
-            (viewCell) => this.getGridMainCellPainter(viewCell),
-            (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
-
-        const grid = this.grid;
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(settingsService, textFormatterService, grid, grid.mainDataServer);
-
     }
 
     get userCanAdd() { return this._litIvemIdList.userCanAdd; }
@@ -91,6 +81,21 @@ export class WatchlistFrame extends GridSourceFrame {
             this._fixedRowCount = value;
             this.updateFlexBasis();
         }
+    }
+
+    override createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(
+            gridHostElement,
+            { fixedColumnCount: 1 },
+            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
+            (viewCell) => this.getGridMainCellPainter(viewCell),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
+        );
+
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+
+        return grid;
     }
 
     newEmpty(keepView: boolean) {

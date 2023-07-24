@@ -22,7 +22,7 @@ export class BalancesNgComponent extends GridSourceNgDirective {
         super(elRef, ++BalancesNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return contentNgService.createBalancesFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createBalancesFrame(this);
     }
 }

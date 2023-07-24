@@ -492,11 +492,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         // this._commandBarComponent.addCommandProcessor(this._frame.depthCommandProcessor);
         // this._commandBarComponent.addCommandProcessor(this._frame.dayTradesCommandProcessor);
 
-        const promise = this._frame.open();
-        promise.then(
-            () => {/**/},
-            (error) => { throw AssertInternalError.createIfNotError(error, 'PDNCICC49677'); }
-        );
+        this._frame.open();
     }
 
     private commitSymbol(typeId: UiAction.CommitTypeId) {

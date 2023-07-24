@@ -23,7 +23,7 @@ export class ScanListNgComponent extends GridSourceNgDirective {
         super(elRef, ++ScanListNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return contentNgService.createScanListFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createScanListFrame(this);
     }
 }

@@ -22,7 +22,7 @@ export class OrdersNgComponent extends GridSourceNgDirective {
         super(elRef, ++OrdersNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    protected override createGridSourceFrame(contentNgService: ContentNgService, hostElement: HTMLElement) {
-        return contentNgService.createOrdersFrame(this, hostElement);
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createOrdersFrame(this);
     }
 }
