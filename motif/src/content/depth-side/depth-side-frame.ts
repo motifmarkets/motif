@@ -244,43 +244,44 @@ export class DepthSideFrame extends ContentFrame {
 
     private initialiseStyle(styleId: DepthStyleId, initialGridLayoutDefinition: GridLayoutDefinition | undefined) {
         let fields: DepthSideGridField[];
-        let fieldDefaultVisibles: boolean[];
         let store: DepthSideGridRecordStore;
         switch (styleId) {
             case DepthStyleId.Full: {
                 const idCount = FullDepthSideField.idCount;
                 fields = new Array<DepthSideGridField>(idCount);
-                fieldDefaultVisibles = new Array<boolean>(idCount);
 
                 for (let id = 0; id < idCount; id++) {
                     const field = new FullDepthSideGridField(id, this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                     fields[id] = field;
-                    fieldDefaultVisibles[id] = FullDepthSideField.idToDefaultVisible(id);
                 }
 
                 store = new FullDepthSideGridRecordStore(styleId, this._sideId);
+
+                if (initialGridLayoutDefinition === undefined) {
+                    initialGridLayoutDefinition = FullDepthSideGridField.createDefaultGridLayoutDefinition(this._sideId);
+                }
+
                 break;
             }
             case DepthStyleId.Short: {
                 const idCount = ShortDepthSideField.idCount;
                 fields = new Array<DepthSideGridField>(idCount);
-                fieldDefaultVisibles = new Array<boolean>(idCount);
 
                 for (let id = 0; id < idCount; id++) {
                     const field = new ShortDepthSideGridField(id, this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                     fields[id] = field;
-                    fieldDefaultVisibles[id] = ShortDepthSideField.idToDefaultVisible(id);
                 }
 
                 store = new ShortDepthSideGridRecordStore(styleId, this._sideId);
+
+                if (initialGridLayoutDefinition === undefined) {
+                    initialGridLayoutDefinition = ShortDepthSideGridField.createDefaultGridLayoutDefinition(this._sideId);
+                }
+
                 break;
             }
             default:
                 throw new UnreachableCaseError('DSFI225576', styleId);
-        }
-
-        if (initialGridLayoutDefinition === undefined) {
-            initialGridLayoutDefinition = this.createDefaultGridLayoutDefinition(fields, fieldDefaultVisibles);
         }
 
         const element: DepthSideFrame.StyleCacheElement = {

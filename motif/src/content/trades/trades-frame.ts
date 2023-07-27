@@ -206,22 +206,7 @@ export class TradesFrame extends ContentFrame {
     }
 
     private createDefaultGridLayout() {
-        const fieldIds: DayTradesGridField.Id[] = [
-            DayTradesDataItem.Field.Id.Time,
-            DayTradesDataItem.Field.Id.Price,
-            DayTradesDataItem.Field.Id.Quantity,
-        ];
-
-        const count = fieldIds.length;
-        const columns = new Array<GridLayoutDefinition.Column>(count);
-        for (let i = 0; i < count; i++) {
-            const fieldId = fieldIds[i];
-            const column: GridLayoutDefinition.Column = {
-                fieldName: DayTradesDataItem.Field.idToName(fieldId),
-            };
-            columns[i] = column;
-        }
-        const definition = new GridLayoutDefinition(columns);
+        const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
         return new GridLayout(definition);
     }
 

@@ -10,9 +10,7 @@ import {
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
     GridLayout,
-    GridLayoutDefinition,
     Integer,
-    PickEnum,
     SettingsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
@@ -175,19 +173,13 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
 
     private dataResetGrid() {
         const colorSettings = this._recordStore.colorSettings;
-        const fieldNames = ColorSchemeGridNgComponent.fieldNames;
+        const fieldNames = ColorSchemeGridField.allFieldNames;
         const fieldCount = fieldNames.length;
         const fields = new Array<ColorSchemeGridField>(fieldCount);
         for (let i = 0; i < fieldCount; i++) {
             fields[i] = ColorSchemeGridField.createField(fieldNames[i], colorSettings);
         }
-        const columns = new Array<GridLayoutDefinition.Column>(fieldCount);
-        for (let i = 0; i < fieldCount; i++) {
-            columns[i] = {
-                fieldName: fieldNames[i],
-            };
-        }
-        const gridLayoutDefinition = new GridLayoutDefinition(columns);
+        const gridLayoutDefinition = ColorSchemeGridField.createDefaultGridLayoutDefinition();
         const gridLayout = new GridLayout(gridLayoutDefinition);
         this._grid.fieldsLayoutReset(fields, gridLayout);
     }
@@ -210,24 +202,4 @@ export namespace ColorSchemeGridNgComponent {
     export type RecordFocusEventer = (recordIndex: RevRecordIndex | undefined) => void;
     export type GridClickEventer = (fieldIndex: RevRecordFieldIndex, recordIndex: RevRecordIndex) => void;
     export type ColumnsViewWithsChangedEventer = (this: void) => void;
-
-    export type FieldName = PickEnum<ColorSchemeGridField.FieldName,
-        ColorSchemeGridField.FieldName.Display |
-        ColorSchemeGridField.FieldName.ResolvedBkgdColorText |
-        ColorSchemeGridField.FieldName.ResolvedBkgdColor |
-        ColorSchemeGridField.FieldName.ResolvedForeColorText |
-        ColorSchemeGridField.FieldName.ResolvedForeColor |
-        ColorSchemeGridField.FieldName.Readability |
-        ColorSchemeGridField.FieldName.IsReadable
-    >;
-
-    export const fieldNames: FieldName[] = [
-        ColorSchemeGridField.FieldName.Display,
-        ColorSchemeGridField.FieldName.ResolvedBkgdColorText,
-        ColorSchemeGridField.FieldName.ResolvedBkgdColor,
-        ColorSchemeGridField.FieldName.ResolvedForeColorText,
-        ColorSchemeGridField.FieldName.ResolvedForeColor,
-        ColorSchemeGridField.FieldName.Readability,
-        ColorSchemeGridField.FieldName.IsReadable
-    ];
 }
