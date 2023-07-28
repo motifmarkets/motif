@@ -20,10 +20,7 @@ export class ScanListNgComponent extends DelayedBadnessGridSourceNgDirective {
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++ScanListNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createScanListFrame(this);
+        const frame = contentNgService.createScanListFrame();
+        super(elRef, ++ScanListNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }

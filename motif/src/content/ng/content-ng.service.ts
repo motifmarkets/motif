@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { GridField, SessionInfoService } from '@motifmarkets/motif-core';
+import { EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -20,8 +20,6 @@ import {
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
-import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-dialog/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
@@ -64,8 +62,8 @@ export class ContentNgService {
         return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createFeedsFrame(componentAccess);
+    createFeedsFrame() {
+        return this._content.createFeedsFrame();
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
@@ -90,44 +88,48 @@ export class ContentNgService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createWatchlistFrame(componentAccess);
+    createWatchlistFrame() {
+        return this._content.createWatchlistFrame();
     }
 
-    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createBrokerageAccountsFrame(componentAccess);
+    createBrokerageAccountsFrame() {
+        return this._content.createBrokerageAccountsFrame();
     }
 
-    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createOrdersFrame(componentAccess);
+    createOrdersFrame() {
+        return this._content.createOrdersFrame();
     }
 
-    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createOrderAuthoriseFrame(componentAccess);
+    createOrderAuthoriseFrame() {
+        return this._content.createOrderAuthoriseFrame();
     }
 
-    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createHoldingsFrame(componentAccess);
+    createHoldingsFrame() {
+        return this._content.createHoldingsFrame();
     }
 
-    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createBalancesFrame(componentAccess);
+    createBalancesFrame() {
+        return this._content.createBalancesFrame();
     }
 
     createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
         return this._content.createStatusSummaryFrame(sessionInfoService, componentAccess);
     }
 
-    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createSearchSymbolsFrame(componentAccess);
+    createSearchSymbolsFrame() {
+        return this._content.createSearchSymbolsFrame();
     }
 
-    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createScanListFrame(componentAccess);
+    createScanListFrame() {
+        return this._content.createScanListFrame();
     }
 
-    createGridLayoutEditorAllowedFieldsFrame(componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess, allowedFields: GridField[]) {
-        return this._content.createGridLayoutEditorAllowedFieldsFrame(componentAccess, allowedFields);
+    createGridLayoutEditorAllowedFieldsFrame(allowedFields: GridField[]) {
+        return this._content.createGridLayoutEditorAllowedFieldsFrame(allowedFields);
+    }
+
+    createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
+        return this._content.createGridLayoutEditorColumnsFrame(columnList);
     }
 
     createDepthSideFrame(hostElement: HTMLElement) {

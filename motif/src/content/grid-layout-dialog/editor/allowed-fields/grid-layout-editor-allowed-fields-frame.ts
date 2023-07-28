@@ -29,8 +29,6 @@ import { GridSourceFrame } from '../../../grid-source/internal-api';
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer;
 
-    declare protected readonly _componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess;
-
     private _records: readonly GridField[];
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
@@ -43,7 +41,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
-        componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess,
         private readonly _allowedFields: GridField[],
     ) {
         super(
@@ -53,7 +50,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
-            componentAccess,
         );
     }
 
@@ -122,7 +118,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField([]);
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
@@ -179,14 +175,11 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return this._gridHeaderCellPainter;
     }
 
-    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
     }
 }
 
 export namespace GridLayoutEditorAllowedFieldsFrame {
-    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
-    }
-
     export type SelectionChangedEventer = (this: void) => void;
 }

@@ -19,10 +19,7 @@ export class BrokerageAccountsNgComponent extends DelayedBadnessGridSourceNgDire
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++BrokerageAccountsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return  contentNgService.createBrokerageAccountsFrame(this);
+        const frame = contentNgService.createBrokerageAccountsFrame();
+        super(elRef, ++BrokerageAccountsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }

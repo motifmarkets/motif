@@ -4,14 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     EditableGridLayoutDefinitionColumnList,
+    LockOpenListItem,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
+import { CoreInjectionTokens } from '../../../../../component-services/ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
-import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
+import { ContentNgService } from '../../../../ng/content-ng.service';
 import { definitionColumnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorSearchGridNgComponent } from '../../search-grid/ng-api';
 import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-frame';
@@ -23,38 +24,34 @@ import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-fram
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+export class GridLayoutEditorColumnsNgComponent extends  GridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
-    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgDirective;
 
-    private readonly _frame: GridLayoutEditorColumnsFrame;
+    declare readonly frame: GridLayoutEditorColumnsFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
         @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
-        super(elRef, ++GridLayoutEditorColumnsNgComponent.typeInstanceCreateCount);
-
-        this._frame = new GridLayoutEditorColumnsFrame(
-            this,
-            tableRecordSourceDefinitionFactoryNgService.service,
-            columnList,
-        );
+        const frame = contentNgService.createGridLayoutEditorColumnsFrame(columnList);
+        super(elRef, ++GridLayoutEditorColumnsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
-    ngAfterViewInit() {
-        delay1Tick(() => this.initialise());
+    protected override processAfterViewInit() {
+        this.frame.setupGrid(this._gridHost.nativeElement);
+        this.frame.initialiseGrid(this._opener, undefined, false);
+        delay1Tick(() => this.linkSearchComponent());
     }
 
-    private initialise() {
-        this._frame.initialise(this._gridSourceComponent.frame/* , this._gridSourceComponent.recordGrid*/);
-
-        this._searchComponent.selectAllEventer = () => this._frame.selectAll();
-        this._searchComponent.searchTextChangedEventer = (searchText) => this._frame.tryFocusFirstSearchMatch(searchText);
-        this._searchComponent.searchNextEventer = (searchText, downKeys) => this._frame.tryFocusNextSearchMatch(searchText, downKeys);
+    private linkSearchComponent() {
+        this._searchComponent.selectAllEventer = () => this.frame.selectAll();
+        this._searchComponent.searchTextChangedEventer = (searchText) => this.frame.tryFocusFirstSearchMatch(searchText);
+        this._searchComponent.searchNextEventer = (searchText, downKeys) => this.frame.tryFocusNextSearchMatch(searchText, downKeys);
     }
 
     // invalidateVisibleValue(rowIndex: Integer): void {

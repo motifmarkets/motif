@@ -34,7 +34,6 @@ import {
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
 
 export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     defaultLitIvemIds: readonly LitIvemId[] | undefined;
@@ -42,6 +41,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     gridSourceOpenedEventer: WatchlistFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: WatchlistFrame.RecordFocusedEventer | undefined
     saveRequiredEventer: WatchlistFrame.SaveRequiredEventer | undefined;
+    setGridHostFlexBasisEventer: WatchlistFrame.SetGridHostFlexBasisEventer;
 
     private _litIvemIdList: RankedLitIvemIdList;
     private _recordSource: RankedLitIvemIdListTableRecordSource;
@@ -58,7 +58,6 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
-        componentAccess: GridSourceFrame.ComponentAccess,
     ) {
         super(
             settingsService,
@@ -67,7 +66,6 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
-            componentAccess,
         );
     }
 
@@ -305,7 +303,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             const headerHeight = this.calculateHeaderPlusFixedRowsHeight();
             const gridHorizontalScrollbarMarginedHeight = this.gridHorizontalScrollbarInsideOverlap;
             const height = headerHeight + rowHeight + gridHorizontalScrollbarMarginedHeight;
-            this.setFlexBasis(height);
+            this.setGridHostFlexBasisEventer(height);
         }
     }
 
@@ -324,13 +322,10 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
 
 export namespace WatchlistFrame {
-    export type GridSourceOpenedEventer = (
-        this: void,
-        rankedLitIvemIdList: RankedLitIvemIdList,
-        rankedLitIvemIdListName: string | undefined
-    ) => void;
+    export type GridSourceOpenedEventer = (this: void, rankedLitIvemIdList: RankedLitIvemIdList, rankedLitIvemIdListName: string | undefined) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
     export type SaveRequiredEventer = (this: void) => void;
+    export type SetGridHostFlexBasisEventer = (this: void, value: number) => void;
 
     export namespace WatchlistJsonName {
         export const keptLayout = 'keptLayout';

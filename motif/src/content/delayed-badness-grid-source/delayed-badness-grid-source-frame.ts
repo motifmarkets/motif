@@ -8,20 +8,19 @@ import { Badness } from '@motifmarkets/motif-core';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
 export abstract class DelayedBadnessGridSourceFrame extends GridSourceFrame {
-    protected declare readonly _componentAccess: DelayedBadnessGridSourceFrame.ComponentAccess
+    setBadnessEventer: DelayedBadnessGridSourceFrame.SetBadnessEventer;
+    hideBadnessWithVisibleDelayEventer: DelayedBadnessGridSourceFrame.HideBadnessWithVisibleDelayEventer;
 
     protected override setBadness(value: Badness) {
-        this._componentAccess.setBadness(value);
+        this.setBadnessEventer(value);
     }
 
     protected override hideBadnessWithVisibleDelay(badness: Badness) {
-        this._componentAccess.hideBadnessWithVisibleDelay(badness);
+        this.hideBadnessWithVisibleDelayEventer(badness);
     }
 }
 
 export namespace DelayedBadnessGridSourceFrame {
-    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
-        setBadness(value: Badness): void;
-        hideBadnessWithVisibleDelay(badness: Badness): void;
-    }
+    export type SetBadnessEventer = (this: void, value: Badness) => void;
+    export type HideBadnessWithVisibleDelayEventer = (this: void, badness: Badness) => void;
 }

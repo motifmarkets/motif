@@ -30,11 +30,8 @@ export class SearchSymbolsNgComponent extends DelayedBadnessGridSourceNgDirectiv
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++SearchSymbolsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createSearchSymbolsFrame(this);
+        const frame = contentNgService.createSearchSymbolsFrame();
+        super(elRef, ++SearchSymbolsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }
 

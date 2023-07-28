@@ -19,10 +19,7 @@ export class OrdersNgComponent extends DelayedBadnessGridSourceNgDirective {
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++OrdersNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createOrdersFrame(this);
+        const frame = contentNgService.createOrdersFrame();
+        super(elRef, ++OrdersNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }

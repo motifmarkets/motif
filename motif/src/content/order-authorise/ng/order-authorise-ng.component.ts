@@ -19,10 +19,7 @@ export class OrderAuthoriseNgComponent extends DelayedBadnessGridSourceNgDirecti
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++OrderAuthoriseNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createOrderAuthoriseFrame(this);
+        const frame = contentNgService.createOrderAuthoriseFrame();
+        super(elRef, ++OrderAuthoriseNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }

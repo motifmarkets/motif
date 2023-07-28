@@ -279,7 +279,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, this._frame.opener, allowedFieldsAndLayoutDefinition);
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {

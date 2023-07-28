@@ -7,6 +7,7 @@
 import {
     AdiService,
     AppStorageService,
+    EditableGridLayoutDefinitionColumnList,
     GridField,
     NamedGridLayoutsService,
     NamedGridSourcesService,
@@ -23,8 +24,7 @@ import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
-import { GridLayoutEditorAllowedFieldsFrame } from './grid-layout-dialog/internal-api';
-import { GridSourceFrame } from './grid-source/internal-api';
+import { GridLayoutEditorAllowedFieldsFrame, GridLayoutEditorColumnsFrame } from './grid-layout-dialog/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
@@ -55,7 +55,7 @@ export class ContentService {
         return new ZenithStatusFrame(componentAccess, this._adiService, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createFeedsFrame() {
         return new FeedsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -63,7 +63,6 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
@@ -93,7 +92,7 @@ export class ContentService {
     //     );
     // }
 
-    createWatchlistFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createWatchlistFrame() {
         return new WatchlistFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
@@ -102,11 +101,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createBrokerageAccountsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createBrokerageAccountsFrame() {
         return new BrokerageAccountsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -114,11 +112,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createOrdersFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createOrdersFrame() {
         return new OrdersFrame(
             this._settingsService,
             this._textFormatterService,
@@ -126,11 +123,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createOrderAuthoriseFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createOrderAuthoriseFrame() {
         return new OrderAuthoriseFrame(
             this._settingsService,
             this._textFormatterService,
@@ -138,11 +134,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createHoldingsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createHoldingsFrame() {
         return new HoldingsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -150,11 +145,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createBalancesFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createBalancesFrame() {
         return new BalancesFrame(
             this._settingsService,
             this._textFormatterService,
@@ -162,11 +156,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createSearchSymbolsFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createSearchSymbolsFrame() {
         return new SearchSymbolsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -174,11 +167,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+    createScanListFrame() {
         return new ScanListFrame(
             this._settingsService,
             this._textFormatterService,
@@ -186,11 +178,10 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
         );
     }
 
-    createGridLayoutEditorAllowedFieldsFrame(componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess, allowedFields: GridField[]) {
+    createGridLayoutEditorAllowedFieldsFrame(allowedFields: GridField[]) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
             this._textFormatterService,
@@ -198,8 +189,19 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
-            componentAccess,
-            allowedFields
+            allowedFields,
+        );
+    }
+
+    createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
+        return new GridLayoutEditorColumnsFrame(
+            this._settingsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            columnList,
         );
     }
 

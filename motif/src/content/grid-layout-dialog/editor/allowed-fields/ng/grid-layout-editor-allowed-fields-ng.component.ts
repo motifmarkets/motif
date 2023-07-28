@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     GridField,
     LockOpenListItem,
@@ -26,7 +26,7 @@ import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-editor-allowe
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirective implements AfterViewInit {
+export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
@@ -40,13 +40,10 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
-        @Inject(allowedFieldsInjectionToken) private readonly _allowedFields: GridField[],
+        @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
     ) {
-        super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createGridLayoutEditorAllowedFieldsFrame(this, this._allowedFields);
+        const frame = contentNgService.createGridLayoutEditorAllowedFieldsFrame(allowedFields);
+        super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
     protected override processAfterViewInit() {

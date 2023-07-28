@@ -27,7 +27,7 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
     @ViewChild('numberInput', { static: true }) private _numberInput: ElementRef<HTMLInputElement>;
 
     private _numberInputElement: HTMLInputElement;
-    private _oldText: string;
+    private _oldText: string | undefined;
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
 

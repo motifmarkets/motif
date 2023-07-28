@@ -19,10 +19,7 @@ export class HoldingsNgComponent extends DelayedBadnessGridSourceNgDirective {
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++HoldingsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createHoldingsFrame(this);
+        const frame = contentNgService.createHoldingsFrame();
+        super(elRef, ++HoldingsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }

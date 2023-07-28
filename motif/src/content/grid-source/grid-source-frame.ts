@@ -70,7 +70,6 @@ export abstract class GridSourceFrame extends ContentFrame {
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
-        protected readonly _componentAccess: GridSourceFrame.ComponentAccess,
     ) {
         super();
     }
@@ -160,10 +159,6 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid = this.createGridAndCellPainters(gridHost);
         this.applySettings();
         this.grid.activate();
-    }
-
-    setFlexBasis(value: number) {
-        this._componentAccess.setStyleFlexBasis(value);
     }
 
     calculateHeaderPlusFixedRowsHeight() {
@@ -1353,9 +1348,5 @@ export namespace GridSourceFrame {
         export interface ValueProvider extends AngularValueProvider {
             useValue: GridCreationParameters;
         }
-    }
-
-    export interface ComponentAccess {
-        setStyleFlexBasis(value: number): void;
     }
 }

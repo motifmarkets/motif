@@ -9,31 +9,24 @@ import {
     ChangeDetectorRef,
     Directive,
     ElementRef,
-    HostBinding,
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { Integer, numberToPixels } from '@motifmarkets/motif-core';
+import { Integer } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
-import { ContentNgService } from '../../ng/content-ng.service';
 import { GridSourceFrame } from '../grid-source-frame';
 
 @Directive()
-export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
-    @HostBinding('style.flex-basis') styleFlexBasis = '';
+export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     @ViewChild('gridHost', { static: true }) protected _gridHost: ElementRef<HTMLElement>;
-
-    readonly frame: GridSourceFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         typeInstanceCreateId: Integer,
-        private readonly _cdr: ChangeDetectorRef,
-        contentNgService: ContentNgService,
+        protected readonly _cdr: ChangeDetectorRef,
+        readonly frame: GridSourceFrame,
     ) {
         super(elRef, typeInstanceCreateId);
-
-        this.frame = this.createGridSourceFrame(contentNgService);
     }
 
     get gridRowHeight() { return this.frame.gridRowHeight; }
@@ -48,25 +41,13 @@ export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirect
         this.processAfterViewInit();
     }
 
-    // Component Access members
-
     getHeaderPlusFixedLineHeight() {
         return this.frame.calculateHeaderPlusFixedRowsHeight();
-    }
-
-    setStyleFlexBasis(value: number) {
-        const newFlexBasis = numberToPixels(value);
-        if (newFlexBasis !== this.styleFlexBasis) {
-            this.styleFlexBasis = newFlexBasis;
-            this._cdr.markForCheck();
-        }
     }
 
     protected processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
     }
-
-    protected abstract createGridSourceFrame(contentNgService: ContentNgService): GridSourceFrame;
 }
 
 export namespace GridSourceNgDirective {

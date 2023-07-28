@@ -485,7 +485,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._modeId = WatchlistDitemNgComponent.ModeId.LayoutDialog;
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinition);
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, this._frame.opener, allowedFieldsAndLayoutDefinition);
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {

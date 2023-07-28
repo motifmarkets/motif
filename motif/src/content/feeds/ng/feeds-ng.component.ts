@@ -37,11 +37,8 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
-        super(elRef, ++FeedsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createFeedsFrame(this);
+        const frame = contentNgService.createFeedsFrame();
+        super(elRef, ++FeedsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
     protected override processAfterViewInit() {

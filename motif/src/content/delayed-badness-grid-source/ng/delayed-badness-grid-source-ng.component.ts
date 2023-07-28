@@ -8,23 +8,19 @@ import {
     Directive,
     ViewChild
 } from '@angular/core';
-import { Badness } from '@motifmarkets/motif-core';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { GridSourceNgDirective } from '../../grid-source/ng-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source-frame';
 
 @Directive()
-export abstract class DelayedBadnessGridSourceNgDirective extends GridSourceNgDirective implements DelayedBadnessGridSourceFrame.ComponentAccess {
-
+export abstract class DelayedBadnessGridSourceNgDirective extends GridSourceNgDirective {
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     declare readonly frame: DelayedBadnessGridSourceFrame;
 
-    setBadness(value: Badness) {
-        this._delayedBadnessComponent.setBadness(value);
-    }
-
-    hideBadnessWithVisibleDelay(badness: Badness) {
-        this._delayedBadnessComponent.hideWithVisibleDelay(badness);
+    protected override processAfterViewInit() {
+        super.processAfterViewInit();
+        this.frame.setBadnessEventer = (value) => this._delayedBadnessComponent.setBadness(value);
+        this.frame.hideBadnessWithVisibleDelayEventer = (badness) => this._delayedBadnessComponent.hideWithVisibleDelay(badness);
     }
 }

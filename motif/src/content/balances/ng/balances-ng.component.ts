@@ -19,10 +19,7 @@ export class BalancesNgComponent extends DelayedBadnessGridSourceNgDirective {
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        super(elRef, ++BalancesNgComponent.typeInstanceCreateCount, cdr, contentNgService);
-    }
-
-    protected override createGridSourceFrame(contentNgService: ContentNgService) {
-        return contentNgService.createBalancesFrame(this);
+        const frame = contentNgService.createBalancesFrame();
+        super(elRef, ++BalancesNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 }
