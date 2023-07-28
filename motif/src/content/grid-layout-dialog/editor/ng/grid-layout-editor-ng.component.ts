@@ -9,9 +9,8 @@ import {
     ChangeDetectionStrategy,
     Component,
     ElementRef,
-    Injector,
+    Inject,
     OnDestroy,
-    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -33,7 +32,7 @@ import {
     SvgButtonNgComponent
 } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { columnListInjectionToken } from '../../ng/grid-layout-dialog-ng-injection-tokens';
+import { definitionColumnListInjectionToken } from '../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
 
 @Component({
@@ -66,7 +65,11 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     private _currentRecordIndex: Integer | undefined = undefined;
     // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
 
-    constructor(elRef: ElementRef<HTMLElement>, commandRegisterNgService: CommandRegisterNgService) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        commandRegisterNgService: CommandRegisterNgService,
+        @Inject(definitionColumnListInjectionToken) readonly definitionColumnList: EditableGridLayoutDefinitionColumnList,
+    ) {
         super(elRef, ++GridLayoutEditorNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
@@ -349,14 +352,6 @@ export namespace GridLayoutEditorNgComponent {
     ) {
         container.clear();
 
-        const columnListProvider: ValueProvider = {
-            provide: columnListInjectionToken,
-            useValue: columnList,
-        };
-        const injector = Injector.create({
-            providers: [columnListProvider],
-        });
-
-        container.createComponent(GridLayoutEditorNgComponent, { injector });
+        container.createComponent(GridLayoutEditorNgComponent);
     }
 }

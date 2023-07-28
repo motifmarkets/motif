@@ -70,7 +70,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
-        private readonly _componentAccess: GridSourceFrame.ComponentAccess,
+        protected readonly _componentAccess: GridSourceFrame.ComponentAccess,
     ) {
         super();
     }
@@ -99,7 +99,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     get isFiltered(): boolean { return this.grid.isFiltered; }
     get recordFocused() {return this.grid.recordFocused; }
 
-    initialise(
+    initialiseGrid(
         opener: LockOpenListItem.Opener,
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
@@ -979,16 +979,6 @@ export abstract class GridSourceFrame extends ContentFrame {
         return grid;
     }
 
-    // descendants can override to use with their own badness display
-    protected setBadness(value: Badness) {
-        this._componentAccess.setBadness(value);
-    }
-
-    // descendants can override to use with their own badness display
-    protected hideBadnessWithVisibleDelay(badness: Badness) {
-        this._componentAccess.hideBadnessWithVisibleDelay(badness);
-    }
-
     protected processGridSourceOpenedEvent(gridSourceOrNamedReference: GridSourceOrNamedReference) {
         // can be overridden by descendants
     }
@@ -1283,6 +1273,9 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     protected abstract createGridAndCellPainters(gridHost: HTMLElement): RecordGrid;
     protected abstract getDefaultGridSourceOrNamedReferenceDefinition(): GridSourceOrNamedReferenceDefinition | undefined;
+
+    protected abstract setBadness(value: Badness): void;
+    protected abstract hideBadnessWithVisibleDelay(badness: Badness): void;
 }
 
 export namespace GridSourceFrame {
@@ -1363,8 +1356,6 @@ export namespace GridSourceFrame {
     }
 
     export interface ComponentAccess {
-        setBadness(value: Badness): void;
-        hideBadnessWithVisibleDelay(badness: Badness): void;
         setStyleFlexBasis(value: number): void;
     }
 }

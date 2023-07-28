@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { WatchlistFrame } from '../watchlist-frame';
 
@@ -9,7 +9,7 @@ import { WatchlistFrame } from '../watchlist-frame';
     styleUrls: ['./watchlist-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class WatchlistNgComponent extends GridSourceNgDirective {
+export class WatchlistNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: WatchlistFrame;

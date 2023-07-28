@@ -73,15 +73,15 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame.fixedRowCount = 1;
 
         if (frameElement === undefined) {
-            this._watchlistFrame.initialise(this.opener, undefined, true);
+            this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
         } else {
             const watchlistElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isErr()) {
-                this._watchlistFrame.initialise(this.opener, undefined, true);
+                this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
             } else {
-                this._watchlistFrame.initialise(this.opener, watchlistElementResult.value, true);
+                this._watchlistFrame.initialiseGrid(this.opener, watchlistElementResult.value, true);
             }
 
             const tradesElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);

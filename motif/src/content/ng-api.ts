@@ -12,6 +12,7 @@ export * from './color-controls/ng-api';
 export * from './color-scheme-grid/ng-api';
 export * from './color-scheme-item-properties/ng-api';
 export * from './color-scheme-preset-code/ng-api';
+export * from './delayed-badness-grid-source/ng-api';
 export * from './delayed-badness/ng-api';
 export * from './depth-grid-layouts-editor-dialog/ng-api';
 export * from './depth-side/ng-api';

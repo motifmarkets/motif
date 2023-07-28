@@ -16,9 +16,9 @@ import {
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
+import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
-export class BrokerageAccountsFrame extends GridSourceFrame {
+export class BrokerageAccountsFrame extends DelayedBadnessGridSourceFrame {
     recordFocusedEventer: BrokerageAccountsFrame.RecordFocusedEventer | undefined
 
     private _recordSource: BrokerageAccountTableRecordSource;

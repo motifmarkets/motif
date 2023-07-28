@@ -64,7 +64,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        balancesFrame.initialise(
+        balancesFrame.initialiseGrid(
             this.opener,
             balancesFrameElement,
             false,

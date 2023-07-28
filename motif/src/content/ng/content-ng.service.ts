@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { SessionInfoService } from '@motifmarkets/motif-core';
+import { GridField, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -20,6 +20,7 @@ import {
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
+import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-dialog/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
@@ -121,16 +122,20 @@ export class ContentNgService {
         return this._content.createSearchSymbolsFrame(componentAccess);
     }
 
+    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
+        return this._content.createScanListFrame(componentAccess);
+    }
+
+    createGridLayoutEditorAllowedFieldsFrame(componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess, allowedFields: GridField[]) {
+        return this._content.createGridLayoutEditorAllowedFieldsFrame(componentAccess, allowedFields);
+    }
+
     createDepthSideFrame(hostElement: HTMLElement) {
         return this._content.createDepthSideFrame(hostElement);
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return this._content.createDepthFrame(componentAccess);
-    }
-
-    createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
-        return this._content.createScanListFrame(componentAccess);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {

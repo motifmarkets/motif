@@ -10,9 +10,9 @@ import {
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
-import { GridSourceFrame } from '../../grid-source/internal-api';
+import { DelayedBadnessGridSourceFrame } from '../../delayed-badness-grid-source/internal-api';
 
-export class ScanListFrame extends GridSourceFrame {
+export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     gridSourceOpenedEventer: ScanListFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: ScanListFrame.RecordFocusedEventer | undefined
 

@@ -10,7 +10,7 @@ import {
     Component,
     ElementRef
 } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { SearchSymbolsFrame } from '../search-symbols-frame';
 
@@ -20,7 +20,7 @@ import { SearchSymbolsFrame } from '../search-symbols-frame';
     styleUrls: ['./search-symbols-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class SearchSymbolsNgComponent extends GridSourceNgDirective {
+export class SearchSymbolsNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: SearchSymbolsFrame;

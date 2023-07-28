@@ -4,15 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/revgrid';
+
 :host {
     display: flex;
     flex-direction: column;
-}
+    height: 100%;
 
-#searchDiv {
-    display: flex;
-
-    #searchInput {
-        width: 8em;
+    #allowedSymbolsGridHost {
+        @include revgrid.hostAsColumnFlexItem;
+        flex: 1 1 0;
     }
 }

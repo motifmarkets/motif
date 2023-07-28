@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { BalancesFrame } from '../balances-frame';
 
@@ -9,7 +9,7 @@ import { BalancesFrame } from '../balances-frame';
     styleUrls: ['./balances-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BalancesNgComponent extends GridSourceNgDirective {
+export class BalancesNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: BalancesFrame;

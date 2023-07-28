@@ -4,4 +4,4 @@
  * License: motionite.trade/license/motif
  */
 
-// export * from './editor/internal-api';
+export * from './editor/internal-api';

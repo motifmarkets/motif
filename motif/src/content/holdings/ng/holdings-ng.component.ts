@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { HoldingsFrame } from '../holdings-frame';
 
@@ -9,7 +9,7 @@ import { HoldingsFrame } from '../holdings-frame';
     styleUrls: ['./holdings-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class HoldingsNgComponent extends GridSourceNgDirective {
+export class HoldingsNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: HoldingsFrame;

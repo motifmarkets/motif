@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { OrdersFrame } from '../orders-frame';
 
@@ -9,7 +9,7 @@ import { OrdersFrame } from '../orders-frame';
     styleUrls: ['./orders-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrdersNgComponent extends GridSourceNgDirective {
+export class OrdersNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: OrdersFrame;

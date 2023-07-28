@@ -13,21 +13,15 @@ import {
     OnDestroy,
     ViewChild
 } from '@angular/core';
-import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
-import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
+import { Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { GridSourceFrame } from '../grid-source-frame';
 
 @Directive()
-export abstract class GridSourceNgDirective
-    extends ContentComponentBaseNgDirective
-    implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
-
+export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridSourceFrame.ComponentAccess {
     @HostBinding('style.flex-basis') styleFlexBasis = '';
-
     @ViewChild('gridHost', { static: true }) protected _gridHost: ElementRef<HTMLElement>;
-    @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     readonly frame: GridSourceFrame;
 
@@ -51,7 +45,7 @@ export abstract class GridSourceNgDirective
     }
 
     ngAfterViewInit(): void {
-        this.setupGrid();
+        this.processAfterViewInit();
     }
 
     // Component Access members
@@ -68,15 +62,7 @@ export abstract class GridSourceNgDirective
         }
     }
 
-    setBadness(value: Badness) {
-        this._delayedBadnessComponent.setBadness(value);
-    }
-
-    hideBadnessWithVisibleDelay(badness: Badness) {
-        this._delayedBadnessComponent.hideWithVisibleDelay(badness);
-    }
-
-    protected setupGrid() {
+    protected processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
     }
 

@@ -60,7 +60,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        scanListFrame.initialise(
+        scanListFrame.initialiseGrid(
             this.opener,
             scanListFrameElement,
             false,

@@ -16,7 +16,7 @@ import {
 } from '@angular/core';
 import { LockOpenListItem } from '@motifmarkets/motif-core';
 import { CoreInjectionTokens } from 'component-services-ng-api';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { FeedsFrame } from '../feeds-frame';
 
@@ -26,7 +26,7 @@ import { FeedsFrame } from '../feeds-frame';
     styleUrls: ['./feeds-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FeedsNgComponent extends GridSourceNgDirective {
+export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: FeedsFrame;
@@ -44,9 +44,9 @@ export class FeedsNgComponent extends GridSourceNgDirective {
         return contentNgService.createFeedsFrame(this);
     }
 
-    protected override setupGrid() {
-        super.setupGrid();
-        this.frame.initialise(this._opener, undefined, false);
+    protected override processAfterViewInit() {
+        this.frame.setupGrid(this._gridHost.nativeElement);
+        this.frame.initialiseGrid(this._opener, undefined, false);
     }
 }
 

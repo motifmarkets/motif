@@ -54,7 +54,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        brokerageAccountsFrame.initialise(
+        brokerageAccountsFrame.initialiseGrid(
             this.opener,
             brokerageAccountsFrameElement,
             false,

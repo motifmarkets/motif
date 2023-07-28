@@ -5,43 +5,89 @@
  */
 
 import {
+    AssertInternalError,
+    Badness,
     GridField,
+    GridFieldTableRecordSource,
     GridSourceDefinition,
+    GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
-    TableRecordSourceDefinitionFactoryService
+    NamedGridLayoutsService,
+    NamedGridSourcesService,
+    SettingsService,
+    TableRecordSourceDefinitionFactoryService,
+    TableRecordSourceFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from '../../../adapted-revgrid/internal-api';
-import { ContentFrame } from '../../../content-frame';
+import { DatalessViewCell } from 'revgrid';
+import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../../../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
-export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
+export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer;
 
-    private _gridSourceFrame: GridSourceFrame;
-    private _recordGrid: RecordGrid;
+    declare protected readonly _componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess;
+
+    private _records: readonly GridField[];
+
+    private _gridHeaderCellPainter: HeaderTextCellPainter;
+    private _gridMainCellPainter: RecordGridMainTextCellPainter;
 
     constructor(
-        private readonly _componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        settingsService: SettingsService,
+        textFormatterService: TextFormatterService,
+        namedGridLayoutsService: NamedGridLayoutsService,
+        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        tableRecordSourceFactoryService: TableRecordSourceFactoryService,
+        namedGridSourcesService: NamedGridSourcesService,
+        componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess,
         private readonly _allowedFields: GridField[],
     ) {
-        super();
+        super(
+            settingsService,
+            textFormatterService,
+            namedGridLayoutsService,
+            tableRecordSourceDefinitionFactoryService,
+            tableRecordSourceFactoryService,
+            namedGridSourcesService,
+            componentAccess,
+        );
     }
 
-    get selectedCount() { return 0; }
-    get selectedFields() { return new Array<GridField>(0); }
+    get selectedCount() {
+        const selection = this.grid.selection;
+        return selection.getRowCount();
+    }
 
-    initialise(gridSourceFrame: GridSourceFrame) {
-        this._gridSourceFrame = gridSourceFrame;
-        // this._recordGrid = recordGrid;
+    get selectedFields() {
+        const selection = this.grid.selection
+        const rowIndices = selection.getRowIndices();
+        const count = rowIndices.length;
+        const fields = new Array<GridField>(count);
+        for (let i = 0; i < count; i++) {
+            const rowIndex = rowIndices[i];
+            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
+            fields[i] = this._records[recordIndex];
+        }
+        return fields;
+    }
 
-        const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-        gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+    override createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(
+            gridHostElement,
+            {},
+            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
+            (viewCell) => this.getGridMainCellPainter(viewCell),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
+        );
+
+        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
+        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+
+        return grid;
     }
 
     setUsedFieldNames(names: string[]) {
@@ -49,7 +95,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
     }
 
     selectAll() {
-        this._recordGrid.selectAllRows();
+        this.grid.selectAllRows();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
@@ -58,13 +104,13 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
 
     tryFocusNextSearchMatch(searchText: string, downKeys: ModifierKey.IdSet) {
         const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const focusedRecIdx = this._recordGrid.focusedRecordIndex;
+        const focusedRecIdx = this.grid.focusedRecordIndex;
 
         let rowIndex: Integer;
         if (focusedRecIdx === undefined) {
             rowIndex = 0;
         } else {
-            const focusedRowIdx = this._recordGrid.recordToRowIndex(focusedRecIdx);
+            const focusedRowIdx = this.grid.recordToRowIndex(focusedRecIdx);
             if (backwards) {
                 rowIndex = focusedRowIdx - 1;
             } else {
@@ -75,27 +121,71 @@ export class GridLayoutEditorAllowedFieldsFrame extends ContentFrame {
         this.tryFocusNextSearchMatchFromRow(searchText, rowIndex, backwards);
     }
 
+    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField([]);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+    }
+
+    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+        const table = this.openedTable;
+        const recordSource = table.recordSource as GridFieldTableRecordSource;
+        this._records = recordSource.records;
+    }
+
+    protected override setBadness(value: Badness) {
+        if (!Badness.isUsable(value)) {
+            throw new AssertInternalError('GLEAFFSB42112', Badness.generateText(value));
+        }
+    }
+
+    protected override hideBadnessWithVisibleDelay(_badness: Badness) {
+        // always hidden as never bad
+    }
+
+    // initialiseGrid(gridSourceFrame: GridSourceFrame) {
+    //     this._gridSourceFrame = gridSourceFrame;
+    //     // this._recordGrid = recordGrid;
+
+    //     const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
+    //     const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+    //     const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+    //     gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+    // }
+
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
         const rowCount = 0; //this._recordGrid.getRowCount();
 
         while (rowIndex >= 0 && rowIndex < rowCount) {
-            const recordIndex = this._recordGrid.rowToRecordIndex(rowIndex);
+            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
             const field = this._allowedFields[recordIndex];
             const upperHeading = field.heading.toUpperCase();
             if (upperHeading.includes(upperSearchText)) {
-                this._recordGrid.focusedRecordIndex = recordIndex;
+                this.grid.focusedRecordIndex = recordIndex;
                 break;
             } else {
                 rowIndex += rowIncrement;
             }
         }
     }
+
+    private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
+    }
+
+    private getGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridHeaderCellPainter;
+    }
+
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridMainCellPainter;
+    }
 }
 
 export namespace GridLayoutEditorAllowedFieldsFrame {
-    export interface ComponentAccess {
+    export interface ComponentAccess extends GridSourceFrame.ComponentAccess {
     }
 
     export type SelectionChangedEventer = (this: void) => void;

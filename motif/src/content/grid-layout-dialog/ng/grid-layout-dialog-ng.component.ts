@@ -8,11 +8,13 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
+    ClassProvider,
     Component,
     ElementRef,
     Inject,
     Injector,
     OnDestroy,
+    Self,
     ValueProvider,
     ViewChild,
     ViewContainerRef
@@ -20,7 +22,6 @@ import {
 import {
     ButtonUiAction,
     CommandRegisterService,
-    EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     GridLayoutDefinition,
@@ -34,12 +35,13 @@ import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { GridLayoutEditorNgComponent } from '../editor/ng-api';
-import { allowedFieldsInjectionToken, oldLayoutDefinitionInjectionToken } from './grid-layout-dialog-ng-injection-tokens';
+import { allowedFieldsInjectionToken, definitionColumnListInjectionToken, oldLayoutDefinitionInjectionToken } from './grid-layout-dialog-ng-injection-tokens';
 
 @Component({
     selector: 'app-grid-layout-dialog',
     templateUrl: './grid-layout-dialog-ng.component.html',
     styleUrls: ['./grid-layout-dialog-ng.component.scss'],
+    providers: [ { provide: definitionColumnListInjectionToken, useClass: EditableGridLayoutDefinitionColumnList}],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -62,14 +64,13 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     private _closeResolve: (value: GridLayoutDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
-    private _columnList: EditableGridLayoutDefinitionColumnList;
-
     constructor(
         elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
         @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
+        @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutDialogNgComponent.typeInstanceCreateCount);
 
@@ -78,7 +79,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         this._cancelUiAction = this.createCancelUiAction();
         this._editorUiAction = this.createEditorUiAction();
 
-        this._columnList = this.createColumnListFromDefinition(allowedFields, this._oldLayoutDefinition);
+        this._definitionColumnList.load(this._oldLayoutDefinition, allowedFields);
     }
 
     ngAfterViewInit() {
@@ -152,29 +153,9 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         }
     }
 
-    private createColumnListFromDefinition(allowedFields: readonly GridField[], definition: GridLayoutDefinition) {
-        const definitionColumns = definition.columns;
-        const maxCount = definitionColumns.length;
-        const editableColumns = new Array<EditableGridLayoutDefinitionColumn>(maxCount);
-        let count = 0;
-        for (let i = 0; i < maxCount; i++) {
-            const definitionColumn = definitionColumns[i];
-            const fieldName = definitionColumn.fieldName;
-            const field = allowedFields.find((value) => value.name === fieldName);
-            if (field !== undefined) {
-                const editableColumn = new EditableGridLayoutDefinitionColumn(field, count++);
-                editableColumn.visible = definitionColumn.visible ?? true;
-                editableColumn.width = definitionColumn.autoSizableWidth;
-                editableColumns[count++] = editableColumn;
-            }
-        }
-        editableColumns.length = count;
-        return new EditableGridLayoutDefinitionColumnList(editableColumns);
-    }
-
     private showEditor() {
         this._subDialogContainer.clear();
-        GridLayoutEditorNgComponent.create(this._subDialogContainer, this._columnList);
+        GridLayoutEditorNgComponent.create(this._subDialogContainer, this._definitionColumnList);
     }
 }
 
@@ -196,8 +177,12 @@ export namespace GridLayoutDialogNgComponent {
             provide: oldLayoutDefinitionInjectionToken,
             useValue: layoutDefinition,
         };
+        const columnListProvider: ClassProvider = {
+            provide: definitionColumnListInjectionToken,
+            useClass: EditableGridLayoutDefinitionColumnList,
+        };
         const injector = Injector.create({
-            providers: [allowedFieldsProvider, layoutDefinitionProvider],
+            providers: [allowedFieldsProvider, layoutDefinitionProvider, columnListProvider],
         });
 
         const componentRef = container.createComponent(GridLayoutDialogNgComponent, { injector });

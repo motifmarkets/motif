@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { BrokerageAccountsFrame } from '../brokerage-accounts-frame';
 
@@ -9,7 +9,7 @@ import { BrokerageAccountsFrame } from '../brokerage-accounts-frame';
     styleUrls: ['./brokerage-accounts-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class BrokerageAccountsNgComponent extends GridSourceNgDirective {
+export class BrokerageAccountsNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: BrokerageAccountsFrame;

@@ -77,7 +77,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        watchlistFrame.initialise(
+        watchlistFrame.initialiseGrid(
             this.opener,
             watchlistFrameElement,
             false,

@@ -169,7 +169,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        searchSymbolsFrame.initialise(
+        searchSymbolsFrame.initialiseGrid(
             this.opener,
             searchSymbolsFrameElement,
             false,

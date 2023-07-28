@@ -17,9 +17,9 @@ import {
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
-import { GridSourceFrame } from '../grid-source/internal-api';
+import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
-export class OrderAuthoriseFrame extends GridSourceFrame {
+export class OrderAuthoriseFrame extends DelayedBadnessGridSourceFrame {
     gridSourceOpenedEventer: OrderAuthoriseFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: OrderAuthoriseFrame.RecordFocusedEventer | undefined
 

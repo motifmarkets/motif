@@ -7,6 +7,7 @@
 import {
     AdiService,
     AppStorageService,
+    GridField,
     NamedGridLayoutsService,
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListsService,
@@ -22,6 +23,7 @@ import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
 import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
+import { GridLayoutEditorAllowedFieldsFrame } from './grid-layout-dialog/internal-api';
 import { GridSourceFrame } from './grid-source/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { MarketsFrame } from './markets/internal-api';
@@ -176,18 +178,6 @@ export class ContentService {
         );
     }
 
-    createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
-        return new StatusSummaryFrame(this._adiService, sessionInfoService, componentAccess,);
-    }
-
-    createDepthSideFrame(hostElement: HTMLElement) {
-        return new DepthSideFrame(this._settingsService, this._textFormatterService, hostElement);
-    }
-
-    createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
-        return new DepthFrame(componentAccess, this._adiService);
-    }
-
     createScanListFrame(componentAccess: GridSourceFrame.ComponentAccess) {
         return new ScanListFrame(
             this._settingsService,
@@ -198,6 +188,31 @@ export class ContentService {
             this._namedGridSourcesService,
             componentAccess,
         );
+    }
+
+    createGridLayoutEditorAllowedFieldsFrame(componentAccess: GridLayoutEditorAllowedFieldsFrame.ComponentAccess, allowedFields: GridField[]) {
+        return new GridLayoutEditorAllowedFieldsFrame(
+            this._settingsService,
+            this._textFormatterService,
+            this._namedGridLayoutDefinitionsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._namedGridSourcesService,
+            componentAccess,
+            allowedFields
+        );
+    }
+
+    createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
+        return new StatusSummaryFrame(this._adiService, sessionInfoService, componentAccess,);
+    }
+
+    createDepthSideFrame(hostElement: HTMLElement) {
+        return new DepthSideFrame(this._settingsService, this._textFormatterService, hostElement);
+    }
+
+    createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
+        return new DepthFrame(componentAccess, this._adiService);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {

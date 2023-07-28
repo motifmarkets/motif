@@ -8,14 +8,22 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     ChangeDetectorRef,
+    ClassProvider,
     Component,
     ElementRef,
+    Inject,
+    Injector,
     OnDestroy,
+    Self,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
     CommandRegisterService,
+    EditableGridLayoutDefinitionColumnList,
+    GridField,
+    GridLayoutDefinition,
     GridLayoutOrNamedReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
@@ -24,7 +32,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { GridLayoutEditorNgComponent } from '../../grid-layout-dialog/ng-api';
+import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, definitionColumnListInjectionToken, oldLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
 import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -32,6 +40,7 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     selector: 'app-nameable-grid-layout-editor-dialog',
     templateUrl: './nameable-grid-layout-editor-dialog-ng.component.html',
     styleUrls: ['./nameable-grid-layout-editor-dialog-ng.component.scss'],
+    providers: [ { provide: definitionColumnListInjectionToken, useClass: EditableGridLayoutDefinitionColumnList}],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
@@ -56,12 +65,17 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
+        @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
+        @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++NameableGridLayoutEditorDialogNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();
+
+        this._definitionColumnList.load(this._oldLayoutDefinition, allowedFields);
     }
 
     ngAfterViewInit() {
@@ -73,14 +87,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         this._cancelUiAction.finalise();
     }
 
-    open(
-        allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition
-    ): NameableGridLayoutEditorDialogNgComponent.ClosePromise {
-        this._editorComponent.setAllowedFieldsAndLayoutDefinition(
-            allowedFieldsAndLayoutDefinition.allowedFields,
-            allowedFieldsAndLayoutDefinition.layoutDefinition,
-        );
-
+    open(): NameableGridLayoutEditorDialogNgComponent.ClosePromise {
         return new Promise<GridLayoutOrNamedReferenceDefinition | undefined>((resolve) => {
             this._closeResolve = resolve;
         });
@@ -138,9 +145,26 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
         allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition,
     ): ClosePromise {
         container.clear();
-        const componentRef = container.createComponent(NameableGridLayoutEditorDialogNgComponent);
+
+        const allowedFieldsProvider: ValueProvider = {
+            provide: allowedFieldsInjectionToken,
+            useValue: allowedFieldsAndLayoutDefinition.allowedFields,
+        };
+        const oldLayoutDefinitionProvider: ValueProvider = {
+            provide: oldLayoutDefinitionInjectionToken,
+            useValue: allowedFieldsAndLayoutDefinition.layoutDefinition,
+        };
+        const columnListProvider: ClassProvider = {
+            provide: definitionColumnListInjectionToken,
+            useClass: EditableGridLayoutDefinitionColumnList,
+        };
+        const injector = Injector.create({
+            providers: [allowedFieldsProvider, oldLayoutDefinitionProvider, columnListProvider],
+        });
+
+        const componentRef = container.createComponent(NameableGridLayoutEditorDialogNgComponent, { injector });
         const component = componentRef.instance;
 
-        return component.open(allowedFieldsAndLayoutDefinition);
+        return component.open();
     }
 }

@@ -70,7 +70,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        ordersFrame.initialise(
+        ordersFrame.initialiseGrid(
             this.opener,
             ordersFrameElement,
             false,

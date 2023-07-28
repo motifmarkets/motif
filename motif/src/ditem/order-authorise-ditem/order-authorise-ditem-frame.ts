@@ -70,7 +70,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        orderAuthoriseFrame.initialise(
+        orderAuthoriseFrame.initialiseGrid(
             this.opener,
             orderAuthoriseFrameElement,
             false,

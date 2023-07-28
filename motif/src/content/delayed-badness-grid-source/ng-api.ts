@@ -4,4 +4,4 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './allowed-fields/internal-api';
+export * from './ng/delayed-badness-grid-source-ng.component';

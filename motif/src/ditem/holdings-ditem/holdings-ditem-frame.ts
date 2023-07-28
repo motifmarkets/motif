@@ -87,13 +87,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        holdingsFrame.initialise(
+        holdingsFrame.initialiseGrid(
             this.opener,
             holdingsFrameElement,
             true,
         );
 
-        balancesFrame.initialise(
+        balancesFrame.initialiseGrid(
             this.opener,
             balancesFrameElement,
             true,

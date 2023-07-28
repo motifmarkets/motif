@@ -33,9 +33,10 @@ import {
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
+import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 import { GridSourceFrame } from '../grid-source/internal-api';
 
-export class WatchlistFrame extends GridSourceFrame {
+export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     defaultLitIvemIds: readonly LitIvemId[] | undefined;
 
     gridSourceOpenedEventer: WatchlistFrame.GridSourceOpenedEventer | undefined;

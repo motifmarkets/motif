@@ -4,16 +4,17 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     GridField,
+    LockOpenListItem,
     StringId,
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
+import { CoreInjectionTokens } from '../../../../../component-services/ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
-import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
+import { ContentNgService } from '../../../../ng/content-ng.service';
 import { allowedFieldsInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorSearchGridNgComponent } from '../../search-grid/ng-api';
 import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-editor-allowed-fields-frame';
@@ -25,39 +26,38 @@ import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-editor-allowe
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorAllowedFieldsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit {
+export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirective implements AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
-    @ViewChild('gridSource', { static: true }) private _gridSourceComponent: GridSourceNgDirective;
 
     public readonly heading = Strings[StringId.AvailableColumns]
 
-    private readonly _frame: GridLayoutEditorAllowedFieldsFrame;
+    declare readonly frame: GridLayoutEditorAllowedFieldsFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
+        @Inject(allowedFieldsInjectionToken) private readonly _allowedFields: GridField[],
     ) {
-        super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount);
-
-        this._frame = new GridLayoutEditorAllowedFieldsFrame(
-            this,
-            tableRecordSourceDefinitionFactoryNgService.service,
-            allowedFields,
-        );
+        super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, contentNgService);
     }
 
-    ngAfterViewInit() {
-        delay1Tick(() => this.initialise());
+    protected override createGridSourceFrame(contentNgService: ContentNgService) {
+        return contentNgService.createGridLayoutEditorAllowedFieldsFrame(this, this._allowedFields);
     }
 
-    private initialise() {
-        this._frame.initialise(this._gridSourceComponent.frame, /*this._gridSourceComponent.recordGrid*/);
+    protected override processAfterViewInit() {
+        this.frame.setupGrid(this._gridHost.nativeElement);
+        this.frame.initialiseGrid(this._opener, undefined, false);
+        delay1Tick(() => this.linkSearchComponent());
+    }
 
-        this._searchComponent.selectAllEventer = () => this._frame.selectAll();
-        this._searchComponent.searchTextChangedEventer = (searchText) => this._frame.tryFocusFirstSearchMatch(searchText);
-        this._searchComponent.searchNextEventer = (searchText, downKeys) => this._frame.tryFocusNextSearchMatch(searchText, downKeys);
+    private linkSearchComponent() {
+        this._searchComponent.selectAllEventer = () => this.frame.selectAll();
+        this._searchComponent.searchTextChangedEventer = (searchText) => this.frame.tryFocusFirstSearchMatch(searchText);
+        this._searchComponent.searchNextEventer = (searchText, downKeys) => this.frame.tryFocusNextSearchMatch(searchText, downKeys);
     }
 }

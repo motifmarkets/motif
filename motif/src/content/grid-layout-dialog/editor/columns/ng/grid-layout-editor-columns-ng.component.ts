@@ -12,7 +12,7 @@ import {
 import { TableRecordSourceDefinitionFactoryNgService } from '../../../../../component-services/ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
-import { columnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
+import { definitionColumnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorSearchGridNgComponent } from '../../search-grid/ng-api';
 import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-frame';
 
@@ -34,7 +34,7 @@ export class GridLayoutEditorColumnsNgComponent extends ContentComponentBaseNgDi
     constructor(
         elRef: ElementRef<HTMLElement>,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        @Inject(columnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
+        @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutEditorColumnsNgComponent.typeInstanceCreateCount);
 

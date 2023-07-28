@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { GridSourceNgDirective } from '../../grid-source/ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { OrderAuthoriseFrame } from '../order-authorise-frame';
 
@@ -9,7 +9,7 @@ import { OrderAuthoriseFrame } from '../order-authorise-frame';
     styleUrls: ['./order-authorise-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class OrderAuthoriseNgComponent extends GridSourceNgDirective {
+export class OrderAuthoriseNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     declare frame: OrderAuthoriseFrame;
