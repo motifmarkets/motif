@@ -38,9 +38,9 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
         );
 
         const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
-            mouseColumnSelection: false,
-            mouseRowSelection: false,
-            mouseRectangleSelection: false,
+            mouseColumnSelectionEnabled: false,
+            mouseRowSelectionEnabled: false,
+            mouseMultiCellRectangleSelectionEnabled: false,
             multipleSelectionAreas: false,
             sortOnDoubleClick: false,
             visibleColumnWidthAdjust: true,

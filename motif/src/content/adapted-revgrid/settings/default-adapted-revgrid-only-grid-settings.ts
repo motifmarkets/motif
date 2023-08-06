@@ -24,4 +24,5 @@ export const defaultAdaptedRevgridOnlyGridSettings: AdaptedRevgridOnlyGridSettin
     columnHeaderFont: '12px Tahoma, Geneva, sans-serif',
     horizontalAlign: 'center',
     columnHeaderHorizontalAlign: 'center',
+    focusedCellSelectColored: false,
 } as const;

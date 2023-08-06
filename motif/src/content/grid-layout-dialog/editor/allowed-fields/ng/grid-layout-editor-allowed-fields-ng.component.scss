@@ -11,7 +11,7 @@
     flex-direction: column;
     height: 100%;
 
-    #allowedSymbolsGridHost {
+    #allowedFieldsGridHost {
         @include revgrid.hostAsColumnFlexItem;
         flex: 1 1 0;
     }

@@ -34,4 +34,5 @@ export interface AdaptedRevgridOnlyGridSettings {
     columnHeaderFont: string;
     horizontalAlign: HorizontalAlign;
     columnHeaderHorizontalAlign: HorizontalAlign;
+    focusedCellSelectColored: boolean;
 }

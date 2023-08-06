@@ -28,6 +28,7 @@ import {
     RevRecordMainDataServer,
     RevRecordRecentChangeTypeId,
     RevRecordValueRecentChangeTypeId,
+    SelectionAreaTypeId,
     StandardTextCellPainter
 } from 'revgrid';
 import { AdaptedRevgrid } from '../adapted-revgrid';
@@ -61,23 +62,48 @@ export abstract class RenderValueTextCellPainter
 
         const gc = this._renderingContext;
         const subgridRowIndex = cell.viewLayoutRow.subgridRowIndex;
+        const activeColumnIndex = cell.viewLayoutColumn.activeColumnIndex;
 
         const altRow = subgridRowIndex % 2 === 1;
 
-        let bkgdColor: string;
         const subgrid = cell.subgrid;
+        const focus = grid.focus;
         const isMainSubgrid = subgrid.isMain;
         const rowFocused = isMainSubgrid && grid.focus.isMainSubgridRowFocused(subgridRowIndex);
+        let focusedCellBorderColor: string | undefined;
+        let cellFocused: boolean;
         if (rowFocused) {
-            bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_FocusedRow);
-        } else {
-            if (prefillColor === undefined) {
-                bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Base);
-            } else {
-                bkgdColor = prefillColor;
+            cellFocused = focus.isCellFocused(cell);
+            if (cellFocused) {
+                focusedCellBorderColor = this._colorSettings.getFore(ColorScheme.ItemId.Grid_FocusedCellBorder);
             }
+        } else {
+            cellFocused = false;
         }
 
+        let bkgdColor: string;
+        const selection = grid.selection;
+        let cellSelectionAreaTypeId: SelectionAreaTypeId | undefined;
+        if (
+            (cellSelectionAreaTypeId = selection.getOneCellSelectionAreaTypeId(activeColumnIndex, subgridRowIndex, subgrid)) !== undefined &&
+            (
+                !cellFocused ||
+                this._gridSettings.focusedCellSelectColored ||
+                !selection.isSelectedCellTheOnlySelectedCell(activeColumnIndex, subgridRowIndex, subgrid, cellSelectionAreaTypeId)
+            )
+        ) {
+            bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Selection);
+        } else {
+            if (rowFocused && this._coreSettings.grid_FocusedRowColored) {
+                bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_FocusedRow);
+            } else {
+                if (prefillColor === undefined) {
+                    bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Grid_Base);
+                } else {
+                    bkgdColor = prefillColor; // stripe or Grid_Base
+                }
+            }
+        }
 
         let foreColor: string;
         if (altRow) {
@@ -307,6 +333,7 @@ export abstract class RenderValueTextCellPainter
                     internalBorderProcessingRequired =
                         fingerprint.internalBorderColor !== internalBorderColor
                         || fingerprint.internalBorderRowOnly !== internalBorderRowOnly
+                        || fingerprint.focusedCellBorderColor !== focusedCellBorderColor
                         || graphicId !== GraphicId.None;
                 }
             }
@@ -324,6 +351,7 @@ export abstract class RenderValueTextCellPainter
                 foreColor,
                 internalBorderColor,
                 internalBorderRowOnly,
+                focusedCellBorderColor,
                 foreText,
             };
 
@@ -356,25 +384,34 @@ export abstract class RenderValueTextCellPainter
                 gc.stroke();
             }
 
-            if (
-                internalBorderProcessingRequired &&
-                internalBorderColor !== undefined
-            ) {
-                gc.cache.strokeStyle = internalBorderColor;
-                gc.cache.lineWidth = 1;
-                if (internalBorderRowOnly) {
-                    gc.beginPath();
-                    gc.moveTo(x, y + 0.5);
-                    gc.lineTo(x + width, y + 0.5);
-                    gc.stroke();
+            if (internalBorderProcessingRequired) {
+                if (internalBorderColor !== undefined) {
+                    gc.cache.strokeStyle = internalBorderColor;
+                    gc.cache.lineWidth = 1;
+                    if (internalBorderRowOnly) {
+                        gc.beginPath();
+                        gc.moveTo(x, y + 0.5);
+                        gc.lineTo(x + width, y + 0.5);
+                        gc.stroke();
 
+                        gc.beginPath();
+                        gc.moveTo(x, y + height - 0.5);
+                        gc.lineTo(x + width, y + height - 0.5);
+                        gc.stroke();
+                    } else {
+                        gc.beginPath();
+                        gc.strokeRect(x + 0.5, y + 0.5, width - 2, height - 2);
+                    }
+                }
+
+                if (focusedCellBorderColor !== undefined) {
+                    gc.cache.strokeStyle = focusedCellBorderColor;
+                    gc.cache.lineWidth = 1;
+                    const oldLineDash = gc.cache.lineDash;
+                    gc.cache.lineDash = [2, 1];
                     gc.beginPath();
-                    gc.moveTo(x, y + height - 0.5);
-                    gc.lineTo(x + width, y + height - 0.5);
-                    gc.stroke();
-                } else {
-                    gc.beginPath();
-                    gc.strokeRect(x + 0.5, y + 0.5, width - 2, height - 2);
+                    gc.strokeRect(x + 0.5, y + 0.5, width - 1, height - 1);
+                    gc.cache.lineDash = oldLineDash;
                 }
             }
 
@@ -467,6 +504,7 @@ interface PaintFingerprintInterface {
     foreColor: string;
     internalBorderColor: string | undefined;
     internalBorderRowOnly: boolean;
+    focusedCellBorderColor: string | undefined;
     foreText: string;
 }
 

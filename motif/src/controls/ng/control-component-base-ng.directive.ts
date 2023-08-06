@@ -21,7 +21,7 @@ import {
 import { ComponentBaseNgDirective } from 'component-ng-api';
 
 @Directive()
-export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {
+export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy /*, CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>*/ {
     @HostBinding('style.display') displayPropertyNoneOverride = ''; // no override
 
     initialiseReady = false;
@@ -63,6 +63,13 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
+
+    // tryOpen(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, openingClickEvent: MouseEvent | undefined) {
+    //     return false;
+    // }
+    // close(field: GridField, subgridRowIndex: number, cancel: boolean) {
+
+    // }
 
     // Assumes that the component has DOM display attribute !== 'none'
     @Input()

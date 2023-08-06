@@ -15,6 +15,7 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
     private _columnHeaderFont: string;
     private _horizontalAlign: HorizontalAlign;
     private _columnHeaderHorizontalAlign: HorizontalAlign;
+    private _focusedCellSelectColored: boolean;
     // private _focusedRowBorderWidth: number;
     // private _alternateBackgroundColor: GridSettings.Color;
     // private _grayedOutForegroundColor: GridSettings.Color;
@@ -58,6 +59,15 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
         if (value !== this._columnHeaderHorizontalAlign) {
             this.beginChange();
             this._columnHeaderHorizontalAlign = value;
+            this.flagChangedViewRender();
+            this.endChange();
+        }
+    }
+    get focusedCellSelectColored() { return this._focusedCellSelectColored; }
+    set focusedCellSelectColored(value: boolean) {
+        if (value !== this._focusedCellSelectColored) {
+            this.beginChange();
+            this._focusedCellSelectColored = value;
             this.flagChangedViewRender();
             this.endChange();
         }
@@ -183,6 +193,9 @@ export class InMemoryAdaptedRevgridBehavioredGridSettings extends InMemoryTextBe
                     break;
                 case 'columnHeaderHorizontalAlign':
                     this._columnHeaderHorizontalAlign = requiredSettings.columnHeaderHorizontalAlign;
+                    break;
+                case 'focusedCellSelectColored':
+                    this._focusedCellSelectColored = requiredSettings.focusedCellSelectColored;
                     break;
                 // case 'alternateBackgroundColor':
                 //     this._alternateBackgroundColor = requiredSettings.alternateBackgroundColor;
