@@ -36,12 +36,6 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
 
     protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     protected processNamedGroupsChanged() {
         this.applyValue(this.uiAction.value, this.uiAction.edited);
     }

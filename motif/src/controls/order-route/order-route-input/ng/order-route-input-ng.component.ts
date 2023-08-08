@@ -41,12 +41,6 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         this.setInitialiseReady();
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: OrderRoute) {
         term = term.toUpperCase();
         return item.upperCode.includes(term) || item.upperDisplay.includes(term);

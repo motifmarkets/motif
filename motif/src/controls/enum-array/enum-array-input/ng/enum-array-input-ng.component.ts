@@ -59,12 +59,6 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         this._ngSelectComponent.element.style.setProperty(inputSizeCssCustomPropertyName, this.inputSize);
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: Entry) {
         term = term.toUpperCase();
         return item.upperCaption.includes(term);

@@ -55,12 +55,6 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         this.setInitialiseReady();
     }
 
-    override focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup) {
         term = term.toUpperCase();
         return item.brokerageAccountGroup.upperId.includes(term) || item.upperName.includes(term);

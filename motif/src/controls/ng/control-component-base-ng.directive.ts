@@ -6,23 +6,29 @@
 
 import { ChangeDetectorRef, Directive, ElementRef, HostBinding, Input, OnDestroy } from '@angular/core';
 import {
+    AdaptedRevgridBehavioredColumnSettings,
     ColorScheme,
     ColorSettings,
     CoreSettings,
     ExchangeSettings,
+    GridField,
     HtmlTypes,
     Integer,
     MultiEvent,
     SettingsService,
     UiAction,
     UnreachableCaseError,
-    delay1Tick
+    delay1Tick,
+    numberToPixels
 } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
+import { CellEditor, DatalessViewCell, Focus, Rectangle } from 'revgrid';
 
 @Directive()
-export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy /*, CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>*/ {
+export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy, CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> {
     @HostBinding('style.display') displayPropertyNoneOverride = ''; // no override
+
+    keyDownEventer: CellEditor.KeyDownEventer; // used by CellEditor
 
     initialiseReady = false;
     initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler | undefined;
@@ -63,13 +69,6 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
-
-    // tryOpen(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, openingClickEvent: MouseEvent | undefined) {
-    //     return false;
-    // }
-    // close(field: GridField, subgridRowIndex: number, cancel: boolean) {
-
-    // }
 
     // Assumes that the component has DOM display attribute !== 'none'
     @Input()
@@ -120,6 +119,45 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         this.pushSettings();
 
         delay1Tick(() => this.markForCheck());
+    }
+
+    tryOpenCell(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, openingClickEvent: MouseEvent | undefined): boolean {
+        // keyDownEventer must be set
+        this.rootHtmlElement.addEventListener('keydown', this.keyDownEventer);
+        this.rootHtmlElement.focus();
+        return true;
+    }
+
+    closeCell(field: GridField, subgridRowIndex: number, cancel: boolean) {
+        this.rootHtmlElement.removeEventListener('keydown', this.keyDownEventer);
+        this.rootHtmlElement.blur(); // make sure it does not have focus
+    }
+
+    processGridKeyDownEvent(event: KeyboardEvent, fromEditor: boolean, field: GridField, subgridRowIndex: number): boolean {
+        if (fromEditor) {
+            // Event was emitted by this editor.  Any key it can consume has effectively already been consumed
+            return this.canConsumeKey(event.key);
+        } else {
+            // Cannot dispatch an event from another element to an input element
+            return false;
+        }
+    }
+
+    setBounds(bounds: Rectangle | undefined) {
+        const htmlElement = this.rootHtmlElement;
+        if (bounds === undefined) {
+            htmlElement.style.visibility = 'hidden';
+        } else {
+            htmlElement.style.left = numberToPixels(bounds.x);
+            htmlElement.style.top = numberToPixels(bounds.y);
+            htmlElement.style.width = numberToPixels(bounds.width);
+            htmlElement.style.height = numberToPixels(bounds.height);
+            htmlElement.style.visibility = 'visible';
+        }
+    }
+
+    focus() {
+        this.rootHtmlElement.focus({ preventScroll: true });
     }
 
     protected finalise() {
@@ -350,6 +388,21 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     private handleRequiredChangePushEvent() {
         //
+    }
+
+    private canConsumeKey(key: string) {
+        switch (key) {
+            case Focus.ActionKeyboardKey.ArrowUp:
+            case Focus.ActionKeyboardKey.ArrowDown:
+            case Focus.ActionKeyboardKey.PageUp:
+            case Focus.ActionKeyboardKey.PageDown:
+            case Focus.ActionKeyboardKey.Tab:
+            case Focus.ActionKeyboardKey.Enter:
+            case Focus.ActionKeyboardKey.Escape:
+                return false;
+            default:
+                return true;
+        }
     }
 }
 

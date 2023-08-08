@@ -140,12 +140,6 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         this.setInitialiseReady();
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public generateTitle(item: LitIvemIdSelectNgComponent.Item, nameIncluded: boolean) {
         const detail = item.detail;
         if (detail === undefined) {

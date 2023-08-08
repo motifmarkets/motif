@@ -125,12 +125,6 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         this.setInitialiseReady();
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public generateTitle(item: RoutedIvemIdSelectNgComponent.Item, nameIncluded: boolean) {
         switch (item.exists) {
             case undefined: {
