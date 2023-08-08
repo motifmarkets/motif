@@ -5,8 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Integer } from '@motifmarkets/motif-core';
+import { AdaptedRevgridBehavioredColumnSettings, AssertInternalError, GridField, Integer } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
+import { DataServer, DatalessViewCell } from 'revgrid';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../../ng/number-ui-action-component-base-ng.directive';
 import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-action-component-base-ng.directive';
@@ -25,6 +26,10 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
     @Input() size = '12';
 
     @ViewChild('numberInput', { static: true }) private _numberInput: ElementRef<HTMLInputElement>;
+
+    declare rootHtmlElement: HTMLInputElement;
+
+    dataServer: DataServer<GridField> | undefined;
 
     private _numberInputElement: HTMLInputElement;
     private _oldText: string | undefined;
@@ -45,6 +50,60 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
     ngOnInit() {
         this.setNumberInputElement(this._numberInput.nativeElement);
         this.setInitialiseReady();
+    }
+
+    override tryOpenCell(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, _openingClickEvent: MouseEvent | undefined) {
+        const dataServer = this.dataServer;
+        if (dataServer === undefined) {
+            throw new AssertInternalError('ITINCTOCDU10008')
+        } else {
+            if (dataServer.getEditValue === undefined) {
+                return false;
+            } else {
+                const key = openingKeyDownEvent !== undefined ? openingKeyDownEvent.key : undefined;
+                if (key !== undefined) {
+                    // trying to open from key down event
+                    const isPrintableKey = key.length === 1 || key === 'Unidentified';
+                    if (!isPrintableKey) {
+                        return false; // only open if relevant key have been pushed down
+                    }
+                }
+
+                const result = super.tryOpenCell(cell, openingKeyDownEvent, _openingClickEvent);
+
+                if (result) {
+                    if (key !== undefined) {
+                        // was opened by keyboard
+                        this.rootHtmlElement.value = key;
+                    } else {
+                        // was not opened by keyboard
+                        const value = dataServer.getEditValue(cell.viewLayoutColumn.column.field, cell.viewLayoutRow.subgridRowIndex);
+                        if (typeof value !== 'number') {
+                            throw new AssertInternalError('ITINCTOCGE10008', typeof value);
+                        } else {
+                            this.rootHtmlElement.valueAsNumber = value;
+                            this.rootHtmlElement.setSelectionRange(0, this.rootHtmlElement.value.length); // selectAll
+                        }
+                    }
+                }
+
+                return result;
+            }
+        }
+    }
+
+    override closeCell(field: GridField, subgridRowIndex: number, cancel: boolean) {
+        if (!cancel && !this.readonly) {
+            const dataServer = this.dataServer;
+            if (dataServer === undefined) {
+                throw new AssertInternalError('ITINGCL10008');
+            } else {
+                if (dataServer.setEditValue !== undefined) {
+                    dataServer.setEditValue(field, subgridRowIndex, this.rootHtmlElement.valueAsNumber);
+                }
+            }
+        }
+        return super.closeCell(field, subgridRowIndex, cancel);
     }
 
     protected override applyValue(value: number | undefined, edited: boolean) {
