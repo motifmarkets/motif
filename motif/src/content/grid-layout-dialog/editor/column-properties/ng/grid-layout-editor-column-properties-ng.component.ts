@@ -12,12 +12,12 @@ import {
     GridLayoutChange,
     GridLayoutRecordStore,
     Integer,
+    RecordGrid,
     StringId,
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { RecordGrid } from '../../../../adapted-revgrid/internal-api';
 import { RecordGridNgComponent } from '../../../../adapted-revgrid/record-grid/ng/record-grid-ng.component';
 import { ContentComponentBaseNgDirective } from '../../../../ng/content-component-base-ng.directive';
 

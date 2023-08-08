@@ -5,14 +5,15 @@
  */
 
 import {
+    AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
-    compareInteger,
     GridField,
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
+    HeaderTextCellPainter,
     Integer,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
@@ -20,19 +21,20 @@ import {
     NamedGridSourcesService,
     NamedJsonRankedLitIvemIdListDefinition,
     NamedJsonRankedLitIvemIdListsService,
-    newGuid,
     RankedLitIvemId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListOrNamedReferenceDefinition,
     RankedLitIvemIdListTableRecordSource,
+    RecordGridMainTextCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService
+    TextFormatterService,
+    compareInteger,
+    newGuid
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
 export class WatchlistFrame extends DelayedBadnessGridSourceFrame {

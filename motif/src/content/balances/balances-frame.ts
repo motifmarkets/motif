@@ -13,10 +13,12 @@ import {
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
     Integer,
-    KeyedCorrectnessList
+    KeyedCorrectnessList,
+    AdaptedRevgridBehavioredColumnSettings,
+    HeaderTextCellPainter,
+    RecordGridMainTextCellPainter,
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
 export class BalancesFrame extends DelayedBadnessGridSourceFrame {

@@ -16,13 +16,13 @@ import {
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    RowDataArrayGrid,
     StringId,
     StringUiAction,
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
-import { RowDataArrayGrid } from 'content-internal-api';
 import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,

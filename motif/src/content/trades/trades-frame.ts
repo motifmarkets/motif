@@ -5,6 +5,7 @@
  */
 
 import {
+    AdaptedRevgrid,
     AdiService,
     AssertInternalError,
     Badness,
@@ -15,15 +16,16 @@ import {
     DayTradesGridRecordStore,
     GridLayout,
     GridLayoutDefinition,
+    HeaderTextCellPainter,
     JsonElement,
     LitIvemId,
     MultiEvent,
+    RecordGrid,
+    RecordGridMainTextCellPainter,
     SettingsService,
-    TextFormatterService
+    TextFormatterService,
 } from '@motifmarkets/motif-core';
-import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
-import { AllowedFieldsAndLayoutDefinition } from '../grid-layout-editor-dialog-definition';
 
 export class TradesFrame extends ContentFrame {
     private _grid: RecordGrid;
@@ -125,7 +127,7 @@ export class TradesFrame extends ContentFrame {
         this.checkClose();
     }
 
-    createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition {
+    createAllowedFieldsAndLayoutDefinition(): AdaptedRevgrid.AllowedFieldsAndLayoutDefinition {
         return this._grid.createAllowedFieldsAndLayoutDefinition();
     }
 

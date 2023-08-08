@@ -5,6 +5,7 @@
  */
 
 import {
+    AdaptedRevgrid,
     AdiService,
     AssertInternalError,
     CommandRegisterService,
@@ -14,7 +15,7 @@ import {
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { AllowedFieldsAndLayoutDefinition, TradesFrame } from 'content-internal-api';
+import { TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -101,7 +102,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    createAllowedFieldsAndLayoutDefinition(): AllowedFieldsAndLayoutDefinition | undefined {
+    createAllowedFieldsAndLayoutDefinition(): AdaptedRevgrid.AllowedFieldsAndLayoutDefinition | undefined {
         if (this._tradesFrame === undefined) {
             throw new AssertInternalError('TDFCAFALD44407');
         } else {

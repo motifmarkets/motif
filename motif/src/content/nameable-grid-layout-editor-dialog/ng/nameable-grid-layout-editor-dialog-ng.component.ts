@@ -19,6 +19,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
+    AdaptedRevgrid,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
@@ -33,7 +34,6 @@ import {
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, definitionColumnListInjectionToken, oldLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
-import { AllowedFieldsAndLayoutDefinition } from '../../grid-layout-editor-dialog-definition';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -143,7 +143,7 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
     export function open(
         container: ViewContainerRef,
         opener: LockOpenListItem.Opener,
-        allowedFieldsAndLayoutDefinition: AllowedFieldsAndLayoutDefinition,
+        allowedFieldsAndLayoutDefinition: AdaptedRevgrid.AllowedFieldsAndLayoutDefinition,
     ): ClosePromise {
         container.clear();
 

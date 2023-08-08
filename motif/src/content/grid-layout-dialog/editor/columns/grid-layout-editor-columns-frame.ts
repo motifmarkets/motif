@@ -5,6 +5,7 @@
  */
 
 import {
+    AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
     EditableGridLayoutDefinitionColumn,
@@ -14,18 +15,19 @@ import {
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
+    HeaderTextCellPainter,
     Integer,
     ModifierKey,
     ModifierKeyId,
     NamedGridLayoutsService,
     NamedGridSourcesService,
+    RecordGridMainTextCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService
+    TextFormatterService,
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter } from '../../../adapted-revgrid/internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorColumnsFrame extends GridSourceFrame {

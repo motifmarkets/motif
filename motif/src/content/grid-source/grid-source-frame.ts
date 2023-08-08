@@ -6,6 +6,8 @@
 
 import { ValueProvider as AngularValueProvider, InjectionToken } from '@angular/core';
 import {
+    AdaptedRevgrid,
+    AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
     GridField,
@@ -21,16 +23,16 @@ import {
     MultiEvent,
     NamedGridLayoutsService,
     NamedGridSourcesService,
+    RecordGrid,
     SettingsService,
     Table,
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService
+    TextFormatterService,
 } from '@motifmarkets/motif-core';
 import { RevRecordMainDataServer, Subgrid } from 'revgrid';
-import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { GridField, GridLayoutDefinition, GridLayoutOrNamedReferenceDefinition } from '@motifmarkets/motif-core';
+import { AdaptedRevgrid, GridField, GridLayoutDefinition, GridLayoutOrNamedReferenceDefinition } from '@motifmarkets/motif-core';
 
 export interface AllowedFieldsAndLayoutDefinition {
     readonly allowedFields: readonly GridField[];
@@ -12,12 +12,12 @@ export interface AllowedFieldsAndLayoutDefinition {
 }
 
 export interface BidAskAllowedFieldsAndLayoutDefinitions {
-    bid: AllowedFieldsAndLayoutDefinition;
-    ask: AllowedFieldsAndLayoutDefinition;
+    bid: AdaptedRevgrid.AllowedFieldsAndLayoutDefinition;
+    ask: AdaptedRevgrid.AllowedFieldsAndLayoutDefinition;
 }
 
 export interface ParidepthAllowedFieldsAndLayoutDefinitions {
-    watchlist: AllowedFieldsAndLayoutDefinition;
+    watchlist: AdaptedRevgrid.AllowedFieldsAndLayoutDefinition;
     depth: BidAskAllowedFieldsAndLayoutDefinitions;
     trades: AllowedFieldsAndLayoutDefinition;
 }

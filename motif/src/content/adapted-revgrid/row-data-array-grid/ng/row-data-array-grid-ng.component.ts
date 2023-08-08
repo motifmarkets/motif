@@ -5,13 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { GridField } from '@motifmarkets/motif-core';
+import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, GridField, RowDataArrayGrid } from '@motifmarkets/motif-core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { SingleHeadingDataRowArrayServerSet, Subgrid } from 'revgrid';
-import { AdaptedRevgrid } from '../../adapted-revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
-import { AdaptedRevgridBehavioredColumnSettings } from '../../settings/adapted-revgrid-behaviored-column-settings';
-import { RowDataArrayGrid } from '../row-data-array-grid';
 
 @Component({
     selector: 'app-row-data-array-grid',

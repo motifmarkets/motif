@@ -5,11 +5,23 @@
  */
 
 import {
-    AdiService, CommandRegisterService,
-    GridField, GridFieldSourceDefinition, IndexSignatureHack,
-    Integer, RenderValue, SettingsService, StringRenderValue, SymbolsService, TextFormatterService, TimeRenderValue
+    AdiService,
+    CommandRegisterService,
+    GridField,
+    GridFieldSourceDefinition,
+    IndexSignatureHack,
+    Integer,
+    RenderValue,
+    SettingsService,
+    StringRenderValue,
+    SymbolsService,
+    TextFormatterService,
+    TimeRenderValue,
+    AdaptedRevgridBehavioredColumnSettings,
+    HeaderTextCellPainter,
+    RecordGridMainTextCellPainter,
+    RowDataArrayGrid,
 } from '@motifmarkets/motif-core';
-import { AdaptedRevgridBehavioredColumnSettings, HeaderTextCellPainter, RecordGridMainTextCellPainter, RowDataArrayGrid } from 'content-internal-api';
 import { DatalessViewCell, HorizontalAlignEnum } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';

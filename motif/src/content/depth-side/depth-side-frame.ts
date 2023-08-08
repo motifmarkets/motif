@@ -5,6 +5,7 @@
  */
 
 import {
+    AdaptedRevgrid,
     AssertInternalError,
     DataItem,
     DepthDataItem,
@@ -19,18 +20,20 @@ import {
     FullDepthSideGridRecordStore,
     GridLayout,
     GridLayoutDefinition,
+    HeaderTextCellPainter,
     Integer,
     JsonElement,
     OrderSideId,
+    RecordGrid,
+    RecordGridMainTextCellPainter,
     SettingsService,
     ShortDepthSideField,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
     TextFormatterService,
-    UnreachableCaseError
+    UnreachableCaseError,
 } from '@motifmarkets/motif-core';
 import { RevRecordStore } from 'revgrid';
-import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {

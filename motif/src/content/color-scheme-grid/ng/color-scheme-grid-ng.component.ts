@@ -6,17 +6,20 @@
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
 import {
+    AdaptedRevgrid,
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
     GridLayout,
+    HeaderTextCellPainter,
     Integer,
+    RecordGrid,
+    RecordGridMainTextCellPainter,
     SettingsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
-import { AdaptedRevgrid, HeaderTextCellPainter, RecordGrid, RecordGridMainTextCellPainter } from '../../adapted-revgrid/internal-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
