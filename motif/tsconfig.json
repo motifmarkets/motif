@@ -29,7 +29,7 @@
     "experimentalDecorators": true,
     "typeRoots": [
       "node_modules/@types",
-      "node_definitions/@types"
+      "src/@types"
     ],
     "lib": [
       "es2019",

@@ -16,8 +16,8 @@ export abstract class ComponentBaseNgDirective {
     constructor(readonly elRef: ElementRef<HTMLElement>, readonly typeInstanceCreateId: Integer, generateUniqueId = false) {
         this.rootHtmlElement = elRef.nativeElement;
         this.typeName = this.rootHtmlElement.tagName.toLowerCase();
+        this.typeInstanceId  = this.typeName + typeInstanceCreateId.toString(10);
         if (generateUniqueId) {
-            this.typeInstanceId  = this.typeName + typeInstanceCreateId.toString(10);
             this.rootHtmlElement.id = this.typeInstanceId;
         }
     }

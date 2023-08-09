@@ -65,6 +65,7 @@ export namespace BuiltinIconButtonUiAction {
         MarkAll = 'MarkAll',
         InsertIntoListFromLeft = 'InsertIntoListFromLeft',
         RemoveFromListToLeft = 'RemoveFromListToLeft',
+        Dot = 'Dot',
     }
 
     export type IconId = keyof typeof IconIdEnum;

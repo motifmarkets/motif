@@ -79,6 +79,7 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.MarkAll: return BuiltinIconButtonUiActionApi.IconIdEnum.MarkAll;
                 case IconButtonUiAction.IconId.InsertIntoListFromLeft: return BuiltinIconButtonUiActionApi.IconIdEnum.InsertIntoListFromLeft;
                 case IconButtonUiAction.IconId.RemoveFromListToLeft: return BuiltinIconButtonUiActionApi.IconIdEnum.RemoveFromListToLeft;
+                case IconButtonUiAction.IconId.Dot: return BuiltinIconButtonUiActionApi.IconIdEnum.Dot;
 
                 default: throw new UnreachableCaseError('BIBUAITAU09992223', value);
             }
@@ -137,6 +138,7 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case BuiltinIconButtonUiActionApi.IconIdEnum.MarkAll: return IconButtonUiAction.IconId.MarkAll;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.InsertIntoListFromLeft: return IconButtonUiAction.IconId.InsertIntoListFromLeft;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.RemoveFromListToLeft: return IconButtonUiAction.IconId.RemoveFromListToLeft;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.Dot: return IconButtonUiAction.IconId.Dot;
 
                 default:
                     throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidBuiltinIconButtonUiActionIconId, enumValue);
