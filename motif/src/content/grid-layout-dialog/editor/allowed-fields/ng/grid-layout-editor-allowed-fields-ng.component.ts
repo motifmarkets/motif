@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
+    EditableGridLayoutDefinitionColumnList,
     GridField,
     LockOpenListItem,
     StringId,
@@ -15,7 +16,7 @@ import {
 import { CoreInjectionTokens } from '../../../../../component-services/ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../ng/content-ng.service';
-import { allowedFieldsInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
+import { allowedFieldsInjectionToken, definitionColumnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorSearchGridNgComponent } from '../../search-grid/ng-api';
 import { GridLayoutEditorAllowedFieldsFrame } from '../grid-layout-editor-allowed-fields-frame';
 
@@ -31,7 +32,7 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
 
-    public readonly heading = Strings[StringId.AvailableColumns]
+    public readonly heading = Strings[StringId.Available]
 
     declare readonly frame: GridLayoutEditorAllowedFieldsFrame;
 
@@ -41,8 +42,9 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
         @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
+        @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
-        const frame = contentNgService.createGridLayoutEditorAllowedFieldsFrame(allowedFields);
+        const frame = contentNgService.createGridLayoutEditorAllowedFieldsFrame(allowedFields, columnList);
         super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 

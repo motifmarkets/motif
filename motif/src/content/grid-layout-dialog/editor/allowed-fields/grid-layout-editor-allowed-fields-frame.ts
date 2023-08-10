@@ -8,6 +8,7 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
+    EditableGridLayoutDefinitionColumnList,
     GridField,
     GridFieldTableRecordSource,
     GridSourceDefinition,
@@ -15,8 +16,11 @@ import {
     GridSourceOrNamedReferenceDefinition,
     HeaderTextCellPainter,
     Integer,
+    JsonElement,
+    LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
+    MultiEvent,
     NamedGridLayoutsService,
     NamedGridSourcesService,
     RecordGridMainTextCellPainter,
@@ -24,17 +28,20 @@ import {
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService,
+    UsableListChangeTypeId,
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell } from 'revgrid';
+import { DatalessViewCell, RevRecord } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
-    selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer;
+    selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer | undefined;
 
     private _records: readonly GridField[];
 
     private _gridHeaderCellPainter: HeaderTextCellPainter;
     private _gridMainCellPainter: RecordGridMainTextCellPainter;
+
+    private _columnListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         settingsService: SettingsService,
@@ -44,6 +51,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
         private readonly _allowedFields: GridField[],
+        private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
             settingsService,
@@ -52,6 +60,10 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
+        );
+
+        this._columnListChangeSubscriptionId = this._columnList.subscribeListChangeEvent(
+            (listChangeTypeId, idx, count) => this.handleColumnListChangeEvent(listChangeTypeId, idx, count)
         );
     }
 
@@ -73,6 +85,13 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return fields;
     }
 
+    override finalise() {
+        super.finalise();
+        this._columnList.unsubscribeListChangeEvent(this._columnListChangeSubscriptionId);
+        this._columnListChangeSubscriptionId = undefined;
+        this.grid.clearFilter();
+    }
+
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
@@ -85,11 +104,18 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
 
+        grid.selectionChangedEventer = () => this.handleGridSelectionChangedEventer();
+
         return grid;
     }
 
-    setUsedFieldNames(names: string[]) {
-        // to do
+    override initialiseGrid(
+        opener: LockOpenListItem.Opener,
+        frameElement: JsonElement | undefined,
+        keepPreviousLayoutIfPossible: boolean,
+    ) {
+        super.initialiseGrid(opener, frameElement, keepPreviousLayoutIfPossible);
+        this.applyColumnListFilter();
     }
 
     selectAll() {
@@ -151,6 +177,16 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     //     gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
     // }
 
+    private handleGridSelectionChangedEventer() {
+        if (this.selectionChangedEventer !== undefined) {
+            this.selectionChangedEventer();
+        }
+    }
+
+    private handleColumnListChangeEvent(_listChangeTypeId: UsableListChangeTypeId, _idx: Integer, _count: Integer) {
+        this.applyColumnListFilter();
+    }
+
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
@@ -179,6 +215,15 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
+    }
+
+    private applyColumnListFilter() {
+        this.grid.applyFilter((record) => this.filterInuseFields(record));
+    }
+
+    private filterInuseFields(record: RevRecord) {
+        const gridField = this._records[record.index];
+        return !this._columnList.includesField(gridField);
     }
 }
 

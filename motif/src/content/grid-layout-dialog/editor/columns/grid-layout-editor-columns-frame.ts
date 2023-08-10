@@ -31,8 +31,7 @@ import { DatalessViewCell } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
-    selectionChangedEventer: GridLayoutEditorColumnsFrame.SelectionChangedEventer;
-    focusChangedEventer: GridLayoutEditorColumnsFrame.FocusChangedEventer;
+    selectionChangedEventer: GridLayoutEditorColumnsFrame.SelectionChangedEventer | undefined;
 
     private _recordList: EditableGridLayoutDefinitionColumnList;
 
@@ -71,6 +70,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
         this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
         this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+
+        grid.selectionChangedEventer = () => this.handleGridSelectionChangedEventer();
 
         return grid;
     }
@@ -158,6 +159,12 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     protected override hideBadnessWithVisibleDelay(_badness: Badness) {
         // always hidden as never bad
+    }
+
+    private handleGridSelectionChangedEventer() {
+        if (this.selectionChangedEventer !== undefined) {
+            this.selectionChangedEventer();
+        }
     }
 
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {

@@ -33,6 +33,8 @@ import {
 } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { definitionColumnListInjectionToken } from '../../ng/grid-layout-dialog-ng-injection-tokens';
+import { GridLayoutEditorAllowedFieldsNgComponent } from '../allowed-fields/ng-api';
+import { GridLayoutEditorColumnsNgComponent } from '../columns/ng-api';
 import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
 
 @Component({
@@ -45,6 +47,8 @@ import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
 export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridLayoutEditorFrame.ComponentAccess {
     private static typeInstanceCreateCount = 0;
 
+    @ViewChild('allowedFieldsGrid', { static: true }) private _allowedFieldsGridComponent: GridLayoutEditorAllowedFieldsNgComponent;
+    @ViewChild('columnsGrid', { static: true }) private _columnsGridComponent: GridLayoutEditorColumnsNgComponent;
     @ViewChild('insertButton', { static: true }) private _insertButtonComponent: SvgButtonNgComponent;
     @ViewChild('removeButton', { static: true }) private _removeButtonComponent: SvgButtonNgComponent;
     @ViewChild('moveUpButton', { static: true }) private _moveUpButtonComponent: SvgButtonNgComponent;
@@ -162,7 +166,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     }
 
     ngAfterViewInit() {
-
+        this._frame.initialise(this. _allowedFieldsGridComponent.frame, this._columnsGridComponent.frame)
         delay1Tick(() => this.initialiseComponentsAndMarkForCheck());
     }
 

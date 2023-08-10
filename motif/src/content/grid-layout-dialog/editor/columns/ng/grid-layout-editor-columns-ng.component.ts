@@ -8,6 +8,8 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inje
 import {
     EditableGridLayoutDefinitionColumnList,
     LockOpenListItem,
+    StringId,
+    Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CoreInjectionTokens } from '../../../../../component-services/ng-api';
@@ -28,6 +30,8 @@ export class GridLayoutEditorColumnsNgComponent extends  GridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
+
+    public readonly heading = Strings[StringId.InUse]
 
     declare readonly frame: GridLayoutEditorColumnsFrame;
 
