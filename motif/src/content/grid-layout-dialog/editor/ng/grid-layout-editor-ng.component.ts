@@ -73,6 +73,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         elRef: ElementRef<HTMLElement>,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(definitionColumnListInjectionToken) readonly definitionColumnList: EditableGridLayoutDefinitionColumnList,
+        @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutEditorNgComponent.typeInstanceCreateCount);
 
@@ -85,9 +86,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._moveDownUiAction = this.createMoveDownUiAction();
         this._moveBottomUiAction = this.createMoveBottomUiAction();
 
-        this._frame = new GridLayoutEditorFrame(
-            this,
-        );
+        this._frame = new GridLayoutEditorFrame(this, columnList);
     }
 
     get insertEnabled() { return this._insertUiAction.enabled; }

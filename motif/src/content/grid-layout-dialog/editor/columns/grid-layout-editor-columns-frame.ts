@@ -59,10 +59,28 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     get selectedCount() { return this.grid.getSelectedRowCount(); }
 
+    get selectedRecordIndices() {
+        const selection = this.grid.selection
+        const rowIndices = selection.getRowIndices(true);
+        const count = rowIndices.length;
+        const recordIndices = new Array<Integer>(count);
+        for (let i = 0; i < count; i++) {
+            const rowIndex = rowIndices[i];
+            recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
+        }
+        return recordIndices;
+    }
+
+
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
-            {},
+            {
+                sortOnClick: false,
+                sortOnDoubleClick: false,
+                mouseColumnSelectionEnabled: false,
+                switchNewRectangleSelectionToRowOrColumn: 'row',
+            },
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridMainCellPainter(viewCell),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
@@ -76,44 +94,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return grid;
     }
 
-    insertFields(fields: GridField[]) {
-        // todo
-    }
-
-    getAllFieldNames() {
-        return [];
-    }
-
-    removeSelected() {
-        return 0;
-    }
-
-    moveSelectedUp() {
-        // todo
-    }
-
-    moveSelectedToTop() {
-        // todo
-    }
-
-    moveSelectedDown() {
-        // todo
-    }
-
-    moveSelectedToBottom() {
-        // todo
-    }
-
     selectAll() {
         this.grid.selectAllRows();
-    }
-
-    isAllSelectedAtTop() {
-        return false;
-    }
-
-    isAllSelectedAtBottom() {
-        return false;
     }
 
     tryFocusFirstSearchMatch(searchText: string) {

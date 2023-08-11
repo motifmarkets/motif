@@ -74,7 +74,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     get selectedFields() {
         const selection = this.grid.selection
-        const rowIndices = selection.getRowIndices();
+        const rowIndices = selection.getRowIndices(true);
         const count = rowIndices.length;
         const fields = new Array<GridField>(count);
         for (let i = 0; i < count; i++) {
@@ -95,7 +95,12 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
-            {},
+            {
+                sortOnClick: false,
+                sortOnDoubleClick: false,
+                mouseColumnSelectionEnabled: false,
+                switchNewRectangleSelectionToRowOrColumn: 'row',
+            },
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridMainCellPainter(viewCell),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),

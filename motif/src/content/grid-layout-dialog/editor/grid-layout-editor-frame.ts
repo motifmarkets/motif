@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { EditableGridLayoutDefinitionColumnList } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../../content-frame';
 import { GridLayoutEditorAllowedFieldsFrame } from './allowed-fields/internal-api';
 import { GridLayoutEditorColumnsFrame } from './columns/internal-api';
@@ -15,6 +16,7 @@ export class GridLayoutEditorFrame extends ContentFrame {
 
     constructor(
         private readonly _componentAccess: GridLayoutEditorFrame.ComponentAccess,
+        private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super();
     }
@@ -36,28 +38,33 @@ export class GridLayoutEditorFrame extends ContentFrame {
     insertSelectedFields() {
         const selectedFields = this._allowedFieldsFrame.selectedFields;
         if (selectedFields.length > 0) {
-            this._columnsFrame.insertFields(selectedFields);
+            this._columnList.appendFields(selectedFields);
         }
     }
 
     removeSelectedColumns() {
-        this._columnsFrame.removeSelected();
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        this._columnList.removeIndexedRecords(selectedRecordIndices);
     }
 
     moveSelectedColumnsUp() {
-        this._columnsFrame.moveSelectedUp();
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        this._columnList.moveIndexedRecordsOnePositionTowardsStartWithSquash(selectedRecordIndices);
     }
 
     moveSelectedColumnsToTop() {
-        this._columnsFrame.moveSelectedToTop();
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        this._columnList.moveIndexedRecordsToStart(selectedRecordIndices);
     }
 
     moveSelectedColumnsDown() {
-        this._columnsFrame.moveSelectedDown();
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        this._columnList.moveIndexedRecordsOnePositionTowardsEndWithSquash(selectedRecordIndices);
     }
 
     moveSelectedColumnsToBottom() {
-        this._columnsFrame.moveSelectedToBottom();
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        this._columnList.moveIndexedRecordsToEnd(selectedRecordIndices);
     }
 
     private updateControlsDependentOnAllowedFieldsSelection() {
@@ -66,19 +73,20 @@ export class GridLayoutEditorFrame extends ContentFrame {
     }
 
     private updateControlsDependentOnColumnsSelection() {
-        const selectedCount = this._columnsFrame.selectedCount;
-        if (selectedCount === 0) {
+        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
+        if (selectedRecordIndices.length === 0) {
             this._componentAccess.removeEnabled = false;
             this._componentAccess.moveTopEnabled = false;
             this._componentAccess.moveUpEnabled = false;
             this._componentAccess.moveDownEnabled = false;
             this._componentAccess.moveBottomEnabled = false;
         } else {
+
             this._componentAccess.removeEnabled = true;
-            const allSelectedNotAtTop = !this._columnsFrame.isAllSelectedAtTop();
+            const allSelectedNotAtTop = !this._columnList.areSortedIndexedRecordsAllAtStart(selectedRecordIndices);
             this._componentAccess.moveTopEnabled = allSelectedNotAtTop;
             this._componentAccess.moveUpEnabled = allSelectedNotAtTop;
-            const allSelectedNotAtBottom = !this._columnsFrame.isAllSelectedAtBottom();
+            const allSelectedNotAtBottom = !this._columnList.areSortedIndexedRecordsAllAtEnd(selectedRecordIndices);
             this._componentAccess.moveDownEnabled = allSelectedNotAtBottom;
             this._componentAccess.moveBottomEnabled = allSelectedNotAtBottom;
         }
