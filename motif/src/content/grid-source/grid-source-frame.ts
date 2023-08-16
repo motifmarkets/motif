@@ -915,8 +915,13 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
-    createAllowedFieldsAndLayoutDefinition() {
-        return this.grid.createAllowedFieldsAndLayoutDefinition();
+    createAllowedFieldsGridLayoutDefinition() {
+        if (this._openedTable === undefined) {
+            throw new AssertInternalError('GSFCAFALD56678');
+        } else {
+            const allowedFields = this._openedTable.createAllowedFields();
+            return this.grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
+        }
     }
 
     // getGridLayout(): GridLayout {

@@ -5,22 +5,22 @@
  */
 
 import {
+    AdaptedRevgridBehavioredColumnSettings,
     AdiService,
     CommandRegisterService,
     GridField,
     GridFieldSourceDefinition,
+    HeaderTextCellPainter,
     IndexSignatureHack,
     Integer,
+    RecordGridMainTextCellPainter,
     RenderValue,
+    RowDataArrayGrid,
     SettingsService,
     StringRenderValue,
     SymbolsService,
     TextFormatterService,
     TimeRenderValue,
-    AdaptedRevgridBehavioredColumnSettings,
-    HeaderTextCellPainter,
-    RecordGridMainTextCellPainter,
-    RowDataArrayGrid,
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell, HorizontalAlignEnum } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -52,7 +52,7 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
             this.settingsService,
             ditemHtmlElement,
             {},
-            (index, key, heading) => this.createField(index, key, heading),
+            (index, key, heading) => this.createField(key, heading),
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
             (viewCell) => this.getGridMainCellPainter(viewCell),
@@ -84,10 +84,10 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
         //
     }
 
-    private createField(index: Integer, key: string, heading: string) {
+    private createField(key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            key,
             gridFieldSourceDefinition,
+            key,
             heading,
             HorizontalAlignEnum.left,
         );

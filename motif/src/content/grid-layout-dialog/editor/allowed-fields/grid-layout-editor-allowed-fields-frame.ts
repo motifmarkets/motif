@@ -29,6 +29,7 @@ import {
     TableRecordSourceFactoryService,
     TextFormatterService,
     UsableListChangeTypeId,
+    delay1Tick,
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell, RevRecord } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
@@ -50,7 +51,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
-        private readonly _allowedFields: GridField[],
+        private readonly _allowedFields: readonly GridField[],
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
@@ -68,8 +69,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     get selectedCount() {
-        const selection = this.grid.selection;
-        return selection.getRowCount();
+        return this.grid.getSelectedRowCount(true);
     }
 
     get selectedFields() {
@@ -124,7 +124,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     selectAll() {
-        this.grid.selectAllRows();
+        this.grid.selectAll();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
@@ -151,7 +151,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
@@ -189,7 +189,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     private handleColumnListChangeEvent(_listChangeTypeId: UsableListChangeTypeId, _idx: Integer, _count: Integer) {
-        this.applyColumnListFilter();
+        delay1Tick(() => this.applyColumnListFilter());
     }
 
     private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {

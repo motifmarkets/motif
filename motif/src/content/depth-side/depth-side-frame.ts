@@ -6,6 +6,7 @@
 
 import {
     AdaptedRevgrid,
+    AllowedGridField,
     AssertInternalError,
     DataItem,
     DepthDataItem,
@@ -15,7 +16,6 @@ import {
     DepthSideGridRecordStore,
     DepthStyle,
     DepthStyleId,
-    FullDepthSideField,
     FullDepthSideGridField,
     FullDepthSideGridRecordStore,
     GridLayout,
@@ -27,11 +27,10 @@ import {
     RecordGrid,
     RecordGridMainTextCellPainter,
     SettingsService,
-    ShortDepthSideField,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
     TextFormatterService,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
@@ -106,6 +105,7 @@ export class DepthSideFrame extends ContentFrame {
         if (!this.finalised) {
             if (this._activeStore !== undefined) {
                 this._activeStore.finalise();
+                this._activeStore = undefined;
             }
             super.finalise();
         }
@@ -233,8 +233,24 @@ export class DepthSideFrame extends ContentFrame {
     //     }
     // }
 
-    createAllowedFieldsAndLayoutDefinition() {
-        return this._grid.createAllowedFieldsAndLayoutDefinition();
+    createAllowedFieldsGridLayoutDefinition() {
+        const activeStore = this._activeStore;
+        if (activeStore === undefined) {
+            throw new AssertInternalError('DSFCAFGLDU22209');
+        } else {
+            let allowedFields: readonly AllowedGridField[];
+            switch (activeStore.styleId) {
+                case DepthStyleId.Full:
+                    allowedFields = FullDepthSideGridField.createAllowedFields();
+                    break;
+                case DepthStyleId.Short:
+                    allowedFields = ShortDepthSideGridField.createAllowedFields();
+                    break;
+                default:
+                    throw new UnreachableCaseError('DSFCAFGLDD22209', activeStore.styleId);
+            }
+            return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
+        }
     }
 
     applyGridLayoutDefinition(definition: GridLayoutDefinition) {
@@ -250,14 +266,7 @@ export class DepthSideFrame extends ContentFrame {
         let store: DepthSideGridRecordStore;
         switch (styleId) {
             case DepthStyleId.Full: {
-                const idCount = FullDepthSideField.idCount;
-                fields = new Array<DepthSideGridField>(idCount);
-
-                for (let id = 0; id < idCount; id++) {
-                    const field = new FullDepthSideGridField(id, this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
-                    fields[id] = field;
-                }
-
+                fields = FullDepthSideGridField.createAll(this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                 store = new FullDepthSideGridRecordStore(styleId, this._sideId);
 
                 if (initialGridLayoutDefinition === undefined) {
@@ -267,14 +276,7 @@ export class DepthSideFrame extends ContentFrame {
                 break;
             }
             case DepthStyleId.Short: {
-                const idCount = ShortDepthSideField.idCount;
-                fields = new Array<DepthSideGridField>(idCount);
-
-                for (let id = 0; id < idCount; id++) {
-                    const field = new ShortDepthSideGridField(id, this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
-                    fields[id] = field;
-                }
-
+                fields = ShortDepthSideGridField.createAll(this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                 store = new ShortDepthSideGridRecordStore(styleId, this._sideId);
 
                 if (initialGridLayoutDefinition === undefined) {

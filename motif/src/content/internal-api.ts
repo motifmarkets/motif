@@ -18,7 +18,6 @@ export * from './order-authorise/internal-api';
 export * from './orders/internal-api';
 // export * from './grid-layout-dialog/internal-api';
 export * from './delayed-badness-grid-source/internal-api';
-export * from './grid-layout-editor-dialog-definition';
 export * from './grid-source/internal-api';
 export * from './markets/internal-api';
 export * from './order-request-step/internal-api';

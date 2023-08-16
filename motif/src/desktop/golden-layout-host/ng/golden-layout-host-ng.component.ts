@@ -38,15 +38,15 @@ import { ExtensionsAccessNgService } from 'content-ng-api';
 import {
     BuiltinDitemFrame,
     DitemComponent,
-    DitemComponentIdAndType,
     DitemFrame,
     ExtensionDitemComponent,
     PlaceholderDitemFrame
 } from 'ditem-internal-api';
 import {
-    BuiltinDitemNgComponentBaseDirective,
+    BuiltinDitemNgComponentBaseNgDirective,
     DesktopAccessNgService,
     DitemComponentFactoryNgService,
+    DitemNgComponentIdAndType,
     PlaceholderDitemNgComponent
 } from 'ditem-ng-api';
 import {
@@ -134,7 +134,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             return undefined;
         } else {
             const component = componentItem.container.component;
-            if (component instanceof BuiltinDitemNgComponentBaseDirective) {
+            if (component instanceof BuiltinDitemNgComponentBaseNgDirective) {
                 return component.ditemFrame;
             } else {
                 return undefined;
@@ -394,7 +394,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
 
     private registerDitemComponents() {
         const factoryService = this._ditemComponentFactoryNgService;
-        const allIdAndTypes = DitemComponentIdAndType.all;
+        const allIdAndTypes = DitemNgComponentIdAndType.all;
         for (const { id, type } of allIdAndTypes) {
             const name = BuiltinDitemFrame.BuiltinType.idToName(id);
             factoryService.registerDitemComponentType(name, type);
@@ -490,7 +490,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         return componentRef;
     }
 
-    private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective>) {
+    private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseNgDirective>) {
         const hostView = componentRef.hostView;
 
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -569,7 +569,7 @@ export namespace GoldenLayoutHostNgComponent {
     }
 
     export interface ContainedDitemComponent {
-        builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective> | undefined;
+        builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseNgDirective> | undefined;
         extensionComponent: ExtensionDitemComponent | undefined;
         focusClosure: FocusClosure | undefined; // only used for extensions
     }

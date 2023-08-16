@@ -126,7 +126,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
             mouseColumnSelectionEnabled: false,
             mouseRowSelectionEnabled: false,
-            mouseMultiCellRectangleSelectionEnabled: false,
+            mouseAddToggleExtendSelectionAreaEnabled: false,
             multipleSelectionAreas: false,
             sortOnDoubleClick: false,
             visibleColumnWidthAdjust: true,

@@ -5,33 +5,33 @@
  */
 
 import { Type } from '@angular/core';
-import { AlertsDitemNgComponent } from './alerts-ditem/ng-api';
-import { BalancesDitemNgComponent } from './balances-ditem/ng-api';
-import { BrokerageAccountsDitemNgComponent } from './brokerage-accounts-ditem/ng-api';
-import { BuiltinDitemFrame } from './builtin-ditem-frame';
-import { DepthDitemNgComponent } from './depth-ditem/ng-api';
-import { EtoPriceQuotationDitemNgComponent } from './eto-price-quotation-ditem/ng-api';
-import { ExtensionsDitemNgComponent } from './extensions-ditem/ng-api';
-import { HoldingsDitemNgComponent } from './holdings-ditem/ng-api';
-import { NewsBodyDitemNgComponent } from './news-body-ditem/ng-api';
-import { NewsHeadlinesDitemNgComponent } from './news-headlines-ditem/ng-api';
-import { BuiltinDitemNgComponentBaseNgDirective } from './ng/builtin-ditem-ng-component-base.directive';
-import { OrderAuthoriseDitemNgComponent } from './order-authorise-ditem/ng-api';
-import { OrderRequestDitemNgComponent } from './order-request-ditem/ng-api';
-import { OrdersDitemNgComponent } from './orders-ditem/ng-api';
-import { ParidepthDitemNgComponent } from './paridepth-ditem/ng-api';
-import { PlaceholderDitemNgComponent } from './placeholder-ditem/ng-api';
-import { ScansDitemNgComponent } from './scans-ditem/ng-api';
-import { SearchDitemNgComponent } from './search-ditem/ng-api';
-import { SearchSymbolsDitemNgComponent } from './search-symbols-ditem/ng-api';
-import { SettingsDitemNgComponent } from './settings-ditem/ng-api';
-import { StatusDitemNgComponent } from './status-ditem/ng-api';
-import { TopShareholdersDitemNgComponent } from './top-shareholders-ditem/ng-api';
-import { TradesDitemNgComponent } from './trades-ditem/ng-api';
-import { WatchlistDitemNgComponent } from './watchlist-ditem/ng-api';
-import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } from './web-page-ditem/ng-api';
+import { AlertsDitemNgComponent } from '../alerts-ditem/ng-api';
+import { BalancesDitemNgComponent } from '../balances-ditem/ng-api';
+import { BrokerageAccountsDitemNgComponent } from '../brokerage-accounts-ditem/ng-api';
+import { BuiltinDitemFrame } from '../builtin-ditem-frame';
+import { DepthDitemNgComponent } from '../depth-ditem/ng-api';
+import { EtoPriceQuotationDitemNgComponent } from '../eto-price-quotation-ditem/ng-api';
+import { ExtensionsDitemNgComponent } from '../extensions-ditem/ng-api';
+import { HoldingsDitemNgComponent } from '../holdings-ditem/ng-api';
+import { NewsBodyDitemNgComponent } from '../news-body-ditem/ng-api';
+import { NewsHeadlinesDitemNgComponent } from '../news-headlines-ditem/ng-api';
+import { OrderAuthoriseDitemNgComponent } from '../order-authorise-ditem/ng-api';
+import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
+import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
+import { ParidepthDitemNgComponent } from '../paridepth-ditem/ng-api';
+import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
+import { ScansDitemNgComponent } from '../scans-ditem/ng-api';
+import { SearchDitemNgComponent } from '../search-ditem/ng-api';
+import { SearchSymbolsDitemNgComponent } from '../search-symbols-ditem/ng-api';
+import { SettingsDitemNgComponent } from '../settings-ditem/ng-api';
+import { StatusDitemNgComponent } from '../status-ditem/ng-api';
+import { TopShareholdersDitemNgComponent } from '../top-shareholders-ditem/ng-api';
+import { TradesDitemNgComponent } from '../trades-ditem/ng-api';
+import { WatchlistDitemNgComponent } from '../watchlist-ditem/ng-api';
+import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } from '../web-page-ditem/ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from './builtin-ditem-ng-component-base.directive';
 
-export namespace DitemComponentIdAndType {
+export namespace DitemNgComponentIdAndType {
     interface IdAndType {
         readonly id: BuiltinDitemFrame.BuiltinTypeId;
         readonly type: Type<BuiltinDitemNgComponentBaseNgDirective>;

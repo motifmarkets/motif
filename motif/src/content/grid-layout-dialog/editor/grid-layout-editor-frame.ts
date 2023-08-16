@@ -35,36 +35,33 @@ export class GridLayoutEditorFrame extends ContentFrame {
         this.updateControlsDependentOnColumnsSelection();
     }
 
+    getGridLayoutDefinition() {
+        return this._columnList.createGridLayoutDefinition();
+    }
+
     insertSelectedFields() {
         const selectedFields = this._allowedFieldsFrame.selectedFields;
-        if (selectedFields.length > 0) {
-            this._columnList.appendFields(selectedFields);
-        }
+        this._columnsFrame.appendFields(selectedFields)
     }
 
     removeSelectedColumns() {
-        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
-        this._columnList.removeIndexedRecords(selectedRecordIndices);
+        this._columnsFrame.removeSelectedColumns();
     }
 
     moveSelectedColumnsUp() {
-        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
-        this._columnList.moveIndexedRecordsOnePositionTowardsStartWithSquash(selectedRecordIndices);
+        this._columnsFrame.moveSelectedColumnsUp()
     }
 
     moveSelectedColumnsToTop() {
-        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
-        this._columnList.moveIndexedRecordsToStart(selectedRecordIndices);
+        this._columnsFrame.moveSelectedColumnsToTop();
     }
 
     moveSelectedColumnsDown() {
-        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
-        this._columnList.moveIndexedRecordsOnePositionTowardsEndWithSquash(selectedRecordIndices);
+        this._columnsFrame.moveSelectedColumnsDown();
     }
 
     moveSelectedColumnsToBottom() {
-        const selectedRecordIndices = this._columnsFrame.selectedRecordIndices;
-        this._columnList.moveIndexedRecordsToEnd(selectedRecordIndices);
+        this._columnsFrame.moveSelectedColumnsToBottom();
     }
 
     private updateControlsDependentOnAllowedFieldsSelection() {

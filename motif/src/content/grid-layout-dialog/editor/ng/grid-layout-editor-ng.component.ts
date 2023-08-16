@@ -17,7 +17,6 @@ import {
 import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
-    GridField,
     GridLayoutDefinition,
     IconButtonUiAction,
     Integer,
@@ -72,7 +71,6 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
     constructor(
         elRef: ElementRef<HTMLElement>,
         commandRegisterNgService: CommandRegisterNgService,
-        @Inject(definitionColumnListInjectionToken) readonly definitionColumnList: EditableGridLayoutDefinitionColumnList,
         @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutEditorNgComponent.typeInstanceCreateCount);
@@ -154,14 +152,8 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         }
     }
 
-    setAllowedFieldsAndLayoutDefinition(allowedFields: readonly GridField[], layoutDefinition: GridLayoutDefinition) {
-        // remove
-    }
-
-
     getGridLayoutDefinition(): GridLayoutDefinition {
-        // return this._gridComponent.gridLayoutDefinition;
-        return new GridLayoutDefinition([]);
+        return this._frame.getGridLayoutDefinition();
     }
 
     ngAfterViewInit() {
@@ -349,12 +341,8 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace GridLayoutEditorNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        columnList: EditableGridLayoutDefinitionColumnList,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-
         container.createComponent(GridLayoutEditorNgComponent);
     }
 }

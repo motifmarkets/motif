@@ -103,7 +103,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         if (this._orderAuthoriseFrame === undefined) {
             throw new AssertInternalError('OADFCAFALD04418');
         } else {
-            return this._orderAuthoriseFrame.createAllowedFieldsAndLayoutDefinition();
+            return this._orderAuthoriseFrame.createAllowedFieldsGridLayoutDefinition();
         }
     }
 

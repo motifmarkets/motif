@@ -206,7 +206,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         if (gridSourceFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFCAFALD13133');
         } else {
-            return gridSourceFrame.createAllowedFieldsAndLayoutDefinition();
+            return gridSourceFrame.createAllowedFieldsGridLayoutDefinition();
         }
     }
 

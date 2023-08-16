@@ -52,7 +52,7 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
         const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
             mouseColumnSelectionEnabled: false,
             mouseRowSelectionEnabled: false,
-            mouseMultiCellRectangleSelectionEnabled: false,
+            mouseAddToggleExtendSelectionAreaEnabled: false,
             multipleSelectionAreas: false,
             sortOnDoubleClick: false,
             visibleColumnWidthAdjust: true,
@@ -97,8 +97,8 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
 
     private createField(index: Integer, key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            key,
             gridFieldSourceDefinition,
+            key,
             heading,
             HorizontalAlignEnum.left,
         );

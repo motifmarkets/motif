@@ -10,13 +10,18 @@ import {
     ChangeDetectorRef,
     Component,
     ElementRef,
+    Injector,
     OnDestroy,
+    ValueProvider,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
+    AllowedGridField,
+    AssertInternalError,
     ButtonUiAction,
     CommandRegisterService,
+    EditableGridLayoutDefinitionColumnList,
     GridField,
     GridLayoutDefinition,
     GridLayoutOrNamedReferenceDefinition,
@@ -31,8 +36,8 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { GridLayoutEditorNgComponent } from '../../grid-layout-dialog/ng-api';
-import { ParidepthAllowedFieldsAndLayoutDefinitions, ParidepthGridLayoutDefinitions } from '../../grid-layout-editor-dialog-definition';
+import { ParidepthDitemFrame } from 'ditem-internal-api';
+import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, definitionColumnListInjectionToken } from '../../grid-layout-dialog/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -45,13 +50,13 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('editor', { static: true }) private _editorComponent: GridLayoutEditorNgComponent;
     @ViewChild('bidDepthButton', { static: true }) private _bidDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('askDepthButton', { static: true }) private _askDepthButtonComponent: ButtonInputNgComponent;
     @ViewChild('watchlistButton', { static: true }) private _watchlistButtonComponent: ButtonInputNgComponent;
     @ViewChild('tradesButton', { static: true }) private _tradesButtonComponent: ButtonInputNgComponent;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
+    @ViewChild('editorContainer', { read: ViewContainerRef, static: true }) private _editorContainer: ViewContainerRef;
 
     private _commandRegisterService: CommandRegisterService;
 
@@ -65,8 +70,6 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
     private _watchlistLayoutDefinition: GridLayoutDefinition;
     private _tradesLayoutDefinition: GridLayoutDefinition;
 
-    private _layoutId: ParidepthGridLayoutsEditorDialogNgComponent.LayoutId;
-
     private _bidDepthUiAction: ButtonUiAction;
     private _askDepthUiAction: ButtonUiAction;
     private _watchlistUiAction: ButtonUiAction;
@@ -74,7 +77,10 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
 
-    private _closeResolve: (value: ParidepthGridLayoutDefinitions | undefined) => void;
+    private _activeParidepthFrameId: ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId | undefined;
+    private _editorComponent: GridLayoutEditorNgComponent | undefined;
+
+    private _closeResolve: (value: ParidepthDitemFrame.GridLayoutDefinitions | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
     constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
@@ -103,76 +109,74 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
         this._cancelUiAction.finalise();
     }
 
-    open(allowedFieldsAndLayoutDefinition: ParidepthAllowedFieldsAndLayoutDefinitions) {
+    open(allowedFieldsAndLayoutDefinition: ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions) {
         this._depthBidAllowedFields = allowedFieldsAndLayoutDefinition.depth.bid.allowedFields;
         this._depthAskAllowedFields = allowedFieldsAndLayoutDefinition.depth.ask.allowedFields;
         this._watchlistAllowedFields = allowedFieldsAndLayoutDefinition.watchlist.allowedFields;
         this._tradesAllowedFields = allowedFieldsAndLayoutDefinition.trades.allowedFields;
 
-        this._depthBidLayoutDefinition = allowedFieldsAndLayoutDefinition.depth.bid.layoutDefinition;
-        this._depthAskLayoutDefinition = allowedFieldsAndLayoutDefinition.depth.ask.layoutDefinition;
-        this._watchlistLayoutDefinition = allowedFieldsAndLayoutDefinition.watchlist.layoutDefinition;
-        this._tradesLayoutDefinition = allowedFieldsAndLayoutDefinition.trades.layoutDefinition;
+        this._depthBidLayoutDefinition = allowedFieldsAndLayoutDefinition.depth.bid.createCopy();
+        this._depthAskLayoutDefinition = allowedFieldsAndLayoutDefinition.depth.ask.createCopy();
+        this._watchlistLayoutDefinition = allowedFieldsAndLayoutDefinition.watchlist.createCopy();
+        this._tradesLayoutDefinition = allowedFieldsAndLayoutDefinition.trades.createCopy();
 
-        return new Promise<ParidepthGridLayoutDefinitions | undefined>((resolve, reject) => {
+        return new Promise<ParidepthDitemFrame.GridLayoutDefinitions | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
             this._closeReject = reject;
         });
     }
 
-    setSideId(value: ParidepthGridLayoutsEditorDialogNgComponent.LayoutId) {
-        this.checkUpdateLayoutFromEditor();
-
+    setSideId(value: ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId) {
         this.allPushUnselected();
 
-        if (value !== this._layoutId) {
-            switch (this._layoutId) {
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.BidDepth:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._depthBidAllowedFields, this._depthBidLayoutDefinition);
+        if (value !== this._activeParidepthFrameId) {
+            switch (this._activeParidepthFrameId) {
+                case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.BidDepth:
+                    this._editorComponent = this.recreateEditor(this._depthBidAllowedFields, this._depthBidLayoutDefinition);
                     this._bidDepthUiAction.pushSelected();
                     break;
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.AskDepth:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._depthAskAllowedFields, this._depthAskLayoutDefinition);
+                case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.AskDepth:
+                    this._editorComponent = this.recreateEditor(this._depthAskAllowedFields, this._depthAskLayoutDefinition);
                     this._askDepthUiAction.pushSelected();
                     break;
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.Watchlist:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(
-                        this._watchlistAllowedFields,
-                        this._watchlistLayoutDefinition
-                    );
+                case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.Watchlist:
+                    this._editorComponent = this.recreateEditor(this._watchlistAllowedFields, this._watchlistLayoutDefinition);
                     this._watchlistUiAction.pushSelected();
                     break;
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.Trades:
-                    this._editorComponent.setAllowedFieldsAndLayoutDefinition(this._tradesAllowedFields, this._tradesLayoutDefinition);
+                case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.Trades:
+                    this._editorComponent = this.recreateEditor(this._tradesAllowedFields, this._tradesLayoutDefinition);
                     this._tradesUiAction.pushSelected();
                     break;
 
+                case undefined:
+                    throw new AssertInternalError('PGLECCULFEU33333');
+
                 default:
-                    throw new UnreachableCaseError('PGLECCULFE33333', this._layoutId);
+                    throw new UnreachableCaseError('PGLECCULFED33333', this._activeParidepthFrameId);
             }
 
-            this._layoutId = value;
+            this._activeParidepthFrameId = value;
             this._cdr.markForCheck();
         }
     }
 
     private handleBidDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.BidDepth);
+        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.BidDepth);
     }
 
     private handleAskDepthSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.AskDepth);
+        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.AskDepth);
     }
 
     private handleWatchlistSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.AskDepth);
+        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.AskDepth);
     }
 
     private handleTradesSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.AskDepth);
+        this.setSideId(ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.AskDepth);
     }
 
     private handleOkSignal(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
@@ -255,35 +259,70 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
         this._tradesUiAction.pushUnselected();
     }
 
-    private checkUpdateLayoutFromEditor() {
-        if (this._layoutId !== undefined) {
-            switch (this._layoutId) {
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.BidDepth:
-                    this._depthBidLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
-                    break;
+    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: GridLayoutDefinition) {
+        this.checkLoadLayoutFromEditor();
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.AskDepth:
-                    this._depthAskLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
-                    break;
+        if (this._editorComponent !== undefined) {
+            this._editorContainer.clear();
+        }
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.Watchlist:
-                    this._watchlistLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
-                    break;
+        const allowedFieldsProvider: ValueProvider = {
+            provide: allowedFieldsInjectionToken,
+            useValue: allowedFields,
+        };
 
-                case ParidepthGridLayoutsEditorDialogNgComponent.LayoutId.Trades:
-                    this._tradesLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
-                    break;
+        const definitionColumnList = new EditableGridLayoutDefinitionColumnList();
+        definitionColumnList.load(allowedFields, layoutDefinition);
+        const columnListProvider: ValueProvider = {
+            provide: definitionColumnListInjectionToken,
+            useValue: definitionColumnList,
+        };
 
-                default:
-                    throw new UnreachableCaseError('PGLECCULFE33333', this._layoutId);
+        const injector = Injector.create({
+            providers: [allowedFieldsProvider, columnListProvider],
+        });
+
+        const componentRef = this._editorContainer.createComponent(GridLayoutEditorNgComponent, { injector });
+        const component = componentRef.instance;
+
+        return component;
+    }
+
+    private checkLoadLayoutFromEditor() {
+        const activeParidepthFrameId = this._activeParidepthFrameId;
+        if (activeParidepthFrameId !== undefined) {
+            const editorComponent = this._editorComponent;
+            if (editorComponent === undefined) {
+                throw new AssertInternalError('PGLEDNCCLLFEE33333');
+            } else {
+                switch (activeParidepthFrameId) {
+                    case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.BidDepth:
+                        this._depthBidLayoutDefinition = editorComponent.getGridLayoutDefinition();
+                        break;
+
+                    case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.AskDepth:
+                        this._depthAskLayoutDefinition = editorComponent.getGridLayoutDefinition();
+                        break;
+
+                    case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.Watchlist:
+                        this._watchlistLayoutDefinition = editorComponent.getGridLayoutDefinition();
+                        break;
+
+                    case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.Trades:
+                        this._tradesLayoutDefinition = editorComponent.getGridLayoutDefinition();
+                        break;
+
+                    default:
+                        throw new UnreachableCaseError('PGLECCULFEU33333', activeParidepthFrameId);
+                }
             }
         }
     }
 
     private close(ok: boolean) {
         if (ok) {
-            this.checkUpdateLayoutFromEditor();
-            const layouts: ParidepthGridLayoutDefinitions = {
+            this.checkLoadLayoutFromEditor();
+            const layouts: ParidepthDitemFrame.GridLayoutDefinitions = {
                 depth: {
                     bid: this._depthBidLayoutDefinition,
                     ask: this._depthAskLayoutDefinition,
@@ -299,18 +338,18 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
 }
 
 export namespace ParidepthGridLayoutsEditorDialogNgComponent {
-    export const enum LayoutId {
+    export const enum ParidepthFrameId {
         BidDepth,
         AskDepth,
         Watchlist,
         Trades,
     }
 
-    export type ClosePromise = Promise<ParidepthGridLayoutDefinitions | undefined>;
+    export type ClosePromise = Promise<ParidepthDitemFrame.GridLayoutDefinitions | undefined>;
 
     export function open(
         container: ViewContainerRef,
-        allowedFieldsAndLayoutDefinition: ParidepthAllowedFieldsAndLayoutDefinitions
+        allowedFieldsAndLayoutDefinition: ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions
     ): ClosePromise {
         container.clear();
         const componentRef = container.createComponent(ParidepthGridLayoutsEditorDialogNgComponent);

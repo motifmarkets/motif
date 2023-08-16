@@ -65,6 +65,8 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         watchlistFrame.defaultLitIvemIds = this.defaultLitIvemIds;
         watchlistFrame.gridSourceOpenedEventer = this._gridSourceOpenedEventer;
         watchlistFrame.gridLayoutSetEventer = this._gridLayoutSetEventer;
+        watchlistFrame.gridSourceOpenedEventer = (rankedLitIvemIdList, rankedLitIvemIdListName) =>
+            this.handleGridSourceOpenedEvent(rankedLitIvemIdList, rankedLitIvemIdListName);
         watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
         watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
 
@@ -128,11 +130,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    createAllowedFieldsAndLayoutDefinition() {
+    createAllowedFieldsGridLayoutDefinition() {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFCAFALD10174');
         } else {
-            return this._watchlistFrame.createAllowedFieldsAndLayoutDefinition();
+            return this._watchlistFrame.createAllowedFieldsGridLayoutDefinition();
         }
     }
 

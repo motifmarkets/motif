@@ -181,7 +181,7 @@ export class ContentService {
         );
     }
 
-    createGridLayoutEditorAllowedFieldsFrame(allowedFields: GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
+    createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
             this._textFormatterService,

@@ -5,8 +5,8 @@
  */
 
 import {
-    AdaptedRevgrid,
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
     GridLayoutDefinition,
@@ -83,6 +83,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
                 const historicalDate = this._componentAccess.getHistoricalDate();
                 this._tradesFrame.open(litIvemId, historicalDate);
 
+                this.updateLockerName(this.symbolsService.litIvemIdToDisplay(litIvemId));
                 this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
             }
         }
@@ -102,11 +103,11 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    createAllowedFieldsAndLayoutDefinition(): AdaptedRevgrid.AllowedFieldsAndLayoutDefinition | undefined {
+    createAllowedFieldsGridLayoutDefinition(): AllowedFieldsGridLayoutDefinition | undefined {
         if (this._tradesFrame === undefined) {
             throw new AssertInternalError('TDFCAFALD44407');
         } else {
-            return this._tradesFrame.createAllowedFieldsAndLayoutDefinition();
+            return this._tradesFrame.createAllowedFieldsGridLayoutDefinition();
         }
     }
 

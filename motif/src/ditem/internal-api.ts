@@ -13,7 +13,6 @@ export * from './ditem-command-context';
 // export * from './ditem-command-parameters';
 export * from './ditem-command-processor';
 export * from './ditem-component';
-export { DitemComponentIdAndType } from './ditem-component-id-and-type';
 export * from './ditem-frame';
 export * from './ditem-service';
 export * from './eto-price-quotation-ditem/internal-api';

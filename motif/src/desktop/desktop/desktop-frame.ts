@@ -45,7 +45,7 @@ import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
 import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
@@ -1071,7 +1071,7 @@ export namespace DesktopFrame {
     export type RequestAppLinkedLitIvemIdEvent = (this: void) => LitIvemId;
     export type RequestAppLinkedBrokerageAccountGroupEvent = (this: void) => BrokerageAccountGroup;
 
-    export type GetBuiltinDitemFrameFromComponent = (component: BuiltinDitemNgComponentBaseDirective) => BuiltinDitemFrame | undefined;
+    export type GetBuiltinDitemFrameFromComponent = (component: BuiltinDitemNgComponentBaseNgDirective) => BuiltinDitemFrame | undefined;
 
     export type EditOrderRequestEvent = (this: void, request: OrderPad) => void;
     export type EditOrderRequestFromMarketOrderIdEvent = (this: void, requestType: OrderRequestTypeId,

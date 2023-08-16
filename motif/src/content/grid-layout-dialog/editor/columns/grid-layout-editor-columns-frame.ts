@@ -94,6 +94,56 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return grid;
     }
 
+    appendFields(gridFields: readonly GridField[]) {
+        if (gridFields.length > 0) {
+            this._columnList.appendFields(gridFields);
+            this.selectGridFields(gridFields);
+        }
+    }
+
+    removeSelectedColumns() {
+        const selectedRecordIndices = this.selectedRecordIndices;
+        if (selectedRecordIndices.length > 0) {
+            this._columnList.removeIndexedRecords(selectedRecordIndices);
+        }
+    }
+
+    moveSelectedColumnsUp() {
+        const selectedRecordIndices = this.selectedRecordIndices;
+        if (selectedRecordIndices.length > 0) {
+            const gridFields = this.getGridFieldsFromRecordIndices(selectedRecordIndices);
+            this._columnList.moveIndexedRecordsOnePositionTowardsStartWithSquash(selectedRecordIndices);
+            this.selectGridFields(gridFields);
+        }
+    }
+
+    moveSelectedColumnsToTop() {
+        const selectedRecordIndices = this.selectedRecordIndices;
+        if (selectedRecordIndices.length > 0) {
+            const gridFields = this.getGridFieldsFromRecordIndices(selectedRecordIndices);
+            this._columnList.moveIndexedRecordsToStart(selectedRecordIndices);
+            this.selectGridFields(gridFields);
+        }
+    }
+
+    moveSelectedColumnsDown() {
+        const selectedRecordIndices = this.selectedRecordIndices;
+        if (selectedRecordIndices.length > 0) {
+            const gridFields = this.getGridFieldsFromRecordIndices(selectedRecordIndices);
+            this._columnList.moveIndexedRecordsOnePositionTowardsEndWithSquash(selectedRecordIndices);
+            this.selectGridFields(gridFields);
+        }
+    }
+
+    moveSelectedColumnsToBottom() {
+        const selectedRecordIndices = this.selectedRecordIndices;
+        if (selectedRecordIndices.length > 0) {
+            const gridFields = this.getGridFieldsFromRecordIndices(selectedRecordIndices);
+            this._columnList.moveIndexedRecordsToEnd(selectedRecordIndices);
+            this.selectGridFields(gridFields);
+        }
+    }
+
     selectAll() {
         this.grid.selectAllRows();
     }
@@ -177,6 +227,42 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
+    }
+
+    private getGridFieldsFromRecordIndices(indices: readonly Integer[]) {
+        const indexCount = indices.length;
+        const gridFields = new Array<GridField>(indexCount);
+        for (let i = 0; i < indexCount; i++) {
+            const index = indices[i];
+            const column = this._recordList.getAt(index);
+            gridFields[i] = column.field;
+        }
+        return gridFields;
+    }
+
+    private selectGridFields(gridFields: readonly GridField[]) {
+        const grid = this.grid;
+        grid.beginSelectionChange();
+        let cleared = false;
+        for (const gridField of gridFields) {
+            const recordIndex  = this._columnList.indexOfGridField(gridField);
+            if (recordIndex < 0) {
+                throw new AssertInternalError('GLECFSGFG30304');
+            } else {
+                const rowIndex = this.grid.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
+                if (rowIndex === undefined) {
+                    throw new AssertInternalError('GLECFSGFR30304');
+                } else {
+                    if (cleared) {
+                        grid.selectRow(rowIndex);
+                    } else {
+                        grid.clearSelectRow(rowIndex);
+                        cleared = true;
+                    }
+                }
+            }
+        }
+        grid.endSelectionChange();
     }
 }
 

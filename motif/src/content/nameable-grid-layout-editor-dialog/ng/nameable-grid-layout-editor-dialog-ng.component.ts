@@ -19,7 +19,7 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    AdaptedRevgrid,
+    AllowedFieldsGridLayoutDefinition,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
@@ -65,8 +65,8 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
-        @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
+        @Inject(allowedFieldsInjectionToken) _allowedFields: readonly GridField[],
+        @Inject(oldLayoutDefinitionInjectionToken) _oldLayoutDefinition: GridLayoutDefinition,
         @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++NameableGridLayoutEditorDialogNgComponent.typeInstanceCreateCount);
@@ -75,7 +75,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();
 
-        this._definitionColumnList.load(this._oldLayoutDefinition, allowedFields);
+        this._definitionColumnList.load(_allowedFields, _oldLayoutDefinition);
     }
 
     ngAfterViewInit() {
@@ -143,7 +143,7 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
     export function open(
         container: ViewContainerRef,
         opener: LockOpenListItem.Opener,
-        allowedFieldsAndLayoutDefinition: AdaptedRevgrid.AllowedFieldsAndLayoutDefinition,
+        allowedFieldsGridLayoutDefinition: AllowedFieldsGridLayoutDefinition,
     ): ClosePromise {
         container.clear();
 
@@ -153,11 +153,11 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
         };
         const allowedFieldsProvider: ValueProvider = {
             provide: allowedFieldsInjectionToken,
-            useValue: allowedFieldsAndLayoutDefinition.allowedFields,
+            useValue: allowedFieldsGridLayoutDefinition.allowedFields,
         };
         const oldLayoutDefinitionProvider: ValueProvider = {
             provide: oldLayoutDefinitionInjectionToken,
-            useValue: allowedFieldsAndLayoutDefinition.layoutDefinition,
+            useValue: allowedFieldsGridLayoutDefinition,
         };
         const injector = Injector.create({
             providers: [openerProvider, allowedFieldsProvider, oldLayoutDefinitionProvider],

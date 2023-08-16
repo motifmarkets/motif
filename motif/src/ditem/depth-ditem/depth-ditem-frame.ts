@@ -4,8 +4,18 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, AssertInternalError, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
-import { BidAskGridLayoutDefinitions, DepthFrame } from 'content-internal-api';
+import {
+    AdiService,
+    AssertInternalError,
+    BidAskGridLayoutDefinitions,
+    CommandRegisterService,
+    DepthStyleId,
+    JsonElement,
+    LitIvemId,
+    SettingsService,
+    SymbolsService,
+} from '@motifmarkets/motif-core';
+import { DepthFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -73,8 +83,10 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
             const litIvemId = this.litIvemId;
             if (litIvemId === undefined) {
                 this._depthFrame.close();
+                this.updateLockerName('');
             } else {
                 this._depthFrame.open(litIvemId, DepthStyleId.Full);
+                this.updateLockerName(this.symbolsService.litIvemIdToDisplay(litIvemId));
             }
             this._componentAccess.notifyOpenedClosed(litIvemId);
         }
@@ -126,11 +138,11 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    createAllowedFieldsAndLayoutDefinitions() {
+    createAllowedFieldsGridLayoutDefinitions() {
         if (this._depthFrame === undefined) {
             throw new AssertInternalError('DDFCAFALD21915');
         } else {
-            return this._depthFrame.createAllowedFieldsAndLayoutDefinitions();
+            return this._depthFrame.createAllowedFieldsGridLayoutDefinitions();
         }
     }
 
@@ -158,14 +170,12 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     }
 }
 
-
 export namespace DepthDitemFrame {
     export namespace JsonName {
         export const depthFrame = 'depthFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;
-
 
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
         pushSymbol(litIvemId: LitIvemId): void;

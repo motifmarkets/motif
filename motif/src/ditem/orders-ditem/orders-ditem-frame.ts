@@ -103,7 +103,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         if (this._ordersFrame === undefined) {
             throw new AssertInternalError('ODFCAFALD04418');
         } else {
-            return this._ordersFrame.createAllowedFieldsAndLayoutDefinition();
+            return this._ordersFrame.createAllowedFieldsGridLayoutDefinition();
         }
     }
 

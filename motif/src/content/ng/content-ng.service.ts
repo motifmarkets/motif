@@ -124,7 +124,7 @@ export class ContentNgService {
         return this._content.createScanListFrame();
     }
 
-    createGridLayoutEditorAllowedFieldsFrame(allowedFields: GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
+    createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return this._content.createGridLayoutEditorAllowedFieldsFrame(allowedFields, columnList);
     }
 

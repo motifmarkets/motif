@@ -29,7 +29,7 @@ import {
     PlaceholderDitemFrame,
     WatchlistDitemFrame
 } from 'ditem-internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import {
     ComponentContainer,
     ComponentItemConfig,
@@ -63,6 +63,7 @@ export class GoldenLayoutHostFrame {
     }
 
     loadLayout(config: LayoutConfig) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (config === undefined) {
             config = this.createDefaultLayoutConfig();
         }
@@ -100,7 +101,7 @@ export class GoldenLayoutHostFrame {
         preferredLocationId: GoldenLayoutHostFrame.PreferredLocationId | undefined
     ) {
         const config = this.createBuiltinComponentConfig(typeId, initialState);
-        return this.createComponent(config, preferredLocationId) as BuiltinDitemNgComponentBaseDirective;
+        return this.createComponent(config, preferredLocationId) as BuiltinDitemNgComponentBaseNgDirective;
     }
 
     createExtensionComponent(extensionHandle: ExtensionHandle, frameTypeName: string, initialState: JsonValue | undefined,
@@ -155,7 +156,7 @@ export class GoldenLayoutHostFrame {
         if (!ContentItem.isComponentItem(contentItem)) {
             throw new AssertInternalError('GLHFCSC33911');
         } else {
-            return contentItem.component as BuiltinDitemNgComponentBaseDirective;
+            return contentItem.component as BuiltinDitemNgComponentBaseNgDirective;
         }
     }
 

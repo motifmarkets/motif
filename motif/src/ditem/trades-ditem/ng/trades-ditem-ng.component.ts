@@ -335,13 +335,13 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private async showGridLayoutDialog() {
-        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
+        const allowedFieldsGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinition();
 
-        if (allowedFieldsAndLayoutDefinition !== undefined) {
+        if (allowedFieldsGridLayoutDefinition !== undefined) {
             const component = GridLayoutDialogNgComponent.create(
                 this._dialogContainer,
-                allowedFieldsAndLayoutDefinition.allowedFields,
-                allowedFieldsAndLayoutDefinition.layoutDefinition,
+                this._frame.opener,
+                allowedFieldsGridLayoutDefinition,
             );
 
             this.isDialogVisible = true;

@@ -6,6 +6,9 @@
 
 import {
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
+    BidAskAllowedFieldsGridLayoutDefinitions,
+    BidAskGridLayoutDefinitions,
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
@@ -18,9 +21,7 @@ import {
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import {
-    BidAskGridLayoutDefinitions,
     DepthFrame,
-    ParidepthAllowedFieldsAndLayoutDefinitions,
     TradesFrame,
     WatchlistFrame
 } from 'content-internal-api';
@@ -188,11 +189,11 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths(widenOnly );
     }
 
-    createAllowedFieldsAndLayoutDefinition(): ParidepthAllowedFieldsAndLayoutDefinitions {
+    createAllowedFieldsAndLayoutDefinition(): ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions {
         return {
-            depth: this._depthFrame.createAllowedFieldsAndLayoutDefinitions(),
-            watchlist: this._watchlistFrame.createAllowedFieldsAndLayoutDefinition(),
-            trades: this._tradesFrame.createAllowedFieldsAndLayoutDefinition(),
+            depth: this._depthFrame.createAllowedFieldsGridLayoutDefinitions(),
+            watchlist: this._watchlistFrame.createAllowedFieldsGridLayoutDefinition(),
+            trades: this._tradesFrame.createAllowedFieldsGridLayoutDefinition(),
         };
     }
 
@@ -270,6 +271,12 @@ export namespace ParidepthDitemFrame {
         watchlist: GridLayoutOrNamedReferenceDefinition;
         depth: BidAskGridLayoutDefinitions;
         trades: GridLayoutDefinition;
+    }
+
+    export interface AllowedFieldsAndLayoutDefinitions {
+        watchlist: AllowedFieldsGridLayoutDefinition;
+        depth: BidAskAllowedFieldsGridLayoutDefinitions;
+        trades: AllowedFieldsGridLayoutDefinition;
     }
 
     export type OpenedEventHandler = (this: void) => void;

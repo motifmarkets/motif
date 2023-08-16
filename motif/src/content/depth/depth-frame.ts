@@ -8,6 +8,8 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
+    BidAskAllowedFieldsGridLayoutDefinitions,
+    BidAskGridLayoutDefinitions,
     CommaText,
     Correctness,
     DepthDataDefinition,
@@ -23,14 +25,13 @@ import {
     OrderSideId,
     SecurityDataDefinition,
     SecurityDataItem,
-    uniqueElementArraysOverlap,
     UnreachableCaseError,
-    ZenithSubscriptionDataId
+    ZenithSubscriptionDataId,
+    uniqueElementArraysOverlap,
 } from '@motifmarkets/motif-core';
 import { ServerNotificationId } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
-import { BidAskAllowedFieldsAndLayoutDefinitions, BidAskGridLayoutDefinitions } from '../grid-layout-editor-dialog-definition';
 
 export class DepthFrame extends ContentFrame {
     public openedPopulatedAndRenderedEvent: DepthFrame.OpenedPopulatedAndRenderedEvent | undefined;
@@ -274,10 +275,10 @@ export class DepthFrame extends ContentFrame {
         this._askDepthSideFrame.autoSizeAllColumnWidths(widthOnly);
     }
 
-    createAllowedFieldsAndLayoutDefinitions(): BidAskAllowedFieldsAndLayoutDefinitions {
+    createAllowedFieldsGridLayoutDefinitions(): BidAskAllowedFieldsGridLayoutDefinitions {
         return {
-            bid: this._bidDepthSideFrame.createAllowedFieldsAndLayoutDefinition(),
-            ask: this._askDepthSideFrame.createAllowedFieldsAndLayoutDefinition(),
+            bid: this._bidDepthSideFrame.createAllowedFieldsGridLayoutDefinition(),
+            ask: this._askDepthSideFrame.createAllowedFieldsGridLayoutDefinition(),
         };
     }
 

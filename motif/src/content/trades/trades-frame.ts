@@ -7,6 +7,7 @@
 import {
     AdaptedRevgrid,
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     Badness,
     CorrectnessId,
@@ -127,8 +128,9 @@ export class TradesFrame extends ContentFrame {
         this.checkClose();
     }
 
-    createAllowedFieldsAndLayoutDefinition(): AdaptedRevgrid.AllowedFieldsAndLayoutDefinition {
-        return this._grid.createAllowedFieldsAndLayoutDefinition();
+    createAllowedFieldsGridLayoutDefinition(): AllowedFieldsGridLayoutDefinition {
+        const allowedFields = DayTradesGridField.createAllowedFields();
+        return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
     }
 
     applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition) {

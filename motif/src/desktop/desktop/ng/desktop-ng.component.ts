@@ -36,7 +36,7 @@ import {
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
-import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
 import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
@@ -194,7 +194,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     }
 
     private getBuiltinDitemFrameFromGoldenLayoutComponent(component: ComponentItem.Component) {
-        if (typeof component !== 'object' || !(component instanceof BuiltinDitemNgComponentBaseDirective)) {
+        if (typeof component !== 'object' || !(component instanceof BuiltinDitemNgComponentBaseNgDirective)) {
             throw new AssertInternalError('DCGBDFFGLC45559248');
         } else {
             return component.ditemFrame;
