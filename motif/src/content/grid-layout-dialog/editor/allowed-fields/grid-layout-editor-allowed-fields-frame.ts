@@ -8,13 +8,13 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
+    CellPainterFactoryService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     GridFieldTableRecordSource,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
-    HeaderTextCellPainter,
     Integer,
     JsonElement,
     LockOpenListItem,
@@ -23,13 +23,14 @@ import {
     MultiEvent,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
     UsableListChangeTypeId,
-    delay1Tick,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell, RevRecord } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
@@ -39,28 +40,28 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     private _records: readonly GridField[];
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     private _columnListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         settingsService: SettingsService,
-        textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
+        cellPainterFactoryService: CellPainterFactoryService,
         private readonly _allowedFields: readonly GridField[],
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
             settingsService,
-            textFormatterService,
             namedGridLayoutsService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
+            cellPainterFactoryService,
         );
 
         this._columnListChangeSubscriptionId = this._columnList.subscribeListChangeEvent(
@@ -106,8 +107,8 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         grid.selectionChangedEventer = () => this.handleGridSelectionChangedEventer();
 

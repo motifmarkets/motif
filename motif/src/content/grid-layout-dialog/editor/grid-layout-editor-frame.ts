@@ -78,8 +78,8 @@ export class GridLayoutEditorFrame extends ContentFrame {
             this._componentAccess.moveDownEnabled = false;
             this._componentAccess.moveBottomEnabled = false;
         } else {
-
-            this._componentAccess.removeEnabled = true;
+            selectedRecordIndices.sort((left, right) => left - right);
+            this._componentAccess.removeEnabled = !this._columnList.areAllIndexedRecordsFixed(selectedRecordIndices);;
             const allSelectedNotAtTop = !this._columnList.areSortedIndexedRecordsAllAtStart(selectedRecordIndices);
             this._componentAccess.moveTopEnabled = allSelectedNotAtTop;
             this._componentAccess.moveUpEnabled = allSelectedNotAtTop;

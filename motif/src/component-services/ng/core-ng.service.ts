@@ -9,6 +9,7 @@ import {
     AdiService,
     AppStorageService,
     CapabilitiesService,
+    CellPainterFactoryService,
     CommandRegisterService,
     CoreService,
     KeyboardService,
@@ -51,6 +52,7 @@ export class CoreNgService implements OnDestroy {
     get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
     get namedGridLayoutsService(): NamedGridLayoutsService { return this._service.namedGridLayoutsService; }
     get namedGridSourcesService(): NamedGridSourcesService { return this._service.namedGridSourcesService; }
+    get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 

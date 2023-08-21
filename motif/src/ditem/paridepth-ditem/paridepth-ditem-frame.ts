@@ -189,6 +189,10 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         this._tradesFrame.autoSizeAllColumnWidths(widenOnly );
     }
 
+    canCreateAllowedFieldsGridLayoutDefinition() {
+        return this._depthFrame.canCreateAllowedFieldsGridLayoutDefinition();
+    }
+
     createAllowedFieldsAndLayoutDefinition(): ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions {
         return {
             depth: this._depthFrame.createAllowedFieldsGridLayoutDefinitions(),

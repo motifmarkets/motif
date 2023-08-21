@@ -8,6 +8,7 @@ import {
     AdaptedRevgrid,
     AllowedGridField,
     AssertInternalError,
+    CellPainterFactoryService,
     DataItem,
     DepthDataItem,
     DepthLevelsDataItem,
@@ -20,16 +21,16 @@ import {
     FullDepthSideGridRecordStore,
     GridLayout,
     GridLayoutDefinition,
-    HeaderTextCellPainter,
     Integer,
     JsonElement,
     OrderSideId,
     RecordGrid,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
-    TextFormatterService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { RevRecordStore } from 'revgrid';
@@ -49,15 +50,15 @@ export class DepthSideFrame extends ContentFrame {
     private _filterXrefs: string[] = [];
     // private _activeWidth = 0;
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     private _storeActivationId = 0;
     private _openedPopulatedAndRendered = false;
 
     constructor(
         private readonly _settingsService: SettingsService,
-        private readonly _textFormatterService: TextFormatterService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
         private readonly _hostElement: HTMLElement,
     ) {
         super();
@@ -233,6 +234,10 @@ export class DepthSideFrame extends ContentFrame {
     //     }
     // }
 
+    canCreateAllowedFieldsGridLayoutDefinition() {
+        return this._activeStore !== undefined;
+    }
+
     createAllowedFieldsGridLayoutDefinition() {
         const activeStore = this._activeStore;
         if (activeStore === undefined) {
@@ -402,8 +407,8 @@ export class DepthSideFrame extends ContentFrame {
 
         this._grid = grid;
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         grid.activate();
     }

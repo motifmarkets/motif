@@ -7,6 +7,7 @@
 import {
     AdiService,
     AppStorageService,
+    CellPainterFactoryService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     NamedGridLayoutsService,
@@ -49,6 +50,7 @@ export class ContentService {
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -58,11 +60,11 @@ export class ContentService {
     createFeedsFrame() {
         return new FeedsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
@@ -96,99 +98,99 @@ export class ContentService {
         return new WatchlistFrame(
             this._settingsService,
             this._namedJsonRankedLitIvemIdListsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createBrokerageAccountsFrame() {
         return new BrokerageAccountsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createOrdersFrame() {
         return new OrdersFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createOrderAuthoriseFrame() {
         return new OrderAuthoriseFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createHoldingsFrame() {
         return new HoldingsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createBalancesFrame() {
         return new BalancesFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createSearchSymbolsFrame() {
         return new SearchSymbolsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createScanListFrame() {
         return new ScanListFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
         );
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
             allowedFields,
             columnList,
         );
@@ -197,11 +199,11 @@ export class ContentService {
     createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorColumnsFrame(
             this._settingsService,
-            this._textFormatterService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._namedGridSourcesService,
+            this._cellPainterFactoryService,
             columnList,
         );
     }
@@ -211,7 +213,7 @@ export class ContentService {
     }
 
     createDepthSideFrame(hostElement: HTMLElement) {
-        return new DepthSideFrame(this._settingsService, this._textFormatterService, hostElement);
+        return new DepthSideFrame(this._settingsService, this._cellPainterFactoryService, hostElement);
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
@@ -219,7 +221,7 @@ export class ContentService {
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {
-        return new TradesFrame(this._settingsService, this._adiService, this._textFormatterService, componentAccess);
+        return new TradesFrame(this._settingsService, this._adiService, this._cellPainterFactoryService, componentAccess);
     }
 
     createPadOrderRequestStepFrame(componentAccess: PadOrderRequestStepFrame.ComponentAccess) {

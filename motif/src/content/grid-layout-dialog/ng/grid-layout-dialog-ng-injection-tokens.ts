@@ -1,10 +1,10 @@
 import { InjectionToken } from '@angular/core';
-import { AllowedGridField, BidAskAllowedGridFields, BidAskGridLayoutDefinitions, EditableGridLayoutDefinitionColumnList, GridLayoutDefinition } from '@motifmarkets/motif-core';
+import { AllowedFieldsGridLayoutDefinition, AllowedGridField, BidAskAllowedGridFields, BidAskGridLayoutDefinitions, EditableGridLayoutDefinitionColumnList } from '@motifmarkets/motif-core';
 
 const allowedFieldsTokenName = 'allowedFields';
 export const allowedFieldsInjectionToken = new InjectionToken<AllowedGridField[]>(allowedFieldsTokenName);
 const oldLayoutDefinitionTokenName = 'oldLayoutDefinition';
-export const oldLayoutDefinitionInjectionToken = new InjectionToken<GridLayoutDefinition>(oldLayoutDefinitionTokenName);
+export const oldLayoutDefinitionInjectionToken = new InjectionToken<AllowedFieldsGridLayoutDefinition>(oldLayoutDefinitionTokenName);
 const definitionColumnListTokenName = 'definitionColumnList';
 export const definitionColumnListInjectionToken = new InjectionToken<EditableGridLayoutDefinitionColumnList>(definitionColumnListTokenName);
 const bidAskAllowedFieldsTokenName = 'bidAskAllowedFields';

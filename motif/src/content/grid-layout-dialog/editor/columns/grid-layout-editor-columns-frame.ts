@@ -8,6 +8,7 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
+    CellPainterFactoryService,
     EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     EditableGridLayoutDefinitionColumnTableRecordSource,
@@ -15,17 +16,17 @@ import {
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
-    HeaderTextCellPainter,
     Integer,
     ModifierKey,
     ModifierKeyId,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
@@ -35,25 +36,25 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     private _recordList: EditableGridLayoutDefinitionColumnList;
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     constructor(
         settingsService: SettingsService,
-        textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
+        cellPainterFactoryService: CellPainterFactoryService,
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
             settingsService,
-            textFormatterService,
             namedGridLayoutsService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
+            cellPainterFactoryService,
         );
     }
 
@@ -86,8 +87,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         grid.selectionChangedEventer = () => this.handleGridSelectionChangedEventer();
 

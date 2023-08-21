@@ -10,6 +10,7 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     Badness,
+    CellPainterFactoryService,
     CorrectnessId,
     DayTradesDataDefinition,
     DayTradesDataItem,
@@ -17,14 +18,14 @@ import {
     DayTradesGridRecordStore,
     GridLayout,
     GridLayoutDefinition,
-    HeaderTextCellPainter,
     JsonElement,
     LitIvemId,
     MultiEvent,
     RecordGrid,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
-    TextFormatterService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 
@@ -37,13 +38,13 @@ export class TradesFrame extends ContentFrame {
     private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     constructor(
         private readonly _settingsService: SettingsService,
         protected readonly adiService: AdiService,
-        private readonly _textFormatterService: TextFormatterService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
         private readonly _componentAccess: TradesFrame.ComponentAccess,
     ) {
         super();
@@ -183,8 +184,8 @@ export class TradesFrame extends ContentFrame {
     private createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(gridHostElement);
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         return grid;
     }

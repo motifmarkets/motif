@@ -70,7 +70,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
-        @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: GridLayoutDefinition,
+        @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: AllowedFieldsGridLayoutDefinition,
         @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutDialogNgComponent.typeInstanceCreateCount);
@@ -80,7 +80,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         this._cancelUiAction = this.createCancelUiAction();
         this._editorUiAction = this.createEditorUiAction();
 
-        this._definitionColumnList.load(allowedFields, this._oldLayoutDefinition);
+        this._definitionColumnList.load(allowedFields, this._oldLayoutDefinition, this._oldLayoutDefinition.fixedColumnCount);
     }
 
     ngAfterViewInit() {

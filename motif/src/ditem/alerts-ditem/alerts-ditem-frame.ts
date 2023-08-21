@@ -7,20 +7,21 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AdiService,
+    CellPainterFactoryService,
     CommandRegisterService,
     GridField,
     GridFieldSourceDefinition,
-    HeaderTextCellPainter,
     IndexSignatureHack,
     Integer,
-    RecordGridMainTextCellPainter,
     RenderValue,
+    RenderValueRowDataArrayGridCellPainter,
     RowDataArrayGrid,
     SettingsService,
     StringRenderValue,
     SymbolsService,
-    TextFormatterService,
-    TimeRenderValue,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
+    TimeRenderValue
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell, HorizontalAlignEnum } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -31,8 +32,8 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
 
     private readonly _grid: RowDataArrayGrid;
 
-    private readonly _gridHeaderCellPainter: HeaderTextCellPainter;
-    private readonly _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private readonly _gridHeaderCellPainter: TextHeaderCellPainter;
+    private readonly _gridMainCellPainter: RenderValueRowDataArrayGridCellPainter<TextRenderValueCellPainter>;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -41,7 +42,7 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
-        textFormatterService: TextFormatterService,
+        cellPainterFactoryService: CellPainterFactoryService,
         ditemHtmlElement: HTMLElement,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Alerts,
@@ -63,8 +64,8 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
         grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
         grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = cellPainterFactoryService.createTextRenderValueRowDataArrayGrid(grid, grid.mainDataServer);
 
         this._grid.setData(demoAlerts.slice(), false);
     }

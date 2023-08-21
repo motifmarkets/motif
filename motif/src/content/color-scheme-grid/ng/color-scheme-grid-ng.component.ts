@@ -7,18 +7,19 @@
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy } from '@angular/core';
 import {
     AdaptedRevgrid,
+    CellPainterFactoryService,
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
     GridLayout,
-    HeaderTextCellPainter,
     Integer,
     RecordGrid,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
-    TextFormatterService
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
+import { CellPainterFactoryNgService, SettingsNgService } from 'component-services-ng-api';
 import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -37,12 +38,12 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     columnsViewWithsChangedEventer: ColorSchemeGridNgComponent.ColumnsViewWithsChangedEventer | undefined;
 
     private readonly _settingsService: SettingsService;
-    private readonly _textFormatterService: TextFormatterService;
+    private readonly _cellPainterFactoryService: CellPainterFactoryService;
 
     private _recordStore: ColorSchemeGridRecordStore;
     private _grid: RecordGrid;
-    private _mainCellPainter: RecordGridMainTextCellPainter;
-    private _headerCellPainter: HeaderTextCellPainter;
+    private _mainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
+    private _headerCellPainter: TextHeaderCellPainter;
 
     private _filterActive = false;
     private _filterFolderId = ColorScheme.Item.FolderId.Grid;
@@ -50,17 +51,17 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     constructor(
         elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
-        textFormatterNgService: TextFormatterNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
         super(elRef, ++ColorSchemeGridNgComponent.typeInstanceCreateCount);
         this._settingsService = settingsNgService.service;
-        this._textFormatterService = textFormatterNgService.service;
+        this._cellPainterFactoryService = cellPainterFactoryNgService.service;
         this._recordStore = new ColorSchemeGridRecordStore(this._settingsService);
         this._grid = this.createGrid(this.rootHtmlElement,);
 
         const grid = this._grid;
-        this._mainCellPainter = new RecordGridMainTextCellPainter(this._settingsService, this._textFormatterService, this._grid, grid.mainDataServer);
-        this._headerCellPainter = new HeaderTextCellPainter(this._settingsService, grid, grid.headerDataServer);
+        this._mainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(this._grid, grid.mainDataServer);
+        this._headerCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
 
         grid.activate();
 

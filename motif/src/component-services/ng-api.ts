@@ -7,6 +7,7 @@
 export * from './ng/adi-ng.service';
 export * from './ng/app-storage-ng.service';
 export * from './ng/capabilities-ng.service';
+export * from './ng/cell-painter-factory-ng.service';
 export * from './ng/command-register-ng.service';
 export * from './ng/core-injection-tokens';
 export * from './ng/core-ng.service';

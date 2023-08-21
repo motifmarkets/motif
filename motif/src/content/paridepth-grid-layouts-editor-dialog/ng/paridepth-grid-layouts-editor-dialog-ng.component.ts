@@ -130,7 +130,7 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
         this.allPushUnselected();
 
         if (value !== this._activeParidepthFrameId) {
-            switch (this._activeParidepthFrameId) {
+            switch (value) {
                 case ParidepthGridLayoutsEditorDialogNgComponent.ParidepthFrameId.BidDepth:
                     this._editorComponent = this.recreateEditor(this._depthBidAllowedFields, this._depthBidLayoutDefinition);
                     this._bidDepthUiAction.pushSelected();
@@ -155,7 +155,7 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
                     throw new AssertInternalError('PGLECCULFEU33333');
 
                 default:
-                    throw new UnreachableCaseError('PGLECCULFED33333', this._activeParidepthFrameId);
+                    throw new UnreachableCaseError('PGLECCULFED33333', value);
             }
 
             this._activeParidepthFrameId = value;
@@ -272,7 +272,7 @@ export class ParidepthGridLayoutsEditorDialogNgComponent extends ContentComponen
         };
 
         const definitionColumnList = new EditableGridLayoutDefinitionColumnList();
-        definitionColumnList.load(allowedFields, layoutDefinition);
+        definitionColumnList.load(allowedFields, layoutDefinition, 0);
         const columnListProvider: ValueProvider = {
             provide: definitionColumnListInjectionToken,
             useValue: definitionColumnList,

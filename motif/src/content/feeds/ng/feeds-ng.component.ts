@@ -42,7 +42,7 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
     }
 
     protected override processAfterViewInit() {
-        this.frame.setupGrid(this._gridHost.nativeElement);
+        super.processAfterViewInit();
         this.frame.initialiseGrid(this._opener, undefined, false);
     }
 }

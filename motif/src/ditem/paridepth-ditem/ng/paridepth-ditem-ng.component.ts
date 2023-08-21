@@ -85,7 +85,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     @ViewChild('trades', { static: true }) private _tradesComponent: TradesNgComponent;
     @ViewChild('watchlist', { static: true }) private _watchlistComponent: WatchlistNgComponent;
     @ViewChild(SplitComponent) private _depthTradesSplitComponent: SplitComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
     @ViewChild('commandBar') private _commandBarComponent: CommandBarNgComponent;
 
     public splitterGutterSize = 3;
@@ -224,6 +224,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushFilterEditValue();
         this.pushHistoricalTradesDate(historicalTradesDate);
         this._symbolApplyUiAction.pushDisabled();
+        this.updateColumnsEnabledDiabled();
         this.pushAccepted();
     }
 
@@ -247,6 +248,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         // this.initialiseWidths();
 
         this.initialiseChildComponents();
+
+        this.updateColumnsEnabledDiabled();
 
         super.initialise();
     }
@@ -537,6 +540,14 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private pushValid() {
         this._symbolApplyUiAction.pushValid();
         this._historicalTradesDateUiAction.pushValid();
+    }
+
+    private updateColumnsEnabledDiabled() {
+        if (this._frame.canCreateAllowedFieldsGridLayoutDefinition()) {
+            this._columnsUiAction.pushAccepted();
+        } else {
+            this._columnsUiAction.pushDisabled();
+        }
     }
 
     private showLayoutDialog() {

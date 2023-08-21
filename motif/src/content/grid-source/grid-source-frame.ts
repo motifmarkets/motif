@@ -10,6 +10,7 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
     Badness,
+    CellPainterFactoryService,
     GridField,
     GridLayout,
     GridLayoutOrNamedReferenceDefinition,
@@ -29,10 +30,9 @@ import {
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
-    TextFormatterService,
+    TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
-import { RevRecordMainDataServer, Subgrid } from 'revgrid';
+import { RevRecordDataServer, Subgrid } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {
@@ -67,11 +67,11 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     constructor(
         protected readonly settingsService: SettingsService,
-        protected readonly textFormatterService: TextFormatterService,
         private readonly _namedGridLayoutsService: NamedGridLayoutsService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _namedGridSourcesService: NamedGridSourcesService,
+        protected readonly cellPainterFactoryService: CellPainterFactoryService,
     ) {
         super();
     }
@@ -948,7 +948,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid.applyFilter(undefined);
     }
 
-    applyFilter(filter?: RevRecordMainDataServer.RecordFilterCallback): void {
+    applyFilter(filter?: RevRecordDataServer.RecordFilterCallback): void {
         this.grid.applyFilter(filter);
     }
 

@@ -9,6 +9,7 @@ import { EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService }
 import {
     AdiNgService,
     AppStorageNgService,
+    CellPainterFactoryNgService,
     NamedGridLayoutsNgService,
     NamedGridSourcesNgService,
     NamedJsonRankedLitIvemIdListsNgService,
@@ -43,6 +44,7 @@ export class ContentNgService {
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
         namedGridSourcesNgService: NamedGridSourcesNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
         this._content = new ContentService(
             settingsNgService.service,
@@ -55,6 +57,7 @@ export class ContentNgService {
             tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
             namedGridSourcesNgService.service,
+            cellPainterFactoryNgService.service,
         );
     }
 

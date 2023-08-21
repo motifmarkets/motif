@@ -275,6 +275,10 @@ export class DepthFrame extends ContentFrame {
         this._askDepthSideFrame.autoSizeAllColumnWidths(widthOnly);
     }
 
+    canCreateAllowedFieldsGridLayoutDefinition() {
+        return this._bidDepthSideFrame.canCreateAllowedFieldsGridLayoutDefinition() && this._askDepthSideFrame.canCreateAllowedFieldsGridLayoutDefinition();
+    }
+
     createAllowedFieldsGridLayoutDefinitions(): BidAskAllowedFieldsGridLayoutDefinitions {
         return {
             bid: this._bidDepthSideFrame.createAllowedFieldsGridLayoutDefinition(),

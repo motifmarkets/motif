@@ -7,13 +7,13 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
+    CellPainterFactoryService,
     GridField,
     GridLayoutOrNamedReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
-    HeaderTextCellPainter,
     Integer,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
@@ -26,11 +26,12 @@ import {
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListOrNamedReferenceDefinition,
     RankedLitIvemIdListTableRecordSource,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
-    TextFormatterService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
     compareInteger,
     newGuid
 } from '@motifmarkets/motif-core';
@@ -49,25 +50,25 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     private _recordSource: RankedLitIvemIdListTableRecordSource;
     private _fixedRowCount: Integer | undefined;
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     constructor(
         settingsService: SettingsService,
         private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
-        textFormatterService: TextFormatterService,
         namedGridLayoutsService: NamedGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: NamedGridSourcesService,
+        cellPainterFactoryService: CellPainterFactoryService,
     ) {
         super(
             settingsService,
-            textFormatterService,
             namedGridLayoutsService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,
+            cellPainterFactoryService,
         );
     }
 
@@ -93,8 +94,8 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         return grid;
     }

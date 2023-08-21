@@ -4,12 +4,13 @@ import {
     GridSourceDefinition,
     GridSourceOrNamedReference,
     GridSourceOrNamedReferenceDefinition,
-    HeaderTextCellPainter,
     Integer,
-    RecordGridMainTextCellPainter,
+    RenderValueRecordGridCellPainter,
     Scan,
     ScanTableRecordSource,
-    ScansService
+    ScansService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../delayed-badness-grid-source/internal-api';
@@ -21,8 +22,8 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     private _recordSource: ScanTableRecordSource;
     private _scansService: ScansService;
 
-    private _gridHeaderCellPainter: HeaderTextCellPainter;
-    private _gridMainCellPainter: RecordGridMainTextCellPainter;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     private _filterText = '';
     private _uppercaseFilterText = '';
@@ -57,8 +58,8 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
 
-        this._gridHeaderCellPainter = new HeaderTextCellPainter(this.settingsService, grid, grid.headerDataServer);
-        this._gridMainCellPainter = new RecordGridMainTextCellPainter(this.settingsService, this.textFormatterService, grid, grid.mainDataServer);
+        this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         return grid;
     }

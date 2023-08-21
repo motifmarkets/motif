@@ -25,7 +25,7 @@ import {
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
+import { AdiNgService, CellPainterFactoryNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -72,7 +72,7 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        textFormatterNgService: TextFormatterNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
         super(
             elRef,
@@ -85,7 +85,7 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
 
         this._frame = new NewsHeadlinesDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, textFormatterNgService.service,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, cellPainterFactoryNgService.service,
             this.rootHtmlElement);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();

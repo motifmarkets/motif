@@ -37,57 +37,24 @@
     ],
     "rootDir": ".",
     "paths": {
-      "third-party-internal-api": [
-        "src/third-party/internal-api"
-      ],
-      "third-party-ng-api": [
-        "src/third-party/ng-api"
-      ],
-      "third-party-code-mirror-component": [
-        "src/third-party/code-mirror-module/code-mirror/ng/code-mirror-ng.component"
-      ],
-      "generated-internal-api": [
-        "src/generated/internal-api"
-      ],
-      "component-internal-api": [
-        "src/component/internal-api"
-      ],
-      "component-ng-api": [
-        "src/component/ng-api"
-      ],
-      "component-services-internal-api": [
-        "src/component-services/internal-api"
-      ],
-      "component-services-ng-api": [
-        "src/component-services/ng-api"
-      ],
-      "controls-internal-api": [
-        "src/controls/internal-api"
-      ],
-      "controls-ng-api": [
-        "src/controls/ng-api"
-      ],
-      "content-internal-api": [
-        "src/content/internal-api"
-      ],
-      "content-ng-api": [
-        "src/content/ng-api"
-      ],
-      "ditem-internal-api": [
-        "src/ditem/internal-api"
-      ],
-      "ditem-ng-api": [
-        "src/ditem/ng-api"
-      ],
-      "desktop-ng-api": [
-        "src/desktop/ng-api"
-      ],
-      "workspace-internal-api": [
-        "src/workspace/internal-api"
-      ],
-      "workspace-ng-api": [
-        "src/workspace/ng-api"
-      ]
+      "@motifmarkets/motif-core": ["../motif-core/src/code/public-api"], // for debugging only
+      "third-party-internal-api": ["src/third-party/internal-api"],
+      "third-party-ng-api": ["src/third-party/ng-api"],
+      "third-party-code-mirror-component": ["src/third-party/code-mirror-module/code-mirror/ng/code-mirror-ng.component"],
+      "generated-internal-api": ["src/generated/internal-api"],
+      "component-internal-api": ["src/component/internal-api"],
+      "component-ng-api": ["src/component/ng-api"],
+      "component-services-internal-api": ["src/component-services/internal-api"],
+      "component-services-ng-api": ["src/component-services/ng-api"],
+      "controls-internal-api": ["src/controls/internal-api"],
+      "controls-ng-api": ["src/controls/ng-api"],
+      "content-internal-api": ["src/content/internal-api"],
+      "content-ng-api": ["src/content/ng-api"],
+      "ditem-internal-api": ["src/ditem/internal-api"],
+      "ditem-ng-api": ["src/ditem/ng-api"],
+      "desktop-ng-api": ["src/desktop/ng-api"],
+      "workspace-internal-api": ["src/workspace/internal-api"],
+      "workspace-ng-api": ["src/workspace/ng-api"]
     },
     "useDefineForClassFields": false
     // "traceResolution": true, // can use this to debug paths below

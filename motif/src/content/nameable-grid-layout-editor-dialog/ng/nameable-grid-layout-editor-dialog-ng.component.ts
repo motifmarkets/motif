@@ -23,7 +23,6 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutDefinition,
     GridLayoutOrNamedReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
@@ -66,7 +65,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(allowedFieldsInjectionToken) _allowedFields: readonly GridField[],
-        @Inject(oldLayoutDefinitionInjectionToken) _oldLayoutDefinition: GridLayoutDefinition,
+        @Inject(oldLayoutDefinitionInjectionToken) _oldLayoutDefinition: AllowedFieldsGridLayoutDefinition,
         @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++NameableGridLayoutEditorDialogNgComponent.typeInstanceCreateCount);
@@ -75,7 +74,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();
 
-        this._definitionColumnList.load(_allowedFields, _oldLayoutDefinition);
+        this._definitionColumnList.load(_allowedFields, _oldLayoutDefinition, _oldLayoutDefinition.fixedColumnCount);
     }
 
     ngAfterViewInit() {

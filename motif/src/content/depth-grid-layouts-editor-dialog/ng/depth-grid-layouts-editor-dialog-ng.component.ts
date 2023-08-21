@@ -210,7 +210,7 @@ export class DepthGridLayoutsEditorDialogNgComponent extends ContentComponentBas
         };
 
         const definitionColumnList = new EditableGridLayoutDefinitionColumnList();
-        definitionColumnList.load(allowedFields, layoutDefinition);
+        definitionColumnList.load(allowedFields, layoutDefinition, 0);
         const columnListProvider: ValueProvider = {
             provide: definitionColumnListInjectionToken,
             useValue: definitionColumnList,
