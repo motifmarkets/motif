@@ -9,6 +9,8 @@ import {
     AssertInternalError,
     Badness,
     CellPainterFactoryService,
+    CheckboxRenderValueRecordGridCellEditor,
+    CheckboxRenderValueRecordGridCellPainter,
     EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     EditableGridLayoutDefinitionColumnTableRecordSource,
@@ -28,7 +30,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell } from 'revgrid';
+import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from 'revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
@@ -38,6 +40,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
+    private _visibleCheckboxPainter: CheckboxRenderValueRecordGridCellPainter;
+    private _visibleCheckboxEditor: CheckboxRenderValueRecordGridCellEditor;
 
     constructor(
         settingsService: SettingsService,
@@ -89,8 +93,19 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
         this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
         this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
+        this._visibleCheckboxPainter = this.cellPainterFactoryService.createCheckboxRenderValueRecordGrid(grid, grid.mainDataServer);
+        this._visibleCheckboxEditor = new CheckboxRenderValueRecordGridCellEditor(this.settingsService, grid, grid.mainDataServer);
 
         grid.selectionChangedEventer = () => this.handleGridSelectionChangedEventer();
+
+        grid.focus.getCellEditorEventer = (
+            field,
+            subgridRowIndex,
+            subgrid,
+            readonly,
+            viewCell
+        ) => this.getCellEditor(field, subgridRowIndex, subgrid, readonly, viewCell);
+
 
         return grid;
     }
@@ -226,8 +241,44 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return this._gridHeaderCellPainter;
     }
 
-    private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
-        return this._gridMainCellPainter;
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        let cellPainter: CellPainter<
+            AdaptedRevgridBehavioredColumnSettings,
+            GridField
+        >;
+
+        if (viewCell.viewLayoutColumn.column.field.definition.sourcelessName === EditableGridLayoutDefinitionColumn.FieldName.visible) {
+            cellPainter = this._visibleCheckboxPainter;
+        } else {
+            cellPainter = this._gridMainCellPainter;
+        }
+        return cellPainter;
+    }
+
+    private getCellEditor(
+        field: GridField,
+        _subgridRowIndex: number,
+        _subgrid: Subgrid<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        readonly: boolean,
+        _viewCell: ViewCell<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined
+    ): CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined {
+        return this.tryGetCellEditor(field.definition.sourcelessName, readonly);
+    }
+
+    private tryGetCellEditor(sourcelesFieldName: string, readonly: boolean) {
+        const editor = this.tryCreateCellEditor(sourcelesFieldName);
+        if (editor !== undefined) {
+            editor.readonly = readonly;
+        }
+        return editor;
+    }
+
+    private tryCreateCellEditor(sourcelesFieldName: string) {
+        if (sourcelesFieldName === EditableGridLayoutDefinitionColumn.FieldName.visible) {
+            return this._visibleCheckboxEditor;
+        } else {
+            return undefined;
+        }
     }
 
     private getGridFieldsFromRecordIndices(indices: readonly Integer[]) {
