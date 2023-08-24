@@ -40,7 +40,6 @@ import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-ap
 import {
     GridLayoutDialogNgComponent,
     GridLayoutEditorAllowedFieldsNgComponent,
-    GridLayoutEditorColumnPropertiesNgComponent,
     GridLayoutEditorColumnsNgComponent,
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
@@ -116,7 +115,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridColumnPropertiesNgComponent,
         GridLayoutEditorNgComponent,
         GridLayoutEditorAllowedFieldsNgComponent,
-        GridLayoutEditorColumnPropertiesNgComponent,
         GridLayoutEditorColumnsNgComponent,
         GridLayoutEditorSearchGridNgComponent,
         HoldingsNgComponent,
