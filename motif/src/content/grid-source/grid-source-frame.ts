@@ -43,7 +43,7 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer | undefined;
 
-    protected grid: RecordGrid;
+    protected _grid: RecordGrid;
 
     private readonly _recordStore = new TableGridRecordStore();
     private readonly _opener: LockOpenListItem.Opener;
@@ -76,6 +76,8 @@ export abstract class GridSourceFrame extends ContentFrame {
         super();
     }
 
+    get grid() { return this._grid; }
+
     get isNamed() {
         return this._lockedGridSourceOrNamedReference?.lockedNamedGridSource !== undefined;
     }
@@ -88,8 +90,8 @@ export abstract class GridSourceFrame extends ContentFrame {
             return this._openedTable;
         }
     }
-    get gridRowHeight() { return this.grid.rowHeight; }
-    get gridHorizontalScrollbarInsideOverlap() { return this.grid.horizontalScroller.insideOverlap; }
+    get gridRowHeight() { return this._grid.rowHeight; }
+    get gridHorizontalScrollbarInsideOverlap() { return this._grid.horizontalScroller.insideOverlap; }
 
     // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
     // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
@@ -97,8 +99,8 @@ export abstract class GridSourceFrame extends ContentFrame {
     get recordCount(): Integer { return this._openedTable === undefined ? 0 : this._openedTable.recordCount; }
     get opened(): boolean { return this._openedTable !== undefined; }
 
-    get isFiltered(): boolean { return this.grid.isFiltered; }
-    get recordFocused() {return this.grid.recordFocused; }
+    get isFiltered(): boolean { return this._grid.isFiltered; }
+    get recordFocused() {return this._grid.recordFocused; }
 
     initialiseGrid(
         opener: LockOpenListItem.Opener,
@@ -152,19 +154,19 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (!this.finalised) {
             this.settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
             this.closeGridSource(false);
-            this.grid.destroy();
+            this._grid.destroy();
             super.finalise();
         }
     }
 
     setupGrid(gridHost: HTMLElement) {
-        this.grid = this.createGridAndCellPainters(gridHost);
+        this._grid = this.createGridAndCellPainters(gridHost);
         this.applySettings();
-        this.grid.activate();
+        this._grid.activate();
     }
 
     calculateHeaderPlusFixedRowsHeight() {
-        return this.grid.calculateHeaderPlusFixedRowsHeight();
+        return this._grid.calculateHeaderPlusFixedRowsHeight();
     }
 
     // grid functions used by Component
@@ -242,10 +244,10 @@ export abstract class GridSourceFrame extends ContentFrame {
 
                         this._recordStore.setTable(table);
                         this._tableFieldsChangedSubscriptionId = table.subscribeFieldsChangedEvent(
-                            () => this.grid.updateAllowedFields(table.fields)
+                            () => this._grid.updateAllowedFields(table.fields)
                         );
 
-                        this.grid.fieldsLayoutReset(table.fields, layout);
+                        this._grid.fieldsLayoutReset(table.fields, layout);
 
                         if (table.beenUsable) {
                             this.applyFirstUsable();
@@ -295,8 +297,8 @@ export abstract class GridSourceFrame extends ContentFrame {
                     this.keptGridLayoutOrNamedReferenceDefinition = undefined;
                 }
                 if (keepView) {
-                    this._keptRowOrderDefinition = this.grid.getRowOrderDefinition();
-                    this._keptGridRowAnchor = this.grid.getViewAnchor();
+                    this._keptRowOrderDefinition = this._grid.getRowOrderDefinition();
+                    this._keptGridRowAnchor = this._grid.getViewAnchor();
                 } else {
                     this._keptRowOrderDefinition = undefined;
                     this._keptGridRowAnchor = undefined;
@@ -313,7 +315,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._lockedGridSourceOrNamedReference === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
-            const rowOrderDefinition = this.grid.getRowOrderDefinition();
+            const rowOrderDefinition = this._grid.getRowOrderDefinition();
             return this._lockedGridSourceOrNamedReference.createDefinition(rowOrderDefinition);
         }
     }
@@ -335,7 +337,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     }
 
     createRowOrderDefinition() {
-        return this.grid.getRowOrderDefinition();
+        return this._grid.getRowOrderDefinition();
     }
 
     openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
@@ -577,11 +579,11 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     getFocusedRecordIndex() {
-        return this.grid.focusedRecordIndex;
+        return this._grid.focusedRecordIndex;
     }
 
     getOrderedGridRecIndices(): Integer[] {
-        return this.grid.rowRecIndices;
+        return this._grid.rowRecIndices;
     }
 
     // end IOpener members
@@ -595,7 +597,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     focusItem(itemIdx: Integer) {
-        this.grid.focusedRecordIndex = itemIdx;
+        this._grid.focusedRecordIndex = itemIdx;
     }
 
     // clearRecordDefinitions() {
@@ -906,7 +908,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     }*/
 
     autoSizeAllColumnWidths(widenOnly: boolean) {
-        this.grid.autoSizeAllColumnWidths(widenOnly);
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     // loadDefaultLayout() {
@@ -920,7 +922,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFCAFALD56678');
         } else {
             const allowedFields = this._openedTable.createAllowedFields();
-            return this.grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
+            return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
         }
     }
 
@@ -945,11 +947,11 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     clearFilter(): void {
-        this.grid.applyFilter(undefined);
+        this._grid.applyFilter(undefined);
     }
 
     applyFilter(filter?: RevRecordDataServer.RecordFilterCallback): void {
-        this.grid.applyFilter(filter);
+        this._grid.applyFilter(filter);
     }
 
     protected createGrid(
@@ -969,7 +971,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             getHeaderCellPainterEventer,
             this,
         );
-        this.grid = grid;
+        this._grid = grid;
 
         grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.processRecordFocusedEvent(newRecordIndex, oldRecordIndex);
         grid.mainClickEventer = (fieldIndex, recordIndex) => this.processGridClickEvent(fieldIndex, recordIndex);
@@ -1020,7 +1022,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             if (newLayout === undefined) {
                 throw new AssertInternalError('GSFHGSGLCE22202');
             } else {
-                this.grid.updateGridLayout(newLayout);
+                this._grid.updateGridLayout(newLayout);
                 this.notifyGridLayoutSet(newLayout);
             }
         }
@@ -1057,7 +1059,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
         const viewAnchor = this._keptGridRowAnchor;
         this._keptGridRowAnchor = undefined;
-        this.grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
+        this._grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
     }
 
     // private closeTable() {

@@ -34,7 +34,7 @@ export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirect
     // Component Access members
 
     ngOnDestroy() {
-        this.frame.finalise();
+        this.processOnDestroy();
     }
 
     ngAfterViewInit(): void {
@@ -43,6 +43,10 @@ export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirect
 
     getHeaderPlusFixedLineHeight() {
         return this.frame.calculateHeaderPlusFixedRowsHeight();
+    }
+
+    protected processOnDestroy() {
+        this.frame.finalise();
     }
 
     protected processAfterViewInit() {

@@ -177,7 +177,9 @@ export class GridLayoutEditorColumnPropertiesNgComponent extends ContentComponen
 
     getColumn(columnIndex: number): GridLayout.Column {
         return {
-            fieldName: ''
+            fieldName: '',
+            visible: undefined,
+            autoSizableWidth: undefined,
         };
         // return this._allowedFieldsAndLayoutDefinition.layout.getColumn(columnIndex);
     }

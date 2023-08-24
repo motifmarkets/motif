@@ -7,12 +7,14 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
     EditableGridLayoutDefinitionColumnList,
+    IntegerUiAction,
     LockOpenListItem,
     StringId,
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from '../../../../../component-services/ng-api';
+import { CoreInjectionTokens } from 'component-services-ng-api';
+import { IntegerTextInputNgComponent } from 'controls-ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../ng/content-ng.service';
 import { definitionColumnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
@@ -26,14 +28,17 @@ import { GridLayoutEditorColumnsFrame } from '../grid-layout-editor-columns-fram
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorColumnsNgComponent extends  GridSourceNgDirective {
+export class GridLayoutEditorColumnsNgComponent extends GridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
+    @ViewChild('widthEditorControl', { static: true }) private _widthEditorComponent: IntegerTextInputNgComponent;
 
     public readonly heading = Strings[StringId.InUse]
 
     declare readonly frame: GridLayoutEditorColumnsFrame;
+
+    private readonly _widthEditorUiAction: IntegerUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -44,183 +49,42 @@ export class GridLayoutEditorColumnsNgComponent extends  GridSourceNgDirective {
     ) {
         const frame = contentNgService.createGridLayoutEditorColumnsFrame(columnList);
         super(elRef, ++GridLayoutEditorColumnsNgComponent.typeInstanceCreateCount, cdr, frame);
+
+        this._widthEditorUiAction = this.createWidthEditorUiAction();
+    }
+
+    protected override processOnDestroy(): void {
+        this._widthEditorUiAction.finalise();
     }
 
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
+        this._widthEditorComponent.dataServer = this.frame.grid.mainDataServer;
         this.frame.initialiseGrid(this._opener, undefined, false);
-        delay1Tick(() => this.linkSearchComponent());
+        delay1Tick(() => this.initialiseComponents());
     }
 
-    private linkSearchComponent() {
+    private initialiseComponents() {
         this._searchComponent.selectAllEventer = () => this.frame.selectAll();
         this._searchComponent.searchTextChangedEventer = (searchText) => this.frame.tryFocusFirstSearchMatch(searchText);
         this._searchComponent.searchNextEventer = (searchText, downKeys) => this.frame.tryFocusNextSearchMatch(searchText, downKeys);
+
+        this._widthEditorComponent.initialise(this._widthEditorUiAction);
+        this.frame.setWidthEditor(this._widthEditorComponent);
     }
 
-    // invalidateVisibleValue(rowIndex: Integer): void {
-    //     // const fieldIndex = this._grid.getFieldIndex(this._visibleField);
-    //     // this._recordStore.invalidateValue(fieldIndex, rowIndex, RevRecordValueRecentChangeTypeId.Update);
-    // }
-
-    // /** @return New focused record index or undefined if no move occurred */
-    // applyGridLayoutChangeAction(action: GridLayoutChange.Action): number | undefined {
-    //     return undefined;
-    //     // const moveColumn = (currentIndex: number, newIndex: number): boolean => {
-    //     //     const result = this._allowedFieldsAndLayoutDefinition.layoutDefinition.moveColumn(currentIndex, newIndex);
-    //     //     if (result) {
-    //     //         this._recordStore.recordsLoaded();
-    //     //     }
-    //     //     return result;
-    //     // };
-
-    //     // switch (action.id) {
-    //     //     case GridLayoutChange.ActionId.MoveUp: {
-    //     //         const newIndex = Math.max(0, action.columnIndex - 1);
-    //     //         if (!moveColumn(action.columnIndex, newIndex)) {
-    //     //             return undefined;
-    //     //         } else {
-    //     //             this._grid.focusedRecordIndex = undefined;
-    //     //             this._grid.focusedRecordIndex = newIndex;
-    //     //             return newIndex;
-    //     //         }
-    //     //     }
-
-    //     //     case GridLayoutChange.ActionId.MoveTop: {
-    //     //         const newIndex = 0;
-    //     //         if (!moveColumn(action.columnIndex, newIndex)) {
-    //     //             return undefined;
-    //     //         } else {
-    //     //             this._grid.focusedRecordIndex = undefined;
-    //     //             this._grid.focusedRecordIndex = newIndex;
-    //     //             return newIndex;
-    //     //         }
-    //     //     }
-
-    //     //     case GridLayoutChange.ActionId.MoveDown: {
-    //     //         const newIndex = Math.min(this._recordStore.recordCount, action.columnIndex + 2);
-    //     //         if (!moveColumn(action.columnIndex, newIndex)) {
-    //     //             return undefined;
-    //     //         } else {
-    //     //             this._grid.focusedRecordIndex = undefined;
-    //     //             this._grid.focusedRecordIndex = newIndex - 1;
-    //     //             return newIndex - 1;
-    //     //         }
-    //     //     }
-
-    //     //     case GridLayoutChange.ActionId.MoveBottom: {
-    //     //         const newIndex = this._recordStore.recordCount;
-    //     //         if (!moveColumn(action.columnIndex, newIndex)) {
-    //     //             return undefined;
-    //     //         } else {
-    //     //             this._grid.focusedRecordIndex = undefined;
-    //     //             this._grid.focusedRecordIndex = newIndex - 1;
-    //     //             return newIndex - 1;
-    //     //         }
-    //     //     }
-
-    //     //     case GridLayoutChange.ActionId.SetVisible: {
-    //     //         throw new UnexpectedCaseError('GLEGNCALCV91006');
-    //     //     }
-
-
-    //     //     case GridLayoutChange.ActionId.SetWidth: {
-    //     //         throw new UnexpectedCaseError('GLEGNCALCW91006');
-    //     //     }
-
-    //     //     default:
-    //     //         throw new UnexpectedCaseError('GLEGNCALCD91006');
-    //     // }
-    // }
-
-    // getColumn(columnIndex: number): GridLayout.Column {
-    //     return {
-    //         fieldName: ''
-    //     };
-    //     // return this._allowedFieldsAndLayoutDefinition.layout.getColumn(columnIndex);
-    // }
-
-    // getColumnHeading(columnIndex: number) {
-    //     // const fieldName = this._allowedFieldsAndLayoutDefinition.layout.getColumn(columnIndex).field.name;
-    //     // const heading = this._allowedFieldsAndLayoutDefinition.headersMap.get(fieldName);
-    //     // if (heading !== undefined) {
-    //     //     return heading;
-    //     // } else {
-    //     //     return fieldName; // looks like headings are not configured
-    //     // }
-    //     return '';
-    // }
-
-    // focusNextSearchMatch(searchText: string) {
-    //     const focusedRecIdx = this._grid.focusedRecordIndex;
-
-    //     let prevMatchRowIdx: Integer;
-    //     if (focusedRecIdx === undefined) {
-    //         prevMatchRowIdx = 0;
-    //     } else {
-    //         const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
-    //         // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    //         prevMatchRowIdx = focusedRowIdx;
-    //     }
-    // }
-
-    // private applyColumnFilter(): void {
-    //     this._grid.clearFilter();
-
-    //     const value = this._columnFilterId;
-    //     switch (value) {
-    //         case GridLayoutEditorColumnsNgComponent.ColumnFilterId.ShowAll:
-    //             this._grid.applyFilter((record) => showAllFilter(record));
-    //             break;
-
-    //         case GridLayoutEditorColumnsNgComponent.ColumnFilterId.ShowVisible:
-    //             this._grid.applyFilter((record) => showVisibleFilter(record));
-    //             break;
-
-    //         case GridLayoutEditorColumnsNgComponent.ColumnFilterId.ShowHidden:
-    //             this._grid.applyFilter((record) => showHiddenFilter(record));
-    //             break;
-
-    //         default:
-    //             throw new UnreachableCaseError('ID:8424163216', value);
-    //     }
-    // }
-
-    // private prepareGrid() {
-    //     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-    //     if (this._grid !== undefined) {
-    //         if (this._gridPrepared) {
-    //             this._grid.reset();
-    //         }
-
-    //         // if (this._allowedFieldsAndLayoutDefinition) {
-    //         //     this._recordStore.setData(this._allowedFieldsAndLayoutDefinition);
-
-    //         //     const positionField = this._recordStore.createPositionField();
-    //         //     const headingField = this._recordStore.createHeadingField();
-    //         //     const widthField = this._recordStore.createWidthField();
-    //         //     this._visibleField = this._recordStore.createVisibleField();
-
-    //         //     this._recordStore.addFields([
-    //         //         positionField,
-    //         //         headingField,
-    //         //         this._visibleField,
-    //         //         widthField,
-    //         //     ]);
-
-    //         //     this._grid.setFieldState(positionField, GridLayoutRecordStore.IntegerGridFieldState);
-    //         //     this._grid.setFieldState(headingField, GridLayoutRecordStore.StringGridFieldState);
-    //         //     this._grid.setFieldState(this._visibleField, GridLayoutRecordStore.StringGridFieldState);
-    //         //     this._grid.setFieldState(widthField, GridLayoutRecordStore.IntegerGridFieldState);
-
-    //         //     this._recordStore.recordsInserted(0, this._recordStore.recordCount);
-
-    //         //     this.applyColumnFilter();
-    //         // }
-
-    //         this._gridPrepared = true;
-    //     }
-    // }
+    private createWidthEditorUiAction() {
+        const action = new IntegerUiAction(false);
+        action.pushCaption(Strings[StringId.GridLayoutEditorColumns_SetWidthCaption]);
+        action.pushTitle(Strings[StringId.GridLayoutEditorColumns_SetWidthTitle]);
+        action.commitEvent = () => {
+            const focus = this.frame.grid.focus;
+            if (focus.canSetFocusedEditValue()) {
+                focus.setFocusedEditValue(this._widthEditorUiAction.value);
+            }
+        };
+        return action;
+    }
 }
 
 export namespace GridLayoutEditorColumnsNgComponent {

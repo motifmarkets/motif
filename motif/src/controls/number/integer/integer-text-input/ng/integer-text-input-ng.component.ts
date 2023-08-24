@@ -7,7 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { AdaptedRevgridBehavioredColumnSettings, AssertInternalError, GridField, Integer } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { DataServer, DatalessViewCell } from 'revgrid';
+import { CellEditor, DataServer, DatalessViewCell } from 'revgrid';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../../ng/number-ui-action-component-base-ng.directive';
 import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-action-component-base-ng.directive';
@@ -19,7 +19,9 @@ import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-act
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgDirective implements OnInit {
+export class IntegerTextInputNgComponent
+extends IntegerUiActionComponentBaseNgDirective
+implements OnInit, CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> {
     private static typeInstanceCreateCount = 0;
 
     @Input() inputId: string;
@@ -29,7 +31,8 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
 
     declare rootHtmlElement: HTMLInputElement;
 
-    dataServer: DataServer<GridField> | undefined;
+    keyDownEventer: CellEditor.KeyDownEventer | undefined; // used by CellEditor
+    dataServer: DataServer<GridField> | undefined; // Used by Cell Editor
 
     private _numberInputElement: HTMLInputElement;
     private _oldText: string | undefined;
@@ -52,7 +55,8 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
         this.setInitialiseReady();
     }
 
-    override tryOpenCell(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, _openingClickEvent: MouseEvent | undefined) {
+    // Used by Cell Editor
+    tryOpenCell(cell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>, openingKeyDownEvent: KeyboardEvent | undefined, _openingClickEvent: MouseEvent | undefined) {
         const dataServer = this.dataServer;
         if (dataServer === undefined) {
             throw new AssertInternalError('ITINCTOCDU10008')
@@ -69,41 +73,73 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
                     }
                 }
 
-                const result = super.tryOpenCell(cell, openingKeyDownEvent, _openingClickEvent);
+                const numberInputElement = this._numberInputElement;
 
-                if (result) {
-                    if (key !== undefined) {
-                        // was opened by keyboard
-                        this.rootHtmlElement.value = key;
+                if (key !== undefined) {
+                    // was opened by keyboard
+                    numberInputElement.value = key;
+                } else {
+                    // was not opened by keyboard
+                    const value = dataServer.getEditValue(cell.viewLayoutColumn.column.field, cell.viewLayoutRow.subgridRowIndex);
+                    if (value === undefined) {
+                        numberInputElement.value = '';
                     } else {
-                        // was not opened by keyboard
-                        const value = dataServer.getEditValue(cell.viewLayoutColumn.column.field, cell.viewLayoutRow.subgridRowIndex);
                         if (typeof value !== 'number') {
                             throw new AssertInternalError('ITINCTOCGE10008', typeof value);
                         } else {
-                            this.rootHtmlElement.valueAsNumber = value;
-                            this.rootHtmlElement.setSelectionRange(0, this.rootHtmlElement.value.length); // selectAll
+                            this.applyValue(Math.round(value), false);
+                            numberInputElement.setSelectionRange(0, numberInputElement.value.length); // selectAll
                         }
                     }
                 }
 
-                return result;
+                if (this.keyDownEventer === undefined) {
+                    throw new AssertInternalError('ITINCTOC10914');
+                } else {
+                    numberInputElement.addEventListener('keydown', this.keyDownEventer);
+                    numberInputElement.focus();
+
+                    return true;
+                }
             }
         }
     }
 
-    override closeCell(field: GridField, subgridRowIndex: number, cancel: boolean) {
-        if (!cancel && !this.readonly) {
-            const dataServer = this.dataServer;
-            if (dataServer === undefined) {
-                throw new AssertInternalError('ITINGCL10008');
-            } else {
-                if (dataServer.setEditValue !== undefined) {
-                    dataServer.setEditValue(field, subgridRowIndex, this.rootHtmlElement.valueAsNumber);
+    // Used by Cell Editor
+    closeCell(field: GridField, subgridRowIndex: number, cancel: boolean) {
+        const numberInputElement = this._numberInputElement;
+
+        if (this.keyDownEventer === undefined) {
+            throw new AssertInternalError('ITINCCC10914');
+        } else {
+            numberInputElement.removeEventListener('keydown', this.keyDownEventer);
+            numberInputElement.blur(); // make sure it does not have focus
+
+            if (!cancel && !this.readonly) {
+                const dataServer = this.dataServer;
+                if (dataServer === undefined) {
+                    throw new AssertInternalError('ITINGCL10008');
+                } else {
+                    if (dataServer.setEditValue !== undefined) {
+                        const inputValue = numberInputElement.value;
+                        if (inputValue === '') {
+                            dataServer.setEditValue(field, subgridRowIndex, undefined);
+                        } else {
+                            const parseResult = this.parseString(inputValue);
+                            const value = parseResult.parsedNumber;
+                            if (value !== undefined) {
+                                dataServer.setEditValue(field, subgridRowIndex, value);
+                            }
+                        }
+                    }
                 }
             }
         }
-        return super.closeCell(field, subgridRowIndex, cancel);
+    }
+
+    // used by Cell Editor
+    override focus() {
+        this._numberInputElement.focus({ preventScroll: true });
     }
 
     protected override applyValue(value: number | undefined, edited: boolean) {
@@ -139,6 +175,7 @@ export class IntegerTextInputNgComponent extends IntegerUiActionComponentBaseNgD
 
     private applyValueAsString(numberAsStr: string) {
         // hack to get around value attribute change detection not working
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (numberAsStr === this.numberAsStr && this._numberInputElement !== undefined) {
             this._numberInputElement.value = numberAsStr;
             // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);

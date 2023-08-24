@@ -42,6 +42,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
     private _visibleCheckboxPainter: CheckboxRenderValueRecordGridCellPainter;
     private _visibleCheckboxEditor: CheckboxRenderValueRecordGridCellEditor;
+    private _widthEditor: CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>;
 
     constructor(
         settingsService: SettingsService,
@@ -62,20 +63,19 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         );
     }
 
-    get selectedCount() { return this.grid.getSelectedRowCount(); }
+    get selectedCount() { return this._grid.getSelectedRowCount(); }
 
     get selectedRecordIndices() {
-        const selection = this.grid.selection
+        const selection = this._grid.selection
         const rowIndices = selection.getRowIndices(true);
         const count = rowIndices.length;
         const recordIndices = new Array<Integer>(count);
         for (let i = 0; i < count; i++) {
             const rowIndex = rowIndices[i];
-            recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
+            recordIndices[i] = this._grid.rowToRecordIndex(rowIndex);
         }
         return recordIndices;
     }
-
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
@@ -108,6 +108,10 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
 
         return grid;
+    }
+
+    setWidthEditor(value: CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        this._widthEditor = value;
     }
 
     appendFields(gridFields: readonly GridField[]) {
@@ -161,7 +165,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     selectAll() {
-        this.grid.selectAllRows();
+        this._grid.selectAllRows();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
@@ -170,13 +174,13 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     tryFocusNextSearchMatch(searchText: string, downKeys: ModifierKey.IdSet) {
         const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const focusedRecIdx = this.grid.focusedRecordIndex;
+        const focusedRecIdx = this._grid.focusedRecordIndex;
 
         let rowIndex: Integer;
         if (focusedRecIdx === undefined) {
             rowIndex = 0;
         } else {
-            const focusedRowIdx = this.grid.recordToRowIndex(focusedRecIdx);
+            const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
             if (backwards) {
                 rowIndex = focusedRowIdx - 1;
             } else {
@@ -221,11 +225,11 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         const rowCount = 0; //this._recordGrid.getRowCount();
 
         while (rowIndex >= 0 && rowIndex < rowCount) {
-            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
+            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
             const column = this._columnList.records[recordIndex];
             const upperHeading = column.fieldHeading.toUpperCase();
             if (upperHeading.includes(upperSearchText)) {
-                this.grid.focusedRecordIndex = recordIndex;
+                this._grid.focusedRecordIndex = recordIndex;
                 break;
             } else {
                 rowIndex += rowIncrement;
@@ -257,27 +261,25 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     private getCellEditor(
         field: GridField,
-        _subgridRowIndex: number,
+        subgridRowIndex: Integer,
         _subgrid: Subgrid<AdaptedRevgridBehavioredColumnSettings, GridField>,
         readonly: boolean,
         _viewCell: ViewCell<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined
     ): CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined {
-        return this.tryGetCellEditor(field.definition.sourcelessName, readonly);
+        return this.tryGetCellEditor(field.definition.sourcelessName, readonly, subgridRowIndex);
     }
 
-    private tryGetCellEditor(sourcelesFieldName: string, readonly: boolean) {
-        const editor = this.tryCreateCellEditor(sourcelesFieldName);
-        if (editor !== undefined) {
-            editor.readonly = readonly;
-        }
-        return editor;
-    }
-
-    private tryCreateCellEditor(sourcelesFieldName: string) {
+    private tryGetCellEditor(sourcelesFieldName: string, readonly: boolean, subgridRowIndex: Integer): CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined {
         if (sourcelesFieldName === EditableGridLayoutDefinitionColumn.FieldName.visible) {
+            this._visibleCheckboxEditor.readonly = readonly || subgridRowIndex < this._recordList.fixedColumnCount;
             return this._visibleCheckboxEditor;
         } else {
-            return undefined;
+            if (sourcelesFieldName === EditableGridLayoutDefinitionColumn.FieldName.width) {
+                this._widthEditor.readonly = readonly
+                return this._widthEditor;
+            } else {
+                return undefined;
+            }
         }
     }
 
@@ -293,7 +295,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     private selectGridFields(gridFields: readonly GridField[]) {
-        const grid = this.grid;
+        const grid = this._grid;
         grid.beginSelectionChange();
         let cleared = false;
         for (const gridField of gridFields) {
@@ -301,7 +303,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
             if (recordIndex < 0) {
                 throw new AssertInternalError('GLECFSGFG30304');
             } else {
-                const rowIndex = this.grid.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
+                const rowIndex = this._grid.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
                 if (rowIndex === undefined) {
                     throw new AssertInternalError('GLECFSGFR30304');
                 } else {

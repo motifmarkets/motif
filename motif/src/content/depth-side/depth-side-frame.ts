@@ -311,6 +311,7 @@ export class DepthSideFrame extends ContentFrame {
             const layoutDefinitionColumn: GridLayoutDefinition.Column = {
                 fieldName: field.name,
                 visible: fieldVisibles[i],
+                autoSizableWidth: undefined,
             };
             layoutDefinitionColumns[i] = layoutDefinitionColumn;
         }

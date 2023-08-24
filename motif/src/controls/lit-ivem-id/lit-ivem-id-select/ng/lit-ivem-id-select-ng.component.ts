@@ -231,6 +231,10 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
         return item.litIvemId.mapKey;
     }
 
+    override focus() {
+        this._ngSelectComponent.focus();
+    }
+
     protected override pushSettings() {
         super.pushSettings();
         this.applyValueWithoutWait(this.uiAction.value, this.uiAction.edited, false);

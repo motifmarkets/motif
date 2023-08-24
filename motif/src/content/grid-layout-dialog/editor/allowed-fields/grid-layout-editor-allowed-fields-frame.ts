@@ -70,17 +70,17 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     get selectedCount() {
-        return this.grid.getSelectedRowCount(true);
+        return this._grid.getSelectedRowCount(true);
     }
 
     get selectedFields() {
-        const selection = this.grid.selection
+        const selection = this._grid.selection
         const rowIndices = selection.getRowIndices(true);
         const count = rowIndices.length;
         const fields = new Array<GridField>(count);
         for (let i = 0; i < count; i++) {
             const rowIndex = rowIndices[i];
-            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
+            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
             fields[i] = this._records[recordIndex];
         }
         return fields;
@@ -90,7 +90,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         super.finalise();
         this._columnList.unsubscribeListChangeEvent(this._columnListChangeSubscriptionId);
         this._columnListChangeSubscriptionId = undefined;
-        this.grid.clearFilter();
+        this._grid.clearFilter();
     }
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
@@ -125,7 +125,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     selectAll() {
-        this.grid.selectAll();
+        this._grid.selectAll();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
@@ -134,13 +134,13 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     tryFocusNextSearchMatch(searchText: string, downKeys: ModifierKey.IdSet) {
         const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const focusedRecIdx = this.grid.focusedRecordIndex;
+        const focusedRecIdx = this._grid.focusedRecordIndex;
 
         let rowIndex: Integer;
         if (focusedRecIdx === undefined) {
             rowIndex = 0;
         } else {
-            const focusedRowIdx = this.grid.recordToRowIndex(focusedRecIdx);
+            const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
             if (backwards) {
                 rowIndex = focusedRowIdx - 1;
             } else {
@@ -199,11 +199,11 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         const rowCount = 0; //this._recordGrid.getRowCount();
 
         while (rowIndex >= 0 && rowIndex < rowCount) {
-            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
+            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
             const field = this._allowedFields[recordIndex];
             const upperHeading = field.heading.toUpperCase();
             if (upperHeading.includes(upperSearchText)) {
-                this.grid.focusedRecordIndex = recordIndex;
+                this._grid.focusedRecordIndex = recordIndex;
                 break;
             } else {
                 rowIndex += rowIncrement;
@@ -224,7 +224,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     private applyColumnListFilter() {
-        this.grid.applyFilter((record) => this.filterInuseFields(record));
+        this._grid.applyFilter((record) => this.filterInuseFields(record));
     }
 
     private filterInuseFields(record: RevRecord) {
