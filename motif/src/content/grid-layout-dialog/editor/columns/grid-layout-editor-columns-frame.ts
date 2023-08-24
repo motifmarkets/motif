@@ -63,16 +63,16 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         );
     }
 
-    get selectedCount() { return this._grid.getSelectedRowCount(); }
+    get selectedCount() { return this.grid.getSelectedRowCount(); }
 
     get selectedRecordIndices() {
-        const selection = this._grid.selection
+        const selection = this.grid.selection
         const rowIndices = selection.getRowIndices(true);
         const count = rowIndices.length;
         const recordIndices = new Array<Integer>(count);
         for (let i = 0; i < count; i++) {
             const rowIndex = rowIndices[i];
-            recordIndices[i] = this._grid.rowToRecordIndex(rowIndex);
+            recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
         }
         return recordIndices;
     }
@@ -81,6 +81,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         const grid = this.createGrid(
             gridHostElement,
             {
+                fixedColumnCount: 1,
                 sortOnClick: false,
                 sortOnDoubleClick: false,
                 mouseColumnSelectionEnabled: false,
@@ -165,30 +166,37 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     selectAll() {
-        this._grid.selectAllRows();
+        this.grid.selectAllRows();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
-        this.tryFocusNextSearchMatchFromRow(searchText, 0, false);
+        if (searchText.length > 0) {
+            const rowCount = this.grid.mainDataServer.getRowCount();
+            if (rowCount > 0) {
+                // specify last as this will immediately wrap and start searching at first
+                const lastRowIndex = this.grid.mainDataServer.getRowCount() - 1;
+                this.tryFocusNextSearchMatchFromRow(searchText, lastRowIndex, false);
+            }
+        }
     }
 
     tryFocusNextSearchMatch(searchText: string, downKeys: ModifierKey.IdSet) {
-        const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const focusedRecIdx = this._grid.focusedRecordIndex;
+        if (searchText.length > 0) {
+            const rowCount = this.grid.mainDataServer.getRowCount();
+            if (rowCount > 0) {
+                const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+                const focusedRecIdx = this.grid.focusedRecordIndex;
 
-        let rowIndex: Integer;
-        if (focusedRecIdx === undefined) {
-            rowIndex = 0;
-        } else {
-            const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
-            if (backwards) {
-                rowIndex = focusedRowIdx - 1;
-            } else {
-                rowIndex = focusedRowIdx + 1;
+                let rowIndex: Integer;
+                if (focusedRecIdx === undefined) {
+                    rowIndex = 0;
+                } else {
+                    rowIndex = this.grid.recordToRowIndex(focusedRecIdx);
+                }
+
+                this.tryFocusNextSearchMatchFromRow(searchText, rowIndex, backwards);
             }
         }
-
-        this.tryFocusNextSearchMatchFromRow(searchText, rowIndex, backwards);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
@@ -219,22 +227,33 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         }
     }
 
-    private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
+    private tryFocusNextSearchMatchFromRow(searchText: string, fromRowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
-        const rowCount = 0; //this._recordGrid.getRowCount();
+        const rowCount = this.grid.mainDataServer.getRowCount();
 
-        while (rowIndex >= 0 && rowIndex < rowCount) {
-            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
+        let rowIndex = fromRowIndex;
+        let wrapped = false;
+        do {
+            rowIndex += rowIncrement;
+            if (rowIndex < 0) {
+                rowIndex = rowCount - 1
+                wrapped = true;
+            } else {
+                if (rowIndex >= rowCount) {
+                    rowIndex = 0;
+                    wrapped = true;
+                }
+            }
+
+            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
             const column = this._columnList.records[recordIndex];
             const upperHeading = column.fieldHeading.toUpperCase();
             if (upperHeading.includes(upperSearchText)) {
-                this._grid.focusedRecordIndex = recordIndex;
+                this.grid.focusedRecordIndex = recordIndex;
                 break;
-            } else {
-                rowIndex += rowIncrement;
             }
-        }
+        } while (!wrapped || (backwards ? rowIndex > fromRowIndex : rowIndex < fromRowIndex));
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
@@ -295,7 +314,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     private selectGridFields(gridFields: readonly GridField[]) {
-        const grid = this._grid;
+        const grid = this.grid;
         grid.beginSelectionChange();
         let cleared = false;
         for (const gridField of gridFields) {
@@ -303,7 +322,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
             if (recordIndex < 0) {
                 throw new AssertInternalError('GLECFSGFG30304');
             } else {
-                const rowIndex = this._grid.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
+                const rowIndex = this.grid.mainDataServer.getRowIndexFromRecordIndex(recordIndex);
                 if (rowIndex === undefined) {
                     throw new AssertInternalError('GLECFSGFR30304');
                 } else {

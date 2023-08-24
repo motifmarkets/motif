@@ -70,17 +70,17 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     get selectedCount() {
-        return this._grid.getSelectedRowCount(true);
+        return this.grid.getSelectedRowCount(true);
     }
 
     get selectedFields() {
-        const selection = this._grid.selection
+        const selection = this.grid.selection
         const rowIndices = selection.getRowIndices(true);
         const count = rowIndices.length;
         const fields = new Array<GridField>(count);
         for (let i = 0; i < count; i++) {
             const rowIndex = rowIndices[i];
-            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
+            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
             fields[i] = this._records[recordIndex];
         }
         return fields;
@@ -90,13 +90,14 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         super.finalise();
         this._columnList.unsubscribeListChangeEvent(this._columnListChangeSubscriptionId);
         this._columnListChangeSubscriptionId = undefined;
-        this._grid.clearFilter();
+        this.grid.clearFilter();
     }
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
             {
+                fixedColumnCount: 1,
                 sortOnClick: false,
                 sortOnDoubleClick: false,
                 mouseColumnSelectionEnabled: false,
@@ -125,30 +126,37 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     selectAll() {
-        this._grid.selectAll();
+        this.grid.selectAll();
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
-        this.tryFocusNextSearchMatchFromRow(searchText, 0, false);
+        if (searchText.length > 0) {
+            const rowCount = this.grid.mainDataServer.getRowCount();
+            if (rowCount > 0) {
+                // specify last as this will immediately wrap and start searching at first
+                const lastRowIndex = this.grid.mainDataServer.getRowCount() - 1;
+                this.tryFocusNextSearchMatchFromRow(searchText, lastRowIndex, false);
+            }
+        }
     }
 
     tryFocusNextSearchMatch(searchText: string, downKeys: ModifierKey.IdSet) {
-        const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const focusedRecIdx = this._grid.focusedRecordIndex;
+        if (searchText.length > 0) {
+            const rowCount = this.grid.mainDataServer.getRowCount();
+            if (rowCount > 0) {
+                const backwards = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+                const focusedRecIdx = this.grid.focusedRecordIndex;
 
-        let rowIndex: Integer;
-        if (focusedRecIdx === undefined) {
-            rowIndex = 0;
-        } else {
-            const focusedRowIdx = this._grid.recordToRowIndex(focusedRecIdx);
-            if (backwards) {
-                rowIndex = focusedRowIdx - 1;
-            } else {
-                rowIndex = focusedRowIdx + 1;
+                let rowIndex: Integer;
+                if (focusedRecIdx === undefined) {
+                    rowIndex = 0;
+                } else {
+                    rowIndex = this.grid.recordToRowIndex(focusedRecIdx);
+                }
+
+                this.tryFocusNextSearchMatchFromRow(searchText, rowIndex, backwards);
             }
         }
-
-        this.tryFocusNextSearchMatchFromRow(searchText, rowIndex, backwards);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {
@@ -173,16 +181,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         // always hidden as never bad
     }
 
-    // initialiseGrid(gridSourceFrame: GridSourceFrame) {
-    //     this._gridSourceFrame = gridSourceFrame;
-    //     // this._recordGrid = recordGrid;
-
-    //     const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields);
-    //     const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-    //     const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-    //     gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-    // }
-
     private handleGridSelectionChangedEventer() {
         if (this.selectionChangedEventer !== undefined) {
             this.selectionChangedEventer();
@@ -193,22 +191,33 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         delay1Tick(() => this.applyColumnListFilter());
     }
 
-    private tryFocusNextSearchMatchFromRow(searchText: string, rowIndex: Integer, backwards: boolean) {
+    private tryFocusNextSearchMatchFromRow(searchText: string, fromRowIndex: Integer, backwards: boolean) {
         const rowIncrement = backwards ? -1 : 1;
         const upperSearchText = searchText.toUpperCase();
-        const rowCount = 0; //this._recordGrid.getRowCount();
+        const rowCount = this.grid.mainDataServer.getRowCount();
 
-        while (rowIndex >= 0 && rowIndex < rowCount) {
-            const recordIndex = this._grid.rowToRecordIndex(rowIndex);
+        let rowIndex = fromRowIndex;
+        let wrapped = false;
+        do {
+            rowIndex += rowIncrement;
+            if (rowIndex < 0) {
+                rowIndex = rowCount - 1
+                wrapped = true;
+            } else {
+                if (rowIndex >= rowCount) {
+                    rowIndex = 0;
+                    wrapped = true;
+                }
+            }
+
+            const recordIndex = this.grid.rowToRecordIndex(rowIndex);
             const field = this._allowedFields[recordIndex];
             const upperHeading = field.heading.toUpperCase();
             if (upperHeading.includes(upperSearchText)) {
-                this._grid.focusedRecordIndex = recordIndex;
+                this.grid.focusedRecordIndex = recordIndex;
                 break;
-            } else {
-                rowIndex += rowIncrement;
             }
-        }
+        } while (!wrapped || (backwards ? rowIndex > fromRowIndex : rowIndex < fromRowIndex));
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
@@ -224,7 +233,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     private applyColumnListFilter() {
-        this._grid.applyFilter((record) => this.filterInuseFields(record));
+        this.grid.applyFilter((record) => this.filterInuseFields(record));
     }
 
     private filterInuseFields(record: RevRecord) {

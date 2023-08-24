@@ -191,7 +191,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     }
 
     private updateWidths() {
-        const gridMinWidth = this._gridComponent.calculateFixedColumnsWidth() + ColorSettingsNgComponent.extraGridFixedColumnsWidth;
+        const gridMinWidth = this._gridComponent.calculateFixedColumnsWidth() + ColorSettingsNgComponent.extraGridFixedColumnsEmWidth * this._gridComponent.emWidth;
         this.gridMinSize = gridMinWidth;
 
         if (!this._splitterDragged) {
@@ -217,7 +217,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 }
 
 export namespace ColorSettingsNgComponent {
-    export const extraGridFixedColumnsWidth = 20;
+    export const extraGridFixedColumnsEmWidth = 2;
 
     export function create(container: ViewContainerRef) {
         container.clear();

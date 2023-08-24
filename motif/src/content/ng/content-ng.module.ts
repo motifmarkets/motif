@@ -36,11 +36,11 @@ import {
     InstalledExtensionListNgComponent
 } from '../extensions/ng-api';
 import { FeedsNgComponent } from '../feeds/ng-api';
-import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
 import {
     GridLayoutDialogNgComponent,
     GridLayoutEditorAllowedFieldsNgComponent,
     GridLayoutEditorColumnsNgComponent,
+    GridLayoutEditorFieldControlsNgComponent,
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
 } from '../grid-layout-dialog/ng-api';
@@ -104,7 +104,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSchemeItemPropertiesNgComponent,
         ColorSchemePresetCodeNgComponent,
         ColorControlsNgComponent,
-        GridLayoutEditorNgComponent,
         GridLayoutDialogNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         DelayedBadnessNgComponent,
@@ -112,10 +111,10 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         DepthGridLayoutsEditorDialogNgComponent,
         DepthSideNgComponent,
         FeedsNgComponent,
-        GridColumnPropertiesNgComponent,
         GridLayoutEditorNgComponent,
         GridLayoutEditorAllowedFieldsNgComponent,
         GridLayoutEditorColumnsNgComponent,
+        GridLayoutEditorFieldControlsNgComponent,
         GridLayoutEditorSearchGridNgComponent,
         HoldingsNgComponent,
         IvemHoldingsNgComponent,
@@ -179,7 +178,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         BalancesNgComponent,
         BrokerageAccountsNgComponent,
-        GridLayoutEditorNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
         DepthGridLayoutsEditorDialogNgComponent,

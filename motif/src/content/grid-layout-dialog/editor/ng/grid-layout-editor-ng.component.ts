@@ -7,6 +7,7 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
     ElementRef,
     Inject,
@@ -15,26 +16,17 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    CommandRegisterService,
+    AssertInternalError,
     EditableGridLayoutDefinitionColumnList,
     GridLayoutDefinition,
-    IconButtonUiAction,
-    Integer,
-    InternalCommand,
-    StringId,
-    Strings,
-    assigned,
-    delay1Tick
+    Integer
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
-import {
-    SvgButtonNgComponent
-} from 'controls-ng-api';
+import { AngularSplitTypes } from '../../../../controls/internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { definitionColumnListInjectionToken } from '../../ng/grid-layout-dialog-ng-injection-tokens';
 import { GridLayoutEditorAllowedFieldsNgComponent } from '../allowed-fields/ng-api';
 import { GridLayoutEditorColumnsNgComponent } from '../columns/ng-api';
-import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
+import { GridLayoutEditorFieldControlsNgComponent } from '../field-controls/ng-api';
 
 @Component({
     selector: 'app-grid-layout-editor',
@@ -43,304 +35,91 @@ import { GridLayoutEditorFrame } from '../grid-layout-editor-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, GridLayoutEditorFrame.ComponentAccess {
+export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('allowedFieldsGrid', { static: true }) private _allowedFieldsGridComponent: GridLayoutEditorAllowedFieldsNgComponent;
-    @ViewChild('columnsGrid', { static: true }) private _columnsGridComponent: GridLayoutEditorColumnsNgComponent;
-    @ViewChild('insertButton', { static: true }) private _insertButtonComponent: SvgButtonNgComponent;
-    @ViewChild('removeButton', { static: true }) private _removeButtonComponent: SvgButtonNgComponent;
-    @ViewChild('moveUpButton', { static: true }) private _moveUpButtonComponent: SvgButtonNgComponent;
-    @ViewChild('moveTopButton', { static: true }) private _moveTopButtonComponent: SvgButtonNgComponent;
-    @ViewChild('moveDownButton', { static: true }) private _moveDownButtonComponent: SvgButtonNgComponent;
-    @ViewChild('moveBottomButton', { static: true }) private _moveBottomButtonComponent: SvgButtonNgComponent;
+    @ViewChild('allowedFields', { static: true }) private _allowedFieldsComponent: GridLayoutEditorAllowedFieldsNgComponent;
+    @ViewChild('fieldControlsAndColumns', { static: true }) private _fieldControlsAndColumnsElRef: ElementRef<HTMLDivElement>;
+    @ViewChild('fieldControls', { static: true }) private _fieldControlsComponent: GridLayoutEditorFieldControlsNgComponent;
+    @ViewChild('columns', { static: true }) private _columnsComponent: GridLayoutEditorColumnsNgComponent;
 
-    private readonly _commandRegisterService: CommandRegisterService;
-    private readonly _frame: GridLayoutEditorFrame;
+    public allowedFieldsWidth: AngularSplitTypes.AreaSize.Html;
+    public allowedFieldsMinWidth: AngularSplitTypes.AreaSize.Html;
+    public splitterGutterSize = 3;
 
-    private readonly _insertUiAction: IconButtonUiAction;
-    private readonly _removeUiAction: IconButtonUiAction;
-    private readonly _moveUpUiAction: IconButtonUiAction;
-    private readonly _moveTopUiAction: IconButtonUiAction;
-    private readonly _moveDownUiAction: IconButtonUiAction;
-    private readonly _moveBottomUiAction: IconButtonUiAction;
+    private _fieldControlsAndColumnsHtmlElement: HTMLDivElement;
 
-    private _currentRecordIndex: Integer | undefined = undefined;
-    // private _layoutWithHeadings: MotifGrid.LayoutWithHeadersMap;
+    private _resizeObserver: ResizeObserver;
+    private _splitterDragged = false;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
-        commandRegisterNgService: CommandRegisterNgService,
-        @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
+        private readonly _cdr: ChangeDetectorRef,
+        @Inject(definitionColumnListInjectionToken) private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(elRef, ++GridLayoutEditorNgComponent.typeInstanceCreateCount);
-
-        this._commandRegisterService = commandRegisterNgService.service;
-
-        this._insertUiAction = this.createInsertUiAction();
-        this._removeUiAction = this.createRemoveUiAction();
-        this._moveUpUiAction = this.createMoveUpUiAction();
-        this._moveTopUiAction = this.createMoveTopUiAction();
-        this._moveDownUiAction = this.createMoveDownUiAction();
-        this._moveBottomUiAction = this.createMoveBottomUiAction();
-
-        this._frame = new GridLayoutEditorFrame(this, columnList);
     }
 
-    get insertEnabled() { return this._insertUiAction.enabled; }
-    set insertEnabled(value: boolean) {
-        if (value) {
-            if (!this._insertUiAction.enabled) {
-                this._insertUiAction.pushAccepted();
-            }
-        } else {
-            this._insertUiAction.pushDisabled();
-        }
-    }
-
-    get removeEnabled() { return this._removeUiAction.enabled; }
-    set removeEnabled(value: boolean) {
-        if (value) {
-            if (!this._removeUiAction.enabled) {
-                this._removeUiAction.pushAccepted();
-            }
-        } else {
-            this._removeUiAction.pushDisabled();
-        }
-    }
-    get moveTopEnabled() { return this._moveTopUiAction.enabled; }
-    set moveTopEnabled(value: boolean) {
-        if (value) {
-            if (!this._moveTopUiAction.enabled) {
-                this._moveTopUiAction.pushAccepted();
-            }
-        } else {
-            this._moveTopUiAction.pushDisabled();
-        }
-    }
-
-    get moveUpEnabled() { return this._moveUpUiAction.enabled; }
-    set moveUpEnabled(value: boolean) {
-        if (value) {
-            if (!this._moveUpUiAction.enabled) {
-                this._moveUpUiAction.pushAccepted();
-            }
-        } else {
-            this._moveUpUiAction.pushDisabled();
-        }
-    }
-
-    get moveDownEnabled() { return this._moveDownUiAction.enabled; }
-    set moveDownEnabled(value: boolean) {
-        if (value) {
-            if (!this._moveDownUiAction.enabled) {
-                this._moveDownUiAction.pushAccepted();
-            }
-        } else {
-            this._moveDownUiAction.pushDisabled();
-        }
-    }
-
-    get moveBottomEnabled() { return this._moveBottomUiAction.enabled; }
-    set moveBottomEnabled(value: boolean) {
-        if (value) {
-            if (!this._moveBottomUiAction.enabled) {
-                this._moveBottomUiAction.pushAccepted();
-            }
-        } else {
-            this._moveBottomUiAction.pushDisabled();
-        }
+    public handleSplitterDragEnd() {
+        this._splitterDragged = true;
     }
 
     getGridLayoutDefinition(): GridLayoutDefinition {
-        return this._frame.getGridLayoutDefinition();
+        return this._columnList.createGridLayoutDefinition();
     }
 
     ngAfterViewInit() {
-        this._frame.initialise(this. _allowedFieldsGridComponent.frame, this._columnsGridComponent.frame)
-        delay1Tick(() => this.initialiseComponentsAndMarkForCheck());
+        this._fieldControlsAndColumnsHtmlElement = this._fieldControlsAndColumnsElRef.nativeElement;
+
+        this._fieldControlsComponent.initialise(this._allowedFieldsComponent.frame, this._columnsComponent.frame)
+
+        this._resizeObserver = new ResizeObserver(() => this.updateWidths());
+        this._resizeObserver.observe(this.rootHtmlElement);
+        this._allowedFieldsComponent.waitLastServerNotificationRendered().then(
+            (success) => {
+                if (success) {
+                    this.updateWidths();
+                }
+            },
+            (error) => { throw AssertInternalError.createIfNotError(error, 'GLENCNAFI20718'); }
+        );
+
+        this._allowedFieldsComponent.columnsViewWithsChangedEventer = () => this.updateWidths();
     }
 
     ngOnDestroy() {
-        this._insertUiAction.finalise();
-        this._removeUiAction.finalise();
-        this._moveUpUiAction.finalise();
-        this._moveTopUiAction.finalise();
-        this._moveDownUiAction.finalise();
-        this._moveBottomUiAction.finalise();
+        this._resizeObserver.disconnect();
     }
 
-    private createInsertUiAction() {
-        const commandName = InternalCommand.Id.Grid_Insert;
-        const displayId = StringId.GridLayoutEditor_InsertCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_InsertTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.InsertIntoListFromLeft);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.insertSelectedFields();
-        return action;
-    }
+    private updateWidths() {
+        const allowedFieldsMinWidth = this._allowedFieldsComponent.calculateFixedColumnsWidth() + GridLayoutEditorNgComponent.fixedColumnsMinExtraEmWidth * this._allowedFieldsComponent.emWidth;
+        this.allowedFieldsMinWidth = allowedFieldsMinWidth;
 
-    private createRemoveUiAction() {
-        const commandName = InternalCommand.Id.Grid_Remove;
-        const displayId = StringId.GridLayoutEditor_RemoveCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_RemoveTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.RemoveFromListToLeft);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.removeSelectedColumns();
-        return action;
-    }
+        if (!this._splitterDragged) {
+            const totalWidth = this.rootHtmlElement.offsetWidth;
+            const availableTotalWidth = totalWidth - this.splitterGutterSize;
+            const fieldControlsAndColumnsWidth = this._fieldControlsAndColumnsHtmlElement.offsetWidth;
+            const allowedFieldsActiveColumnsWidth = this._allowedFieldsComponent.calculateActiveColumnsWidth();
+            let calculatedAllowedFieldsWidth: Integer;
+            if (availableTotalWidth >= (fieldControlsAndColumnsWidth + allowedFieldsActiveColumnsWidth)) {
+                calculatedAllowedFieldsWidth = allowedFieldsActiveColumnsWidth;
+            } else {
+                if (availableTotalWidth > (fieldControlsAndColumnsWidth + allowedFieldsMinWidth)) {
+                    calculatedAllowedFieldsWidth = availableTotalWidth - fieldControlsAndColumnsWidth;
+                } else {
+                    calculatedAllowedFieldsWidth = allowedFieldsMinWidth;
+                }
+            }
 
-    private createMoveUpUiAction() {
-        const commandName = InternalCommand.Id.Grid_MoveUp;
-        const displayId = StringId.GridLayoutEditor_MoveUpCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveUpTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.MoveUp);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.moveSelectedColumnsUp();
-        return action;
-    }
-
-    private createMoveTopUiAction() {
-        const commandName = InternalCommand.Id.Grid_MoveTop;
-        const displayId = StringId.GridLayoutEditor_MoveTopCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveTopTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.MoveToTop);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.moveSelectedColumnsToTop();
-        return action;
-    }
-
-    private createMoveDownUiAction() {
-        const commandName = InternalCommand.Id.Grid_MoveDown;
-        const displayId = StringId.GridLayoutEditor_MoveDownCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveDownTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.MoveDown);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.moveSelectedColumnsDown();
-        return action;
-    }
-
-    private createMoveBottomUiAction() {
-        const commandName = InternalCommand.Id.Grid_MoveBottom;
-        const displayId = StringId.GridLayoutEditor_MoveBottomCaption;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutEditor_MoveBottomTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.MoveToBottom);
-        action.pushUnselected();
-        action.signalEvent = () => this._frame.moveSelectedColumnsToBottom();
-        return action;
-    }
-
-    private updateCurrentRecordIndex(index: Integer | undefined): void {
-        if (index !== this._currentRecordIndex) {
-            this._currentRecordIndex = index;
-            this.updateFieldProperties();
+            this.allowedFieldsWidth = calculatedAllowedFieldsWidth;
+            this._cdr.markForCheck();
         }
-    }
-
-    private updateFieldProperties(): void {
-        // if (assigned(this._currentRecordIndex)) {
-        //     const column = this._gridComponent.getColumn(this._currentRecordIndex);
-        //     this._fieldVisibleUiAction.pushValue(column.visible);
-        //     this.fieldName = this._gridComponent.getColumnHeading(this._currentRecordIndex);
-        //     if (this._currentRecordIndex === 0) {
-        //         this._moveUpUiAction.pushDisabled();
-        //     } else {
-        //         this._moveUpUiAction.pushUnselected();
-        //     }
-
-        // } else {
-        //     this.fieldName = undefined;
-        // }
-        // this._cdr.markForCheck();
-    }
-
-    private updateColumnFilterRadioInput(): void {
-        // this._filterUiAction.pushValue(this._gridComponent.columnFilterId);
-    }
-
-    /*private handleGetSearchButtonStateEvent() {
-        if (this._searchInputElement.inputtedValue === '') {
-            return ButtonInputElement.ButtonState.Disabled;
-        } else {
-            return ButtonInputElement.ButtonState.Unselected;
-        }
-    }*/
-
-    private initialiseComponentsAndMarkForCheck() {
-        this._insertButtonComponent.initialise(this._insertUiAction);
-        this._removeButtonComponent.initialise(this._removeUiAction);
-        this._moveUpButtonComponent.initialise(this._moveUpUiAction);
-        this._moveTopButtonComponent.initialise(this._moveTopUiAction);
-        this._moveDownButtonComponent.initialise(this._moveDownUiAction);
-        this._moveBottomButtonComponent.initialise(this._moveBottomUiAction);
-    }
-
-    private handleMoveUpButtonClickEvent() {
-        if (assigned(this._currentRecordIndex)) {
-            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-            //     id: GridLayoutChange.ActionId.MoveUp,
-            //     columnIndex: this._currentRecordIndex,
-            // });
-            // if (defined(focusedIndex)) {
-            //     this.updateCurrentRecordIndex(focusedIndex);
-            // }
-        }
-    }
-
-    private handleMoveTopButtonClickEvent() {
-        if (assigned(this._currentRecordIndex)) {
-            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-            //     id: GridLayoutChange.ActionId.MoveTop,
-            //     columnIndex: this._currentRecordIndex,
-            // });
-            // if (defined(focusedIndex)) {
-            //     this.updateCurrentRecordIndex(focusedIndex);
-            // }
-        }
-    }
-
-    private handleMoveDownButtonClickEvent() {
-        if (assigned(this._currentRecordIndex)) {
-            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-            //     id: GridLayoutChange.ActionId.MoveDown,
-            //     columnIndex: this._currentRecordIndex,
-            // });
-            // if (defined(focusedIndex)) {
-            //     this.updateCurrentRecordIndex(focusedIndex);
-            // }
-        }
-    }
-
-    private handleMoveBottomButtonClickEvent() {
-        if (assigned(this._currentRecordIndex)) {
-            // const focusedIndex = this._gridComponent.applyGridLayoutChangeAction({
-            //     id: GridLayoutChange.ActionId.MoveBottom,
-            //     columnIndex: this._currentRecordIndex,
-            // });
-            // if (defined(focusedIndex)) {
-            //     this.updateCurrentRecordIndex(focusedIndex);
-            // }
-        }
-    }
-
-    private handleGridRecordFocusEvent(recordIndex: Integer | undefined) {
-        this.updateCurrentRecordIndex(recordIndex);
     }
 }
 
 export namespace GridLayoutEditorNgComponent {
+    export const fixedColumnsMinExtraEmWidth = 2;
+
     export function create(container: ViewContainerRef) {
         container.clear();
         container.createComponent(GridLayoutEditorNgComponent);

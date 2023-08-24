@@ -11,7 +11,17 @@
     flex-direction: column;
     height: 100%;
 
-    #columnsGridHost {
+    #header {
+        display: flex;
+        align-items: center;
+        gap: 0.8em;
+
+        #heading {
+            font-size: larger;
+        }
+    }
+
+    #gridHost {
         @include revgrid.hostAsColumnFlexItem;
         flex: 1 1 0;
 
@@ -19,9 +29,5 @@
             visibility: hidden;
             position: absolute;
         }
-    }
-
-    #searchInput {
-        width: 8em;
     }
 }

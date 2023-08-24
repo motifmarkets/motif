@@ -32,6 +32,8 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
 
     @ViewChild('search', { static: true }) private _searchComponent: GridLayoutEditorSearchGridNgComponent;
 
+    columnsViewWithsChangedEventer: GridLayoutEditorAllowedFieldsNgComponent.ColumnsViewWithsChangedEventer | undefined;
+
     public readonly heading = Strings[StringId.Available]
 
     declare readonly frame: GridLayoutEditorAllowedFieldsFrame;
@@ -48,9 +50,30 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
+    get emWidth() { return this.frame.grid.canvas.gc.getEmWidth(); }
+
+    calculateFixedColumnsWidth() {
+        return this.frame.grid.columnsManager.calculateFixedColumnsWidth();
+    }
+
+    calculateActiveColumnsWidth() {
+        return this.frame.grid.calculateActiveColumnsWidth();
+    }
+
+    waitLastServerNotificationRendered() {
+        return this.frame.grid.renderer.waitLastServerNotificationRendered();
+    }
+
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
         this.frame.initialiseGrid(this._opener, undefined, false);
+
+        this.frame.grid.columnsViewWidthsChangedEventer = (_fixedChanged, _nonFixedChanged, allChanged) => {
+            if (allChanged && this.columnsViewWithsChangedEventer !== undefined) {
+                this.columnsViewWithsChangedEventer();
+            }
+        }
+
         delay1Tick(() => this.linkSearchComponent());
     }
 
@@ -59,4 +82,8 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         this._searchComponent.searchTextChangedEventer = (searchText) => this.frame.tryFocusFirstSearchMatch(searchText);
         this._searchComponent.searchNextEventer = (searchText, downKeys) => this.frame.tryFocusNextSearchMatch(searchText, downKeys);
     }
+}
+
+export namespace GridLayoutEditorAllowedFieldsNgComponent {
+    export type ColumnsViewWithsChangedEventer = (this: void) => void;
 }

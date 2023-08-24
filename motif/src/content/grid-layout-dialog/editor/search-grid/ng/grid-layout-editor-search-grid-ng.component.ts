@@ -78,7 +78,8 @@ export class GridLayoutEditorSearchGridNgComponent extends ContentComponentBaseN
     }
 
     private createSearchEditUiAction() {
-        const action = new StringUiAction();
+        const action = new StringUiAction(false);
+        action.pushPlaceholder(Strings[StringId.Search]);
         action.pushTitle(Strings[StringId.Grid_SearchInputTitle]);
         action.inputEvent = () => {
             this.resolveSearchEnabled();
@@ -96,7 +97,7 @@ export class GridLayoutEditorSearchGridNgComponent extends ContentComponentBaseN
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.Grid_SearchNextTitle]);
         action.pushIcon(IconButtonUiAction.IconId.SearchNext);
-        action.signalEvent = (downKeys) => {
+        action.signalEvent = (_signalTypeId, downKeys) => {
             const searchText = this._searchEditUiAction.inputtedText;
             if (this.searchNextEventer !== undefined && searchText.length > 0) {
                 this.searchNextEventer(searchText, downKeys);
@@ -132,7 +133,7 @@ export class GridLayoutEditorSearchGridNgComponent extends ContentComponentBaseN
         if (!this._searchEnabled || this._searchEditUiAction.inputtedText === '') {
             this._searchNextUiAction.pushDisabled();
         } else {
-            this._selectAllUiAction.pushUnselected();
+            this._searchNextUiAction.pushUnselected();
         }
     }
 }

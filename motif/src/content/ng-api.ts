@@ -21,7 +21,6 @@ export * from './exchange-settings/ng-api';
 export * from './expandable-collapsible-lined-heading/ng-api';
 export * from './extensions/ng-api';
 export * from './feeds/ng-api';
-export * from './grid-column-properties/ng-api';
 export * from './grid-layout-dialog/ng-api';
 export * from './grid-source/ng-api';
 export * from './holdings/ng-api';

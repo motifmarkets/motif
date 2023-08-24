@@ -43,7 +43,7 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     gridLayoutSetEventer: GridSourceFrame.GridLayoutSetEventer | undefined;
 
-    protected _grid: RecordGrid;
+    private _grid: RecordGrid;
 
     private readonly _recordStore = new TableGridRecordStore();
     private readonly _opener: LockOpenListItem.Opener;
