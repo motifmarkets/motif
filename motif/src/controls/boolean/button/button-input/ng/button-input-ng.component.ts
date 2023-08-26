@@ -28,7 +28,7 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
     private _value: boolean;
 
     constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(elRef, ++ButtonInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(elRef, ++ButtonInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
         this.inputId = 'Button' + this.typeInstanceId;
     }
 

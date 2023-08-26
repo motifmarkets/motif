@@ -22,9 +22,9 @@ import {
     ExchangesSettingsNgComponent,
     GeneralSettingsNgComponent,
     GridSettingsNgComponent,
-    OrderPadSettingsNgComponent,
-    SettingsComponentBaseNgDirective
+    OrderPadSettingsNgComponent
 } from 'content-ng-api';
+import { TabListNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
@@ -39,18 +39,12 @@ import { SettingsDitemFrame } from '../settings-ditem-frame';
 export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
+    @ViewChild('tabList', { static: true }) private _tabListComponent: TabListNgComponent;
     @ViewChild('groupContainer', { read: ViewContainerRef, static: true }) private _groupContainer: ViewContainerRef;
 
-    public generalGroupActive: boolean;
-    public gridGroupActive: boolean;
-    public orderPadGroupActive: boolean;
-    public exchangesGroupActive: boolean;
-    public colorGroupActive: boolean;
-
     private _frame: SettingsDitemFrame;
-    private _settingsGroupId: SettingsDitemFrame.SettingsGroupId;
-
-    private _groupComponent: SettingsComponentBaseNgDirective | undefined;
+    private _tabs: readonly TabListNgComponent.Tab[];
+    private _settingsGroupId: SettingsDitemFrame.GroupId;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -88,28 +82,9 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.finalise();
     }
 
-    handleGeneralSettingsClick() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.General);
-    }
-
-    handleColorSettingsClick() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.Color);
-    }
-
-    handleExchangesSettingsClick() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.Exchanges);
-    }
-
-    handleGridSettingsClick() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.Grid);
-    }
-
-    handleOrderPadSettingsClick() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.OrderPad);
-    }
-
     protected override initialise() {
-        this.setGroupId(SettingsDitemFrame.SettingsGroupId.General);
+        this.initialiseTabs();
+        this.setGroupId(SettingsDitemFrame.GroupId.General);
         super.initialise();
     }
 
@@ -128,41 +103,67 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.save(frameElement);
     }
 
-    private clearAllGroupContainers() {
-        this._groupContainer.clear();
-        this._groupComponent = undefined;
+    private initialiseTabs() {
+        const tabDefinitions: TabListNgComponent.TabDefinition[] = [
+            {
+                caption: SettingsDitemFrame.Group.idToCaption(SettingsDitemFrame.GroupId.General),
+                initialActive: true,
+                initialDisabled: false,
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.General, tab),
+            },
+            {
+                caption: SettingsDitemFrame.Group.idToCaption(SettingsDitemFrame.GroupId.Grid),
+                initialActive: false,
+                initialDisabled: false,
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.Grid, tab),
+            },
+            {
+                caption: SettingsDitemFrame.Group.idToCaption(SettingsDitemFrame.GroupId.OrderPad),
+                initialActive: false,
+                initialDisabled: false,
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.OrderPad, tab),
+            },
+            {
+                caption: SettingsDitemFrame.Group.idToCaption(SettingsDitemFrame.GroupId.Exchanges),
+                initialActive: false,
+                initialDisabled: false,
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.Exchanges, tab),
+            },
+            {
+                caption: SettingsDitemFrame.Group.idToCaption(SettingsDitemFrame.GroupId.Colors),
+                initialActive: false,
+                initialDisabled: false,
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.Colors, tab),
+            },
+        ];
+        this._tabs = this._tabListComponent.setTabs(tabDefinitions);
     }
 
-    private setGroupId(value: SettingsDitemFrame.SettingsGroupId) {
-        if (value !== this._settingsGroupId) {
-            this.clearAllGroupContainers();
+    private handleActiveTabChangedEvent(groupId: SettingsDitemFrame.GroupId, tab: TabListNgComponent.Tab) {
+        if (tab.active) {
+            this.setGroupId(groupId);
+        }
+    }
 
-            this.generalGroupActive = false;
-            this.gridGroupActive = false;
-            this.orderPadGroupActive = false;
-            this.exchangesGroupActive = false;
-            this.colorGroupActive = false;
+    private setGroupId(value: SettingsDitemFrame.GroupId) {
+        if (value !== this._settingsGroupId) {
+            this._groupContainer.clear();
 
             switch (value) {
-                case SettingsDitemFrame.SettingsGroupId.General:
-                    this.generalGroupActive = true;
-                    this._groupComponent = GeneralSettingsNgComponent.create(this._groupContainer);
+                case SettingsDitemFrame.GroupId.General:
+                    GeneralSettingsNgComponent.create(this._groupContainer);
                     break;
-                case SettingsDitemFrame.SettingsGroupId.Grid:
-                    this.gridGroupActive = true;
-                    this._groupComponent = GridSettingsNgComponent.create(this._groupContainer);
+                case SettingsDitemFrame.GroupId.Grid:
+                    GridSettingsNgComponent.create(this._groupContainer);
                     break;
-                case SettingsDitemFrame.SettingsGroupId.OrderPad:
-                    this.orderPadGroupActive = true;
-                    this._groupComponent = OrderPadSettingsNgComponent.create(this._groupContainer);
+                case SettingsDitemFrame.GroupId.OrderPad:
+                    OrderPadSettingsNgComponent.create(this._groupContainer);
                     break;
-                case SettingsDitemFrame.SettingsGroupId.Exchanges:
-                    this.exchangesGroupActive = true;
-                    this._groupComponent = ExchangesSettingsNgComponent.create(this._groupContainer);
+                case SettingsDitemFrame.GroupId.Exchanges:
+                    ExchangesSettingsNgComponent.create(this._groupContainer);
                     break;
-                case SettingsDitemFrame.SettingsGroupId.Color:
-                    this.colorGroupActive = true;
-                    this._groupComponent = ColorSettingsNgComponent.create(this._groupContainer);
+                case SettingsDitemFrame.GroupId.Colors:
+                    ColorSettingsNgComponent.create(this._groupContainer);
                     break;
             }
 

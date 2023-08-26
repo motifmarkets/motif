@@ -109,7 +109,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
             ++SvgButtonNgComponent.typeInstanceCreateCount,
             cdr,
             settingsNgService.service,
-            ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
+            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray,
         );
         this._bkgdColorCssVarName = this.getBkgdColorCssVariableName(SvgButtonNgComponent.buttonColorItemId);
         this._foreColorCssVarName = this.getForeColorCssVariableName(SvgButtonNgComponent.buttonColorItemId);

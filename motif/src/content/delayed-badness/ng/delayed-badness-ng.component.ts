@@ -34,8 +34,8 @@ export class DelayedBadnessNgComponent extends ContentComponentBaseNgDirective i
     public display = HtmlTypes.Display.None;
     public displayText = '';
 
-    private _settingsService: SettingsService;
-    private _colorSettings: ColorSettings;
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
     private _settingsChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _badness: Badness | undefined = Badness.notBad;
     private _text: string | undefined;

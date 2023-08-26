@@ -30,7 +30,7 @@ export class BrokerageAccountGroupNameLabelNgComponent extends BrokerageAccountG
             cdr,
             settingsNgService.service,
             pulseService,
-            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray
         );
     }
 

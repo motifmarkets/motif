@@ -52,6 +52,7 @@ import { OrderRouteInputNgComponent } from '../order-route/ng-api';
 import { RoutedIvemIdInputNgComponent, RoutedIvemIdSelectNgComponent, SymbolNameLabelNgComponent } from '../routed-ivem-id/ng-api';
 import { StaticInitialise } from '../static-initialise';
 import { TextInputNgComponent } from '../string/ng-api';
+import { TabListNgComponent } from '../tab-list/ng-api';
 
 @NgModule({
     declarations: [
@@ -94,6 +95,7 @@ import { TextInputNgComponent } from '../string/ng-api';
         RoutedIvemIdInputNgComponent,
         RoutedIvemIdSelectNgComponent,
         SymbolNameLabelNgComponent,
+        TabListNgComponent,
         TextInputNgComponent,
     ],
     imports: [
@@ -134,9 +136,12 @@ import { TextInputNgComponent } from '../string/ng-api';
         RoutedIvemIdInputNgComponent,
         RoutedIvemIdSelectNgComponent,
         SymbolNameLabelNgComponent,
+        TabListNgComponent,
         TextInputNgComponent,
     ]
 })
+
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ControlsNgModule {
     constructor(
         ngSelectConfig: NgSelectConfig,
