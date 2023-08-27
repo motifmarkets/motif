@@ -580,7 +580,7 @@ export namespace GoldenLayoutHostNgComponent {
         ColorScheme.ItemId.Layout_Base,
         ColorScheme.ItemId.Layout_SinglePaneContent,
         ColorScheme.ItemId.Layout_PopinIconBorder,
-        ColorScheme.ItemId.Layout_ActiveTab,
+        ColorScheme.ItemId.Layout_FocusedTab,
         ColorScheme.ItemId.Layout_DropTargetIndicatorOutline,
         ColorScheme.ItemId.Layout_SplitterDragging,
         ColorScheme.ItemId.Layout_SingleTabContainer,
