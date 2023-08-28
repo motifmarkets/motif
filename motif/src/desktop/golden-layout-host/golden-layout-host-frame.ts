@@ -25,7 +25,7 @@ import {
     ExtensionDitemFrame,
     HoldingsDitemFrame,
     OrdersDitemFrame,
-    ParidepthDitemFrame,
+    DepthAndSalesDitemFrame,
     PlaceholderDitemFrame,
     WatchlistDitemFrame
 } from 'ditem-internal-api';
@@ -209,7 +209,7 @@ export class GoldenLayoutHostFrame {
         const depthAndTradesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, undefined);
         const ordersItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Orders, undefined);
         const balancesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Balances, undefined);
-        const orderAuthoriseItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise, undefined);
+        // const orderAuthoriseItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise, undefined);
 
         const config: GoldenLayoutHostFrame.DefaultLayoutConfig = {
             root: {
@@ -340,7 +340,7 @@ export class GoldenLayoutHostFrame {
     private prepareDefaultLayoutDepthAndTrades(componentId: string | undefined) {
         if (componentId !== undefined) {
             const frame = this._componentAccess.getDitemFrameByComponentId(componentId);
-            if (frame === undefined || !(frame instanceof ParidepthDitemFrame)) {
+            if (frame === undefined || !(frame instanceof DepthAndSalesDitemFrame)) {
                 throw new AssertInternalError('GLHFPDLDAT4444812');
             } else {
                 if (frame.litIvemIdLinkable) {

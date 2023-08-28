@@ -4,12 +4,10 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="layoutSelectorDiv">
+<div id="toolbar">
     <app-svg-button #okButton id="okButton"></app-svg-button>
     <app-svg-button #cancelButton id="cancelButton"></app-svg-button>
-    <div id="dialogTitleCaption">{{caption}}</div>
+    <div id="caption">{{caption}}</div>
 </div>
 
-<div id="editorDiv">
-    <app-grid-layout-editor #editor></app-grid-layout-editor>
-</div>
+<app-grid-layout-editor #editor id="editor"></app-grid-layout-editor>

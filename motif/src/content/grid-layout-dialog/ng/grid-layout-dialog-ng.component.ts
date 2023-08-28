@@ -11,6 +11,7 @@ import {
     Component,
     ElementRef,
     Inject,
+    InjectionToken,
     Injector,
     OnDestroy,
     Self,
@@ -20,7 +21,6 @@ import {
 } from '@angular/core';
 import {
     AllowedFieldsGridLayoutDefinition,
-    ButtonUiAction,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
@@ -29,11 +29,10 @@ import {
     InternalCommand,
     LockOpenListItem,
     StringId,
-    Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
-import { ButtonInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 import { GridLayoutEditorNgComponent } from '../editor/ng-api';
 import { allowedFieldsInjectionToken, definitionColumnListInjectionToken, oldLayoutDefinitionInjectionToken } from './grid-layout-dialog-ng-injection-tokens';
@@ -52,15 +51,13 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     @ViewChild('subDialog', { static: true, read: ViewContainerRef }) private _subDialogContainer: ViewContainerRef;
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
-    @ViewChild('editorButton', { static: true }) private _editorButtonComponent: ButtonInputNgComponent;
-
-    public caption = 'Grid Columns';
 
     private _commandRegisterService: CommandRegisterService;
 
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
-    private _editorUiAction: ButtonUiAction;
+
+    private _editor: GridLayoutEditorNgComponent;
 
     private _closeResolve: (value: GridLayoutDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
@@ -69,7 +66,9 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
         @Inject(allowedFieldsInjectionToken) allowedFields: readonly GridField[],
+        @Inject(GridLayoutDialogNgComponent.captionInjectionToken) public readonly caption: string,
         @Inject(oldLayoutDefinitionInjectionToken) private readonly _oldLayoutDefinition: AllowedFieldsGridLayoutDefinition,
         @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
     ) {
@@ -78,7 +77,6 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         this._commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction();
         this._cancelUiAction = this.createCancelUiAction();
-        this._editorUiAction = this.createEditorUiAction();
 
         this._definitionColumnList.load(allowedFields, this._oldLayoutDefinition, this._oldLayoutDefinition.fixedColumnCount);
     }
@@ -90,7 +88,6 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     ngOnDestroy() {
         this._okUiAction.finalise();
         this._cancelUiAction.finalise();
-        this._editorUiAction.finalise();
     }
 
     waitClose(): GridLayoutDialogNgComponent.ClosePromise {
@@ -128,27 +125,15 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
         return action;
     }
 
-    private createEditorUiAction(): ButtonUiAction {
-        const commandName = InternalCommand.Id.GridLayoutDialog_EditColumns;
-        const displayId = StringId.Edit;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
-        const action = new ButtonUiAction(command);
-        action.pushTitle(Strings[StringId.GridLayoutDialog_EditGridColumns]);
-        action.pushUnselected();
-        action.signalEvent = () => this.showEditor();
-        return action;
-    }
-
     private initialise() {
         this._okButtonComponent.initialise(this._okUiAction);
         this._cancelButtonComponent.initialise(this._cancelUiAction);
-        this._editorButtonComponent.initialise(this._editorUiAction);
         this.showEditor();
     }
 
     private close(ok: boolean) {
         if (ok) {
-            // this._closeResolve(this._subDialogContainer.getGridLayoutDefinition());
+            this._closeResolve(this._editor.getGridLayoutDefinition());
         } else {
             this._closeResolve(undefined);
         }
@@ -156,16 +141,18 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
 
     private showEditor() {
         this._subDialogContainer.clear();
-        GridLayoutEditorNgComponent.create(this._subDialogContainer);
+        this._editor = GridLayoutEditorNgComponent.create(this._subDialogContainer);
     }
 }
 
 export namespace GridLayoutDialogNgComponent {
     export type ClosePromise = Promise<GridLayoutDefinition | undefined>;
+    export const captionInjectionToken = new InjectionToken<string>('GridLayoutDialogNgComponent.Caption');
 
     export function create(
         container: ViewContainerRef,
         opener: LockOpenListItem.Opener,
+        caption: string,
         allowedFieldsGridLayoutDefinition: AllowedFieldsGridLayoutDefinition,
     ): GridLayoutDialogNgComponent {
         container.clear();
@@ -174,6 +161,10 @@ export namespace GridLayoutDialogNgComponent {
             provide: CoreInjectionTokens.lockOpenListItemOpener,
             useValue: opener,
         };
+        const captionProvider: ValueProvider = {
+            provide: captionInjectionToken,
+            useValue: caption,
+        }
         const allowedFieldsProvider: ValueProvider = {
             provide: allowedFieldsInjectionToken,
             useValue: allowedFieldsGridLayoutDefinition.allowedFields,
@@ -184,7 +175,7 @@ export namespace GridLayoutDialogNgComponent {
         };
 
         const injector = Injector.create({
-            providers: [openerProvider, allowedFieldsProvider, oldLayoutDefinitionProvider],
+            providers: [openerProvider, captionProvider, allowedFieldsProvider, oldLayoutDefinitionProvider],
         });
 
         const componentRef = container.createComponent(GridLayoutDialogNgComponent, { injector });

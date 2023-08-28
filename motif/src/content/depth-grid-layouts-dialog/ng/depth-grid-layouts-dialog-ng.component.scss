@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/centered-toolbar-group-mixin';
+@use './partials/centered-toolbar-group-mixin';
 
 :host {
     display: flex;
@@ -12,7 +12,7 @@
     height: 100%;
 
     #toolbar {
-        @include centeredToolbarGroupMixin;
+        @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
 
         #cancelButton {
             height: 1em;

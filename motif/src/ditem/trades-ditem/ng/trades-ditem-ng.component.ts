@@ -232,7 +232,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.WatchlistSymbolInputTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = () => this.handleSymbolCommitEvent();
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -341,6 +341,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
             const component = GridLayoutDialogNgComponent.create(
                 this._dialogContainer,
                 this._frame.opener,
+                Strings[StringId.Trades_ColumnsDialogCaption],
                 allowedFieldsGridLayoutDefinition,
             );
 

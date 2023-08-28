@@ -12,6 +12,7 @@ import { ControlsNgModule } from 'controls-ng-api';
 import { AlertsDitemNgComponent } from '../alerts-ditem/ng-api';
 import { BalancesDitemNgComponent } from '../balances-ditem/ng-api';
 import { BrokerageAccountsDitemNgComponent } from '../brokerage-accounts-ditem/ng-api';
+import { DepthAndSalesDitemNgComponent } from '../depth-and-sales-ditem/ng-api';
 import { DepthDitemNgComponent } from '../depth-ditem/ng-api';
 import { EtoPriceQuotationDitemNgComponent } from '../eto-price-quotation-ditem/ng-api';
 import { ExtensionsDitemNgComponent } from '../extensions-ditem/ng-api';
@@ -21,7 +22,6 @@ import { NewsHeadlinesDitemNgComponent } from '../news-headlines-ditem/ng-api';
 import { OrderAuthoriseDitemNgComponent } from '../order-authorise-ditem/ng-api';
 import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
-import { ParidepthDitemNgComponent } from '../paridepth-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
 import { ScansDitemNgComponent } from '../scans-ditem/ng/scans-ditem-ng.component';
 import { SearchDitemNgComponent } from '../search-ditem/ng-api';
@@ -46,7 +46,7 @@ import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } 
         OrderRequestDitemNgComponent,
         OrdersDitemNgComponent,
         OrderAuthoriseDitemNgComponent,
-        ParidepthDitemNgComponent,
+        DepthAndSalesDitemNgComponent,
         PlaceholderDitemNgComponent,
         StatusDitemNgComponent,
         SearchSymbolsDitemNgComponent,
@@ -68,6 +68,7 @@ import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } 
         AngularSplitModule,
     ],
 })
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class DitemNgModule {
     constructor() {
         StaticInitialise.initialise();

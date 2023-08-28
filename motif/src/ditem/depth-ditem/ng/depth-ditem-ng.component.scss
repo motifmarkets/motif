@@ -23,7 +23,7 @@
     #mainToolbarDiv {
         @include mainToolbarCssMixin;
 
-        #symbolEdit {
+        #symbolInput {
             margin-left: $toolbar-button-group-separation;
             width: 12em;
         }

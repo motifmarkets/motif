@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/paridepth-ditem-ng.component';
+export * from './depth-and-sales-ditem-frame';
 

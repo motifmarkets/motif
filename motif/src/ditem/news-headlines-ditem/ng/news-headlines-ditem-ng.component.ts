@@ -146,7 +146,7 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.WatchlistSymbolInputTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         // action.commitEvent = () => this.handleSymbolCommitEvent();
         // action.inputEvent = () => this.handleSymbolInputEvent();
         return action;

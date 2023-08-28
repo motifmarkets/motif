@@ -351,7 +351,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.WatchlistSymbolInputTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = (typeId) => this.handleSymbolCommitEvent(typeId);
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -362,7 +362,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         const displayId = StringId.ApplySymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.WatchlistSymbolButtonTitle]);
+        action.pushTitle(Strings[StringId.Watchlist_SymbolButtonTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Execute);
         action.pushDisabled();
         action.signalEvent = () => this.handleSymbolApplyUiActionSignalEvent();
@@ -371,10 +371,10 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createDeleteSymbolUiAction() {
         const commandName = InternalCommand.Id.Watchlist_DeleteSymbol;
-        const displayId = StringId.WatchlistDeleteSymbolCaption;
+        const displayId = StringId.Watchlist_DeleteSymbolCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.WatchlistDeleteSymbolTitle]);
+        action.pushTitle(Strings[StringId.Watchlist_DeleteSymbolTitle]);
         action.pushIcon(IconButtonUiAction.IconId.DeleteSymbol);
         action.signalEvent = () => this.handleDeleteSymbolUiActionEvent();
         return action;
@@ -382,10 +382,10 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createNewUiAction() {
         const commandName = InternalCommand.Id.Watchlist_New;
-        const displayId = StringId.NewWatchlistCaption;
+        const displayId = StringId.Watchlist_NewCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.NewWatchlistTitle]);
+        action.pushTitle(Strings[StringId.Watchlist_NewTitle]);
         action.pushIcon(IconButtonUiAction.IconId.NewWatchlist);
         action.pushUnselected();
         action.signalEvent = (signalTypeId) => this.handleNewUiActionSignalEvent(signalTypeId);
@@ -394,10 +394,10 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createOpenUiAction() {
         const commandName = InternalCommand.Id.Watchlist_Open;
-        const displayId = StringId.OpenWatchlistCaption;
+        const displayId = StringId.Watchlist_OpenCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.OpenWatchlistTitle]);
+        action.pushTitle(Strings[StringId.Watchlist_OpenTitle]);
         action.pushIcon(IconButtonUiAction.IconId.OpenWatchlist);
         action.pushUnselected();
         action.signalEvent = () => this.handleOpenUiActionSignalEvent();
@@ -406,10 +406,10 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createSaveUiAction() {
         const commandName = InternalCommand.Id.Watchlist_Save;
-        const displayId = StringId.SaveWatchlistCaption;
+        const displayId = StringId.Watchlist_SaveCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.SaveWatchlistTitle]);
+        action.pushTitle(Strings[StringId.Watchlist_SaveTitle]);
         action.pushIcon(IconButtonUiAction.IconId.SaveWatchlist);
         action.pushUnselected();
         action.signalEvent = () => this.handleSaveUiActionEvent();
@@ -485,7 +485,12 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._modeId = WatchlistDitemNgComponent.ModeId.LayoutDialog;
         const allowedFieldsGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinition();
 
-        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(this._dialogContainer, this._frame.opener, allowedFieldsGridLayoutDefinition);
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Watchlist_ColumnsDialogCaption],
+            allowedFieldsGridLayoutDefinition
+        );
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {

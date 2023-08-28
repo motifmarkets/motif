@@ -33,7 +33,7 @@ import {
     getErrorMessage
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DepthGridLayoutsEditorDialogNgComponent, DepthNgComponent } from 'content-ng-api';
+import { DepthGridLayoutsDialogNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -52,7 +52,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('symbolEdit') private _symbolEditComponent: LitIvemIdSelectNgComponent;
+    @ViewChild('symbolInput') private _symbolInputComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('rollUpButton', { static: true }) private _rollUpButtonComponent: SvgButtonNgComponent;
@@ -66,7 +66,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     public isLayoutEditorVisible = false;
 
-    private _symbolEditUiAction: LitIvemIdUiAction;
+    private _symbolInputUiAction: LitIvemIdUiAction;
     private _symbolApplyUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
     private _rollUpUiAction: IconButtonUiAction;
@@ -101,7 +101,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._frame = new DepthDitemFrame(this, this.settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
-        this._symbolEditUiAction = this.createSymbolEditUiAction();
+        this._symbolInputUiAction = this.createSymbolInputUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._rollUpUiAction = this.createRollUpUiAction();
@@ -130,7 +130,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     // TradesDitemFrame.ComponentAccess methods
     public pushSymbol(litIvemId: LitIvemId | undefined) {
-        this._symbolEditUiAction.pushValue(litIvemId);
+        this._symbolInputUiAction.pushValue(litIvemId);
     }
 
     public notifyOpenedClosed(litIvemId: LitIvemId | undefined) {
@@ -160,7 +160,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     protected override finalise() {
-        this._symbolEditUiAction.finalise();
+        this._symbolInputUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
         this._rollUpUiAction.finalise();
@@ -193,7 +193,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleSymbolInputEvent() {
-        if (this._symbolEditUiAction.inputtedText === '') {
+        if (this._symbolInputUiAction.inputtedText === '') {
             this._symbolApplyUiAction.pushDisabled();
         } else {
             // if (!this._symbolEditUiAction.inputtedParseDetails.success) {
@@ -235,7 +235,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             this._frame.setFilter(toArrayResult.value);
             this.pushFilterEditValue();
         } else {
-            this._filterUiAction.pushInvalid(Strings[StringId.InvalidFilterXrefs]);
+            this._filterUiAction.pushInvalid(Strings[StringId.Depth_InvalidFilterXrefs]);
         }
     }
 
@@ -248,10 +248,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.showLayoutEditor();
     }
 
-    private createSymbolEditUiAction() {
+    private createSymbolInputUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.SymbolEditTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = (typeId) => this.handleSymbolCommitEvent(typeId);
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -282,10 +282,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createRollUpUiAction() {
         const commandName = InternalCommand.Id.Depth_Rollup;
-        const displayId = StringId.RollUpDepthCaption;
+        const displayId = StringId.Depth_RollUpCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.RollUpDepthToPriceLevelsTitle]);
+        action.pushTitle(Strings[StringId.Depth_RollUpToPriceLevelsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollUp);
         action.signalEvent = (signalTypeId, downKeys) => this.handleRollUpUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -293,10 +293,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createExpandUiAction() {
         const commandName = InternalCommand.Id.Depth_Expand;
-        const displayId = StringId.ExpandDepthCaption;
+        const displayId = StringId.Depth_ExpandCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.ExpandDepthToOrdersTitle]);
+        action.pushTitle(Strings[StringId.Depth_ExpandToOrdersTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollDown);
         action.signalEvent = (signalTypeId, downKeys) => this.handleExpandUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -304,10 +304,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createFilterUiAction() {
         const commandName = InternalCommand.Id.Depth_Filter;
-        const displayId = StringId.FilterDepthCaption;
+        const displayId = StringId.Depth_FilterCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.FilterDepthToXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_FilterToXrefsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Filter);
         action.signalEvent = (signalTypeId, downKeys) => this.handleFilterUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -315,7 +315,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createFilterEditUiAction() {
         const action = new StringUiAction();
-        action.pushTitle(Strings[StringId.SpecifyDepthFilterXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_SpecifyFilterXrefsTitle]);
         action.commitEvent = (typeId) => this.handleFilterEditUiActionCommitEvent(typeId);
         return action;
     }
@@ -345,7 +345,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private initialiseChildComponents() {
-        this._symbolEditComponent.initialise(this._symbolEditUiAction);
+        this._symbolInputComponent.initialise(this._symbolInputUiAction);
         this._symbolButtonComponent.initialise(this._symbolApplyUiAction);
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
         this._rollUpButtonComponent.initialise(this._rollUpUiAction);
@@ -359,7 +359,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private commitSymbol(typeId: UiAction.CommitTypeId) {
-        const litIvemId = this._symbolEditUiAction.value;
+        const litIvemId = this._symbolInputUiAction.value;
         if (litIvemId !== undefined) {
             this._frame.setLitIvemIdFromDitem(litIvemId);
         }
@@ -400,7 +400,12 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.isLayoutEditorVisible = true;
         const allowedFieldGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinitions();
 
-        const closePromise = DepthGridLayoutsEditorDialogNgComponent.open(this._layoutEditorContainer, this._frame.opener, allowedFieldGridLayoutDefinition);
+        const closePromise = DepthGridLayoutsDialogNgComponent.open(
+            this._layoutEditorContainer,
+            this._frame.opener,
+            Strings[StringId.Depth_ColumnsDialogCaption],
+            allowedFieldGridLayoutDefinition
+        );
         closePromise.then(
             (layouts) => {
                 if (layouts !== undefined) {

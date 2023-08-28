@@ -127,7 +127,6 @@ export class DepthSideFrame extends ContentFrame {
     close() {
         if (this._activeStore !== undefined) {
             this._activeStore.close();
-            this._activeStore = undefined;
         }
     }
 

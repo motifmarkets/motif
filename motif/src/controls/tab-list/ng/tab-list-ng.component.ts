@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, InjectionToken, Optional } from '@angular/core';
-import { ColorScheme, ColorSettings, Integer, ModifierKey } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Inject, InjectionToken, OnDestroy, Optional } from '@angular/core';
+import { ColorScheme, ColorSettings, HtmlTypes, Integer, ModifierKey, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 
 @Component({
@@ -18,21 +18,35 @@ import { SettingsNgService } from 'component-services-ng-api';
         role: 'tablist'
     }
 })
-export class TabListNgComponent {
+export class TabListNgComponent implements OnDestroy {
     public readonly tabs: TabListNgComponent.Tab[] = [];
+    public borderColor: string;
 
+    private readonly _settingsService: SettingsService;
     private readonly _colorSettings: ColorSettings;
+
+    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         @Optional() @Inject(TabListNgComponent.tabDefinitionsInjectionToken) initialTabDefinitions: readonly TabListNgComponent.TabDefinition[] | null,
     ) {
-        this._colorSettings = settingsNgService.service.color;
+        this._settingsService = settingsNgService.service;
+        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
+            () => this.applySettings()
+        );
+        this._colorSettings = this._settingsService.color;
 
         if (initialTabDefinitions !== null) {
             this.setTabs(initialTabDefinitions);
         }
+
+        this.applySettings();
+    }
+
+    ngOnDestroy(): void {
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
     }
 
     setTabs(tabDefinitions: readonly TabListNgComponent.TabDefinition[]) {
@@ -115,6 +129,11 @@ export class TabListNgComponent {
         }
     }
 
+    private applySettings() {
+        this.borderColor = this._colorSettings.getFore(ColorScheme.ItemId.Tab_ActiveBorder);
+        this._cdr.markForCheck();
+    }
+
     private markForCheck() {
         this._cdr.markForCheck();
     }
@@ -142,6 +161,7 @@ export namespace TabListNgComponent {
         private _active: boolean;
         private _bkgdColor: ColorScheme.ResolvedColor;
         private _foreColor: ColorScheme.ResolvedColor;
+        private _borderStyle: HtmlTypes.BorderStyle;
 
         constructor(
             private readonly _colorSettings: ColorSettings,
@@ -154,6 +174,7 @@ export namespace TabListNgComponent {
             this._active = active;
             this._bkgdColor = this.calculateTabBkgdColor(disabled, active);
             this._foreColor = this.calculateTabForeColor(disabled, active);
+            this._borderStyle = this.calculateBorderStyle(disabled, active);
             this._activeChangedEventer = tabDefinition.activeChangedEventer;
         }
 
@@ -162,6 +183,7 @@ export namespace TabListNgComponent {
         get disabled() { return this._disabled; }
         get bkgdColor() { return this._bkgdColor; }
         get foreColor() { return this._foreColor; }
+        get borderStyle() { return this._borderStyle; }
 
         activate() {
             this.requestActiveChangeEventer(true);
@@ -173,6 +195,8 @@ export namespace TabListNgComponent {
                 const disabled = this.disabled;
                 this._bkgdColor = this.calculateTabBkgdColor(disabled, value);
                 this._foreColor = this.calculateTabForeColor(disabled, value);
+                this._borderStyle = this.calculateBorderStyle(disabled, value);
+                this._borderStyle
                 this._activeChangedEventer(this, downKeys);
             }
         }
@@ -200,6 +224,14 @@ export namespace TabListNgComponent {
                 } else {
                     return colorSettings.getFore(ColorScheme.ItemId.Tab_Inactive);
                 }
+            }
+        }
+
+        private calculateBorderStyle(disabled: boolean, active: boolean) {
+            if (disabled || !active) {
+                return HtmlTypes.BorderStyle.Hidden;
+            } else {
+                return HtmlTypes.BorderStyle.Solid;
             }
         }
     }

@@ -44,7 +44,7 @@ import {
     SymbolsNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
-import { DepthNgComponent, ParidepthGridLayoutsEditorDialogNgComponent, TradesNgComponent, WatchlistNgComponent } from 'content-ng-api';
+import { DepthAndSalesGridLayoutsDialogNgComponent, DepthNgComponent, TradesNgComponent, WatchlistNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import {
     CommandBarNgComponent,
@@ -56,17 +56,17 @@ import {
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
 import { DesktopAccessNgService } from '../../ng/desktop-access-ng.service';
-import { ParidepthDitemFrame } from '../paridepth-ditem-frame';
+import { DepthAndSalesDitemFrame } from '../depth-and-sales-ditem-frame';
 
 @Component({
-    selector: 'app-paridepth-ditem',
-    templateUrl: './paridepth-ditem-ng.component.html',
-    styleUrls: ['./paridepth-ditem-ng.component.scss'],
+    selector: 'app-depth-and-sales-ditem',
+    templateUrl: './depth-and-sales-ditem-ng.component.html',
+    styleUrls: ['./depth-and-sales-ditem-ng.component.scss'],
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
-    implements OnDestroy, AfterViewInit, ParidepthDitemFrame.ComponentAccess {
+export class DepthAndSalesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
+    implements OnDestroy, AfterViewInit, DepthAndSalesDitemFrame.ComponentAccess {
 
     private static typeInstanceCreateCount = 0;
 
@@ -95,7 +95,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     public explicitDepthWidth = false;
 
-    private _layoutEditorComponent: ParidepthGridLayoutsEditorDialogNgComponent | undefined;
+    private _layoutEditorComponent: DepthAndSalesGridLayoutsDialogNgComponent | undefined;
 
     private _symbolEditUiAction: LitIvemIdUiAction;
     private _symbolApplyUiAction: IconButtonUiAction;
@@ -108,8 +108,8 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
 
-    private _modeId = ParidepthDitemNgComponent.ModeId.Main;
-    private _frame: ParidepthDitemFrame;
+    private _modeId = DepthAndSalesDitemNgComponent.ModeId.Main;
+    private _frame: DepthAndSalesDitemFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -122,9 +122,9 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
     ) {
-        super(elRef, ++ParidepthDitemNgComponent.typeInstanceCreateCount, cdr, container, settingsNgService.service, commandRegisterNgService.service);
+        super(elRef, ++DepthAndSalesDitemNgComponent.typeInstanceCreateCount, cdr, container, settingsNgService.service, commandRegisterNgService.service);
 
-        this._frame = new ParidepthDitemFrame(
+        this._frame = new DepthAndSalesDitemFrame(
             this,
             this.settingsService,
             this.commandRegisterService,
@@ -153,7 +153,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     get ditemFrame() { return this._frame; }
 
-    protected get stateSchemaVersion() { return ParidepthDitemNgComponent.stateSchemaVersion; }
+    protected get stateSchemaVersion() { return DepthAndSalesDitemNgComponent.stateSchemaVersion; }
 
     public ngOnDestroy() {
         this.finalise();
@@ -185,14 +185,14 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     // template functions
     public isMainMode() {
-        return this._modeId === ParidepthDitemNgComponent.ModeId.Main;
+        return this._modeId === DepthAndSalesDitemNgComponent.ModeId.Main;
     }
 
     public isDialogMode() {
         switch (this._modeId) {
-            case ParidepthDitemNgComponent.ModeId.LayoutDialog:
+            case DepthAndSalesDitemNgComponent.ModeId.LayoutDialog:
                 return true;
-            case ParidepthDitemNgComponent.ModeId.Main:
+            case DepthAndSalesDitemNgComponent.ModeId.Main:
                 return false;
             default:
                 throw new UnreachableCaseError('PDNCIDM65312', this._modeId);
@@ -224,7 +224,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this.pushFilterEditValue();
         this.pushHistoricalTradesDate(historicalTradesDate);
         this._symbolApplyUiAction.pushDisabled();
-        this.updateColumnsEnabledDiabled();
+        this.updateColumnsEnabledDisabled();
         this.pushAccepted();
     }
 
@@ -249,7 +249,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
         this.initialiseChildComponents();
 
-        this.updateColumnsEnabledDiabled();
+        this.updateColumnsEnabledDisabled();
 
         super.initialise();
     }
@@ -277,7 +277,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         if (element === undefined) {
             this.explicitDepthWidth = false;
         } else {
-            const depthWidthAsStringResult = element.tryGetString(ParidepthDitemNgComponent.JsonName.depthWidth);
+            const depthWidthAsStringResult = element.tryGetString(DepthAndSalesDitemNgComponent.JsonName.depthWidth);
             if (depthWidthAsStringResult.isErr()) {
                 this.explicitDepthWidth = false;
             } else {
@@ -295,7 +295,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     protected save(element: JsonElement) {
         if (this.explicitDepthWidth) {
             const [depthWidth, ignoredTradesWidth] = this.getDepthTradesWidths();
-            element.setString(ParidepthDitemNgComponent.JsonName.depthWidth, AngularSplitTypes.AreaSize.iOutputToJsonValue(depthWidth));
+            element.setString(DepthAndSalesDitemNgComponent.JsonName.depthWidth, AngularSplitTypes.AreaSize.iOutputToJsonValue(depthWidth));
         }
         const frameElement = this.createChildFrameJsonElement(element);
         this._frame.save(frameElement);
@@ -352,7 +352,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             this._frame.setFilter(toArrayResult.value);
             this.pushFilterEditValue();
         } else {
-            this._filterUiAction.pushInvalid(Strings[StringId.InvalidFilterXrefs]);
+            this._filterUiAction.pushInvalid(Strings[StringId.Depth_InvalidFilterXrefs]);
         }
     }
 
@@ -373,7 +373,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.SymbolEditTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = (typeId) => this.handleSymbolCommitEvent(typeId);
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -404,10 +404,10 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createRollUpUiAction() {
         const commandName = InternalCommand.Id.Depth_Rollup;
-        const displayId = StringId.RollUpDepthCaption;
+        const displayId = StringId.Depth_RollUpCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.RollUpDepthToPriceLevelsTitle]);
+        action.pushTitle(Strings[StringId.Depth_RollUpToPriceLevelsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollUp);
         action.signalEvent = (signalTypeId, downKeys) => this.handleRollUpUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -415,10 +415,10 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createExpandUiAction() {
         const commandName = InternalCommand.Id.Depth_Expand;
-        const displayId = StringId.ExpandDepthCaption;
+        const displayId = StringId.Depth_ExpandCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.ExpandDepthToOrdersTitle]);
+        action.pushTitle(Strings[StringId.Depth_ExpandToOrdersTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollDown);
         action.signalEvent = (signalTypeId, downKeys) => this.handleExpandUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -426,10 +426,10 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createFilterUiAction() {
         const commandName = InternalCommand.Id.Depth_Filter;
-        const displayId = StringId.FilterDepthCaption;
+        const displayId = StringId.Depth_FilterCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.FilterDepthToXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_FilterToXrefsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Filter);
         action.signalEvent = (signalTypeId, downKeys) => this.handleFilterUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -437,7 +437,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private createFilterEditUiAction() {
         const action = new StringUiAction();
-        action.pushTitle(Strings[StringId.SpecifyDepthFilterXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_SpecifyFilterXrefsTitle]);
         action.commitEvent = (typeId) => this.handleFilterEditUiActionCommitEvent(typeId);
         return action;
     }
@@ -542,7 +542,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._historicalTradesDateUiAction.pushValid();
     }
 
-    private updateColumnsEnabledDiabled() {
+    private updateColumnsEnabledDisabled() {
         if (this._frame.canCreateAllowedFieldsGridLayoutDefinition()) {
             this._columnsUiAction.pushAccepted();
         } else {
@@ -551,10 +551,15 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private showLayoutDialog() {
-        this._modeId = ParidepthDitemNgComponent.ModeId.LayoutDialog;
+        this._modeId = DepthAndSalesDitemNgComponent.ModeId.LayoutDialog;
         const allowedFieldsAndLayoutDefinitions = this._frame.createAllowedFieldsAndLayoutDefinition();
 
-        const closePromise = ParidepthGridLayoutsEditorDialogNgComponent.open(this._dialogContainer, allowedFieldsAndLayoutDefinitions);
+        const closePromise = DepthAndSalesGridLayoutsDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.DepthAndSales_ColumnsDialogCaption],
+            allowedFieldsAndLayoutDefinitions
+        );
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
@@ -564,7 +569,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`ParidepthInput Layout Editor error: ${errorText}`);
+                Logger.logError(`Depth and Sales Grid Layout error: ${errorText}`);
                 this.closeDialog();
             }
         );
@@ -575,7 +580,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private closeDialog() {
         this._dialogContainer.clear();
-        this._modeId = ParidepthDitemNgComponent.ModeId.Main;
+        this._modeId = DepthAndSalesDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }
 
@@ -600,7 +605,7 @@ export class ParidepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     // }
 }
 
-export namespace ParidepthDitemNgComponent {
+export namespace DepthAndSalesDitemNgComponent {
     export const enum ModeId {
         Main,
         LayoutDialog,

@@ -20,7 +20,8 @@ import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../color-scheme-preset-code/ng-api';
 import { DelayedBadnessNgComponent } from '../delayed-badness/ng-api';
-import { DepthGridLayoutsEditorDialogNgComponent } from '../depth-grid-layouts-editor-dialog/ng-api';
+import { DepthAndSalesGridLayoutsDialogNgComponent } from '../depth-and-sales-grid-layouts-dialog/ng-api';
+import { DepthGridLayoutsDialogNgComponent } from '../depth-grid-layouts-dialog/ng-api';
 import { DepthSideNgComponent } from '../depth-side/ng-api';
 import { DepthNgComponent } from '../depth/ng-api';
 import { ExchangeSettingsNgComponent } from '../exchange-settings/ng-api';
@@ -61,7 +62,6 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { OrdersNgComponent } from '../orders/ng-api';
-import { ParidepthGridLayoutsEditorDialogNgComponent } from '../paridepth-grid-layouts-editor-dialog/ng-api';
 import {
     CriteriaScanPropertiesSectionNgComponent,
     GeneralScanPropertiesSectionNgComponent,
@@ -108,7 +108,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         NameableGridLayoutEditorDialogNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
-        DepthGridLayoutsEditorDialogNgComponent,
+        DepthGridLayoutsDialogNgComponent,
         DepthSideNgComponent,
         FeedsNgComponent,
         GridLayoutEditorNgComponent,
@@ -123,7 +123,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         OrderAuthoriseNgComponent,
         PadOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
-        ParidepthGridLayoutsEditorDialogNgComponent,
+        DepthAndSalesGridLayoutsDialogNgComponent,
         ColorSettingsNgComponent,
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
@@ -180,7 +180,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BrokerageAccountsNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
-        DepthGridLayoutsEditorDialogNgComponent,
+        DepthGridLayoutsDialogNgComponent,
         ExtensionsSidebarNgComponent,
         ExtensionDetailNgComponent,
         FeedsNgComponent,
@@ -195,7 +195,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ReviewOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
         SearchSymbolsNgComponent,
-        ParidepthGridLayoutsEditorDialogNgComponent,
+        DepthAndSalesGridLayoutsDialogNgComponent,
         ColorSettingsNgComponent,
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,

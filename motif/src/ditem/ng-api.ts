@@ -20,7 +20,7 @@ export * from './ng/ditem-ng.module';
 export * from './order-authorise-ditem/ng-api';
 export * from './order-request-ditem/ng-api';
 export * from './orders-ditem/ng-api';
-export * from './paridepth-ditem/ng-api';
+export * from './depth-and-sales-ditem/ng-api';
 export * from './placeholder-ditem/ng-api';
 export * from './scans-ditem/ng-api';
 export * from './search-symbols-ditem/ng-api';

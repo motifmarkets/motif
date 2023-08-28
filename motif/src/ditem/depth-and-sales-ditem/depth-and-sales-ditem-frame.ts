@@ -7,8 +7,10 @@
 import {
     AdiService,
     AllowedFieldsGridLayoutDefinition,
+    AllowedGridField,
     BidAskAllowedFieldsGridLayoutDefinitions,
     BidAskGridLayoutDefinitions,
+    BidAskPair,
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
@@ -29,7 +31,7 @@ import { lowestValidServerNotificationId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
-export class ParidepthDitemFrame extends BuiltinDitemFrame {
+export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
     private _watchlistFrame: WatchlistFrame;
     private _depthFrame: DepthFrame;
     private _tradesFrame: TradesFrame;
@@ -39,7 +41,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     // private _tradesCommandProcessor: TradesCommandProcessor;
 
     constructor(
-        private _componentAccess: ParidepthDitemFrame.ComponentAccess,
+        private _componentAccess: DepthAndSalesDitemFrame.ComponentAccess,
         settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
         desktopAccessService: DitemFrame.DesktopAccessService,
@@ -78,21 +80,21 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
         } else {
-            const watchlistElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.watchlist);
+            const watchlistElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isErr()) {
                 this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
             } else {
                 this._watchlistFrame.initialiseGrid(this.opener, watchlistElementResult.value, true);
             }
 
-            const tradesElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.trades);
+            const tradesElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.trades);
             if (tradesElementResult.isErr()) {
                 this._tradesFrame.initialise(undefined);
             } else {
                 this._tradesFrame.initialise(tradesElementResult.value);
             }
 
-            const depthElementResult = frameElement.tryGetElement(ParidepthDitemFrame.JsonName.depth);
+            const depthElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.depth);
             if (depthElementResult.isErr()) {
                 this._depthFrame.initialise(undefined);
             } else {
@@ -107,17 +109,17 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         super.save(element);
 
         if (this._watchlistFrame.opened) {
-            const watchlistElement = element.newElement(ParidepthDitemFrame.JsonName.watchlist);
+            const watchlistElement = element.newElement(DepthAndSalesDitemFrame.JsonName.watchlist);
             this._watchlistFrame.saveLayout(watchlistElement);
         }
 
         if (this._depthFrame.opened) {
-            const depthElement = element.newElement(ParidepthDitemFrame.JsonName.depth);
+            const depthElement = element.newElement(DepthAndSalesDitemFrame.JsonName.depth);
             this._depthFrame.save(depthElement);
         }
 
         if (this._tradesFrame.opened) {
-            const tradesElement = element.newElement(ParidepthDitemFrame.JsonName.trades);
+            const tradesElement = element.newElement(DepthAndSalesDitemFrame.JsonName.trades);
             this._tradesFrame.saveLayoutToConfig(tradesElement);
         }
     }
@@ -190,10 +192,13 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     }
 
     canCreateAllowedFieldsGridLayoutDefinition() {
-        return this._depthFrame.canCreateAllowedFieldsGridLayoutDefinition();
+        return (
+            this._watchlistFrame.canCreateAllowedFieldsGridLayoutDefinition() &&
+            this._depthFrame.canCreateAllowedFieldsGridLayoutDefinition()
+        );
     }
 
-    createAllowedFieldsAndLayoutDefinition(): ParidepthDitemFrame.AllowedFieldsAndLayoutDefinitions {
+    createAllowedFieldsAndLayoutDefinition(): DepthAndSalesDitemFrame.AllowedFieldsAndLayoutDefinitions {
         return {
             depth: this._depthFrame.createAllowedFieldsGridLayoutDefinitions(),
             watchlist: this._watchlistFrame.createAllowedFieldsGridLayoutDefinition(),
@@ -201,9 +206,10 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
         };
     }
 
-    applyGridLayoutDefinitions(layouts: ParidepthDitemFrame.GridLayoutDefinitions) {
+    applyGridLayoutDefinitions(layouts: DepthAndSalesDitemFrame.GridLayoutDefinitions) {
         this._depthFrame.applyGridLayoutDefinitions(layouts.depth);
-        this._watchlistFrame.applyGridLayoutDefinition(layouts.watchlist);
+        const watchlistGridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.watchlist);
+        this._watchlistFrame.applyGridLayoutDefinition(watchlistGridLayoutOrNamedReferenceDefinition);
         this._tradesFrame.applyGridLayoutDefinition(layouts.trades);
     }
 
@@ -254,7 +260,7 @@ export class ParidepthDitemFrame extends BuiltinDitemFrame {
     }
 }
 
-export namespace ParidepthDitemFrame {
+export namespace DepthAndSalesDitemFrame {
     export namespace JsonName {
         export const watchlist = 'watchlist';
         export const depth = 'depth';
@@ -271,8 +277,14 @@ export namespace ParidepthDitemFrame {
         export const historicalTradeDate = undefined;
     }
 
+    export interface AllowedGridFields {
+        watchlist: readonly AllowedGridField[];
+        depth: BidAskPair<readonly AllowedGridField[]>;
+        trades: readonly AllowedGridField[];
+    }
+
     export interface GridLayoutDefinitions {
-        watchlist: GridLayoutOrNamedReferenceDefinition;
+        watchlist: GridLayoutDefinition;
         depth: BidAskGridLayoutDefinitions;
         trades: GridLayoutDefinition;
     }

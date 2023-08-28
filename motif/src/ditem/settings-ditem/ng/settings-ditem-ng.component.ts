@@ -43,7 +43,6 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('groupContainer', { read: ViewContainerRef, static: true }) private _groupContainer: ViewContainerRef;
 
     private _frame: SettingsDitemFrame;
-    private _tabs: readonly TabListNgComponent.Tab[];
     private _settingsGroupId: SettingsDitemFrame.GroupId;
 
     constructor(
@@ -136,7 +135,7 @@ export class SettingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
                 activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(SettingsDitemFrame.GroupId.Colors, tab),
             },
         ];
-        this._tabs = this._tabListComponent.setTabs(tabDefinitions);
+        this._tabListComponent.setTabs(tabDefinitions);
     }
 
     private handleActiveTabChangedEvent(groupId: SettingsDitemFrame.GroupId, tab: TabListNgComponent.Tab) {

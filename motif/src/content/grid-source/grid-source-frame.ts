@@ -917,6 +917,10 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
+    canCreateAllowedFieldsGridLayoutDefinition() {
+        return this._openedTable !== undefined;
+    }
+
     createAllowedFieldsGridLayoutDefinition() {
         if (this._openedTable === undefined) {
             throw new AssertInternalError('GSFCAFALD56678');

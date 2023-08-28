@@ -4,12 +4,11 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="toolBarDiv">
+<div id="toolbar">
     <app-svg-button #okButton id="okButton"></app-svg-button>
     <app-svg-button #cancelButton id="cancelButton"></app-svg-button>
-    <div id="dialogTitleCaption">{{caption}}</div>
+    <div id="caption">{{caption}}</div>
+    <app-tab-list-ng #tabList></app-tab-list-ng>
 </div>
 
-<div id="subDialogDiv">
-    <ng-container #subDialog></ng-container>
-</div>
+<ng-container #editorContainer id="editor"></ng-container>

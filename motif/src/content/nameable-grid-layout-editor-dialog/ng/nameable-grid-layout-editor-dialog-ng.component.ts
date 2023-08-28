@@ -7,10 +7,10 @@
 import {
     AfterViewInit,
     ChangeDetectionStrategy,
-    ChangeDetectorRef,
     Component,
     ElementRef,
     Inject,
+    InjectionToken,
     Injector,
     OnDestroy,
     Self,
@@ -50,8 +50,6 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     @ViewChild('okButton', { static: true }) private _okButtonComponent: SvgButtonNgComponent;
     @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
 
-    public caption = 'Grid Columns';
-
     private _commandRegisterService: CommandRegisterService;
 
     private _okUiAction: IconButtonUiAction;
@@ -62,8 +60,8 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
 
     constructor(
         elRef: ElementRef<HTMLElement>,
-        private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        @Inject(NameableGridLayoutEditorDialogNgComponent.captionInjectionToken) public readonly caption: string,
         @Inject(allowedFieldsInjectionToken) _allowedFields: readonly GridField[],
         @Inject(oldLayoutDefinitionInjectionToken) _oldLayoutDefinition: AllowedFieldsGridLayoutDefinition,
         @Self() @Inject(definitionColumnListInjectionToken) private readonly _definitionColumnList: EditableGridLayoutDefinitionColumnList,
@@ -138,10 +136,12 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
 
 export namespace NameableGridLayoutEditorDialogNgComponent {
     export type ClosePromise = Promise<GridLayoutOrNamedReferenceDefinition | undefined>;
+    export const captionInjectionToken = new InjectionToken<string>('NameableGridLayoutEditorDialogNgComponent.Caption');
 
     export function open(
         container: ViewContainerRef,
         opener: LockOpenListItem.Opener,
+        caption: string,
         allowedFieldsGridLayoutDefinition: AllowedFieldsGridLayoutDefinition,
     ): ClosePromise {
         container.clear();
@@ -150,6 +150,10 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
             provide: CoreInjectionTokens.lockOpenListItemOpener,
             useValue: opener,
         };
+        const captionProvider: ValueProvider = {
+            provide: captionInjectionToken,
+            useValue: caption,
+        }
         const allowedFieldsProvider: ValueProvider = {
             provide: allowedFieldsInjectionToken,
             useValue: allowedFieldsGridLayoutDefinition.allowedFields,
@@ -159,7 +163,7 @@ export namespace NameableGridLayoutEditorDialogNgComponent {
             useValue: allowedFieldsGridLayoutDefinition,
         };
         const injector = Injector.create({
-            providers: [openerProvider, allowedFieldsProvider, oldLayoutDefinitionProvider],
+            providers: [openerProvider, captionProvider, allowedFieldsProvider, oldLayoutDefinitionProvider],
         });
 
         const componentRef = container.createComponent(NameableGridLayoutEditorDialogNgComponent, { injector });

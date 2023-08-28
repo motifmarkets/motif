@@ -18,7 +18,7 @@ import { NewsHeadlinesDitemNgComponent } from '../news-headlines-ditem/ng-api';
 import { OrderAuthoriseDitemNgComponent } from '../order-authorise-ditem/ng-api';
 import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
-import { ParidepthDitemNgComponent } from '../paridepth-ditem/ng-api';
+import { DepthAndSalesDitemNgComponent } from '../depth-and-sales-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
 import { ScansDitemNgComponent } from '../scans-ditem/ng-api';
 import { SearchDitemNgComponent } from '../search-ditem/ng-api';
@@ -54,7 +54,7 @@ export namespace DitemNgComponentIdAndType {
         },
         DepthAndTrades: {
             id: BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades,
-            type: ParidepthDitemNgComponent,
+            type: DepthAndSalesDitemNgComponent,
         },
         Watchlist: {
             id: BuiltinDitemFrame.BuiltinTypeId.Watchlist,

@@ -9,10 +9,6 @@
     gap: .25rem;
 
     > [role="tab"] {
-        border-style: none;
-
-        &[aria-selected="true"] {
-            border-style: inset;
-        }
+        border-width: 1px;
     }
 }

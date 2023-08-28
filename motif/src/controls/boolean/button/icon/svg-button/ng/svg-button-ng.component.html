@@ -9,6 +9,7 @@
     type="button"
     [id]="inputId"
     [title]="title"
+    [disabled]="disabled"
     (click)="onClick($event)"
     (keydown.enter)="onEnterKeyDown($event)"
     (keydown.spacebar)="onSpacebarKeyDown($event)">

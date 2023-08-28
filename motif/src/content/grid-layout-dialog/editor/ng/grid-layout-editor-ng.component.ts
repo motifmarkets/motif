@@ -122,6 +122,7 @@ export namespace GridLayoutEditorNgComponent {
 
     export function create(container: ViewContainerRef) {
         container.clear();
-        container.createComponent(GridLayoutEditorNgComponent);
+        const componentRef  = container.createComponent(GridLayoutEditorNgComponent);
+        return componentRef.instance;
     }
 }
