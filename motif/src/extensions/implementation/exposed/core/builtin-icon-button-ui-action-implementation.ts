@@ -26,8 +26,9 @@ export class BuiltinIconButtonUiActionImplementation extends ButtonUiActionImple
 
 export namespace BuiltinIconButtonUiActionImplementation {
     export namespace IconId {
-        export function toApi(value: IconButtonUiAction.IconId): BuiltinIconButtonUiActionApi.IconId {
+        export function toApi(value: IconButtonUiAction.IconId | undefined): BuiltinIconButtonUiActionApi.IconId | undefined {
             switch (value) {
+                case undefined: return undefined;
                 case IconButtonUiAction.IconId.Blankest: return BuiltinIconButtonUiActionApi.IconIdEnum.Blankest;
                 case IconButtonUiAction.IconId.PrimaryDitemFrame: return BuiltinIconButtonUiActionApi.IconIdEnum.PrimaryDitemFrame;
                 case IconButtonUiAction.IconId.SymbolLink: return BuiltinIconButtonUiActionApi.IconIdEnum.SymbolLink;
@@ -72,6 +73,14 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.Details: return BuiltinIconButtonUiActionApi.IconIdEnum.Details;
                 case IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed:
                     return BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed;
+                case IconButtonUiAction.IconId.ExpandVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.ExpandVertically;
+                case IconButtonUiAction.IconId.RestoreVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.RestoreVertically;
+                case IconButtonUiAction.IconId.CollapseVertically: return BuiltinIconButtonUiActionApi.IconIdEnum.CollapseVertically;
+                case IconButtonUiAction.IconId.MarkAll: return BuiltinIconButtonUiActionApi.IconIdEnum.MarkAll;
+                case IconButtonUiAction.IconId.InsertIntoListFromLeft: return BuiltinIconButtonUiActionApi.IconIdEnum.InsertIntoListFromLeft;
+                case IconButtonUiAction.IconId.RemoveFromListToLeft: return BuiltinIconButtonUiActionApi.IconIdEnum.RemoveFromListToLeft;
+                case IconButtonUiAction.IconId.Dot: return BuiltinIconButtonUiActionApi.IconIdEnum.Dot;
+
                 default: throw new UnreachableCaseError('BIBUAITAU09992223', value);
             }
         }
@@ -123,6 +132,14 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Details: return IconButtonUiAction.IconId.Details;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.ToggleSearchTermNotExchangedMarketProcessed:
                     return IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.ExpandVertically: return IconButtonUiAction.IconId.ExpandVertically;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.RestoreVertically: return IconButtonUiAction.IconId.RestoreVertically;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.CollapseVertically: return IconButtonUiAction.IconId.CollapseVertically;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.MarkAll: return IconButtonUiAction.IconId.MarkAll;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.InsertIntoListFromLeft: return IconButtonUiAction.IconId.InsertIntoListFromLeft;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.RemoveFromListToLeft: return IconButtonUiAction.IconId.RemoveFromListToLeft;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.Dot: return IconButtonUiAction.IconId.Dot;
+
                 default:
                     throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidBuiltinIconButtonUiActionIconId, enumValue);
             }

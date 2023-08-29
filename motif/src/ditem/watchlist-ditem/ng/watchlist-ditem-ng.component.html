@@ -22,17 +22,11 @@
             <div id="linkButtonsDiv">
                 <app-svg-button #symbolLinkButton></app-svg-button>
             </div>
-            <span id="watchlistDescriptonSpan" [title]="WatchListFullDescription">{{watchlistAbbreviatedDescription}}</span>
+            <span id="watchlistDescriptonSpan" [title]="watchListFullDescription">{{watchlistAbbreviatedDescription}}</span>
         </div>
     </div>
-    <app-table #table id="table" [frameGridProperties]="frameGridProperties " ></app-table>
+    <app-watchlist #gridSource id="gridSource"></app-watchlist>
 </div>
-<div id="layoutEditorDiv" [style.display]="!isLayoutEditorMode() ? 'none' : null">
-    <ng-template #layoutEditorContainer></ng-template>
-</div>
-<div id="openDialogDiv" [style.display]="!isOpenDialogMode() ? 'none' : null">
-    <!-- TODO:MED Add open dialog -->
-</div>
-<div id="saveDialogDiv" [style.display]="!isSaveDialogMode() ? 'none' : null">
-    <!-- TODO:MED Add save dialog -->
+<div id="dialogDiv" [style.display]="!isDialogMode() ? 'none' : null">
+    <ng-container #dialogContainer></ng-container>
 </div>

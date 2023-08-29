@@ -5,18 +5,25 @@
  */
 
 import {
-    AdiService, AssertInternalError,
+    AdiService,
+    AssertInternalError,
     Badness,
     EnumInfoOutOfOrderError,
     Integer,
-    JsonElement,
-    MultiEvent, Order, OrderPad, OrderRequestDataDefinition, OrderRequestDataItem,
+    MultiEvent,
+    Order,
+    OrderPad,
+    OrderRequestDataDefinition,
+    OrderRequestDataItem,
     OrderRequestError,
     OrderRequestErrorCode,
     OrderRequestErrorCodeId,
     OrderRequestResultId,
     OrderRequestTypeId,
-    OrdersDataMessage, StringId, Strings, UnreachableCaseError
+    OrdersDataMessage,
+    StringId,
+    Strings,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -50,12 +57,6 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
         super.finalise();
     }
 
-    loadLayoutConfig(element: JsonElement | undefined) {
-    }
-
-    saveLayoutConfig(element: JsonElement) {
-    }
-
     send(orderPad: OrderPad, definition: OrderRequestDataDefinition) {
         if (orderPad.sent) {
             const name = orderPad.routedIvemId === undefined ? '' : orderPad.routedIvemId.name;
@@ -82,7 +83,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
             this._dataItemBadnessChangeSubscriptionId = this._dataItem.subscribeBadnessChangeEvent(
                 () => this.handleDataItemBadnessChangeEvent()
             );
-            this._dataItemCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+            this._dataItemCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
                 () => this.handleDataItemCorrectnessChangeEvent()
             );
 
@@ -113,7 +114,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeSubscriptionId);
             this._dataItemBadnessChangeSubscriptionId = undefined;
-            this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemCorrectnessChangeSubscriptionId);
+            this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemCorrectnessChangeSubscriptionId);
             this._dataItemCorrectnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._dataItem);
             this._dataItem = undefined;

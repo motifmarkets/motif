@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/revgrid';
+
 :host {
-    height: 100%;
     flex: 1 1 0;
 }
 
@@ -14,48 +15,36 @@
 @import './partials/centered-toolbar-group-mixin';
 
 :host {
-    position: absolute;
-    display: flex;
-    flex-direction: column;
-    overflow: clip;
-    height: 100%;
-    // min-height: 0;
-    // width: 100%;
-}
-
-#mainSection {
-    flex: 1 1 0;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-
-    > #mainToolbarSection {
-        @include mainToolbarCssMixin;
-        flex: 0 0 auto;
-
-        > #buttonsSection {
-            @include centeredToolbarGroupMixin;
-            margin-left: $toolbar-button-group-separation;
-        }
-
-        > #columnButtonsSection {
-            @include centeredToolbarGroupMixin;
-            margin-left: $toolbar-button-group-separation;
-        }
-    }
-
-    > #grid {
-        // required because MotifGrid component uses ViewEncapsulation.None
-        flex: 1 1 auto;
+    #mainSection {
+        flex: 1 1 0;
         height: 100%;
-        position: relative;
-        min-height: 0;
-        overflow-y: clip;
-    }
-}
+        display: flex;
+        flex-direction: column;
 
-#layoutEditorDiv {
-    position: absolute;
-    height: 100%;
-    width: 100%;
+        > #mainToolbarSection {
+            @include mainToolbarCssMixin;
+            flex: 0 0 auto;
+
+            > #buttonsSection {
+                @include centeredToolbarGroupMixin;
+                margin-left: $toolbar-button-group-separation;
+            }
+
+            > #columnButtonsSection {
+                @include centeredToolbarGroupMixin;
+                margin-left: $toolbar-button-group-separation;
+            }
+        }
+
+        > #gridHost {
+            @include revgrid.hostAsColumnFlexItem;
+            flex: 1 1 0;
+        }
+    }
+
+    #layoutEditorDiv {
+        position: absolute;
+        height: 100%;
+        width: 100%;
+    }
 }

@@ -6,16 +6,19 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
-    calculateIntlNumberFormatCharParts,
-    createNumberGroupCharRemoveRegex,
+    AssertInternalError,
     DecimalUiAction,
     Integer,
-    IntlNumberFormatCharParts, isPartialIntlFormattedNumber,
-    newDecimal,
+    IntlNumberFormatCharParts,
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    calculateIntlNumberFormatCharParts,
+    createNumberGroupCharRemoveRegex,
+    getErrorMessage,
+    isPartialIntlFormattedNumber,
+    newDecimal
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { Decimal } from 'decimal.js-light';
@@ -30,6 +33,8 @@ import { DecimalComponentBaseNgDirective } from '../../ng/decimal-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() size = '12';
     @Input() inputId: string;
 
@@ -46,9 +51,15 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'DecimalInput' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++DecimalInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
+        this.inputId = 'DecimalInput' + this.typeInstanceId;
     }
 
     ngOnInit() {
@@ -123,12 +134,17 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
                 useGrouping = this.coreSettings.format_NumberGroupingActive;
                 break;
             default:
-                throw new UnreachableCaseError('DICCNF232388', this.uiAction.options.useGrouping);
+                throw new UnreachableCaseError('DICCNF23238', this.uiAction.options.useGrouping);
         }
 
         this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        const partsResult = calculateIntlNumberFormatCharParts(this._numberFormat);
+        if (partsResult.isErr()) {
+            throw new AssertInternalError('DINCUNFP23238', partsResult.error);
+        } else {
+            this._numberFormatCharParts = partsResult.value;
+            this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        }
     }
 
     private testInputValue(text?: string): boolean {
@@ -156,7 +172,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
             const parsedDecimal = newDecimal(value);
             return { parsedDecimal };
         } catch (e) {
-            const errorText = `${Strings[StringId.InvalidNumber]}: ${e}`;
+            const errorText = `${Strings[StringId.InvalidNumber]}: ${getErrorMessage(e)}`;
             return { errorText };
         }
     }

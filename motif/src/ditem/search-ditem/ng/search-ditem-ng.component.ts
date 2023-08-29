@@ -10,21 +10,20 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    ButtonUiAction, delay1Tick,
+    ButtonUiAction,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
-    IndexSignatureHack,
-    Integer, InternalCommand,
-    JsonElement, RenderValue,
+    InternalCommand,
+    JsonElement,
+    RowDataArrayGrid,
     StringId,
-    StringRenderValue,
+    StringUiAction,
     Strings,
-    StringUiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
-import { SimpleGridNgComponent } from 'content-ng-api';
+import { AdiNgService, CellPainterFactoryNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionLabelNgComponent,
@@ -43,7 +42,9 @@ import { SearchDitemFrame } from '../search-ditem-frame';
     styleUrls: ['./search-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
     @ViewChild('searchButtonControl', { static: true }) private _searchButtonControlComponent: ButtonInputNgComponent;
     @ViewChild('detailsButtonControl', { static: true }) private _detailsButtonControlComponent: ButtonInputNgComponent;
@@ -54,13 +55,13 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
     @ViewChild('keywordsControl') private _keywordsControlComponent: TextInputNgComponent;
     @ViewChild('searchDescriptionLabel', { static: true }) private _searchDescriptionLabelComponent: CaptionLabelNgComponent;
     @ViewChild('alertButtonControl', { static: true }) private _alertButtonControlComponent: ButtonInputNgComponent;
-    @ViewChild(SimpleGridNgComponent, { static: true }) private _gridComponent: SimpleGridNgComponent;
+    @ViewChild(RowDataArrayGridNgComponent, { static: true }) private _gridComponent: RowDataArrayGridNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
     public isMainMode = true;
     public isLayoutEditorMode = false;
 
-    private _grid: SimpleGrid;
+    private _grid: RowDataArrayGrid;
     private _frame: SearchDitemFrame;
 
     private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
@@ -75,19 +76,29 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
     private readonly _alertUiAction: ButtonUiAction;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++SearchDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new SearchDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService
+
+        this._frame = new SearchDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, cellPainterFactoryNgService.service,
+            this.rootHtmlElement,
         );
 
         this._categoryUiAction = this.createCategoryUiAction();
@@ -120,18 +131,7 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
     }
 
     protected override initialise() {
-        // const componentStateElement = this.getInitialComponentStateJsonElement();
-        // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        // this._frame.initialise(this._contentComponent.frame, frameElement);
-
-        this._grid = this._gridComponent.createGrid(SearchDitemNgComponent.frameGridProperties);
-        this._grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
-        this._grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
-
-        this.prepareGrid();
-
         this.initialiseComponents();
-
         super.initialise();
     }
 
@@ -157,18 +157,6 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
 
     protected save(element: JsonElement) {
         // nothing to save
-    }
-
-    private prepareGrid() {
-        this._grid.setData(demoSearchResults.slice(), 1);
-    }
-
-    private handleRowFocusEvent(newRowIndex: Integer | undefined) {
-        //
-    }
-
-    private handleGridClickEvent(columnIndex: Integer, rowIndex: Integer) {
-        //
     }
 
     private createCategoryUiAction() {
@@ -315,49 +303,4 @@ export class SearchDitemNgComponent  extends BuiltinDitemNgComponentBaseNgDirect
 
 export namespace SearchDitemNgComponent {
     export const stateSchemaVersion = '2';
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
-}
-
-interface SearchResult {
-    code: string | StringRenderValue;
-    company: string | StringRenderValue;
-    product: string  | StringRenderValue;
-    price: string | StringRenderValue;
-}
-
-const demoSearchResults: IndexSignatureHack<readonly SearchResult[]> = [
-    {
-        code: 'Code',
-        company: 'Company',
-        product: 'Product',
-        price: 'Price',
-    },
-    {
-        code: createAdvertStringRenderValue('trav1.ad'),
-        company: createAdvertStringRenderValue('Example Travel Company 1'),
-        product: createAdvertStringRenderValue('See Arizona in style'),
-        price: createAdvertStringRenderValue('18,000'),
-    },
-    {
-        code: createAdvertStringRenderValue('spc.ad'),
-        company: createAdvertStringRenderValue('Spectaculix Travel'),
-        product: createAdvertStringRenderValue('Magical Arizona'),
-        price: createAdvertStringRenderValue('11,999'),
-    },
-    {
-        code: createAdvertStringRenderValue('trav2.ad'),
-        company: createAdvertStringRenderValue('Example Travel Company 1'),
-        product: createAdvertStringRenderValue('The best of Arizona'),
-        price: createAdvertStringRenderValue('10,500'),
-    },
-] as const;
-
-function createAdvertStringRenderValue(text: string) {
-    const result = new StringRenderValue(text);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
 }

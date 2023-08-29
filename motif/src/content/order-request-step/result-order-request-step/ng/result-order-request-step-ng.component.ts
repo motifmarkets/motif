@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
-import { Badness, ColorScheme, delay1Tick, MultiEvent, SettingsService, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { Badness, ColorScheme, MultiEvent, SettingsService, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { DelayedBadnessNgComponent } from '../../../delayed-badness/ng-api';
@@ -21,6 +21,8 @@ import { ResultOrderRequestStepFrame } from '../result-order-request-step-frame'
 })
 export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponentNgDirective
     implements OnDestroy, AfterViewInit, ResultOrderRequestStepFrame.ComponentAccess {
+
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild('statusLabel', { static: true }) private _statusLabelComponent: CaptionLabelNgComponent;
@@ -47,13 +49,15 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
     private readonly _orderIdUiAction: StringUiAction;
     private readonly _errorsUiAction: StringUiAction;
 
-    constructor(cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         private _contentService: ContentNgService
     ) {
-        super(cdr);
+        super(elRef, ++ResultOrderRequestStepNgComponent.typeInstanceCreateCount, cdr);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );

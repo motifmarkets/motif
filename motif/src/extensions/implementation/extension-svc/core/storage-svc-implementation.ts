@@ -4,43 +4,42 @@
  * License: motionite.trade/license/motif
  */
 
-import { AppStorageService } from '@motifmarkets/motif-core';
-import { RegisteredExtension } from 'content-internal-api';
+import { AppStorageService, KeyValueStore, RegisteredExtension, Result } from '@motifmarkets/motif-core';
 import { StorageSvc } from '../../../api/extension-api';
 
 export class StorageSvcImplementation implements StorageSvc {
     private _keyPrefix: string;
 
     constructor(private readonly _registeredExtension: RegisteredExtension, private readonly _storageService: AppStorageService) {
-        this._keyPrefix = AppStorageService.Key.Extensions + ':' + this._registeredExtension.persistKey + ':';
+        this._keyPrefix = KeyValueStore.Key.Extensions + ':' + this._registeredExtension.persistKey + ':';
     }
 
-    getItem(key: string): Promise<string | undefined> {
+    getItem(key: string): Promise<Result<string | undefined>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.getItem(actualKey);
     }
 
-    getSubNamedItem(key: string, subName: string): Promise<string | undefined> {
+    getSubNamedItem(key: string, subName: string): Promise<Result<string | undefined>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.getSubNamedItem(actualKey, subName);
     }
 
-    setItem(key: string, value: string): Promise<void> {
+    setItem(key: string, value: string): Promise<Result<void>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.setItem(actualKey, value);
     }
 
-    setSubNamedItem(key: string, subName: string, value: string): Promise<void> {
+    setSubNamedItem(key: string, subName: string, value: string): Promise<Result<void>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.setSubNamedItem(actualKey, subName, value);
     }
 
-    removeItem(key: string): Promise<void> {
+    removeItem(key: string): Promise<Result<void>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.removeItem(actualKey);
     }
 
-    removeSubNamedItem(key: string, subName: string): Promise<void> {
+    removeSubNamedItem(key: string, subName: string): Promise<Result<void>> {
         const actualKey = this.generateActualKey(key);
         return this._storageService.removeSubNamedItem(actualKey, subName);
     }

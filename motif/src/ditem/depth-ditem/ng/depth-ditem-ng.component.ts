@@ -5,15 +5,18 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
     ElementRef,
-
-    Inject, OnDestroy, ViewChild, ViewContainerRef
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     CommaText,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -23,12 +26,14 @@ import {
     ModifierKey,
     ModifierKeyId,
     StringId,
-    Strings,
     StringUiAction,
-    UiAction
+    Strings,
+    UiAction,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DepthGridLayoutsEditorNgComponent, DepthNgComponent } from 'content-ng-api';
+import { DepthGridLayoutsDialogNgComponent, DepthNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -45,7 +50,9 @@ import { DepthDitemFrame } from '../depth-ditem-frame';
 export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, DepthDitemFrame.ComponentAccess {
 
-    @ViewChild('symbolEdit') private _symbolEditComponent: LitIvemIdSelectNgComponent;
+    private static typeInstanceCreateCount = 0;
+
+    @ViewChild('symbolInput') private _symbolInputComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('rollUpButton', { static: true }) private _rollUpButtonComponent: SvgButtonNgComponent;
@@ -59,7 +66,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     public isLayoutEditorVisible = false;
 
-    private _symbolEditUiAction: LitIvemIdUiAction;
+    private _symbolInputUiAction: LitIvemIdUiAction;
     private _symbolApplyUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
     private _rollUpUiAction: IconButtonUiAction;
@@ -72,22 +79,29 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     private _frame: DepthDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
-        private _resolver: ComponentFactoryResolver,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++DepthDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new DepthDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
 
-        this._symbolEditUiAction = this.createSymbolEditUiAction();
+        this._frame = new DepthDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+
+        this._symbolInputUiAction = this.createSymbolInputUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._rollUpUiAction = this.createRollUpUiAction();
@@ -116,7 +130,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     // TradesDitemFrame.ComponentAccess methods
     public pushSymbol(litIvemId: LitIvemId | undefined) {
-        this._symbolEditUiAction.pushValue(litIvemId);
+        this._symbolInputUiAction.pushValue(litIvemId);
     }
 
     public notifyOpenedClosed(litIvemId: LitIvemId | undefined) {
@@ -132,8 +146,8 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._contentComponent.frame);
 
         this.pushFilterSelectState();
         this.pushFilterEditValue();
@@ -146,7 +160,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     protected override finalise() {
-        this._symbolEditUiAction.finalise();
+        this._symbolInputUiAction.finalise();
         this._symbolApplyUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
         this._rollUpUiAction.finalise();
@@ -179,7 +193,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleSymbolInputEvent() {
-        if (this._symbolEditUiAction.inputtedText === '') {
+        if (this._symbolInputUiAction.inputtedText === '') {
             this._symbolApplyUiAction.pushDisabled();
         } else {
             // if (!this._symbolEditUiAction.inputtedParseDetails.success) {
@@ -216,27 +230,28 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleFilterEditUiActionCommitEvent(typeId: UiAction.CommitTypeId) {
-        const toArrayResult = CommaText.toStringArrayWithResult(this._filterEditUiAction.definedValue, false);
-        if (toArrayResult.success) {
-            this._frame.setFilter(toArrayResult.array);
+        const toArrayResult = CommaText.tryToStringArray(this._filterEditUiAction.definedValue, false);
+        if (toArrayResult.isOk()) {
+            this._frame.setFilter(toArrayResult.value);
             this.pushFilterEditValue();
         } else {
-            this._filterUiAction.pushInvalid(Strings[StringId.InvalidFilterXrefs]);
+            this._filterUiAction.pushInvalid(Strings[StringId.Depth_InvalidFilterXrefs]);
         }
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
         this.showLayoutEditor();
     }
 
-    private createSymbolEditUiAction() {
+    private createSymbolInputUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.SymbolEditTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = (typeId) => this.handleSymbolCommitEvent(typeId);
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -267,10 +282,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createRollUpUiAction() {
         const commandName = InternalCommand.Id.Depth_Rollup;
-        const displayId = StringId.RollUpDepthCaption;
+        const displayId = StringId.Depth_RollUpCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.RollUpDepthToPriceLevelsTitle]);
+        action.pushTitle(Strings[StringId.Depth_RollUpToPriceLevelsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollUp);
         action.signalEvent = (signalTypeId, downKeys) => this.handleRollUpUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -278,10 +293,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createExpandUiAction() {
         const commandName = InternalCommand.Id.Depth_Expand;
-        const displayId = StringId.ExpandDepthCaption;
+        const displayId = StringId.Depth_ExpandCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.ExpandDepthToOrdersTitle]);
+        action.pushTitle(Strings[StringId.Depth_ExpandToOrdersTitle]);
         action.pushIcon(IconButtonUiAction.IconId.RollDown);
         action.signalEvent = (signalTypeId, downKeys) => this.handleExpandUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -289,10 +304,10 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createFilterUiAction() {
         const commandName = InternalCommand.Id.Depth_Filter;
-        const displayId = StringId.FilterDepthCaption;
+        const displayId = StringId.Depth_FilterCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.FilterDepthToXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_FilterToXrefsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.Filter);
         action.signalEvent = (signalTypeId, downKeys) => this.handleFilterUiActionSignalEvent(signalTypeId, downKeys);
         return action;
@@ -300,7 +315,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private createFilterEditUiAction() {
         const action = new StringUiAction();
-        action.pushTitle(Strings[StringId.SpecifyDepthFilterXrefsTitle]);
+        action.pushTitle(Strings[StringId.Depth_SpecifyFilterXrefsTitle]);
         action.commitEvent = (typeId) => this.handleFilterEditUiActionCommitEvent(typeId);
         return action;
     }
@@ -330,7 +345,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private initialiseChildComponents() {
-        this._symbolEditComponent.initialise(this._symbolEditUiAction);
+        this._symbolInputComponent.initialise(this._symbolInputUiAction);
         this._symbolButtonComponent.initialise(this._symbolApplyUiAction);
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
         this._rollUpButtonComponent.initialise(this._rollUpUiAction);
@@ -344,7 +359,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private commitSymbol(typeId: UiAction.CommitTypeId) {
-        const litIvemId = this._symbolEditUiAction.value;
+        const litIvemId = this._symbolInputUiAction.value;
         if (litIvemId !== undefined) {
             this._frame.setLitIvemIdFromDitem(litIvemId);
         }
@@ -369,12 +384,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private pushFilterEditValue() {
         const filterXrefs = this._frame.filterXrefs;
-        let value: string;
-        if (filterXrefs === undefined) {
-            value = '';
-        } else {
-            value = CommaText.fromStringArray(filterXrefs);
-        }
+        const value = CommaText.fromStringArray(filterXrefs);
         this._filterEditUiAction.pushValue(value);
     }
 
@@ -388,23 +398,27 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     private showLayoutEditor() {
         this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getGridLayoutsWithHeadings();
+        const allowedFieldGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinitions();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = DepthGridLayoutsEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
-            closePromise.then(
-                (layouts) => {
-                    if (layouts !== undefined) {
-                        this._frame.setGridLayouts(layouts);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    Logger.logError(`DepthInput Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
+        const closePromise = DepthGridLayoutsDialogNgComponent.open(
+            this._layoutEditorContainer,
+            this._frame.opener,
+            Strings[StringId.Depth_ColumnsDialogCaption],
+            allowedFieldGridLayoutDefinition
+        );
+        closePromise.then(
+            (layouts) => {
+                if (layouts !== undefined) {
+                    this._frame.applyGridLayoutDefinitions(layouts);
                 }
-            );
-        }
+                this.closeLayoutEditor();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`DepthInput Layout Editor error: ${errorText}`);
+                this.closeLayoutEditor();
+            }
+        );
 
         this.markForCheck();
     }

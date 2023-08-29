@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExtensionId, ExtensionsAccessService } from 'content-internal-api';
+import { ExtensionId } from '@motifmarkets/motif-core';
+import { ExtensionsAccessService } from 'content-internal-api';
 import { ExtensionDitemComponent } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
 

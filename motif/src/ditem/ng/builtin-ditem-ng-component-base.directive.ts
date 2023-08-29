@@ -5,9 +5,9 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
-import { ColorScheme, CommandRegisterService, Json, JsonElement, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ColorScheme, CommandRegisterService, Integer, Json, JsonElement, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ComponentContainer } from 'golden-layout';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemComponent } from '../ditem-component';
 import { DitemFrame } from '../ditem-frame';
@@ -16,49 +16,41 @@ import { DitemFrame } from '../ditem-frame';
 export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBaseNgDirective
     implements DitemFrame.ComponentAccess, DitemComponent {
 
-    private readonly _rootHtmlElement: HTMLElement;
-
     private _focused = false;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _container: ComponentContainer,
-        private readonly _elRef: ElementRef,
-        private readonly _settingsService: SettingsService,
-        private readonly _commandRegisterService: CommandRegisterService,
+        readonly container: ComponentContainer,
+        protected readonly settingsService: SettingsService,
+        protected readonly commandRegisterService: CommandRegisterService,
+        generateUniqueId = true
     ) {
-        super();
+        super(elRef, typeInstanceCreateId, generateUniqueId);
 
-        this._rootHtmlElement = this._elRef.nativeElement;
+        this.container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
 
-        this._container.stateRequestEvent = () => this.handleContainerStateRequestEvent();
-
-        this._container.addEventListener('show', this._containerShownEventListener);
-        this._container.addEventListener('hide', this._containerHideEventListener);
-        this._container.addEventListener('focus', this._containerFocusEventListener);
-        this._container.addEventListener('blur', this._containerBlurEventListener);
+        this.container.addEventListener('show', this._containerShownEventListener);
+        this.container.addEventListener('hide', this._containerHideEventListener);
+        this.container.addEventListener('focus', this._containerFocusEventListener);
+        this.container.addEventListener('blur', this._containerBlurEventListener);
 
         this.initialiseFocusDetectionHandling();
     }
 
-    get container() { return this._container; }
-    get rootHtmlElement() { return this._rootHtmlElement; }
     get focused() { return this._focused; }
-
-    protected get settingsService() { return this._settingsService; }
-    protected get commandRegisterService() { return this._commandRegisterService; }
-    protected get elRef() { return this._elRef; }
 
     abstract get ditemFrame(): BuiltinDitemFrame;
     protected abstract get stateSchemaVersion(): string;
 
     focus() {
-        this._container.focus();
+        this.container.focus();
     }
 
     blur() {
-        this._container.blur();
+        this.container.blur();
     }
 
     public processSymbolLinkedChanged() {
@@ -74,68 +66,78 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
     }
 
     protected initialise() {
-        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
+        this._settingsChangedSubscriptionId = this.settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );
         this.applySettings();
     }
 
     protected finalise() {
-        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
+        this.settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
 
-        this._container.stateRequestEvent = undefined;
+        this.container.stateRequestEvent = undefined;
 
-        this._container.removeEventListener('show', this._containerShownEventListener);
-        this._container.removeEventListener('hide', this._containerHideEventListener);
-        this._container.removeEventListener('focus', this._containerFocusEventListener);
-        this._container.removeEventListener('blur', this._containerBlurEventListener);
+        this.container.removeEventListener('show', this._containerShownEventListener);
+        this.container.removeEventListener('hide', this._containerHideEventListener);
+        this.container.removeEventListener('focus', this._containerFocusEventListener);
+        this.container.removeEventListener('blur', this._containerBlurEventListener);
 
         this.finaliseFocusDetectionHandling();
     }
 
     protected applySettings() {
-        const containerBkgdColor = this._settingsService.color.getBkgd(ColorScheme.ItemId.Layout_SinglePaneContent);
-        this._container.element.style.setProperty('background-color', containerBkgdColor);
+        const containerBkgdColor = this.settingsService.color.getBkgd(ColorScheme.ItemId.Layout_SinglePaneContent);
+        this.container.element.style.setProperty('background-color', containerBkgdColor);
     }
 
     protected initialiseFocusDetectionHandling() {
-        this._rootHtmlElement.addEventListener('click', this._containerElementClickListener, { capture: true });
-        this._rootHtmlElement.addEventListener('focusin', this._containerElementFocusinListener, { capture: true });
+        this.rootHtmlElement.addEventListener('click', this._containerElementClickListener, { capture: true });
+        this.rootHtmlElement.addEventListener('focusin', this._containerElementFocusinListener, { capture: true });
     }
 
     protected finaliseFocusDetectionHandling() {
-        this._rootHtmlElement.removeEventListener('click', this._containerElementClickListener);
-        this._rootHtmlElement.removeEventListener('focusin', this._containerElementFocusinListener);
+        this.rootHtmlElement.removeEventListener('click', this._containerElementClickListener);
+        this.rootHtmlElement.removeEventListener('focusin', this._containerElementFocusinListener);
     }
 
     protected getInitialComponentStateJsonElement() {
-        const json = this._container.initialState as Json | undefined;
+        const json = this.container.initialState as Json | undefined;
         return json === undefined ? undefined : new JsonElement(json);
     }
 
     protected tryGetChildFrameJsonElement(element: JsonElement | undefined) {
-        return element === undefined ? undefined : element.tryGetElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+        if (element === undefined) {
+            return undefined;
+        } else {
+            const frameResult = element.tryGetElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+            if (frameResult.isErr()) {
+                return undefined;
+            } else {
+                return frameResult.value;
+            }
+        }
     }
 
     protected createChildFrameJsonElement(element: JsonElement) {
         return element.newElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
     }
 
-    protected getStateSchemaVersion(element: JsonElement) {
-        const jsonValue = element.tryGetString(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
-        if (jsonValue === undefined) {
-            return undefined;
-        } else {
-            return jsonValue;
-        }
+    protected tryGetStateSchemaVersion(element: JsonElement) {
+        return element.tryGetString(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.schemaVersion);
     }
 
     protected markForCheck() {
         this._cdr.markForCheck();
     }
 
-    protected setTitle(value: string) {
-        this._container.setTitle(value);
+    protected setTitle(baseTabDisplay: string, contentName: string | undefined) {
+        let title: string;
+        if (contentName === undefined || contentName === '') {
+            title = baseTabDisplay;
+        } else {
+            title = `${baseTabDisplay}: ${contentName}`;
+        }
+        this.container.setTitle(title);
     }
 
     protected processShown() {

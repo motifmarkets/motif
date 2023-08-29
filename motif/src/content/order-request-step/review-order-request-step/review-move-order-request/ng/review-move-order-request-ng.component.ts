@@ -4,17 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Inject, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, Inject, OnDestroy } from '@angular/core';
 import {
     AssertInternalError,
     ColorScheme,
     MultiEvent, OrderExtendedSideId, OrderPad,
     OrderRequestDataDefinition,
     SettingsService, StringId,
-    Strings,
-    textFormatter
+    Strings
 } from '@motifmarkets/motif-core';
-import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { SettingsNgService, SymbolsNgService, TextFormatterNgService } from 'component-services-ng-api';
 import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-request-component-ng.directive';
 
 @Component({
@@ -24,6 +23,8 @@ import { ReviewOrderRequestComponentNgDirective } from '../../ng/review-order-re
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestComponentNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
     @HostBinding('style.--color-grid-order-side') gridOrderSideColor: string;
@@ -57,18 +58,22 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
 
     private readonly _sideId: OrderExtendedSideId;
 
-    constructor(cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
-        @Inject(ReviewOrderRequestComponentNgDirective.OrderPadInjectionToken) orderPad: OrderPad,
-        @Inject(ReviewOrderRequestComponentNgDirective.DefinitionInjectionToken) definition: OrderRequestDataDefinition
+        textFormatterNgService: TextFormatterNgService,
+        @Inject(ReviewOrderRequestComponentNgDirective.orderPadInjectionToken) orderPad: OrderPad,
+        @Inject(ReviewOrderRequestComponentNgDirective.definitionInjectionToken) definition: OrderRequestDataDefinition
     ) {
-        super(cdr, orderPad, definition);
+        super(elRef, ++ReviewMoveOrderRequestNgComponent.typeInstanceCreateCount, cdr, orderPad, definition);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
-        const symbolsService = symbolsNgService.symbolsManager;
+        const symbolsService = symbolsNgService.service;
+        const textFormatterService = textFormatterNgService.service;
 
         this.orderIdCaption = Strings[StringId.OrderPadExistingOrderIdCaption];
         const orderId = orderPad.existingOrderId;
@@ -99,7 +104,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
             throw new AssertInternalError('RMIRCCSI9888332312');
         } else {
             this._sideId = sideId;
-            this.side = textFormatter.formatOrderExtendedSideId(sideId);
+            this.side = textFormatterService.formatOrderExtendedSideId(sideId);
         }
 
         this.symbolCaption = Strings[StringId.OrderPadSymbolCaption];
@@ -128,7 +133,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
         if (orderTypeId === undefined) {
             throw new AssertInternalError('RMIRCCOT9888332312');
         } else {
-            this.orderType = textFormatter.formatOrderTypeId(orderTypeId);
+            this.orderType = textFormatterService.formatOrderTypeId(orderTypeId);
         }
 
         this.timeInForceCaption = Strings[StringId.OrderPadTimeInForceCaption];
@@ -137,7 +142,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
         if (timeInForceId === undefined) {
             throw new AssertInternalError('RMIRCCTF9888332312');
         } else {
-            this.timeInForce = textFormatter.formatTimeInForceId(timeInForceId);
+            this.timeInForce = textFormatterService.formatTimeInForceId(timeInForceId);
 
             if (!orderPad.isFieldValid(OrderPad.FieldId.ExpiryDate)) {
                 throw new AssertInternalError('RMIRCCED9888332312');
@@ -146,7 +151,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
                 if (expiryDate === undefined) {
                     this.expiryDate = '';
                 } else {
-                    this.expiryDate = textFormatter.formatDate(expiryDate);
+                    this.expiryDate = textFormatterService.formatDate(expiryDate);
                 }
             }
         }
@@ -157,7 +162,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
         if (totalQuantity === undefined) {
             throw new AssertInternalError('RMIRCCTC9888332312');
         } else {
-            this.quantity = textFormatter.formatQuantity(totalQuantity);
+            this.quantity = textFormatterService.formatQuantity(totalQuantity);
         }
 
         this.priceCaption = Strings[StringId.OrderPadLimitValueCaption];
@@ -169,7 +174,7 @@ export class ReviewMoveOrderRequestNgComponent extends ReviewOrderRequestCompone
             if (price === undefined) {
                 this.price = '';
             } else {
-                this.price = textFormatter.formatPrice(price);
+                this.price = textFormatterService.formatPrice(price);
             }
         }
 

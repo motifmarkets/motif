@@ -9,7 +9,6 @@ import { isReadable as tinyColorIsReadable, readability as tinyColorReadability 
 import {
     ColorScheme,
     ColorSettings,
-    delay1Tick,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -18,9 +17,10 @@ import {
     StringId,
     Strings,
     UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionedRadioNgComponent, CaptionLabelNgComponent, NumberInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedRadioNgComponent, NumberInputNgComponent } from 'controls-ng-api';
 import { MultiColorPickerNgComponent } from 'src/content/multi-color-picker/ng/multi-color-picker-ng.component';
 import { ColorControlsNgComponent } from '../../color-controls/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -33,6 +33,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('bkgdControls', { static: true }) private _bkgdControls: ColorControlsNgComponent;
     @ViewChild('multiPicker', { static: true }) private _multiPicker: MultiColorPickerNgComponent;
     @ViewChild('foreControls', { static: true }) private _foreControls: ColorControlsNgComponent;
@@ -53,10 +55,10 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
     private _itemId: ColorScheme.ItemId | undefined;
     private _width: Integer;
 
-    constructor(private _cdr: ChangeDetectorRef, private readonly _hostElementRef: ElementRef, settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++ColorSchemeItemPropertiesNgComponent.typeInstanceCreateCount);
 
-        this._colorSettings = settingsNgService.settingsService.color;
+        this._colorSettings = settingsNgService.service.color;
 
         this._readabilityUiAction = this.createReadbilityUiAction();
         this._pickerTypeUiAction = this.createPickerTypeUiAction();
@@ -104,14 +106,16 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
         this._bkgdControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
         this._bkgdControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Bkgd, rgb);
         this._bkgdControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Bkgd);
-        this._bkgdControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Bkgd, hide);
+        this._bkgdControls.colorHiddenInPickerChangedEventer =
+            (hidden) => this._multiPicker.setColorHidden(ColorScheme.BkgdForeId.Bkgd, hidden);
 
         this._foreControls.bkdgFore = ColorScheme.BkgdForeId.Fore;
         this._foreControls.position = ColorControlsNgComponent.Position.Bottom;
         this._foreControls.itemChangedEventer = (itemId) => this.handleItemChangedEvent(itemId);
         this._foreControls.colorInternallyChangedEventer = (rgb) => this._multiPicker.setColor(ColorScheme.BkgdForeId.Fore, rgb);
         this._foreControls.requestActiveInPickerEventer = () => this._multiPicker.requestActive(ColorScheme.BkgdForeId.Fore);
-        this._foreControls.hideInPickerChangedEventer = (hide) => this._multiPicker.setHide(ColorScheme.BkgdForeId.Fore, hide);
+        this._foreControls.colorHiddenInPickerChangedEventer =
+            (hidden) => this._multiPicker.setColorHidden(ColorScheme.BkgdForeId.Fore, hidden);
 
         this._multiPicker.inputChangeEventer = (backForeId, rgb) => {
             switch (backForeId) {

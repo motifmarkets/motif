@@ -8,6 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     EventEmitter,
     HostBinding,
     HostListener,
@@ -15,11 +16,18 @@ import {
     OnDestroy,
     Output
 } from '@angular/core';
-import { AssertInternalError, ColorScheme, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    AssertInternalError,
+    ColorScheme, ExtensionInfo,
+    MultiEvent,
+    PublisherId,
+    RegisteredExtension,
+    SettingsService,
+    StringId,
+    Strings
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionInfo } from '../../extension/extension-info';
-import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';
 
 @Component({
     selector: 'app-extension-list-info-item',
@@ -28,6 +36,8 @@ import { ExtensionId, RegisteredExtension } from '../../extension/internal-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Output() installSignalEmitter = new EventEmitter();
     @Output() focusEmitter = new EventEmitter();
 
@@ -44,12 +54,13 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
     private _installedExtensionLoadedChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++ExtensionListInfoItemNgComponent.typeInstanceCreateCount);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );
@@ -57,13 +68,17 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
         this.applySettings();
     }
 
+    @Input() set info(value: ExtensionInfo) {
+        if (value !== this._info) {
+            this.setInfo(value);
+        }
+    }
+
     public get abbreviatedPublisherTypeDisplay() {
-        return ExtensionId.PublisherType.idToAbbreviatedDisplay(
-            this._info.publisherTypeId
-        );
+        return PublisherId.Type.idToAbbreviatedDisplay(this._info.publisherId.typeId);
     }
     public get publisherName() {
-        return this._info.publisherName;
+        return this._info.publisherId.name;
     }
     public get name() {
         return this._info.name;
@@ -78,20 +93,12 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
         return Strings[StringId.Extensions_ExtensionInstallCaption];
     }
 
-    @Input() set info(value: ExtensionInfo) {
-        if (value !== this._info) {
-            this.setInfo(value);
-        }
-    }
-
     @HostListener('click', []) handleHostClick() {
         this.focusEmitter.emit(this._info);
     }
 
     ngOnDestroy() {
-        this._settingsService.unsubscribeSettingsChangedEvent(
-            this._settingsChangedSubscriptionId
-        );
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
         this.checkClearInstalledExtension();
     }
 
@@ -141,19 +148,13 @@ export class ExtensionListInfoItemNgComponent extends ContentComponentBaseNgDire
         if (this._installedExtension === undefined) {
             throw new AssertInternalError('EDCCIE566583333');
         } else {
-            this._installedExtension.unsubscribeLoadedChangedEvent(
-                this._installedExtensionLoadedChangedSubscriptionId
-            );
+            this._installedExtension.unsubscribeLoadedChangedEvent(this._installedExtensionLoadedChangedSubscriptionId);
             this._installedExtensionLoadedChangedSubscriptionId = undefined;
         }
     }
 
     private updateEnabledDisabled(loaded: boolean) {
-        this.color = loaded
-            ? ''
-            : this._settingsService.color.getFore(
-                  ColorScheme.ItemId.Text_GreyedOut
-              );
+        this.color = loaded ? '' : this._settingsService.color.getFore(ColorScheme.ItemId.Text_GreyedOut);
     }
 
     private applySettings() {

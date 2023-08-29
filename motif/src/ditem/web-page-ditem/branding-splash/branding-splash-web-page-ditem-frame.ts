@@ -5,26 +5,27 @@
  */
 
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { AdiService, CommandRegisterService, SymbolsService } from '@motifmarkets/motif-core';
+import { AdiService, CommandRegisterService, SettingsService, SymbolsService } from '@motifmarkets/motif-core';
 import { BuiltinDitemFrame } from '../../builtin-ditem-frame';
-import { DesktopAccessService } from '../../desktop-access-service';
 import { DitemFrame } from '../../ditem-frame';
 
 export class BrandingSplashWebPageDitemFrame extends BuiltinDitemFrame {
+    readonly initialised = true;
+
     constructor(
         private readonly _componentAccess: BrandingSplashWebPageDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage,
-            _componentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            _componentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.BrandingSplashWebPage; }
-    get initialised() { return true; }
 
     loadPage(safeResourceUrl: SafeResourceUrl) {
         this._componentAccess.loadPage(safeResourceUrl);

@@ -4,22 +4,45 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild, ViewEncapsulation } from '@angular/core';
 import {
-    addToGrow15ArrayUniquely, AdiService, AssertInternalError, BooleanUiAction,
-    CommandRegisterService, compareString,
-    ComparisonResult, ExchangeId,
-    ExchangeInfo, IconButtonUiAction, Integer, InternalCommand, IvemId,
+    AdiService,
+    AssertInternalError,
+    BooleanUiAction,
+    CommandRegisterService,
+    ComparisonResult,
+    ExchangeId,
+    ExchangeInfo,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    IvemId,
     MarketId,
-    MarketOrderRoute, MultiEvent, OrderRoute,
+    MarketOrderRoute,
+    MultiEvent,
+    OrderRoute,
     RoutedIvemId,
-    SearchSymbolsDataDefinition, StringId, Strings, SymbolDetailCache,
-    symbolDetailCache, SymbolsDataItem, SymbolsService,
-    UiAction, UnreachableCaseError
+    SearchSymbolsDataDefinition,
+    StringId,
+    Strings,
+    SymbolDetailCacheService,
+    SymbolsDataItem,
+    SymbolsService,
+    UiAction,
+    UnreachableCaseError,
+    addToGrow15ArrayUniquely,
+    compareString,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { distinctUntilChanged, map, merge, Observable, Observer, of, Subject, switchAll, tap, Unsubscribable } from 'rxjs';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
+import { Observable, Observer, Subject, Unsubscribable, distinctUntilChanged, map, merge, of, switchAll, tap } from 'rxjs';
 import { SvgButtonNgComponent } from '../../../boolean/ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -34,6 +57,8 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
     encapsulation: ViewEncapsulation.None,
 })
 export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
@@ -48,8 +73,9 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     public selected: RoutedIvemIdSelectNgComponent.Item | null;
     public minCodeLength = 2;
 
-    private _adiService: AdiService;
-    private _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
+    private readonly _adiService: AdiService;
+    private readonly _symbolDetailCacheService: SymbolDetailCacheService;
+    private readonly _searchTermNotExchangedMarketProcessedToggleUiAction: BooleanUiAction;
 
     private _applyValueTransactionId = 0;
     private _nextSearchNumber = 1;
@@ -62,21 +88,26 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        private _ngSelectOverlayNgService: NgSelectOverlayNgService,
+        private readonly _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService,
         adiNgService: AdiNgService,
-        symbolsNgService: SymbolsNgService
+        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
         super(
+            elRef,
+            ++RoutedIvemIdSelectNgComponent.typeInstanceCreateCount,
             cdr,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
             symbolsNgService,
         );
-        this._adiService = adiNgService.adiService;
-        this.inputId = 'RoutedIvemIdInput' + this.componentInstanceId;
+        this._adiService = adiNgService.service;
+        this._symbolDetailCacheService = symbolDetailCacheNgService.service;
+        this.inputId = 'RoutedIvemIdInput' + this.typeInstanceId;
         this._searchTermNotExchangedMarketProcessedToggleUiAction =
             this.createSearchTermNotExchangedMarketProcessedToggleUiAction(commandRegisterNgService.service);
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
@@ -94,12 +125,6 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         this.setInitialiseReady();
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public generateTitle(item: RoutedIvemIdSelectNgComponent.Item, nameIncluded: boolean) {
         switch (item.exists) {
             case undefined: {
@@ -112,7 +137,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 let result = `${Strings[StringId.Exchange]}: ${ExchangeInfo.idToAbbreviatedDisplay(item.routedIvemId.ivemId.exchangeId)}`;
 
                 if (nameIncluded) {
-                    result = `${this.getItemDisplayName}\n` + result;
+                    result = `${this.getItemDisplayName(item)}\n` + result;
                 }
 
                 return result;
@@ -124,6 +149,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
 
     getItemDisplayName(item: RoutedIvemIdSelectNgComponent.Item) {
         const name = item.name;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         return name === undefined ? '' : name;
     }
 
@@ -173,18 +199,18 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
         super.finalise();
     }
 
-    protected override async applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    protected override async applyValue(value: RoutedIvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             const applyValueTransactionId = ++this._applyValueTransactionId;
             let selected: RoutedIvemIdSelectNgComponent.Item | null;
             if (value === undefined) {
                 selected = null;
             } else {
-                const cachedIvemIdDetail = await symbolDetailCache.getIvemId(value.ivemId);
+                const cachedIvemIdDetail = await this._symbolDetailCacheService.getIvemId(value.ivemId);
                 if (cachedIvemIdDetail === undefined) {
                     selected = null;
                 } else {
-                    selected = RoutedIvemIdSelectNgComponent.createItemFromCacheDetail(value, cachedIvemIdDetail, this.symbolsManager);
+                    selected = RoutedIvemIdSelectNgComponent.createItemFromCacheDetail(value, cachedIvemIdDetail, this.symbolsService);
                 }
             }
 
@@ -226,6 +252,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 maxBoldIdWidth = boldIdMetrics.width;
             }
             const name = item.name;
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (name !== undefined) {
                 const nameMetrics = this._measureCanvasContext.measureText(name);
                 if (nameMetrics.width > maxNameWidth) {
@@ -271,6 +298,7 @@ export class RoutedIvemIdSelectNgComponent extends RoutedIvemIdComponentBaseNgDi
                 (parsedTerm) => new RoutedIvemIdSelectNgComponent.ItemArrayObservable(
                     this._adiService,
                     this.symbolsService,
+                    this._symbolDetailCacheService,
                     parsedTerm, 800,
                     (start) => this.handleQueryStartFinishEvent(start),
                     (start) => this.handleDebounceDelayStartFinishEvent(start)
@@ -442,7 +470,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
     export function createItemNameFromCacheDetail(
         routedIvemId: RoutedIvemId,
-        cacheDetail: SymbolDetailCache.IvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.IvemIdDetail,
         symbolsService: SymbolsService
     ) {
         if (cacheDetail.exists) {
@@ -460,7 +488,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
     export function createItemFromCacheDetail(
         routedIvemId: RoutedIvemId,
-        cacheDetail: SymbolDetailCache.IvemIdDetail,
+        cacheDetail: SymbolDetailCacheService.IvemIdDetail,
         symbolsService: SymbolsService
     ) {
         const item: Item = {
@@ -485,6 +513,7 @@ export namespace RoutedIvemIdSelectNgComponent {
         constructor(
             private readonly _adiService: AdiService,
             private readonly _symbolsService: SymbolsService,
+            private readonly _symbolDetailCacheService: SymbolDetailCacheService,
             private readonly _term: ParsedSearchTerm,
             private readonly _searchDelay: Integer,
             private readonly _queryStartFinishEventHandler: (this: void, start: boolean) => void,
@@ -516,7 +545,7 @@ export namespace RoutedIvemIdSelectNgComponent {
             if (termRoutedIvemId === undefined) {
                 this.emitItems();
             } else {
-                const cacheDetail = symbolDetailCache.getIvemIdFromCache(termRoutedIvemId.ivemId);
+                const cacheDetail = this._symbolDetailCacheService.getIvemIdFromCache(termRoutedIvemId.ivemId);
                 let exists: boolean | undefined;
                 let name: string;
                 if (cacheDetail === undefined) {
@@ -537,7 +566,11 @@ export namespace RoutedIvemIdSelectNgComponent {
                 this.emitItems();
 
                 if (exists === undefined) {
-                    this.fetchTermDetailAndEmit(termRoutedIvemId);
+                    const fetchTermDetailAndEmitPromise = this.fetchTermDetailAndEmit(termRoutedIvemId);
+                    fetchTermDetailAndEmitPromise.then(
+                        () => {/**/},
+                        (error) => { throw new AssertInternalError('RIISNCIAOSF34344', getErrorMessage(error)); }
+                    )
                 }
             }
 
@@ -563,18 +596,16 @@ export namespace RoutedIvemIdSelectNgComponent {
 
         private async fetchTermDetailAndEmit(routedIvemId: RoutedIvemId) {
             this._termIvemIdFetching = true;
-            const cacheDetail = await symbolDetailCache.getIvemId(routedIvemId.ivemId);
-            if (this._termIvemIdFetching) {
-                this._termIvemIdFetching = false;
-                if (cacheDetail !== undefined) {
-                    this._termItem.exists = cacheDetail.exists;
-                    this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail, this._symbolsService);
-                    this.emitItems();
-                }
+            const cacheDetail = await this._symbolDetailCacheService.getIvemId(routedIvemId.ivemId);
+            this._termIvemIdFetching = false;
+            if (cacheDetail !== undefined) {
+                this._termItem.exists = cacheDetail.exists;
+                this._termItem.name = createItemNameFromCacheDetail(routedIvemId, cacheDetail, this._symbolsService);
+                this.emitItems();
+            }
 
-                if (this._searchDelaySetTimeoutHandle === undefined) {
-                    this.complete();
-                }
+            if (this._searchDelaySetTimeoutHandle === undefined) {
+                this.complete();
             }
         }
 
@@ -614,7 +645,7 @@ export namespace RoutedIvemIdSelectNgComponent {
             if (this._dataItem.incubated) {
                 this.processDataItemIncubated(this._dataItem);
             } else {
-                this._dataItemCorrectnessChangeSubcriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+                this._dataItemCorrectnessChangeSubcriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
                     () => this.handleDataItemCorrectnessChange()
                 );
             }
@@ -632,7 +663,7 @@ export namespace RoutedIvemIdSelectNgComponent {
 
         private checkUnsubscribeDataItem() {
             if (this._dataItem !== undefined) {
-                this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemCorrectnessChangeSubcriptionId);
+                this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemCorrectnessChangeSubcriptionId);
                 this._dataItemCorrectnessChangeSubcriptionId = undefined;
                 this._adiService.unsubscribe(this._dataItem);
                 this._dataItem = undefined;
@@ -736,13 +767,16 @@ export namespace RoutedIvemIdSelectNgComponent {
         private emitItems() {
             const termItem = this._termItem;
             const searchItems = this._searchItems;
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (termItem === undefined) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (searchItems !== undefined) {
                     this._observer.next(searchItems);
                 } else {
                     this._observer.next([]);
                 }
             } else {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (searchItems === undefined) {
                     this._observer.next([termItem]);
                 } else {
@@ -819,7 +853,7 @@ export namespace RoutedIvemIdSelectNgComponent {
         errorEvent: Typeahead.ErrorEvent;
 
         constructor(private _adiService: PariAdi,
-            private _symbolsService: SymbolsManager,
+            private _symbolsService: SymbolsNgService,
             private _term: ParsedSearchTerm,
             private _minCodeLength: Integer,
             private _exchangeMarketParsingActive: boolean,

@@ -11,16 +11,18 @@ import {
 } from '@angular/core';
 import {
     ButtonUiAction,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
+    StringUiAction,
     Strings,
-    StringUiAction
+    UiAction,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
 import { ScansNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -34,15 +36,15 @@ import { ScansDitemFrame } from '../scans-ditem-frame';
     styleUrls: ['./scans-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
-    implements OnDestroy, AfterViewInit, ScansDitemFrame.ComponentAccess {
+export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('newButton', { static: true }) private _newButtonComponent: ButtonInputNgComponent;
     @ViewChild('filterEdit') private _filterEditComponent: TextInputNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('scansContent', { static: true }) private _scansContentComponent: ScansNgComponent;
+    @ViewChild('scans', { static: true }) private _scansComponent: ScansNgComponent;
     @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     public dialogActive = false;
@@ -56,19 +58,27 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     private _frame: ScansDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++ScansDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new ScansDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this._frame = new ScansDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._newUiAction = this.createNewUiAction();
         this._filterEditUiAction = this.createFilterEditUiAction();
@@ -78,13 +88,6 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
         this.pushSymbolLinkSelectState();
-    }
-
-    public get frameGridProperties(): AdaptedRevgrid.FrameGridProperties {
-        return {
-            fixedColumnCount: 1,
-            gridRightAligned: false,
-        };
     }
 
     get ditemFrame() { return this._frame; }
@@ -105,7 +108,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._scansContentComponent.frame, frameElement);
+        this._frame.initialise(frameElement, this._scansComponent.listFrame);
 
         // this.pushFilterSelectState();
         this.pushFilterEditValue();
@@ -146,8 +149,9 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._frame.filterText = this._filterEditUiAction.definedValue;
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -185,7 +189,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
         action.pushUnselected();
-        action.signalEvent = () => this.handleAutoSizeColumnWidthsUiActionSignalEvent();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 

@@ -4,10 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { Badness, Integer, numberToPixels } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
-import { AdaptedRevgrid, RecordGrid } from 'content-internal-api';
 import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
 import { DepthSideNgComponent } from '../../depth-side/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -21,20 +20,13 @@ import { DepthFrame } from '../depth-frame';
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit, DepthFrame.ComponentAccess {
+export class DepthNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DepthFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness') private _delayedBadnessComponent: DelayedBadnessNgComponent;
     @ViewChild(SplitComponent) private _split: SplitComponent;
     @ViewChild('bidSide', { static: true }) private _bidComponent: DepthSideNgComponent;
     @ViewChild('askSide', { static: true }) private _askComponent: DepthSideNgComponent;
-
-    public readonly bidFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        gridRightAligned: true,
-        fixedColumnCount: 0,
-    };
-    public readonly askFrameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        gridRightAligned: false,
-        fixedColumnCount: 0,
-    };
 
     public bidActiveWidth = '120px';
     public bidWidthPercent = 50;
@@ -44,20 +36,18 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
 
     private readonly _frame: DepthFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        super(elRef, ++DepthNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createDepthFrame(this);
     }
 
     public get frame(): DepthFrame { return this._frame; }
+    public get bidDepthSideFrame() { return this._bidComponent.frame; }
+    public get askDepthSideFrame() { return this._askComponent.frame; }
 
     ngOnDestroy() {
         this._frame.finalise();
-    }
-
-    ngAfterViewInit() {
-        this._frame.bindChildFrames(this._bidComponent.frame, this._askComponent.frame);
     }
 
     // Component Access Methods

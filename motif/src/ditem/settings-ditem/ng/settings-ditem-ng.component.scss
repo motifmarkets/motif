@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/horizontal-children-separator';
+// @import './partials/horizontal-children-separator';
+@use './partials/tablist';
 
 :host {
     display: flex;
@@ -14,10 +15,11 @@
     height: 100%;
 }
 
-#groupSelectorButtonsDiv {
-    display: flex;
-    flex-direction: row;
-}
+// #groupSelectorButtonsDiv {
+//     @include tablist.row;
+//     // display: flex;
+//     // flex-direction: row;
+// }
 
 #groupContainer {
     height: 100%;

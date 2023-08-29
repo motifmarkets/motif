@@ -12,11 +12,11 @@ import { CoreNgService } from './core-ng.service';
     providedIn: 'root',
 })
 export class AppStorageNgService {
-    private _appStorage: AppStorageService;
+    private _service: AppStorageService;
 
     constructor(coreNgService: CoreNgService) {
-        this._appStorage = coreNgService.appStorageService;
+        this._service = coreNgService.appStorageService;
     }
 
-    get appStorage() { return this._appStorage; }
+    get service() { return this._service; }
 }

@@ -4,12 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, Input } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, Input } from '@angular/core';
 import {
     Account, AssertInternalError, BrokerageAccountGroup, BrokerageAccountGroupUiAction, BrokerageAccountsDataDefinition,
     BrokerageAccountsDataItem,
     DataItemIncubator,
-    MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError
+    Integer,
+    MultiEvent, SettingsService, SingleBrokerageAccountGroup, StringId, Strings, UiAction, UnreachableCaseError,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { CoreNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
@@ -25,20 +27,14 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private _dataItem: BrokerageAccountsDataItem;
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
-    constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
+    constructor(elRef: ElementRef<HTMLElement>, typeInstanceCreateId: Integer, cdr: ChangeDetectorRef, settingsService: SettingsService,
         pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
     ) {
-        super(cdr, settingsService, stateColorItemIdArray);
-        this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adi);
+        super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);
+        this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adiService);
     }
 
     protected override get uiAction() { return super.uiAction as BrokerageAccountGroupUiAction; }
-
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
 
     protected processNamedGroupsChanged() {
         this.applyValue(this.uiAction.value, this.uiAction.edited);
@@ -71,7 +67,8 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
             dataItemOrPromise.then(
                 (dataItem) => this.processDataItemIncubated(dataItem),
                 (reason) => {
-                    throw new AssertInternalError('BAIICBC323299', reason);
+                    const errorText = getErrorMessage(reason);
+                    throw new AssertInternalError('BAIICBC323299', errorText);
                 }
             );
         }
@@ -183,12 +180,13 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
             this.applyValueAsNamedGroup(undefined, edited);
         } else {
             switch (value.typeId) {
-                case BrokerageAccountGroup.TypeId.Single:
+                case BrokerageAccountGroup.TypeId.Single: {
                     const singleGroup = value as SingleBrokerageAccountGroup;
                     const keyNamedGroup = this.createKeyNamedGroup(singleGroup.accountKey);
                     this.applyValueAsNamedGroup(keyNamedGroup, edited);
                     break;
-                case BrokerageAccountGroup.TypeId.All:
+                }
+                case BrokerageAccountGroup.TypeId.All: {
                     if (this.uiAction.options.allAllowed) {
                         const allNamedGroup = this.createAllNamedGroup();
                         this.applyValueAsNamedGroup(allNamedGroup, edited);
@@ -196,6 +194,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
                         this.applyValueAsNamedGroup(undefined, edited);
                     }
                     break;
+                }
                 default:
                     throw new UnreachableCaseError('BAGCBDAV77763439', value.typeId);
             }

@@ -10,7 +10,7 @@ import { DesktopFrame } from 'src/desktop/internal-api';
 export class WorkspaceService {
     private _localDesktopFrameLoadedMultiEvent = new MultiEvent<WorkspaceService.LocalDesktopFrameLoadedEventHandler>();
 
-    private _localDesktopFrame: DesktopFrame;
+    private _localDesktopFrame: DesktopFrame | undefined;
 
     get localDesktopFrame() { return this._localDesktopFrame; }
 
@@ -27,9 +27,7 @@ export class WorkspaceService {
             throw new AssertInternalError('WSSLDF22293546');
         } else {
             this._localDesktopFrame = value;
-            if (this._localDesktopFrameLoadedMultiEvent !== undefined) {
-                this.notifyLocalDesktopFrameLoaded();
-            }
+            this.notifyLocalDesktopFrameLoaded();
         }
     }
 

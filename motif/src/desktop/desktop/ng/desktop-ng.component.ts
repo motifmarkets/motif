@@ -17,12 +17,13 @@ import {
     ButtonUiAction,
     ColorScheme,
     CommandRegisterService,
-    delay1Tick,
     InternalCommand,
     MultiEvent,
     SettingsService,
-    StringId
+    StringId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SignOutService } from 'component-services-internal-api';
 import {
     AdiNgService,
@@ -30,16 +31,15 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SignOutNgService,
-    SymbolsNgService,
+    SymbolDetailCacheNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
-import { BuiltinDitemNgComponentBaseDirective, DesktopAccessNgService } from 'ditem-ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
-import { AppFeature } from 'src/app.feature';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from 'src/root/ng/config-ng.service';
 import { GoldenLayoutHostNgComponent } from '../../golden-layout-host/ng-api';
 import { DesktopFrame } from '../desktop-frame';
@@ -51,17 +51,19 @@ import { DesktopFrame } from '../desktop-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
-    @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent;
+    @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent | undefined;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;
     @ViewChild('layoutHost', { static: true }) private _layoutHostComponent: GoldenLayoutHostNgComponent;
 
-    public advertisingEnabled = AppFeature.advertising;
-    public barBkgdColor: string;
-    public barForeColor: string;
+    public readonly advertisingEnabled: boolean;
     public readonly barLeftImageExists: boolean;
     public readonly barLeftImageUrl: string;
+    public barBkgdColor: string;
+    public barForeColor: string;
 
     private readonly _commandRegisterService: CommandRegisterService;
     private readonly _settingsService: SettingsService;
@@ -69,29 +71,30 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
 
     private readonly _desktopFrame: DesktopFrame;
 
-    private readonly _aboutAdvertisingUiAction: ButtonUiAction;
+    private readonly _aboutAdvertisingUiAction: ButtonUiAction | undefined;
     private readonly _signOutUiAction: ButtonUiAction;
     // private _commandBarUiAction: CommandBarUiAction;
 
     constructor(
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         configNgService: ConfigNgService,
         settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,
         userAlertNgService: UserAlertNgService,
+        capabilitiesNgService: CapabilitiesNgService,
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
         adiNgService: AdiNgService,
         signOutNgService: SignOutNgService,
         menuBarNgService: MenuBarNgService,
         commandRegisterNgService: CommandRegisterNgService,
         keyboardNgService: KeyboardNgService,
     ) {
-        super();
+        super(elRef, ++DesktopNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 
         const signOutService = signOutNgService.service;
@@ -107,14 +110,18 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             this.barLeftImageUrl = barLeftImageUrl;
         }
 
+        const capabilitiesService = capabilitiesNgService.service;
+        this.advertisingEnabled = capabilitiesService.advertisingEnabled;
+
         this._desktopFrame = new DesktopFrame(
-            elRef.nativeElement,
+            this.rootHtmlElement,
             this._settingsService,
-            appStorageNgService.appStorage,
+            appStorageNgService.service,
             userAlertNgService.service,
+            capabilitiesService,
             extensionsAccessNgService.service,
-            symbolsNgService.symbolsManager,
-            adiNgService.adiService,
+            symbolDetailCacheNgService.service,
+            adiNgService.service,
             signOutService,
             menuBarNgService.service,
             this._commandRegisterService,
@@ -187,7 +194,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     }
 
     private getBuiltinDitemFrameFromGoldenLayoutComponent(component: ComponentItem.Component) {
-        if (typeof component !== 'object' || !(component instanceof BuiltinDitemNgComponentBaseDirective)) {
+        if (typeof component !== 'object' || !(component instanceof BuiltinDitemNgComponentBaseNgDirective)) {
             throw new AssertInternalError('DCGBDFFGLC45559248');
         } else {
             return component.ditemFrame;

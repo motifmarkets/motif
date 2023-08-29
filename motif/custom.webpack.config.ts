@@ -101,7 +101,7 @@ declare namespace DevServer {
 function customizeWebpackConfig(config: webpack.WebpackOptionsNormalized) {
     // console.log(new Date().toLocaleTimeString());
     // console.log('Pre');
-    // console.log(config);
+    // console.log(JSON.stringify(config));
 
     let development: boolean;
     if (config.mode === undefined) {
@@ -119,7 +119,7 @@ function customizeWebpackConfig(config: webpack.WebpackOptionsNormalized) {
     }
 
     // console.log('Post');
-    // console.log(config);
+    // console.log(JSON.stringify(config));
     return config;
 }
 
@@ -133,15 +133,15 @@ function updateRules(config: webpack.WebpackOptionsNormalized, development: bool
             throw new Error(`${webpackConfigFileName}: module.rules undefined`);
         } else {
             excludeSvgButtonIconFolderFromModuleRules(rules);
-            addIconSpriteModuleRule(rules);
+            addSvgInlineAssetsRule(rules);
             addSourceMapLoaderRule(rules);
         }
     }
 }
 
-function excludeSvgButtonIconFolderFromModuleRules(rules: (webpack.RuleSetRule | '...')[]) {
+function excludeSvgButtonIconFolderFromModuleRules(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     rules.forEach((rule) => {
-        if (typeof rule !== 'string') {
+        if (typeof rule === 'object' && rule !== null) {
             const test = rule.test;
             if (test !== undefined) {
                 if (!test.toString().includes('svg')) {
@@ -168,19 +168,15 @@ function excludeSvgButtonIconFolderFromModuleRule(rule: webpack.RuleSetRule) {
     rule.exclude = [rule.exclude, svgButtonIconsFolderPath];
 }
 
-function addIconSpriteModuleRule(rules: (webpack.RuleSetRule | '...')[]) {
+function addSvgInlineAssetsRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     const rule: webpack.RuleSetRule = {
         test: /\.svg$/,
-        loader: 'svg-sprite-loader',
-        include: svgButtonIconsFolderPath,
-        options: {
-            symbolId: 'button-icon-[name]',
-        },
+        type: 'asset/inline',
     };
     rules.push(rule);
 }
 
-function addSourceMapLoaderRule(rules: (webpack.RuleSetRule | '...')[]) {
+function addSourceMapLoaderRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     const rule: webpack.RuleSetRule = {
         test: /\.js$/,
         enforce: 'pre',

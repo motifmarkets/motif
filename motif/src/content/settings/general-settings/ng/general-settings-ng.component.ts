@@ -5,20 +5,41 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, OnInit, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    OnInit,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
-    ArrayUiAction, assert, BooleanUiAction, delay1Tick, EnumUiAction, ExchangeInfo, ExplicitElementsEnumArrayUiAction,
+    ArrayUiAction,
+    BooleanUiAction,
+    EnumUiAction,
+    ExchangeInfo,
+    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
     IntegerUiAction,
-    MasterSettings, MultiEvent, SourceTzOffsetDateTime, StringId, Strings, StringUiAction, SymbolField, SymbolFieldId, SymbolsService
+    MasterSettings,
+    MultiEvent,
+    SourceTzOffsetDateTime,
+    StringId,
+    StringUiAction,
+    Strings,
+    SymbolField,
+    SymbolFieldId,
+    SymbolsService,
+    assert,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import {
+    CaptionLabelNgComponent,
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
-    CaptionLabelNgComponent,
     CheckboxInputNgComponent,
     EnumArrayInputNgComponent,
     EnumInputNgComponent,
@@ -35,6 +56,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('fontFamilyLabel', { static: true }) private _fontFamilyLabelComponent: CaptionLabelNgComponent;
     @ViewChild('fontFamilyControl', { static: true }) private _fontFamilyControlComponent: TextInputNgComponent;
     @ViewChild('fontSizeLabel', { static: true }) private _fontSizeLabelComponent: CaptionLabelNgComponent;
@@ -102,10 +125,10 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
-        super(cdr, settingsNgService.settingsService);
-        this._masterSettings = settingsNgService.settingsService.master;
-        this._symbolsService = symbolsNgService.symbolsManager;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, symbolsNgService: SymbolsNgService) {
+        super(elRef, ++GeneralSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
+        this._masterSettings = settingsNgService.service.master;
+        this._symbolsService = symbolsNgService.service;
 
         this.dateTimeTimezoneModeRadioName = this.generateInstancedRadioName('dateTimeTimezoneMode');
 
@@ -312,7 +335,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExplicitSearchFieldsEnabled]);
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExplicitSearchFieldsEnabled]);
         action.commitEvent = () => {
-            this.coreSettings.symbol_ExplicitSearchFieldsEnabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
+            this._symbolsService.explicitSearchFieldsEnabled = this._explicitSymbolSearchFieldsEnabledUiAction.definedValue;
             this.updateExplicitSearchFieldsUiActionEnabled();
         };
         return action;
@@ -337,7 +360,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this.coreSettings.symbol_ExplicitSearchFieldIds = this._explicitSymbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
+            this._symbolsService.explicitSearchFieldIds = this._explicitSymbolSearchFieldsUiAction.definedValue as SymbolFieldId[];
         };
         return action;
     }
@@ -346,23 +369,23 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Master_SettingsProfile]);
         action.pushTitle(Strings[StringId.SettingTitle_Master_SettingsProfile]);
-        const selectorIds: MasterSettings.ApplicationEnvironmentSelector.SelectorId[] = [
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.Default,
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.DataEnvironment,
-            MasterSettings.ApplicationEnvironmentSelector.SelectorId.Test,
+        const selectorIds: MasterSettings.ApplicationUserEnvironmentSelector.SelectorId[] = [
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.Default,
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.DataEnvironment,
+            MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.Test,
         ];
         const elementPropertiesArray = selectorIds.map<EnumUiAction.ElementProperties>(
             (selectorId) => (
                 {
                     element: selectorId,
-                    caption: MasterSettings.ApplicationEnvironmentSelector.idToDisplay(selectorId),
-                    title: MasterSettings.ApplicationEnvironmentSelector.idToDescription(selectorId),
+                    caption: MasterSettings.ApplicationUserEnvironmentSelector.idToDisplay(selectorId),
+                    title: MasterSettings.ApplicationUserEnvironmentSelector.idToDescription(selectorId),
                 }
             )
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._masterSettings.applicationEnvironmentSelectorId = this._settingsProfileUiAction.definedValue;
+            this._masterSettings.applicationUserEnvironmentSelectorId = this._settingsProfileUiAction.definedValue;
         };
         return action;
     }
@@ -414,10 +437,10 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         this._minimumPriceFractionDigitsCountUiAction.pushValue(this.coreSettings.format_MinimumPriceFractionDigitsCount);
         this._24HourUiAction.pushValue(this.coreSettings.format_24Hour);
         this._dateTimeTimezoneModeUiAction.pushValue(this.coreSettings.format_DateTimeTimezoneModeId);
-        this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldsEnabled);
-        this._explicitSymbolSearchFieldsUiAction.pushValue(this.coreSettings.symbol_ExplicitSearchFieldIds);
+        this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this._symbolsService.explicitSearchFieldsEnabled);
+        this._explicitSymbolSearchFieldsUiAction.pushValue(this._symbolsService.explicitSearchFieldIds);
         this.updateExplicitSearchFieldsUiActionEnabled();
-        this._settingsProfileUiAction.pushValue(this._masterSettings.applicationEnvironmentSelectorId);
+        this._settingsProfileUiAction.pushValue(this._masterSettings.applicationUserEnvironmentSelectorId);
 
         if (this.settingsService.restartRequired !== this.restartRequired) {
             this.restartRequired = this.settingsService.restartRequired;
@@ -451,14 +474,10 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
 export namespace GeneralSettingsNgComponent {
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(GeneralSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(GeneralSettingsNgComponent);
         assert(componentRef.instance instanceof GeneralSettingsNgComponent, 'ASCC2288532');
-        return componentRef.instance as GeneralSettingsNgComponent;
+        return componentRef.instance;
     }
 }

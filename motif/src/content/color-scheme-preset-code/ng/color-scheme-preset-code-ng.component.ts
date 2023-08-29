@@ -5,22 +5,28 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-    OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import { TinyColor } from '@ctrl/tinycolor';
 import {
-    assert,
     ColorScheme,
     ColorSettings,
     CommandRegisterService,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     ModifierKey,
     StringBuilder,
     StringId,
-    UiAction
+    UiAction,
+    assert,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -34,6 +40,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     private static readonly _tabs2 = ' '.repeat(8);
     private static readonly _tabs3 = ' '.repeat(12);
 
@@ -51,8 +59,8 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
     private _closeResolve: () => void;
     private _closeReject: (reason: unknown) => void;
 
-    constructor(private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++ColorSchemePresetCodeNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
 
@@ -83,7 +91,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
         const listener = (e: ClipboardEvent) => {
             const clipboard = e.clipboardData;
             if (clipboard === null) {
-
+                // show some type of warning in future
             } else {
                 clipboard.setData('text/plain', this.presetCode);
                 e.preventDefault();
@@ -100,7 +108,7 @@ export class ColorSchemePresetCodeNgComponent extends ContentComponentBaseNgDire
     }
 
     private createReturnUiAction() {
-        const commandName = InternalCommand.Id.ContentGridLayoutEditor_Ok;
+        const commandName = InternalCommand.Id.GridLayoutDialog_Ok;
         const displayId = StringId.Ok;
         const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
@@ -174,15 +182,13 @@ export namespace ColorSchemePresetCodeNgComponent {
 
     export function open(
         container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
         colorSettings: ColorSettings,
     ): ClosePromise {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ColorSchemePresetCodeNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ColorSchemePresetCodeNgComponent);
         assert(componentRef.instance instanceof ColorSchemePresetCodeNgComponent, 'CSPCCO232324');
 
-        const component = componentRef.instance as ColorSchemePresetCodeNgComponent;
+        const component = componentRef.instance;
 
         return component.open(colorSettings);
     }

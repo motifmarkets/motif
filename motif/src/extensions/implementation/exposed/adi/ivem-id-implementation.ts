@@ -5,7 +5,8 @@
  */
 
 import { IvemId } from '@motifmarkets/motif-core';
-import { IvemId as IvemIdApi, Json as JsonApi } from '../../../api/extension-api';
+import { IvemId as IvemIdApi, JsonElement as JsonElementApi } from '../../../api/extension-api';
+import { JsonElementImplementation } from '../sys/internal-api';
 import { ExchangeIdImplementation } from './exchange-id-api-implementation';
 
 export class IvemIdImplementation implements IvemIdApi {
@@ -17,8 +18,9 @@ export class IvemIdImplementation implements IvemIdApi {
     get exchangeId() { return ExchangeIdImplementation.toApi(this._actual.exchangeId); }
     get name() { return this._actual.name; }
 
-    toJson(): JsonApi {
-        return this._actual.toJson();
+    saveToJson(elementApi: JsonElementApi) {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        return this._actual.saveToJson(element);
     }
 }
 

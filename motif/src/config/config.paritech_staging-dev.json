@@ -2,6 +2,7 @@
   "configFormatVersion": "2",
   "configComment": "",
   "service": {
+    "group": "Paritech",
     "name": "Paritech Staging (Development)",
     "description": "Paritech Staging (Development)"
   },
@@ -39,7 +40,7 @@
   "defaultLayout": {
     "instanceName": "Default",
     "linkedSymbol": {
-      "code": "BHP",
+      "code": "AMP",
       "market": "AsxTradeMatch"
     },
     "watchlist": [
@@ -54,14 +55,20 @@
       {
         "code": "NAB",
         "market": "AsxTradeMatch"
+      },
+      {
+        "code": "AMP",
+        "market": "AsxTradeMatch"
       }
     ]
   },
   "bundledExtensions": [
     {
       "info": {
-        "publisherType": "Organisation",
-        "publisherName": "Paritech",
+        "publisherId": {
+          "type": "Organisation",
+          "name": "Paritech"
+        },
         "name": "Highcharts",
         "version": "0.0.2",
         "apiVersion": "1",
@@ -73,8 +80,10 @@
     },
     {
       "info": {
-        "publisherType": "Organisation",
-        "publisherName": "Paritech",
+        "publisherId": {
+          "type": "Organisation",
+          "name": "Paritech"
+        },
         "name": "Website Embed",
         "version": "0.0.1",
         "apiVersion": "1",
@@ -86,8 +95,10 @@
     },
     {
       "info": {
-        "publisherType": "Organisation",
-        "publisherName": "Paritech",
+        "publisherId": {
+          "type": "Organisation",
+          "name": "Paritech"
+        },
         "name": "TsDemo",
         "version": "0.0.1",
         "apiVersion": "1",
@@ -98,8 +109,9 @@
       "install": false
     }
   ],
-  "features": {
-    "advertising": false
+  "capabilities": {
+    "advertising": false,
+    "dtr": true
   },
   "diagnostics": {
     "telemetry": {

@@ -5,7 +5,7 @@
  */
 
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { DataEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
+import { ConfigServiceGroupId, DataEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
 import { ExtensionsService } from 'src/extensions/internal-api';
 
 export interface Config {
@@ -17,7 +17,7 @@ export interface Config {
     readonly defaultLayout: Config.DefaultLayout;
     readonly bundledExtensions: Config.BundledExtensions;
     readonly diagnostics: Config.Diagnostics;
-    readonly features: Config.Features;
+    readonly capabilities: Config.Capabilities;
     readonly branding: Config.Branding;
 }
 
@@ -30,6 +30,7 @@ export namespace Config {
     export interface Service {
         readonly name: string;
         readonly description: string | undefined;
+        readonly groupId: ConfigServiceGroupId | undefined;
     }
 
     export interface Exchange {
@@ -140,14 +141,14 @@ export namespace Config {
         }
     }
 
-    export interface Features {
-        readonly preview: boolean;
+    export interface Capabilities {
         readonly advertising: boolean;
+        readonly dtr: boolean;
     }
 
-    export namespace Features {
-        export const defaultPreview = false;
+    export namespace Capabilities {
         export const defaultAdvertising = false;
+        export const defaultDtr = false;
     }
 
     export interface Branding {

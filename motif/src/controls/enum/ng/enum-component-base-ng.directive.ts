@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, Input } from '@angular/core';
-import { EnumUiAction, Integer, isUndefinableArrayEqualUniquely, MultiEvent, SettingsService, UiAction } from '@motifmarkets/motif-core';
+import { Directive, Input } from '@angular/core';
+import { EnumUiAction, Integer, MultiEvent, UiAction, isUndefinableArrayEqualUniquely } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()
@@ -15,14 +15,6 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
     private _pushEnumEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     private _filter: readonly Integer[] | undefined;
-
-    constructor(
-        cdr: ChangeDetectorRef,
-        settingsService: SettingsService,
-        stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
-    ) {
-        super(cdr, settingsService, stateColorItemIdArray);
-    }
 
     protected override get uiAction() { return super.uiAction as EnumUiAction; }
 

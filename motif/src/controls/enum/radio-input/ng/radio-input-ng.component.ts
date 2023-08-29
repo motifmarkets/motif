@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, Renderer2 } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input } from '@angular/core';
 import { Integer, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -18,15 +18,22 @@ import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-compo
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
 
     @Input() name = '';
     @Input() checked = false;
 
     public radioDisabled = true;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'Radio' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>,cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++RadioInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
+        );
+        this.inputId = 'Radio' + this.typeInstanceId;
     }
 
     onChange(checked: boolean) {

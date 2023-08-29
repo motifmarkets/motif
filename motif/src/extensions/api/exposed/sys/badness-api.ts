@@ -78,6 +78,7 @@ export namespace Badness {
         StatusWarnings = 'StatusWarnings',
         StatusRetrieving = 'StatusRetrieving',
         StatusErrors = 'StatusErrors',
+        LockError = 'LockError',
     }
 
     export type Reason = keyof typeof ReasonEnum;

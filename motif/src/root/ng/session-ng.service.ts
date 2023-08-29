@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import {
     AdiNgService,
     AppStorageNgService,
+    CapabilitiesNgService,
     MotifServicesNgService,
     ScansNgService,
     SessionInfoNgService,
@@ -18,6 +19,7 @@ import {
     UserAlertNgService
 } from 'component-services-ng-api';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
+import { WorkspaceNgService } from 'workspace-ng-api';
 import { Config } from '../config';
 import { SessionService } from '../session-service';
 import { ConfigNgService } from './config-ng.service';
@@ -31,31 +33,37 @@ export class SessionNgService implements OnDestroy {
     private _config: Config;
     private _session: SessionService;
 
-    constructor(private _router: Router,
+    constructor(
+        private readonly _router: Router,
         configNgService: ConfigNgService,
         telemetryNgService: TelemetryNgService,
         userAlertNgService: UserAlertNgService,
         settingsNgService: SettingsNgService,
         openIdNgService: OpenIdNgService,
+        capabilitiesNgService: CapabilitiesNgService,
         motifServicesNgService: MotifServicesNgService,
         appStorageNgService: AppStorageNgService,
         extensionNgService: ExtensionsNgService,
+        workspaceNgService: WorkspaceNgService,
         adiNgService: AdiNgService,
-        symbolsManagerNgService: SymbolsNgService,
+        symbolsNgService: SymbolsNgService,
         scansNgService: ScansNgService,
         sessionInfoNgService: SessionInfoNgService,
         signOutNgService: SignOutNgService,
     ) {
         this._config = configNgService.config;
-        this._session = new SessionService(telemetryNgService.telemetry,
+        this._session = new SessionService(
+            telemetryNgService.telemetry,
             userAlertNgService.service,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             openIdNgService.service,
+            capabilitiesNgService.service,
             motifServicesNgService.service,
-            appStorageNgService.appStorage,
+            appStorageNgService.service,
             extensionNgService.service,
-            adiNgService.adiService,
-            symbolsManagerNgService.symbolsManager,
+            workspaceNgService.service,
+            adiNgService.service,
+            symbolsNgService.service,
             scansNgService.service,
             signOutNgService.service,
         );

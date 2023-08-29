@@ -12,19 +12,19 @@ import { CoreNgService } from './core-ng.service';
     providedIn: 'root'
 })
 export class SymbolsNgService {
-    private _symbolsManager: SymbolsService;
+    private _service: SymbolsService;
 
     constructor(coreNgService: CoreNgService) {
-        this._symbolsManager = coreNgService.symbolsManager;
+        this._service = coreNgService.symbolsService;
     }
 
-    get symbolsManager() { return this._symbolsManager; }
+    get service() { return this._service; }
 
     litIvemIdToDisplay(litIvemId: LitIvemId): string {
-        return this._symbolsManager.litIvemIdToDisplay(litIvemId);
+        return this._service.litIvemIdToDisplay(litIvemId);
     }
 
     parseLitIvemId(value: string): SymbolsService.LitIvemIdParseDetails {
-        return this._symbolsManager.parseLitIvemId(value);
+        return this._service.parseLitIvemId(value);
     }
 }

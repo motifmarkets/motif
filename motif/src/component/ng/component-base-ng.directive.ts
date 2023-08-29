@@ -4,25 +4,25 @@
  * License: motionite.trade/license/motif
  */
 
-import { Directive } from '@angular/core';
+import { Directive, ElementRef } from '@angular/core';
 import { Integer } from '@motifmarkets/motif-core';
 
 @Directive()
 export abstract class ComponentBaseNgDirective {
-    private static _componentInstanceConstructCount = 0;
+    readonly rootHtmlElement: HTMLElement;
+    readonly typeName: string;
+    readonly typeInstanceId: string;
 
-    private _componentInstanceNumber: Integer;
-    private _componentInstanceId: string;
-
-    constructor() {
-        this._componentInstanceNumber = ++ComponentBaseNgDirective._componentInstanceConstructCount;
-        this._componentInstanceId = this._componentInstanceNumber.toString();
+    constructor(readonly elRef: ElementRef<HTMLElement>, readonly typeInstanceCreateId: Integer, generateUniqueId = false) {
+        this.rootHtmlElement = elRef.nativeElement;
+        this.typeName = this.rootHtmlElement.tagName.toLowerCase();
+        this.typeInstanceId  = this.typeName + typeInstanceCreateId.toString(10);
+        if (generateUniqueId) {
+            this.rootHtmlElement.id = this.typeInstanceId;
+        }
     }
 
-    protected get componentInstanceNumber() { return this._componentInstanceNumber; }
-    protected get componentInstanceId() { return this._componentInstanceId; }
-
     protected generateInstancedRadioName(name: string) {
-        return this.componentInstanceId + name;
+        return this.typeInstanceId + '_' + name;
     }
 }

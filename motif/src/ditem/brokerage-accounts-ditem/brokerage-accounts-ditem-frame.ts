@@ -5,113 +5,141 @@
  */
 
 import {
-    Account, AdiService, BrokerageAccountGroup, BrokerageAccountTableRecordDefinition,
-    BrokerageAccountTableRecordDefinitionList,
-    CommandRegisterService, DataRecordList, Integer, JsonElement, SingleBrokerageAccountGroup, SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList
+    Account,
+    AdiService,
+    AssertInternalError,
+    BrokerageAccountGroup,
+    BrokerageAccountId,
+    CommandRegisterService,
+    Integer,
+    JsonElement,
+    SettingsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { BrokerageAccountsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
-    private _tableFrame: TableFrame;
-    private _accountsDataItem: DataRecordList<Account>;
+    private _brokerageAccountsFrame: BrokerageAccountsFrame | undefined;
 
     private _accountGroupApplying = false;
     private _currentFocusedAccountIdSetting = false;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
     }
 
-    get initialised() { return this._tableFrame !== undefined; }
+    get initialised() { return this._brokerageAccountsFrame !== undefined; }
 
-    initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined) {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(ditemFrameElement: JsonElement | undefined, brokerageAccountsFrame: BrokerageAccountsFrame) {
+        this._brokerageAccountsFrame = brokerageAccountsFrame;
 
-        if (frameElement === undefined) {
-            this._tableFrame.loadLayoutConfig(undefined);
-        } else {
-            const contentElement = frameElement.tryGetElement(BrokerageAccountsDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+        brokerageAccountsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex)
+
+        let brokerageAccountsFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const brokerageAccountsFrameElementResult = ditemFrameElement.tryGetElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
+            if (brokerageAccountsFrameElementResult.isOk()) {
+                brokerageAccountsFrameElement = brokerageAccountsFrameElementResult.value;
+            }
         }
+
+        brokerageAccountsFrame.initialiseGrid(
+            this.opener,
+            brokerageAccountsFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
 
+    override finalise() {
+        if (this._brokerageAccountsFrame !== undefined) {
+            this._brokerageAccountsFrame.finalise();
+        }
+        super.finalise();
+    }
+
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        const brokerageAccountsFrame = this._brokerageAccountsFrame;
+        if (brokerageAccountsFrame === undefined) {
+            throw new AssertInternalError('BADFS50789');
+        } else {
+            const brokerageAccountsFrameElement = ditemFrameElement.newElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
+            brokerageAccountsFrame.save(brokerageAccountsFrameElement);
+        }
+    }
+
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean { // override
-        if (this._tableFrame.layoutConfigLoading || this._currentFocusedAccountIdSetting || group === undefined) {
+        if (this._currentFocusedAccountIdSetting || group === undefined) {
             return false;
         } else {
-            if (!(group instanceof SingleBrokerageAccountGroup)) {
+            if (!BrokerageAccountGroup.isSingle(group)) {
                 return false;
             } else {
-                let result: boolean;
-                this._accountGroupApplying = true;
-                try {
-                    const key = group.accountKey;
-                    const definition = new BrokerageAccountTableRecordDefinition(undefined, key);
-                    const itemDefinitionIndex = this._tableFrame.findRecordDefinition(definition);
-
-                    if (itemDefinitionIndex === undefined) {
-                        result = false;
-                    } else {
-                        this._tableFrame.focusItem(itemDefinitionIndex);
-                        result = super.applyBrokerageAccountGroup(group, selfInitiated);
-
-                        // if (result && selfInitiated) {
-                        //     this.notifyAccountIdAccepted(group);
-                        // }
+                const brokerageAccountsFrame = this._brokerageAccountsFrame;
+                if (brokerageAccountsFrame === undefined) {
+                    throw new AssertInternalError('BDFABAG50789');
+                } else {
+                    this._accountGroupApplying = true;
+                    try {
+                        const recordList = brokerageAccountsFrame.recordList;
+                        let index = -1;
+                        const accountId = group.id;
+                        const count = recordList.count;
+                        for (let i = 0; i < count; i++) {
+                            const record = recordList.getAt(i);
+                            if (BrokerageAccountId.isDefinedEqual(record.id, accountId)) {
+                                index = i;
+                                break;
+                            }
+                        }
+                        if (index === -1) {
+                            return false;
+                        } else {
+                            brokerageAccountsFrame.focusItem(index);
+                            return super.applyBrokerageAccountGroup(group, selfInitiated);
+                        }
+                    } finally {
+                        this._accountGroupApplying = false;
                     }
-                } finally {
-                    this._accountGroupApplying = false;
                 }
-
-                return result;
             }
         }
     }
 
-    private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const account = this._accountsDataItem.records[newRecordIndex];
-            this.processAccountFocusChange(account);
+            const brokerageAccountsFrame = this._brokerageAccountsFrame;
+            if (brokerageAccountsFrame === undefined) {
+                throw new AssertInternalError('BDFHRFE10789');
+            } else {
+                const account = brokerageAccountsFrame.recordList.records[newRecordIndex];
+                this.processAccountFocusChange(account);
+            }
         }
-    }
-
-    private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createBrokerageAccount();
-    }
-
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const accountRecordDefinitionList = recordDefinitionList as BrokerageAccountTableRecordDefinitionList;
-        this._accountsDataItem = accountRecordDefinitionList.dataRecordList;
     }
 
     private processAccountFocusChange(newFocusedAccount: Account) {
         if (!this._accountGroupApplying) {
-            if (newFocusedAccount !== undefined) {
-                this._currentFocusedAccountIdSetting = true;
-                try {
-                    const key = newFocusedAccount.createKey();
-                    this.applyDitemBrokerageAccountGroupFocus(BrokerageAccountGroup.createSingle(key), true);
-                } finally {
-                    this._currentFocusedAccountIdSetting = false;
-                }
+            this._currentFocusedAccountIdSetting = true;
+            try {
+                const key = newFocusedAccount.createKey();
+                this.applyDitemBrokerageAccountGroupFocus(BrokerageAccountGroup.createSingle(key), true);
+            } finally {
+                this._currentFocusedAccountIdSetting = false;
             }
         }
     }
@@ -119,6 +147,6 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
 export namespace BrokerageAccountsDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const brokerageAccountsFrame = 'brokerageAccountsFrame';
     }
 }

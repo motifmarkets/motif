@@ -69,8 +69,8 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
     bootstrap: [RootNgComponent]
 })
 
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class AppNgModule {
-
     constructor() {
         StaticInitialise.initialise();
     }

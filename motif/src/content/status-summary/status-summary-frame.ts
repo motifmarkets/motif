@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     Badness,
     CorrectnessId,
     MultiEvent, SessionInfoService, StringId,
@@ -25,12 +26,14 @@ export class StatusSummaryFrame extends ContentFrame {
     private _extConnectionPublisherOnlineChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _extConnectionPublisherStateChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _serverInfoDataItem: ZenithServerInfoDataItem;
+    private _serverInfoDataItem: ZenithServerInfoDataItem | undefined;
     private _serverInfoFieldValuesChangedSubscriptionId: MultiEvent.SubscriptionId;
     private _serverInfoCorrectnessChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _componentAccess: StatusSummaryFrame.ComponentAccess, private _adi: AdiService,
-        public readonly _sessionInfoService: SessionInfoService
+    constructor(
+        private readonly _adiService: AdiService,
+        public readonly _sessionInfoService: SessionInfoService,
+        private readonly _componentAccess: StatusSummaryFrame.ComponentAccess,
     ) {
         super();
 
@@ -41,7 +44,7 @@ export class StatusSummaryFrame extends ContentFrame {
 
     get publisherOnline() { return this._extConnectionDataItem.publisherOnline ? Strings[StringId.Online] : Strings[StringId.Offline]; }
     get publisherStateId() { return ZenithPublisherState.idToDisplay(this._extConnectionDataItem.publisherStateId); }
-    get serverName() { return this._serverInfoDataItem.serverName === undefined ? '' : this._serverInfoDataItem.serverName; }
+    get serverName() { return this._serverInfoDataItem?.serverName === undefined ? '' : this._serverInfoDataItem.serverName; }
 
     initialise() {
         this.subscribeZenithExtConnection();
@@ -85,7 +88,7 @@ export class StatusSummaryFrame extends ContentFrame {
         const dataDefinition = new ZenithExtConnectionDataDefinition();
         dataDefinition.zenithWebsocketEndpoints = this._sessionInfoService.zenithEndpoints;
 
-        this._extConnectionDataItem = this._adi.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
+        this._extConnectionDataItem = this._adiService.subscribe(dataDefinition) as ZenithExtConnectionDataItem;
         this._extConnectionPublisherOnlineChangeSubscriptionId = this._extConnectionDataItem.subscribePublisherOnlineChangeEvent(
             () => { this.handleExtConnectionPublisherOnlineChangeEvent(); }
         );
@@ -99,12 +102,12 @@ export class StatusSummaryFrame extends ContentFrame {
         this._extConnectionPublisherOnlineChangeSubscriptionId = undefined;
         this._extConnectionDataItem.unsubscribePublisherStateChangeEvent(this._extConnectionPublisherStateChangeSubscriptionId);
         this._extConnectionPublisherStateChangeSubscriptionId = undefined;
-        this._adi.unsubscribe(this._extConnectionDataItem);
+        this._adiService.unsubscribe(this._extConnectionDataItem);
     }
 
     private subscribeZenithServerInfo() {
         const dataDefinition = new ZenithServerInfoDataDefinition();
-        this._serverInfoDataItem = this._adi.subscribe(dataDefinition) as ZenithServerInfoDataItem;
+        this._serverInfoDataItem = this._adiService.subscribe(dataDefinition) as ZenithServerInfoDataItem;
         this._serverInfoFieldValuesChangedSubscriptionId = this._serverInfoDataItem.subscribeFieldValuesChangedEvent(
             () => { this.handleServerInfoFieldValuesChangedEvent(); }
         );
@@ -119,33 +122,38 @@ export class StatusSummaryFrame extends ContentFrame {
             this._serverInfoFieldValuesChangedSubscriptionId = undefined;
             this._serverInfoDataItem.unsubscribeBadnessChangeEvent(this._serverInfoCorrectnessChangeSubscriptionId);
             this._serverInfoCorrectnessChangeSubscriptionId = undefined;
-            this._adi.unsubscribe(this._serverInfoDataItem);
+            this._adiService.unsubscribe(this._serverInfoDataItem);
+            this._serverInfoDataItem = undefined;
         }
     }
 
     private calculateBadness() {
-        const serverInfoBadness = this._serverInfoDataItem.badness;
-        const correctnessId = Badness.Reason.idToCorrectnessId(serverInfoBadness.reasonId);
-        switch (correctnessId) {
-            case CorrectnessId.Good:
-            case CorrectnessId.Usable:
-                return Badness.notBad;
-            case CorrectnessId.Suspect: {
-                const badness: Badness = {
-                    reasonId: Badness.ReasonId.StatusRetrieving,
-                    reasonExtra: Badness.generateText(serverInfoBadness),
-                };
-                return badness;
+        if (this._serverInfoDataItem === undefined) {
+            throw new AssertInternalError('SSFCB34986');
+        } else {
+            const serverInfoBadness = this._serverInfoDataItem.badness;
+            const correctnessId = Badness.Reason.idToCorrectnessId(serverInfoBadness.reasonId);
+            switch (correctnessId) {
+                case CorrectnessId.Good:
+                case CorrectnessId.Usable:
+                    return Badness.notBad;
+                case CorrectnessId.Suspect: {
+                    const badness: Badness = {
+                        reasonId: Badness.ReasonId.StatusRetrieving,
+                        reasonExtra: Badness.generateText(serverInfoBadness),
+                    };
+                    return badness;
+                }
+                case CorrectnessId.Error: {
+                    const badness: Badness = {
+                        reasonId: Badness.ReasonId.StatusWarnings,
+                        reasonExtra: Badness.generateText(serverInfoBadness),
+                    };
+                    return badness;
+                }
+                default:
+                    throw new UnreachableCaseError('SSFCB988873444', correctnessId);
             }
-            case CorrectnessId.Error: {
-                const badness: Badness = {
-                    reasonId: Badness.ReasonId.StatusWarnings,
-                    reasonExtra: Badness.generateText(serverInfoBadness),
-                };
-                return badness;
-            }
-            default:
-                throw new UnreachableCaseError('SSFCB988873444', correctnessId);
         }
     }
 }

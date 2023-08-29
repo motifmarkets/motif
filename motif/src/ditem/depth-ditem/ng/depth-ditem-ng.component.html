@@ -6,7 +6,7 @@
 
 <div id="inputDiv" [style.display]="isLayoutEditorVisible ? 'none' : null">
     <div id="mainToolbarDiv">
-        <app-lit-ivem-id-select #symbolEdit id="symbolEdit"></app-lit-ivem-id-select>
+        <app-lit-ivem-id-select #symbolInput id="symbolInput"></app-lit-ivem-id-select>
         <app-svg-button #symbolButton id="symbolButton"></app-svg-button>
         <section id="rollUpDownButtonSection">
             <app-svg-button #rollDownButton id="rollDownButton"></app-svg-button>
@@ -28,5 +28,5 @@
     <app-depth #depthContent id="depthContent"></app-depth>
 </div>
 <div id="layoutEditorDiv" [style.display]="!isLayoutEditorVisible ? 'none' : null">
-    <ng-template #layoutEditorContainer></ng-template>
+    <ng-container #layoutEditorContainer></ng-container>
 </div>

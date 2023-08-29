@@ -8,16 +8,20 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
     ConfigError,
+    ConfigServiceGroup,
+    ConfigServiceGroupId,
     createRandomUrlSearch,
     DataEnvironment,
     DataEnvironmentId,
+    ErrorCode,
     ExchangeInfo,
-    ExternalError,
+    ExtensionInfo,
+    Json,
+    JsonElement,
     LitIvemId,
     Logger,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
-import { ExtensionInfo, PersistableExtensionInfo } from 'content-internal-api';
 import { Config } from '../config';
 
 @Injectable({
@@ -27,6 +31,7 @@ export class ConfigNgService {
     version: string;
     config: Config;
 
+    // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-empty-function
     constructor() { }
 }
 
@@ -47,14 +52,14 @@ export namespace ConfigNgService {
         const [versionResponse, configResponse] = await Promise.all([fetch(versionUri), fetch(configJsonUri)]);
 
         if (versionResponse.status !== 200) {
-            throw new ConfigError(ExternalError.Code.CSL23230003998, 'VersionHTTP',
-                `${versionResponse.status}: "${versionResponse.statusText}" Uri: ${versionResponse}`);
+            throw new ConfigError(ErrorCode.CSL23230003998, 'VersionHTTP',
+                `${versionResponse.status}: "${versionResponse.statusText}" Uri: ${configJsonUri}`);
         } else {
             const versionText = await versionResponse.text();
             configService.version = versionText.trim();
 
             if (configResponse.status !== 200) {
-                throw new ConfigError(ExternalError.Code.CSL23230003998, 'ConfigHTTP',
+                throw new ConfigError(ErrorCode.CSL23230003998, 'ConfigHTTP',
                     `${configResponse.status}: "${configResponse.statusText}" Uri: ${configJsonUri}`);
             } else {
                 const configText = await configResponse.text();
@@ -68,20 +73,21 @@ export namespace ConfigNgService {
     export interface ConfigJson {
         readonly configFormatVersion: string;
         readonly configComment?: string;
-        readonly environment: Environment.Json;
-        readonly service: Service.Json;
-        readonly exchange: Exchange.Json;
-        readonly endpoints: Endpoints.Json;
-        readonly openId: OpenId.Json;
-        readonly defaultLayout?: DefaultLayout.Json;
-        readonly bundledExtensions?: BundledExtensions.Json;
-        readonly diagnostics?: Diagnostics.Json;
-        readonly features?: Features.Json;
-        readonly branding?: Branding.Json;
+        readonly environment: Environment.EnvironmentJson;
+        readonly service: Service.ServiceJson;
+        readonly exchange: Exchange.ExchangeJson;
+        readonly endpoints: Endpoints.EndPointsJson;
+        readonly openId: OpenId.OpenIdJson;
+        readonly defaultLayout?: DefaultLayout.DefaultLayoutJson;
+        readonly bundledExtensions?: Json;
+        readonly diagnostics?: Diagnostics.DiagnosticsJson;
+        readonly features?: Capabilities.CapabilitiesJson; // backwards compatibility - remove when all configs have been updated
+        readonly capabilities?: Capabilities.CapabilitiesJson;
+        readonly branding?: Branding.BrandingJson;
     }
 
     export namespace Environment {
-        export interface Json {
+        export interface EnvironmentJson {
             readonly defaultDataEnvironment: DataEnvironmentEnum;
             readonly bannerOverrideDataEnvironment: DataEnvironmentEnum | '' | undefined;
         }
@@ -103,34 +109,41 @@ export namespace ConfigNgService {
             }
         }
 
-        export function parseJson(json: Json, serviceName: string) {
+        export function parseJson(json: unknown, serviceName: string) {
             if (json === undefined) {
-                throw new ConfigError(ExternalError.Code.ConfigMissingEnvironment, serviceName, '');
+                throw new ConfigError(ErrorCode.ConfigMissingEnvironment, serviceName, '');
             } else {
-                const defaultDataEnvironment = json.defaultDataEnvironment;
-                if (defaultDataEnvironment === undefined) {
-                    throw new ConfigError(ExternalError.Code.ConfigEnvironmentMissingDefaultData, serviceName, '');
+                const jsonType = typeof json;
+                if (jsonType !== 'object') {
+                    throw new ConfigError(ErrorCode.ConfigEnvironmentInvalidType, serviceName, jsonType);
                 } else {
-                    const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
-                    if (defaultDataEnvironmentId === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSEPJET9072322185564, serviceName, defaultDataEnvironment);
+                    const environmentJson = json as EnvironmentJson;
+                    const defaultDataEnvironment = environmentJson.defaultDataEnvironment;
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                    if (defaultDataEnvironment === undefined) {
+                        throw new ConfigError(ErrorCode.ConfigEnvironmentMissingDefaultData, serviceName, '');
                     } else {
-                        let bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
-                        const bannerOverrideDataEnvironment = json.bannerOverrideDataEnvironment;
-                        if (bannerOverrideDataEnvironment === undefined || bannerOverrideDataEnvironment === '') {
-                            bannerOverrideDataEnvironmentId = undefined;
+                        const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
+                        if (defaultDataEnvironmentId === undefined) {
+                            throw new ConfigError(ErrorCode.CSEPJET9072322185564, serviceName, defaultDataEnvironment);
                         } else {
-                            bannerOverrideDataEnvironmentId = tryDataEnvironmentToId(bannerOverrideDataEnvironment);
+                            let bannerOverrideDataEnvironmentId: DataEnvironmentId | undefined;
+                            const bannerOverrideDataEnvironment = environmentJson.bannerOverrideDataEnvironment;
+                            if (bannerOverrideDataEnvironment === undefined || bannerOverrideDataEnvironment === '') {
+                                bannerOverrideDataEnvironmentId = undefined;
+                            } else {
+                                bannerOverrideDataEnvironmentId = tryDataEnvironmentToId(bannerOverrideDataEnvironment);
 
-                            if (bannerOverrideDataEnvironmentId === undefined) {
-                                throw new ConfigError(ExternalError.Code.CSEPJOE9072322185564, serviceName, defaultDataEnvironment);
+                                if (bannerOverrideDataEnvironmentId === undefined) {
+                                    throw new ConfigError(ErrorCode.CSEPJOE9072322185564, serviceName, defaultDataEnvironment);
+                                }
                             }
+                            const environment: Config.Environment = {
+                                defaultDataEnvironmentId,
+                                bannerOverrideDataEnvironmentId,
+                            };
+                            return environment;
                         }
-                        const environment: Config.Environment = {
-                            defaultDataEnvironmentId,
-                            bannerOverrideDataEnvironmentId,
-                        };
-                        return environment;
                     }
                 }
             }
@@ -138,23 +151,38 @@ export namespace ConfigNgService {
     }
 
     export namespace Service {
-        export interface Json {
+        export interface ServiceJson {
             readonly name: string;
             readonly description?: string;
+            readonly group?: string;
         }
 
-        export function parseJson(json: Json, jsonText: string) {
+        export function parseJson(json: ServiceJson, jsonText: string) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ExternalError.Code.ConfigMissingService, '?', jsonText);
+                throw new ConfigError(ErrorCode.ConfigMissingService, '?', jsonText);
             } else {
                 const name = json.name;
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (name === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSSPJN14499232322, '?', jsonText);
+                    throw new ConfigError(ErrorCode.CSSPJN14499232322, '?', jsonText);
                 } else {
                     const description = json.description;
 
+                    const group = json.group;
+                    let groupId: ConfigServiceGroupId | undefined;
+                    if (group === undefined) {
+                        groupId = undefined;
+                    } else {
+                        groupId = ConfigServiceGroup.tryJsonValueToId(group);
+                        if (groupId === undefined) {
+                            throw new ConfigError(ErrorCode.ConfigServiceInvalidGroup, name, group);
+                        }
+                    }
+
                     const service: Config.Service = {
                         name,
+                        groupId,
                         description,
                     };
 
@@ -165,29 +193,31 @@ export namespace ConfigNgService {
     }
 
     export namespace Exchange {
-        export interface Json {
+        export interface ExchangeJson {
             readonly defaultDefault: string;
-            readonly options?: Json.Option[];
+            readonly options?: ExchangeJson.Option[];
         }
 
-        export namespace Json {
+        export namespace ExchangeJson {
             export interface Option {
                 readonly exchange: string;
                 readonly overriddenDefaultDataEnvironment?: Environment.DataEnvironmentEnum;
             }
         }
 
-        export function parseJson(json: Json, serviceName: string) {
+        export function parseJson(json: ExchangeJson, serviceName: string) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ExternalError.Code.ConfigMissingExchange, serviceName, '');
+                throw new ConfigError(ErrorCode.ConfigMissingExchange, serviceName, '');
             } else {
                 const defaultDefault = json.defaultDefault;
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (defaultDefault === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSEPJDDU97222185554, serviceName, '');
+                    throw new ConfigError(ErrorCode.CSEPJDDU97222185554, serviceName, '');
                 } else {
                     const defaultDefaultExchangeId = ExchangeInfo.tryJsonValueToId(defaultDefault);
                     if (defaultDefaultExchangeId === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSLEPJDDEIU2248883843, serviceName, defaultDefault);
+                        throw new ConfigError(ErrorCode.CSLEPJDDEIU2248883843, serviceName, defaultDefault);
                     } else {
                         const optionsJson = json.options;
                         let options: Config.Exchange.Option[] | undefined;
@@ -214,18 +244,18 @@ export namespace ConfigNgService {
             }
         }
 
-        function parseOptionJson(optionJson: Json.Option, serviceName: string): Config.Exchange.Option {
+        function parseOptionJson(optionJson: ExchangeJson.Option, serviceName: string): Config.Exchange.Option {
             const exchangeJson = optionJson.exchange;
             const exchangeId = ExchangeInfo.tryJsonValueToId(exchangeJson);
             if (exchangeId === undefined) {
-                throw new ConfigError(ExternalError.Code.CSLEPJDDEIU2248883844, serviceName, exchangeJson);
+                throw new ConfigError(ErrorCode.CSLEPJDDEIU2248883844, serviceName, exchangeJson);
             } else {
                 const overriddenDefaultDataEnvironmentJson = optionJson.overriddenDefaultDataEnvironment;
                 let overriddenDefaultDataEnvironmentId: DataEnvironmentId | undefined;
                 if (overriddenDefaultDataEnvironmentJson !== undefined) {
                     overriddenDefaultDataEnvironmentId = DataEnvironment.tryJsonToId(overriddenDefaultDataEnvironmentJson);
                     if (overriddenDefaultDataEnvironmentId === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSLEPOJDDEIU2248883845, serviceName, overriddenDefaultDataEnvironmentJson);
+                        throw new ConfigError(ErrorCode.CSLEPOJDDEIU2248883845, serviceName, overriddenDefaultDataEnvironmentJson);
                     }
                 }
 
@@ -240,34 +270,37 @@ export namespace ConfigNgService {
     }
 
     export namespace Endpoints {
-        export interface Json {
+        export interface EndPointsJson {
             readonly motifServices: readonly string[];
             readonly zenith: readonly string[];
         }
 
-        export function parseJson(json: Json, serviceName: string) {
+        export function parseJson(json: EndPointsJson, serviceName: string) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ExternalError.Code.ConfigMissingEndpoints, serviceName, '');
+                throw new ConfigError(ErrorCode.ConfigMissingEndpoints, serviceName, '');
             } else {
                 const motifServices = json.motifServices;
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (motifServices === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSEPPMSU00831852399, serviceName, '');
+                    throw new ConfigError(ErrorCode.CSEPPMSU00831852399, serviceName, '');
                 } else {
                     if (motifServices.length === 0) {
-                        throw new ConfigError(ExternalError.Code.CSEPPMSL00831852399, serviceName, '');
+                        throw new ConfigError(ErrorCode.CSEPPMSL00831852399, serviceName, '');
                     } else {
                         if (motifServices[0].length === 0) {
-                            throw new ConfigError(ExternalError.Code.CSEPPMSE00831852399, serviceName, '');
+                            throw new ConfigError(ErrorCode.CSEPPMSE00831852399, serviceName, '');
                         } else {
                             const zenith = json.zenith;
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             if (zenith === undefined) {
-                                throw new ConfigError(ExternalError.Code.CSEPPZU00831852399, serviceName, '');
+                                throw new ConfigError(ErrorCode.CSEPPZU00831852399, serviceName, '');
                             } else {
                                 if (zenith.length === 0) {
-                                    throw new ConfigError(ExternalError.Code.CSEPPZL00831852399, serviceName, '');
+                                    throw new ConfigError(ErrorCode.CSEPPZL00831852399, serviceName, '');
                                 } else {
                                     if (zenith[0].length === 0) {
-                                        throw new ConfigError(ExternalError.Code.CSEPPZE00831852399, serviceName, '');
+                                        throw new ConfigError(ErrorCode.CSEPPZE00831852399, serviceName, '');
                                     } else {
                                         const endpoints: Config.Endpoints = {
                                             motifServices,
@@ -286,7 +319,7 @@ export namespace ConfigNgService {
     }
 
     export namespace OpenId {
-        export interface Json {
+        export interface OpenIdJson {
             readonly authority: string;
             readonly clientId: string;
             readonly redirectUri: string;
@@ -294,29 +327,35 @@ export namespace ConfigNgService {
             readonly scope: string;
         }
 
-        export function parseJson(json: Json, serviceName: string) {
+        export function parseJson(json: OpenIdJson, serviceName: string) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ExternalError.Code.ConfigMissingOpenId, serviceName, '');
+                throw new ConfigError(ErrorCode.ConfigMissingOpenId, serviceName, '');
             } else {
                 const authority = json.authority;
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (authority === undefined) {
-                    throw new ConfigError(ExternalError.Code.CSOIPJA0831852399, serviceName, '');
+                    throw new ConfigError(ErrorCode.CSOIPJA0831852399, serviceName, '');
                 } else {
                     const clientId = json.clientId;
+                    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     if (clientId === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSOIPJCI100194724, serviceName, '');
+                        throw new ConfigError(ErrorCode.CSOIPJCI100194724, serviceName, '');
                     } else {
                         const redirectUri = json.redirectUri;
+                        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                         if (redirectUri === undefined) {
-                            throw new ConfigError(ExternalError.Code.CSOIPJRU33448829, serviceName, '');
+                            throw new ConfigError(ErrorCode.CSOIPJRU33448829, serviceName, '');
                         } else {
                             const silentRedirectUri = json.silentRedirectUri;
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             if (silentRedirectUri === undefined) {
-                                throw new ConfigError(ExternalError.Code.CSOIPJSR12120987, serviceName, '');
+                                throw new ConfigError(ErrorCode.CSOIPJSR12120987, serviceName, '');
                             } else {
                                 const scope = json.scope;
+                                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                                 if (scope === undefined) {
-                                    throw new ConfigError(ExternalError.Code.CSOIPJSC67773223, serviceName, '');
+                                    throw new ConfigError(ErrorCode.CSOIPJSC67773223, serviceName, '');
                                 } else {
                                     const openId: Config.OpenId = {
                                         authority,
@@ -337,14 +376,14 @@ export namespace ConfigNgService {
     }
 
     export namespace DefaultLayout {
-        export interface Json {
+        export interface DefaultLayoutJson {
             readonly internalName: string | undefined;
             readonly instanceName: string | undefined;
             readonly linkedSymbol: LitIvemId.Json | undefined;
             readonly watchlist: LitIvemId.Json[] | undefined;
         }
 
-        export function parseJson(json: Json | undefined) {
+        export function parseJson(json: DefaultLayoutJson | undefined) {
             let defaultLayout: Config.DefaultLayout;
             if (json === undefined) {
                 defaultLayout = {
@@ -371,11 +410,10 @@ export namespace ConfigNgService {
             readonly install: boolean;
         }
 
-        export interface BundledExtensionJson {
-            readonly info: PersistableExtensionInfo;
-            readonly install: boolean;
+        export namespace JsonName {
+            export const install = 'install';
+            export const info = 'info';
         }
-        export type Json = BundledExtensionJson[];
 
         export function parseJson(json: Json | undefined, serviceName: string): Config.BundledExtensions {
             if (json !== undefined) {
@@ -386,10 +424,16 @@ export namespace ConfigNgService {
                     const result = new Array<BundledExtension>(maxCount);
                     let count = 0;
                     for (let i = 0; i < maxCount; i++) {
-                        const bundledExtensionJson = json[i];
-                        const bundledExtension = parseBundledExtensionJson(bundledExtensionJson, serviceName);
-                        if (bundledExtension !== undefined) {
-                            result[count++] = bundledExtension;
+                        const bundledExtensionJson = json[i] as Json;
+                        const bundledExtensionJsonType = typeof bundledExtensionJson;
+                        if (bundledExtensionJsonType !== 'object') {
+                            Logger.logConfigError('CNSDEPJBE23300', `${serviceName}: ${bundledExtensionJsonType}`);
+                        } else {
+                            const bundledExtensionJsonElement = new JsonElement(bundledExtensionJson);
+                            const bundledExtension = parseBundledExtensionJson(bundledExtensionJsonElement, serviceName);
+                            if (bundledExtension !== undefined) {
+                                result[count++] = bundledExtension;
+                            }
                         }
                     }
                     result.length = count;
@@ -400,43 +444,45 @@ export namespace ConfigNgService {
             return [];
         }
 
-        export function parseBundledExtensionJson(json: BundledExtensionJson | undefined, serviceName: string) {
+        export function parseBundledExtensionJson(json: JsonElement | undefined, serviceName: string) {
             if (json === undefined) {
                 Logger.logConfigError('CNSPJU13300911', serviceName);
             } else {
-                if (!checkBoolean(json.install)) {
+                const installResult = json.tryGetBoolean(JsonName.install);
+                if (installResult.isErr()) {
                     Logger.logConfigError('CNSPJI13300911', serviceName);
                 } else {
-                    const fromResult = ExtensionInfo.fromPersistable(json.info);
-                    const errorText = fromResult.errorText;
-                    if (errorText !== undefined) {
-                        Logger.logConfigError('CNSPJU13300911', `"${serviceName}": ${errorText}`);
+                    const infoElementResult = json.tryGetElement(JsonName.info);
+                    if (infoElementResult.isErr()) {
+                        Logger.logConfigError('CNSBEPBEJNL20558', serviceName);
                     } else {
-                        const result: BundledExtension = {
-                            info: fromResult.info,
-                            install: json.install,
-                        };
-                        return result;
+                        const createResult = ExtensionInfo.tryCreateFromJson(infoElementResult.value);
+                        if (createResult.isErr()) {
+                            Logger.logConfigError('CNSPJU13300911', `"${serviceName}": ${createResult.error}`);
+                        } else {
+                            const result: BundledExtension = {
+                                info: createResult.value,
+                                install: installResult.value,
+                            };
+                            return result;
+                        }
                     }
                 }
             }
             return undefined;
         }
-        function checkBoolean(value: boolean) {
-            return value !== undefined && typeof value === 'boolean';
-        }
     }
 
     export namespace Diagnostics {
-        export interface Json {
+        export interface DiagnosticsJson {
             readonly appNotifyErrors?: boolean;
-            readonly telemetry?: Telemetry.Json;
+            readonly telemetry?: Telemetry.TelemetryJson;
             readonly zenithLogLevel?: ZenithLog.Level;
             readonly dataSubscriptionCachingDisabled?: boolean;
-            readonly motifServicesBypass?: MotifServicesBypass.Json;
+            readonly motifServicesBypass?: MotifServicesBypass.MotifServicesByPassJson;
         }
 
-        export function parseJson(json: Json | undefined, serviceName: string) {
+        export function parseJson(json: DiagnosticsJson | undefined, serviceName: string) {
             if (json === undefined) {
                 const diagnostics: Config.Diagnostics = {
                     appNotifyErrors: Config.Diagnostics.defaultAppNotifyErrors,
@@ -463,7 +509,7 @@ export namespace ConfigNgService {
 
         export namespace Telemetry {
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            export interface Json {
+            export interface TelemetryJson {
                 enabled?: boolean;
                 itemsPerMinute?: number;
                 maxErrorCount?: number;
@@ -471,7 +517,7 @@ export namespace ConfigNgService {
             }
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            export function parseJson(json: Json | undefined, serviceName: string) {
+            export function parseJson(json: TelemetryJson | undefined, serviceName: string) {
                 let enabled: boolean;
                 let itemsPerMinute: number;
                 let maxErrorCount: number;
@@ -505,6 +551,7 @@ export namespace ConfigNgService {
                     } else {
                         let invalid = false;
                         for (const itemIgnore of json) {
+                            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             if (typeof itemIgnore !== 'object' || itemIgnore === null) {
                                 Logger.logConfigError('CNSDTPIIJO13300911', serviceName);
                                 invalid = true;
@@ -556,7 +603,7 @@ export namespace ConfigNgService {
                 } else {
                     const levelId = tryLevelToId(level);
                     if (levelId === undefined) {
-                        throw new ConfigError(ExternalError.Code.CSDZLPJ788831131, serviceName, level);
+                        throw new ConfigError(ErrorCode.CSDZLPJ788831131, serviceName, level);
                     } else {
                         return levelId;
                     }
@@ -566,12 +613,12 @@ export namespace ConfigNgService {
 
         export namespace MotifServicesBypass {
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            export interface Json {
+            export interface MotifServicesByPassJson {
                 readonly useLocalStateStorage?: boolean;
             }
 
             // eslint-disable-next-line @typescript-eslint/no-shadow
-            export function parseJson(json: Json | undefined) {
+            export function parseJson(json: MotifServicesByPassJson | undefined) {
                 let useLocalStateStorage: boolean;
 
                 if (json === undefined) {
@@ -589,32 +636,32 @@ export namespace ConfigNgService {
         }
     }
 
-    export namespace Features {
-        export interface Json {
-            readonly preview?: boolean;
+    export namespace Capabilities {
+        export interface CapabilitiesJson {
             readonly advertising?: boolean;
+            readonly dtr?: boolean;
         }
 
-        export function parseJson(json: Json | undefined) {
-            const preview = json?.preview ?? Config.Features.defaultPreview;
-            const advertising = json?.advertising ?? Config.Features.defaultAdvertising;
+        export function parseJson(json: CapabilitiesJson | undefined) {
+            const advertising = json?.advertising ?? Config.Capabilities.defaultAdvertising;
+            const dtr = json?.dtr ?? Config.Capabilities.defaultDtr;
 
-            const features: Config.Features = {
-                preview,
+            const capabilities: Config.Capabilities = {
                 advertising,
+                dtr
             };
 
-            return features;
+            return capabilities;
         }
     }
 
     export namespace Branding {
-        export interface Json {
+        export interface BrandingJson {
             readonly startupSplashWebPageUrl?: string;
             readonly desktopBarLeftImageUrl?: string;
         }
 
-        export function parseJson(sanitizer: DomSanitizer, json: Json | undefined, configFolderPath: string): Config.Branding {
+        export function parseJson(sanitizer: DomSanitizer, json: BrandingJson | undefined, configFolderPath: string): Config.Branding {
             if (json === undefined) {
                 return {
                     startupSplashWebPageSafeResourceUrl: undefined,
@@ -626,7 +673,7 @@ export namespace ConfigNgService {
                 if (startupSplashWebPageUrl === undefined) {
                     startupSplashWebPageSafeResourceUrl = undefined;
                 } else {
-                    if (startupSplashWebPageUrl.indexOf('http://') !== 0 && startupSplashWebPageUrl.indexOf('https://') !== 0) {
+                    if (!startupSplashWebPageUrl.startsWith('http://') || !startupSplashWebPageUrl.startsWith('https://')) {
                         startupSplashWebPageUrl = '/' + configFolderPath + '/' + startupSplashWebPageUrl;
                     }
                     startupSplashWebPageSafeResourceUrl = sanitizer.bypassSecurityTrustResourceUrl(startupSplashWebPageUrl);
@@ -634,7 +681,7 @@ export namespace ConfigNgService {
 
                 let desktopBarLeftImageUrl = json.desktopBarLeftImageUrl;
                 if (desktopBarLeftImageUrl !== undefined) {
-                    if (desktopBarLeftImageUrl.indexOf('http://') !== 0 && desktopBarLeftImageUrl.indexOf('https://') !== 0) {
+                    if (!desktopBarLeftImageUrl.startsWith('http://') || !desktopBarLeftImageUrl.startsWith('https://')) {
                         desktopBarLeftImageUrl = '/' + configFolderPath + '/' + desktopBarLeftImageUrl;
                     }
                 }
@@ -659,14 +706,14 @@ export namespace ConfigNgService {
     ): Promise<boolean> {
         let configJson: ConfigJson;
         try {
-            configJson = JSON.parse(jsonText);
+            configJson = JSON.parse(jsonText) as ConfigJson;
         } catch (e) {
             logConfigError('CSLTP988871038839', jsonText);
             throw (e);
         }
 
         if (configJson.configFormatVersion !== acceptedConfigFormatVersion) {
-            throw new ConfigError(ExternalError.Code.CSLTF1988871038839, '?', jsonText);
+            throw new ConfigError(ErrorCode.CSLTF1988871038839, '?', jsonText);
         } else {
             const service = ConfigNgService.Service.parseJson(configJson.service, jsonText);
             const environment = ConfigNgService.Environment.parseJson(configJson.environment, service.name);
@@ -676,7 +723,7 @@ export namespace ConfigNgService {
             const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout);
             const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions, service.name);
             const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
-            const features = ConfigNgService.Features.parseJson(configJson.features);
+            const capabilities = ConfigNgService.Capabilities.parseJson(configJson.capabilities ?? configJson.features);
             const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
             const config: Config = {
                 environment,
@@ -687,13 +734,14 @@ export namespace ConfigNgService {
                 defaultLayout,
                 bundledExtensions,
                 diagnostics,
-                features,
+                capabilities,
                 branding,
             };
 
             const validationError = Config.checkForValidationError(config);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (validationError !== undefined) {
-                throw new ConfigError(ExternalError.Code.CSLTV777333999, service.name, validationError);
+                throw new ConfigError(ErrorCode.CSLTV777333999, service.name, validationError);
             } else {
                 configService.config = config;
                 return Promise.resolve(true);

@@ -16,23 +16,17 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    DateTimeRenderValue, delay1Tick,
     IconButtonUiAction,
-    IndexSignatureHack,
-    Integer,
-    IntegerRenderValue,
     InternalCommand,
     JsonElement,
     LitIvemIdUiAction,
-    RenderValue,
     StringId,
-    StringRenderValue,
+    StringUiAction,
     Strings,
-    StringUiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid, SimpleGrid } from 'content-internal-api';
-import { SimpleGridNgComponent } from 'content-ng-api';
+import { AdiNgService, CellPainterFactoryNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -46,19 +40,20 @@ import { NewsHeadlinesDitemFrame } from '../news-headlines-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('filterInput') private _filterEditComponent: TextInputNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild(SimpleGridNgComponent, { static: true }) private _gridComponent: SimpleGridNgComponent;
+    @ViewChild(RowDataArrayGridNgComponent, { static: true }) private _gridComponent: RowDataArrayGridNgComponent;
     @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
 
     public isMainMode = true;
     public isLayoutEditorMode = false;
 
-    private _grid: SimpleGrid;
     private _frame: NewsHeadlinesDitemFrame;
 
     private _symbolEditUiAction: LitIvemIdUiAction;
@@ -69,19 +64,29 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private _columnsUiAction: IconButtonUiAction;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++NewsHeadlinesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new NewsHeadlinesDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this._frame = new NewsHeadlinesDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service, cellPainterFactoryNgService.service,
+            this.rootHtmlElement);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();
@@ -113,12 +118,6 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         // const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         // this._frame.initialise(this._contentComponent.frame, frameElement);
 
-        this._grid = this._gridComponent.createGrid(NewsHeadlinesDitemNgComponent.frameGridProperties);
-        this._grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
-        this._grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
-
-        this.prepareGrid();
-
         this.initialiseComponents();
 
         super.initialise();
@@ -144,22 +143,10 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         // nothing to save
     }
 
-    private prepareGrid() {
-        this._grid.setData(demoHeadlines.slice(), 1);
-    }
-
-    private handleRowFocusEvent(newRowIndex: Integer | undefined) {
-        //
-    }
-
-    private handleGridClickEvent(columnIndex: Integer, rowIndex: Integer) {
-        //
-    }
-
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.WatchlistSymbolInputTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         // action.commitEvent = () => this.handleSymbolCommitEvent();
         // action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -222,7 +209,6 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         return action;
     }
 
-
     private initialiseComponents() {
         this._symbolEditComponent.initialise(this._symbolEditUiAction);
         this._symbolButtonComponent.initialise(this._symbolApplyUiAction);
@@ -237,185 +223,5 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
 
 export namespace NewsHeadlinesDitemNgComponent {
     export const stateSchemaVersion = '2';
-
-    export const frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 }
 
-interface Headline {
-    code: string | StringRenderValue;
-    name: string | StringRenderValue;
-    text: string | StringRenderValue;
-    sensitive: string | StringRenderValue;
-    time: Date | string  | DateTimeRenderValue;
-}
-
-const demoHeadlines: IndexSignatureHack<readonly Headline[]> = [
-    {
-        code: 'Code',
-        name: 'Name',
-        text: 'Headline',
-        sensitive: 'Sensitive',
-        time: 'Time',
-    },
-    {
-        code: 'TNR.AX',
-        name: 'TORIAN RESOURCES LIMITED',
-        text: 'Mt Stirling Central HREE Discovery Confirmed',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 10),
-    },
-    {
-        code: 'CHR.AX',
-        name: 'CHARGER METALS NL',
-        text: 'Quarterly Cashflow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 10),
-    },
-    {
-        code: 'CAQ.AX',
-        name: 'CAQ HOLDINGS LIMITED',
-        text: 'Appendix 4C',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 9),
-    },
-    {
-        code: 'CCR.AX',
-        name: 'CREDIT CLEAR LIMITED',
-        text: 'Results of Meeting',
-        sensitive: '',
-        time: new Date(2022, 1, 31, 13, 9),
-    },
-    {
-        code: 'RBX.AX',
-        name: 'RESOURCE BASE LIMITED',
-        text: 'Quarterly Activities/Appendix 5B Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 6),
-    },
-    {
-        code: createAdvertStringRenderValue('SPC.AD'),
-        name: createAdvertStringRenderValue('Spectaculix Travel'),
-        text: createAdvertStringRenderValue('New magical Arizona holiday now available'),
-        sensitive: createAdvertStringRenderValue(''),
-        time: createAdvertDateTimeRenderValue(new Date(2022, 1, 31, 13, 6)),
-    },
-    {
-        code: 'SCP.AX',
-        name: 'SHOPPING CENTRES AUSTRALASIA PROPERTY GROUP',
-        text: 'Application for quotation of securities - SCP',
-        sensitive: '',
-        time: new Date(2022, 1, 31, 13, 6),
-    },
-    {
-        code: 'BMM.AX',
-        name: 'BALKAN MINING AND MINERALS LIMITED',
-        text: 'Quarterly Activities/Appendix 5B Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 6),
-    },
-    {
-        code: 'SCU.AX',
-        name: 'STEMCELL UNITED LIMITED',
-        text: 'Chairman\'s address to the FY2021 Annual General Meeting',
-        sensitive: '',
-        time: new Date(2022, 1, 31, 13, 3),
-    },
-    {
-        code: 'DUB.AX',
-        name: 'DUBBER CORPORATION LIMITED',
-        text: 'Quarterly Activities/Appendix 4C Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 3),
-    },
-    {
-        code: 'AGR.AX',
-        name: 'AGUIA RESOURCES LIMITED',
-        text: 'Quarterly Appendix 5B Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 3),
-    },
-    {
-        code: 'ADX.AX',
-        name: 'ADX ENERGY LTD',
-        text: 'Quarterly Cashflow Report - Dec 2021',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 2),
-    },
-    {
-        code: 'SUB.AX',
-        name: 'SUNBASE CHINA LIMITED',
-        text: 'Final Dividend/Distribution for period ending 31 Jan 2022',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 2),
-    },
-    {
-        code: 'GCA.AX',
-        name: 'GEC ASIAN VALUE FUND',
-        text: 'Final Dividend/Distribution for period ending 31 Jan 2022',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 2),
-    },
-    {
-        code: 'FLO.AX',
-        name: 'FLOWCOM LIMITED',
-        text: 'Final Dividend/Distribution for period ending 31 Jan 2022',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 2),
-    },
-    {
-        code: 'KGD.AX',
-        name: 'KULA GOLD LIMITED',
-        text: 'Quarterly Activities/Appendix 5B Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 13, 0),
-    },
-    {
-        code: 'AEV.AX',
-        name: 'AVENIRA LIMITED',
-        text: 'Quarterly Activities/Appendix 5B Cash Flow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 12, 58),
-    },
-    {
-        code: 'TPO.AX',
-        name: 'TIAN POH RESOURCES LIMITED',
-        text: 'Nuurst Coal Resource Estimate Restated',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 12, 57),
-    },
-    {
-        code: 'RMT.AX',
-        name: 'RMA ENERGY LIMITED',
-        text: 'Quarterly Activities and Cashflow Report',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 12, 57),
-    },
-    {
-        code: 'GFL.AX',
-        name: 'GLOBAL MASTERS FUND LIMITED',
-        text: 'GFL Notes - Quarterly Report December 2021',
-        sensitive: 'sensitive',
-        time: new Date(2022, 1, 31, 12, 56),
-    },
-] as const;
-
-function createAdvertStringRenderValue(text: string) {
-    const result = new StringRenderValue(text);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
-}
-
-function createAdvertIntegerRenderValue(value: Integer) {
-    const result = new IntegerRenderValue(value);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
-}
-
-function createAdvertDateTimeRenderValue(value: Date) {
-    const result = new DateTimeRenderValue(value);
-    result.addAttribute(RenderValue.advertAttribute);
-    return result;
-}

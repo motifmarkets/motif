@@ -9,36 +9,27 @@ import {
     AdiService,
     AssertInternalError,
     BrokerageAccountGroup,
-    BrokerageAccountGroupOrderList,
     CommandRegisterService,
     CoreSettings,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayoutOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     Order,
     OrderPad,
-    OrderTableRecordDefinitionList,
+    OrderTableRecordSourceDefinition,
     SettingsService,
+    SymbolDetailCacheService,
     SymbolsService,
-    tableDefinitionFactory,
-    TableRecordDefinitionList
+    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
-import { TableFrame } from 'content-internal-api';
+import { OrdersFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class OrdersDitemFrame extends BuiltinDitemFrame {
-    private static readonly defaultActiveAccountGroup = BrokerageAccountGroup.createAll();
-
-    recordFocusEvent: OrdersDitemFrame.RecordFocusEvent;
-    tableOpenEvent: OrdersDitemFrame.TableOpenEvent;
-
     private readonly _coreSettings: CoreSettings;
 
-    private _tableFrame: TableFrame;
-    private _orderList: BrokerageAccountGroupOrderList;
+    private _ordersFrame: OrdersFrame | undefined;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
     private _brokerageAccountGroupApplying: boolean;
 
@@ -46,155 +37,193 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         ditemComponentAccess: DitemFrame.ComponentAccess,
         settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _symbolDetailCacheService: SymbolDetailCacheService,
+        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _gridSourceOpenedEventer: OrdersDitemFrame.GridSourceOpenedEventer,
+        private readonly _recordFocusedEventer: OrdersDitemFrame.RecordFocusedEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Orders,
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
 
         this._coreSettings = settingsService.core;
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.Orders; }
-    get initialised() { return this._tableFrame !== undefined; }
-    get focusedRecordIndex() { return this._tableFrame.getFocusedRecordIndex(); }
+    get initialised() { return this._ordersFrame !== undefined; }
+    get focusedRecordIndex() { return this._ordersFrame?.getFocusedRecordIndex(); }
 
-    initialise(tableFrame: TableFrame, frameElement: JsonElement | undefined): void {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    initialise(ditemFrameElement: JsonElement | undefined, ordersFrame: OrdersFrame): void {
+        this._ordersFrame = ordersFrame;
 
-        if (frameElement === undefined) {
-            this._tableFrame.loadLayoutConfig(undefined);
-        } else {
-            const contentElement = frameElement.tryGetElement(OrdersDitemFrame.JsonName.content);
-            this._tableFrame.loadLayoutConfig(contentElement);
+        ordersFrame.gridSourceOpenedEventer = (brokerageAccountGroup) => this.handleGridSourceOpenedEvent(brokerageAccountGroup);
+        ordersFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
+
+        let ordersFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const ordersFrameElementResult = ditemFrameElement.tryGetElement(OrdersDitemFrame.JsonName.ordersFrame);
+            if (ordersFrameElementResult.isOk()) {
+                ordersFrameElement = ordersFrameElementResult.value;
+            }
         }
+
+        ordersFrame.initialiseGrid(
+            this.opener,
+            ordersFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
 
     override finalise() {
-        this._tableFrame.closeTable(false);
+        if (this._ordersFrame !== undefined) {
+            this._ordersFrame.closeGridSource(false);
+        }
         super.finalise();
     }
 
     override save(element: JsonElement) {
         super.save(element);
 
-        const contentConfig = element.newElement(OrdersDitemFrame.JsonName.content);
-        this._tableFrame.saveLayoutConfig(contentConfig);
+        const ordersFrame = this._ordersFrame;
+        if (ordersFrame === undefined) {
+            throw new AssertInternalError('ODFS04418');
+        } else {
+            const contentElement = element.newElement(OrdersDitemFrame.JsonName.ordersFrame);
+            const definition = ordersFrame.createGridSourceOrNamedReferenceDefinition();
+            definition.saveToJson(contentElement);
+        }
+    }
+
+    createAllowedFieldsAndLayoutDefinition() {
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFCAFALD04418');
+        } else {
+            return this._ordersFrame.createAllowedFieldsGridLayoutDefinition();
+        }
+    }
+
+    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFOGLONRD04418');
+        } else {
+            this._ordersFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
     }
 
     canAmendFocusedOrder() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        if (focusedIndex === undefined) {
-            return false;
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFCAFO68109');
         } else {
-            const order = this._orderList.records[focusedIndex];
-            return order.canAmend();
+            return this._ordersFrame.canAmendFocusedOrder();
         }
     }
 
     canCancelFocusedOrder() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        if (focusedIndex === undefined) {
-            return false;
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFCCFO68109');
         } else {
-            const order = this._orderList.records[focusedIndex];
-            return order.canCancel();
+            return this._ordersFrame.canCancelFocusedOrder();
         }
     }
 
     buyFocused() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this.symbolsService, this.adi);
-        if (focusedIndex !== undefined) {
-            const order = this._orderList.records[focusedIndex];
-            orderPad.loadBuyFromOrder(order);
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFBF68109');
         } else {
-            orderPad.loadBuy();
+            const focusedOrder = this._ordersFrame.getFocusedOrder();
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
+            if (focusedOrder !== undefined) {
+                orderPad.loadBuyFromOrder(focusedOrder);
+            } else {
+                orderPad.loadBuy();
+            }
+            orderPad.applySettingsDefaults(this._coreSettings);
+            this.desktopAccessService.editOrderRequest(orderPad);
         }
-        orderPad.applySettingsDefaults(this._coreSettings);
-        this.desktopAccessService.editOrderRequest(orderPad);
     }
 
     sellFocused() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        const orderPad = new OrderPad(this.symbolsService, this.adi);
-        if (focusedIndex !== undefined) {
-            const order = this._orderList.records[focusedIndex];
-            orderPad.loadSellFromOrder(order);
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFSF68109');
         } else {
-            orderPad.loadSell();
+            const focusedOrder = this._ordersFrame.getFocusedOrder();
+            const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
+            if (focusedOrder !== undefined) {
+                orderPad.loadSellFromOrder(focusedOrder);
+            } else {
+                orderPad.loadSell();
+            }
+            orderPad.applySettingsDefaults(this._coreSettings);
+            this.desktopAccessService.editOrderRequest(orderPad);
         }
-        orderPad.applySettingsDefaults(this._coreSettings);
-        this.desktopAccessService.editOrderRequest(orderPad);
     }
 
     amendFocused() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        if (focusedIndex !== undefined) {
-            const order = this._orderList.records[focusedIndex];
-            const orderPad = new OrderPad(this.symbolsService, this.adi);
-            orderPad.loadAmendFromOrder(order);
-            this.desktopAccessService.editOrderRequest(orderPad);
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFAF68109');
+        } else {
+            const focusedOrder = this._ordersFrame.getFocusedOrder();
+            if (focusedOrder !== undefined) {
+                const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
+                orderPad.loadAmendFromOrder(focusedOrder);
+                this.desktopAccessService.editOrderRequest(orderPad);
+            }
         }
     }
 
     cancelFocused() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        if (focusedIndex !== undefined) {
-            const order = this._orderList.records[focusedIndex];
-            const orderPad = new OrderPad(this.symbolsService, this.adi);
-            orderPad.loadCancelFromOrder(order);
-            this.desktopAccessService.editOrderRequest(orderPad);
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFCF68109');
+        } else {
+            const focusedOrder = this._ordersFrame.getFocusedOrder();
+            if (focusedOrder !== undefined) {
+                const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
+                orderPad.loadCancelFromOrder(focusedOrder);
+                this.desktopAccessService.editOrderRequest(orderPad);
+            }
         }
     }
 
     moveFocused() {
-        const focusedIndex = this._tableFrame.getFocusedRecordIndex();
-        if (focusedIndex !== undefined) {
-            const order = this._orderList.records[focusedIndex];
-            const orderPad = new OrderPad(this.symbolsService, this.adi);
-            orderPad.loadMoveFromOrder(order);
-            this.desktopAccessService.editOrderRequest(orderPad);
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFMF68109');
+        } else {
+            const focusedOrder = this._ordersFrame.getFocusedOrder();
+            if (focusedOrder !== undefined) {
+                const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
+                orderPad.loadMoveFromOrder(focusedOrder);
+                this.desktopAccessService.editOrderRequest(orderPad);
+            }
         }
-    }
-
-    setGridLayout(value: GridLayout) {
-        this._tableFrame.setGridLayout(value);
-    }
-
-    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._tableFrame.getGridLayoutWithHeadersMap();
     }
 
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         if (this._currentFocusedLitIvemIdAccountGroupSetting) {
             return false;
         } else {
-            if (selfInitiated) {
-                return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
+            const ordersFrame = this._ordersFrame;
+            if (ordersFrame === undefined) {
+                throw new AssertInternalError('ODFABAG68109');
             } else {
-                if (group === undefined) {
-                    return false;
+                if (selfInitiated) {
+                    return this.applyBrokerageAccountGroupWithOpen(ordersFrame, group, selfInitiated, true);
                 } else {
-                    const table = this._tableFrame.table;
-                    if (table === undefined) {
-                        return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
+                    if (group === undefined) {
+                        return false;
                     } else {
-                        const recordDefinitionList = table.recordDefinitionList;
-                        if (!(recordDefinitionList instanceof OrderTableRecordDefinitionList)) {
+                        const tableRecordSourceDefinition = ordersFrame.createTableRecordSourceDefinition();
+                        if (!(tableRecordSourceDefinition instanceof OrderTableRecordSourceDefinition)) {
                             throw new AssertInternalError('ODFABAGT34340098');
                         } else {
-                            if (group.isEqualTo(recordDefinitionList.brokerageAccountGroup)) {
+                            if (group.isEqualTo(tableRecordSourceDefinition.brokerageAccountGroup)) {
                                 return false;
                             } else {
-                                return this.applyBrokerageAccountGroupWithNewTable(group, selfInitiated);
+                                return this.applyBrokerageAccountGroupWithOpen(ordersFrame, group, selfInitiated, true);
                             }
                         }
                     }
@@ -203,23 +232,21 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
+    private handleGridSourceOpenedEvent(brokerageAccountGroup: BrokerageAccountGroup) {
+        this.updateLockerName(brokerageAccountGroup.isAll() ? '' : brokerageAccountGroup.id);
+        this._gridSourceOpenedEventer(brokerageAccountGroup);
+    }
+
+    private handleRecordFocusedEvent(newRecordIndex: Integer | undefined) {
         if (newRecordIndex !== undefined) {
-            const order = this._orderList.records[newRecordIndex];
-            this.processOrderFocusChange(order);
+            if (this._ordersFrame === undefined) {
+                throw new AssertInternalError('ODFHGSOE29974');
+            } else {
+                const order = this._ordersFrame.recordList.getAt(newRecordIndex);
+                this.processOrderFocusChange(order);
+            }
         }
-        this.recordFocusEvent(newRecordIndex);
-    }
-
-    private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createOrder(OrdersDitemFrame.defaultActiveAccountGroup);
-    }
-
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        const orderRecordDefinitionList = recordDefinitionList as OrderTableRecordDefinitionList;
-        this._orderList = orderRecordDefinitionList.dataRecordList;
-        const group = orderRecordDefinitionList.brokerageAccountGroup;
-        this.tableOpenEvent(group);
+        this._recordFocusedEventer(newRecordIndex);
     }
 
     private processOrderFocusChange(newFocusedOrder: Order) {
@@ -244,19 +271,14 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private newTable(group: BrokerageAccountGroup, keepCurrentLayout: boolean) {
-        const tableDefinition = tableDefinitionFactory.createOrder(group);
-        this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
-    }
-
-    private applyBrokerageAccountGroupWithNewTable(group: BrokerageAccountGroup | undefined, selfInitiated: boolean) {
+    private applyBrokerageAccountGroupWithOpen(ordersFrame: OrdersFrame, group: BrokerageAccountGroup | undefined, selfInitiated: boolean, keepView: boolean) {
         let result: boolean;
         this._brokerageAccountGroupApplying = true;
         try {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
                 // TODO add support for clearTable
-                this.newTable(group, true);
+                ordersFrame.tryOpenWithDefaultLayout(group, keepView);
             }
         } finally {
             this._brokerageAccountGroupApplying = false;
@@ -267,9 +289,9 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
 export namespace OrdersDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const ordersFrame = 'ordersFrame';
     }
 
-    export type RecordFocusEvent = (this: void, newRecordIndex: Integer | undefined) => void;
-    export type TableOpenEvent = (this: void, group: BrokerageAccountGroup) => void;
+    export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
+    export type GridSourceOpenedEventer = (this: void, group: BrokerageAccountGroup) => void;
 }

@@ -8,7 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -27,14 +27,16 @@ import { MarketsFrame } from '../markets-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class MarketsNgComponent extends ContentComponentBaseNgDirective implements MarketsFrame.ComponentAccess, OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
     public displayRecords: MarketsFrame.DisplayRecord[];
 
     private _frame: MarketsFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+        super(elRef, ++MarketsNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createMarketsFrame(this);
         this.displayRecords = this._frame.displayRecords;
@@ -63,13 +65,9 @@ export class MarketsNgComponent extends ContentComponentBaseNgDirective implemen
 }
 
 export namespace MarketsNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(MarketsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(MarketsNgComponent);
         const instance = componentRef.instance;
         if (!(instance instanceof MarketsNgComponent)) {
             throw new AssertInternalError('MCCI129953235');

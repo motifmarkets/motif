@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import {
     Account,
     AssertInternalError,
@@ -14,7 +14,6 @@ import {
     ColorScheme,
     DateUiAction,
     DecimalUiAction,
-    delay1Tick,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
@@ -22,8 +21,6 @@ import {
     Movement,
     MovementId,
     MultiEvent,
-    newUndefinableDate,
-    newUndefinableDecimal,
     Order,
     OrderExtendedSide,
     OrderExtendedSideId,
@@ -41,18 +38,21 @@ import {
     SettingsService,
     SingleBrokerageAccountGroup,
     StringId,
-    Strings,
     StringUiAction,
+    Strings,
     TimeInForce,
     TimeInForceId, UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick,
+    newUndefinableDate,
+    newUndefinableDecimal
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     BrokerageAccountGroupInputNgComponent,
     BrokerageAccountGroupNameLabelNgComponent,
-    CaptionedRadioNgComponent,
     CaptionLabelNgComponent,
+    CaptionedRadioNgComponent,
     DateInputNgComponent,
     DecimalInputNgComponent,
     EnumCaptionNgComponent,
@@ -77,6 +77,8 @@ import { PadOrderRequestStepFrame } from '../pad-order-request-step-frame';
 })
 export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgDirective
     implements OnDestroy, AfterViewInit, PadOrderRequestStepFrame.ComponentAccess {
+
+    private static typeInstanceCreateCount = 0;
 
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
@@ -167,10 +169,10 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     private readonly _errorCountUiAction: IntegerUiAction;
     private readonly _errorsUiAction: StringUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
-        super(cdr);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, contentNgService: ContentNgService) {
+        super(elRef, ++PadOrderRequestStepNgComponent.typeInstanceCreateCount, cdr);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         this.sideRadioName = this.generateInstancedRadioName('side');

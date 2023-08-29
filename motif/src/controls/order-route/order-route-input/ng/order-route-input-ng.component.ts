@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
-import { isArrayEqualUniquely, MultiEvent, OrderRoute, OrderRouteUiAction, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { MultiEvent, OrderRoute, OrderRouteUiAction, StringId, Strings, UiAction, isArrayEqualUniquely } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
@@ -19,6 +19,8 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
@@ -29,8 +31,8 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
 
     private _pushOrderRouteEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++OrderRouteInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
     }
 
     public override get uiAction() { return super.uiAction as OrderRouteUiAction; }
@@ -39,15 +41,9 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
         this.setInitialiseReady();
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: OrderRoute) {
         term = term.toUpperCase();
-        return item.upperCode.indexOf(term) > -1 || item.upperDisplay.indexOf(term) > -1;
+        return item.upperCode.includes(term) || item.upperDisplay.includes(term);
     }
 
     public handleSelectChangeEvent(event: unknown) {
@@ -165,7 +161,7 @@ export class OrderRouteInputNgComponent extends ControlComponentBaseNgDirective 
     }
 }
 
-interface InputAttrs { [key: string]: string }
+type InputAttrs = Record<string, string>;
 
 interface SearchEvent {
     term: string;

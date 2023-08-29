@@ -19,7 +19,7 @@ export class JsonSvcImplementation implements JsonSvc {
     }
 
     createJsonElement(json?: JsonApi): JsonElementApi {
-        const element = new JsonElement(json, false);
+        const element = new JsonElement(json);
         return JsonElementImplementation.toApi(element);
     }
 

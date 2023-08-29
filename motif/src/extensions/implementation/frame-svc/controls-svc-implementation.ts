@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Integer } from '@motifmarkets/motif-core';
+import { getErrorMessage, Integer } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
     BrokerageAccountGroupSelect as BrokerageAccountGroupSelectApi,
@@ -66,7 +66,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICB377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICB377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -78,7 +78,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICBIIB377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICBIIB377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -89,7 +89,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICCC377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICCC377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -100,7 +100,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICC377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICC377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -111,7 +111,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICII377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICII377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -122,7 +122,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICNI377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICNI377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -133,7 +133,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICDEI377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICDEI377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -144,7 +144,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICDAI377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICDAI377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -155,7 +155,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICBAGS377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICBAGS377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -166,7 +166,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICLIIS377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICLIIS377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -177,7 +177,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICRIIS377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICRIIS377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 
@@ -188,7 +188,7 @@ export class ControlsSvcImplementation implements ControlsSvc {
                 this.pushControl(controlApi as ControlComponentApi, controlApi as UiActionApi);
                 return Promise.resolve(controlApi);
             },
-            (reason) => Promise.reject(`CSICORS377273727: ' + ${reason}`)
+            (reason) => Promise.reject(`CSICORS377273727: ' + ${getErrorMessage(reason)}`)
         );
     }
 

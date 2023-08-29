@@ -5,17 +5,25 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ScansService, SessionInfoService } from '@motifmarkets/motif-core';
-import { AdiNgService, AppStorageNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
+import {
+    AdiNgService,
+    AppStorageNgService,
+    CellPainterFactoryNgService,
+    NamedGridLayoutsNgService,
+    NamedGridSourcesNgService,
+    NamedJsonRankedLitIvemIdListsNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService,
+    TableRecordSourceFactoryNgService,
+    TextFormatterNgService
+} from 'component-services-ng-api';
 import { ContentService } from '../content-service';
-import { DepthSideFrame } from '../depth-side/internal-api';
 import { DepthFrame } from '../depth/internal-api';
-import { FeedsFrame } from '../feeds/internal-api';
 import { MarketsFrame } from '../markets/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from '../order-request-step/internal-api';
-import { ScansFrame } from '../scans/internal-api';
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
-import { TableFrame } from '../table/internal-api';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 
@@ -25,47 +33,114 @@ import { ZenithStatusFrame } from '../zenith-status/internal-api';
 export class ContentNgService {
     private _content: ContentService;
 
-    constructor(settingsNgService: SettingsNgService,
-        symbolsManagerNgService: SymbolsNgService,
+    constructor(
+        settingsNgService: SettingsNgService,
         appStorageNgService: AppStorageNgService,
-        adiNgService: AdiNgService
+        adiNgService: AdiNgService,
+        symbolsNgService: SymbolsNgService,
+        textFormatterNgService: TextFormatterNgService,
+        namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
+        tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        namedGridLayoutDefinitionsNgService: NamedGridLayoutsNgService,
+        namedGridSourcesNgService: NamedGridSourcesNgService,
+        cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
-        this._content = new ContentService(settingsNgService.settingsService,
-            symbolsManagerNgService.symbolsManager,
-            appStorageNgService.appStorage,
-            adiNgService.adiService);
+        this._content = new ContentService(
+            settingsNgService.service,
+            appStorageNgService.service,
+            adiNgService.service,
+            symbolsNgService.service,
+            textFormatterNgService.service,
+            namedJsonRankedLitIvemIdListsNgService.service,
+            namedGridLayoutDefinitionsNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            tableRecordSourceFactoryNgService.service,
+            namedGridSourcesNgService.service,
+            cellPainterFactoryNgService.service,
+        );
     }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
         return this._content.createZenithStatusFrame(componentAccess, zenithEndpoints);
     }
 
-    createFeedsFrame(componentAccess: FeedsFrame.ComponentAccess) {
-        return this._content.createFeedsFrame(componentAccess);
+    createFeedsFrame() {
+        return this._content.createFeedsFrame();
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
         return this._content.createMarketsFrame(componentAccess);
     }
 
-    createTableFrame(componentAccess: TableFrame.ComponentAccess) {
-        return this._content.createTableFrame(componentAccess);
+    // createGridSourceFrame(
+    //     componentAccess: GridSourceFrame.ComponentAccess,
+    //     hostElement: HTMLElement,
+    //     customGridSettings: AdaptedRevgrid.CustomGridSettings,
+    //     customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+    //     getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    //     getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    // ) {
+    //     return this._content.createGridSourceFrame(
+    //         componentAccess,
+    //         hostElement,
+    //         customGridSettings,
+    //         customiseSettingsForNewColumnEventer,
+    //         getMainCellPainterEventer,
+    //         getHeaderCellPainterEventer,
+    //     );
+    // }
+
+    createWatchlistFrame() {
+        return this._content.createWatchlistFrame();
     }
 
-    createStatusSummaryFrame(componentAccess: StatusSummaryFrame.ComponentAccess, sessionInfoService: SessionInfoService) {
-        return this._content.createStatusSummaryFrame(componentAccess, sessionInfoService);
+    createBrokerageAccountsFrame() {
+        return this._content.createBrokerageAccountsFrame();
     }
 
-    createDepthSideFrame(componentAccess: DepthSideFrame.ComponentAccess) {
-        return this._content.createDepthSideFrame(componentAccess);
+    createOrdersFrame() {
+        return this._content.createOrdersFrame();
+    }
+
+    createOrderAuthoriseFrame() {
+        return this._content.createOrderAuthoriseFrame();
+    }
+
+    createHoldingsFrame() {
+        return this._content.createHoldingsFrame();
+    }
+
+    createBalancesFrame() {
+        return this._content.createBalancesFrame();
+    }
+
+    createStatusSummaryFrame(sessionInfoService: SessionInfoService, componentAccess: StatusSummaryFrame.ComponentAccess) {
+        return this._content.createStatusSummaryFrame(sessionInfoService, componentAccess);
+    }
+
+    createSearchSymbolsFrame() {
+        return this._content.createSearchSymbolsFrame();
+    }
+
+    createScanListFrame() {
+        return this._content.createScanListFrame();
+    }
+
+    createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
+        return this._content.createGridLayoutEditorAllowedFieldsFrame(allowedFields, columnList);
+    }
+
+    createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
+        return this._content.createGridLayoutEditorColumnsFrame(columnList);
+    }
+
+    createDepthSideFrame(hostElement: HTMLElement) {
+        return this._content.createDepthSideFrame(hostElement);
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {
         return this._content.createDepthFrame(componentAccess);
-    }
-
-    createScansFrame(componentAccess: ScansFrame.ComponentAccess, scansService: ScansService) {
-        return this._content.createScansFrame(componentAccess, scansService);
     }
 
     createTradesFrame(componentAccess: TradesFrame.ComponentAccess) {

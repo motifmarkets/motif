@@ -5,15 +5,19 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
-    assigned,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -21,11 +25,22 @@ import {
     Logger,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    UnreachableCaseError,
+    assert,
+    assigned,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { ContentGridLayoutEditorNgComponent, TableNgComponent } from 'content-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
+import { NameableGridLayoutEditorDialogNgComponent, OrdersNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -40,8 +55,9 @@ import { OrdersDitemFrame } from '../orders-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
-    @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+    @ViewChild('orders', { static: true }) private _ordersComponent: OrdersNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('buyButton', { static: true }) private _buyButtonComponent: SvgButtonNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
@@ -52,12 +68,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _buyUiAction: IconButtonUiAction;
@@ -74,22 +85,39 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: OrdersDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
-        private _resolver: ComponentFactoryResolver,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++OrdersDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new OrdersDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
-        this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
-        this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
+
+        this._frame = new OrdersDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            symbolDetailCacheNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
+        );
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._buyUiAction = this.createBuyUiAction();
@@ -116,7 +144,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     protected get stateSchemaVersion() { return OrdersDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
-        assert(assigned(this._tableComponent), 'OICNAVI33885');
+        assert(assigned(this._ordersComponent), 'OICNAVI33885');
 
         delay1Tick(() => this.initialise());
     }
@@ -129,8 +157,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         return this._modeId === OrdersDitemNgComponent.ModeId.Main;
     }
 
-    public isLayoutEditorMode() {
-        return this._modeId === OrdersDitemNgComponent.ModeId.LayoutEditor;
+    public isDialogMode() {
+        switch (this._modeId) {
+            case OrdersDitemNgComponent.ModeId.LayoutDialog:
+                return true;
+            case OrdersDitemNgComponent.ModeId.Main:
+                return false;
+            default:
+                throw new UnreachableCaseError('ODNCIDM65312', this._modeId);
+        }
     }
 
     public override processSymbolLinkedChanged() {
@@ -155,7 +190,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._tableComponent.frame, frameElement);
+        this._frame.initialise(frameElement, this._ordersComponent.frame);
 
         this.pushAmendCancelButtonState(this._frame.focusedRecordIndex);
 
@@ -213,12 +248,14 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this._frame.moveFocused();
     }
 
-    private handleRecordFocusEvent(recordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(recordIndex: Integer | undefined) {
         this.pushAmendCancelButtonState(recordIndex);
     }
 
-    private handleTableOpenEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -238,30 +275,35 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private showLayoutEditor() {
-        this._modeId = OrdersDitemNgComponent.ModeId.LayoutEditor;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
+        this._modeId = OrdersDitemNgComponent.ModeId.LayoutDialog;
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
-            closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.setGridLayout(layout);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    Logger.logError(`Orders Ditem Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
+
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Orders_ColumnsDialogCaption],
+            allowedFieldsAndLayoutDefinition
+        );
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
                 }
-            );
-        }
+                this.closeDialog();
+            },
+            (reason) => {
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`Orders Ditem Layout Dialog error: ${errorText}`);
+                this.closeDialog();
+            }
+        );
 
         this.markForCheck();
     }
 
-    private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
+    private closeDialog() {
+        this._dialogContainer.clear();
         this._modeId = OrdersDitemNgComponent.ModeId.Main;
         this.markForCheck();
     }
@@ -426,6 +468,6 @@ export namespace OrdersDitemNgComponent {
 
     export const enum ModeId {
         Main,
-        LayoutEditor,
+        LayoutDialog,
     }
 }

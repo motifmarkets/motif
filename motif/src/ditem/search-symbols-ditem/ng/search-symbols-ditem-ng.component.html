@@ -65,7 +65,7 @@
             <app-integer-label #topPageCountLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>
             <app-button-input #topNextButton [style.display]="paginationActive ? null : 'none'"></app-button-input>
         </section>
-        <app-table #table id="table" [frameGridProperties]="frameGridProperties "></app-table>
+        <app-search-symbols #searchSymbols id="searchSymbols"></app-search-symbols>
         <section id="bottomPageSection">
             <app-caption-label #bottomPageLabel [style.display]="paginationActive ? null : 'none'"></app-caption-label>
             <app-integer-label #bottomPageNumberLabel [style.display]="paginationActive ? null : 'none'"></app-integer-label>

@@ -7,12 +7,19 @@
 import { IvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
+    Err as ErrApi,
     ExchangeId as ExchangeIdApi,
     IvemId as IvemIdApi,
-    IvemIdSvc,
-    Json as JsonApi
+    IvemIdSvc, JsonElement as JsonElementApi,
+    Ok as OkApi,
+    Result as ResultApi
 } from '../../../api/extension-api';
-import { ComparisonResultImplementation, ExchangeIdImplementation, IvemIdImplementation } from '../../exposed/internal-api';
+import {
+    ComparisonResultImplementation,
+    ExchangeIdImplementation,
+    IvemIdImplementation,
+    JsonElementImplementation
+} from '../../exposed/internal-api';
 
 export class IvemIdSvcImplementation implements IvemIdSvc {
     create(code: string, litIdApi: ExchangeIdApi): IvemIdApi {
@@ -40,21 +47,25 @@ export class IvemIdSvcImplementation implements IvemIdSvc {
         return ComparisonResultImplementation.toApi(result);
     }
 
-    tryCreateFromJson(json: JsonApi): IvemIdApi | undefined {
-        const ivemId = IvemId.tryCreateFromJson(json as IvemId.PersistJson);
-        if (ivemId === undefined) {
-            return undefined;
+    tryCreateFromJson(elementApi: JsonElementApi): ResultApi<IvemIdApi> {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        const result = IvemId.tryCreateFromJson(element);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return IvemIdImplementation.toApi(ivemId);
+            const ivemIdApi = IvemIdImplementation.toApi(result.value);
+            return new OkApi(ivemIdApi);
         }
     }
 
-    tryCreateArrayFromJson(jsonArray: JsonApi[]): IvemIdApi[] | undefined {
-        const ivemIdArray = IvemId.tryCreateArrayFromJson(jsonArray as IvemId.PersistJson[]);
-        if (ivemIdArray === undefined) {
-            return undefined;
+    tryCreateArrayFromJson(elementsApi: JsonElementApi[]): ResultApi<IvemIdApi[]> {
+        const elements = JsonElementImplementation.arrayFromApi(elementsApi);
+        const result = IvemId.tryCreateArrayFromJsonElementArray(elements);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return IvemIdImplementation.arrayToApi(ivemIdArray);
+            const ivemIdArrayApi = IvemIdImplementation.arrayToApi(result.value);
+            return new OkApi(ivemIdArrayApi);
         }
     }
 }

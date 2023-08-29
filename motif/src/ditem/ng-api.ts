@@ -12,15 +12,15 @@ export * from './extensions-ditem/ng-api';
 export * from './holdings-ditem/ng-api';
 export * from './news-body-ditem/ng-api';
 export * from './news-headlines-ditem/ng-api';
-export {
-    BuiltinDitemNgComponentBaseNgDirective as BuiltinDitemNgComponentBaseDirective
-} from './ng/builtin-ditem-ng-component-base.directive';
+export { BuiltinDitemNgComponentBaseNgDirective } from './ng/builtin-ditem-ng-component-base.directive';
 export { DesktopAccessNgService } from './ng/desktop-access-ng.service';
 export { DitemComponentFactoryNgService } from './ng/ditem-component-factory-ng.service';
+export { DitemNgComponentIdAndType } from './ng/ditem-ng-component-id-and-type';
 export * from './ng/ditem-ng.module';
+export * from './order-authorise-ditem/ng-api';
 export * from './order-request-ditem/ng-api';
 export * from './orders-ditem/ng-api';
-export * from './paridepth-ditem/ng-api';
+export * from './depth-and-sales-ditem/ng-api';
 export * from './placeholder-ditem/ng-api';
 export * from './scans-ditem/ng-api';
 export * from './search-symbols-ditem/ng-api';

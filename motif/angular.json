@@ -68,7 +68,9 @@
             ],
             "baseHref": "/",
             "allowedCommonJsDependencies": [
-              "crypto-js"
+              "crypto-js",
+              "decimal.js-light",
+              "rollbar"
             ]
           },
           "configurations": {
@@ -76,13 +78,13 @@
               "budgets": [
                 {
                   "type": "initial",
-                  "maximumWarning": "6mb",
-                  "maximumError": "7mb"
+                  "maximumWarning": "16mb",
+                  "maximumError": "17mb"
                 },
                 {
                   "type": "anyComponentStyle",
-                  "maximumWarning": "10kb",
-                  "maximumError": "10kb"
+                  "maximumWarning": "20kb",
+                  "maximumError": "20kb"
                 }
               ],
 

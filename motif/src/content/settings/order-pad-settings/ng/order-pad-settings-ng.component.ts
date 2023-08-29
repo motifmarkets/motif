@@ -9,7 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -17,13 +17,13 @@ import {
 } from '@angular/core';
 import {
     BooleanUiAction,
-    delay1Tick,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     OrderType,
     StringId,
     Strings,
     TimeInForce,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
@@ -36,6 +36,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnInit, OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('reviewEnabledLabel', { static: true }) private _reviewEnabledComponent: CaptionLabelNgComponent;
     @ViewChild('reviewEnabledControl', { static: true }) private _reviewEnabledControlComponent: CheckboxInputNgComponent;
     @ViewChild('defaultOrderTypeIdLabel', { static: true }) private _defaultOrderTypeIdLabelComponent: CaptionLabelNgComponent;
@@ -47,8 +49,8 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     private _defaultOrderTypeIdUiAction: ExplicitElementsEnumUiAction;
     private _defaultTimeInForceIdUiAction: ExplicitElementsEnumUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++OrderPadSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._reviewEnabledUiAction = this.createReviewEnabledUiAction();
         this._defaultOrderTypeIdUiAction = this.createDefaultOrderTypeIdUiAction();
@@ -121,9 +123,9 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
             const elementProperties: EnumUiAction.ElementProperties = {
-                element: i,
-                caption: OrderType.idToDisplay(i),
-                title: OrderType.idToDisplay(i),
+                element: id,
+                caption: OrderType.idToDisplay(id),
+                title: OrderType.idToDisplay(id),
             };
             elementPropertiesArray[idx++] = elementProperties;
         }
@@ -153,9 +155,9 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
             const elementProperties: EnumUiAction.ElementProperties = {
-                element: i,
-                caption: TimeInForce.idToDisplay(i),
-                title: TimeInForce.idToDisplay(i),
+                element: id,
+                caption: TimeInForce.idToDisplay(id),
+                title: TimeInForce.idToDisplay(id),
             };
             elementPropertiesArray[idx++] = elementProperties;
         }
@@ -203,13 +205,9 @@ export namespace OrderPadSettingsNgComponent {
     export const UndefinedOrderTypeIdEnumValue = -1;
     export const UndefinedTimeInForceIdEnumValue = -1;
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(OrderPadSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
-        return componentRef.instance as OrderPadSettingsNgComponent;
+        const componentRef = container.createComponent(OrderPadSettingsNgComponent);
+        return componentRef.instance;
     }
 }

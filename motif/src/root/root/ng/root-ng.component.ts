@@ -8,20 +8,22 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDe
 import { Title } from '@angular/platform-browser';
 import { Router } from '@angular/router';
 import {
+    CapabilitiesService,
     ColorScheme,
     CommandContext,
-    CoreSettings, delay1Tick,
+    CoreSettings,
     KeyboardService,
     MultiEvent,
     SessionStateId,
     SettingsService,
     StringId,
-    UserAlertService
+    UserAlertService,
+    delay1Tick
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SettingsNgService, UserAlertNgService } from 'component-services-ng-api';
-import { AppFeature } from 'src/app.feature';
+import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
 import { KeyboardNgService } from 'src/component-services/ng/keyboard-ng-service';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ExtensionsService } from 'src/extensions/internal-api';
 import { ExtensionsNgService } from 'src/extensions/ng-api';
 import { OverlayOriginNgComponent } from 'src/overlay/ng-api';
@@ -38,6 +40,7 @@ import { UserAlertNgComponent } from '../../user-alert/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RootNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('userAlert', { static: true }) private _userAlertComponent: UserAlertNgComponent;
     @ViewChild('overlayOrigin', { static: true }) private _overlayOriginComponent: OverlayOriginNgComponent;
@@ -45,6 +48,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
     public starting = true;
 
+    private _capabilitiesService: CapabilitiesService;
     private _keyboardService: KeyboardService;
     private _commandContext: CommandContext;
 
@@ -60,35 +64,37 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     private _measureFontSize: string;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _router: Router,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
         private readonly _titleService: Title,
-        private readonly _sessionService: SessionNgService,
+        private readonly _sessionNgService: SessionNgService,
         settingsNgService: SettingsNgService,
+        capabilitiesNgService: CapabilitiesNgService,
         extensionsNgService: ExtensionsNgService,
         keyboardNgService: KeyboardNgService,
         userAlertNgService: UserAlertNgService,
     ) {
-        super();
+        super(elRef, ++RootNgComponent.typeInstanceCreateCount);
 
-        this._session = this._sessionService.session;
+        this._session = this._sessionNgService.session;
         this._sessionStateChangeSubscriptionId =
             this._session.subscribeStateChangeEvent((stateId) => this.handleSessionStateChangeEvent(stateId));
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._coreSettings = this._settingsService.core;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 
         this._titleService.setTitle('Motif'); // need to improve this
 
+        this._capabilitiesService = capabilitiesNgService.service;
         this._keyboardService = keyboardNgService.service;
-        this._commandContext = this.createCommandContext(this._elRef.nativeElement, extensionsNgService.service);
+        this._commandContext = this.createCommandContext(this.rootHtmlElement, extensionsNgService.service);
         this._keyboardService.registerCommandContext(this._commandContext, true);
         this._userAlertService = userAlertNgService.service;
     }
 
-    public get advertisingActive() { return AppFeature.advertising && !this.starting; };
+    public get advertisingActive() { return this._capabilitiesService.advertisingEnabled && !this.starting; }
 
     ngOnInit() {
         this._userAlertService.alertQueueChangedEvent = () => this.handleUserAlertServiceAlertQueueChangedEvent();
@@ -122,17 +128,17 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     }
 
     private applySettings() {
-        this._elRef.nativeElement.style.setProperty('font-family', this._settingsService.core.fontFamily);
-        this._elRef.nativeElement.style.setProperty('font-size', this._settingsService.core.fontSize);
+        this.rootHtmlElement.style.setProperty('font-family', this._settingsService.core.fontFamily);
+        this.rootHtmlElement.style.setProperty('font-size', this._settingsService.core.fontSize);
 
         const panelItemId = ColorScheme.ItemId.Panel;
         const bkgdPanelColor = this._settingsService.color.getBkgd(panelItemId);
-        this._elRef.nativeElement.style.setProperty('background-color', bkgdPanelColor);
+        this.rootHtmlElement.style.setProperty('background-color', bkgdPanelColor);
 
         const color = this._settingsService.color.getFore(panelItemId);
-        this._elRef.nativeElement.style.setProperty('color', color);
+        this.rootHtmlElement.style.setProperty('color', color);
 
-        const borderItemId = ColorScheme.ItemId.Text_ControlBorder;
+        // const borderItemId = ColorScheme.ItemId.Text_ControlBorder;
 
         this._cdr.markForCheck();
 

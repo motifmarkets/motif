@@ -4,42 +4,54 @@
  * License: motionite.trade/license/motif
  */
 
-import { AdiService, CommandRegisterService, DepthStyleId, JsonElement, LitIvemId, SymbolsService } from '@motifmarkets/motif-core';
+import {
+    AdiService,
+    AssertInternalError,
+    BidAskGridLayoutDefinitions,
+    CommandRegisterService,
+    DepthStyleId,
+    JsonElement,
+    LitIvemId,
+    SettingsService,
+    SymbolsService,
+} from '@motifmarkets/motif-core';
 import { DepthFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class DepthDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: DepthFrame;
+    private _depthFrame: DepthFrame | undefined;
 
     constructor(
         private _componentAccess: DepthDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopInterface: DesktopAccessService,
+        desktopInterface: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Depth, _componentAccess,
-            commandRegisterService, desktopInterface, symbolsMgr, adi
+            settingsService, commandRegisterService, desktopInterface, symbolsMgr, adi
         );
     }
 
-    get filterActive() { return this._contentFrame.filterActive; }
-    get filterXrefs() { return this._contentFrame.filterXrefs; }
+    get filterActive() { return this._depthFrame === undefined ? false : this._depthFrame.filterActive; }
+    get filterXrefs() { return this._depthFrame === undefined ? [] : this._depthFrame.filterXrefs; }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    get initialised() { return this._depthFrame !== undefined; }
 
-    initialise(depthContentFrame: DepthFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = depthContentFrame;
-        this._contentFrame.initialise();
+    initialise(ditemFrameElement: JsonElement | undefined, depthFrame: DepthFrame): void {
+        this._depthFrame = depthFrame;
 
-        if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
-        } else {
-            const contentElement = frameElement.tryGetElement(DepthDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+        let depthFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const depthFrameElementResult = ditemFrameElement.tryGetElement(DepthDitemFrame.JsonName.depthFrame);
+            if (depthFrameElementResult.isOk()) {
+                depthFrameElement = depthFrameElementResult.value;
+            }
         }
+        this._depthFrame.initialise(depthFrameElement);
 
         // this._contentFrame.initialiseWidths();
 
@@ -49,18 +61,35 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     override save(element: JsonElement) {
         super.save(element);
 
-        const contentElement = element.newElement(DepthDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutToConfig(contentElement);
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFS21915');
+        } else {
+            const depthFrameElement = element.newElement(DepthDitemFrame.JsonName.depthFrame);
+            this._depthFrame.save(depthFrameElement);
+        }
+    }
+
+    override finalise() {
+        if (this._depthFrame !== undefined) {
+            this._depthFrame.finalise();
+        }
+        super.finalise();
     }
 
     open() {
-        const litIvemId = this.litIvemId;
-        if (litIvemId === undefined) {
-            this._contentFrame.close();
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFO21915');
         } else {
-            this._contentFrame.open(litIvemId, DepthStyleId.Full);
+            const litIvemId = this.litIvemId;
+            if (litIvemId === undefined) {
+                this._depthFrame.close();
+                this.updateLockerName('');
+            } else {
+                this._depthFrame.open(litIvemId, DepthStyleId.Full);
+                this.updateLockerName(this.symbolsService.litIvemIdToDisplay(litIvemId));
+            }
+            this._componentAccess.notifyOpenedClosed(litIvemId);
         }
-        this._componentAccess.notifyOpenedClosed(litIvemId);
     }
 
     // loadConstructLayoutConfig() {
@@ -68,33 +97,61 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     // }
 
     toggleFilterActive() {
-        this._contentFrame.toggleFilterActive();
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFTFA21915');
+        } else {
+            this._depthFrame.toggleFilterActive();
+        }
     }
 
     setFilter(xrefs: string[]) {
-        this._contentFrame.setFilter(xrefs);
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFSF21915');
+        } else {
+            this._depthFrame.setFilter(xrefs);
+        }
     }
 
     expand(newRecordsOnly: boolean) {
-        this._contentFrame.openExpand = true;
-        this._contentFrame.expand(newRecordsOnly);
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFE21915');
+        } else {
+            this._depthFrame.openExpand = true;
+            this._depthFrame.expand(newRecordsOnly);
+        }
     }
 
     rollUp(newRecordsOnly: boolean) {
-        this._contentFrame.openExpand = false;
-        this._contentFrame.rollup(newRecordsOnly);
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFRU21915');
+        } else {
+            this._depthFrame.openExpand = false;
+            this._depthFrame.rollup(newRecordsOnly);
+        }
     }
 
-    autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFASACW21915');
+        } else {
+            this._depthFrame.autoSizeAllColumnWidths(widenOnly);
+        }
     }
 
-    getGridLayoutsWithHeadings() {
-        return this._contentFrame.getGridLayoutsWithHeadings();
+    createAllowedFieldsGridLayoutDefinitions() {
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFCAFALD21915');
+        } else {
+            return this._depthFrame.createAllowedFieldsGridLayoutDefinitions();
+        }
     }
 
-    setGridLayouts(layout: DepthFrame.GridLayouts) {
-        this._contentFrame.setGridLayouts(layout);
+    applyGridLayoutDefinitions(layout: BidAskGridLayoutDefinitions) {
+        if (this._depthFrame === undefined) {
+            throw new AssertInternalError('DDFAGLD21915');
+        } else {
+            this._depthFrame.applyGridLayoutDefinitions(layout);
+        }
     }
 
     // adviseShown() {
@@ -113,14 +170,12 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
     }
 }
 
-
 export namespace DepthDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const depthFrame = 'depthFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;
-
 
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
         pushSymbol(litIvemId: LitIvemId): void;

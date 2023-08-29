@@ -7,10 +7,13 @@
 import { IvemId, RoutedIvemId } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
+    Err as ErrApi,
     ExchangeId as ExchangeIdApi,
     IvemId as IvemIdApi,
-    Json as JsonApi,
+    JsonElement as JsonElementApi,
+    Ok as OkApi,
     OrderRoute as OrderRouteApi,
+    Result as ResultApi,
     RoutedIvemId as RoutedIvemIdApi,
     RoutedIvemIdSvc
 } from '../../../api/extension-api';
@@ -18,6 +21,7 @@ import {
     ApiErrorImplementation,
     ExchangeIdImplementation,
     IvemIdImplementation,
+    JsonElementImplementation,
     OrderRouteImplementation,
     RoutedIvemIdImplementation
 } from '../../exposed/internal-api';
@@ -54,21 +58,25 @@ export class RoutedIvemIdSvcImplementation implements RoutedIvemIdSvc {
         return RoutedIvemId.isUndefinableEqual(left, right);
     }
 
-    tryCreateFromJson(json: JsonApi): RoutedIvemIdApi | undefined {
-        const routedIvemId = RoutedIvemId.tryCreateFromJson(json as RoutedIvemId.PersistJson);
-        if (routedIvemId === undefined) {
-            return undefined;
+    tryCreateFromJson(elementApi: JsonElementApi): ResultApi<RoutedIvemIdApi> {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        const result = RoutedIvemId.tryCreateFromJson(element);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return RoutedIvemIdImplementation.toApi(routedIvemId);
+            const routedIvemIdApi = RoutedIvemIdImplementation.toApi(result.value);
+            return new OkApi(routedIvemIdApi);
         }
     }
 
-    tryCreateArrayFromJson(jsonArray: JsonApi[]): RoutedIvemIdApi[] | undefined {
-        const routedIvemIdArray = RoutedIvemId.tryCreateArrayFromJson(jsonArray as RoutedIvemId.PersistJson[]);
-        if (routedIvemIdArray === undefined) {
-            return undefined;
+    tryCreateArrayFromJson(elementsApi: JsonElementApi[]): ResultApi<RoutedIvemIdApi[]> {
+        const elements = JsonElementImplementation.arrayFromApi(elementsApi);
+        const result = RoutedIvemId.tryCreateArrayFromJsonElementArray(elements);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return RoutedIvemIdImplementation.arrayToApi(routedIvemIdArray);
+            const routedIvemIdArrayApi = RoutedIvemIdImplementation.arrayToApi(result.value);
+            return new OkApi(routedIvemIdArrayApi);
         }
     }
 

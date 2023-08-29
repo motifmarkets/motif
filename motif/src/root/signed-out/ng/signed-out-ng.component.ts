@@ -4,12 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import { Router } from '@angular/router';
-import { ButtonUiAction, CommandRegisterService, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
+import { AssertInternalError, ButtonUiAction, CommandRegisterService, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 // NOT USED.  Probably best to delete
 
@@ -20,6 +20,8 @@ import { ComponentBaseNgDirective } from 'src/component/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SignedOutNgComponent extends ComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('signInAgainButton', { static: true }) _signInAgainButtonComponent: ButtonInputNgComponent;
 
     public signedOutText = Strings[StringId.SignedOut];
@@ -27,10 +29,12 @@ export class SignedOutNgComponent extends ComponentBaseNgDirective implements On
     private _commandRegisterService: CommandRegisterService;
     private _signInAgainUiAction: ButtonUiAction;
 
-    constructor(private _router: Router,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private _router: Router,
         commandRegisterNgService: CommandRegisterNgService
     ) {
-        super();
+        super(elRef, ++SignedOutNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
         this._signInAgainUiAction = this.createSignInAgainUiAction();
@@ -45,7 +49,11 @@ export class SignedOutNgComponent extends ComponentBaseNgDirective implements On
     }
 
     private handleSignInAgainSignal() {
-        this._router.navigate(['/startup']);
+        const promise = this._router.navigate(['/startup']);
+        promise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'SINGHSIAS'); }
+        )
     }
 
     private createSignInAgainUiAction() {

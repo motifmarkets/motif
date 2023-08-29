@@ -1,0 +1,16 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<ng-container id="list" *ngFor="let tab of tabs">
+    <button
+        role="tab"
+        [attr.aria-selected]="tab.active"
+        [ngStyle]="{'background-color': tab.bkgdColor, 'color': tab.foreColor, 'border-style': tab.borderStyle, 'border-color': borderColor }"
+        (click)="tab.clickEventer($event)"
+    >
+        {{tab.caption}}
+    </button>
+</ng-container>

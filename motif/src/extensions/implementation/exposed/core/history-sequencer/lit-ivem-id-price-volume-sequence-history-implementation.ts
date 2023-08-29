@@ -94,14 +94,16 @@ export namespace LitIvemIdPriceVolumeSequenceHistoryImplementation {
         export function fromApi(value: LitIvemIdPriceVolumeSequenceHistoryApi.SeriesType) {
             const enumValue = value as LitIvemIdPriceVolumeSequenceHistoryApi.SeriesTypeEnum;
             switch (enumValue) {
-                case LitIvemIdPriceVolumeSequenceHistoryApi.SeriesTypeEnum.Price:
+                case LitIvemIdPriceVolumeSequenceHistoryApi.SeriesTypeEnum.Price: {
                     return LitIvemIdPriceVolumeSequenceHistory.SeriesTypeId.Price;
-                case LitIvemIdPriceVolumeSequenceHistoryApi.SeriesTypeEnum.Volume:
+                }
+                case LitIvemIdPriceVolumeSequenceHistoryApi.SeriesTypeEnum.Volume: {
                     return LitIvemIdPriceVolumeSequenceHistory.SeriesTypeId.Volume;
-                default:
+                }
+                default: {
                     const errorCode = ApiError.CodeEnum.InvalidLitIvemIdPriceVolumeSequenceHistorySeriesTypeId;
                     throw new UnreachableCaseApiErrorImplementation(errorCode, enumValue);
-
+                }
             }
         }
     }

@@ -5,14 +5,19 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
-    ElementRef, OnDestroy, ViewChild, ViewContainerRef
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
+    AssertInternalError,
     ColorScheme,
     CommandRegisterService,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -21,7 +26,10 @@ import {
     ModifierKeyId,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    assert,
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -40,7 +48,9 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('leftAndRightDiv', { static: true }) private _leftAndRightDiv: ElementRef;
+    private static typeInstanceCreateCount = 0;
+
+    @ViewChild('leftAndRightDiv', { static: true }) private _leftAndRightDiv: ElementRef<HTMLElement>;
     @ViewChild('grid', { static: true }) private _gridComponent: ColorSchemeGridNgComponent;
     @ViewChild('saveSchemeButton', { static: true }) private _saveSchemeButton: SvgButtonNgComponent;
     @ViewChild('itemProperties', { static: true }) private _itemPropertiesComponent: ColorSchemeItemPropertiesNgComponent;
@@ -61,12 +71,12 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     private _currentRecordIndex: Integer | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
-        super(cdr, settingsNgService.settingsService);
+        super(elRef, ++ColorSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._commandRegisterService = commandRegisterNgService.service;
 
@@ -144,11 +154,14 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
         this._resizeObserver.observe(this._leftAndRightDiv.nativeElement);
-        this._gridComponent.waitRendered().then((success) => {
-            if (success) {
-                this.updateWidths();
-            }
-        });
+        this._gridComponent.waitLastServerNotificationRendered().then(
+            (success) => {
+                if (success) {
+                    this.updateWidths();
+                }
+            },
+            (error) => { throw AssertInternalError.createIfNotError(error, 'CSNCI21199'); }
+        );
 
         this.processSettingsChanged();
     }
@@ -156,13 +169,14 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     private showPresetCode() {
         this.isPresetCodeVisible = true;
 
-        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this._resolver, this.colorSettings);
+        const closePromise = ColorSchemePresetCodeNgComponent.open(this._presetCodeContainer, this.colorSettings);
         closePromise.then(
             () => {
                 this.closePresetCode();
             },
             (reason) => {
-                Logger.logError(`ColorSchemePresetCode error: ${reason}`);
+                const errorText = getErrorMessage(reason);
+                Logger.logError(`ColorSchemePresetCode error: ${errorText}`);
                 this.closePresetCode();
             }
         );
@@ -177,7 +191,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
     }
 
     private updateWidths() {
-        const gridMinWidth = this._gridComponent.calculateFixedColumnsWidth() + ColorSettingsNgComponent.extraGridFixedColumnsWidth;
+        const gridMinWidth = this._gridComponent.calculateFixedColumnsWidth() + ColorSettingsNgComponent.extraGridFixedColumnsEmWidth * this._gridComponent.emWidth;
         this.gridMinSize = gridMinWidth;
 
         if (!this._splitterDragged) {
@@ -203,16 +217,12 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
 }
 
 export namespace ColorSettingsNgComponent {
-    export const extraGridFixedColumnsWidth = 20;
+    export const extraGridFixedColumnsEmWidth = 2;
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ColorSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ColorSettingsNgComponent);
         assert(componentRef.instance instanceof ColorSettingsNgComponent, 'CSCC909553');
-        return componentRef.instance as ColorSettingsNgComponent;
+        return componentRef.instance;
     }
 }

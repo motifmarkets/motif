@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { Integer } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
@@ -18,11 +18,18 @@ import { EnumComponentBaseNgDirective } from '../../ng/enum-component-base-ng.di
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class EnumCaptionNgComponent extends EnumComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
     @Input() for: string;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++EnumCaptionNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray
+        );
     }
 
     override ngOnDestroy() {

@@ -34,11 +34,11 @@
     @include mainToolbarCssMixin;
 }
 
-#watchTable {
+#watchGridSource {
     flex: 0 0 auto;
 }
 
-#etoPriceQuotationTable {
+#callPutGridSource {
     flex: 1 1 auto;
 }
 

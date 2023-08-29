@@ -8,16 +8,25 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     EventEmitter,
     HostBinding,
     OnDestroy,
     Output,
     ViewEncapsulation
 } from '@angular/core';
-import { ColorScheme, Integer, ListChangeTypeId, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    ColorScheme,
+    ExtensionInfo,
+    Integer,
+    ListChangeTypeId,
+    MultiEvent,
+    SettingsService,
+    StringId,
+    Strings
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionInfo } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';
 import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service';
 
@@ -29,6 +38,8 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     encapsulation: ViewEncapsulation.None,
 })
 export class InstalledExtensionListNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--color-grid-base-bkgd') gridBkgdColor: string;
     @HostBinding('style.--color-grid-base-alt-bkgd') gridAltBkgdColor: string;
     @HostBinding('style.border-color') borderColor: string;
@@ -47,14 +58,15 @@ export class InstalledExtensionListNgComponent extends ContentComponentBaseNgDir
     private _installedListChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         extensionsAccessNgService: ExtensionsAccessNgService,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++InstalledExtensionListNgComponent.typeInstanceCreateCount);
 
         this._extensionsAccessService = extensionsAccessNgService.service;
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
             () => this.applySettings()
         );

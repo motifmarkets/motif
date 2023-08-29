@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 
 @Component({
@@ -16,8 +16,10 @@ import { SessionNgService } from '../../ng/session-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AuthCallbackNgComponent extends ComponentBaseNgDirective implements OnInit {
-    constructor(private _sessionNgService: SessionNgService) {
-        super();
+    private static typeInstanceCreateCount = 0;
+
+    constructor(elRef: ElementRef<HTMLElement>, private _sessionNgService: SessionNgService) {
+        super(elRef, ++AuthCallbackNgComponent.typeInstanceCreateCount);
     }
 
     ngOnInit() {

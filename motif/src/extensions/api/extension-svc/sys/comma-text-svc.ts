@@ -4,6 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+import { Result } from '../../exposed/extension-api';
+
 /** @public */
 export interface CommaTextSvc {
     readonly delimiterChar: string;
@@ -18,28 +20,8 @@ export interface CommaTextSvc {
     fromIntegerArray(value: number[]): string;
 
     toStringArray(value: string): string[];
-    toStringArrayWithResult(value: string, strict?: boolean): CommaTextSvc.ToStringArrayResult;
-    toIntegerArrayWithResult(value: string): CommaTextSvc.ToIntegerArrayResult;
+    toStringArrayWithResult(value: string, strict?: boolean): Result<string[]>;
+    toIntegerArrayWithResult(value: string): Result<number[]>;
 
-    strictValidate(value: string): CommaTextSvc.StrictValidateResult;
-}
-
-/** @public */
-export namespace CommaTextSvc {
-    export interface ToStringArrayResult {
-        success: boolean;
-        array: string[];
-        errorText: string;
-    }
-
-    export interface ToIntegerArrayResult {
-        success: boolean;
-        array: number[];
-        errorText: string;
-    }
-
-    export interface StrictValidateResult {
-        success: boolean;
-        errorText: string;
-    }
+    strictValidate(value: string): Result<boolean>;
 }

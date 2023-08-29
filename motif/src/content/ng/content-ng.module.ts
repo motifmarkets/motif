@@ -8,21 +8,24 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { ControlsNgModule } from 'controls-ng-api';
-import { RecordGridNgComponent, SimpleGridNgComponent } from '../adapted-revgrid/ng-api';
+import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
     AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
 } from '../advert/ng-api';
+import { BalancesNgComponent } from '../balances/ng-api';
+import { BrokerageAccountsNgComponent } from '../brokerage-accounts/ng-api';
 import { CashHoldingsNgComponent } from '../cash-holdings/ng-api';
 import { ColorControlsNgComponent } from '../color-controls/ng-api';
 import { ColorSchemeGridNgComponent } from '../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../color-scheme-preset-code/ng-api';
-import { ContentGridLayoutEditorNgComponent } from '../content-grid-layout-editor/ng-api';
 import { DelayedBadnessNgComponent } from '../delayed-badness/ng-api';
-import { DepthGridLayoutsEditorNgComponent } from '../depth-grid-layouts-editor/ng-api';
+import { DepthAndSalesGridLayoutsDialogNgComponent } from '../depth-and-sales-grid-layouts-dialog/ng-api';
+import { DepthGridLayoutsDialogNgComponent } from '../depth-grid-layouts-dialog/ng-api';
 import { DepthSideNgComponent } from '../depth-side/ng-api';
 import { DepthNgComponent } from '../depth/ng-api';
 import { ExchangeSettingsNgComponent } from '../exchange-settings/ng-api';
+import { ExpandableCollapsibleLinedHeadingNgComponent } from '../expandable-collapsible-lined-heading/ng-api';
 import {
     AvailableExtensionListNgComponent,
     ExtensionDetailNgComponent,
@@ -34,12 +37,20 @@ import {
     InstalledExtensionListNgComponent
 } from '../extensions/ng-api';
 import { FeedsNgComponent } from '../feeds/ng-api';
-import { GridColumnPropertiesNgComponent } from '../grid-column-properties/ng-api';
-import { GridLayoutEditorGridNgComponent } from '../grid-layout-editor-grid/ng-api';
-import { GridLayoutEditorNgComponent } from '../grid-layout-editor/ng-api';
+import {
+    GridLayoutDialogNgComponent,
+    GridLayoutEditorAllowedFieldsNgComponent,
+    GridLayoutEditorColumnsNgComponent,
+    GridLayoutEditorFieldControlsNgComponent,
+    GridLayoutEditorNgComponent,
+    GridLayoutEditorSearchGridNgComponent
+} from '../grid-layout-dialog/ng-api';
+import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
+import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
+import { OrderAuthoriseNgComponent } from '../order-authorise/ng-api';
 import {
     PadOrderRequestStepNgComponent,
     ResultOrderRequestStepNgComponent,
@@ -50,17 +61,23 @@ import {
     ReviewOrderRequestZenithMessageNgComponent,
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
-import { ParidepthGridLayoutsEditorNgComponent } from '../paridepth-grid-layouts-editor/ng-api';
-import { ScanCriteriaNgComponent } from '../scans/scan-criteria/ng-api';
-import { ScanNewNgComponent } from '../scans/scan-new/ng-api';
-import { ScanNotifiersNgComponent } from '../scans/scan-notifiers/ng-api';
-import { ScanPropertiesNgComponent } from '../scans/scan-properties/ng-api';
-import { ScanTargetsNgComponent } from '../scans/scan-targets/ng-api';
-import { ScanTypeDescriptionNgComponent } from '../scans/scan-type-description/ng/scan-type-description-ng.component';
-import { ScanTypesControlsNgComponent } from '../scans/scan-types-controls/ng/scan-types-controls-ng.component';
-import { ScanTypesGridNgComponent } from '../scans/scan-types-grid/ng/scan-types-grid-ng.component';
-import { ScansNgComponent } from '../scans/scans/ng/scans-ng.component';
+import { OrdersNgComponent } from '../orders/ng-api';
+import {
+    CriteriaScanPropertiesSectionNgComponent,
+    GeneralScanPropertiesSectionNgComponent,
+    NotifiersScanPropertiesSectionNgComponent,
+    ScanListNgComponent,
+    ScanNewNgComponent,
+    ScanPropertiesNgComponent,
+    ScanTypeDescriptionNgComponent,
+    ScanTypesControlsNgComponent,
+    ScanTypesGridNgComponent,
+    ScansNgComponent,
+    TargetsScanPropertiesNgComponent,
+    ZenithScanCriteriaViewNgComponent
+} from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
+import { SearchSymbolsNgComponent } from '../search-symbols/ng-api';
 import { ExchangesSettingsNgComponent } from '../settings/exchanges-settings/ng-api';
 import {
     ColorSettingsNgComponent,
@@ -70,36 +87,47 @@ import {
 } from '../settings/ng-api';
 import { StaticInitialise } from '../static-initialise';
 import { StatusSummaryNgComponent } from '../status-summary/ng-api';
-import { TableNgComponent } from '../table/ng-api';
 import { TradesNgComponent } from '../trades/ng-api';
+import {
+    OpenWatchlistDialogNgComponent,
+    SaveWatchlistDialogNgComponent
+} from '../watchlist-dialog/ng-api';
+import { WatchlistNgComponent } from '../watchlist/ng-api';
 import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
 
 @NgModule({
     declarations: [
+        BalancesNgComponent,
+        BrokerageAccountsNgComponent,
         CashHoldingsNgComponent,
         ColorSchemeGridNgComponent,
         ColorSchemeItemPropertiesNgComponent,
         ColorSchemePresetCodeNgComponent,
         ColorControlsNgComponent,
-        ContentGridLayoutEditorNgComponent,
+        GridLayoutDialogNgComponent,
+        NameableGridLayoutEditorDialogNgComponent,
         DelayedBadnessNgComponent,
         DepthNgComponent,
-        DepthGridLayoutsEditorNgComponent,
+        DepthGridLayoutsDialogNgComponent,
         DepthSideNgComponent,
         FeedsNgComponent,
-        GridColumnPropertiesNgComponent,
         GridLayoutEditorNgComponent,
-        GridLayoutEditorGridNgComponent,
+        GridLayoutEditorAllowedFieldsNgComponent,
+        GridLayoutEditorColumnsNgComponent,
+        GridLayoutEditorFieldControlsNgComponent,
+        GridLayoutEditorSearchGridNgComponent,
+        HoldingsNgComponent,
         IvemHoldingsNgComponent,
         MarketsNgComponent,
+        OrdersNgComponent,
+        OrderAuthoriseNgComponent,
         PadOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
-        ParidepthGridLayoutsEditorNgComponent,
+        DepthAndSalesGridLayoutsDialogNgComponent,
         ColorSettingsNgComponent,
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        TableNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
         OrderPadSettingsNgComponent,
@@ -109,6 +137,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ReviewCancelOrderRequestNgComponent,
         ReviewMoveOrderRequestNgComponent,
         ReviewOrderRequestZenithMessageNgComponent,
+        SearchSymbolsNgComponent,
         ExtensionsSidebarNgComponent,
         ExtensionListsNgComponent,
         InstalledExtensionListNgComponent,
@@ -125,49 +154,68 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         AdvertWebPageNgComponent,
         AdvertTickerNgComponent,
-        SimpleGridNgComponent,
+        RowDataArrayGridNgComponent,
         ScansNgComponent,
         ScanPropertiesNgComponent,
+        GeneralScanPropertiesSectionNgComponent,
         ScanNewNgComponent,
+        ScanListNgComponent,
         ScanTypesGridNgComponent,
         ScanTypesControlsNgComponent,
         ScanTypeDescriptionNgComponent,
-        ScanTargetsNgComponent,
-        ScanNotifiersNgComponent,
-        ScanCriteriaNgComponent,
-    ],
-    imports: [
-        CommonModule,
-        AngularSplitModule,
-        ControlsNgModule,
+        TargetsScanPropertiesNgComponent,
+        NotifiersScanPropertiesSectionNgComponent,
+        CriteriaScanPropertiesSectionNgComponent,
+        ExpandableCollapsibleLinedHeadingNgComponent,
+        ZenithScanCriteriaViewNgComponent,
+        OpenWatchlistDialogNgComponent,
+        SaveWatchlistDialogNgComponent,
+        WatchlistNgComponent,
     ],
     exports: [
         AdvertTickerNgComponent,
         AdvertWebPageNgComponent,
         BannerAdvertNgComponent,
-        ContentGridLayoutEditorNgComponent,
+        BalancesNgComponent,
+        BrokerageAccountsNgComponent,
+        DelayedBadnessNgComponent,
         DepthNgComponent,
-        DepthGridLayoutsEditorNgComponent,
+        DepthGridLayoutsDialogNgComponent,
         ExtensionsSidebarNgComponent,
         ExtensionDetailNgComponent,
         FeedsNgComponent,
         GridLayoutEditorNgComponent,
+        GridLayoutDialogNgComponent,
+        HoldingsNgComponent,
+        NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
+        OrdersNgComponent,
+        OrderAuthoriseNgComponent,
         PadOrderRequestStepNgComponent,
         ReviewOrderRequestStepNgComponent,
         ResultOrderRequestStepNgComponent,
-        ParidepthGridLayoutsEditorNgComponent,
+        SearchSymbolsNgComponent,
+        DepthAndSalesGridLayoutsDialogNgComponent,
         ColorSettingsNgComponent,
         GeneralSettingsNgComponent,
         GridSettingsNgComponent,
         StatusSummaryNgComponent,
-        TableNgComponent,
         TradesNgComponent,
         ZenithStatusNgComponent,
-        SimpleGridNgComponent,
+        RowDataArrayGridNgComponent,
         ScansNgComponent,
+        OpenWatchlistDialogNgComponent,
+        SaveWatchlistDialogNgComponent,
+        WatchlistNgComponent,
+    ],
+    imports: [
+        CommonModule,
+        AngularSplitModule,
+        ControlsNgModule
     ]
 })
+
+// eslint-disable-next-line @typescript-eslint/no-extraneous-class
 export class ContentNgModule {
     constructor() {
         StaticInitialise.initialise();

@@ -6,11 +6,10 @@
 
 import {
     ApplicationRef,
-    ComponentFactoryResolver,
     ComponentRef,
-    Injectable,
-    Injector,
-    Type
+    createComponent,
+    EnvironmentInjector,
+    Injectable, Type
 } from '@angular/core';
 import {
     BooleanUiAction,
@@ -61,7 +60,7 @@ import { ApiComponentFactoryServiceBaseNgDirective } from './api-component-facto
     providedIn: 'root',
 })
 export class ApiControlComponentFactoryNgService extends ApiComponentFactoryServiceBaseNgDirective implements ApiControlComponentFactory {
-    constructor(appRef: ApplicationRef, private readonly _componentFactoryResolver: ComponentFactoryResolver) {
+    constructor(appRef: ApplicationRef, private readonly _environmentInjector: EnvironmentInjector) {
         super(appRef);
     }
 
@@ -307,26 +306,18 @@ export class ApiControlComponentFactoryNgService extends ApiComponentFactoryServ
 
     private createFactoryComponentRef<T extends ControlComponentBaseNgDirective>(componentType: Type<T>) {
         const componentRef = this.createControl(componentType);
-        return new ApiControlComponentFactoryNgService.GenericFactoryComponentRefImplementation(componentRef);
+        return new ApiControlComponentFactoryNgService.ControlFactoryComponentRefImplementation(componentRef);
     }
 
     private createControl<T extends ControlComponentBaseNgDirective>(componentType: Type<T>) {
-        const injector = Injector.create({
-            providers: [],
-        });
-        const componentFactoryRef = this._componentFactoryResolver.resolveComponentFactory<T>(
-            componentType
-        );
-        const componentRef = componentFactoryRef.create(injector);
-
+        const componentRef = createComponent(componentType, { environmentInjector: this._environmentInjector } );
         this.appRef.attachView(componentRef.hostView);
-
         return componentRef;
     }
 }
 
 export namespace ApiControlComponentFactoryNgService {
-    export class GenericFactoryComponentRefImplementation<T extends ControlComponentBaseNgDirective>
+    export class ControlFactoryComponentRefImplementation<T extends ControlComponentBaseNgDirective>
         extends ApiComponentFactoryServiceBaseNgDirective.FactoryComponentRefImplementation {
 
         constructor(private readonly _componentRef: ComponentRef<T>) {

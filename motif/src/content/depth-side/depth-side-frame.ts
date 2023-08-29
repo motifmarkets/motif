@@ -5,7 +5,11 @@
  */
 
 import {
-    assigned, DataItem,
+    AdaptedRevgrid,
+    AllowedGridField,
+    AssertInternalError,
+    CellPainterFactoryService,
+    DataItem,
     DepthDataItem,
     DepthLevelsDataItem,
     DepthRecord,
@@ -16,18 +20,24 @@ import {
     FullDepthSideGridField,
     FullDepthSideGridRecordStore,
     GridLayout,
-    GridLayoutIO,
-    GridRecordFieldState,
+    GridLayoutDefinition,
     Integer,
-    JsonElement, OrderSideId, ShortDepthSideGridField,
+    JsonElement,
+    OrderSideId,
+    RecordGrid,
+    RenderValueRecordGridCellPainter,
+    SettingsService,
+    ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from 'content-internal-api';
 import { RevRecordStore } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {
+    public openedPopulatedAndRenderedEvent: DepthSideFrame.OpenedPopulatedAndRenderedEvent;
     // public columnWidthChangedEvent: DepthSideFrame.ColumnWidthChangedEventHandler;
     // public activeWidthChangedEvent: DepthSideFrame.ActiveWidthChangedEventHandler;
 
@@ -35,32 +45,71 @@ export class DepthSideFrame extends ContentFrame {
     private _gridPrepared = false;
     private _sideId: OrderSideId;
     private _dataItem: DataItem;
-    private _activeStore: DepthSideGridRecordStore;
+    private _activeStore: DepthSideGridRecordStore | undefined;
     private _styleCache = new Array<DepthSideFrame.StyleCacheElement>(DepthStyle.idCount);
     private _filterXrefs: string[] = [];
     // private _activeWidth = 0;
 
-    constructor(private readonly _componentAccess: DepthSideFrame.ComponentAccess) {
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
+
+    private _storeActivationId = 0;
+    private _openedPopulatedAndRendered = false;
+
+    constructor(
+        private readonly _settingsService: SettingsService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
+        private readonly _hostElement: HTMLElement,
+    ) {
         super();
     }
 
     get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
+    get openedPopulatedAndRendered() { return this._openedPopulatedAndRendered; }
+    get lastServerNotificationId() { return this._grid.renderer.lastServerNotificationId; }
+
+    initialise(sideId: OrderSideId, element: JsonElement | undefined) {
+        this._sideId = sideId;
+
+        const initialGridLayoutDefinitions = new Array<GridLayoutDefinition | undefined>(DepthStyle.idCount);
+        if (element !== undefined) {
+            const tryGetFullResult = element.tryGetElement(DepthSideFrame.JsonName.fullLayout);
+            if (tryGetFullResult.isOk()) {
+                const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetFullResult.value);
+                if (layoutDefinitionResult.isOk()) {
+                    const layoutDefinition = layoutDefinitionResult.value;
+                    // const styleCacheElement = this._styleCache[DepthStyleId.Full];
+                    // styleCacheElement.lastLayoutDefinition = layoutDefinition;
+                    initialGridLayoutDefinitions[DepthStyleId.Full] = layoutDefinition;
+                }
+            }
+
+            const tryGetShortResult = element.tryGetElement(DepthSideFrame.JsonName.shortLayout);
+            if (tryGetShortResult.isOk()) {
+                const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetShortResult.value);
+                if (layoutDefinitionResult.isOk()) {
+                    const layoutDefinition = layoutDefinitionResult.value;
+                    // const styleCacheElement = this._styleCache[DepthStyleId.Short];
+                    // styleCacheElement.lastLayoutDefinition = layoutDefinition;
+                    initialGridLayoutDefinitions[DepthStyleId.Short] = layoutDefinition;
+                }
+            }
+        }
+
+        for (let styleId: DepthStyleId = 0; styleId < DepthStyle.idCount; styleId++) {
+            this.initialiseStyle(styleId, initialGridLayoutDefinitions[styleId]);
+        }
+        this.activateStyle(DepthSideFrame.initialDepthStyleId);
+    }
 
     override finalise() {
         if (!this.finalised) {
             if (this._activeStore !== undefined) {
                 this._activeStore.finalise();
+                this._activeStore = undefined;
             }
             super.finalise();
         }
-    }
-
-    setOrderSideId(sideId: OrderSideId) {
-        this._sideId = sideId;
-        for (let styleId: DepthStyleId = 0; styleId < DepthStyle.idCount; styleId++) {
-            this.initialiseStyle(styleId);
-        }
-        this.activateStyle(DepthSideFrame.initialDepthStyleId);
     }
 
     openFull(dataItem: DepthDataItem, expand: boolean) {
@@ -76,60 +125,28 @@ export class DepthSideFrame extends ContentFrame {
     }
 
     close() {
-        this._activeStore.close();
-    }
-
-    loadLayoutConfig(element: JsonElement | undefined) {
-        if (element !== undefined) {
-            const context = 'DepthSideFrame';
-
-            const fullStyleCacheElement = this._styleCache[DepthStyleId.Full];
-            const fullLayoutElement = element.tryGetElement(DepthSideFrame.JsonName.fullLayout, context + '_full');
-            const fullSerialisedColumns = GridLayoutIO.loadLayout(fullLayoutElement);
-            if (fullSerialisedColumns) {
-                const layout = new GridLayout();
-                layout.deserialise(fullSerialisedColumns);
-                fullStyleCacheElement.lastLayout = layout;
-            }
-
-            const shortStyleCacheElement = this._styleCache[DepthStyleId.Short];
-            const shortLayoutElement = element.tryGetElement(DepthSideFrame.JsonName.shortLayout, context + '_short');
-            const shortSerialisedColumns = GridLayoutIO.loadLayout(shortLayoutElement);
-            if (shortSerialisedColumns) {
-                const layout = new GridLayout();
-                layout.deserialise(shortSerialisedColumns);
-                shortStyleCacheElement.lastLayout = layout;
-            }
+        if (this._activeStore !== undefined) {
+            this._activeStore.close();
         }
     }
 
-    saveLayoutConfig(element: JsonElement) {
-        if (assigned(this._activeStore)) {
+    save(element: JsonElement) {
+        if (this._activeStore !== undefined) {
             const styleCacheElement = this._styleCache[this._activeStore.styleId];
-            styleCacheElement.lastLayout = this._grid.saveLayout();
+            styleCacheElement.lastLayoutDefinition = this._grid.createGridLayoutDefinition();
         }
 
-        const fullGridLayout = this._styleCache[DepthStyleId.Full].lastLayout;
-        if (fullGridLayout !== undefined) {
+        const fullGridLayoutDefinition = this._styleCache[DepthStyleId.Full].lastLayoutDefinition;
+        if (fullGridLayoutDefinition !== undefined) {
             const fullGridLayoutElement = element.newElement(DepthSideFrame.JsonName.fullLayout);
-            const serialisedColumns = fullGridLayout.serialise();
-            GridLayoutIO.saveLayout(serialisedColumns, fullGridLayoutElement);
+            fullGridLayoutDefinition.saveToJson(fullGridLayoutElement);
         }
 
-        const shortGridLayout = this._styleCache[DepthStyleId.Short].lastLayout;
-        if (shortGridLayout !== undefined) {
+        const shortGridLayoutDefinition = this._styleCache[DepthStyleId.Short].lastLayoutDefinition;
+        if (shortGridLayoutDefinition !== undefined) {
             const shortGridLayoutElement = element.newElement(DepthSideFrame.JsonName.shortLayout);
-            const serialisedColumns = shortGridLayout.serialise();
-            GridLayoutIO.saveLayout(serialisedColumns, shortGridLayoutElement);
+            shortGridLayoutDefinition.saveToJson(shortGridLayoutElement);
         }
-    }
-
-    waitOpenPopulated() {
-        return this._activeStore.waitOpenPopulated();
-    }
-
-    waitRendered() {
-        return this._grid.waitModelRendered();
     }
 
     calculateActiveColumnsWidth() {
@@ -186,14 +203,16 @@ export class DepthSideFrame extends ContentFrame {
         this._grid.continuousFiltering = false;
     }
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
     handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+        // not yet implemented
     }
 
     handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+        // not yet implemented
     }
 
     handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
@@ -214,64 +233,94 @@ export class DepthSideFrame extends ContentFrame {
     //     }
     // }
 
-    getLayoutWithHeadersMap() {
-        return this._grid.getLayoutWithHeadersMap();
+    canCreateAllowedFieldsGridLayoutDefinition() {
+        return this._activeStore !== undefined;
     }
 
-    setGridLayout(layout: GridLayout) {
-        this._grid.loadLayout(layout);
+    createAllowedFieldsGridLayoutDefinition() {
+        const activeStore = this._activeStore;
+        if (activeStore === undefined) {
+            throw new AssertInternalError('DSFCAFGLDU22209');
+        } else {
+            let allowedFields: readonly AllowedGridField[];
+            switch (activeStore.styleId) {
+                case DepthStyleId.Full:
+                    allowedFields = FullDepthSideGridField.createAllowedFields();
+                    break;
+                case DepthStyleId.Short:
+                    allowedFields = ShortDepthSideGridField.createAllowedFields();
+                    break;
+                default:
+                    throw new UnreachableCaseError('DSFCAFGLDD22209', activeStore.styleId);
+            }
+            return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
+        }
+    }
+
+    applyGridLayoutDefinition(definition: GridLayoutDefinition) {
+        this._grid.applyGridLayoutDefinition(definition);
     }
 
     private handleGetDataItemCorrectnessIdEvent() {
         return this._dataItem.correctnessId;
     }
 
-    private initialiseStyle(styleId: DepthStyleId) {
-        let allFieldsStatesVisibles: DepthSideGridField.AllFieldsAndDefaults;
+    private initialiseStyle(styleId: DepthStyleId, initialGridLayoutDefinition: GridLayoutDefinition | undefined) {
+        let fields: DepthSideGridField[];
         let store: DepthSideGridRecordStore;
         switch (styleId) {
-            case DepthStyleId.Full:
-                allFieldsStatesVisibles = FullDepthSideGridField.createAllFieldsAndDefaults(
-                    this._sideId,
-                    () => this.handleGetDataItemCorrectnessIdEvent()
-                );
+            case DepthStyleId.Full: {
+                fields = FullDepthSideGridField.createAll(this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                 store = new FullDepthSideGridRecordStore(styleId, this._sideId);
+
+                if (initialGridLayoutDefinition === undefined) {
+                    initialGridLayoutDefinition = FullDepthSideGridField.createDefaultGridLayoutDefinition(this._sideId);
+                }
+
                 break;
-            case DepthStyleId.Short:
-                allFieldsStatesVisibles = ShortDepthSideGridField.createAllFieldsAndDefaults(
-                    this._sideId,
-                    () => this.handleGetDataItemCorrectnessIdEvent()
-                );
+            }
+            case DepthStyleId.Short: {
+                fields = ShortDepthSideGridField.createAll(this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
                 store = new ShortDepthSideGridRecordStore(styleId, this._sideId);
+
+                if (initialGridLayoutDefinition === undefined) {
+                    initialGridLayoutDefinition = ShortDepthSideGridField.createDefaultGridLayoutDefinition(this._sideId);
+                }
+
                 break;
+            }
             default:
                 throw new UnreachableCaseError('DSFI225576', styleId);
         }
 
-        const fields = allFieldsStatesVisibles.fields;
-        const defaultVisibles = allFieldsStatesVisibles.defaultVisibles;
-        const defaultLayout = new GridLayout();
-        for (let idx = 0; idx < fields.length; idx++) {
-            defaultLayout.addField(fields[idx].name, defaultVisibles[idx]);
-        }
-
-        if (this._sideId === OrderSideId.Bid) {
-            // Reverse the order of columns in the asks grid.
-            const lastColumnIdx = defaultLayout.columnCount - 1;
-            for (let idx = 0; idx < lastColumnIdx; idx++) {
-                defaultLayout.moveColumn(lastColumnIdx, idx);
-            }
-        }
-
         const element: DepthSideFrame.StyleCacheElement = {
             gridFields: fields,
-            defaultGridFieldStates: allFieldsStatesVisibles.defaultStates,
-            defaultGridFieldVisibles: defaultVisibles,
-            lastLayout: defaultLayout,
+            lastLayoutDefinition: initialGridLayoutDefinition,
             store,
         };
 
         this._styleCache[styleId] = element;
+    }
+
+    private createDefaultGridLayoutDefinition(fields: DepthSideGridField[], fieldVisibles: boolean[]) {
+        const fieldCount = fields.length;
+        const layoutDefinitionColumns = new Array<GridLayoutDefinition.Column>(fieldCount);
+        for (let i = 0; i < fieldCount; i++) {
+            const field = fields[i];
+            const layoutDefinitionColumn: GridLayoutDefinition.Column = {
+                fieldName: field.name,
+                visible: fieldVisibles[i],
+                autoSizableWidth: undefined,
+            };
+            layoutDefinitionColumns[i] = layoutDefinitionColumn;
+        }
+
+        if (this._sideId === OrderSideId.Ask) {
+            // Reverse the order of columns in the asks grid.
+            layoutDefinitionColumns.reverse();
+        }
+
+        return new GridLayoutDefinition(layoutDefinitionColumns);
     }
 
     private activateStyle(newStyleId: DepthStyleId) {
@@ -280,7 +329,7 @@ export class DepthSideFrame extends ContentFrame {
         } else {
             const oldStyleId = this._activeStore.styleId;
             if (oldStyleId !== newStyleId) {
-                this._styleCache[oldStyleId].lastLayout = this._grid.saveLayout();
+                this._styleCache[oldStyleId].lastLayoutDefinition = this._grid.createGridLayoutDefinition();
                 this._activeStore.finalise();
                 this.activateStore(newStyleId);
             }
@@ -288,29 +337,80 @@ export class DepthSideFrame extends ContentFrame {
     }
 
     private activateStore(styleId: DepthStyleId) {
+        ++this._storeActivationId;
+        this._openedPopulatedAndRendered = false;
+
         this._activeStore = this._styleCache[styleId].store;
-        switch (this._activeStore.styleId) {
-            case DepthStyleId.Full:
-                const fullDataStore = this._activeStore as FullDepthSideGridRecordStore;
+        const activeStore = this._activeStore;
+        switch (activeStore.styleId) {
+            case DepthStyleId.Full: {
+                const fullDataStore = activeStore as FullDepthSideGridRecordStore;
                 this.setGrid(fullDataStore);
                 break;
-            case DepthStyleId.Short:
-                const shortDataStore = this._activeStore as ShortDepthSideGridRecordStore;
+            }
+            case DepthStyleId.Short: {
+                const shortDataStore = activeStore as ShortDepthSideGridRecordStore;
                 this.setGrid(shortDataStore);
                 break;
+            }
             default:
-                throw new UnreachableCaseError('DSFDSFAS333387', this._activeStore.styleId);
+                throw new UnreachableCaseError('DSFDSFAS333387', activeStore.styleId);
         }
 
         const styleCacheElement = this._styleCache[styleId];
         this.prepareGrid(styleCacheElement);
+
+        const storeActivationId = this._storeActivationId;
+        const populatedPromise = activeStore.waitOpenPopulated();
+        populatedPromise.then(
+            (success) => {
+                if (success && storeActivationId === this._storeActivationId) {
+                    this.waitRendered();
+                }
+            },
+            (error) => AssertInternalError.createIfNotError(error, 'DSFAS69114')
+        );
     }
 
-    private setGrid(dataStore: RevRecordStore) {
-        this._grid = this._componentAccess.createGrid(dataStore);
-        this._grid.recordFocusEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
-        this._grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-        this._grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+    private setGrid(
+        recordStore: RevRecordStore,
+    ) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._grid !== undefined) {
+            this._grid.destroy();
+        }
+
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            sortOnClick: false,
+            sortOnDoubleClick: false,
+            gridRightAligned: this._sideId === OrderSideId.Bid,
+        };
+
+        const grid = new RecordGrid(
+            this._settingsService,
+            this._hostElement,
+            recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+            this,
+        );
+
+        if (this._sideId === OrderSideId.Ask) {
+            grid.verticalScroller.setBeforeInsideOffset(0);
+        }
+
+        grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusEvent(newRecordIndex, oldRecordIndex);
+        grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
+        grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+
+        this._grid = grid;
+
+        this._gridHeaderCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
+
+        grid.activate();
     }
 
     private prepareGrid(element: DepthSideFrame.StyleCacheElement) {
@@ -318,43 +418,54 @@ export class DepthSideFrame extends ContentFrame {
             this._grid.reset();
         }
 
-        this._activeStore.addFields(element.gridFields);
+        const gridLayout = new GridLayout(element.lastLayoutDefinition);
+        this._grid.fieldsLayoutReset(element.gridFields, gridLayout);
 
-        for (let id = 0; id < element.defaultGridFieldStates.length; id++) {
-            this._grid.setFieldState(element.gridFields[id], element.defaultGridFieldStates[id]);
-        }
-
-        this._grid.loadLayout(element.lastLayout);
-
-        this. _grid.sortable = false;
         this. _grid.continuousFiltering = true;
 
         this._gridPrepared = true;
     }
 
-    // === Data store methods ====
-    // public GetDataStatus(): DataItemStatusId {
-    //     return (this._tradeDataItem) ? this._tradeDataItem.statusId : DataItemStatusId.Inactive;
-    // }
+    private customiseSettingsForNewColumn() {
+        // no customisation required
+    }
+
+    private getMainCellPainter() {
+        return this._gridMainCellPainter;
+    }
+
+    private getHeaderCellPainter() {
+        return this._gridHeaderCellPainter;
+    }
+
+    private waitRendered() {
+        const storeActivationId = this._storeActivationId;
+        const renderPromise = this._grid.renderer.waitLastServerNotificationRendered();
+        renderPromise.then(
+            () => {
+                if (storeActivationId === this._storeActivationId) {
+                    this._openedPopulatedAndRendered = true;
+                    this.openedPopulatedAndRenderedEvent()
+                }
+            },
+            (error) => AssertInternalError.createIfNotError(error, 'DSFWR69114')
+        );
+    }
 }
 
 export namespace DepthSideFrame {
     export const initialDepthStyleId = DepthStyleId.Full;
 
+    export type OpenedPopulatedAndRenderedEvent = (this: void) => void;
     // export type ColumnWidthChangedEventHandler = (this: void, columnIndex: Integer) => void;
     // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export class StyleCacheElement {
         gridFields: readonly DepthSideGridField[];
-        defaultGridFieldStates: readonly GridRecordFieldState[];
-        defaultGridFieldVisibles: readonly boolean[];
-        lastLayout: GridLayout;
+        // defaultGridFieldStates: readonly GridRecordFieldState[];
+        // defaultGridFieldVisibles: readonly boolean[];
+        lastLayoutDefinition: GridLayoutDefinition | undefined;
         store: DepthSideGridRecordStore;
-    }
-
-    export interface ComponentAccess {
-        readonly id: string;
-        createGrid(dataStore: RevRecordStore): RecordGrid;
     }
 
     export namespace JsonName {

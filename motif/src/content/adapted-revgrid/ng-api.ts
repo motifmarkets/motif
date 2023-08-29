@@ -5,5 +5,5 @@
  */
 
 export * from './record-grid/ng-api';
-export * from './simple-grid/ng-api';
+export * from './row-data-array-grid/ng-api';
 

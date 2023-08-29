@@ -8,7 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
+    ElementRef,
     OnDestroy,
     OnInit,
     ViewChild,
@@ -29,6 +29,8 @@ import { ZenithStatusFrame } from '../zenith-status-frame';
 })
 export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
     implements ZenithStatusFrame.ComponentAccess, OnInit, OnDestroy {
+
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
 
@@ -70,8 +72,8 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 
     private readonly _frame: ZenithStatusFrame;
 
-    constructor(private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService, sessionInfoNgService: SessionInfoNgService) {
+        super(elRef, ++ZenithStatusNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createZenithStatusFrame(this, sessionInfoNgService.service.zenithEndpoints);
     }
@@ -198,13 +200,9 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace ZenithStatusNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ZenithStatusNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(ZenithStatusNgComponent);
         const instance = componentRef.instance;
         if (!(instance instanceof ZenithStatusNgComponent)) {
             throw new AssertInternalError('ZSCCI339212772');

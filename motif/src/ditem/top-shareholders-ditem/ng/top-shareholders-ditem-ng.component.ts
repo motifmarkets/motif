@@ -15,10 +15,7 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
-    assigned,
     DateUiAction,
-    delay1Tick,
     EnumInfoOutOfOrderError,
     ExchangeId,
     IconButtonUiAction,
@@ -34,11 +31,19 @@ import {
     Strings,
     UiAction,
     UnexpectedCaseError,
-    UnreachableCaseError
+    UnreachableCaseError,
+    assert,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService
+} from 'component-services-ng-api';
+import { GridSourceNgDirective } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -55,21 +60,18 @@ import { TopShareholdersDitemFrame } from '../top-shareholders-ditem-frame';
 export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, TopShareholdersDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('todayModeButton', { static: true }) private _todayModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('historicalModeButton', { static: true }) private _historicalModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('compareModeButton', { static: true }) private _compareModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('detailsModeButton', { static: true }) private _detailsModeButtonInputComponent: SvgButtonNgComponent;
     @ViewChild('historyCompareButton', { static: true }) private _historyCompareButtonInputComponent: SvgButtonNgComponent;
-    @ViewChild('topShareholdersTableContent', { static: true }) private _contentComponent: TableNgComponent;
+    @ViewChild('topShareholdersTableContent', { static: true }) private _contentComponent: GridSourceNgDirective;
     @ViewChild('symbolInput', { static: true }) private _symbolEditComponent: IvemIdInputNgComponent;
     @ViewChild('historicalDateInput', { static: true }) private _historicalDateInputComponent: DateInputNgComponent;
     @ViewChild('compareDateInput', { static: true }) private _compareDateInputComponent: DateInputNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     public caption = '';
     public details: TopShareholdersDitemNgComponent.Details = {
@@ -100,20 +102,35 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     private _frame: TopShareholdersDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        symbolsNgService: SymbolsNgService,
+        private readonly _symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _symbolsManager: SymbolsNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++TopShareholdersDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new TopShareholdersDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this._frame = new TopShareholdersDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            this._symbolsNgService.service,
+            adiNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+        );
 
         this._toggleSymbolLinkingButtonUiAction = this.createToggleSymbolLinkingButtonUiAction();
         this._todayModeUiAction = this.createTodayModeUiAction();
@@ -190,7 +207,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
 
         this.caption = this.calculateCaption(params.litIvemId, params.historicalDate, params.compareDate);
 
-        this.details.symbolText = this._symbolsManager.litIvemIdToDisplay(params.litIvemId);
+        this.details.symbolText = this._symbolsNgService.litIvemIdToDisplay(params.litIvemId);
     }
 
     public canNewTableOnLitIvemIdApply() {
@@ -251,13 +268,12 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         if (element === undefined) {
             this.setModeId(TopShareholdersDitemNgComponent.defaultModeId);
         } else {
-            const context = 'Top Shareholders: ModeId';
             let loadedModeId: TopShareholdersDitemNgComponent.ModeId;
-            const modeIdJsonValue = element.tryGetString(TopShareholdersDitemNgComponent.JsonName.modeId, context);
-            if (modeIdJsonValue === undefined) {
+            const modeIdJsonValueResult = element.tryGetString(TopShareholdersDitemNgComponent.JsonName.modeId);
+            if (modeIdJsonValueResult.isErr()) {
                 loadedModeId = TopShareholdersDitemNgComponent.defaultModeId;
             } else {
-                const typedModeId = TopShareholdersDitemNgComponent.Mode.tryJsonValueToId(modeIdJsonValue);
+                const typedModeId = TopShareholdersDitemNgComponent.Mode.tryJsonValueToId(modeIdJsonValueResult.value);
                 if (typedModeId === undefined) {
                     loadedModeId = TopShareholdersDitemNgComponent.defaultModeId;
                 } else {
@@ -266,12 +282,12 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             }
             this.setModeId(loadedModeId);
 
-            /*const historicalJsonDate = element.tryGetDate(TopShareholdersInputComponent.jsonTag_HistoricalDate);
+            /*const historicalJsonDateResult = element.tryGetDateType(TopShareholdersInputComponent.jsonTag_HistoricalDate);
             if (historicalJsonDate !== undefined) {
                 this._historicalDateInputElement.setValue(historicalJsonDate);
             }
 
-            const compareJsonDate = element.tryGetDate(TopShareholdersInputComponent.jsonTag_CompareDate);
+            const compareJsonDateResult = element.tryGetDateType(TopShareholdersInputComponent.jsonTag_CompareDate);
             if (compareJsonDate !== undefined) {
                 this._historicalDateInputElement.setValue(compareJsonDate);
             }*/
@@ -435,13 +451,11 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private isHistoryValid() {
-        return this._symbolUiAction !== undefined &&
-            this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk();
+        return this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk();
     }
 
     private isCompareValid() {
-        return this._symbolUiAction !== undefined &&
-            this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk() && this._compareDateUiAction.isValueOk();
+        return this._symbolUiAction.isValueOk() && this._historicalDateUiAction.isValueOk() && this._compareDateUiAction.isValueOk();
     }
 
     private isHistoryCompareValid() {
@@ -460,14 +474,14 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
                 if (!this.isHistoryValid()) {
                     Logger.logWarning('TopShareholders history clicked when not all history controls valid');
                 } else {
-                    this.newTable();
+                    this.tryOpenGridSource();
                 }
                 break;
             case TopShareholdersDitemNgComponent.ModeId.Compare:
                 if (!this.isCompareValid()) {
                     Logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
                 } else {
-                    this.newTable();
+                    this.tryOpenGridSource();
                 }
                 break;
             default: throw new UnexpectedCaseError('TSICHCCU239984', this._modeId.toString(10));
@@ -485,9 +499,9 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         this._compareDateUiAction.pushAccepted();
     }
 
-    private newTable() {
+    private tryOpenGridSource() {
         this.acceptUi();
-        this._frame.newTable(true);
+        this._frame.tryOpenGridSource();
     }
 
     private initialiseComponents() {
@@ -608,7 +622,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private calculateCaption(symbol: LitIvemId, historicalDate: Date | undefined, compareDate: Date | undefined): string {
-        const symbolText = this._symbolsManager.litIvemIdToDisplay(symbol);
+        const symbolText = this._symbolsNgService.litIvemIdToDisplay(symbol);
         const top100ShareholdersText = Strings[StringId.Top100Shareholders];
         const forText = Strings[StringId.For];
 

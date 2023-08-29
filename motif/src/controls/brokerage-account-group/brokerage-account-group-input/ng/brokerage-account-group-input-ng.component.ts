@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnInit, Renderer2, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnInit, Renderer2, ViewChild, ViewEncapsulation } from '@angular/core';
 import { MultiEvent, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { CoreNgService, SettingsNgService } from 'component-services-ng-api';
@@ -22,6 +22,7 @@ import { BrokerageAccountGroupComponentBaseNgDirective } from '../../ng/brokerag
     encapsulation: ViewEncapsulation.None,
 })
 export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroupComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
 
@@ -32,11 +33,17 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
     private _measureBoldCanvasContext: CanvasRenderingContext2D;
     private _ngSelectWidths: NgSelectWidths | undefined;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef,
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService, pulseService: CoreNgService
     ) {
-        super(cdr, settingsNgService.settingsService, pulseService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        super(
+            elRef,
+            ++BrokerageAccountGroupInputNgComponent.typeInstanceCreateCount,
+            cdr, settingsNgService.service,
+            pulseService,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureBoldCanvasContext = this._ngSelectOverlayNgService.measureBoldCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
@@ -48,15 +55,9 @@ export class BrokerageAccountGroupInputNgComponent extends BrokerageAccountGroup
         this.setInitialiseReady();
     }
 
-    override focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: BrokerageAccountGroupComponentBaseNgDirective.NamedGroup) {
         term = term.toUpperCase();
-        return item.brokerageAccountGroup.upperId.indexOf(term) > -1 || item.upperName.indexOf(term) > -1;
+        return item.brokerageAccountGroup.upperId.includes(term) || item.upperName.includes(term);
     }
 
     public handleSelectChangeEvent(event: unknown) {

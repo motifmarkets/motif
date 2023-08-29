@@ -6,99 +6,93 @@
 
 import {
     AdiService,
-    CommandRegisterService,
-    GridLayout,
-    GridLayoutRecordStore,
-    JsonElement,
-    LitIvemId,
-    SymbolsService,
+    AssertInternalError,
+    CommandRegisterService, JsonElement,
+    SettingsService,
+    SymbolsService
 } from '@motifmarkets/motif-core';
-import { ScansFrame } from 'content-internal-api';
+import { ScanListFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: ScansFrame;
+    private _scanListFrame: ScanListFrame | undefined;
 
     constructor(
-        private _componentAccess: ScansDitemFrame.ComponentAccess,
+        ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopInterface: DesktopAccessService,
+        desktopInterface: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
-        super(BuiltinDitemFrame.BuiltinTypeId.Scans, _componentAccess,
-            commandRegisterService, desktopInterface, symbolsService, adiService
+        super(BuiltinDitemFrame.BuiltinTypeId.Scans, ditemComponentAccess,
+            settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
         );
     }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    get initialised() { return this._scanListFrame !== undefined; }
 
-    get filterText() { return this._contentFrame.filterText; }
-    set filterText(value: string) { this._contentFrame.filterText = value; }
-
-    initialise(contentFrame: ScansFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = contentFrame;
-        this._contentFrame.initialise();
-
-        if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
+    get filterText() {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFGFT49471');
         } else {
-            const contentElement = frameElement.tryGetElement(ScansDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+            return this._scanListFrame.filterText;
+        }
+    }
+    set filterText(value: string) {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFSFT49471');
+        } else {
+            this._scanListFrame.filterText = value;
+        }
+    }
+
+    initialise(ditemFrameElement: JsonElement | undefined, scanListFrame: ScanListFrame): void {
+        this._scanListFrame = scanListFrame;
+
+        let scanListFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const scanListFrameElementResult = ditemFrameElement.tryGetElement(ScansDitemFrame.JsonName.scanListFrame);
+            if (scanListFrameElementResult.isOk()) {
+                scanListFrameElement = scanListFrameElementResult.value;
+            }
         }
 
-        // this._contentFrame.initialiseWidths();
+        scanListFrame.initialiseGrid(
+            this.opener,
+            scanListFrameElement,
+            false,
+        );
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
-
-        const contentElement = element.newElement(ScansDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutConfig(contentElement);
+    override finalise() {
+        if (this._scanListFrame !== undefined) {
+            this._scanListFrame.finalise();
+        }
+        super.finalise();
     }
 
-    // open() {
-    //     const litIvemId = this.litIvemId;
-    //     if (litIvemId === undefined) {
-    //         this._contentFrame.close();
-    //     } else {
-    //         this._contentFrame.open(litIvemId, DepthStyleId.Full);
-    //     }
-    //     this._componentAccess.notifyOpenedClosed(litIvemId);
-    // }
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
 
-    // loadConstructLayoutConfig() {
-    //     super.loadConstructLayoutConfig();
-    // }
-
-    autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
-    }
-
-    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap | undefined {
-        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadersMap();
-    }
-
-
-    setGridLayout(layout: GridLayout) {
-        this._contentFrame.setGridLayout(layout);
-    }
-
-    // adviseShown() {
-    //     setTimeout(() => this._contentFrame.initialiseWidths(), 200);
-    // }
-
-    protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
-        super.applyLitIvemId(litIvemId, selfInitiated);
-        if (litIvemId === undefined) {
-            return false;
+        const scanListFrame = this._scanListFrame;
+        if (scanListFrame === undefined) {
+            throw new AssertInternalError('SDFS29974');
         } else {
-            // this.open();
-            return true;
+            const scanListFrameElement = ditemFrameElement.newElement(ScansDitemFrame.JsonName.scanListFrame);
+            scanListFrame.save(scanListFrameElement);
+        }
+    }
+
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFASACW49471');
+        } else {
+            this._scanListFrame.autoSizeAllColumnWidths(widenOnly);
         }
     }
 }
@@ -106,12 +100,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
 export namespace ScansDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const scanListFrame = 'scanListFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;
-
-
-    export interface ComponentAccess extends DitemFrame.ComponentAccess {
-    }
 }

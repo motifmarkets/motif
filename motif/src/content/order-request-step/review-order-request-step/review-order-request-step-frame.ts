@@ -4,19 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-import { JsonElement, OrderPad, OrderRequestDataDefinition, OrderRequestTypeId, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { OrderPad, OrderRequestDataDefinition, OrderRequestTypeId, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ReviewOrderRequestStepFrame extends OrderRequestStepFrame {
 
     constructor(private readonly _componentAccess: ReviewOrderRequestStepFrame.ComponentAccess) {
         super(OrderRequestStepFrame.StepId.Review);
-    }
-
-    loadLayoutConfig(element: JsonElement | undefined) {
-    }
-
-    saveLayoutConfig(element: JsonElement) {
     }
 
     setOrderPad(orderPad: OrderPad, definition: OrderRequestDataDefinition, zenithMessageActive: boolean) {

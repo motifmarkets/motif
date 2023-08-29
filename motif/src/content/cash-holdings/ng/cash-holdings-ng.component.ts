@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -14,10 +14,10 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CashHoldingsNgComponent extends ContentComponentBaseNgDirective implements OnInit {
-    constructor() {
-        super();
-    }
+export class CashHoldingsNgComponent extends ContentComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
 
-    ngOnInit() {}
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++CashHoldingsNgComponent.typeInstanceCreateCount);
+    }
 }

@@ -10,52 +10,56 @@ import {
     AppStorageService,
     AssertInternalError,
     BrokerageAccountGroup,
+    CapabilitiesService,
     Command,
     CommandContext,
     CommandRegisterService,
     CommandUiAction,
+    Err,
     ExtensionHandle,
+    getErrorMessage,
     Integer,
     InternalCommand,
     Json,
     JsonElement,
     JsonValue,
     KeyboardService,
+    KeyValueStore,
     LitIvemId,
     Logger,
     MarketOrderId,
     MultiEvent,
+    Ok,
     OrderPad,
     OrderRequestTypeId,
+    Result,
     SettingsService,
     SingleBrokerageAccountGroup,
     StringId,
     Strings,
-    SuccessOrErrorText,
-    SuccessOrErrorText_Success,
-    SymbolsService,
+    SymbolDetailCacheService,
     UiAction,
     UserAlertService
 } from '@motifmarkets/motif-core';
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { BuiltinDitemFrame, DesktopAccessService, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
-import { AppFeature } from 'src/app.feature';
 import { BrandingSplashWebPageDitemFrame } from 'src/ditem/web-page-ditem/branding-splash/branding-splash-web-page-ditem-frame';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
-export class DesktopFrame implements DesktopAccessService {
+export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private static readonly XmlTag_HistoricalAccountIds = 'HistoricalAccountIds';
     private static readonly DefaultMaxHistoricalAccountIdCount = 15;
 
-    initialLoadedEvent: DesktopAccessService.InitialLoadedEvent;
+    initialLoadedEvent: DitemFrame.DesktopAccessService.InitialLoadedEvent;
 
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
     private _activeLayoutName: string | undefined;
+    private _layoutSaveRequired = false;
 
     private _frames: DitemFrame[] = [];
     private _primaryFrames: DitemFrame[] = [];
@@ -107,6 +111,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newOrderRequestDitemUiAction: CommandUiAction;
     private _newBrokerageAccountsDitemUiAction: CommandUiAction;
     private _newOrdersDitemUiAction: CommandUiAction;
+    private _newOrderAuthoriseDitemUiAction: CommandUiAction;
     private _newHoldingsDitemUiAction: CommandUiAction;
     private _newBalancesDitemUiAction: CommandUiAction;
     private _newSettingsDitemUiAction: CommandUiAction;
@@ -133,6 +138,7 @@ export class DesktopFrame implements DesktopAccessService {
     private _newTradesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBrokerageAccountsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newOrdersDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newOrderAuthoriseDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newHoldingsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBalancesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSettingsDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -158,8 +164,9 @@ export class DesktopFrame implements DesktopAccessService {
         private readonly _settingsService: SettingsService,
         private readonly _storage: AppStorageService,
         private readonly _userAlertService: UserAlertService,
+        private readonly _capabilitiesService: CapabilitiesService,
         private readonly _extensionsAccessService: ExtensionsAccessService,
-        private readonly _symbolsService: SymbolsService,
+        private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _adiService: AdiService,
         private readonly _signOutService: SignOutService,
         private readonly _menuBarService: MenuBarService,
@@ -171,6 +178,8 @@ export class DesktopFrame implements DesktopAccessService {
         this._commandContext = this.createCommandContext(frameHtmlElement);
         this.createUiActions();
     }
+
+    get layoutSaveRequired() { return this._layoutSaveRequired; }
 
     get historicalAccountIds(): string[] { return this._historicalAccountIds; }
     get FrameCount(): Integer { return this.getFrameCount(); }
@@ -219,7 +228,7 @@ export class DesktopFrame implements DesktopAccessService {
     public get litIvemIdChangedEvent(): DesktopFrame.TLitIvemIdChangedEvent { return this._litIvemIdChangedEvent; }
     public set litIvemIdChangedEvent(value: DesktopFrame.TLitIvemIdChangedEvent) { this._litIvemIdChangedEvent = value; }
 
-    async initialise(goldenLayoutHostFrame: GoldenLayoutHostFrame) {
+    initialise(goldenLayoutHostFrame: GoldenLayoutHostFrame) {
         this._goldenLayoutHostFrame = goldenLayoutHostFrame;
 
         this.connectMenuBarItems();
@@ -230,12 +239,14 @@ export class DesktopFrame implements DesktopAccessService {
                 if (!success) {
                     // layout does not exist
                     this._goldenLayoutHostFrame.loadDefaultLayout();
+                    this._activeLayoutName = undefined;
                 }
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
             },
             (reason) => {
-                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${reason}". Resetting Layout`);
+                const errorText = getErrorMessage(reason);
+                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
                 this._goldenLayoutHostFrame.resetLayout();
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
@@ -435,11 +446,15 @@ export class DesktopFrame implements DesktopAccessService {
         this._lastFocusedBrokerageAccountGroup = undefined;
     }
 
-    resetLayout() {
+    async resetLayout() {
         // this._activeLayoutName = undefined;
         // this._goldenLayoutHostFrame.resetLayout();
-        this._storage.removeSubNamedItem(AppStorageService.Key.Layout, DesktopFrame.mainLayoutName);
-        this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
+        const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName, true);
+        if (result.isErr()) {
+            Logger.logError(`DesktopService save layout error: ${result.error}`);
+        } else {
+            this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
+        }
     }
 
     createExtensionComponent(extensionHandle: ExtensionHandle, frameTypeName: string, initialState: JsonValue | undefined,
@@ -476,30 +491,41 @@ export class DesktopFrame implements DesktopAccessService {
 
     loadLayout(name: string): Promise<boolean> {
         // return Promise.resolve(false); // uncomment to force default layout
-        const getPromise = this._storage.getSubNamedItem(AppStorageService.Key.Layout, name);
+        const getPromise = this._storage.getSubNamedItem(KeyValueStore.Key.Layout, name, true);
         return getPromise.then(
-            (layoutConfigAsStr) => {
-                if (layoutConfigAsStr === undefined) {
+            (getResult) => {
+                if (getResult.isErr()) {
                     return Promise.resolve(false);
                 } else {
-                    let successOrErrorText: string | undefined;
-                    try {
-                        successOrErrorText = this.loadLayoutFromString(layoutConfigAsStr);
-                    } catch (e) {
-                        successOrErrorText = `${e}`;
-                    }
-                    if (successOrErrorText !== SuccessOrErrorText_Success) {
-                        return Promise.reject(`Load layout "${name}" failure: ${successOrErrorText}`);
+                    const layoutConfigAsStr = getResult.value;
+                    if (layoutConfigAsStr === undefined || layoutConfigAsStr === '') {
+                        return Promise.resolve(false);
                     } else {
-                        return Promise.resolve(true);
+                        let loadResult: Result<void>;
+                        try {
+                            loadResult = this.loadLayoutFromString(layoutConfigAsStr, name);
+                        } catch (e) {
+                            loadResult = new Err(getErrorMessage(e));
+                        }
+                        if (loadResult.isErr()) {
+                            return Promise.reject(`Load layout "${name}" failure: ${loadResult.error}`);
+                        } else {
+                            return Promise.resolve(true);
+                        }
                     }
                 }
             },
-            (reason) => Promise.reject(`Storage Get Failure: ${reason}`)
+            (reason) => Promise.reject(`Storage Get Internal Error: ${getErrorMessage(reason)}`)
         );
     }
 
-    async saveLayout(name: string) {
+    flagLayoutSaveRequired() {
+        this._layoutSaveRequired = true;
+    }
+
+    async saveLayout() {
+        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
+
         const layoutElement = new JsonElement();
         let goldenLayoutConfig: LayoutConfig;
         const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
@@ -509,6 +535,8 @@ export class DesktopFrame implements DesktopAccessService {
         } else {
             goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
         }
+        // remove eslint disable when can save with different names
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._activeLayoutName !== undefined) {
             layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
         }
@@ -517,10 +545,15 @@ export class DesktopFrame implements DesktopAccessService {
 
         const layoutStr = JSON.stringify(layoutElement.json);
         try {
-            return await this._storage.setSubNamedItem(AppStorageService.Key.Layout, name, layoutStr);
+            const result = await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
+            if (result.isErr()) {
+                Logger.logError(`DesktopService save layout error: ${result.error}`);
+            } else {
+                this._layoutSaveRequired = false;
+            }
         } catch (e) {
-            Logger.logError(`DesktopService save layout error: ${e}`);
-            throw(e);
+            const errorText = getErrorMessage(e);
+            Logger.logError(`DesktopService save layout error: ${errorText}`);
         }
     }
 
@@ -545,7 +578,7 @@ export class DesktopFrame implements DesktopAccessService {
             if (!(primaryFrame instanceof OrderRequestDitemFrame)) {
                 throw new AssertInternalError('GLHFEOR233884324');
             } else {
-                const orderRequestFrame = primaryFrame as OrderRequestDitemFrame;
+                const orderRequestFrame = primaryFrame;
                 orderRequestFrame.setOrderPad(pad);
                 primaryFrame.focus();
             }
@@ -582,7 +615,7 @@ export class DesktopFrame implements DesktopAccessService {
 
     private handleNewBuyOrderRequestDitemUiActionSignal() {
         const component = this.createOrderRequestBuiltinComponent();
-        const pad = new OrderPad(this._symbolsService, this._adiService);
+        const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadBuy();
         pad.applySettingsDefaults(this._settingsService.core);
         component.setOrderPad(pad);
@@ -590,18 +623,34 @@ export class DesktopFrame implements DesktopAccessService {
 
     private handleNewSellOrderRequestDitemUiActionSignal() {
         const component = this.createOrderRequestBuiltinComponent();
-        const pad = new OrderPad(this._symbolsService, this._adiService);
+        const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadSell();
         pad.applySettingsDefaults(this._settingsService.core);
         component.setOrderPad(pad);
     }
 
     private handleSaveLayoutUiActionSignal() {
-        this.saveLayout(DesktopFrame.mainLayoutName);
+        const saveLayoutPromise = this.saveLayout();
+        saveLayoutPromise.then(
+            () => {
+                // nothing to do
+            },
+            (error) => {
+                throw new AssertInternalError('DFHSLUAS69333', getErrorMessage(error)); // should never occur
+            }
+        )
     }
 
     private handleResetLayoutUiActionSignal() {
-        this.resetLayout();
+        const resetLayoutPromise = this.resetLayout();
+        resetLayoutPromise.then(
+            () => {
+                // nothing to do
+            },
+            (error) => {
+                throw new AssertInternalError('DFHSLUAS69334', getErrorMessage(error)); // should never occur
+            }
+        )
     }
 
     private handleSignOutUiActionSignal() {
@@ -640,6 +689,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newOrderRequestDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.OrderRequest);
         this._newBrokerageAccountsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts);
         this._newOrdersDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Orders);
+        this._newOrderAuthoriseDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise);
         this._newHoldingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Holdings);
         this._newBalancesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Balances);
         this._newSettingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Settings);
@@ -706,6 +756,7 @@ export class DesktopFrame implements DesktopAccessService {
         this._newOrderRequestDitemUiAction.finalise();
         this._newBrokerageAccountsDitemUiAction.finalise();
         this._newOrdersDitemUiAction.finalise();
+        this._newOrderAuthoriseDitemUiAction.finalise();
         this._newHoldingsDitemUiAction.finalise();
         this._newBalancesDitemUiAction.finalise();
         this._newSettingsDitemUiAction.finalise();
@@ -755,7 +806,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
-            if (AppFeature.advertising) {
+            if (this._capabilitiesService.advertisingEnabled) {
                 this._newNewsHeadlinesDitemMenuItem = this._menuBarService.connectMenuItem(this._newNewsHeadlinesDitemUiAction);
                 this._newAlertsDitemMenuItem = this._menuBarService.connectMenuItem(this._newAlertsDitemUiAction);
                 this._newSearchDitemMenuItem = this._menuBarService.connectMenuItem(this._newSearchDitemUiAction);
@@ -772,6 +823,9 @@ export class DesktopFrame implements DesktopAccessService {
             this._newSellOrderRequestDitemMenuItem = this._menuBarService.connectMenuItem(this._newSellOrderRequestDitemUiAction);
             this._saveLayoutMenuItem = this._menuBarService.connectMenuItem(this._saveLayoutUiAction);
             this._resetLayoutMenuItem = this._menuBarService.connectMenuItem(this._resetLayoutUiAction);
+            if (this._capabilitiesService.dtrEnabled) {
+                this._newOrderAuthoriseDitemMenuItem = this._menuBarService.connectMenuItem(this._newOrderAuthoriseDitemUiAction);
+            }
         } finally {
             this._menuBarService.endChanges();
         }
@@ -786,7 +840,7 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);
-            if (AppFeature.advertising) {
+            if (this._capabilitiesService.advertisingEnabled) {
                 this._menuBarService.disconnectMenuItem(this._newNewsHeadlinesDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newAlertsDitemMenuItem);
                 this._menuBarService.disconnectMenuItem(this._newSearchDitemMenuItem);
@@ -803,6 +857,9 @@ export class DesktopFrame implements DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newSellOrderRequestDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._saveLayoutMenuItem);
             this._menuBarService.disconnectMenuItem(this._resetLayoutMenuItem);
+            if (this._capabilitiesService.dtrEnabled) {
+                this._menuBarService.disconnectMenuItem(this._newOrderAuthoriseDitemMenuItem);
+            }
         } finally {
             this._menuBarService.endChanges();
         }
@@ -899,38 +956,39 @@ export class DesktopFrame implements DesktopAccessService {
         }
     }
 
-    private loadLayoutFromString(layoutAsStr: string): SuccessOrErrorText {
-        let result: SuccessOrErrorText;
+    private loadLayoutFromString(layoutAsStr: string, layoutName: string): Result<void> {
+        let result: Result<void>;
         let layoutJson: Json | undefined;
         try {
-            layoutJson = JSON.parse(layoutAsStr);
-            result = SuccessOrErrorText_Success;
+            layoutJson = JSON.parse(layoutAsStr) as Json;
+            result = new Ok(undefined);
         } catch (e) {
-            result = `${Strings[StringId.Layout_InvalidJson]}: "${e}": ${layoutAsStr}`;
-            Logger.logError(result, 1000);
+            const errorText = `${Strings[StringId.Layout_InvalidJson]}: "${getErrorMessage(e)}": ${layoutAsStr}`;
+            Logger.logError(errorText, 1000);
+            result = new Err(errorText);
             layoutJson = undefined;
         }
 
         if (layoutJson !== undefined) {
             const layoutElement = new JsonElement(layoutJson);
-            this._activeLayoutName = layoutElement.tryGetString(DesktopFrame.JsonName.layoutName);
-            const name = this._activeLayoutName ?? 'Unnamed';
-            const schemaVersion = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
-            if (schemaVersion === undefined) {
+            this._activeLayoutName = layoutName;
+            const name = this._activeLayoutName;
+            const schemaVersionResult = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
+            if (schemaVersionResult.isErr()) {
                 Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
             } else {
-                if (schemaVersion !== DesktopFrame.layoutStateSchemaVersion) {
+                if (schemaVersionResult.value !== DesktopFrame.layoutStateSchemaVersion) {
                     Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
-                        `${schemaVersion}, ${DesktopFrame.layoutStateSchemaVersion}`);
+                        `${schemaVersionResult.value}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
-                    const golden = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
-                    if (golden === undefined) {
+                    const goldenResult = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
+                    if (goldenResult.isErr()) {
                         Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();
                     } else {
-                        this._goldenLayoutHostFrame.loadLayout(golden as LayoutConfig);
+                        this._goldenLayoutHostFrame.loadLayout(goldenResult.value as LayoutConfig);
                     }
                 }
             }
@@ -1013,7 +1071,7 @@ export namespace DesktopFrame {
     export type RequestAppLinkedLitIvemIdEvent = (this: void) => LitIvemId;
     export type RequestAppLinkedBrokerageAccountGroupEvent = (this: void) => BrokerageAccountGroup;
 
-    export type GetBuiltinDitemFrameFromComponent = (component: BuiltinDitemNgComponentBaseDirective) => BuiltinDitemFrame | undefined;
+    export type GetBuiltinDitemFrameFromComponent = (component: BuiltinDitemNgComponentBaseNgDirective) => BuiltinDitemFrame | undefined;
 
     export type EditOrderRequestEvent = (this: void, request: OrderPad) => void;
     export type EditOrderRequestFromMarketOrderIdEvent = (this: void, requestType: OrderRequestTypeId,

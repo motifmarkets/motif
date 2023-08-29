@@ -1,10 +1,14 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
-import { SettingsNgService } from 'component-services-ng-api';
-import { GridProperties, RevRecordStore } from 'revgrid';
-import { AdaptedRevgrid } from '../../adapted-revgrid';
+import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, GridField, RecordGrid } from '@motifmarkets/motif-core';
+import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
+import { RevRecordStore, Subgrid } from 'revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
-import { RecordGrid } from '../record-grid';
-import { RecordGridCellPainter } from '../record-grid-cell-painter';
 
 @Component({
     selector: 'app-record-grid',
@@ -13,24 +17,15 @@ import { RecordGridCellPainter } from '../record-grid-cell-painter';
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy, RecordGrid.ComponentAccess {
-    private readonly _cellPainter: RecordGridCellPainter;
-
+export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy {
     private _grid: RecordGrid;
 
-    constructor(elRef: ElementRef, settingsNgService: SettingsNgService) {
-        const settingsService = settingsNgService.settingsService;
-        super(elRef.nativeElement, settingsService);
-
-        if (recordGridCellPainter === undefined) {
-            recordGridCellPainter = new RecordGridCellPainter(settingsService);
-        }
-        this._cellPainter = recordGridCellPainter;
-
-        this.applySettings();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, textFormatterNgService: TextFormatterNgService) {
+        const settingsService = settingsNgService.service;
+        super(elRef, 1, settingsService);
     }
 
-    get grid() { return this._grid; }
+    get recordGrid() { return this._grid; }
 
     ngOnDestroy() {
         if (this.destroyEventer !== undefined) {
@@ -38,43 +33,41 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
         }
     }
 
-    createGrid(recordStore: RevRecordStore, frameGridProperties: AdaptedRevgrid.FrameGridProperties) {
+    createGrid(
+        recordStore: RevRecordStore,
+        customGridSettings: AdaptedRevgrid.CustomGridSettings,
+        customiseSettingsForNewColumnEventer: AdaptedRevgrid.CustomiseSettingsForNewColumnEventer,
+        getMainCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+        getHeaderCellPainterEventer: Subgrid.GetCellPainterEventer<AdaptedRevgridBehavioredColumnSettings, GridField>,
+    ) {
         this.destroyGrid(); // Can only have one grid so destroy previous one if it exists
 
-        const gridProperties: Partial<GridProperties> = {
-            renderFalsy: true,
-            autoSelectRows: false,
-            singleRowSelectionMode: false,
-            columnSelection: false,
-            rowSelection: false,
-            restoreColumnSelections: false,
-            multipleSelections: false,
-            sortOnDoubleClick: false,
-            visibleColumnWidthAdjust: true,
-            ...AdaptedRevgrid.createGridPropertiesFromSettings(this._settingsService, frameGridProperties, undefined),
-        };
-
-        this._grid = new RecordGrid(
-            this,
+        const grid = new RecordGrid(
             this._settingsService,
-            this._hostElement,
+            this.rootHtmlElement,
             recordStore,
-            this._cellPainter,
-            gridProperties,
+            customGridSettings,
+            customiseSettingsForNewColumnEventer,
+            getMainCellPainterEventer,
+            getHeaderCellPainterEventer,
+            this,
         );
 
-        this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(this._grid, frameGridProperties);
+        this._grid = grid;
 
-        return this._grid;
+        // this.initialiseGridRightAlignedAndCtrlKeyMouseMoveEventer(grid, frameGridSettings);
+
+        grid.activate();
+
+        return grid;
     }
 
     override destroyGrid() {
         super.destroyGrid();
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._grid !== undefined) {
             this._grid.destroy();
         }
     }
 }
-
-let recordGridCellPainter: RecordGridCellPainter; // singleton shared with all RecordGrid instantiations

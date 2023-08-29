@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommandRegisterService, MultiEvent } from '@motifmarkets/motif-core';
-import { RegisteredExtension } from 'content-internal-api';
+import { AssertInternalError, CommandRegisterService, MultiEvent, RegisteredExtension } from '@motifmarkets/motif-core';
 import { WorkspaceService } from 'src/workspace/internal-api';
 import { LocalDesktop as LocalDesktopApi, WorkspaceSvc } from '../../../api/extension-api';
 import { LocalDesktopImplementation } from '../../exposed/internal-api';
@@ -41,7 +40,7 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
             this._localDesktop.destroy();
         }
 
-        this.resolveGetLoadedLocalDesktop(this._localDesktop);
+        this.resolveGetLoadedLocalDesktop(undefined);
     }
 
     getLoadedLocalDesktop(): Promise<LocalDesktopApi | undefined> {
@@ -57,18 +56,23 @@ export class WorkspaceSvcImplementation implements WorkspaceSvc {
     }
 
     private loadLocalDesktop() {
-        this._localDesktop = new LocalDesktopImplementation(this._registeredExtension,
-            this._workspaceService.localDesktopFrame,
-            this._commandRegisterService,
-        );
+        const localDesktopFrame = this._workspaceService.localDesktopFrame;
+        if (localDesktopFrame === undefined) {
+            throw new AssertInternalError('WSILLD00023');
+        } else {
+            this._localDesktop = new LocalDesktopImplementation(this._registeredExtension,
+                localDesktopFrame,
+                this._commandRegisterService,
+            );
 
-        if (this.localDesktopLoadedEventer !== undefined) {
-            this.localDesktopLoadedEventer();
+            if (this.localDesktopLoadedEventer !== undefined) {
+                this.localDesktopLoadedEventer();
+            }
+
+            this.resolveGetLoadedLocalDesktop(this._localDesktop);
+
+            this.checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent();
         }
-
-        this.resolveGetLoadedLocalDesktop(this._localDesktop);
-
-        this.checkUnsubscribeWorkspaceServiceLocalDesktopFrameLoadedEvent();
     }
 
     private resolveGetLoadedLocalDesktop(value: LocalDesktopApi | undefined) {

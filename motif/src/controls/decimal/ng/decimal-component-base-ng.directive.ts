@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive } from '@angular/core';
-import { DecimalUiAction, MultiEvent, SettingsService, UiAction } from '@motifmarkets/motif-core';
+import { Directive } from '@angular/core';
+import { DecimalUiAction, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
@@ -16,12 +16,6 @@ export abstract class DecimalComponentBaseNgDirective extends ControlComponentBa
     public step?: number;
 
     private _pushDecimalEventsSubscriptionId: MultiEvent.SubscriptionId;
-
-    constructor(cdr: ChangeDetectorRef,
-        settingsService: SettingsService,
-        stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray) {
-        super(cdr, settingsService, stateColorItemIdArray);
-    }
 
     public override get uiAction() { return super.uiAction as DecimalUiAction; }
 

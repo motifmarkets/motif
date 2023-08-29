@@ -12,11 +12,11 @@ import { CoreNgService } from './core-ng.service';
     providedIn: 'root',
 })
 export class AdiNgService {
-    private _adiService: AdiService;
+    private _service: AdiService;
 
     constructor(coreNgService: CoreNgService) {
-        this._adiService = coreNgService.adi;
+        this._service = coreNgService.adiService;
     }
 
-    get adiService() { return this._adiService; }
+    get service() { return this._service; }
 }

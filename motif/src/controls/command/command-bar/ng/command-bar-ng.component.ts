@@ -8,8 +8,8 @@ import {
     AfterViewInit,
     ChangeDetectionStrategy,
     Component,
-    ComponentFactoryResolver,
-    OnDestroy, ViewChild,
+    OnDestroy,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
 import {
@@ -34,10 +34,7 @@ export class CommandBarNgComponent implements OnDestroy, AfterViewInit {
 
     private _activeCommand: Command | undefined;
 
-    constructor(
-        private _resolver: ComponentFactoryResolver,
-        commandRegisterNgService: CommandRegisterNgService
-    ) {
+    constructor(commandRegisterNgService: CommandRegisterNgService) {
         // this._commandUiAction = this.createCommandUiAction(
         //     commandRegisterNgService.service
         // );

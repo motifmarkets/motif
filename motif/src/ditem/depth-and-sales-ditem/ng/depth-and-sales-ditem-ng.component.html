@@ -1,0 +1,47 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="contentDiv" [style.display]="isMainMode() ? null : 'none'">
+    <div id="mainToolbarDiv">
+
+        <div class="toolbarGroup">
+            <app-lit-ivem-id-select #symbolInput id="symbolInput"></app-lit-ivem-id-select>
+        </div>
+        <div class="toolbarGroup">
+            <app-svg-button #rollDownButton id="rollDownButton"></app-svg-button>
+            <app-svg-button #rollUpButton id="rollUpButton"></app-svg-button>
+        </div>
+        <div class="toolbarGroup">
+            <app-svg-button #filterButton id="filterButton"></app-svg-button>
+            <app-text-input #filterEdit size="5"></app-text-input>
+        </div>
+        <app-date-input #historicalDateInput></app-date-input>
+        <div class="toolbarGroup">
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
+        </div>
+        <div class="toolbarGroup">
+            <app-svg-button #symbolLinkButton></app-svg-button>
+        </div>
+        <app-command-bar #commandBar id="commandBar"></app-command-bar>
+    </div>
+
+    <app-watchlist #watchlist id="watchlist"></app-watchlist>
+
+    <div #depthTradesDiv id="depthTradesDiv">
+        <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="splitDragEnd($event)">
+            <as-split-area [size]="depthWidth">
+                <app-depth #depth id="depth"></app-depth>
+            </as-split-area>
+            <as-split-area [size]="null"> <!-- was size="*" -->
+                <app-trades #trades id="trades"></app-trades>
+            </as-split-area>
+        </as-split>
+    </div>
+</div>
+<div id="dialogDiv" [style.display]="isDialogMode() ? null : 'none'">
+    <ng-template #dialogContainer></ng-template>
+</div>

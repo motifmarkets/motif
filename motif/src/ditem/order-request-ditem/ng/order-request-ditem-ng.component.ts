@@ -18,10 +18,28 @@ import {
 import {
     BooleanUiAction,
     ButtonUiAction,
-    ColorScheme, delay1Tick, HtmlTypes, IconButtonUiAction,
-    InternalCommand, JsonElement, ModifierKey, ModifierKeyId, numberToPixels, OrderPad, OrderRequestType, StringId, Strings, UiAction
+    ColorScheme,
+    HtmlTypes,
+    IconButtonUiAction,
+    InternalCommand,
+    JsonElement,
+    ModifierKey,
+    ModifierKeyId,
+    OrderPad,
+    OrderRequestType,
+    StringId,
+    Strings,
+    UiAction,
+    delay1Tick,
+    numberToPixels
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
 import {
     OrderRequestStepComponentNgDirective
 } from 'content-ng-api';
@@ -40,6 +58,8 @@ import { OrderRequestDitemFrame } from '../order-request-ditem-frame';
 })
 export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, OrderRequestDitemFrame.ComponentAccess {
+
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('pad', { static: true }) private _padElementRef: ElementRef<HTMLDivElement>;
     @ViewChild('primaryButton', { static: true }) private _primaryButtonComponent: SvgButtonNgComponent;
@@ -68,7 +88,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     public reviewBackSectionWidth: string = HtmlTypes.Width.MaxContent;
     public reviewButtonInitDisplayed: boolean;
 
-    public newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Hidden;
+    public newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Hidden;
     public newAmendRequestPossibleFlagChar = Strings[StringId.OrderRequest_NewAmendPossibleFlagChar];
 
     private readonly _primaryUiAction: IconButtonUiAction;
@@ -85,19 +105,35 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
     private _padHtmlElement: HTMLDivElement;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++OrderRequestDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new OrderRequestDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this._frame = new OrderRequestDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            symbolDetailCacheNgService.service,
+        );
 
         this._primaryUiAction = this.createPrimaryUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -201,9 +237,9 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
 
     public pushNewAmendRequestPossible(value: boolean) {
         if (value) {
-            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Visible;
+            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Visible;
         } else {
-            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visiblity.Hidden;
+            this.newAmendRequestPossibleFlagVisibility = HtmlTypes.Visibility.Hidden;
         }
         this.markForCheck();
     }

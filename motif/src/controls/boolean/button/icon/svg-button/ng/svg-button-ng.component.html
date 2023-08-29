@@ -9,11 +9,12 @@
     type="button"
     [id]="inputId"
     [title]="title"
+    [disabled]="disabled"
     (click)="onClick($event)"
     (keydown.enter)="onEnterKeyDown($event)"
     (keydown.spacebar)="onSpacebarKeyDown($event)">
 
-    <svg #svg id="svg" role="img" aria-hidden="true" ariaLabelledBy="null" ariaTitle="null" focusable="false" [ngClass]="selectedDisabledClass">
-        <use [attr.href]="'#button-icon-' + sprite"/>
+    <svg #svg role="img" aria-hidden="true" ariaLabelledBy="null" ariaTitle="null" focusable="false" [ngClass]="selectedDisabledClass">
+        <use [attr.href]="spriteLink"/>
     </svg>
 </button>

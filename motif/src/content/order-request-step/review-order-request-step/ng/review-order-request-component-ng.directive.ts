@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, InjectionToken } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, InjectionToken } from '@angular/core';
 import {
     AmendOrderMessageConvert,
     AmendOrderRequestDataDefinition,
@@ -12,6 +12,7 @@ import {
     CancelOrderRequestDataDefinition,
     DataChannel,
     DataChannelId,
+    Integer,
     MoveOrderMessageConvert,
     MoveOrderRequestDataDefinition,
     OrderPad,
@@ -23,17 +24,20 @@ import {
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()
-export class ReviewOrderRequestComponentNgDirective extends ContentComponentBaseNgDirective {
+export abstract class ReviewOrderRequestComponentNgDirective extends ContentComponentBaseNgDirective {
     public zenithMessageTitle = '';
 
     private _zenithMessageActive = false;
-    private _zenithMessageText: string;
+    private _zenithMessageText: string | undefined;
 
-    constructor(private readonly _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        private readonly _cdr: ChangeDetectorRef,
         private readonly _orderPad: OrderPad,
         private readonly _dataDefinition: OrderRequestDataDefinition
     ) {
-        super();
+        super(elRef, typeInstanceCreateId);
     }
 
     public get zenithMessageActive() { return this._zenithMessageActive; }
@@ -88,7 +92,7 @@ export class ReviewOrderRequestComponentNgDirective extends ContentComponentBase
 
 export namespace ReviewOrderRequestComponentNgDirective {
     const orderPadTokenName = 'orderPad';
-    export const OrderPadInjectionToken = new InjectionToken<OrderPad>(orderPadTokenName);
+    export const orderPadInjectionToken = new InjectionToken<OrderPad>(orderPadTokenName);
     const definitionTokenName = 'definition';
-    export const DefinitionInjectionToken = new InjectionToken<OrderRequestDataDefinition>(definitionTokenName);
+    export const definitionInjectionToken = new InjectionToken<OrderRequestDataDefinition>(definitionTokenName);
 }

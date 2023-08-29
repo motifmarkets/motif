@@ -1,7 +1,7 @@
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "target": "es2020",
+    "target": "ES2022",
     "module": "es2020",
     "downlevelIteration": true,
     "resolveJsonModule": true,
@@ -14,13 +14,12 @@
     "strictBindCallApply": true,
     "alwaysStrict": true,
     "noImplicitReturns": true,
-    // "useUnknownInCatchVariables": true,
     "strictFunctionTypes": true,
-    "noFallthroughCasesInSwitch": false, // rely on linter for this
+    "noFallthroughCasesInSwitch": false,
     "forceConsistentCasingInFileNames": true,
     "strictPropertyInitialization": false,
     "noUnusedLocals": false,
-    "esModuleInterop": true, // Used by Rollbar. Also enables allowSyntheticDefaultImports which is required by version.ts
+    "esModuleInterop": true,
     "baseUrl": ".",
     "sourceMap": true,
     "declaration": false,
@@ -30,20 +29,21 @@
     "experimentalDecorators": true,
     "typeRoots": [
       "node_modules/@types",
-      "node_definitions/@types"
+      "src/@types"
     ],
     "lib": [
-      "es2018",
+      "es2019",
       "dom"
     ],
     "rootDir": ".",
     "paths": {
+      "@motifmarkets/motif-core": ["../motif-core/src/code/public-api"], // for debugging only
+      "third-party-internal-api": ["src/third-party/internal-api"],
+      "third-party-ng-api": ["src/third-party/ng-api"],
+      "third-party-code-mirror-component": ["src/third-party/code-mirror-module/code-mirror/ng/code-mirror-ng.component"],
       "generated-internal-api": ["src/generated/internal-api"],
-      // "res-internal-api": ["src/res/internal-api"],
-      // "sys-internal-api": ["src/sys/internal-api"],
-      // "adi-internal-api": ["src/adi/internal-api"],
-      // "core-internal-api": ["src/core/internal-api"],
       "component-internal-api": ["src/component/internal-api"],
+      "component-ng-api": ["src/component/ng-api"],
       "component-services-internal-api": ["src/component-services/internal-api"],
       "component-services-ng-api": ["src/component-services/ng-api"],
       "controls-internal-api": ["src/controls/internal-api"],
@@ -53,20 +53,11 @@
       "ditem-internal-api": ["src/ditem/internal-api"],
       "ditem-ng-api": ["src/ditem/ng-api"],
       "desktop-ng-api": ["src/desktop/ng-api"],
-      // make sure we do not import the CommonJS decimal.js-light
-      // "decimal.js-light": ["node_modules/decimal.js-light.mjs"]
-    }
+      "workspace-internal-api": ["src/workspace/internal-api"],
+      "workspace-ng-api": ["src/workspace/ng-api"]
+    },
+    "useDefineForClassFields": false
     // "traceResolution": true, // can use this to debug paths below
-    //// the following entries allow you to link in revgrid without copying dist to Motif.
-    // "paths": {
-    //     "@angular/*": [
-    //         "./node_modules/@angular/*"
-    //     ],
-    //     "revgrid": [
-    //         "../../../RevGrid/ng/dist/revgrid"
-    //     ]
-    // }
-    //// revgrid entries end
   },
   "exclude": [
     "custom_modules",

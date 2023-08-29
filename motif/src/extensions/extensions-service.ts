@@ -5,23 +5,36 @@
  */
 
 import {
-    AdiService, AppStorageService, AssertInternalError, CommandRegisterService, ComparisonResult,
+    AdiService,
+    AppStorageService,
+    AssertInternalError,
+    CommandRegisterService,
+    ComparisonResult,
+    Err,
+    ErrorCode,
     ExtensionError,
     ExtensionHandle,
-    ExternalError, ExtStringId, ExtStrings, Integer,
+    ExtensionId,
+    ExtensionInfo,
+    ExtStringId,
+    ExtStrings,
+    Integer,
     invalidHandle,
     ListChangeTypeId,
     Logger,
     mSecsPerMin,
-    MultiEvent, StringId, Strings, SuccessOrErrorText,
-    SuccessOrErrorText_Success, SymbolsService, SysTick
+    MultiEvent,
+    Ok,
+    PublisherId,
+    RegisteredExtension,
+    Result,
+    SettingsService,
+    StringId,
+    Strings,
+    SymbolsService,
+    SysTick
 } from '@motifmarkets/motif-core';
-import {
-    ExtensionId,
-    ExtensionInfo,
-    ExtensionsAccessService,
-    RegisteredExtension
-} from 'content-internal-api';
+import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
 import { ExtensionDitemComponent } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
@@ -30,8 +43,8 @@ import { WorkspaceService } from 'src/workspace/internal-api';
 import { Extension as ExtensionApi, ExtensionRegistrar as ExtensionRegistrarApi, Frame as FrameApi } from './api/extension-api';
 import { ExtensionRegistration } from './extension-registration';
 import {
-    ApiContentComponentFactory, ApiControlComponentFactory,
-
+    ApiContentComponentFactory,
+    ApiControlComponentFactory,
     ExtensionRegistrarImplementation,
     FrameSvcImplementation,
     PublisherTypeImplementation
@@ -64,6 +77,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     constructor(
         private readonly _adiService: AdiService,
+        private readonly _settingsService: SettingsService,
         private readonly _commandRegisterService: CommandRegisterService,
         private readonly _storageService: AppStorageService,
         private readonly _symbolsService: SymbolsService,
@@ -147,6 +161,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     public uninstallExtension(handle: Integer) {
         const registration = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (registration === undefined) {
             throw new AssertInternalError('ESUE319981667');
         } else {
@@ -165,21 +180,23 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     public getExtensionName(handle: ExtensionHandle) {
         const extension = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (extension === undefined) {
-            throw new ExtensionError(ExternalError.Code.ExtensionsServiceGetNameHandleExtensionUndefined, handle.toString());
+            throw new ExtensionError(ErrorCode.ExtensionsService_GetNameHandleExtensionUndefined, handle.toString());
         } else {
             return extension.name;
         }
     }
 
-    public getExtensionPublisher(handle: ExtensionHandle) {
+    public getExtensionPublisherName(handle: ExtensionHandle) {
         const extension = this._registrations[handle];
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (extension === undefined) {
-            throw new ExtensionError(ExternalError.Code.ExtensionsServiceGetPublisherHandleExtensionUndefined,
+            throw new ExtensionError(ErrorCode.ExtensionsService_GetPublisherHandleExtensionUndefined,
                 handle.toString()
             );
         } else {
-            return extension.publisherName;
+            return extension.publisherId.name;
         }
     }
 
@@ -187,7 +204,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         const count = this._registrations.length;
         for (let i = 0; i < count; i++) {
             const registration = this._registrations[i];
-            if (registration.publisherName === publisher && registration.name === name) {
+            if (registration.publisherId.name === publisher && registration.name === name) {
                 return registration;
             }
         }
@@ -211,15 +228,17 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 return { component: undefined, errorText: Strings[StringId.Extensions_ExtensionNotInstalledOrEnabled] };
             } else {
                 const localDesktop = extensionSvc.workspaceSvc.localDesktop;
-                if (localDesktop === undefined) {
+                const localDesktopFrame = this._workspaceService.localDesktopFrame;
+                if (localDesktop === undefined || localDesktopFrame === undefined) {
                     return { component: undefined, errorText: Strings[StringId.Extensions_LocalDesktopNotLoaded] };
                 } else {
                     const frameSvc = new FrameSvcImplementation(
                         registration.handle,
                         frameTypeName,
                         container,
+                        this._settingsService,
                         this._commandRegisterService,
-                        this._workspaceService.localDesktopFrame, // LocalDesktopAccessService
+                        localDesktopFrame, // LocalDesktopAccessService
                         this._symbolsService,
                         this._adiService,
                         this._apiControlComponentFactory,
@@ -370,8 +389,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         if (this.isBundled(registration)) {
             // Do not add registration into uninstalledBundled. Make copy
             const bundledInfo: ExtensionInfo = {
-                publisherTypeId: registration.publisherTypeId,
-                publisherName: registration.publisherName,
+                publisherId: registration.publisherId,
                 name: registration.name,
                 version: registration.version,
                 apiVersion: registration.apiVersion,
@@ -427,8 +445,8 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     private registerInvalidExtension() {
         const extensionRequest: ExtensionRegistrarApi.Request = {
-            publisherType: PublisherTypeImplementation.toApi(ExtensionsService.invalidExtensionInfo.publisherTypeId),
-            publisherName: ExtensionsService.invalidExtensionInfo.publisherName,
+            publisherType: PublisherTypeImplementation.toApi(ExtensionsService.invalidExtensionInfo.publisherId.typeId),
+            publisherName: ExtensionsService.invalidExtensionInfo.publisherId.name,
             name: ExtensionsService.invalidExtensionInfo.name,
             version: ExtensionsService.invalidExtensionInfo.version,
             apiVersion: ExtensionsService.apiVersion,
@@ -448,8 +466,8 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
     private registerInternalExtension() {
         const extensionRequest: ExtensionRegistrarApi.Request = {
-            publisherType: PublisherTypeImplementation.toApi(ExtensionsService.internalExtensionInfo.publisherTypeId),
-            publisherName: ExtensionsService.internalExtensionInfo.publisherName,
+            publisherType: PublisherTypeImplementation.toApi(ExtensionsService.internalExtensionInfo.publisherId.typeId),
+            publisherName: ExtensionsService.internalExtensionInfo.publisherId.name,
             name: ExtensionsService.internalExtensionInfo.name,
             version: ExtensionsService.internalExtensionInfo.version,
             apiVersion: ExtensionsService.apiVersion,
@@ -466,48 +484,64 @@ export class ExtensionsService implements FrameExtensionsAccessService {
     }
 
     private processRegistrationRequest(request: ExtensionRegistrarApi.Request) {
-        const publisherTypeId = PublisherTypeImplementation.fromApi(request.publisherType);
-
-        const requestExtensionInfo: ExtensionInfo = {
-            publisherTypeId,
-            publisherName: request.publisherName,
-            name: request.name,
-            version: '',
-            apiVersion: '',
-            shortDescription: '',
-            longDescription: '',
-            urlPath: '',
-        };
-
-        const activeDownload = this.extractActiveDownload(requestExtensionInfo);
-        if (activeDownload === undefined) {
-            // must have timed out
-            Logger.logWarning('Extension active download not found:',
-                `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
-            );
+        const publisherType = request.publisherType;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (publisherType === undefined) {
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            Logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
         } else {
-            const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
-            if (matchingExtension !== undefined) {
-                Logger.logExternalError(ExternalError.Code.ExtensionsServiceAddDuplicateName,
-                    `${this.generateExtensionKeyText(requestExtensionInfo)}`
-                );
+            const publisherTypeId = PublisherTypeImplementation.tryFromApi(publisherType);
+            if (publisherTypeId === undefined) {
+                // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+                Logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
             } else {
-                const requestedInfo = activeDownload.info;
-                const matchOrErrorText = this.matchRequestWithInfo(request, requestedInfo);
-                if (matchOrErrorText !== SuccessOrErrorText_Success) {
-                    Logger.logExternalError(ExternalError.Code.ExtensionsServiceMismatchedExtensionInfo,
-                        `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchOrErrorText}`
+                const publisherId: PublisherId = {
+                    typeId: publisherTypeId,
+                    name: request.publisherName,
+                };
+
+                const requestExtensionInfo: ExtensionInfo = {
+                    publisherId,
+                    name: request.name,
+                    version: '',
+                    apiVersion: '',
+                    shortDescription: '',
+                    longDescription: '',
+                    urlPath: '',
+                };
+
+                const activeDownload = this.extractActiveDownload(requestExtensionInfo);
+                if (activeDownload === undefined) {
+                    // must have timed out
+                    Logger.logWarning('Extension active download not found:',
+                        `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
                     );
                 } else {
-                    const registration = this.registerExtension(request, requestedInfo);
-                    this.installRegistration(registration, activeDownload.loadAlso);
+                    const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
+                    if (matchingExtension !== undefined) {
+                        Logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
+                            `${this.generateExtensionKeyText(requestExtensionInfo)}`
+                        );
+                    } else {
+                        const requestedInfo = activeDownload.info;
+                        const matchResult = this.matchRequestWithInfo(request, requestedInfo);
+                        if (matchResult.isErr()) {
+                            Logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
+                                `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchResult.error}`
+                            );
+                        } else {
+                            const registration = this.registerExtension(request, requestedInfo);
+                            this.installRegistration(registration, activeDownload.loadAlso);
+                        }
+                    }
                 }
             }
         }
     }
 
     private generateExtensionKeyText(info: ExtensionInfo) {
-        return `"${ExtensionId.PublisherType.idToDisplay(info.publisherTypeId)}" "${info.publisherName}" "${info.name}"`;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        return `"${PublisherId.Type.idToDisplay(info.publisherId.typeId)}" "${info.publisherId.name ?? ''}" "${info.name ?? ''}"`;
     }
 
     private registerExtension(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo) {
@@ -608,18 +642,18 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo): SuccessOrErrorText {
+    private matchRequestWithInfo(request: ExtensionRegistrarApi.Request, extensionInfo: ExtensionInfo): Result<void> {
         const match =
-            request.publisherName === extensionInfo.publisherName &&
+            request.publisherName === extensionInfo.publisherId.name &&
             request.name === extensionInfo.name &&
             request.version === extensionInfo.version &&
             request.apiVersion === extensionInfo.apiVersion;
 
         if (match) {
-            return SuccessOrErrorText_Success;
+            return new Ok(undefined);
         } else {
             const extensionText =
-                `${extensionInfo.publisherName}|` +
+                `${extensionInfo.publisherId.name}|` +
                 `${extensionInfo.name}|` +
                 `${extensionInfo.version}|` +
                 `${extensionInfo.apiVersion}`;
@@ -630,37 +664,34 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 `${request.version}|` +
                 `${request.apiVersion}`;
 
-            return `${extensionText}|:|${requestText}`;
+            return new Err(`${extensionText}|:|${requestText}`);
         }
     }
 }
 
 export namespace ExtensionsService {
-    export const internalPublisherName = 'Internal';
     export const apiVersion = '1';
 
     export const invalidExtensionInfo: ExtensionInfo = {
-        publisherTypeId: ExtensionId.PublisherTypeId.Builtin,
-        publisherName: internalPublisherName,
+        publisherId: PublisherId.invalid,
         name: 'Invalid',
         version: '1.0.0',
         apiVersion,
         shortDescription: 'Builtin Invalid Extension',
         longDescription: 'Builtin Invalid Extension',
         urlPath: '/',
-    };
+    } as const;
 
     export const internalExtensionName = 'Internal';
     export const internalExtensionInfo: ExtensionInfo = {
-        publisherTypeId: ExtensionId.PublisherTypeId.Builtin,
-        publisherName: internalPublisherName,
+        publisherId: PublisherId.internal,
         name: internalExtensionName,
         version: '1.0.0',
         apiVersion,
         shortDescription: 'Builtin Internal Extension',
         longDescription: 'Builtin Internal Extension',
         urlPath: '/',
-    };
+    } as const;
 
     export const nullLoadCallback: ExtensionRegistrarApi.Request.LoadCallback = () => {
         const nullExtension: ExtensionApi = {

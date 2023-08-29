@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, ViewChild, ViewEncapsulation } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Integer, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
@@ -22,6 +22,8 @@ import { EnumArrayComponentBaseNgDirective } from '../../ng/enum-array-component
     encapsulation: ViewEncapsulation.None,
 })
 export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective implements AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputSize = '8em';
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
@@ -33,12 +35,20 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _ngSelectDropDownPanelWidth: number | undefined;
 
-    constructor(cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         settingsNgService: SettingsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'EnumArrayInput' + this.componentInstanceId;
+        super(
+            elRef,
+            ++EnumArrayInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
+        this.inputId = 'EnumArrayInput' + this.typeInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
             () => this.handleMeasureCanvasContextsEvent()
@@ -49,15 +59,9 @@ export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective
         this._ngSelectComponent.element.style.setProperty(inputSizeCssCustomPropertyName, this.inputSize);
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: Entry) {
         term = term.toUpperCase();
-        return item.upperCaption.indexOf(term) > -1;
+        return item.upperCaption.includes(term);
     }
 
     public handleSelectChangeEvent(event: ChangeEvent) {

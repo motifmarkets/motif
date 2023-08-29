@@ -1,5 +1,6 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy, ViewChild } from '@angular/core';
-import { ButtonUiAction, CommandRegisterService, delay1Tick, InternalCommand, StringId, Strings } from '@motifmarkets/motif-core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { ButtonUiAction, CommandRegisterService, InternalCommand, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
 
@@ -9,7 +10,9 @@ import { ButtonInputNgComponent } from 'controls-ng-api';
     styleUrls: ['./advert-ticker-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class AdvertTickerNgComponent implements AfterViewInit, OnDestroy {
+export class AdvertTickerNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('leftInterestedButton', { static: false }) private _leftInterestedButtonComponent: ButtonInputNgComponent;
     @ViewChild('rightInterestedButton', { static: false }) private _rightInterestedButtonComponent: ButtonInputNgComponent;
 
@@ -17,7 +20,9 @@ export class AdvertTickerNgComponent implements AfterViewInit, OnDestroy {
 
     private readonly _commandRegisterService: CommandRegisterService;
 
-    constructor(commandRegisterNgService: CommandRegisterNgService) {
+    constructor(elRef: ElementRef<HTMLElement>, commandRegisterNgService: CommandRegisterNgService) {
+        super(elRef, ++AdvertTickerNgComponent.typeInstanceCreateCount);
+
         this._commandRegisterService = commandRegisterNgService.service;
 
         this._interestedUiAction = this.createInterestedUiAction();

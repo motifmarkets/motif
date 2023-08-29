@@ -24,32 +24,29 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('ivemidInput') private ivemidInput: ElementRef;
 
     public symbol = IvemIdInputNgComponent.emptySymbol;
 
-    private _symbolsManager: SymbolsService;
+    private _symbolsService: SymbolsService;
     private _pushIvemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        _symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this._symbolsManager = _symbolsManagerService.symbolsManager;
-        this.inputId = 'IvemIdInput' + this.componentInstanceId;
+        super(elRef, ++IvemIdInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        this._symbolsService = symbolsNgService.service;
+        this.inputId = 'IvemIdInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as IvemIdUiAction; }
-
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
 
     onInput(value: string): void {
         if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
@@ -94,13 +91,13 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(value, edited, selectAll);
     }
 
-    private applyValue(value: IvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    private applyValue(value: IvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             let symbol: string;
             if (value === undefined) {
                 symbol = IvemIdInputNgComponent.emptySymbol;
             } else {
-                symbol = this._symbolsManager.ivemIdToDisplay(value);
+                symbol = this._symbolsService.ivemIdToDisplay(value);
             }
 
             if (symbol !== this.symbol) {
@@ -115,7 +112,7 @@ export class IvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     private parseSymbol(value: string): SymbolsService.IvemIdParseDetails {
-        return this._symbolsManager.parseIvemId(value);
+        return this._symbolsService.parseIvemId(value);
     }
 
     private input(text: string) {

@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostListener, OnDestroy, OnInit } from '@angular/core';
-import { ColorScheme, getElementDocumentPositionRect, Line, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ColorScheme, Line, UnreachableCaseError, getElementDocumentPositionRect } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarChildItemComponentNgDirective } from '../../../ng/menu-bar-child-item-component-ng.directive';
 import { MenuBarMenuItemComponentNgDirective } from '../../../ng/menu-bar-menu-item-component-ng.directive';
@@ -18,11 +18,15 @@ import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarRootChildItemNgComponent extends MenuBarChildItemComponentNgDirective implements OnInit, OnDestroy {
-    constructor(cdr: ChangeDetectorRef, private readonly _elRef: ElementRef<HTMLElement>,
+    private static typeInstanceCreateCount = 0;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         menuBarNgService: MenuBarNgService
     ) {
-        super(cdr, settingsNgService.settingsService, menuBarNgService);
+        super(elRef, ++MenuBarRootChildItemNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, menuBarNgService);
     }
 
     @HostListener('click', []) handleClickEvent() {
@@ -66,7 +70,7 @@ export class MenuBarRootChildItemNgComponent extends MenuBarChildItemComponentNg
     }
 
     private calculateChildMenuContactDocumentLine(): Line {
-        const documentRect = getElementDocumentPositionRect(this._elRef.nativeElement);
+        const documentRect = getElementDocumentPositionRect(this.rootHtmlElement);
         const y = documentRect.top + documentRect.height;
         return {
             beginX: documentRect.left,

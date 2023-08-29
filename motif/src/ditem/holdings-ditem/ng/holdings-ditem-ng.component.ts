@@ -18,20 +18,26 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { SplitComponent } from 'angular-split';
-import { IOutputData } from 'angular-split/lib/interface';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import { IOutputData, SplitComponent } from 'angular-split';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolDetailCacheNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
+} from 'component-services-ng-api';
+import { BalancesNgComponent, HoldingsNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -47,18 +53,15 @@ import { HoldingsDitemFrame } from '../holdings-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
-    @ViewChild('balancesTable', { static: true }) private _balancesTableComponent: TableNgComponent;
-    @ViewChild('holdingsTable', { static: true }) private _holdingsTableComponent: TableNgComponent;
+    private static typeInstanceCreateCount = 0;
+
+    @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
+    @ViewChild('holdings', { static: true }) private _holdingsComponent: HoldingsNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     public splitterGutterSize = 3;
     public balancesVisible = false;
@@ -73,21 +76,41 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private _frame: HoldingsDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        adiNgService: AdiNgService,
+        symbolsNgService: SymbolsNgService,
+        textFormatterNgService: TextFormatterNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++HoldingsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new HoldingsDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
-        this._frame.holdingsRecordFocusEvent = (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex);
-        this._frame.groupOpenedEvent = (group) => this.handleGroupOpenedEvent(group);
 
+        this._frame = new HoldingsDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            textFormatterNgService.service,
+            symbolDetailCacheNgService.service,
+            tableRecordSourceDefinitionFactoryNgService.service,
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex),
+        );
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._sellUiAction = this.createSellUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -122,11 +145,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (config === undefined) {
             this._explicitBalancesHeight = false;
         } else {
-            const balancesHeight = config.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
-            if (balancesHeight === undefined) {
+            const balancesHeightResult = config.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
+            if (balancesHeightResult.isErr()) {
                 this._explicitBalancesHeight = false;
             } else {
-                this.balancesHeight = balancesHeight;
+                this.balancesHeight = balancesHeightResult.value;
                 this._explicitBalancesHeight = true;
             }
         }
@@ -155,13 +178,15 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._holdingsTableComponent.frame, this._balancesTableComponent.frame, frameElement);
+        const holdingsFrame = this._holdingsComponent.frame;
+        const balancesFrame = this._balancesComponent.frame;
+        this._frame.initialise(frameElement, holdingsFrame, balancesFrame);
 
         if (!this._explicitBalancesHeight) {
-            const gridRowHeight = this._balancesTableComponent.gridRowHeight;
-            const gridHeaderHeight = this._balancesTableComponent.getHeaderPlusFixedLineHeight();
-            const gridHorizontalScrollbarMarginedHeight = this._balancesTableComponent.gridHorizontalScrollbarMarginedHeight;
-            this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarMarginedHeight;
+            const gridRowHeight = this._balancesComponent.gridRowHeight;
+            const gridHeaderHeight = this._balancesComponent.getHeaderPlusFixedLineHeight();
+            const gridHorizontalScrollbarInsideOverlap = balancesFrame.gridHorizontalScrollbarInsideOverlap;
+            this.balancesHeight = gridHeaderHeight + gridRowHeight + gridHorizontalScrollbarInsideOverlap;
             this.markForCheck();
         }
 
@@ -187,11 +212,11 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (element === undefined) {
             this._explicitBalancesHeight = false;
         } else {
-            const balancesHeight = element.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
-            if (balancesHeight === undefined) {
+            const balancesHeightResult = element.tryGetInteger(HoldingsDitemNgComponent.JsonName.balancesHeight);
+            if (balancesHeightResult.isErr()) {
                 this._explicitBalancesHeight = false;
             } else {
-                this.balancesHeight = balancesHeight;
+                this.balancesHeight = balancesHeightResult.value;
                 this._explicitBalancesHeight = true;
             }
         }
@@ -228,8 +253,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.pushSellButtonState(this._frame.focusedRecordIndex);
     }
 
-    private handleGroupOpenedEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private createAccountIdUiAction() {

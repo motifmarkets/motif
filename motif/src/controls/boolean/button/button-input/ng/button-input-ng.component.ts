@@ -17,6 +17,8 @@ import { ControlComponentBaseNgDirective } from '../../../../ng/control-componen
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ButtonInputNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('buttonInput', { static: true }) private _buttonRef: ElementRef;
@@ -25,9 +27,9 @@ export class ButtonInputNgComponent extends ControlComponentBaseNgDirective impl
 
     private _value: boolean;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'Button' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++ButtonInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
+        this.inputId = 'Button' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as ButtonUiAction; }

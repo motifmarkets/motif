@@ -35,7 +35,7 @@ export class SymbolSvcImplementation implements SymbolSvc {
     get allowedMarketIds() { return MarketIdImplementation.arrayToApi(this._symbolsService.allowedMarketIds); }
     get defaultExchangeId() { return ExchangeIdImplementation.toApi(this._symbolsService.defaultExchangeId); }
     get exchangeAnnouncerChar() { return this._symbolsService.pscExchangeAnnouncerChar; }
-    get marketSeparatorChar() { return this._symbolsService.pscMarketSeparatorChar; }
+    get marketSeparatorChar() { return this._symbolsService.pscMarketAnnouncerChar; }
     get defaultMarketHidden() { return this._symbolsService.pscDefaultMarketHidden; }
     get marketCodeAsLocalWheneverPossible() { return this._symbolsService.pscMarketCodeAsLocalWheneverPossible; }
 
@@ -134,14 +134,16 @@ export class SymbolSvcImplementation implements SymbolSvc {
     }
 
     unsubscribeAllowedMarketIdsChangedEvent(subscriptionId: MultiEventApi.SubscriptionId) {
-        const idx = this._allowedMarketIdsChangedSubscriptionIds.indexOf(subscriptionId);
-        if (idx < 0) {
-            throw new ApiErrorImplementation(ApiErrorApi.CodeEnum.EventSubscriptionNotFound,
-                `SymbolSvc.AllowedMarketIdsChanged: ${subscriptionId}`
-            );
-        } else {
-            this._allowedMarketIdsChangedSubscriptionIds.splice(idx, 1);
-            this._symbolsService.unsubscribeAllowedMarketIdsChangedEvent(subscriptionId);
+        if (subscriptionId !== undefined) {
+            const idx = this._allowedMarketIdsChangedSubscriptionIds.indexOf(subscriptionId);
+            if (idx < 0) {
+                throw new ApiErrorImplementation(ApiErrorApi.CodeEnum.EventSubscriptionNotFound,
+                    `SymbolSvc.AllowedMarketIdsChanged: ${subscriptionId}`
+                );
+            } else {
+                this._allowedMarketIdsChangedSubscriptionIds.splice(idx, 1);
+                this._symbolsService.unsubscribeAllowedMarketIdsChangedEvent(subscriptionId);
+            }
         }
     }
 
@@ -152,14 +154,16 @@ export class SymbolSvcImplementation implements SymbolSvc {
     }
 
     unsubscribeAllowedExchangeIdsChangedEvent(subscriptionId: MultiEventApi.SubscriptionId) {
-        const idx = this._allowedExchangeIdsChangedSubscriptionIds.indexOf(subscriptionId);
-        if (idx < 0) {
-            throw new ApiErrorImplementation(ApiErrorApi.CodeEnum.EventSubscriptionNotFound,
-                `SymbolSvc.AllowedExchangeIdsChanged: ${subscriptionId}`
-            );
-        } else {
-            this._allowedExchangeIdsChangedSubscriptionIds.splice(idx, 1);
-            this._symbolsService.unsubscribeAllowedExchangeIdsChangedEvent(subscriptionId);
+        if (subscriptionId !== undefined) {
+            const idx = this._allowedExchangeIdsChangedSubscriptionIds.indexOf(subscriptionId);
+            if (idx < 0) {
+                throw new ApiErrorImplementation(ApiErrorApi.CodeEnum.EventSubscriptionNotFound,
+                    `SymbolSvc.AllowedExchangeIdsChanged: ${subscriptionId}`
+                );
+            } else {
+                this._allowedExchangeIdsChangedSubscriptionIds.splice(idx, 1);
+                this._symbolsService.unsubscribeAllowedExchangeIdsChangedEvent(subscriptionId);
+            }
         }
     }
 

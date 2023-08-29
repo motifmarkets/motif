@@ -7,10 +7,11 @@
 import {
     AssertInternalError,
     ExtensionHandle,
+    Integer,
+    JsonElement,
     LitIvemId,
     Logger,
     SessionInfoService,
-    TUID,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
@@ -18,18 +19,17 @@ import {
     BalancesDitemFrame,
     BrokerageAccountsDitemFrame,
     BuiltinDitemFrame,
-    DesktopAccessService,
     DitemComponent,
     DitemFrame,
     ExtensionDitemComponent,
     ExtensionDitemFrame,
     HoldingsDitemFrame,
     OrdersDitemFrame,
-    ParidepthDitemFrame,
+    DepthAndSalesDitemFrame,
     PlaceholderDitemFrame,
     WatchlistDitemFrame
 } from 'ditem-internal-api';
-import { BuiltinDitemNgComponentBaseDirective } from 'ditem-ng-api';
+import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import {
     ComponentContainer,
     ComponentItemConfig,
@@ -44,13 +44,16 @@ import {
 } from 'golden-layout';
 
 export class GoldenLayoutHostFrame {
+    private _lastComponentIdInteger: Integer;
     constructor(
         private readonly _componentAccess: GoldenLayoutHostFrame.ComponentAccess,
         private readonly _goldenLayout: VirtualLayout,
         private readonly _defaultLayoutConfig: SessionInfoService.DefaultLayout,
         private readonly _extensionsAccessService: ExtensionsAccessService,
-        private readonly _desktopAccessService: DesktopAccessService,
-    ) { }
+        private readonly _desktopAccessService: DitemFrame.DesktopAccessService,
+    ) {
+        this._lastComponentIdInteger = Number.MIN_SAFE_INTEGER;
+    }
 
     finalise() {
     }
@@ -60,6 +63,7 @@ export class GoldenLayoutHostFrame {
     }
 
     loadLayout(config: LayoutConfig) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (config === undefined) {
             config = this.createDefaultLayoutConfig();
         }
@@ -97,7 +101,7 @@ export class GoldenLayoutHostFrame {
         preferredLocationId: GoldenLayoutHostFrame.PreferredLocationId | undefined
     ) {
         const config = this.createBuiltinComponentConfig(typeId, initialState);
-        return this.createComponent(config, preferredLocationId) as BuiltinDitemNgComponentBaseDirective;
+        return this.createComponent(config, preferredLocationId) as BuiltinDitemNgComponentBaseNgDirective;
     }
 
     createExtensionComponent(extensionHandle: ExtensionHandle, frameTypeName: string, initialState: JsonValue | undefined,
@@ -152,7 +156,7 @@ export class GoldenLayoutHostFrame {
         if (!ContentItem.isComponentItem(contentItem)) {
             throw new AssertInternalError('GLHFCSC33911');
         } else {
-            return contentItem.component as BuiltinDitemNgComponentBaseDirective;
+            return contentItem.component as BuiltinDitemNgComponentBaseNgDirective;
         }
     }
 
@@ -172,26 +176,29 @@ export class GoldenLayoutHostFrame {
         }
     }
 
-    private createComponentPersistableDefinition(extensionHandle: ExtensionHandle,
+    private createComponentDefinition(extensionHandle: ExtensionHandle,
         constructionMethodId: DitemComponent.ConstructionMethodId, componentTypeName: string,
-    ) {
+    ): DitemComponent.Definition {
         const extensionInfo = this._extensionsAccessService.getRegisteredExtensionInfo(extensionHandle);
 
         const definition: DitemComponent.Definition = {
             extensionId: {
-                publisherTypeId: extensionInfo.publisherTypeId,
-                publisherName: extensionInfo.publisherName,
+                publisherId: extensionInfo.publisherId,
                 name: extensionInfo.name,
             },
             constructionMethodId,
             componentTypeName,
         };
 
-        return DitemComponent.Definition.toPersistable(definition);
+        return definition;
     }
 
     private generateComponentId(): string {
-        return TUID.getUID().toString(36);
+        if (this._lastComponentIdInteger >= Number.MAX_SAFE_INTEGER - 1) {
+            throw new AssertInternalError('GLHFGCI93112');
+        } else {
+            return (++this._lastComponentIdInteger).toString(36);
+        }
     }
 
     private createDefaultLayoutConfig() {
@@ -202,6 +209,7 @@ export class GoldenLayoutHostFrame {
         const depthAndTradesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, undefined);
         const ordersItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Orders, undefined);
         const balancesItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Balances, undefined);
+        // const orderAuthoriseItemConfig = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise, undefined);
 
         const config: GoldenLayoutHostFrame.DefaultLayoutConfig = {
             root: {
@@ -266,11 +274,12 @@ export class GoldenLayoutHostFrame {
     private prepareDefaultLayoutLinkedSymbol() {
         const linkedSymbolJson = this._defaultLayoutConfig.linkedSymbolJson;
         if (linkedSymbolJson !== undefined) {
-            const linkedSymbol = LitIvemId.tryCreateFromJson(linkedSymbolJson);
-            if (linkedSymbol === undefined) {
-                Logger.logConfigError('GLHFPDLLS38220', JSON.stringify(linkedSymbolJson), 200);
+            const jsonElement = new JsonElement(linkedSymbolJson);
+            const tryCreateResult = LitIvemId.tryCreateFromJson(jsonElement);
+            if (tryCreateResult.isErr()) {
+                Logger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
             } else {
-                this._desktopAccessService.initialiseLitIvemId(linkedSymbol);
+                this._desktopAccessService.initialiseLitIvemId(tryCreateResult.value);
             }
         }
     }
@@ -287,11 +296,12 @@ export class GoldenLayoutHostFrame {
 
                 const watchlistJson = this._defaultLayoutConfig.watchlistJson;
                 if (watchlistJson !== undefined) {
-                    const watchlist = LitIvemId.tryCreateArrayFromJson(watchlistJson);
-                    if (watchlist === undefined) {
-                        Logger.logConfigError('GLHFPDLW1444813', JSON.stringify(watchlistJson), 400);
+                    const jsonElements = watchlistJson.map((json) => new JsonElement(json));
+                    const tryCreateResult = LitIvemId.tryCreateArrayFromJsonElementArray(jsonElements);
+                    if (tryCreateResult.isErr()) {
+                        Logger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
                     } else {
-                        frame.defaultLitIvemIds = watchlist;
+                        frame.defaultLitIvemIds = tryCreateResult.value;
                     }
                 }
             }
@@ -330,7 +340,7 @@ export class GoldenLayoutHostFrame {
     private prepareDefaultLayoutDepthAndTrades(componentId: string | undefined) {
         if (componentId !== undefined) {
             const frame = this._componentAccess.getDitemFrameByComponentId(componentId);
-            if (frame === undefined || !(frame instanceof ParidepthDitemFrame)) {
+            if (frame === undefined || !(frame instanceof DepthAndSalesDitemFrame)) {
                 throw new AssertInternalError('GLHFPDLDAT4444812');
             } else {
                 if (frame.litIvemIdLinkable) {
@@ -368,7 +378,7 @@ export class GoldenLayoutHostFrame {
 
     private createBuiltinComponentConfig(type: BuiltinDitemFrame.BuiltinTypeId, initialState: JsonValue | undefined, tabText?: string) {
         if (tabText === undefined) {
-            tabText = BuiltinDitemFrame.BuiltinType.idToTabTitle(type);
+            tabText = BuiltinDitemFrame.BuiltinType.idToBaseTabDisplay(type);
         }
 
         return this.createComponentConfig(
@@ -399,14 +409,17 @@ export class GoldenLayoutHostFrame {
         initialState: JsonValue | undefined,
         tabText: string | undefined,
     ) {
-        const definition = this.createComponentPersistableDefinition(extensionHandle, constructionMethodId, componentTypeName);
+        const definition = this.createComponentDefinition(extensionHandle, constructionMethodId, componentTypeName);
+
+        const definitionJsonElement = new JsonElement();
+        DitemComponent.Definition.saveToJson(definition, definitionJsonElement);
 
         if (tabText === undefined) {
             tabText = componentTypeName;
         }
 
         const config: ComponentItemConfig = {
-            componentType: definition,
+            componentType: definitionJsonElement.json,
             title: tabText,
             type: 'component',
             id: this.generateComponentId(),
@@ -441,8 +454,9 @@ export class GoldenLayoutHostFrame {
         tabText: string,
         reason: string
     ) {
-        const definition = this.createComponentPersistableDefinition(extensionHandle, constructionMethodId, componentTypeName);
-        const placeheld: PlaceholderDitemFrame.PersistablePlaceheld = {
+        const definition = this.createComponentDefinition(extensionHandle, constructionMethodId, componentTypeName);
+
+        const placeheld: PlaceholderDitemFrame.Placeheld = {
             definition,
             state: componentState,
             tabText,
@@ -450,7 +464,10 @@ export class GoldenLayoutHostFrame {
             invalidReason: undefined,
         };
 
-        const config = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Placeholder, placeheld, tabText);
+        const definitionJsonElement = new JsonElement();
+        PlaceholderDitemFrame.PlaceHeld.saveToJson(placeheld, definitionJsonElement);
+
+        const config = this.createBuiltinComponentConfig(BuiltinDitemFrame.BuiltinTypeId.Placeholder, definitionJsonElement.json, tabText);
         container.replaceComponent(config);
     }
 

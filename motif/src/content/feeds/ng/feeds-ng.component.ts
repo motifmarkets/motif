@@ -5,20 +5,19 @@
  */
 
 import {
-    AfterViewInit,
     ChangeDetectionStrategy,
+    ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
-    OnDestroy,
-    ViewChild,
+    ElementRef,
+    Inject,
+    Injector,
+    ValueProvider,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, Badness, delay1Tick } from '@motifmarkets/motif-core';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { DelayedBadnessNgComponent } from '../../delayed-badness/ng-api';
-import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { LockOpenListItem } from '@motifmarkets/motif-core';
+import { CoreInjectionTokens } from 'component-services-ng-api';
+import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
-import { TableNgComponent } from '../../table/ng-api';
 import { FeedsFrame } from '../feeds-frame';
 
 @Component({
@@ -27,53 +26,39 @@ import { FeedsFrame } from '../feeds-frame';
     styleUrls: ['./feeds-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class FeedsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy, FeedsFrame.ComponentAccess {
-    @ViewChild('delayedBadness', { static: true }) private _delayedBadnessComponent: DelayedBadnessNgComponent;
-    @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
+    private static typeInstanceCreateCount = 0;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
+    declare frame: FeedsFrame;
 
-    private _frame: FeedsFrame;
-
-    constructor(contentService: ContentNgService) {
-        super();
-
-        this._frame = contentService.createFeedsFrame(this);
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
+    ) {
+        const frame = contentNgService.createFeedsFrame();
+        super(elRef, ++FeedsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
-    ngAfterViewInit() {
-        delay1Tick(() => this._frame.initialise(this._tableComponent.frame));
-    }
-
-    ngOnDestroy() {
-        this._frame.finalise();
-    }
-
-    public setBadness(value: Badness) {
-        this._delayedBadnessComponent.setBadness(value);
-    }
-
-    public hideBadnessWithVisibleDelay(badness: Badness) {
-        this._delayedBadnessComponent.hideWithVisibleDelay(badness);
+    protected override processAfterViewInit() {
+        super.processAfterViewInit();
+        this.frame.initialiseGrid(this._opener, undefined, false);
     }
 }
 
 export namespace FeedsNgComponent {
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef, opener: LockOpenListItem.Opener) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(FeedsNgComponent);
-        const componentRef = container.createComponent(factory);
-        const instance = componentRef.instance;
-        if (!(instance instanceof FeedsNgComponent)) {
-            throw new AssertInternalError('FCCI59923112141');
-        } else {
-            return instance;
-        }
+
+        const openerProvider: ValueProvider = {
+            provide: CoreInjectionTokens.lockOpenListItemOpener,
+            useValue: opener,
+        };
+        const injector = Injector.create({
+            providers: [openerProvider],
+        });
+
+        container.createComponent(FeedsNgComponent, { injector });
     }
 }

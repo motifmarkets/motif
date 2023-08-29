@@ -5,70 +5,71 @@
  */
 
 import {
-    Badness,
-    DataRecordList,
+    AdaptedRevgridBehavioredColumnSettings,
     Feed,
-    FeedTableRecordDefinitionList,
+    FeedTableRecordSource,
+    GridField,
+    GridSourceDefinition,
+    GridSourceOrNamedReference,
+    GridSourceOrNamedReferenceDefinition,
     Integer,
-    MultiEvent,
-    tableDefinitionFactory,
-    TableRecordDefinitionList,
+    KeyedCorrectnessList,
+    RenderValueRecordGridCellPainter,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter,
 } from '@motifmarkets/motif-core';
-import { ContentFrame } from '../content-frame';
-import { TableFrame } from '../table/table-frame';
+import { DatalessViewCell } from 'revgrid';
+import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
-export class FeedsFrame extends ContentFrame {
-    private _tableFrame: TableFrame;
-    private _recordList: DataRecordList<Feed>;
-    private _recordListBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
+export class FeedsFrame extends DelayedBadnessGridSourceFrame {
+    private _recordSource: FeedTableRecordSource;
+    private _recordList: KeyedCorrectnessList<Feed>;
 
-    constructor(private _componentAccess: FeedsFrame.ComponentAccess) {
-        super();
-    }
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
-    initialise(tableFrame: TableFrame) {
-        this._tableFrame = tableFrame;
-        this._tableFrame.recordFocusEvent = (newRecordIndex) => this.handleRecordFocusEvent(newRecordIndex);
-        this._tableFrame.requireDefaultTableDefinitionEvent = () => this.handleRequireDefaultTableDefinitionEvent();
-        this._tableFrame.tableOpenEvent = (recordDefinitionList) => this.handleTableOpenEvent(recordDefinitionList);
+    get recordList() { return this._recordList; }
 
-        this.newTable(false);
-    }
-
-    override finalise() {
-        this.checkUnsubscribeRecordListBadnessChangeEvent();
-        super.finalise();
-    }
-
-    private handleRecordListBadnessChangeEvent() {
-        const badness = this._recordList.badness;
-        this._componentAccess.setBadness(badness);
-    }
-
-    private handleRecordFocusEvent(newRecordIndex: Integer | undefined) {
-        if (newRecordIndex !== undefined) {
-            const feed = this._recordList.records[newRecordIndex];
-            this.processFeedFocusChange(feed);
-        }
-    }
-
-    private handleRequireDefaultTableDefinitionEvent() {
-        return tableDefinitionFactory.createBrokerageAccount();
-    }
-
-    private handleTableOpenEvent(recordDefinitionList: TableRecordDefinitionList) {
-        this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const feedRecordDefinitionList = recordDefinitionList as FeedTableRecordDefinitionList;
-        this._recordList = feedRecordDefinitionList.dataRecordList;
-        this._recordListBadnessChangeSubscriptionId = this._recordList.subscribeBadnessChangeEvent(
-            () => this.handleRecordListBadnessChangeEvent
+    override createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(
+            gridHostElement,
+            {},
+            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
+            (viewCell) => this.getGridMainCellPainter(viewCell),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
         );
+
+        this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
+
+        return grid;
     }
 
-    private checkUnsubscribeRecordListBadnessChangeEvent() {
-        if (this._recordListBadnessChangeSubscriptionId !== undefined) {
-            this._recordList.unsubscribeBadnessChangeEvent(this._recordListBadnessChangeSubscriptionId);
-            this._recordListBadnessChangeSubscriptionId = undefined;
+    tryOpenWithDefaultLayout(keepView: boolean) {
+        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
+        return this.tryOpenGridSource(definition, keepView);
+    }
+
+    createDefaultLayoutGridSourceOrNamedReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createFeed();
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+    }
+
+    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
+    }
+
+    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+        const table = this.openedTable;
+        this._recordSource = table.recordSource as FeedTableRecordSource;
+        this._recordList = this._recordSource.recordList;
+    }
+
+    protected override processRecordFocusedEvent(newRecordIndex: Integer | undefined, _oldRecordIndex: Integer | undefined) {
+        if (newRecordIndex !== undefined) {
+            const feed = this._recordList.getAt(newRecordIndex);
+            this.processFeedFocusChange(feed);
         }
     }
 
@@ -76,17 +77,15 @@ export class FeedsFrame extends ContentFrame {
         // not yet used
     }
 
-    private newTable(keepCurrentLayout: boolean) {
-        this.checkUnsubscribeRecordListBadnessChangeEvent();
-        const tableDefinition = tableDefinitionFactory.createFeed();
-        this._tableFrame.newPrivateTable(tableDefinition, keepCurrentLayout);
-        this._componentAccess.hideBadnessWithVisibleDelay(Badness.notBad);
+    private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {
+        // no customisation
     }
-}
 
-export namespace FeedsFrame {
-    export interface ComponentAccess {
-        setBadness(value: Badness): void;
-        hideBadnessWithVisibleDelay(badness: Badness): void;
+    private getGridHeaderCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridHeaderCellPainter;
+    }
+
+    private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
+        return this._gridMainCellPainter;
     }
 }

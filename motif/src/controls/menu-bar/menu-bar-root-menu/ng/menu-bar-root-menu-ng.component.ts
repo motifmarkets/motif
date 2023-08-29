@@ -18,8 +18,8 @@ import { MenuBarNgService } from '../../ng/menu-bar-ng.service';
 export class MenuBarRootMenuNgComponent extends MenuBarMenuComponentNgDirective implements OnDestroy {
     private readonly _menu: MenuBarService.RootMenu;
 
-    constructor(cdr: ChangeDetectorRef, private readonly _elRef: ElementRef<HTMLElement>, menuBarNgService: MenuBarNgService) {
-        super(cdr, menuBarNgService);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, menuBarNgService: MenuBarNgService) {
+        super(elRef, 0, cdr, menuBarNgService);
         this._menu = menuBarNgService.service.rootMenu;
         this._menu.renderEvent = (childMenu) => this.renderMenu(childMenu);
         this._menu.getIsMouseOverEvent = (mouseClientX, mouseClientY) => this.handleGetIsMouseOverEvent(mouseClientX, mouseClientY);
@@ -33,7 +33,7 @@ export class MenuBarRootMenuNgComponent extends MenuBarMenuComponentNgDirective 
     }
 
     private handleGetIsMouseOverEvent(mouseClientX: number, mouseClientY: number) {
-        const domRect = this._elRef.nativeElement.getBoundingClientRect();
+        const domRect = this.rootHtmlElement.getBoundingClientRect();
         return mouseClientX >= domRect.left &&
             mouseClientX < domRect.right &&
             mouseClientY >= domRect.top &&

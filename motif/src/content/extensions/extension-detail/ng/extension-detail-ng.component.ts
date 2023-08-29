@@ -4,11 +4,20 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, HostBinding, Input, OnDestroy } from '@angular/core';
-import { AssertInternalError, ColorScheme, HtmlTypes, MultiEvent, SettingsService, StringId, Strings } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, Input, OnDestroy } from '@angular/core';
+import {
+    AssertInternalError,
+    ColorScheme, ExtensionInfo,
+    HtmlTypes,
+    MultiEvent,
+    PublisherId,
+    RegisteredExtension,
+    SettingsService,
+    StringId,
+    Strings
+} from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionId, ExtensionInfo, RegisteredExtension } from '../../extension/internal-api';
 import { ExtensionsAccessService } from '../../extensions-access-service';
 import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service';
 
@@ -19,6 +28,8 @@ import { ExtensionsAccessNgService } from '../../ng/extensions-access-ng.service
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.display') hostDisplay = HtmlTypes.Display.None;
 
     public isInstallable = false;
@@ -43,13 +54,15 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
 
     private _installedExtensionLoadedChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private readonly _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private readonly _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         extensionsAccessNgService: ExtensionsAccessNgService
     ) {
-        super();
+        super(elRef, ++ExtensionDetailNgComponent.typeInstanceCreateCount);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
 
         this._extensionsAccessService = extensionsAccessNgService.service;
@@ -62,18 +75,18 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
         this.applySettings();
     }
 
-    public get name() { return this._info.name; }
-    public get publisherTypeDisplay() { return ExtensionId.PublisherType.idToDisplay(this._info.publisherTypeId); }
-    public get publisherName() { return this._info.publisherName; }
-    public get version() { return this._info.version; }
-    public get shortDescription() { return this._info.shortDescription; }
-    public get longDescription() { return this._info.longDescription; }
-
     @Input() set info(value: ExtensionInfo) {
         if (value !== this._info) {
             this.setInfo(value);
         }
     }
+
+    public get name() { return this._info.name; }
+    public get publisherTypeDisplay() { return PublisherId.Type.idToDisplay(this._info.publisherId.typeId); }
+    public get publisherName() { return this._info.publisherId.name; }
+    public get version() { return this._info.version; }
+    public get shortDescription() { return this._info.shortDescription; }
+    public get longDescription() { return this._info.longDescription; }
 
     ngOnDestroy() {
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
@@ -118,6 +131,7 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private setInfo(value: ExtensionInfo) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (value === undefined) {
             this._info = ExtensionDetailNgComponent.invalidExtensionInfo;
             this.hostDisplay = HtmlTypes.Display.None;
@@ -178,8 +192,10 @@ export class ExtensionDetailNgComponent extends ContentComponentBaseNgDirective 
 
 export namespace ExtensionDetailNgComponent {
     export const invalidExtensionInfo: ExtensionInfo = {
-        publisherTypeId: ExtensionId.PublisherTypeId.Invalid,
-        publisherName: '',
+        publisherId: {
+            typeId: PublisherId.TypeId.Builtin,
+            name: '',
+        },
         name: '',
         version: '',
         apiVersion: '',

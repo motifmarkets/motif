@@ -4,27 +4,31 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive, HostBinding, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef, HostBinding, Input, OnDestroy } from '@angular/core';
 import {
     ColorScheme,
     ColorSettings,
     CoreSettings,
-    delay1Tick,
     ExchangeSettings,
+    GridField,
     HtmlTypes,
+    Integer,
     MultiEvent,
     SettingsService,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick,
+    numberToPixels
 } from '@motifmarkets/motif-core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
+import { Focus, Rectangle } from 'revgrid';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {
     @HostBinding('style.display') displayPropertyNoneOverride = ''; // no override
 
     initialiseReady = false;
-    initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler;
+    initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler | undefined;
 
     public disabled = true;
     public readonly = true;
@@ -49,11 +53,14 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     private _readonlyAlways = false;
 
-    constructor(private _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
-        private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
+        private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
     ) {
-        super();
+        super(elRef, typeInstanceCreateId);
         this._coreSettings = this._settingsService.core;
         this._colorSettings = this._settingsService.color;
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
@@ -111,8 +118,54 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         delay1Tick(() => this.markForCheck());
     }
 
+    // used by Cell Editor
+    setBounds(bounds: Rectangle | undefined) {
+        const htmlElement = this.rootHtmlElement;
+        if (bounds === undefined) {
+            htmlElement.style.visibility = 'hidden';
+        } else {
+            htmlElement.style.left = numberToPixels(bounds.x);
+            htmlElement.style.top = numberToPixels(bounds.y);
+            htmlElement.style.width = numberToPixels(bounds.width);
+            htmlElement.style.height = numberToPixels(bounds.height);
+            htmlElement.style.visibility = 'visible';
+        }
+    }
+
+    focus() {
+        // descendants can override
+    }
+
+    // used by Cell Editor
+    processGridKeyDownEvent(event: KeyboardEvent, fromEditor: boolean, field: GridField, subgridRowIndex: number): boolean {
+        if (fromEditor) {
+            // Event was emitted by this editor.  Any key it can consume has effectively already been consumed
+            return this.canConsumeGridKey(event.key);
+        } else {
+            // Cannot dispatch an event from another element to an input element
+            return false;
+        }
+    }
+
+    // used by Cell Editor
+    protected canConsumeGridKey(key: string) {
+        switch (key) {
+            case Focus.ActionKeyboardKey.ArrowUp:
+            case Focus.ActionKeyboardKey.ArrowDown:
+            case Focus.ActionKeyboardKey.PageUp:
+            case Focus.ActionKeyboardKey.PageDown:
+            case Focus.ActionKeyboardKey.Tab:
+            case Focus.ActionKeyboardKey.Enter:
+            case Focus.ActionKeyboardKey.Escape:
+                return false;
+            default:
+                return true;
+        }
+    }
+
     protected finalise() {
         const action = this._uiAction;
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (action !== undefined) {
             this._uiAction.unsubscribePushEvents(this._pushEventsSubscriptionId);
         }
@@ -337,7 +390,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     private handleRequiredChangePushEvent() {
-
+        //
     }
 }
 

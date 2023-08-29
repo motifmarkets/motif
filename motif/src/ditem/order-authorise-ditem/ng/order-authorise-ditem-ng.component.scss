@@ -1,0 +1,63 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import 'partials/variables';
+@import './partials/main-toolbar-css-mixin';
+@import './partials/centered-toolbar-group-mixin';
+
+:host {
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
+
+    #mainDiv {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    #layoutEditorDiv {
+        height: 100%;
+        width: 100%;
+    }
+
+    #mainToolbarDiv {
+        @include mainToolbarCssMixin;
+
+        #accountGroupInput {
+            width: 8em;
+        }
+
+        #authoriseButton {
+            margin-left: 2.5em;
+        }
+
+        #rejectButton {
+            margin-left: 2.5em;
+            margin-right: 2em;
+        }
+
+        #columnButtonsDiv {
+            @include centeredToolbarGroupMixin;
+            margin-left: $toolbar-button-group-separation;
+        }
+
+        #linkButtonsDiv {
+            @include centeredToolbarGroupMixin;
+            margin-left: $toolbar-button-group-separation;
+        }
+    }
+
+    #orderAuthorise {
+        flex-grow: 1;
+    }
+
+    // #orderReqestButtonsDiv {
+    //     @include centeredToolbarGroupMixin;
+    //     margin-left: $toolbar-button-group-separation;
+    // }
+}

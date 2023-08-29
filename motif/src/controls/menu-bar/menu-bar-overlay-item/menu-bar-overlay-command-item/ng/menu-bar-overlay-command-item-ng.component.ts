@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit } from '@angular/core';
 import { ColorScheme, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { MenuBarCommandItemComponentNgDirective } from '../../../ng/menu-bar-command-item-component-ng.directive';
@@ -18,8 +18,10 @@ import { MenuBarNgService } from '../../../ng/menu-bar-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class MenuBarOverlayCommandItemNgComponent extends MenuBarCommandItemComponentNgDirective implements OnInit, OnDestroy {
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
-        super(cdr, settingsNgService.settingsService, menuBarNgService);
+    private static typeInstanceCreateCount = 0;
+
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService, menuBarNgService: MenuBarNgService) {
+        super(elRef, ++MenuBarOverlayCommandItemNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, menuBarNgService);
     }
 
     ngOnInit() {

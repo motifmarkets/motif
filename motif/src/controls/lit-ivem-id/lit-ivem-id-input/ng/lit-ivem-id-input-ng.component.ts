@@ -24,32 +24,29 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     @Input() inputId: string;
 
     @ViewChild('litivemidInput', { static: true }) private symbolInput: ElementRef;
 
     public symbol = LitIvemIdInputNgComponent.emptySymbol;
 
-    private _symbolsManager: SymbolsService;
+    private _symbolsService: SymbolsService;
     private _pushLitivemidEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        _symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this._symbolsManager = _symbolsManagerService.symbolsManager;
-        this.inputId = 'LitIvemIdInput' + this.componentInstanceId;
+        super(elRef, ++LitIvemIdInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        this._symbolsService = symbolsNgService.service;
+        this.inputId = 'LitIvemIdInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as LitIvemIdUiAction; }
-
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
 
     onInput(value: string): void {
         if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
@@ -94,13 +91,13 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
         this.applyValue(value, edited, selectAll);
     }
 
-    private applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean = true) {
+    private applyValue(value: LitIvemId | undefined, edited: boolean, selectAll = true) {
         if (!edited) {
             let symbol: string;
             if (value === undefined) {
                 symbol = LitIvemIdInputNgComponent.emptySymbol;
             } else {
-                symbol = this._symbolsManager.litIvemIdToDisplay(value);
+                symbol = this._symbolsService.litIvemIdToDisplay(value);
             }
 
             if (symbol !== this.symbol) {
@@ -115,7 +112,7 @@ export class LitIvemIdInputNgComponent extends ControlComponentBaseNgDirective {
     }
 
     private parseSymbol(value: string): SymbolsService.LitIvemIdParseDetails {
-        return this._symbolsManager.parseLitIvemId(value);
+        return this._symbolsService.parseLitIvemId(value);
     }
 
     private input(text: string) {

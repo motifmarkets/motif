@@ -4,15 +4,23 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive } from '@angular/core';
+import { ChangeDetectorRef, Directive, ElementRef } from '@angular/core';
+import { Integer } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from '../../../component/ng-api';
 import { MenuBarService } from '../menu-bar-service';
 import { MenuBarNgService } from './menu-bar-ng.service';
 
 @Directive()
-export abstract class MenuBarComponentNgDirective {
+export abstract class MenuBarComponentNgDirective extends ComponentBaseNgDirective {
     private _menuBarService: MenuBarService;
 
-    constructor(private _cdr: ChangeDetectorRef, menuBarNgService: MenuBarNgService) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        private _cdr: ChangeDetectorRef,
+        menuBarNgService: MenuBarNgService
+    ) {
+        super(elRef, typeInstanceCreateId);
         this._menuBarService = menuBarNgService.service;
     }
 

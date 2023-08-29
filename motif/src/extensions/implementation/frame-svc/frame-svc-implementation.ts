@@ -12,12 +12,14 @@ import {
     JsonElement,
     JsonValue,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
-import { DesktopAccessService, DitemFrame, ExtensionDitemFrame } from 'ditem-internal-api';
+import { DitemFrame, ExtensionDitemFrame } from 'ditem-internal-api';
 import { ComponentContainer } from 'golden-layout';
 import {
     BrokerageAccountGroup as BrokerageAccountGroupApi,
+    Frame as FrameApi,
     FrameSvc,
     JsonElement as JsonElementApi,
     LitIvemId as LitIvemIdApi
@@ -29,7 +31,7 @@ import { ApiControlComponentFactory } from './api-control-component-factory';
 import { ContentSvcImplementation } from './content-svc-implementation';
 import { ControlsSvcImplementation } from './controls-svc-implementation';
 
-export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.ComponentAccess {
+export class FrameSvcImplementation implements FrameSvc, FrameApi.SvcProxy, ExtensionDitemFrame.ComponentAccess {
     savePersistStateEventer: FrameSvc.SavePersistStateEventHandler | undefined;
     shownEventer: FrameSvc.ShownEventHandler | undefined;
     hiddenEventer: FrameSvc.HiddenEventHandler | undefined;
@@ -53,8 +55,9 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
         extensionHandle: ExtensionHandle,
         frameTypeName: string,
         private readonly _container: ComponentContainer,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
         apiControlComponentFactory: ApiControlComponentFactory,
@@ -62,7 +65,7 @@ export class FrameSvcImplementation implements FrameSvc, ExtensionDitemFrame.Com
     ) {
         const ditemTypeId = DitemFrame.TypeId.create(extensionHandle, frameTypeName);
         this._ditemFrame = new ExtensionDitemFrame(ditemTypeId, this,
-            commandRegisterService, desktopAccessService, symbolsService, adiService
+            settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
 
         this._container.addEventListener('show', this._containerShowEventListener);

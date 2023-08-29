@@ -9,7 +9,6 @@ import {
     BrokerageAccountGroup,
     BrokerageAccountId,
     Integer,
-    JsonElement,
     LitIvemId,
     MovementId,
     MultiEvent,
@@ -26,9 +25,8 @@ import {
     Strings,
     SymbolsService,
     TimeInForceId,
-    TradingEnvironment,
     UiAction,
-    UnreachableCaseError,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
@@ -46,7 +44,10 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     private _litIvemIdSetting = false;
     private _brokerageAccountGroupSetting = false;
 
-    constructor(private _componentAccess: PadOrderRequestStepFrame.ComponentAccess, private _symbolsManager: SymbolsService) {
+    constructor(
+        private readonly _componentAccess: PadOrderRequestStepFrame.ComponentAccess,
+        private readonly _symbolsService: SymbolsService
+    ) {
         super(OrderRequestStepFrame.StepId.Pad);
 
         for (let id = 0; id < OrderPad.Field.idCount; id++) {
@@ -88,7 +89,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
         this._orderPad.routedIvemId = value;
         this._litIvemIdSetting = true;
         try {
-            const litIvemId = value === undefined ? undefined : this._symbolsManager.getBestLitIvemIdFromRoutedIvemId(value);
+            const litIvemId = value === undefined ? undefined : this._symbolsService.getBestLitIvemIdFromRoutedIvemId(value);
             this.litIvemIdSetEvent(litIvemId);
         } finally {
             this._litIvemIdSetting = false;
@@ -149,12 +150,6 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
         }
     }
 
-    loadLayoutConfig(element: JsonElement | undefined) {
-    }
-
-    saveLayoutConfig(element: JsonElement) {
-    }
-
     private handleOrderPadFieldsChangeEvent(fieldIds: OrderPad.FieldId[]) {
         this.processOrderPadFieldsChange(fieldIds, false); // note that error processing may still be required
     }
@@ -175,32 +170,37 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
         } else {
             const statusId = this._orderPad.getFieldStatusId(fieldId);
             switch (statusId) {
-                case OrderPad.Field.StatusId.Disabled:
+                case OrderPad.Field.StatusId.Disabled: {
                     stateId = UiAction.StateId.Disabled;
                     const disabledReasonId = this._orderPad.getFieldStatusReasonId(fieldId);
                     title = this.calculateTitle(StringId.Disabled, disabledReasonId);
                     break;
-                case OrderPad.Field.StatusId.PrerequisiteFieldNotValid:
+                }
+                case OrderPad.Field.StatusId.PrerequisiteFieldNotValid: {
                     stateId = UiAction.StateId.Warning;
                     const prerequisiteReasonId = this._orderPad.getFieldStatusReasonId(fieldId);
                     title = this.calculateTitle(StringId.Prerequisite, prerequisiteReasonId);
                     break;
-                case OrderPad.Field.StatusId.Waiting:
+                }
+                case OrderPad.Field.StatusId.Waiting: {
                     stateId = UiAction.StateId.Waiting;
                     const waitingReasonId = this._orderPad.getFieldStatusReasonId(fieldId);
                     title = this.calculateTitle(StringId.Waiting, waitingReasonId);
                     break;
-                case OrderPad.Field.StatusId.Error:
+                }
+                case OrderPad.Field.StatusId.Error: {
                     const errorReasonId = this._orderPad.getFieldStatusReasonId(fieldId);
                     stateId = errorReasonId === OrderPad.Field.StatusReasonId.ValueRequired ?
                         UiAction.StateId.Missing : UiAction.StateId.Error;
                     title = this.calculateTitle(StringId.Error, errorReasonId);
                     break;
-                case OrderPad.Field.StatusId.ReadOnlyOk:
+                }
+                case OrderPad.Field.StatusId.ReadOnlyOk: {
                     stateId = UiAction.StateId.Readonly;
                     title = undefined;
                     break;
-                case OrderPad.Field.StatusId.ValueOk:
+                }
+                case OrderPad.Field.StatusId.ValueOk: {
                     stateId = UiAction.StateId.Accepted;
                     if (errorState.uiEdited) {
                         title = `${Strings[StringId.Error]}: ${Strings[StringId.Editing]}`;
@@ -208,6 +208,7 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
                         title = undefined;
                     }
                     break;
+                }
                 default:
                     throw new UnreachableCaseError('OPDFCUAS33998', statusId);
             }
@@ -400,8 +401,10 @@ export class PadOrderRequestStepFrame extends OrderRequestStepFrame {
     }
 
     private unbindOrderPad() {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._orderPad !== undefined) {
             this._orderPad.unsubscribeFieldsChangedEvent(this._orderPadFieldsChangedSubscriptionId);
+            this._orderPadFieldsChangedSubscriptionId = undefined;
         }
     }
 }

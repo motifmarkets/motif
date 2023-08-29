@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Json } from '../sys/extension-api';
-import { ExchangeId } from './extension-api';
+import { JsonElement } from '../sys/extension-api';
+import { ExchangeId } from './exchange-id-api';
 import { IvemId } from './ivem-id-api';
 import { OrderRoute } from './order-route-api';
 
@@ -18,5 +18,5 @@ export interface RoutedIvemId {
 
     readonly name: string;
 
-    toJson(): Json;
+    saveToJson(elementApi: JsonElement): void;
 }

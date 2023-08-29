@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Json } from '../sys/extension-api';
+import { JsonElement } from '../sys/extension-api';
 import { DataEnvironmentId } from './data-environment-id-api';
 import { MarketId } from './market-id-api';
 
@@ -17,7 +17,7 @@ export interface LitIvemId {
 
     readonly name: string;
 
-    readonly persistKey: string;
+    readonly mapKey: string;
 
-    toJson(): Json;
+    saveToJson(elementApi: JsonElement): void;
 }

@@ -25,9 +25,10 @@ export namespace SourceTzOffsetDateTimeImplementation {
                 case SourceTzOffsetDateTimeApi.TimezoneModeEnum.Utc: return SourceTzOffsetDateTime.TimezoneModeId.Utc;
                 case SourceTzOffsetDateTimeApi.TimezoneModeEnum.Local: return SourceTzOffsetDateTime.TimezoneModeId.Local;
                 case SourceTzOffsetDateTimeApi.TimezoneModeEnum.Source: return SourceTzOffsetDateTime.TimezoneModeId.Source;
-                default:
+                default: {
                     const code = ApiErrorApi.CodeEnum.InvalidSourceTzOffsetDateTimeApiTimezoneMode;
                     throw new UnreachableCaseApiErrorImplementation(code, enumValue);
+                }
             }
         }
     }

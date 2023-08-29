@@ -1,10 +1,10 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnInit } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import { JsonElement } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'src/ditem/ng/builtin-ditem-ng-component-base.directive';
+import { DesktopAccessNgService } from '../../../ng/desktop-access-ng.service';
 import { WebPageDitemNgComponentBaseNgDirective } from '../../ng/web-page-ditem-ng-component-base-ng.directive';
 import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-ditem-frame';
 
@@ -15,34 +15,42 @@ import { BrandingSplashWebPageDitemFrame } from '../branding-splash-web-page-dit
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgComponentBaseNgDirective
-    implements OnInit, BrandingSplashWebPageDitemFrame.ComponentAccess {
+    implements BrandingSplashWebPageDitemFrame.ComponentAccess {
+
+    private static typeInstanceCreateCount = 0;
 
     public safeResourceUrl: SafeResourceUrl;
 
     private _frame: BrandingSplashWebPageDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new BrandingSplashWebPageDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+        const settingsService = settingsNgService.service;
+        super(
+            elRef,
+            ++BrandingSplashWebPageDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
+        this._frame = new BrandingSplashWebPageDitemFrame(this, settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }
 
     get ditemFrame() { return this._frame; }
     protected get stateSchemaVersion() { return BrandingSplashWebPageDitemNgComponent.stateSchemaVersion; }
-
-    ngOnInit(): void {}
 
     loadPage(safeResourceUrl: SafeResourceUrl) {
         this.safeResourceUrl = safeResourceUrl;

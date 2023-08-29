@@ -5,10 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, EventEmitter, HostBinding, OnDestroy, Output } from '@angular/core';
-import { ColorScheme, ColorSettings, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ColorScheme, ColorSettings, ExtensionInfo, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ExtensionInfo } from '../../extension/internal-api';
 
 @Component({
     selector: 'app-extensions-sidebar',
@@ -17,6 +16,8 @@ import { ExtensionInfo } from '../../extension/internal-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.background-color') bkgdColor: string;
 
     @Output() infoFocusEmitter = new EventEmitter<ExtensionInfo>();
@@ -29,17 +30,17 @@ export class ExtensionsSidebarNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private readonly _elRef: ElementRef, settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
+        super(elRef, ++ExtensionsSidebarNgComponent.typeInstanceCreateCount);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
         this.applySettings();
     }
 
     get width() {
-        const domRect = (this._elRef.nativeElement as HTMLElement).getBoundingClientRect();
+        const domRect = (this.rootHtmlElement).getBoundingClientRect();
         return Math.round(domRect.width);
     }
 

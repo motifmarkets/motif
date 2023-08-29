@@ -9,12 +9,14 @@ import {
     AdiService,
     AppStorageService,
     AssertInternalError,
+    CapabilitiesService,
     DataEnvironment,
-    DataEnvironmentId, ExchangeInfo, ExternalError,
-    IdleDeadline,
-    IdleRequestOptions,
+    DataEnvironmentId,
+    ErrorCode,
+    ExchangeInfo,
     Integer,
     JsonElement,
+    KeyValueStore,
     Logger,
     MotifServicesError,
     MotifServicesService,
@@ -28,9 +30,8 @@ import {
     SettingsService,
     StringId,
     Strings,
-    SymbolsService,
-    SysTick,
-    TradingEnvironment, UserAlertService,
+    SymbolsService, TradingEnvironment,
+    UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
     ZenithPublisherReconnectReason,
@@ -39,11 +40,12 @@ import {
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
+import { SignOutService } from 'component-services-internal-api';
 import { Version } from 'generated-internal-api';
-import { AppFeature } from 'src/app.feature';
-import { SignOutService } from 'src/component-services/sign-out-service';
 import { ExtensionsService } from 'src/extensions/internal-api';
+import { WorkspaceService } from 'workspace-internal-api';
 import { Config } from './config';
+import { IdleProcessor } from './idle-processor';
 import { OpenIdService } from './open-id-service';
 import { TelemetryService } from './telemetry-service';
 
@@ -59,6 +61,7 @@ export class SessionService {
     private _motifServicesEndpoint: string;
 
     private _infoService: SessionInfoService = new SessionInfoService();
+    private _idleProcessor: IdleProcessor;
 
     private _useLocalStateStorage: boolean;
     private _motifServicesEndpoints: readonly string[];
@@ -78,18 +81,16 @@ export class SessionService {
     private _zenithLogSubscriptionId: MultiEvent.SubscriptionId;
     private _publisherSessionTerminatedSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _requestIdleCallbackHandle: number | undefined;
-    private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
-    private _lastSettingsSaveFailed = false;
-
     constructor(
         private readonly _telemetryService: TelemetryService,
         private readonly _userAlertService: UserAlertService,
         private readonly _settingsService: SettingsService,
         private readonly _openIdService: OpenIdService,
+        private readonly _capabilitiesService: CapabilitiesService,
         private readonly _motifServicesService: MotifServicesService,
         private readonly _appStorageService: AppStorageService,
         private readonly _extensionService: ExtensionsService,
+        private readonly _workspaceService: WorkspaceService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _scansService: ScansService,
@@ -158,7 +159,7 @@ export class SessionService {
             storageTypeId = AppStorageService.TypeId.Local;
         } else {
             if (this._motifServicesEndpoints.length === 0) {
-                throw new MotifServicesError(ExternalError.Code.SSSMSE19774);
+                throw new MotifServicesError(ErrorCode.SSSMSE19774);
             } else {
                 this.logInfo('State Storage: MotifServices');
                 this._motifServicesEndpoint = this._motifServicesEndpoints[0];
@@ -170,7 +171,7 @@ export class SessionService {
                 storageTypeId = AppStorageService.TypeId.MotifServices;
             }
         }
-        this._appStorageService.initialise(storageTypeId);
+        this._appStorageService.initialise(storageTypeId, config.service.groupId);
 
         await this.processLoadSettings();
         await this.processLoadExtensions();
@@ -188,9 +189,8 @@ export class SessionService {
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
 
-            if (this._requestIdleCallbackHandle !== undefined) {
-                window.cancelIdleCallback(this._requestIdleCallbackHandle);
-                this._requestIdleCallbackHandle = undefined;
+            if (this._idleProcessor !== undefined) {
+                this._idleProcessor.destroy();
             }
 
             this.unsubscribeZenithExtConnection();
@@ -364,8 +364,8 @@ export class SessionService {
         this.setServiceName(config.service.name);
         this.setServiceDescription(config.service.description);
 
-        AppFeature.preview = config.features.preview;
-        AppFeature.advertising = config.features.advertising;
+        this._capabilitiesService.setAdvertisingEnabled(config.capabilities.advertising);
+        this._capabilitiesService.setDtrEnabled(config.capabilities.dtr);
 
         this._telemetryService.applyConfig(config);
         this._userAlertService.enabled = config.diagnostics.appNotifyErrors;
@@ -415,18 +415,25 @@ export class SessionService {
 
     private async processLoadSettings() {
         this.logInfo('Retrieving Settings');
-        const appSettings = await this._appStorageService.getItem(AppStorageService.Key.Settings);
+        const appSettingsGetResult = await this._appStorageService.getItem(KeyValueStore.Key.Settings);
         if (!this.final) {
             let rootElement: JsonElement | undefined;
-            if (appSettings === undefined || appSettings === '') {
-                this.logWarning('Could not retrieve saved settings. Using defaults');
+            if (appSettingsGetResult.isErr()) {
+                this.logWarning(`Error retrieving saved settings: "${appSettingsGetResult.error}". Using defaults`);
                 rootElement = undefined;
             } else {
-                this.logInfo('Loading Settings');
-                rootElement = new JsonElement();
-                if (!rootElement.parse(appSettings, 'Load Settings')) {
-                    this.logWarning('Could not parse saved settings. Using defaults');
+                const appSettings = appSettingsGetResult.value;
+                if (appSettings === undefined || appSettings === '') {
+                    this.logWarning('App Settings not specified. Using defaults');
                     rootElement = undefined;
+                } else {
+                    this.logInfo('Loading Settings');
+                    rootElement = new JsonElement();
+                    const parseResult = rootElement.parse(appSettings);
+                    if (parseResult.isErr()) {
+                        this.logWarning('Could not parse saved settings. Using defaults.  ' + parseResult.error);
+                        rootElement = undefined;
+                    }
                 }
             }
 
@@ -458,7 +465,7 @@ export class SessionService {
         const rootElement = new JsonElement();
         this._settingsService.save(rootElement);
         const settingsAsJsonString = rootElement.stringify();
-        return this._appStorageService.setItem(AppStorageService.Key.Settings, settingsAsJsonString);
+        return this._appStorageService.setItem(KeyValueStore.Key.Settings, settingsAsJsonString);
     }
 
     private finishStartup() {
@@ -466,7 +473,7 @@ export class SessionService {
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
         this._scansService.start();
-        this.startIdleProcessing();
+        this._idleProcessor = new IdleProcessor(this._settingsService, this._appStorageService, this._workspaceService);
     }
 
     private subscribeZenithExtConnection() {
@@ -527,45 +534,6 @@ export class SessionService {
             this._zenithExtConnectionDataItem = undefined;
         }
     }
-
-    private startIdleProcessing() {
-        this.initiateRequestIdleCallback();
-    }
-
-    private initiateRequestIdleCallback() {
-        const options: IdleRequestOptions = {
-            timeout: SessionService.idleCallbackTimeout,
-        };
-        this._requestIdleCallbackHandle = window.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
-    }
-
-    private idleCallback(deadline: IdleDeadline) {
-        if (!this.final) {
-            // Check for dirty elements....
-            if (this._settingsService.saveRequired) {
-                if (SysTick.now() > this._settingsSaveNotAllowedUntilTime) {
-                    const promise = this.saveSettings();
-                    promise.then(
-                        () => {
-                            this._settingsService.reportSaved();
-                            if (this._lastSettingsSaveFailed) {
-                                this.logWarning(`Save settings succeeded`);
-                                this._lastSettingsSaveFailed = false;
-                            }
-                            this._settingsSaveNotAllowedUntilTime = SysTick.now() + SessionService.minimumSettingsSaveRepeatSpan;
-                        },
-                        (reason) => {
-                            this.logWarning(`Save settings error: ${reason}`);
-                            this._lastSettingsSaveFailed = true;
-                            this._settingsSaveNotAllowedUntilTime = SysTick.now() + SessionService.minimumSettingsSaveRepeatSpan;
-                        }
-                    );
-                }
-            }
-
-            this.initiateRequestIdleCallback();
-        }
-    }
 }
 
 export namespace SessionService {
@@ -582,6 +550,4 @@ export namespace SessionService {
 
     export const motifServicesGetClientConfigurationRetryDelaySpan = 30 * mSecsPerSec;
     export const getSettingsRetryDelaySpan = 30 * mSecsPerSec;
-    export const idleCallbackTimeout = 30 * mSecsPerSec;
-    export const minimumSettingsSaveRepeatSpan = 15 * mSecsPerSec;
 }

@@ -2,3 +2,7 @@
     display: block;
     margin: 1em 0;
 }
+
+:host(.hidden) {
+    visibility: hidden;
+}

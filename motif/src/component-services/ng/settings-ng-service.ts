@@ -18,5 +18,5 @@ export class SettingsNgService {
         this._service = coreNgService.settingsService;
     }
 
-    get settingsService() { return this._service; }
+    get service() { return this._service; }
 }

@@ -14,7 +14,7 @@ import {
     InjectionToken,
     OnDestroy
 } from '@angular/core';
-import { ColorScheme, delay1Tick, JsonElement, StringId, Strings } from '@motifmarkets/motif-core';
+import { ColorScheme, JsonElement, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -29,6 +29,8 @@ import { PlaceholderDitemFrame } from '../placeholder-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     public readonly componentIsNotAvailable = Strings[StringId.PlaceholderDitem_ComponentIsNotAvailable];
     public readonly placeheldExtensionPublisherCaption = Strings[StringId.PlaceholderDitem_PlaceheldExtensionPublisherCaption];
     public readonly placeheldExtensionNameCaption = Strings[StringId.PlaceholderDitem_PlaceheldExtensionNameCaption];
@@ -43,18 +45,26 @@ export class PlaceholderDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
     private _frame: PlaceholderDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new PlaceholderDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+        super(
+            elRef,
+            ++PlaceholderDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
+
+        this._frame = new PlaceholderDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
     }

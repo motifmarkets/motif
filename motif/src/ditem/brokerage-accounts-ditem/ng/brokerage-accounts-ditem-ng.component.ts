@@ -15,20 +15,22 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
-    assigned,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
-    ModifierKey,
     StringId,
     Strings,
-    UiAction
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService,
+    TableRecordSourceDefinitionFactoryNgService,
+    TextFormatterNgService
+} from 'component-services-ng-api';
+import { BrokerageAccountsNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -43,30 +45,44 @@ import { BrokerageAccountsDitemFrame } from '../brokerage-accounts-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('table', { static: true }) private _contentComponent: TableNgComponent;
-    @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
+    private static typeInstanceCreateCount = 0;
 
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
+    @ViewChild('brokerageAccounts', { static: true }) private _brokerageAccountsComponent: BrokerageAccountsNgComponent;
+    @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
 
     private _frame: BrokerageAccountsDitemFrame;
     private _toggleAccountLinkingUiAction: IconButtonUiAction;
 
     constructor(
         cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
+        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        symbolsNgService: SymbolsNgService,
+        adiNgService: AdiNgService,
+        textFormatterNgService: TextFormatterNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++BrokerageAccountsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new BrokerageAccountsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
+
+        this._frame = new BrokerageAccountsDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+        );
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();
 
@@ -90,20 +106,14 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         this.pushAccountLinkButtonState();
     }
 
-    public handleSymbolChange(value: string) {
+    // public setFilter(value: string) {
 
-    }
-
-    public setFilter(value: string) {
-
-    }
+    // }
 
     protected override initialise() {
-        assert(assigned(this._contentComponent), 'ID:53255332');
-
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._brokerageAccountsComponent.frame);
 
         this.initialiseChildComponents(); // was previously delay1Tick
 
@@ -134,11 +144,11 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.ToggleAccountLinkingTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AccountGroupLink);
-        action.signalEvent = (signalTypeId, downKeys) => this.handleAccountLinkButtonSignalEvent(signalTypeId, downKeys);
+        action.signalEvent = () => this.handleAccountLinkButtonSignalEvent();
         return action;
     }
 
-    private handleAccountLinkButtonSignalEvent(signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+    private handleAccountLinkButtonSignalEvent() {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 

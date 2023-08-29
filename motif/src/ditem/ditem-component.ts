@@ -4,9 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { EnumInfoOutOfOrderError, StringId, Strings } from '@motifmarkets/motif-core';
+import {
+    EnumInfoOutOfOrderError,
+    Err,
+    ErrorCode,
+    ExtensionId,
+    JsonElement,
+    Ok,
+    Result
+} from '@motifmarkets/motif-core';
 import { Component } from 'component-internal-api';
-import { ExtensionId, PersistableExtensionId } from 'content-internal-api';
 
 // This represents the Golden Layout Component Object
 
@@ -22,78 +29,64 @@ export namespace DitemComponent {
     }
 
     export namespace Definition {
-        export interface FromPersistableResult {
-            definition: Definition;
-            errorText: string | undefined;
+        export namespace JsonName {
+            export const extensionId = 'extensionId';
+            export const constructionMethodId = 'constructionMethodId';
+            export const componentTypeName = 'componentTypeName';
         }
 
-        export function fromPersistable(value: PersistableDefinition | undefined): FromPersistableResult {
-            let constructionMethodId = DitemComponent.ConstructionMethodId.Invalid;
-            let componentTypeName: string;
-            const fromExtensionIdPersistableResult = ExtensionId.fromPersistable(value?.extensionId);
-            const extensionId = fromExtensionIdPersistableResult.extensionId;
+        export const invalid: Definition = {
+            extensionId: ExtensionId.invalid,
+            constructionMethodId: ConstructionMethodId.Invalid,
+            componentTypeName: '',
+        };
 
-            let errorText = fromExtensionIdPersistableResult.errorText;
-
-            if (value === undefined || errorText !== undefined) {
-                componentTypeName = '';
-                if (errorText === undefined) {
-                    errorText = Strings[StringId.DitemComponent_PersistableIsNotSpecified];
-                }
+        export function tryCreateFromJson(value: JsonElement): Result<Definition> {
+            const getExtensionIdElementResult = value.tryGetElement(JsonName.extensionId);
+            if (getExtensionIdElementResult.isErr()) {
+                return getExtensionIdElementResult.createOuter(ErrorCode.DitemComponent_ExtensionIdIsNotSpecified);
             } else {
-                constructionMethodId = DitemComponent.ConstructionMethodId.Invalid;
-                componentTypeName = value.componentType;
 
-                if (componentTypeName === undefined) {
-                    componentTypeName = '';
-                    const notSpecifiedText = Strings[StringId.DitemComponent_ComponentTypeIsNotSpecified];
-                    errorText = errorText === undefined ? errorText : `${errorText}, ${notSpecifiedText}`;
+                const extensionIdCreateResult = ExtensionId.tryCreateFromJson(getExtensionIdElementResult.value);
+                if (extensionIdCreateResult.isErr()) {
+                    return extensionIdCreateResult.createOuter(ErrorCode.DitemComponent_ExtensionIdIsInvalid);
                 } else {
-                    if (componentTypeName === '') {
-                        const errorTypeText = Strings[StringId.DitemComponent_ComponentTypeIsInvalid];
-                        errorText = `${errorTypeText}: "${componentTypeName}"`;
-                    }
-                }
+                    const extensionId = extensionIdCreateResult.value;
 
-                if (errorText === undefined) {
-                    const constructionMethodName = value.constructionMethod;
-                    if (constructionMethodName === undefined) {
-                        errorText = Strings[StringId.DitemComponent_ConstructionMethodIsNotSpecified];
+                    const componentTypeNameResult = value.tryGetString(JsonName.componentTypeName);
+                    if (componentTypeNameResult.isErr()) {
+                        const errorCode = ErrorCode.DitemComponent_ComponentTypeNameIsNotSpecifiedOrInvalid;
+                        return componentTypeNameResult.createOuter(errorCode);
                     } else {
-                        const possibleConstructionMethodId = DitemComponent.ConstructionMethod.tryJsonValueToId(
-                            constructionMethodName
-                        );
-                        if (possibleConstructionMethodId === undefined) {
-                            const errorTypeText = Strings[StringId.DitemComponent_ConstructionMethodIsInvalid];
-                            errorText = `${errorTypeText}: "${constructionMethodName}"`;
+                        const constructionMethodNameResult = value.tryGetString(JsonName.constructionMethodId);
+                        if (constructionMethodNameResult.isErr()) {
+                            const errorCode = ErrorCode.DitemComponent_ConstructionMethodNameIsNotSpecifiedOrInvalid;
+                            return constructionMethodNameResult.createOuter(errorCode);
                         } else {
-                            constructionMethodId = possibleConstructionMethodId;
+                            const constructionMethodName = constructionMethodNameResult.value;
+                            const constructionMethodId = DitemComponent.ConstructionMethod.tryJsonValueToId(constructionMethodName);
+                            if (constructionMethodId === undefined) {
+                                return new Err(ErrorCode.DitemComponent_ConstructionMethodNameIsUnknown);
+                            } else {
+                                const definition: Definition = {
+                                    extensionId,
+                                    constructionMethodId,
+                                    componentTypeName: componentTypeNameResult.value,
+                                };
+                                return new Ok(definition);
+                            }
                         }
                     }
                 }
             }
-
-            const definition: DitemComponent.Definition = {
-                extensionId,
-                constructionMethodId,
-                componentTypeName,
-            };
-            return { definition, errorText };
         }
 
-        export function toPersistable(value: Definition): PersistableDefinition {
-            return {
-                extensionId: ExtensionId.toPersistable(value.extensionId),
-                constructionMethod: ConstructionMethod.idToJsonValue(value.constructionMethodId),
-                componentType: value.componentTypeName,
-            } as const;
+        export function saveToJson(value: Definition, element: JsonElement) {
+            const extensionIdElement = element.newElement(JsonName.extensionId);
+            ExtensionId.saveToJson(value.extensionId, extensionIdElement);
+            element.setString(JsonName.constructionMethodId, ConstructionMethod.idToJsonValue(value.constructionMethodId));
+            element.setString(JsonName.componentTypeName, value.componentTypeName);
         }
-    }
-
-    export interface PersistableDefinition {
-        readonly extensionId: PersistableExtensionId;
-        readonly constructionMethod: string;
-        readonly componentType: string;
     }
 
     export const enum ConstructionMethodId {

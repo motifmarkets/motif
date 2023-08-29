@@ -5,7 +5,8 @@
  */
 
 import { Decimal } from './decimal-api';
-import { Guid, Integer, Json, JsonValue, JsonValueArray } from './types-api';
+import { Result } from './result-api';
+import { Guid, Integer, Json, JsonValue } from './types-api';
 
 /** @public */
 export interface JsonElement {
@@ -16,38 +17,38 @@ export interface JsonElement {
     deepExtend(other: Json): void;
 
     stringify(): string;
-    parse(jsonText: string, context?: string): boolean;
+    parse(jsonText: string): Result<void>;
 
-    tryGetElement(name: string, context?: string): JsonElement | undefined;
+    tryGetElement(name: string): Result<JsonElement>;
     tryGetJsonValue(name: string): JsonValue | undefined;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    tryGetNativeObject(name: string, context?: string): object | undefined;
-    tryGetJsonObject(name: string, context?: string): Json | undefined;
+    tryGetNativeObject(name: string): Result<object>;
+    tryGetJsonObject(name: string): Result<Json>;
 
-    tryGetString(name: string, context?: string): string | undefined;
-    getString(name: string, defaultValue: string, context?: string): string;
-    tryGetNumber(name: string, context?: string): number | undefined;
-    getNumber(name: string, defaultValue: number, context?: string): number;
-    tryGetBoolean(name: string, context?: string): boolean | undefined;
-    getBoolean(name: string, defaultValue: boolean, context?: string): boolean;
+    tryGetString(name: string): Result<string>;
+    getString(name: string, defaultValue: string): string;
+    tryGetNumber(name: string): Result<number>;
+    getNumber(name: string, defaultValue: number): number;
+    tryGetBoolean(name: string): Result<boolean>;
+    getBoolean(name: string, defaultValue: boolean): boolean;
 
-    tryGetElementArray(name: string, context?: string): JsonElement[] | undefined;
-    tryGetJsonObjectArray(name: string, context?: string): Json[] | undefined;
-    tryGetStringArray(name: string, context?: string): string[] | undefined;
-    tryGetNumberArray(name: string, context?: string): number[] | undefined;
-    tryGetBooleanArray(name: string, context?: string): boolean[] | undefined;
-    tryGetAnyJsonValueTypeArray(name: string, context?: string): JsonValueArray | undefined;
+    tryGetElementArray(name: string): Result<JsonElement[], Integer>;
+    tryGetJsonObjectArray(name: string): Result<Json[], Integer>;
+    tryGetStringArray(name: string): Result<string[], Integer>;
+    tryGetNumberArray(name: string): Result<number[], Integer>;
+    tryGetBooleanArray(name: string): Result<boolean[], Integer>;
+    tryGetAnyJsonValueTypeArray(name: string): Result<JsonValue[], Integer>;
 
-    tryGetInteger(name: string, context?: string): Integer | undefined;
-    getInteger(name: string, defaultValue: Integer, context?: string): Integer;
-    tryGetDate(name: string, context?: string): Date | undefined;
-    getDate(name: string, defaultValue: Date, context?: string): Date;
-    tryGetDateTime(name: string, context?: string): Date | undefined;
-    getDateTime(name: string, defaultValue: Date, context?: string): Date;
-    tryGetGuid(name: string, context?: string): Guid | undefined;
-    getGuid(name: string, defaultValue: Guid, context?: string): Guid;
-    tryGetDecimal(name: string, context?: string): Decimal | undefined;
-    getDecimal(name: string, defaultValue: Decimal, context?: string): Decimal;
+    tryGetInteger(name: string): Result<Integer>;
+    getInteger(name: string, defaultValue: Integer): Integer;
+    tryGetDate(name: string): Result<Date>;
+    getDate(name: string, defaultValue: Date): Date;
+    tryGetDateTime(name: string): Result<Date>;
+    getDateTime(name: string, defaultValue: Date): Date;
+    tryGetGuid(name: string): Result<Guid>;
+    getGuid(name: string, defaultValue: Guid): Guid;
+    tryGetDecimal(name: string): Result<Decimal>;
+    getDecimal(name: string, defaultValue: Decimal): Decimal;
 
     newElement(name: string): JsonElement;
     setElement(name: string, value: JsonElement | undefined): void;

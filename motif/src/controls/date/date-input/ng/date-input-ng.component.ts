@@ -17,18 +17,20 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DateInputNgComponent extends ControlComponentBaseNgDirective implements OnInit{
+    private static typeInstanceCreateCount = 0;
+
     @Input() size = '12';
     @Input() inputId: string;
 
-    @ViewChild('dateInput', { static: true }) private _dateInput: ElementRef;
+    @ViewChild('dateInput', { static: true }) private _dateInput: ElementRef<HTMLInputElement>;
 
     public dateAsStr = DateInputNgComponent.emptyDateStr;
 
     private _pushDateEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'DateInput' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++DateInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
+        this.inputId = 'DateInput' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as DateUiAction; }

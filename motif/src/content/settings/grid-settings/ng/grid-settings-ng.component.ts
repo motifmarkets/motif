@@ -5,11 +5,16 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component,
-    ComponentFactoryResolver, OnDestroy, ViewChild,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
+    ElementRef,
+    OnDestroy,
+    ViewChild,
     ViewContainerRef
 } from '@angular/core';
-import { assert, BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, Strings, StringUiAction } from '@motifmarkets/motif-core';
+import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, StringUiAction, Strings, assert } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
@@ -28,6 +33,7 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('fontFamilyLabel', { static: true }) private _fontFamilyLabelComponent: CaptionLabelNgComponent;
     @ViewChild('fontFamilyControl', { static: true }) private _fontFamilyControlComponent: TextInputNgComponent;
@@ -100,8 +106,8 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     private readonly _scrollbarMarginUiAction: IntegerUiAction;
     private readonly _scrollbarThumbInactiveOpacityUiAction: NumberUiAction;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++GridSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._fontFamilyUiAction = this.createFontFamilyUiAction();
         this._fontSizeUiAction = this.createFontSizeUiAction();
@@ -450,14 +456,10 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
 
 export namespace GridSettingsNgComponent {
 
-    export function create(
-        container: ViewContainerRef,
-        resolver: ComponentFactoryResolver,
-    ) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(GridSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
+        const componentRef = container.createComponent(GridSettingsNgComponent);
         assert(componentRef.instance instanceof GridSettingsNgComponent, 'GSCC39399987');
-        return componentRef.instance as GridSettingsNgComponent;
+        return componentRef.instance;
     }
 }

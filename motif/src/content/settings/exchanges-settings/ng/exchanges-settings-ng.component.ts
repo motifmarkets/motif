@@ -8,7 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
+    ElementRef,
     OnDestroy,
     ViewContainerRef
 } from '@angular/core';
@@ -23,6 +23,8 @@ import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-ba
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     public exchanges: ExchangeSettings[];
 
     private _exchangesSettings: ExchangesSettings;
@@ -30,16 +32,17 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         symbolsNgService: SymbolsNgService,
     ) {
-        super(cdr, settingsNgService.settingsService);
+        super(elRef, ++ExchangesSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
 
         this._exchangesSettings = this.settingsService.exchanges;
         this.exchanges = this._exchangesSettings.exchanges;
 
-        this._symbolsService = symbolsNgService.symbolsManager;
+        this._symbolsService = symbolsNgService.service;
         this._allowedExchangeIdsChangedSubscriptionId = this._symbolsService.subscribeAllowedExchangeIdsChangedEvent(
             () => this.handleAllowedExchangeIdsChangedEvent()
         );
@@ -65,10 +68,9 @@ export class ExchangesSettingsNgComponent extends SettingsComponentBaseNgDirecti
 }
 
 export namespace ExchangesSettingsNgComponent {
-    export function create(container: ViewContainerRef, resolver: ComponentFactoryResolver) {
+    export function create(container: ViewContainerRef) {
         container.clear();
-        const factory = resolver.resolveComponentFactory(ExchangesSettingsNgComponent);
-        const componentRef = container.createComponent(factory);
-        return componentRef.instance as ExchangesSettingsNgComponent;
+        const componentRef = container.createComponent(ExchangesSettingsNgComponent);
+        return componentRef.instance;
     }
 }

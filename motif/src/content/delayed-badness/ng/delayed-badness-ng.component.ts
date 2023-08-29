@@ -4,15 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy } from '@angular/core';
 import {
     Badness, ColorScheme, ColorSettings, Correctness,
     CorrectnessId,
     HtmlTypes,
     Integer,
-    mSecsPerSec,
     MultiEvent, SettingsService, TimeSpan,
-    UnreachableCaseError
+    UnreachableCaseError,
+    mSecsPerSec
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -25,6 +25,8 @@ import { DelayedBadnessComponent } from '../delayed-badness-component';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class DelayedBadnessNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, DelayedBadnessComponent {
+    private static typeInstanceCreateCount = 0;
+
     delayTimeSpan: TimeSpan = DelayedBadnessNgComponent.defaultDelayTimeSpan;
 
     public bkgdColor = 'inherit';
@@ -32,8 +34,8 @@ export class DelayedBadnessNgComponent extends ContentComponentBaseNgDirective i
     public display = HtmlTypes.Display.None;
     public displayText = '';
 
-    private _settingsService: SettingsService;
-    private _colorSettings: ColorSettings;
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
     private _settingsChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _badness: Badness | undefined = Badness.notBad;
     private _text: string | undefined;
@@ -42,9 +44,9 @@ export class DelayedBadnessNgComponent extends ContentComponentBaseNgDirective i
     private _visibleDelayActive = false;
     private _visibleDelayTransactionId = 0;
 
-    constructor(private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super();
-        this._settingsService = settingsNgService.settingsService;
+    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(elRef, ++DelayedBadnessNgComponent.typeInstanceCreateCount);
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
 
         this._settingsChangeSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(

@@ -4,11 +4,11 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef } from '@angular/core';
 import { StringId, Strings } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { Version } from 'generated-internal-api';
 import { nanoid } from 'nanoid';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { ConfigNgService } from '../../ng/config-ng.service';
 
 @Component({
@@ -18,6 +18,8 @@ import { ConfigNgService } from '../../ng/config-ng.service';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class NotCurrentVersionNgComponent extends ComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
+
     public notRunningCurrentVersionText = Strings[StringId.NotCurrentVersion_NotRunningCurrentVersion];
     public currentCaption = Strings[StringId.NotCurrentVersion_CurrentCaption];
     public currentVersion: string;
@@ -27,8 +29,8 @@ export class NotCurrentVersionNgComponent extends ComponentBaseNgDirective {
     public reloadAppCaption = Strings[StringId.NotCurrentVersion_ReloadAppCaption];
     public moreInfo = Strings[StringId.NotCurrentVersion_MoreInfo];
 
-    constructor(configNgService: ConfigNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, configNgService: ConfigNgService) {
+        super(elRef, ++NotCurrentVersionNgComponent.typeInstanceCreateCount);
         this.currentVersion = configNgService.version;
     }
 

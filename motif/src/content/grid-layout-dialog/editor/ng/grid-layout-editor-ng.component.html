@@ -1,0 +1,17 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+    <as-split-area [size]="allowedFieldsWidth" [minSize]="allowedFieldsMinWidth">
+        <app-grid-layout-editor-allowed-fields #allowedFields id="allowedFields"></app-grid-layout-editor-allowed-fields>
+    </as-split-area>
+    <as-split-area [size]="null"> <!-- was size="*"-->
+        <div #fieldControlsAndColumns id="fieldControlsAndColumns">
+            <app-grid-layout-editor-field-controls #fieldControls id="fieldControls"></app-grid-layout-editor-field-controls>
+            <app-grid-layout-editor-columns #columns id="columns"></app-grid-layout-editor-columns>
+        </div>
+    </as-split-area>
+</as-split>

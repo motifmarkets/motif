@@ -13,7 +13,8 @@
 $baseBkgdColor: var(--color-layout-base-bkgd, #000000); // Appears 7 times
 $singlePaneContentBkgdColor: var(--color-layout-single-pane-content-bkgd, #222222); // Appears 3 times
 $popinIconBorderForeColor: var(--color-layout-popin-icon-border-fore, #eeeeee); // Appears 2 times
-$activeTabForeColor: var(--color-layout-active-tab-fore, #dddddd); // Appears 2 times
+$focusedTabBkgdColor: var(--color-layout-focused-tab-bkgd, #354be3); // Appears 1 time
+$focusedTabForeColor: var(--color-layout-focused-tab-fore, #dddddd); // Appears 2 times
 
 $dropTargetIndicatorOutlineForeColor: var(--color-layout-drop-target-indicator-outline-fore, #cccccc); // Appears 1 time
 $splitterDraggingBkgdColor: var(--color-layout-splitter-dragging-bkgd, #444444); // Appears 1 time
@@ -22,8 +23,6 @@ $singleTablContainerBkgdColor: var(--color-layout-single-tab-container-bkgd, #11
 $selectedHeaderBkgdColor: var(--color-layout-selected-header-bkgd, #452500); // Appears 1 time
 $transitionIndicatorBorderForeColor: var(--color-layout-transition-indicator-border-fore, #555555); // Appears 1 time
 $dropDownArrowForeColor: var(--color-layout-drop-down-arrow-fore, #ffffff); // Appears 2 time
-
-$focusedTabBkgdColor: var(--color-layout-focused-tab-bkgd, #354be3); // Appears 1 time
 
 // ".lm_dragging" is applied to BODY tag during Drag and is also directly applied to the root of the object being dragged
 
@@ -152,7 +151,7 @@ $focusedTabBkgdColor: var(--color-layout-focused-tab-bkgd, #354be3); // Appears 
     &.lm_active // If Tab is active, so if it's in foreground
     {
         background: $singlePaneContentBkgdColor;
-        color: $activeTabForeColor;
+        color: $focusedTabForeColor;
     }
 }
 

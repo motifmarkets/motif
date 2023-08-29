@@ -11,28 +11,47 @@ import {
     EnumInfoOutOfOrderError,
     ExtensionHandle,
     InternalCommand,
+    LockOpenListItem,
+    SettingsService,
     StringId,
     Strings,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { MenuBarService } from 'controls-internal-api';
-import { DesktopAccessService } from './desktop-access-service';
 import { DitemFrame } from './ditem-frame';
 
 export abstract class BuiltinDitemFrame extends DitemFrame {
+    readonly opener: LockOpenListItem.Opener;
+
     constructor(private readonly _builtinDitemTypeId: BuiltinDitemFrame.BuiltinTypeId,
         ditemComponentAccess: DitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService
     ) {
         super(BuiltinDitemFrame.createBuiltinDitemTypeId(commandRegisterService.internalExtensionHandle, _builtinDitemTypeId),
-            ditemComponentAccess, commandRegisterService, desktopAccessService, symbolsService, adiService
+            ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
+
+        this.opener = {
+            lockerName: ''
+        };
+        this.updateLockerName('');
     }
 
     get builtinDitemTypeId() { return this._builtinDitemTypeId; }
+
+    get baseTabDisplay() { return BuiltinDitemFrame.BuiltinType.idToBaseTabDisplay(this._builtinDitemTypeId); }
+
+    protected updateLockerName(contentName: string | undefined) {
+        if (contentName === undefined || contentName === '') {
+            this.opener.lockerName = `${this.baseTabDisplay} (${this.frameId})`;
+        } else {
+            this.opener.lockerName = `${this.baseTabDisplay}: ${contentName} (${this.frameId})`;
+        }
+    }
 }
 
 export namespace BuiltinDitemFrame {
@@ -62,6 +81,7 @@ export namespace BuiltinDitemFrame {
         OrderRequest,
         BrokerageAccounts,
         Orders,
+        OrderAuthorise,
         Holdings,
         Balances,
         Settings,
@@ -239,7 +259,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_BrokerageAccounts,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
-                    rank: 60000,
+                    rank: 100000,
                 },
             },
             Orders: {
@@ -250,6 +270,16 @@ export namespace BuiltinDitemFrame {
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.trading],
                     rank: 30000,
+                },
+            },
+            OrderAuthorise: {
+                id: BuiltinTypeId.OrderAuthorise,
+                name: 'OrderAuthorise',
+                newInternalCommandId: InternalCommand.Id.NewOrderAuthoriseDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_OrderAuthorise,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.trading],
+                    rank: 60000,
                 },
             },
             Holdings: {
@@ -332,7 +362,7 @@ export namespace BuiltinDitemFrame {
             return tryNameToId(jsonValue);
         }
 
-        export function idToTabTitle(id: Id) {
+        export function idToBaseTabDisplay(id: Id) {
             return idToMenuDisplay(id);
         }
 

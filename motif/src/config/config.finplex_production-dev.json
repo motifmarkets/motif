@@ -1,0 +1,77 @@
+{
+    "configFormatVersion": "2",
+    "configComment": "",
+    "service": {
+        "name": "Finplex production",
+        "description": "Finplex production",
+        "group": "Fpsx"
+    },
+    "environment": {
+        "defaultDataEnvironment": "production"
+    },
+    "exchange": {
+        "defaultDefault": "Fpsx"
+    },
+    "endpoints": {
+        "motifServices": [
+            "https://motif-services.paritech.com"
+        ],
+        "zenith": [
+            "wss://ws-finplex.paritech.com"
+        ]
+    },
+    "openId": {
+        "authority": "https://passport.paritech.com",
+        "clientId": "MotifFinplex$Web",
+        "redirectUri": "http://localhost:4200/auth-callback",
+        "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+        "scope": "openid profile roles Zenith/Trading Zenith/Market Zenith/News Zenith/OrderPad MotifSvc/RestAPI"
+    },
+    "defaultLayout": {
+        "instanceName": "Default"
+    },
+    "bundledExtensions": [
+        {
+            "info": {
+                "publisherId": {
+                    "type": "Organisation",
+                    "name": "Paritech"
+                },
+                "name": "Highcharts",
+                "version": "0.0.2",
+                "apiVersion": "1",
+                "shortDescription": "Highcharts Charting",
+                "longDescription": "Highcharts Charting",
+                "urlPath": "/_extensions/highcharts/highcharts.js"
+            },
+            "install": true
+        }
+    ],
+    "diagnostics": {
+        "telemetry": {
+            "enabled": true,
+            "itemIgnores": [
+	        {
+	          "typeId": "Message",
+	          "message": "^Error TRDLLFJI33858"
+	        },
+	        {
+	          "typeId": "Message",
+	          "message": "^ResizeObserver loop limit exceeded"
+	        },
+	        {
+	          "typeId": "Message",
+	          "message": "^Zenith Publisher: Abnormal closure (1006)"
+	        },
+	        {
+	          "typeId": "Message",
+	          "message": "^Zenith Reconnection: "
+	        }
+            ]
+        },
+        "dataSubscriptionCachingDisabled": false
+    },
+    "branding": {
+        "desktopBarLeftImageUrl": "branding/images/desktop-bar-left-icon.svg"
+    }
+}

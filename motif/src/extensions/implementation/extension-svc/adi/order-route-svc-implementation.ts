@@ -6,12 +6,15 @@
 
 import { OrderRoute } from '@motifmarkets/motif-core';
 import {
-    Json as JsonApi,
+    Err as ErrApi,
+    JsonElement as JsonElementApi,
     MarketOrderRoute as MarketOrderRouteApi,
+    Ok as OkApi,
     OrderRoute as OrderRouteApi,
-    OrderRouteSvc
+    OrderRouteSvc,
+    Result as ResultApi
 } from '../../../api/extension-api';
-import { OrderRouteImplementation } from '../../exposed/internal-api';
+import { JsonElementImplementation, OrderRouteImplementation } from '../../exposed/internal-api';
 
 export class OrderRouteSvcImplementation implements OrderRouteSvc {
     isEqual(left: OrderRouteApi, right: OrderRouteApi) {
@@ -31,12 +34,14 @@ export class OrderRouteSvcImplementation implements OrderRouteSvc {
         return OrderRoute.isMarketRoute(actual);
     }
 
-    tryCreateFromJson(json: JsonApi): OrderRouteApi | undefined {
-        const orderRoute = OrderRoute.tryCreateFromJson(json as OrderRoute.PersistJson);
-        if (orderRoute === undefined) {
-            return undefined;
+    tryCreateFromJson(elementApi: JsonElementApi): ResultApi<OrderRouteApi> {
+        const element = JsonElementImplementation.fromApi(elementApi);
+        const result = OrderRoute.tryCreateFromJson(element);
+        if (result.isErr()) {
+            return new ErrApi(result.error);
         } else {
-            return OrderRouteImplementation.toApi(orderRoute);
+            const orderRouteApi = OrderRouteImplementation.toApi(result.value);
+            return new OkApi(orderRouteApi);
         }
     }
 }

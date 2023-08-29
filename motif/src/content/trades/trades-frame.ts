@@ -5,30 +5,32 @@
  */
 
 import {
+    AdaptedRevgrid,
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     Badness,
+    CellPainterFactoryService,
     CorrectnessId,
     DayTradesDataDefinition,
     DayTradesDataItem,
     DayTradesGridField,
     DayTradesGridRecordStore,
     GridLayout,
-    GridLayoutIO,
-    GridLayoutRecordStore,
-    Integer,
+    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
-    MultiEvent
+    MultiEvent,
+    RecordGrid,
+    RenderValueRecordGridCellPainter,
+    SettingsService,
+    TextHeaderCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { RecordGrid } from '../adapted-revgrid/internal-api';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
-    // activeWidthChangedEvent: TradesFrame.ActiveWidthChangedEventHandler;
-
     private _grid: RecordGrid;
-    private _gridPrepared = false;
     private _recordStore: DayTradesGridRecordStore;
 
     private _dataItem: DayTradesDataItem | undefined;
@@ -36,67 +38,83 @@ export class TradesFrame extends ContentFrame {
     private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
+
     constructor(
+        private readonly _settingsService: SettingsService,
+        protected readonly adiService: AdiService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
         private readonly _componentAccess: TradesFrame.ComponentAccess,
-        protected readonly adi: AdiService
     ) {
         super();
         this._recordStore = new DayTradesGridRecordStore();
     }
 
-    get recordStore() { return this._recordStore; }
+    get opened() { return this._dataItem !== undefined; }
+
+    setupGrid(gridHost: HTMLElement) {
+        this._grid = this.createGridAndCellPainters(gridHost);
+        // this.applySettings();
+        this._grid.activate();
+        this._grid.rowOrderReversed = true;
+    }
+
+    initialise(tradesFrameElement: JsonElement | undefined) {
+        let gridLayout: GridLayout;
+        if (tradesFrameElement === undefined) {
+            gridLayout = this.createDefaultGridLayout();
+        } else {
+            const tryGetElementResult = tradesFrameElement.tryGetElement(TradesFrame.JsonName.layout);
+            if (tryGetElementResult.isErr()) {
+                gridLayout = this.createDefaultGridLayout();
+            } else {
+                const definitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetElementResult.value);
+                if (definitionResult.isErr()) {
+                    gridLayout = this.createDefaultGridLayout();
+                } else {
+                    gridLayout = new GridLayout(definitionResult.value);
+                }
+            }
+        }
+
+        const fieldCount = DayTradesGridField.idCount;
+        const fields = new Array<DayTradesGridField>(fieldCount);
+
+        for (let id = 0; id < fieldCount; id++) {
+            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
+            fields[id] = gridField;
+        }
+
+        this._grid.fieldsLayoutReset(fields, gridLayout);
+
+        this._recordStore.recordsLoaded();
+    }
 
     override finalise() {
         if (!this.finalised) {
+            this._grid.destroy();
             this.checkClose();
             super.finalise();
         }
     }
 
-    // grid functions used by Component
-
-    setGrid(value: RecordGrid) {
-        this._grid = value;
-        this._grid.rowOrderReversed = true;
-        this._grid.recordFocusEventer = (newRecIdx, oldRecIdx) => this.handleRecordFocusEvent(newRecIdx, oldRecIdx);
-        this._grid.mainClickEventer = (fieldIdx, recIdx) => this.handleGridClickEvent(fieldIdx, recIdx);
-        this._grid.mainDblClickEventer = (fieldIdx, recIdx) => this.handleGridDblClickEvent(fieldIdx, recIdx);
-
-        this.prepareGrid();
-    }
-
-    loadLayoutConfig(element: JsonElement | undefined) {
-        if (element !== undefined) {
-            const context = 'TradesFrame';
-            const layoutElement = element.tryGetElement(TradesFrame.JsonName.layout, context);
-            const serialisedColumns = GridLayoutIO.loadLayout(layoutElement);
-            if (serialisedColumns) {
-                const layout = this._grid.saveLayout();
-                layout.deserialise(serialisedColumns);
-                this._grid.loadLayout(layout);
-            }
-        }
-    }
-
-    saveLayoutConfig(element: JsonElement) {
+    saveLayoutToConfig(element: JsonElement) {
         const layoutElement = element.newElement(TradesFrame.JsonName.layout);
-        const columns = this._grid.saveLayout().serialise();
-        GridLayoutIO.saveLayout(columns, layoutElement);
-    }
-
-    close() {
-        this.checkClose();
+        const definition = this._grid.createGridLayoutDefinition();
+        definition.saveToJson(layoutElement);
     }
 
     open(litIvemId: LitIvemId, historicalDate: Date | undefined): void {
         this.checkClose();
+        this._grid.dataReset();
         const definition = new DayTradesDataDefinition();
         definition.litIvemId = litIvemId;
         definition.date = historicalDate;
-        this._dataItem = this.adi.subscribe(definition) as DayTradesDataItem;
+        this._dataItem = this.adiService.subscribe(definition) as DayTradesDataItem;
         this._recordStore.setDataItem(this._dataItem);
 
-        this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangeEvent(
+        this._dataItemDataCorrectnessChangeEventSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
             () => this.handleDataItemDataCorrectnessChangeEvent()
         );
         this._dataItemDataCorrectnessId = this._dataItem.correctnessId;
@@ -107,70 +125,37 @@ export class TradesFrame extends ContentFrame {
         this._componentAccess.hideBadnessWithVisibleDelay(this._dataItem.badness);
     }
 
-    prepareGrid() {
-        if (this._gridPrepared) {
-            this._grid.reset();
-        }
-
-        const fieldCount = DayTradesGridField.idCount;
-        const fields = new Array<DayTradesGridField>(fieldCount);
-
-        for (let id = 0; id < fieldCount; id++) {
-            const gridField = DayTradesGridField.createField(id, () => this.handleGetDataItemCorrectnessIdEvent());
-            fields[id] = gridField;
-        }
-        this._recordStore.addFields(fields);
-
-        this._grid.sortable = false;
-
-        for (let id = 0; id < fieldCount; id++) {
-            this._grid.setFieldState(fields[id], fields[id].fieldStateDefinition);
-        }
-
-        for (let id = 0; id < fieldCount; id++) {
-            this._grid.setFieldVisible(fields[id], fields[id].defaultVisible);
-        }
-
-        // const fieldsAndInitialStates = this._table.getGridFieldsAndInitialStates();
-        // this._componentAccess.gridAddFields(fieldsAndInitialStates.fields);
-        // const states = fieldsAndInitialStates.states;
-        // const fieldCount = states.length; // one state for each field
-        // for (let i = 0; i < fieldCount; i++) {
-        //     this._componentAccess.gridSetFieldState(i, states[i]);
-        // }
-
-        // this._componentAccess.gridLoadLayout(this._table.layout);
-        this._recordStore.recordsLoaded();
-
-        this._gridPrepared = true;
+    close() {
+        this.checkClose();
     }
 
-    autoSizeAllColumnWidths() {
-        this._grid.autoSizeAllColumnWidths();
+    createAllowedFieldsGridLayoutDefinition(): AllowedFieldsGridLayoutDefinition {
+        const allowedFields = DayTradesGridField.createAllowedFields();
+        return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
     }
 
-    handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition) {
+        this._grid.applyGridLayoutDefinition(layoutDefinition);
     }
 
-    handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        this._grid.autoSizeAllColumnWidths(widenOnly);
     }
 
-    handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
-    }
+    // private handleRecordFocusEvent(newRecordIndex: Integer | undefined, oldRecordIndex: Integer | undefined) {
+    // }
+
+    // private handleGridClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+    // }
+
+    // private handleGridDblClickEvent(fieldIndex: Integer, recordIndex: Integer) {
+    // }
 
     // adviseColumnWidthChanged(columnIndex: Integer) {
     //     if (this.activeWidthChangedEvent !== undefined) {
     //         this.activeWidthChangedEvent(); // advise PariDepth frame
     //     }
     // }
-
-    getGridLayoutWithHeadersMap(): GridLayoutRecordStore.LayoutWithHeadersMap {
-        return this._grid.getLayoutWithHeadersMap();
-    }
-
-    setGridLayout(layout: GridLayout): void {
-        this._grid.loadLayout(layout);
-    }
 
     // getRenderedActiveWidth() {
     //     return this._componentAccess.gridGetRenderedActiveWidth();
@@ -196,21 +181,65 @@ export class TradesFrame extends ContentFrame {
         return this._dataItemDataCorrectnessId;
     }
 
+    private createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(gridHostElement);
+
+        this._gridHeaderCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
+
+        return grid;
+    }
+
+    private createGrid(gridHostElement: HTMLElement) {
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+            sortOnClick: false,
+            sortOnDoubleClick: false,
+        }
+
+        const grid = new RecordGrid(
+            this._settingsService,
+            gridHostElement,
+            this._recordStore,
+            customGridSettings,
+            () => this.customiseSettingsForNewColumn(),
+            () => this.getMainCellPainter(),
+            () => this.getHeaderCellPainter(),
+            this,
+        );
+
+        return grid;
+    }
+
+    private createDefaultGridLayout() {
+        const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
+        return new GridLayout(definition);
+    }
+
     private checkClose() {
         if (this._dataItem !== undefined) {
-            this._dataItem.unsubscribeCorrectnessChangeEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
+            this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
             this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
             this._recordStore.clearDataItem();
-            this.adi.unsubscribe(this._dataItem);
+            this.adiService.unsubscribe(this._dataItem);
             this._dataItem = undefined;
             this._dataItemDataCorrectnessId = CorrectnessId.Suspect;
         }
     }
+
+    private customiseSettingsForNewColumn() {
+        // no customisation required
+    }
+
+    private getMainCellPainter() {
+        return this._gridMainCellPainter;
+    }
+
+    private getHeaderCellPainter() {
+        return this._gridHeaderCellPainter;
+    }
 }
 
 export namespace TradesFrame {
-    // export type ActiveWidthChangedEventHandler = (this: void) => void;
-
     export class TradesSubscriptionIds {
         beginChanges: MultiEvent.SubscriptionId;
         endChanges: MultiEvent.SubscriptionId;

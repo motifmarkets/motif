@@ -5,25 +5,38 @@
  */
 
 import {
-    AdiService, Badness, CoreSettings, Correctness, FeedStatus, Integer, Market,
+    AdiService,
+    AssertInternalError,
+    Badness,
+    CoreSettings,
+    Correctness,
+    FeedStatus,
+    Integer,
+    Market,
     MarketBoard,
     MarketInfo,
     MarketsDataDefinition,
-    MarketsDataItem, MultiEvent,
+    MarketsDataItem,
+    MultiEvent,
     SourceTzOffsetDate,
-    SourceTzOffsetDateTime, textFormatter, TradingMarketBoard,
-    TradingState, UnreachableCaseError,
+    SourceTzOffsetDateTime,
+    TextFormatterService,
+    TradingMarketBoard,
+    TradingState,
+    UnreachableCaseError,
     UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
 import { ContentFrame } from '../content-frame';
 
 export class MarketsFrame extends ContentFrame {
-    marketCountChangedEvent: MarketsFrame.MarketsCountChangedEventHandler;
-    tradingMarketBoardCountChangedEvent: MarketsFrame.TradingMarketBoardCountChangedEventHandler;
+    marketCountChangedEvent: MarketsFrame.MarketsCountChangedEventHandler | undefined;
+    tradingMarketBoardCountChangedEvent: MarketsFrame.TradingMarketBoardCountChangedEventHandler | undefined;
 
-    private _marketsDataItem: MarketsDataItem;
+    private _marketsDataItem: MarketsDataItem | undefined;
     private _marketsListChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _marketsBadnessChangeSubscriptionId: MultiEvent.SubscriptionId;
+
+    private _markets: Market[];
 
     private _marketWrappers: MarketsFrame.MarketWrapper[] = [];
     private _displayRecords: MarketsFrame.DisplayRecord[] = [];
@@ -32,7 +45,12 @@ export class MarketsFrame extends ContentFrame {
     private _offlineMarketCount = 0;
     private _tradingMarketBoardCount = 0;
 
-    constructor(private _componentAccess: MarketsFrame.ComponentAccess, private _coreSettings: CoreSettings, private _adi: AdiService) {
+    constructor(
+        private readonly _componentAccess: MarketsFrame.ComponentAccess,
+        private readonly _coreSettings: CoreSettings,
+        private readonly _adi: AdiService,
+        private readonly _textFormatterService: TextFormatterService,
+    ) {
         super();
     }
 
@@ -44,6 +62,7 @@ export class MarketsFrame extends ContentFrame {
     initialise() {
         const dataDefinition = new MarketsDataDefinition();
         this._marketsDataItem = this._adi.subscribe(dataDefinition) as MarketsDataItem;
+        this._markets = this._marketsDataItem.records;
         this._marketsListChangeSubscriptionId = this._marketsDataItem.subscribeListChangeEvent(
             (listChangeTypeId, index, count) => this.handleMarketsListChangeEvent(listChangeTypeId, index, count)
         );
@@ -74,6 +93,8 @@ export class MarketsFrame extends ContentFrame {
             this._marketsDataItem.unsubscribeBadnessChangeEvent(this._marketsBadnessChangeSubscriptionId);
             this._marketsBadnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._marketsDataItem);
+            this._markets = undefined as unknown as Market[];
+            this._marketsDataItem = undefined;
         }
 
         super.finalise();
@@ -109,31 +130,48 @@ export class MarketsFrame extends ContentFrame {
     }
 
     private calculateBadness() {
-        return this._marketsDataItem.badness;
+        if (this._marketsDataItem === undefined) {
+            throw new AssertInternalError('MFCB03298');
+        } else {
+            return this._marketsDataItem.badness;
+        }
     }
 
     private processMarketsListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
         switch (listChangeTypeId) {
-            case UsableListChangeTypeId.Unusable:
+            case UsableListChangeTypeId.Unusable: {
                 const UnusableBadness = this.calculateBadness();
                 this._componentAccess.setBadness(UnusableBadness);
                 return true;
-            case UsableListChangeTypeId.PreUsableClear:
+            }
+            case UsableListChangeTypeId.PreUsableClear: {
                 return this.clearMarkets();
-            case UsableListChangeTypeId.PreUsableAdd:
+            }
+            case UsableListChangeTypeId.PreUsableAdd: {
                 return this.insertMarkets(index, count);
-            case UsableListChangeTypeId.Usable:
+            }
+            case UsableListChangeTypeId.Usable: {
                 const Usablebadness = this.calculateBadness();
                 this._componentAccess.setBadness(Usablebadness);
                 return true;
-            case UsableListChangeTypeId.Insert:
+            }
+            case UsableListChangeTypeId.Insert: {
                 return this.insertMarkets(index, count);
-            case UsableListChangeTypeId.Remove:
+            }
+            case UsableListChangeTypeId.BeforeReplace: {
+                throw new AssertInternalError('CIDFPMLCBR09134');
+            }
+            case UsableListChangeTypeId.AfterReplace: {
+                throw new AssertInternalError('CIDFPMLCAR09134');
+            }
+            case UsableListChangeTypeId.Remove: {
                 return this.removeMarkets(index, count);
-            case UsableListChangeTypeId.Clear:
+            }
+            case UsableListChangeTypeId.Clear: {
                 return this.clearMarkets();
+            }
             default:
-                throw new UnreachableCaseError('CIDFPMLCU10009134', listChangeTypeId);
+                throw new UnreachableCaseError('CIDFPMLCU09134', listChangeTypeId);
         }
     }
 
@@ -157,7 +195,7 @@ export class MarketsFrame extends ContentFrame {
             const newMarketWrappers = new Array<MarketsFrame.MarketWrapper>(count);
             let recordIdx = index;
             for (let i = 0; i < count; i++) {
-                const market = this._marketsDataItem.records[recordIdx++];
+                const market = this._markets[recordIdx++];
                 const wrapper = new MarketsFrame.MarketWrapper(market);
                 wrapper.changeEvent = () => this.handleMarketChangeEvent();
                 newMarketWrappers[i] = wrapper;
@@ -185,7 +223,7 @@ export class MarketsFrame extends ContentFrame {
     }
 
     private updateDisplayRecordsAndCounts() {
-        const markets = this._marketsDataItem.records;
+        const markets = this._markets;
 
         const marketCount = markets.length;
         let offlineMarketCount = 0;
@@ -242,7 +280,7 @@ export class MarketsFrame extends ContentFrame {
             tradingDateStr = '';
         } else {
             const utcTimezonedTradingDate = SourceTzOffsetDate.getUtcTimezonedDate(tradingDate);
-            tradingDateStr = textFormatter.formatDate(utcTimezonedTradingDate); // utcTimezonedTradingDate.toLocaleString();
+            tradingDateStr = this._textFormatterService.formatDate(utcTimezonedTradingDate); // utcTimezonedTradingDate.toLocaleString();
         }
 
         let marketTimeStr: string;
@@ -252,7 +290,7 @@ export class MarketsFrame extends ContentFrame {
         } else {
             const utcTimezonedMarketTime =
                 SourceTzOffsetDateTime.getTimezonedDate(marketTime, this._coreSettings.format_DateTimeTimezoneModeId);
-            marketTimeStr = textFormatter.formatDateTime(utcTimezonedMarketTime); // utcTimezonedMarketTime.toLocaleString();
+            marketTimeStr = this._textFormatterService.formatDateTime(utcTimezonedMarketTime); // utcTimezonedMarketTime.toLocaleString();
         }
 
         const record: MarketsFrame.DisplayRecord = {

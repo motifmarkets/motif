@@ -6,65 +6,86 @@
 
 import {
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
+    AssertInternalError,
     CommandRegisterService,
-    GridLayout,
-    GridLayoutRecordStore,
+    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
+    SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
-import { DesktopAccessService } from '../desktop-access-service';
 import { DitemFrame } from '../ditem-frame';
 
 export class TradesDitemFrame extends BuiltinDitemFrame {
-    private _contentFrame: TradesFrame;
+    private _tradesFrame: TradesFrame | undefined;
 
     constructor(
         private _componentAccess: TradesDitemFrame.ComponentAccess,
+        settingsService: SettingsService,
         commandRegisterService: CommandRegisterService,
-        desktopAccessService: DesktopAccessService,
+        desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adi: AdiService
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Trades, _componentAccess,
-            commandRegisterService, desktopAccessService, symbolsMgr, adi
+            settingsService, commandRegisterService, desktopAccessService, symbolsMgr, adi
         );
     }
 
-    get initialised() { return this._contentFrame !== undefined; }
+    // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+    get initialised() { return this._tradesFrame !== undefined; }
 
-    initialise(tradesContentFrame: TradesFrame, frameElement: JsonElement | undefined): void {
-        this._contentFrame = tradesContentFrame;
+    initialise(ditemFrameElement: JsonElement | undefined, tradesFrame: TradesFrame): void {
+        this._tradesFrame = tradesFrame;
 
-        if (frameElement === undefined) {
-            this._contentFrame.loadLayoutConfig(undefined);
-        } else {
-            const contentElement = frameElement.tryGetElement(TradesDitemFrame.JsonName.content);
-            this._contentFrame.loadLayoutConfig(contentElement);
+        let tradesFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
+            if (tradesFrameElementResult.isOk()) {
+                tradesFrameElement = tradesFrameElementResult.value;
+            }
         }
+        this._tradesFrame.initialise(tradesFrameElement);
 
         this.applyLinked();
     }
 
-    override save(element: JsonElement) {
-        super.save(element);
+    override finalise() {
+        if (this._tradesFrame !== undefined) {
+            this._tradesFrame.finalise();
+        }
+        super.finalise();
+    }
 
-        const contentElement = element.newElement(TradesDitemFrame.JsonName.content);
-        this._contentFrame.saveLayoutConfig(contentElement);
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFS44407');
+        } else {
+            const tradesFrameElement = ditemFrameElement.newElement(TradesDitemFrame.JsonName.tradesFrame);
+            this._tradesFrame.saveLayoutToConfig(tradesFrameElement);
+        }
     }
 
     open() {
-        const litIvemId = this.litIvemId;
-        if (litIvemId === undefined) {
-            this._contentFrame.close();
-            this._componentAccess.notifyOpenedClosed(undefined, undefined);
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFO44407');
         } else {
-            const historicalDate = this._componentAccess.getHistoricalDate();
-            this._contentFrame.open(litIvemId, historicalDate);
+            const litIvemId = this.litIvemId;
+            if (litIvemId === undefined) {
+                this._tradesFrame.close();
+                this._componentAccess.notifyOpenedClosed(undefined, undefined);
+            } else {
+                const historicalDate = this._componentAccess.getHistoricalDate();
+                this._tradesFrame.open(litIvemId, historicalDate);
 
-            this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
+                this.updateLockerName(this.symbolsService.litIvemIdToDisplay(litIvemId));
+                this._componentAccess.notifyOpenedClosed(litIvemId, historicalDate);
+            }
         }
     }
 
@@ -74,19 +95,28 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    autoSizeAllColumnWidths() {
-        this._contentFrame.autoSizeAllColumnWidths();
-    }
-
-    getGridLayoutWithHeadings(): GridLayoutRecordStore.LayoutWithHeadersMap | undefined {
-        return this._contentFrame && this._contentFrame.getGridLayoutWithHeadersMap();
-    }
-
-    setGridLayout(layout: GridLayout): void {
-        if (!this._contentFrame) {
-            throw new Error('Condition not handled [ID:5326171853]');
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFASACW44407');
+        } else {
+            this._tradesFrame.autoSizeAllColumnWidths(widenOnly);
         }
-        this._contentFrame.setGridLayout(layout);
+    }
+
+    createAllowedFieldsGridLayoutDefinition(): AllowedFieldsGridLayoutDefinition | undefined {
+        if (this._tradesFrame === undefined) {
+            throw new AssertInternalError('TDFCAFALD44407');
+        } else {
+            return this._tradesFrame.createAllowedFieldsGridLayoutDefinition();
+        }
+    }
+
+    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
+        if (this._tradesFrame === undefined) {
+            throw new Error('Condition not handled [ID:5326171853]');
+        } else {
+            this._tradesFrame.applyGridLayoutDefinition(layoutDefinition);
+        }
     }
 
     protected override applyLitIvemId(litIvemId: LitIvemId | undefined, selfInitiated: boolean): boolean {
@@ -103,7 +133,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
 
 export namespace TradesDitemFrame {
     export namespace JsonName {
-        export const content = 'content';
+        export const tradesFrame = 'tradesFrame';
     }
 
     export type OpenedEventHandler = (this: void) => void;

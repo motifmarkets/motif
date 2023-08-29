@@ -26,28 +26,31 @@ import { ControlComponentBaseNgDirective } from '../../../ng/control-component-b
 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CaptionedCheckboxNgComponent
-    extends ControlComponentBaseNgDirective
-    implements OnInit, OnDestroy {
+export class CaptionedCheckboxNgComponent extends ControlComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() checked = false;
     @Input() inputId: string;
 
     @ViewChild('checkboxInput', { static: true })
-    private _checkboxInput: ElementRef;
+    private _checkboxInput: ElementRef<HTMLInputElement>;
 
     private _pushCheckboxEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _renderer: Renderer2,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
         super(
+            elRef,
+            ++CaptionedCheckboxNgComponent.typeInstanceCreateCount,
             cdr,
-            settingsNgService.settingsService,
+            settingsNgService.service,
             ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
         );
-        this.inputId = 'CaptionedCheckbox' + this.componentInstanceId;
+        this.inputId = 'CaptionedCheckbox' + this.typeInstanceId;
     }
 
     public override get uiAction() { return super.uiAction as BooleanUiAction; }

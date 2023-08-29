@@ -21,29 +21,32 @@ import {
     ColorScheme,
     ColorSettings,
     ExtensionHandle,
+    ExtensionId,
     Json,
+    JsonElement,
     MultiEvent,
-    numberToPixels,
+    Result,
     SettingsService,
     StringId,
     Strings,
-    UnreachableCaseError
+    UnreachableCaseError,
+    numberToPixels
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
-import { ExtensionId } from 'content-internal-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
 import {
     BuiltinDitemFrame,
     DitemComponent,
-    DitemComponentIdAndType,
     DitemFrame,
     ExtensionDitemComponent,
     PlaceholderDitemFrame
 } from 'ditem-internal-api';
 import {
-    BuiltinDitemNgComponentBaseDirective,
+    BuiltinDitemNgComponentBaseNgDirective,
     DesktopAccessNgService,
     DitemComponentFactoryNgService,
+    DitemNgComponentIdAndType,
     PlaceholderDitemNgComponent
 } from 'ditem-ng-api';
 import {
@@ -53,7 +56,6 @@ import {
     ResolvedComponentItemConfig,
     VirtualLayout
 } from 'golden-layout';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 import { FrameExtensionsAccessService } from '../frame-extension-access-service';
 import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
 
@@ -66,6 +68,8 @@ import { GoldenLayoutHostFrame } from '../golden-layout-host-frame';
     encapsulation: ViewEncapsulation.None,
 })
 export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implements OnDestroy, GoldenLayoutHostFrame.ComponentAccess {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('componentsViewContainer', { read: ViewContainerRef, static: true }) private _componentsViewContainerRef: ViewContainerRef;
 
     private readonly _frame: GoldenLayoutHostFrame;
@@ -82,8 +86,8 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     private _componentsParentBoundingClientRect: DOMRect = new DOMRect();
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _elRef: ElementRef<HTMLElement>,
         private readonly _appRef: ApplicationRef,
         private readonly _ditemComponentFactoryNgService: DitemComponentFactoryNgService,
         sessionNgService: SessionInfoNgService,
@@ -91,12 +95,12 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         extensionsAccessNgService: ExtensionsAccessNgService,
         desktopAccessNgService: DesktopAccessNgService,
     ) {
-        super();
+        super(elRef, ++GoldenLayoutHostNgComponent.typeInstanceCreateCount);
 
-        this._componentsParentHtmlElement = this._elRef.nativeElement;
-        this._settingsService = settingsNgService.settingsService;
+        this._componentsParentHtmlElement = this.rootHtmlElement;
+        this._settingsService = settingsNgService.service;
         this._colorSettings = this._settingsService.color;
-        this._extensionsAccessService = extensionsAccessNgService.service;
+        this._extensionsAccessService = extensionsAccessNgService.service as FrameExtensionsAccessService;
 
         this._virtualLayout = new VirtualLayout(
             this._componentsParentHtmlElement,
@@ -130,7 +134,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             return undefined;
         } else {
             const component = componentItem.container.component;
-            if (component instanceof BuiltinDitemNgComponentBaseDirective) {
+            if (component instanceof BuiltinDitemNgComponentBaseNgDirective) {
                 return component.ditemFrame;
             } else {
                 return undefined;
@@ -152,8 +156,8 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 const ditemFrame = builtinComponent.ditemFrame;
                 if (PlaceholderDitemFrame.is(ditemFrame)) {
                     const placeheld = ditemFrame.placeheld;
-                    const definition = placeheld.definition;
-                    if (ExtensionId.isEqual(definition.extensionId, extensionInfo)) {
+                    const ditemCodedefinition = placeheld.definition;
+                    if (ExtensionId.isEqual(ditemCodedefinition.extensionId, extensionInfo)) {
                         const containedPlaceheld: GoldenLayoutHostFrame.ContainedPlaceheld = {
                             container,
                             placeheld,
@@ -187,7 +191,6 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
                 this.handleContainerVirtualZIndexChangeRequiredEvent(container, logicalZIndex, defaultZIndex);
 
         const parseResult = this.parseGoldenLayoutComponentType(itemConfig.componentType);
-        const componentDefinition = parseResult.definition;
 
         const componentState = itemConfig.componentState;
         let state: Json | undefined;
@@ -204,12 +207,12 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         let containedDitemComponent: GoldenLayoutHostNgComponent.ContainedDitemComponent;
         let component: ComponentContainer.Component;
 
-        if (parseResult.errorText !== undefined) {
+        if (parseResult.isErr()) {
             const placeheld: PlaceholderDitemFrame.Placeheld = {
-                definition: componentDefinition,
+                definition: DitemComponent.Definition.invalid,
                 state,
                 tabText: itemConfig.title,
-                reason: parseResult.errorText,
+                reason: parseResult.error,
                 invalidReason: undefined,
             };
             const builtinComponentRef = this.attachPlaceholderComponent(componentContainer, placeheld);
@@ -220,6 +223,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             };
             component = builtinComponentRef.instance;
         } else {
+            const componentDefinition = parseResult.value;
             switch (componentDefinition.constructionMethodId) {
                 case DitemComponent.ConstructionMethodId.Invalid: {
                     throw new AssertInternalError('GLHCHGCE78533009');
@@ -390,7 +394,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
 
     private registerDitemComponents() {
         const factoryService = this._ditemComponentFactoryNgService;
-        const allIdAndTypes = DitemComponentIdAndType.all;
+        const allIdAndTypes = DitemNgComponentIdAndType.all;
         for (const { id, type } of allIdAndTypes) {
             const name = BuiltinDitemFrame.BuiltinType.idToName(id);
             factoryService.registerDitemComponentType(name, type);
@@ -421,30 +425,32 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
             if (ColorScheme.Item.idHasBkgd(itemId)) {
                 const varName = ColorScheme.Item.idToBkgdCssVariableName(itemId);
                 const color = this._colorSettings.getBkgd(itemId);
-                this._elRef.nativeElement.style.setProperty(varName, color);
+                this.rootHtmlElement.style.setProperty(varName, color);
             }
             if (ColorScheme.Item.idHasFore(itemId)) {
                 const varName = ColorScheme.Item.idToForeCssVariableName(itemId);
                 const color = this._colorSettings.getFore(itemId);
-                this._elRef.nativeElement.style.setProperty(varName, color);
+                this.rootHtmlElement.style.setProperty(varName, color);
             }
         }
         this._cdr.markForCheck();
     }
 
-    private parseGoldenLayoutComponentType(value: JsonValue): DitemComponent.Definition.FromPersistableResult {
+    private parseGoldenLayoutComponentType(value: JsonValue): Result<DitemComponent.Definition> {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (value === undefined) {
             throw new AssertInternalError('GLHCPGLCTU98983333');
         } else {
-            if (!JsonValue.isJsonObject(value)) {
+            if (!JsonValue.isJson(value)) {
                 if (value === null) {
                     throw new AssertInternalError('GLHCPGLCTN98983333');
                 } else {
-                    throw new AssertInternalError('GLHCPGLCTJ98983333', value.toString());
+                    throw new AssertInternalError('GLHCPGLCTJ98983333', JSON.stringify(value).toString());
                 }
             } else {
-                const persistableDefinition = value as DitemComponent.PersistableDefinition;
-                return DitemComponent.Definition.fromPersistable(persistableDefinition);
+                const jsonElement = new JsonElement(value);
+                const definitionResult = DitemComponent.Definition.tryCreateFromJson(jsonElement);
+                return definitionResult;
             }
         }
     }
@@ -454,8 +460,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
 
         const result: DitemComponent.Definition = {
             extensionId: {
-                publisherTypeId: extensionInfo.publisherTypeId,
-                publisherName: extensionInfo.publisherName,
+                publisherId: extensionInfo.publisherId,
                 name: extensionInfo.name,
             },
             constructionMethodId: DitemComponent.ConstructionMethodId.Builtin1,
@@ -472,6 +477,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         const componentTypeName = componentDefinition.componentTypeName;
         const componentRef = this._ditemComponentFactoryNgService.createComponent(componentTypeName, container);
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
             this._componentsViewContainerRef.insert(componentRef.hostView);
         } else {
@@ -484,9 +490,10 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         return componentRef;
     }
 
-    private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective>) {
+    private detachBuiltinComponent(componentRef: ComponentRef<BuiltinDitemNgComponentBaseNgDirective>) {
         const hostView = componentRef.hostView;
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (GoldenLayoutHostNgComponent.viewContainerRefActive) {
             const viewRefIndex = this._componentsViewContainerRef.indexOf(hostView);
             if (viewRefIndex < 0) {
@@ -562,7 +569,7 @@ export namespace GoldenLayoutHostNgComponent {
     }
 
     export interface ContainedDitemComponent {
-        builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseDirective> | undefined;
+        builtinComponentRef: ComponentRef<BuiltinDitemNgComponentBaseNgDirective> | undefined;
         extensionComponent: ExtensionDitemComponent | undefined;
         focusClosure: FocusClosure | undefined; // only used for extensions
     }
@@ -573,7 +580,7 @@ export namespace GoldenLayoutHostNgComponent {
         ColorScheme.ItemId.Layout_Base,
         ColorScheme.ItemId.Layout_SinglePaneContent,
         ColorScheme.ItemId.Layout_PopinIconBorder,
-        ColorScheme.ItemId.Layout_ActiveTab,
+        ColorScheme.ItemId.Layout_FocusedTab,
         ColorScheme.ItemId.Layout_DropTargetIndicatorOutline,
         ColorScheme.ItemId.Layout_SplitterDragging,
         ColorScheme.ItemId.Layout_SingleTabContainer,

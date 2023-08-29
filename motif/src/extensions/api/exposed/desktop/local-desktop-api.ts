@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { FrameSvc } from '../../frame-svc/extension-api';
 import { BrokerageAccountGroup, LitIvemId, SingleBrokerageAccountGroup } from '../adi/extension-api';
 import { MenuBar } from '../controls/menu-bar-api';
 import { Frame } from '../ditem/frame-api';
@@ -23,7 +22,7 @@ export interface LocalDesktop {
 
     // editOrderRequest(orderPad: OrderPad): void;
 
-    getFrameEventer: LocalDesktop.GetFrameEventHandler;
+    getFrameEventer: LocalDesktop.GetFrameEventHandler | undefined;
     releaseFrameEventer: LocalDesktop.ReleaseFrameEventHandler | undefined;
 
     readonly frames: Frame[];
@@ -37,7 +36,7 @@ export interface LocalDesktop {
 
 /** @public */
 export namespace LocalDesktop {
-    export type GetFrameEventHandler = (this: void, frameSvc: FrameSvc) => Frame;
+    export type GetFrameEventHandler = (this: void, frameSvc: Frame.SvcProxy) => Frame;
     export type ReleaseFrameEventHandler = (this: void, frame: Frame) => void;
 
     export const enum PreferredLocationEnum {

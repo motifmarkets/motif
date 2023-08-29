@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     OnDestroy
 } from '@angular/core';
 import {
@@ -25,9 +26,9 @@ import {
     UnexpectedCaseError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionInfoNgService, SettingsNgService } from 'component-services-ng-api';
 import { Integer } from 'public-api';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
 
 @Component({
     selector: 'app-environment-display',
@@ -36,6 +37,8 @@ import { ComponentBaseNgDirective } from 'src/component/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     public showEnvironmentText = true;
     public environmentText = '?';
     public environmentBkgdColor = 'yellow';
@@ -48,13 +51,14 @@ export class EnvironmentDisplayNgComponent extends ComponentBaseNgDirective impl
     private _kickedOff = false;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
         sessionInfoNgService: SessionInfoNgService
     ) {
-        super();
+        super(elRef, ++EnvironmentDisplayNgComponent.typeInstanceCreateCount);
 
-        this._colorSettings = settingsNgService.settingsService.color;
+        this._colorSettings = settingsNgService.service.color;
 
         this._sessionInfoService = sessionInfoNgService.service;
         this._publisherSessionTerminatedEventSubscriptionId = this._sessionInfoService.subscribePublisherSessionTerminatedChangedEvent(

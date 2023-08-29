@@ -13,8 +13,6 @@ import { SessionInfoService } from '@motifmarkets/motif-core';
 export class SessionInfoNgService {
     private _service: SessionInfoService;
 
-    constructor() { }
-
     get service() { return this._service; }
 
     setSessionInfo(value: SessionInfoService) {

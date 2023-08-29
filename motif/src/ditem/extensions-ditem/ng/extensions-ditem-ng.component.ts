@@ -16,10 +16,9 @@ import {
     ViewChild,
     ViewEncapsulation
 } from '@angular/core';
-import { AssertInternalError, ColorScheme, delay1Tick, JsonElement } from '@motifmarkets/motif-core';
+import { AssertInternalError, ColorScheme, ExtensionId, ExtensionInfo, JsonElement, delay1Tick } from '@motifmarkets/motif-core';
 import { SplitComponent } from 'angular-split';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ExtensionId, ExtensionInfo } from 'content-internal-api';
 import { ExtensionsSidebarNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ComponentContainer } from 'golden-layout';
@@ -35,9 +34,11 @@ import { ExtensionsDitemFrame } from '../extensions-ditem-frame';
     encapsulation: ViewEncapsulation.None,
 })
 export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.--splitter-background-color') splitterBackgroundColor: string;
 
-    @ViewChild('splitter') private _splitterComponent: SplitComponent;
+    @ViewChild('splitter') private _splitterComponent: SplitComponent | undefined;
     @ViewChild('sidebar') private _sideBarComponent: ExtensionsSidebarNgComponent;
 
     public splitterGutterSize = 3;
@@ -50,19 +51,27 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     private _listTransitioningInfo: ExtensionInfo | undefined;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef<HTMLElement>,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++ExtensionsDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new ExtensionsDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+
+        this._frame = new ExtensionsDitemFrame(this, this.settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         elRef.nativeElement.style.position = 'absolute';
         elRef.nativeElement.style.overflow = 'hidden';
@@ -133,17 +142,17 @@ export class ExtensionsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDir
     }
 
     protected override processShown() {
-        if (this._splitterComponent !== undefined) {
-            this.checkSetSidebarPixelWidth();
-        }
+        this.checkSetSidebarPixelWidth();
     }
 
     private checkSetSidebarPixelWidth() {
-        if (this._splitterComponent.unit !== AngularSplitTypes.Unit.pixel) {
-            const width = this._sideBarComponent.width;
-            if (width > 0) {
-                this._splitterComponent.unit = AngularSplitTypes.Unit.pixel;
-                this._splitterComponent.setVisibleAreaSizes([width, '*']);
+        if (this._splitterComponent !== undefined) {
+            if (this._splitterComponent.unit !== AngularSplitTypes.Unit.pixel) {
+                const width = this._sideBarComponent.width;
+                if (width > 0) {
+                    this._splitterComponent.unit = AngularSplitTypes.Unit.pixel;
+                    this._splitterComponent.setVisibleAreaSizes([width, '*']);
+                }
             }
         }
     }

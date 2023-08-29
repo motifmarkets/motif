@@ -4,18 +4,18 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectorRef, Directive } from '@angular/core';
+import { Directive } from '@angular/core';
 import {
-    calculateIntlNumberFormatCharParts,
-    createNumberGroupCharRemoveRegex,
+    AssertInternalError,
     IntlNumberFormatCharParts,
     MultiEvent,
     NumberUiAction,
-    SettingsService,
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError
+    UnreachableCaseError,
+    calculateIntlNumberFormatCharParts,
+    createNumberGroupCharRemoveRegex
 } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
@@ -30,11 +30,6 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
     private _numberFormatCharParts: IntlNumberFormatCharParts;
     private _numberGroupCharRemoveRegex: RegExp | undefined;
     private _pushNumberEventsSubscriptionId: MultiEvent.SubscriptionId;
-
-    constructor(cdr: ChangeDetectorRef, settingsService: SettingsService,
-        stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray) {
-        super(cdr, settingsService, stateColorItemIdArray);
-    }
 
     public override get uiAction() { return super.uiAction as NumberUiAction; }
 
@@ -159,8 +154,13 @@ export abstract class NumberUiActionComponentBaseNgDirective extends ControlComp
                 throw new UnreachableCaseError('NUAICCNF43439', this.uiAction.options.useGrouping);
         }
         this._numberFormat = new Intl.NumberFormat(undefined, { useGrouping });
-        this._numberFormatCharParts = calculateIntlNumberFormatCharParts(this._numberFormat);
-        this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        const partsResult = calculateIntlNumberFormatCharParts(this._numberFormat);
+        if (partsResult.isErr()) {
+            throw new AssertInternalError('NUACBNUNFDP43439', partsResult.error);
+        } else {
+            this._numberFormatCharParts = partsResult.value;
+            this._numberGroupCharRemoveRegex = createNumberGroupCharRemoveRegex(this._numberFormatCharParts.group);
+        }
     }
 
     private applyOptions(options: NumberUiAction.Options) {

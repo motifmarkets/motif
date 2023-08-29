@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { JsonElement } from '@motifmarkets/motif-core';
+import { Err, JsonElement } from '@motifmarkets/motif-core';
 import {
     Decimal as DecimalApi,
     Guid as GuidApi,
@@ -12,7 +12,9 @@ import {
     Json as JsonApi,
     JsonElement as JsonElementApi,
     JsonValue as JsonValueApi,
-    JsonValueArray as JsonValueArrayApi
+    JsonValueArray as JsonValueArrayApi,
+    Ok as OkApi,
+    Result as ResultApi
 } from '../../../api/extension-api';
 
 export class JsonElementImplementation implements JsonElementApi {
@@ -40,12 +42,18 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.stringify();
     }
 
-    parse(jsonText: string, context?: string): boolean {
-        return this._actual.parse(jsonText, context);
+    parse(jsonText: string): ResultApi<void> {
+        return this._actual.parse(jsonText);
     }
 
-    tryGetElement(name: string, context?: string): JsonElement | undefined {
-        return this._actual.tryGetElement(name, context);
+    tryGetElement(name: string): ResultApi<JsonElementApi> {
+        const result = this._actual.tryGetElement(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            const jsonElement = new JsonElementImplementation(result.value);
+            return new OkApi(jsonElement);
+        }
     }
 
     tryGetJsonValue(name: string): JsonValueApi | undefined {
@@ -53,100 +61,156 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types
-    tryGetNativeObject(name: string, context?: string): object | undefined {
-        return this._actual.tryGetNativeObject(name, context);
+    tryGetNativeObject(name: string): ResultApi<object> {
+        const result = this._actual.tryGetNativeObject(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    tryGetJsonObject(name: string, context?: string): JsonApi | undefined {
-        return this._actual.tryGetJsonObject(name, context);
+    tryGetJsonObject(name: string): ResultApi<JsonApi> {
+        const result = this._actual.tryGetJsonObject(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    tryGetString(name: string, context?: string): string | undefined {
-        return this._actual.tryGetString(name, context);
+    tryGetString(name: string): ResultApi<string> {
+        const result = this._actual.tryGetString(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getString(name: string, defaultValue: string, context?: string): string {
-        return this._actual.getString(name, defaultValue, context);
+    getString(name: string, defaultValue: string): string {
+        return this._actual.getString(name, defaultValue);
     }
 
-    tryGetNumber(name: string, context?: string): number | undefined {
-        return this._actual.tryGetNumber(name, context);
+    tryGetNumber(name: string): ResultApi<number> {
+        const result = this._actual.tryGetNumber(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getNumber(name: string, defaultValue: number, context?: string): number {
-        return this._actual.getNumber(name, defaultValue, context);
+    getNumber(name: string, defaultValue: number): number {
+        return this._actual.getNumber(name, defaultValue);
     }
 
-    tryGetBoolean(name: string, context?: string): boolean | undefined {
-        return this._actual.tryGetBoolean(name, context);
+    tryGetBoolean(name: string, context?: string): ResultApi<boolean> {
+        const result = this._actual.tryGetBoolean(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getBoolean(name: string, defaultValue: boolean, context?: string): boolean {
-        return this._actual.getBoolean(name, defaultValue, context);
+    getBoolean(name: string, defaultValue: boolean): boolean {
+        return this._actual.getBoolean(name, defaultValue);
     }
 
-    tryGetElementArray(name: string, context?: string): JsonElementApi[] | undefined {
-        return this._actual.tryGetElementArray(name, context);
+    tryGetElementArray(name: string): ResultApi<JsonElementApi[], IntegerApi> {
+        const result = this._actual.tryGetElementArray(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            const value = JsonElementImplementation.arrayToApi(result.value);
+            return new OkApi(value);
+        }
     }
 
-    tryGetJsonObjectArray(name: string, context?: string): JsonApi[] | undefined {
-        return this._actual.tryGetJsonObjectArray(name, context);
+    tryGetJsonObjectArray(name: string): ResultApi<JsonApi[], number> {
+        return this._actual.tryGetJsonObjectArray(name);
     }
 
-    tryGetStringArray(name: string, context?: string): string[] | undefined {
-        return this._actual.tryGetStringArray(name, context);
+    tryGetStringArray(name: string): ResultApi<string[], number> {
+        return this._actual.tryGetStringArray(name);
     }
 
-    tryGetNumberArray(name: string, context?: string): number[] | undefined {
-        return this._actual.tryGetNumberArray(name, context);
+    tryGetNumberArray(name: string): ResultApi<number[], number> {
+        return this._actual.tryGetNumberArray(name);
     }
 
-    tryGetBooleanArray(name: string, context?: string): boolean[] | undefined {
-        return this._actual.tryGetBooleanArray(name, context);
+    tryGetBooleanArray(name: string): ResultApi<boolean[], number> {
+        return this._actual.tryGetBooleanArray(name);
     }
 
-    tryGetAnyJsonValueTypeArray(name: string, context?: string): JsonValueArrayApi | undefined {
-        return this._actual.tryGetAnyJsonValueTypeArray(name, context);
+    tryGetAnyJsonValueTypeArray(name: string): ResultApi<JsonValueArrayApi, number> {
+        return this._actual.tryGetAnyJsonValueArray(name);
     }
 
-    tryGetInteger(name: string, context?: string): IntegerApi | undefined {
-        return this._actual.tryGetInteger(name, context);
+    tryGetInteger(name: string): ResultApi<IntegerApi> {
+        const result = this._actual.tryGetInteger(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getInteger(name: string, defaultValue: IntegerApi, context?: string): IntegerApi {
-        return this._actual.getInteger(name, defaultValue, context);
+    getInteger(name: string, defaultValue: IntegerApi): IntegerApi {
+        return this._actual.getInteger(name, defaultValue);
     }
 
-    tryGetDate(name: string, context?: string): Date | undefined {
-        return this._actual.tryGetDate(name, context);
+    tryGetDate(name: string): ResultApi<Date> {
+        const result = this._actual.tryGetDate(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getDate(name: string, defaultValue: Date, context?: string): Date {
-        return this._actual.getDate(name, defaultValue, context);
+    getDate(name: string, defaultValue: Date): Date {
+        return this._actual.getDate(name, defaultValue);
     }
 
-    tryGetDateTime(name: string, context?: string): Date | undefined {
-        return this._actual.tryGetDateTime(name, context);
+    tryGetDateTime(name: string): ResultApi<Date> {
+        const result = this._actual.tryGetDateTime(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getDateTime(name: string, defaultValue: Date, context?: string): Date {
-        return this._actual.getDateTime(name, defaultValue, context);
+    getDateTime(name: string, defaultValue: Date): Date {
+        return this._actual.getDateTime(name, defaultValue);
     }
 
-    tryGetGuid(name: string, context?: string): GuidApi | undefined {
-        return this._actual.tryGetGuid(name, context);
+    tryGetGuid(name: string): ResultApi<GuidApi> {
+        const result = this._actual.tryGetGuid(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getGuid(name: string, defaultValue: GuidApi, context?: string): GuidApi {
-        return this._actual.getGuid(name, defaultValue, context);
+    getGuid(name: string, defaultValue: GuidApi): GuidApi {
+        return this._actual.getGuid(name, defaultValue);
     }
 
-    tryGetDecimal(name: string, context?: string): DecimalApi | undefined {
-        return this._actual.tryGetDecimal(name, context);
+    tryGetDecimal(name: string): ResultApi<DecimalApi> {
+        const result = this._actual.tryGetDecimal(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            return new OkApi(result.value);
+        }
     }
 
-    getDecimal(name: string, defaultValue: DecimalApi, context?: string): DecimalApi {
-        return this._actual.getDecimal(name, defaultValue, context);
+    getDecimal(name: string, defaultValue: DecimalApi): DecimalApi {
+        return this._actual.getDecimal(name, defaultValue);
     }
 
     newElement(name: string): JsonElementApi {
@@ -220,27 +284,31 @@ export class JsonElementImplementation implements JsonElementApi {
         this._actual.setDecimal(name, value);
     }
 
-    forEach(callback: JsonElement.ForEachCallback): void {
+    forEach(callback: JsonElementApi.ForEachCallback): void {
         this._actual.forEach(callback);
     }
 
-    forEachElement(callback: JsonElement.ForEachElementCallback): void {
-        this._actual.forEachElement(callback);
+    forEachElement(callback: JsonElementApi.ForEachElementCallback): void {
+        function actualCallback(name: string, value: JsonElement, idx: IntegerApi) {
+            const valueApi = JsonElementImplementation.toApi(value);
+            callback(name, valueApi, idx);
+        }
+        this._actual.forEachElement(actualCallback);
     }
 
-    forEachValue(callback: JsonElement.ForEachValueCallback): void {
+    forEachValue(callback: JsonElementApi.ForEachValueCallback): void {
         this._actual.forEachValue(callback);
     }
 
-    forEachString(callback: JsonElement.ForEachStringCallback): void {
+    forEachString(callback: JsonElementApi.ForEachStringCallback): void {
         this._actual.forEachString(callback);
     }
 
-    forEachNumber(callback: JsonElement.ForEachNumberCallback): void {
+    forEachNumber(callback: JsonElementApi.ForEachNumberCallback): void {
         this._actual.forEachNumber(callback);
     }
 
-    forEachBoolean(callback: JsonElement.ForEachBooleanCallback): void {
+    forEachBoolean(callback: JsonElementApi.ForEachBooleanCallback): void {
         this._actual.forEachBoolean(callback);
     }
 }
@@ -253,6 +321,15 @@ export namespace JsonElementImplementation {
     export function fromApi(value: JsonElementApi): JsonElement {
         const implementation = value as JsonElementImplementation;
         return implementation.actual;
+    }
+
+    export function arrayToApi(value: readonly JsonElement[]): JsonElementApi[] {
+        const count = value.length;
+        const result = new Array<JsonElementApi>(count);
+        for (let i = 0; i < count; i++) {
+            result[i] = toApi(value[i]);
+        }
+        return result;
     }
 
     export function arrayFromApi(value: JsonElementApi[]) {

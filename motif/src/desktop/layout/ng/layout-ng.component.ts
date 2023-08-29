@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, Component, OnInit } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ChangeDetectionStrategy, Component, ElementRef, OnInit } from '@angular/core';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 
 @Component({
     selector: 'app-layout',
@@ -15,9 +15,11 @@ import { ComponentBaseNgDirective } from 'src/component/ng-api';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class LayoutNgComponent extends ComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
 
-    constructor() {
-        super();
+
+    constructor(elRef: ElementRef<HTMLElement>) {
+        super(elRef, ++LayoutNgComponent.typeInstanceCreateCount);
     }
 
     ngOnInit() {

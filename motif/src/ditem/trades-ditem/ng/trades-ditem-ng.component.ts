@@ -5,26 +5,32 @@
  */
 
 import {
-    AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentFactoryResolver,
+    AfterViewInit,
+    ChangeDetectionStrategy,
+    ChangeDetectorRef,
+    Component,
     ElementRef,
-    Inject, OnDestroy, ViewChild, ViewContainerRef
+    Inject,
+    OnDestroy,
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
-    assert,
-    assigned,
+    AssertInternalError,
     DateUiAction,
-    delay1Tick,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
     LitIvemId,
-    LitIvemIdUiAction,
-    Logger,
-    StringId,
-    Strings
+    LitIvemIdUiAction, ModifierKey, ModifierKeyId, StringId,
+    Strings,
+    UiAction,
+    assert,
+    assigned,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ContentGridLayoutEditorNgComponent, TradesNgComponent } from 'content-ng-api';
+import { GridLayoutDialogNgComponent, TradesNgComponent } from 'content-ng-api';
 import { DateInputNgComponent, LitIvemIdSelectNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -41,6 +47,8 @@ import { TradesDitemFrame } from '../trades-ditem-frame';
 export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective
     implements OnDestroy, AfterViewInit, TradesDitemFrame.ComponentAccess {
 
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('symbolInput') private _symbolEditComponent: LitIvemIdSelectNgComponent;
     @ViewChild('symbolButton', { static: true }) private _symbolButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
@@ -48,35 +56,42 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('tradesContent', { static: true }) private _contentComponent: TradesNgComponent;
-    @ViewChild('layoutEditorContainer', { read: ViewContainerRef, static: true }) private _layoutEditorContainer: ViewContainerRef;
+    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
     // public statusText: string | undefined;
-    public isLayoutEditorVisible = false;
+    public isDialogVisible = false;
 
-    private _symbolEditUiAction: LitIvemIdUiAction;
-    private _symbolApplyUiAction: IconButtonUiAction;
-    private _toggleSymbolLinkingUiAction: IconButtonUiAction;
-    private _historicalDateUiAction: DateUiAction;
-    private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
-    private _columnsUiAction: IconButtonUiAction;
+    private readonly _symbolEditUiAction: LitIvemIdUiAction;
+    private readonly _symbolApplyUiAction: IconButtonUiAction;
+    private readonly _toggleSymbolLinkingUiAction: IconButtonUiAction;
+    private readonly _historicalDateUiAction: DateUiAction;
+    private readonly _autoSizeColumnWidthsUiAction: IconButtonUiAction;
+    private readonly _columnsUiAction: IconButtonUiAction;
 
     private _frame: TradesDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        const settingsService = settingsNgService.service;
+        super(
+            elRef,
+            ++TradesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new TradesDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+        this._frame = new TradesDitemFrame(this, settingsService, this.commandRegisterService,
+            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();
         this._symbolApplyUiAction = this.createSymbolApplyUiAction();
@@ -103,7 +118,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     autoSizeAllColumnWidths() {
-        this._frame.autoSizeAllColumnWidths();
+        this._frame.autoSizeAllColumnWidths(true);
     }
 
     // TradesDitemFrame.ComponentAccess methods
@@ -130,8 +145,15 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         assert(assigned(this._contentComponent), 'ID:4817161157');
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._contentComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        let tradesFrameElement: JsonElement | undefined;
+        if (ditemFrameElement !== undefined) {
+            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
+            if (tradesFrameElementResult.isOk()) {
+                tradesFrameElement = tradesFrameElementResult.value;
+            }
+        }
+        this._frame.initialise(tradesFrameElement, this._contentComponent.frame);
 
         this.initialiseComponents();
 
@@ -193,18 +215,24 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         // this.pushValid();
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleColumnsUiActionSignalEvent() {
-        this.showLayoutEditor();
+        const dialogPromise = this.showGridLayoutDialog();
+
+        dialogPromise.then(
+            () => {/**/},
+            (error) => { throw AssertInternalError.createIfNotError(error, 'TDNCHCUASE34009'); }
+        )
     }
 
     private createSymbolEditUiAction() {
         const action = new LitIvemIdUiAction();
         action.valueRequired = false;
-        action.pushTitle(Strings[StringId.WatchlistSymbolInputTitle]);
+        action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = () => this.handleSymbolCommitEvent();
         action.inputEvent = () => this.handleSymbolInputEvent();
         return action;
@@ -248,7 +276,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
         action.pushUnselected();
-        action.signalEvent = () => this.handleAutoSizeColumnWidthsUiActionSignalEvent();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 
@@ -306,32 +334,32 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         }
     }
 
-    private showLayoutEditor() {
-        this.isLayoutEditorVisible = true;
-        const layoutWithHeadings = this._frame.getGridLayoutWithHeadings();
+    private async showGridLayoutDialog() {
+        const allowedFieldsGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinition();
 
-        if (layoutWithHeadings !== undefined) {
-            const closePromise = ContentGridLayoutEditorNgComponent.open(this._layoutEditorContainer, this._resolver, layoutWithHeadings);
-            closePromise.then(
-                (layout) => {
-                    if (layout !== undefined) {
-                        this._frame.setGridLayout(layout);
-                    }
-                    this.closeLayoutEditor();
-                },
-                (reason) => {
-                    Logger.logError(`TradesInput Layout Editor error: ${reason}`);
-                    this.closeLayoutEditor();
-                }
+        if (allowedFieldsGridLayoutDefinition !== undefined) {
+            const component = GridLayoutDialogNgComponent.create(
+                this._dialogContainer,
+                this._frame.opener,
+                Strings[StringId.Trades_ColumnsDialogCaption],
+                allowedFieldsGridLayoutDefinition,
             );
-        }
 
-        this.markForCheck();
+            this.isDialogVisible = true;
+            this.markForCheck();
+
+            const newLayoutDefinition = await component.waitClose();
+            if (newLayoutDefinition !== undefined) {
+                this._frame.applyGridLayoutDefinition(newLayoutDefinition);
+            }
+
+            this.closeLayoutEditor();
+        }
     }
 
     private closeLayoutEditor() {
-        this._layoutEditorContainer.clear();
-        this.isLayoutEditorVisible = false;
+        this._dialogContainer.clear();
+        this.isDialogVisible = false;
         this.markForCheck();
     }
 }

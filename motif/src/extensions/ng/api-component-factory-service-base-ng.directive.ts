@@ -5,7 +5,7 @@
  */
 
 import { ApplicationRef, ComponentRef, Directive, EmbeddedViewRef } from '@angular/core';
-import { ComponentBaseNgDirective } from 'src/component/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { ApiComponentFactory, ComponentImplementation, FactoryComponentRef } from '../implementation/internal-api';
 
 @Directive()

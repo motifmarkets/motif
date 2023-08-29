@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
-import { RoutedIvemId, symbolDetailCache } from '@motifmarkets/motif-core';
-import { SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
+import { AssertInternalError, RoutedIvemId, SymbolDetailCacheService } from '@motifmarkets/motif-core';
+import { SettingsNgService, SymbolDetailCacheNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-component-base-ng.directive';
 
@@ -18,16 +18,30 @@ import { RoutedIvemIdComponentBaseNgDirective } from '../../ng/routed-ivem-id-co
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() for: string;
 
+    private readonly _symbolDetailCacheService: SymbolDetailCacheService;
     private activePromiseId = 0;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        symbolsManagerService: SymbolsNgService
+        symbolsNgService: SymbolsNgService,
+        symbolDetailCacheNgService: SymbolDetailCacheNgService,
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray, symbolsManagerService);
+        super(
+            elRef,
+            ++SymbolNameLabelNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray,
+            symbolsNgService
+        );
+
+        this._symbolDetailCacheService = symbolDetailCacheNgService.service;
     }
 
     override ngOnDestroy() {
@@ -40,7 +54,11 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
         if (value === undefined) {
             this.checkApplyCaption('');
         } else {
-            this.applyRoutedIvemId(value);
+            const promise = this.applyRoutedIvemId(value);
+            promise.then(
+                () => {/**/},
+                (error) => { throw AssertInternalError.createIfNotError(error, 'SNLNCAVA43344'); }
+            );
         }
     }
 
@@ -52,9 +70,9 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
 
     private async applyRoutedIvemId(value: RoutedIvemId) {
         this.checkApplyCaption('');
-        const litIvemId = this.symbolsManager.getBestLitIvemIdFromRoutedIvemId(value);
+        const litIvemId = this.symbolsService.getBestLitIvemIdFromRoutedIvemId(value);
         const promiseId = ++this.activePromiseId;
-        const detail = await symbolDetailCache.getLitIvemId(litIvemId);
+        const detail = await this._symbolDetailCacheService.getLitIvemId(litIvemId);
         if (detail !== undefined && promiseId === this.activePromiseId) {
             const caption = detail.valid && detail.exists ? detail.name : '';
             this.checkApplyCaption(caption);

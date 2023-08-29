@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { Integer, isPartialIntlFormattedNumber, StringId, Strings } from '@motifmarkets/motif-core';
+import { Integer, StringId, Strings, isPartialIntlFormattedNumber } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-action-component-base-ng.directive';
@@ -18,6 +18,7 @@ import { NumberUiActionComponentBaseNgDirective } from '../../ng/number-ui-actio
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirective implements OnInit {
+    private static typeInstanceCreateCount = 0;
 
     @Input() size = '12';
     @Input() inputId: string;
@@ -29,9 +30,15 @@ export class NumberInputNgComponent extends NumberUiActionComponentBaseNgDirecti
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'NumberInput' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++NumberInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
+        this.inputId = 'NumberInput' + this.typeInstanceId;
     }
 
     ngOnInit() {

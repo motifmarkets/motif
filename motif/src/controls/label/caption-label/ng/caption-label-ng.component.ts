@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { LabelComponentBaseNgDirective } from '../../ng/label-component-base-ng.directive';
@@ -17,11 +17,18 @@ import { LabelComponentBaseNgDirective } from '../../ng/label-component-base-ng.
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CaptionLabelNgComponent extends LabelComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
     @Input() for: string;
 
-    constructor(cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.labelStateColorItemIdArray);
+    constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++CaptionLabelNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.labelStateColorItemIdArray
+        );
     }
 
     override ngOnDestroy() {

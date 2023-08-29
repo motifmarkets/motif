@@ -15,21 +15,24 @@ import {
     ViewChild
 } from '@angular/core';
 import {
-    assert,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
-    delay1Tick,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
     StringId,
     Strings,
-    UiAction
+    UiAction,
+    delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreNgService, SettingsNgService } from 'component-services-ng-api';
-import { AdaptedRevgrid } from 'content-internal-api';
-import { TableNgComponent } from 'content-ng-api';
+import {
+    AdiNgService,
+    CommandRegisterNgService,
+    SettingsNgService,
+    SymbolsNgService
+} from 'component-services-ng-api';
+import { BalancesNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -44,36 +47,47 @@ import { BalancesDitemFrame } from '../balances-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
 
-    @ViewChild('table', { static: true }) private _tableComponent: TableNgComponent;
+    @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-
-    public readonly frameGridProperties: AdaptedRevgrid.FrameGridProperties = {
-        fixedColumnCount: 0,
-        gridRightAligned: false,
-    };
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
 
-    private _frame: BalancesDitemFrame;
+    private readonly _frame: BalancesDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
-        pulseService: CoreNgService
+        symbolsNgService: SymbolsNgService,
+        adiNgService: AdiNgService,
+        @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
+        super(
+            elRef,
+            ++BalancesDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsNgService.service,
+            commandRegisterNgService.service
+        );
 
-        this._frame = new BalancesDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, pulseService.symbolsManager, pulseService.adi);
-        this._frame.recordFocusEvent = (recordIndex) => this.handleRecordFocusEvent(recordIndex);
-        this._frame.tableOpenEvent = (group) => this.handleTableOpenEvent(group);
+
+        this._frame = new BalancesDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            (group) => this.handleGridSourceOpenedEvent(group),
+            (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
+        );
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._toggleAccountGroupLinkingUiAction = this.createToggleAccountGroupLinkingUiAction();
@@ -89,8 +103,6 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected get stateSchemaVersion() { return BalancesDitemNgComponent.stateSchemaVersion; }
 
     public ngAfterViewInit() {
-        assert(this._tableComponent !== undefined, 'BDCNAVI22953');
-
         delay1Tick(() => this.initialise());
     }
 
@@ -107,8 +119,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._accountLinkButtonComponent.initialise(this._toggleAccountGroupLinkingUiAction);
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
-        const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(this._tableComponent.frame, frameElement);
+        const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
+        this._frame.initialise(ditemFrameElement, this._balancesComponent.frame);
 
         super.initialise();
     }
@@ -140,12 +152,14 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
 
-    private handleRecordFocusEvent(recordIndex: Integer | undefined) {
+    private handleRecordFocusedEvent(_recordIndex: Integer | undefined) {
         //
     }
 
-    private handleTableOpenEvent(group: BrokerageAccountGroup) {
+    private handleGridSourceOpenedEvent(group: BrokerageAccountGroup) {
         this._accountGroupUiAction.pushValue(group);
+        const contentName = group.isAll() ? undefined : group.id;
+        this.setTitle(this._frame.baseTabDisplay, contentName);
     }
 
     private createAccountIdUiAction() {

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { getObjectPropertyValue, Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { Version } from 'generated-internal-api';
 import Rollbar, { LogArgument } from 'rollbar';
 import { environment } from 'src/environments/environment';
@@ -102,8 +102,8 @@ export class TelemetryService {
         if (this._enabled && this._errorCount < this._maxErrorCount) {
             this._errorCount++;
             if (typeof err === 'object' && err !== null) {
-                const originalErr = getObjectPropertyValue(err, 'originalError');
-                if (originalErr !== undefined) {
+                if ('originalError' in err) {
+                    const originalErr = err['originalError'];
                     err = originalErr;
                 }
             }
@@ -191,27 +191,19 @@ export class TelemetryService {
             if (Config.Diagnostics.Telemetry.ItemIgnore.isException(itemIgnore)) {
                 let matched = false;
                 if (itemIgnore.message !== undefined) {
-                    if (error.message === undefined) {
+                    const itemIgnoreErrorMessageRegExp = new RegExp(itemIgnore.message);
+                    if (!itemIgnoreErrorMessageRegExp.test(error.message)) {
                         continue;
                     } else {
-                        const itemIgnoreErrorMessageRegExp = new RegExp(itemIgnore.message);
-                        if (!itemIgnoreErrorMessageRegExp.test(error.message)) {
-                            continue;
-                        } else {
-                            matched = true;
-                        }
+                        matched = true;
                     }
                 }
                 if (itemIgnore.exceptionName !== undefined) {
-                    if (error.name !== undefined) {
+                    const itemIgnoreErrorNameRegExp = new RegExp(itemIgnore.exceptionName);
+                    if (!itemIgnoreErrorNameRegExp.test(error.name)) {
                         continue;
                     } else {
-                        const itemIgnoreErrorNameRegExp = new RegExp(itemIgnore.exceptionName);
-                        if (!itemIgnoreErrorNameRegExp.test(error.name)) {
-                            continue;
-                        } else {
-                            matched = true;
-                        }
+                        matched = true;
                     }
                 }
 

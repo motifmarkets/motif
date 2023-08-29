@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Renderer2, ViewChild, ViewEncapsulation } from '@angular/core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
 import { Account, Integer, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
 import { SettingsNgService } from 'component-services-ng-api';
@@ -22,6 +22,7 @@ import { EnumComponentBaseNgDirective } from '../../ng/enum-component-base-ng.di
     encapsulation: ViewEncapsulation.None,
 })
 export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
+    private static typeInstanceCreateCount = 0;
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
 
@@ -32,28 +33,29 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
     private _measureCanvasContext: CanvasRenderingContext2D;
     private _ngSelectDropDownPanelWidth: number | undefined;
 
-    constructor(private _renderer: Renderer2,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService
     ) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
-        this.inputId = 'EnumInput' + this.componentInstanceId;
+        super(
+            elRef,
+            ++EnumInputNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+        );
+        this.inputId = 'EnumInput' + this.typeInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._measureCanvasContextsEventSubscriptionId = this._ngSelectOverlayNgService.subscribeMeasureCanvasContextsEvent(
             () => this.handleMeasureCanvasContextsEvent()
         );
     }
 
-    focus() {
-        // this does not work.  needs further investigation
-        // const element = this._renderer.selectRootElement('symbolInput');
-        // element.focus();
-    }
-
     public customSearchFtn(term: string, item: Entry) {
         term = term.toUpperCase();
-        return item.upperCaption.indexOf(term) > -1;
+        return item.upperCaption.includes(term);
     }
 
     public handleSelectChangeEvent(event: unknown) {

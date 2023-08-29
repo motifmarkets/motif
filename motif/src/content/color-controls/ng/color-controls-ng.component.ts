@@ -9,6 +9,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
+    ElementRef,
     HostBinding,
     HostListener,
     OnDestroy,
@@ -19,17 +20,21 @@ import {
     BooleanUiAction,
     ColorScheme,
     ColorSettings,
-    CommandRegisterService, delay1Tick, EnumInfoOutOfOrderError, EnumUiAction,
+    CommandRegisterService,
+    EnumInfoOutOfOrderError, EnumUiAction,
     ExplicitElementsEnumUiAction, HtmlTypes, IconButtonUiAction,
     IntegerUiAction,
-    InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId, Strings, StringUiAction,
-    UiAction, UnreachableCaseError
+    InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId,
+    StringUiAction,
+    Strings,
+    UiAction, UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import {
+    CaptionLabelNgComponent,
     CaptionedCheckboxNgComponent,
     CaptionedRadioNgComponent,
-    CaptionLabelNgComponent,
     IntegerTextInputNgComponent,
     NumberInputNgComponent,
     SvgButtonNgComponent,
@@ -46,6 +51,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class ColorControlsNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @HostBinding('style.flex-direction') public flexDirection: string;
 
     @ViewChild('hideInPickerControl', { static: true }) private _hideInPickerControl: CaptionedCheckboxNgComponent;
@@ -77,7 +84,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     itemChangedEventer: ColorControlsNgComponent.ItemChangedEventer;
     colorInternallyChangedEventer: ColorControlsNgComponent.ColorInternallyChangedEventer;
     requestActiveInPickerEventer: ColorControlsNgComponent.RequestActiveInPickerEventer;
-    hideInPickerChangedEventer: ColorControlsNgComponent.HideInPickerChangedEventer;
+    colorHiddenInPickerChangedEventer: ColorControlsNgComponent.ColorHiddenInPickerChangedEventer;
 
     public activeInPickerIndicatorFontWeight: string;
     public heading: string;
@@ -114,15 +121,17 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
 
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(private _cdr: ChangeDetectorRef,
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         settingsNgService: SettingsNgService
     ) {
-        super();
+        super(elRef, ++ColorControlsNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
-        this._settingsService = settingsNgService.settingsService;
-        this._colorSettings = settingsNgService.settingsService.color;
+        this._settingsService = settingsNgService.service;
+        this._colorSettings = settingsNgService.service.color;
 
         this._hideInPickerUiAction = this.createHideInPickerUiAction();
         this._itemColorTypeUiAction = this.createItemColorTypeUiAction();
@@ -445,10 +454,8 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
                 color = this._colorSettings.getColor(this._enabledItemId, otherBkgdForeId);
             }
 
-            if (color !== undefined) {
-                const newColor = this.setUiColor(new TinyColor(color));
-                this.setItemColor(this._enabledItemId, newColor);
-            }
+            const newColor = this.setUiColor(new TinyColor(color));
+            this.setItemColor(this._enabledItemId, newColor);
         }
     }
 
@@ -620,7 +627,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
         action.pushValue(false);
         action.pushAccepted(true);
         action.commitEvent = () => {
-            this.hideInPickerChangedEventer(this._hideInPickerUiAction.definedValue);
+            this.colorHiddenInPickerChangedEventer(this._hideInPickerUiAction.definedValue);
         };
         return action;
     }
@@ -870,7 +877,7 @@ export namespace ColorControlsNgComponent {
     export type ItemChangedEventer = (itemId: ColorScheme.ItemId) => void;
     export type ColorInternallyChangedEventer = (rgb: RGB | undefined) => void;
     export type RequestActiveInPickerEventer = (this: void) => void;
-    export type HideInPickerChangedEventer = (this: void, hide: boolean) => void;
+    export type ColorHiddenInPickerChangedEventer = (this: void, hide: boolean) => void;
 
     export interface CalculatedColor {
         typeId: ItemColorTypeId;

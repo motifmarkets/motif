@@ -5,13 +5,13 @@
  */
 
 import { Injectable } from '@angular/core';
-import { CanActivate } from '@angular/router';
+
 import { SessionNgService } from './session-ng.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class AuthGuardNgService implements CanActivate {
+export class AuthGuardNgService  {
 
     constructor(private _sessionNgService: SessionNgService) { }
 

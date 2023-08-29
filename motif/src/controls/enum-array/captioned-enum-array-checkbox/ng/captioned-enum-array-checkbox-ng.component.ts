@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, Input, OnDestroy, Renderer2 } from '@angular/core';
-import { concatenateElementToArrayUniquely, Integer, subtractElementFromArrayUniquely, UiAction } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, Renderer2 } from '@angular/core';
+import { Integer, UiAction, concatenateElementToArrayUniquely, subtractElementFromArrayUniquely } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-element-component-base-ng.directive';
@@ -18,13 +18,21 @@ import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-el
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class CaptionedEnumArrayCheckboxNgComponent extends EnumArrayElementComponentBaseNgDirective implements OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() checked = false;
 
     public checkboxDisabled = true;
 
-    constructor(private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
-        super(cdr, settingsNgService.settingsService, ControlComponentBaseNgDirective.clickControlStateColorItemIdArray);
-        this.inputId = 'CaptionedEnumArrayCheckbox' + this.componentInstanceId;
+    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+        super(
+            elRef,
+            ++CaptionedEnumArrayCheckboxNgComponent.typeInstanceCreateCount,
+            cdr,
+            settingsNgService.service,
+            ControlComponentBaseNgDirective.clickControlStateColorItemIdArray
+        );
+        this.inputId = 'CaptionedEnumArrayCheckbox' + this.typeInstanceId;
     }
 
     override ngOnDestroy() {

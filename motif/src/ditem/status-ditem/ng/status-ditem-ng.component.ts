@@ -8,10 +8,7 @@ import {
     ChangeDetectionStrategy,
     ChangeDetectorRef,
     Component,
-    ComponentFactoryResolver,
-
     ElementRef,
-
     Inject,
     OnDestroy,
     OnInit,
@@ -34,6 +31,8 @@ import { StatusDitemFrame } from '../status-ditem-frame';
     changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('statusContainer', { read: ViewContainerRef, static: true }) private _statusContainer: ViewContainerRef;
 
     public summaryActive = false;
@@ -44,19 +43,32 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _frame: StatusDitemFrame;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        elRef: ElementRef,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        private _resolver: ComponentFactoryResolver,
     ) {
-        super(cdr, container, elRef, settingsNgService.settingsService, commandRegisterNgService.service);
-        this._frame = new StatusDitemFrame(this, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.symbolsManager, adiNgService.adiService);
+        const settingsService = settingsNgService.service;
+        super(
+            elRef,
+            ++StatusDitemNgComponent.typeInstanceCreateCount,
+            cdr,
+            container,
+            settingsService,
+            commandRegisterNgService.service
+        );
+        this._frame = new StatusDitemFrame(
+            this,
+            settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service
+        );
     }
 
     get ditemFrame() { return this._frame; }
@@ -97,6 +109,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     // component access methods
     public loadConstructLayoutConfig(element: JsonElement | undefined) {
         if (element !== undefined) {
+            // no code
         }
     }
 
@@ -125,7 +138,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = false;
         this.zenithActive = false;
-        StatusSummaryNgComponent.create(this._statusContainer, this._resolver);
+        StatusSummaryNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 
@@ -134,7 +147,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = true;
         this.feedsActive = false;
         this.zenithActive = false;
-        MarketsNgComponent.create(this._statusContainer, this._resolver);
+        MarketsNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 
@@ -143,7 +156,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = true;
         this.zenithActive = false;
-        FeedsNgComponent.create(this._statusContainer, this._resolver);
+        FeedsNgComponent.create(this._statusContainer, this._frame.opener);
         this.markForCheck();
     }
 
@@ -152,7 +165,7 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.marketsActive = false;
         this.feedsActive = false;
         this.zenithActive = true;
-        ZenithStatusNgComponent.create(this._statusContainer, this._resolver);
+        ZenithStatusNgComponent.create(this._statusContainer);
         this.markForCheck();
     }
 }

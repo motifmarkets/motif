@@ -1,0 +1,35 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="mainDiv" [style.display]="isMainMode() ? null : 'none'">
+    <div id="mainToolbarDiv">
+        <app-brokerage-account-group-input #accountGroupInput id="accountGroupInput" inputId="accountGroupInput"></app-brokerage-account-group-input>
+
+        <!-- <div id="orderReqestButtonsDiv">
+            <app-svg-button #buyButton></app-svg-button>
+            <app-svg-button #sellButton></app-svg-button>
+            <app-svg-button #amendButton></app-svg-button>
+            <app-svg-button #cancelButton></app-svg-button>
+            <app-svg-button #moveButton></app-svg-button>
+        </div> -->
+
+        <button id="authoriseButton">Authorise</button>
+        <button id="rejectButton">Reject</button>
+
+        <div id="columnButtonsDiv">
+            <app-svg-button #columnsButton></app-svg-button>
+            <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+        </div>
+        <div id="linkButtonsDiv">
+            <app-svg-button #accountLinkButton></app-svg-button>
+            <app-svg-button #symbolLinkButton></app-svg-button>
+        </div>
+    </div>
+    <app-order-authorise #orderAuthorise id="orderAuthorise"></app-order-authorise>
+</div>
+<div id="dialogDiv" [style.display]="isDialogMode() ? null : 'none'">
+    <ng-template #dialogContainer></ng-template>
+</div>

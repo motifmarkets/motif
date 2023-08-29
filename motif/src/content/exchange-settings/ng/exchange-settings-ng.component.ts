@@ -1,8 +1,10 @@
-import { ChangeDetectionStrategy, Component, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    ArrayUiAction, delay1Tick, EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
+    ArrayUiAction,
+    EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
     ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId
+    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
@@ -15,6 +17,8 @@ import { ContentComponentBaseNgDirective } from '../../ng/content-component-base
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective implements OnInit, OnDestroy {
+    private static typeInstanceCreateCount = 0;
+
     @Input() exchangeId: ExchangeId;
 
     @ViewChild('symbolNameFieldLabel', { static: true }) private _symbolNameFieldLabelComponent: CaptionLabelNgComponent;
@@ -32,10 +36,10 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     private _symbolNameFieldUiAction: ExplicitElementsEnumUiAction;
     private _symbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
 
-    constructor(settingsNgService: SettingsNgService) {
-        super();
+    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
+        super(elRef, ++ExchangeSettingsNgComponent.typeInstanceCreateCount);
 
-        this._settingsService = settingsNgService.settingsService;
+        this._settingsService = settingsNgService.service;
         this._settingsChangedSubsciptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 

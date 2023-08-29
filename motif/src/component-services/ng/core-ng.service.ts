@@ -8,32 +8,51 @@ import { Injectable, OnDestroy } from '@angular/core';
 import {
     AdiService,
     AppStorageService,
+    CapabilitiesService,
+    CellPainterFactoryService,
     CommandRegisterService,
     CoreService,
     KeyboardService,
     MotifServicesService,
+    NamedGridLayoutsService,
+    NamedGridSourcesService,
     ScansService,
     SettingsService,
-    SymbolsService
+    SymbolDetailCacheService,
+    SymbolsService,
+    TableRecordSourceDefinitionFactoryService,
+    TableRecordSourceFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root'
 })
 export class CoreNgService implements OnDestroy {
-    private _service: CoreService;
+    private readonly _service: CoreService;
 
     constructor() {
         this._service = new CoreService();
     }
 
     get service() { return this._service; }
+
     get settingsService(): SettingsService { return this._service.settingsService; }
     get motifServicesService(): MotifServicesService { return this._service.motifServicesService; }
-    get appStorageService(): AppStorageService { return this._service.applicationStateStorage; }
-    get adi(): AdiService { return this._service.adi; }
-    get symbolsManager(): SymbolsService { return this._service.symbolsManager; }
+    get appStorageService(): AppStorageService { return this._service.appStorageService; }
+    get adiService(): AdiService { return this._service.adiService; }
+    get capabilitiesService(): CapabilitiesService { return this._service.capabilitiesService; }
+    get symbolsService(): SymbolsService { return this._service.symbolsService; }
+    get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
     get scansService(): ScansService { return this._service.scansService; }
+    get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
+    get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
+        return this._service.tableRecordSourceDefinitionFactoryService;
+    }
+    get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
+    get namedGridLayoutsService(): NamedGridLayoutsService { return this._service.namedGridLayoutsService; }
+    get namedGridSourcesService(): NamedGridSourcesService { return this._service.namedGridSourcesService; }
+    get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }
 
