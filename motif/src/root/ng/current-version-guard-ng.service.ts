@@ -5,14 +5,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ActivatedRouteSnapshot, CanActivate, Router, RouterStateSnapshot } from '@angular/router';
+import { ActivatedRouteSnapshot, Router, RouterStateSnapshot } from '@angular/router';
 import { Version } from 'generated-internal-api';
 import { ConfigNgService } from './config-ng.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class CurrentVersionGuardNgService implements CanActivate {
+export class CurrentVersionGuardNgService  {
 
     constructor(private _router: Router, private _configNgService: ConfigNgService) { }
 
