@@ -88,6 +88,7 @@ export class MarketsFrame extends ContentFrame {
 
     override finalise() {
         if (this._marketsDataItem !== undefined) {
+            this.clearMarkets();
             this._marketsDataItem.unsubscribeListChangeEvent(this._marketsListChangeSubscriptionId);
             this._marketsListChangeSubscriptionId = undefined;
             this._marketsDataItem.unsubscribeBadnessChangeEvent(this._marketsBadnessChangeSubscriptionId);
