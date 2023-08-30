@@ -99,6 +99,10 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             true,
         );
 
+        if (balancesFrame.opened) {
+            this._componentAccess.setBalancesVisible(true);
+        }
+
         this.applyLinked();
     }
 
