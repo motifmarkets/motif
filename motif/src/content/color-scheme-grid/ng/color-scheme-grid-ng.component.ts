@@ -65,7 +65,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
 
         grid.activate();
 
-        this.dataResetGrid();
+        this.initialiseGrid();
 
         this._recordStore.recordsInserted(0, this._recordStore.recordCount);
         this.applyFilter();
@@ -176,7 +176,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         }
     }
 
-    private dataResetGrid() {
+    private initialiseGrid() {
         const colorSettings = this._recordStore.colorSettings;
         const fieldNames = ColorSchemeGridField.allFieldNames;
         const fieldCount = fieldNames.length;
