@@ -30,15 +30,16 @@ export * from './markets/ng-api';
 export * from './nameable-grid-layout-editor-dialog/ng-api';
 export * from './ng/content-component-base-ng.directive';
 export * from './ng/content-ng.module';
+export * from './open-watchlist-dialog/ng-api';
 export * from './order-authorise/ng-api';
 export * from './order-request-step/ng-api';
 export * from './orders/ng-api';
+export * from './save-watchlist-dialog/ng-api';
 export * from './scan/ng-api';
 export * from './search-symbols/ng-api';
 export * from './settings/ng-api';
 export * from './status-summary/ng-api';
 export * from './trades/ng-api';
-export * from './watchlist-dialog/ng-api';
 export * from './watchlist/ng-api';
 export * from './zenith-status/ng-api';
 

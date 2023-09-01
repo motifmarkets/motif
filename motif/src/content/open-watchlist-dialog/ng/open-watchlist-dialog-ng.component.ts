@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, InjectionToken, OnDestroy, ViewContainerRef } from '@angular/core';
 import { GridSourceOrNamedReferenceDefinition, Result } from '@motifmarkets/motif-core';
-import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-open-watchlist-dialog',
@@ -20,7 +20,10 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
 
     private _closeResolve: (value: Result<GridSourceOrNamedReferenceDefinition>) => void;
 
-    constructor(elRef: ElementRef<HTMLElement>) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        @Inject(OpenWatchlistDialogNgComponent.captionInjectionToken) public readonly caption: string,
+    ) {
         super(elRef, ++OpenWatchlistDialogNgComponent.typeInstanceCreateCount);
     }
 
@@ -42,6 +45,7 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
 
 export namespace OpenWatchlistDialogNgComponent {
     export type ClosePromise = Promise<Result<GridSourceOrNamedReferenceDefinition>>;
+    export const captionInjectionToken = new InjectionToken<string>('OpenWatchlistDialogNgComponent.Caption');
 
     export function open(
         container: ViewContainerRef,
