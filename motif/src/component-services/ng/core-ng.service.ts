@@ -16,6 +16,7 @@ import {
     MotifServicesService,
     NamedGridLayoutsService,
     NamedGridSourcesService,
+    RankedLitIvemIdListReferentialsService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
@@ -45,6 +46,8 @@ export class CoreNgService implements OnDestroy {
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
     get scansService(): ScansService { return this._service.scansService; }
+    get rankedLitIvemIdListReferentialsService(): RankedLitIvemIdListReferentialsService { return this._service.rankedLitIvemIdListReferentialsService; }
+
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
     get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
         return this._service.tableRecordSourceDefinitionFactoryService;

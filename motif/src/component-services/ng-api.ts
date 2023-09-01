@@ -16,7 +16,7 @@ export * from './ng/idle-processing-ng.service';
 export * from './ng/motif-services-ng.service';
 export * from './ng/named-grid-layouts-ng.service';
 export * from './ng/named-grid-sources-ng.service';
-export * from './ng/named-json-ranked-lit-ivem-id-lists-ng.service';
+export * from './ng/ranked-lit-ivem-id-list-referentials-ng.service';
 export * from './ng/scans-ng-service';
 export * from './ng/session-info-ng-service';
 export * from './ng/settings-ng-service';
