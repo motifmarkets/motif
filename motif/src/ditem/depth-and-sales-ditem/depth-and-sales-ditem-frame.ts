@@ -133,7 +133,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
             // watchlist
             if (!this._watchlistFrame.opened) {
                 const id = newGuid();
-                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, [litIvemId]);
+                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', [litIvemId]);
                 const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(
                     litIvemIdListDefinition,
                     undefined,

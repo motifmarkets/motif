@@ -16,15 +16,15 @@ import {
     GridSourceOrNamedReferenceDefinition,
     Integer,
     JsonRankedLitIvemIdListDefinition,
+    JsonScoredRankedLitIvemIdList,
     LitIvemId,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    NamedJsonRankedLitIvemIdListDefinition,
-    RankedLitIvemIdListReferentialsService,
     RankedLitIvemId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListOrReferenceDefinition,
+    RankedLitIvemIdListReferentialsService,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
     SettingsService,
@@ -33,8 +33,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     compareInteger,
-    newGuid,
-    JsonScoredRankedLitIvemIdList
+    newGuid
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -146,7 +145,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         let jsonRankedLitIvemIdListDefinition: JsonRankedLitIvemIdListDefinition | undefined;
         if (as.name === undefined) {
             const id = newGuid();
-            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, newLitIvemIds);
+            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', newLitIvemIds);
             this.notifySaveRequired();
         } else {
             if (as.id !== undefined) {
@@ -165,7 +164,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
             if (jsonRankedLitIvemIdListDefinition === undefined) {
                 const id = newGuid();
-                const namedJsonRankedLitIvemIdListDefinition = new NamedJsonRankedLitIvemIdListDefinition(id, as.name, newLitIvemIds);
+                const namedJsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, as.name, '', '', newLitIvemIds);
                 this._rankedLitIvemIdListReferentialsService.new(namedJsonRankedLitIvemIdListDefinition);
                 jsonRankedLitIvemIdListDefinition = namedJsonRankedLitIvemIdListDefinition;
             }
@@ -284,7 +283,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             return this.createEmptyGridSourceOrNamedReferenceDefinition();
         } else {
             const id = newGuid();
-            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, litIvemIds);
+            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', litIvemIds);
             return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
         }
     }
@@ -292,7 +291,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     private createEmptyGridSourceOrNamedReferenceDefinition() {
         const id = newGuid();
         const litIvemIds: readonly LitIvemId[] = [];
-        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, litIvemIds);
+        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', litIvemIds);
         return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 
