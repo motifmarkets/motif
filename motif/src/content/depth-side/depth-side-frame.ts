@@ -42,7 +42,6 @@ export class DepthSideFrame extends ContentFrame {
     // public activeWidthChangedEvent: DepthSideFrame.ActiveWidthChangedEventHandler;
 
     private _grid: RecordGrid;
-    private _gridPrepared = false;
     private _sideId: OrderSideId;
     private _dataItem: DataItem;
     private _activeStore: DepthSideGridRecordStore | undefined;
@@ -53,7 +52,8 @@ export class DepthSideFrame extends ContentFrame {
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
-    private _storeActivationId = 0;
+    private _waitOpenPopulatedId = DepthSideFrame.initialWaitOpenPopulatedId;
+    private _waitLastServerNotificationRenderedId = 0;
     private _openedPopulatedAndRendered = false;
 
     constructor(
@@ -96,10 +96,14 @@ export class DepthSideFrame extends ContentFrame {
             }
         }
 
-        for (let styleId: DepthStyleId = 0; styleId < DepthStyle.idCount; styleId++) {
+        for (let styleId = 0; styleId < DepthStyle.idCount; styleId++) {
             this.initialiseStyle(styleId, initialGridLayoutDefinitions[styleId]);
         }
-        this.activateStyle(DepthSideFrame.initialDepthStyleId);
+
+        const styleId = DepthSideFrame.initialDepthStyleId;
+        this.activateStyle(styleId);
+        this.applyFirstUsable(styleId);
+        this.waitRendered();
     }
 
     override finalise() {
@@ -113,15 +117,25 @@ export class DepthSideFrame extends ContentFrame {
     }
 
     openFull(dataItem: DepthDataItem, expand: boolean) {
+        const styleId = DepthStyleId.Full;
         this._dataItem = dataItem;
-        this.activateStyle(DepthStyleId.Full);
+        const styleActivated = this.activateStyle(styleId);
         (this._activeStore as FullDepthSideGridRecordStore).open(dataItem, expand);
+
+        if (styleActivated || this._waitOpenPopulatedId === DepthSideFrame.initialWaitOpenPopulatedId) {
+            this.waitPopulated(styleId)
+        }
     }
 
     openShort(dataItem: DepthLevelsDataItem, expand: boolean) {
+        const styleId = DepthStyleId.Short;
         this._dataItem = dataItem;
-        this.activateStyle(DepthStyleId.Short);
+        const styleActivated = this.activateStyle(styleId);
         (this._activeStore as ShortDepthSideGridRecordStore).open(dataItem);
+
+        if (styleActivated || this._waitOpenPopulatedId === DepthSideFrame.initialWaitOpenPopulatedId) {
+            this.waitPopulated(styleId)
+        }
     }
 
     close() {
@@ -294,7 +308,7 @@ export class DepthSideFrame extends ContentFrame {
         }
 
         const element: DepthSideFrame.StyleCacheElement = {
-            gridFields: fields,
+            allowedGridFields: fields,
             lastLayoutDefinition: initialGridLayoutDefinition,
             store,
         };
@@ -326,54 +340,65 @@ export class DepthSideFrame extends ContentFrame {
     private activateStyle(newStyleId: DepthStyleId) {
         if (this._activeStore === undefined) {
             this.activateStore(newStyleId);
+            return true;
         } else {
             const oldStyleId = this._activeStore.styleId;
-            if (oldStyleId !== newStyleId) {
+            if (oldStyleId === newStyleId) {
+                return false;
+            } else {
                 this._styleCache[oldStyleId].lastLayoutDefinition = this._grid.createGridLayoutDefinition();
                 this._activeStore.finalise();
                 this.activateStore(newStyleId);
+                return true;
             }
         }
     }
 
     private activateStore(styleId: DepthStyleId) {
-        ++this._storeActivationId;
         this._openedPopulatedAndRendered = false;
 
-        this._activeStore = this._styleCache[styleId].store;
+        const styleCacheElement = this._styleCache[styleId];
+        const allowedGridFields = styleCacheElement.allowedGridFields;
+        this._activeStore = styleCacheElement.store;
         const activeStore = this._activeStore;
         switch (activeStore.styleId) {
             case DepthStyleId.Full: {
                 const fullDataStore = activeStore as FullDepthSideGridRecordStore;
-                this.setGrid(fullDataStore);
+                this.setGrid(fullDataStore, allowedGridFields);
                 break;
             }
             case DepthStyleId.Short: {
                 const shortDataStore = activeStore as ShortDepthSideGridRecordStore;
-                this.setGrid(shortDataStore);
+                this.setGrid(shortDataStore, allowedGridFields);
                 break;
             }
             default:
                 throw new UnreachableCaseError('DSFDSFAS333387', activeStore.styleId);
         }
+    }
 
-        const styleCacheElement = this._styleCache[styleId];
-        this.prepareGrid(styleCacheElement);
-
-        const storeActivationId = this._storeActivationId;
-        const populatedPromise = activeStore.waitOpenPopulated();
-        populatedPromise.then(
-            (success) => {
-                if (success && storeActivationId === this._storeActivationId) {
-                    this.waitRendered();
-                }
-            },
-            (error) => AssertInternalError.createIfNotError(error, 'DSFAS69114')
-        );
+    private waitPopulated(styleId: DepthStyleId) {
+        const activeStore = this._activeStore;
+        if (activeStore === undefined) {
+            throw new AssertInternalError('DSFCOSA53881');
+        } else {
+            const waitOpenPopulatedId = ++this._waitOpenPopulatedId;
+            const populatedPromise = activeStore.waitOpenPopulated();
+            populatedPromise.then(
+                (success) => {
+                    if (success && waitOpenPopulatedId === this._waitOpenPopulatedId) {
+                        this.applyFirstUsable(styleId);
+                        this.waitRendered();
+                    }
+                },
+                (error) => AssertInternalError.createIfNotError(error, 'DSFAS69114')
+            );
+        }
     }
 
     private setGrid(
         recordStore: RevRecordStore,
+        allowedFields: readonly DepthSideGridField[],
     ) {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._grid !== undefined) {
@@ -411,19 +436,10 @@ export class DepthSideFrame extends ContentFrame {
         this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
 
         grid.activate();
-    }
 
-    private prepareGrid(element: DepthSideFrame.StyleCacheElement) {
-        if (this._gridPrepared) {
-            this._grid.reset();
-        }
+        grid.continuousFiltering = true;
 
-        const gridLayout = new GridLayout(element.lastLayoutDefinition);
-        this._grid.fieldsLayoutReset(element.gridFields, gridLayout);
-
-        this. _grid.continuousFiltering = true;
-
-        this._gridPrepared = true;
+        grid.initialiseAllowedFields(allowedFields);
     }
 
     private customiseSettingsForNewColumn() {
@@ -438,12 +454,18 @@ export class DepthSideFrame extends ContentFrame {
         return this._gridHeaderCellPainter;
     }
 
+    private applyFirstUsable(styleId: DepthStyleId) {
+        const styleCacheElement = this._styleCache[styleId];
+        const gridLayout = new GridLayout(styleCacheElement.lastLayoutDefinition);
+        this._grid.applyFirstUsable(undefined, undefined, gridLayout);
+    }
+
     private waitRendered() {
-        const storeActivationId = this._storeActivationId;
+        const waitLastServerNotificationRenderedId = ++this._waitLastServerNotificationRenderedId;
         const renderPromise = this._grid.renderer.waitLastServerNotificationRendered();
         renderPromise.then(
             () => {
-                if (storeActivationId === this._storeActivationId) {
+                if (waitLastServerNotificationRenderedId === this._waitLastServerNotificationRenderedId) {
                     this._openedPopulatedAndRendered = true;
                     this.openedPopulatedAndRenderedEvent()
                 }
@@ -455,13 +477,14 @@ export class DepthSideFrame extends ContentFrame {
 
 export namespace DepthSideFrame {
     export const initialDepthStyleId = DepthStyleId.Full;
+    export const initialWaitOpenPopulatedId = 0;
 
     export type OpenedPopulatedAndRenderedEvent = (this: void) => void;
     // export type ColumnWidthChangedEventHandler = (this: void, columnIndex: Integer) => void;
     // export type ActiveWidthChangedEventHandler = (this: void) => void;
 
     export class StyleCacheElement {
-        gridFields: readonly DepthSideGridField[];
+        allowedGridFields: readonly DepthSideGridField[];
         // defaultGridFieldStates: readonly GridRecordFieldState[];
         // defaultGridFieldVisibles: readonly boolean[];
         lastLayoutDefinition: GridLayoutDefinition | undefined;

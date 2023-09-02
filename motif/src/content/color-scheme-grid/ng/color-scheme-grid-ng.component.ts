@@ -68,6 +68,11 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this.initialiseGrid();
 
         this._recordStore.recordsInserted(0, this._recordStore.recordCount);
+
+        const gridLayoutDefinition = ColorSchemeGridField.createDefaultGridLayoutDefinition();
+        const gridLayout = new GridLayout(gridLayoutDefinition);
+        grid.applyFirstUsable(undefined, undefined, gridLayout);
+
         this.applyFilter();
     }
 
@@ -184,9 +189,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         for (let i = 0; i < fieldCount; i++) {
             fields[i] = ColorSchemeGridField.createField(fieldNames[i], colorSettings);
         }
-        const gridLayoutDefinition = ColorSchemeGridField.createDefaultGridLayoutDefinition();
-        const gridLayout = new GridLayout(gridLayoutDefinition);
-        this._grid.fieldsLayoutReset(fields, gridLayout);
+        this._grid.initialiseAllowedFields(fields);
     }
 
     private customiseSettingsForNewColumn() {
