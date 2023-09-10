@@ -24,6 +24,7 @@ export * from './extensions/ng-api';
 export * from './feeds/ng-api';
 export * from './grid-layout-dialog/ng-api';
 export * from './grid-source/ng-api';
+export * from './holdings-grid-layouts-dialog/ng-api';
 export * from './holdings/ng-api';
 export * from './ivem-holdings/ng-api';
 export * from './markets/ng-api';

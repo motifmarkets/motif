@@ -45,6 +45,7 @@ import {
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
 } from '../grid-layout-dialog/ng-api';
+import { HoldingsGridLayoutsDialogNgComponent } from '../holdings-grid-layouts-dialog/ng-api';
 import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
@@ -115,6 +116,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorFieldControlsNgComponent,
         GridLayoutEditorSearchGridNgComponent,
         HoldingsNgComponent,
+        HoldingsGridLayoutsDialogNgComponent,
         IvemHoldingsNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,
@@ -185,6 +187,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorNgComponent,
         GridLayoutDialogNgComponent,
         HoldingsNgComponent,
+        HoldingsGridLayoutsDialogNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,

@@ -30,10 +30,12 @@
     position: relative;
     height: 100%;
     min-height: 0; // by default, flex items have min-height: auto
+    overflow-y: clip;
 }
 
 @mixin hostAsRowFlexItem {
     position: relative;
     width: 100%;
     min-width: 0; // by default, flex items have min-width: auto
+    overflow-y: clip;
 }

@@ -12,6 +12,7 @@ import {
     BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
     CommandRegisterService,
+    GridLayoutOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     SettingsService,
@@ -89,6 +90,30 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         } else {
             const balancesFrameElement = ditemFrameElement.newElement(BalancesDitemFrame.JsonName.balancesFrame);
             balancesFrame.save(balancesFrameElement);
+        }
+    }
+
+    createAllowedFieldsAndLayoutDefinition() {
+        if (this._balancesFrame === undefined) {
+            throw new AssertInternalError('BDFCAFALD04418');
+        } else {
+            return this._balancesFrame.createAllowedFieldsGridLayoutDefinition();
+        }
+    }
+
+    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+        if (this._balancesFrame === undefined) {
+            throw new AssertInternalError('BDFOGLONRD04418');
+        } else {
+            this._balancesFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
+    }
+
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._balancesFrame === undefined) {
+            throw new AssertInternalError('BDFASACW10174');
+        } else {
+            this._balancesFrame.autoSizeAllColumnWidths(widenOnly);
         }
     }
 
