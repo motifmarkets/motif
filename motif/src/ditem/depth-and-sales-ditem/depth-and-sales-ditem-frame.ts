@@ -75,6 +75,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         }
 
         this._watchlistFrame.fixedRowCount = 1;
+        this._watchlistFrame.focusedRowColoredAllowed = false;
 
         if (frameElement === undefined) {
             this._watchlistFrame.initialiseGrid(this.opener, undefined, true);

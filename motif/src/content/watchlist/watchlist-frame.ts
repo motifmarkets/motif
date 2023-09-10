@@ -83,6 +83,10 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             this.updateFlexBasis();
         }
     }
+    get focusedRowColoredAllowed() { return this._gridMainCellPainter.focusedRowColoredAllowed; }
+    set focusedRowColoredAllowed(value: boolean) {
+        this._gridMainCellPainter.focusedRowColoredAllowed = value;
+    }
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
