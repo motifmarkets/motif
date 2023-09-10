@@ -7,10 +7,14 @@
 import {
     Account,
     AdiService,
+    AllowedFieldsGridLayoutDefinition,
+    AllowedGridField,
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
     CoreSettings,
+    GridLayoutDefinition,
+    GridLayoutOrNamedReferenceDefinition,
     Holding,
     HoldingTableRecordSourceDefinition,
     Integer,
@@ -99,6 +103,10 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             true,
         );
 
+        if (balancesFrame.opened) {
+            this._componentAccess.setBalancesVisible(true);
+        }
+
         this.applyLinked();
     }
 
@@ -139,6 +147,45 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             }
             orderPad.applySettingsDefaults(this._coreSettings);
             this.desktopAccessService.editOrderRequest(orderPad);
+        }
+    }
+
+    createAllowedFieldsAndLayoutDefinition(): HoldingsDitemFrame.AllowedFieldsAndLayoutDefinitions {
+        if (this._holdingsFrame === undefined || this._balancesFrame === undefined) {
+            throw new AssertInternalError('HDFCAFALD33097');
+        } else {
+            return {
+                holdings: this._holdingsFrame.createAllowedFieldsGridLayoutDefinition(),
+                balances: this._balancesFrame.createAllowedFieldsGridLayoutDefinition(),
+            };
+        }
+    }
+
+    openGridLayoutOrNamedReferenceDefinition(layouts: HoldingsDitemFrame.GridLayoutDefinitions) {
+        if (this._holdingsFrame === undefined) {
+            throw new AssertInternalError('HDFAGLDH22298');
+        } else {
+            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.holdings);
+            this._holdingsFrame.applyGridLayoutDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
+        if (this._balancesFrame === undefined) {
+            throw new AssertInternalError('HDFAGLDB22298');
+        } else {
+            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.balances);
+            this._balancesFrame.applyGridLayoutDefinition(gridLayoutOrNamedReferenceDefinition);
+        }
+    }
+
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._holdingsFrame === undefined) {
+            throw new AssertInternalError('HDFASACW10174');
+        } else {
+            this._holdingsFrame.autoSizeAllColumnWidths(widenOnly);
+        }
+        if (this._balancesFrame === undefined) {
+            throw new AssertInternalError('HDFASACW10174');
+        } else {
+            this._balancesFrame.autoSizeAllColumnWidths(widenOnly);
         }
     }
 
@@ -269,6 +316,21 @@ export namespace HoldingsDitemFrame {
 
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
     export type GridSourceOpenedEventer = (this: void, group: BrokerageAccountGroup) => void;
+
+    export interface AllowedGridFields {
+        holdings: readonly AllowedGridField[];
+        balances: readonly AllowedGridField[];
+    }
+
+    export interface GridLayoutDefinitions {
+        holdings: GridLayoutDefinition;
+        balances: GridLayoutDefinition;
+    }
+
+    export interface AllowedFieldsAndLayoutDefinitions {
+        holdings: AllowedFieldsGridLayoutDefinition;
+        balances: AllowedFieldsGridLayoutDefinition;
+    }
 
     export interface ComponentAccess extends DitemFrame.ComponentAccess {
         setBalancesVisible(value: boolean): void;

@@ -5,28 +5,44 @@
  */
 
 @import './partials/main-toolbar-css-mixin';
+@import './partials/centered-toolbar-group-mixin';
 
 :host {
     display: block;
     position: absolute;
     overflow: hidden;
     height: 100%;
-}
 
-#mainDiv {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-}
+    > #mainDiv {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
 
-#mainToolbarDiv {
-    @include mainToolbarCssMixin;
+        > #mainToolbarDiv {
+            @include mainToolbarCssMixin;
 
-    #accountGroupInput {
-        width: 8em;
+            > #accountGroupInput {
+                width: 8em;
+            }
+
+            > #columnButtonsDiv {
+                @include centeredToolbarGroupMixin;
+                margin-left: $toolbar-button-group-separation;
+            }
+
+            > #linkButtonsDiv {
+                @include centeredToolbarGroupMixin;
+                margin-left: $toolbar-button-group-separation;
+            }
+        }
+
+        > #balances {
+            flex-grow: 1;
+        }
     }
-}
 
-#balances {
-    flex-grow: 1;
+    > #dialogDiv {
+        height: 100%;
+        width: 100%;
+    }
 }

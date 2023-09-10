@@ -12,7 +12,7 @@ import {
     GridField,
     NamedGridLayoutsService,
     NamedGridSourcesService,
-    NamedJsonRankedLitIvemIdListsService,
+    RankedLitIvemIdListReferentialsService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
@@ -45,7 +45,7 @@ export class ContentService {
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _namedJsonRankedLitIvemIdListsService: NamedJsonRankedLitIvemIdListsService,
+        private readonly _rankedLitIvemIdListReferentialsService: RankedLitIvemIdListReferentialsService,
         private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
@@ -97,7 +97,7 @@ export class ContentService {
     createWatchlistFrame() {
         return new WatchlistFrame(
             this._settingsService,
-            this._namedJsonRankedLitIvemIdListsService,
+            this._rankedLitIvemIdListReferentialsService,
             this._namedGridLayoutDefinitionsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,

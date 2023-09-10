@@ -30,6 +30,7 @@ import {
     ModifierKeyId,
     NamedGridLayoutDefinition,
     RankedLitIvemIdList,
+    RankedLitIvemIdListDefinition,
     StringId,
     Strings,
     UiAction,
@@ -43,7 +44,7 @@ import {
     AdiNgService,
     CommandRegisterNgService,
     FavouriteNamedGridLayoutDefinitionReferencesNgService,
-    NamedJsonRankedLitIvemIdListsNgService,
+    RankedLitIvemIdListReferentialsNgService,
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService,
@@ -113,7 +114,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
-        namedJsonRankedLitIvemIdListsNgService: NamedJsonRankedLitIvemIdListsNgService,
+        namedJsonRankedLitIvemIdListsNgService: RankedLitIvemIdListReferentialsNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
@@ -332,8 +333,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         } else {
             tabTitle = `${baseTabDisplay} ${rankedLitIvemIdListName}`;
             const typeId = rankedLitIvemIdList.typeId;
-            this.watchlistAbbreviatedDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToAbbreviation(typeId)})`;
-            this.watchListFullDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdList.Type.idToDisplay(typeId)})`;
+            this.watchlistAbbreviatedDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdListDefinition.Type.idToAbbreviation(typeId)})`;
+            this.watchListFullDescription = `${rankedLitIvemIdListName} (${RankedLitIvemIdListDefinition.Type.idToDisplay(typeId)})`;
         }
         this.setTitle(tabTitle, rankedLitIvemIdListName);
         this.markForCheck();

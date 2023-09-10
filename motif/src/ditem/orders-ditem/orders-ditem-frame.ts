@@ -202,6 +202,14 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
+    autoSizeAllColumnWidths(widenOnly: boolean) {
+        if (this._ordersFrame === undefined) {
+            throw new AssertInternalError('ODFASACW10174');
+        } else {
+            this._ordersFrame.autoSizeAllColumnWidths(widenOnly);
+        }
+    }
+
     protected override applyBrokerageAccountGroup(group: BrokerageAccountGroup | undefined, selfInitiated: boolean): boolean {
         if (this._currentFocusedLitIvemIdAccountGroupSetting) {
             return false;

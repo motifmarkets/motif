@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './open-watchlist-dialog/ng-api';
-export * from './save-watchlist-dialog/ng-api';
+export * from './ng/holdings-grid-layouts-dialog-ng.component';
 

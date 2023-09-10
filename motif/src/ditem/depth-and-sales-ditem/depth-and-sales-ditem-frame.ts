@@ -20,7 +20,8 @@ import {
     LitIvemId,
     SettingsService,
     SymbolsService,
-    TextFormatterService
+    TextFormatterService,
+    newGuid
 } from '@motifmarkets/motif-core';
 import {
     DepthFrame,
@@ -74,6 +75,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         }
 
         this._watchlistFrame.fixedRowCount = 1;
+        this._watchlistFrame.focusedRowColoredAllowed = false;
 
         if (frameElement === undefined) {
             this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
@@ -131,7 +133,8 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         } else {
             // watchlist
             if (!this._watchlistFrame.opened) {
-                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition([litIvemId]);
+                const id = newGuid();
+                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', [litIvemId]);
                 const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(
                     litIvemIdListDefinition,
                     undefined,

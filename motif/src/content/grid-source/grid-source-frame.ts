@@ -247,14 +247,14 @@ export abstract class GridSourceFrame extends ContentFrame {
                             () => this._grid.updateAllowedFields(table.fields)
                         );
 
-                        this._grid.fieldsLayoutReset(table.fields, layout);
+                        this._grid.initialiseAllowedFields(table.fields);
 
                         if (table.beenUsable) {
-                            this.applyFirstUsable();
+                            this.applyFirstUsable(layout);
                         } else {
                             this._tableFirstUsableSubscriptionId = table.subscribeFirstUsableEvent(() => {
                                 table.unsubscribeFirstUsableEvent(this._tableFirstUsableSubscriptionId);
-                                this.applyFirstUsable();
+                                this.applyFirstUsable(layout);
                             });
                         }
 
@@ -308,6 +308,8 @@ export abstract class GridSourceFrame extends ContentFrame {
                 this._lockedGridSourceOrNamedReference = undefined;
                 this._openedTable = undefined;
             }
+
+            this._grid.setActiveColumns([]);
         }
     }
 
@@ -1051,7 +1053,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private applyFirstUsable() {
+    private applyFirstUsable(layout: GridLayout) {
         let rowOrderDefinition = this._keptRowOrderDefinition;
         this._keptRowOrderDefinition = undefined;
         if (rowOrderDefinition === undefined) {
@@ -1063,7 +1065,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
         const viewAnchor = this._keptGridRowAnchor;
         this._keptGridRowAnchor = undefined;
-        this._grid.applyFirstUsable(rowOrderDefinition, viewAnchor);
+        this._grid.applyFirstUsable(rowOrderDefinition, viewAnchor, layout);
     }
 
     // private closeTable() {

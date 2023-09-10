@@ -45,11 +45,13 @@ import {
     GridLayoutEditorNgComponent,
     GridLayoutEditorSearchGridNgComponent
 } from '../grid-layout-dialog/ng-api';
+import { HoldingsGridLayoutsDialogNgComponent } from '../holdings-grid-layouts-dialog/ng-api';
 import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
+import { OpenWatchlistDialogNgComponent } from '../open-watchlist-dialog/ng-api';
 import { OrderAuthoriseNgComponent } from '../order-authorise/ng-api';
 import {
     PadOrderRequestStepNgComponent,
@@ -62,6 +64,7 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { OrdersNgComponent } from '../orders/ng-api';
+import { SaveWatchlistDialogNgComponent } from '../save-watchlist-dialog/ng-api';
 import {
     CriteriaScanPropertiesSectionNgComponent,
     GeneralScanPropertiesSectionNgComponent,
@@ -88,10 +91,6 @@ import {
 import { StaticInitialise } from '../static-initialise';
 import { StatusSummaryNgComponent } from '../status-summary/ng-api';
 import { TradesNgComponent } from '../trades/ng-api';
-import {
-    OpenWatchlistDialogNgComponent,
-    SaveWatchlistDialogNgComponent
-} from '../watchlist-dialog/ng-api';
 import { WatchlistNgComponent } from '../watchlist/ng-api';
 import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
 
@@ -117,6 +116,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorFieldControlsNgComponent,
         GridLayoutEditorSearchGridNgComponent,
         HoldingsNgComponent,
+        HoldingsGridLayoutsDialogNgComponent,
         IvemHoldingsNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,
@@ -187,6 +187,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorNgComponent,
         GridLayoutDialogNgComponent,
         HoldingsNgComponent,
+        HoldingsGridLayoutsDialogNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         MarketsNgComponent,
         OrdersNgComponent,

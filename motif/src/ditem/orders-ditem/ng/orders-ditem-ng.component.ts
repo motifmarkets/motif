@@ -16,17 +16,18 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
-    Logger,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
     UiAction,
-    UnreachableCaseError,
     assert,
     assigned,
     delay1Tick,
@@ -57,18 +58,20 @@ import { OrdersDitemFrame } from '../orders-ditem-frame';
 export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('orders', { static: true }) private _ordersComponent: OrdersNgComponent;
-    @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
-    @ViewChild('buyButton', { static: true }) private _buyButtonComponent: SvgButtonNgComponent;
-    @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
-    @ViewChild('amendButton', { static: true }) private _amendButtonComponent: SvgButtonNgComponent;
-    @ViewChild('cancelButton', { static: true }) private _cancelButtonComponent: SvgButtonNgComponent;
-    @ViewChild('moveButton', { static: true }) private _moveButtonComponent: SvgButtonNgComponent;
-    @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
-    @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
+    @ViewChild('orders') private _ordersComponent: OrdersNgComponent;
+    @ViewChild('accountGroupInput') private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
+    @ViewChild('buyButton') private _buyButtonComponent: SvgButtonNgComponent;
+    @ViewChild('sellButton') private _sellButtonComponent: SvgButtonNgComponent;
+    @ViewChild('amendButton') private _amendButtonComponent: SvgButtonNgComponent;
+    @ViewChild('cancelButton') private _cancelButtonComponent: SvgButtonNgComponent;
+    @ViewChild('moveButton') private _moveButtonComponent: SvgButtonNgComponent;
+    @ViewChild('columnsButton') private _columnsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('autoSizeColumnWidthsButton') private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
+    @ViewChild('accountLinkButton') private _accountLinkButtonComponent: SvgButtonNgComponent;
+    @ViewChild('dialogContainer', { read: ViewContainerRef }) private _dialogContainer: ViewContainerRef;
+
+    private readonly _frame: OrdersDitemFrame;
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _buyUiAction: IconButtonUiAction;
@@ -81,8 +84,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
 
-    private _modeId = OrdersDitemNgComponent.ModeId.Main;
-    private _frame: OrdersDitemFrame;
+    private _activeDialogTypeId = OrdersDitemNgComponent.ActiveDialogTypeId.None;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -153,19 +155,8 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this.finalise();
     }
 
-    public isMainMode() {
-        return this._modeId === OrdersDitemNgComponent.ModeId.Main;
-    }
-
-    public isDialogMode() {
-        switch (this._modeId) {
-            case OrdersDitemNgComponent.ModeId.LayoutDialog:
-                return true;
-            case OrdersDitemNgComponent.ModeId.Main:
-                return false;
-            default:
-                throw new UnreachableCaseError('ODNCIDM65312', this._modeId);
-        }
+    public isDialogActive() {
+        return this._activeDialogTypeId !== OrdersDitemNgComponent.ActiveDialogTypeId.None;
     }
 
     public override processSymbolLinkedChanged() {
@@ -259,11 +250,12 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private handleColumnsUiActionSignalEvent() {
-        this.showLayoutEditor();
+        this.showLayoutEditorDialog();
     }
 
-    private handleAutoSizeColumnWidthsUiActionSignalEvent() {
-        // this._frame.autoSizeAllColumnWidths();
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleAccountLinkSignalEvent() {
@@ -274,8 +266,8 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         this._frame.litIvemIdLinked = !this._frame.litIvemIdLinked;
     }
 
-    private showLayoutEditor() {
-        this._modeId = OrdersDitemNgComponent.ModeId.LayoutDialog;
+    private showLayoutEditorDialog() {
+        this._activeDialogTypeId = OrdersDitemNgComponent.ActiveDialogTypeId.Layout;
 
         const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
 
@@ -293,9 +285,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
                 this.closeDialog();
             },
             (reason) => {
-                const errorText = getErrorMessage(reason);
-                Logger.logError(`Orders Ditem Layout Dialog error: ${errorText}`);
-                this.closeDialog();
+                throw new AssertInternalError('ODNCSLEDCPTR20987', getErrorMessage(reason));
             }
         );
 
@@ -304,7 +294,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     private closeDialog() {
         this._dialogContainer.clear();
-        this._modeId = OrdersDitemNgComponent.ModeId.Main;
+        this._activeDialogTypeId = OrdersDitemNgComponent.ActiveDialogTypeId.None;
         this.markForCheck();
     }
 
@@ -397,7 +387,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
         action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
         action.pushUnselected();
-        action.signalEvent = () => this.handleAutoSizeColumnWidthsUiActionSignalEvent();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 
@@ -466,8 +456,8 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 export namespace OrdersDitemNgComponent {
     export const stateSchemaVersion = '2';
 
-    export const enum ModeId {
-        Main,
-        LayoutDialog,
+    export const enum ActiveDialogTypeId {
+        None,
+        Layout,
     }
 }

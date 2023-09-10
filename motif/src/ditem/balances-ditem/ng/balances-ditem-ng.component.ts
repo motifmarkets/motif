@@ -12,19 +12,24 @@ import {
     ElementRef,
     Inject,
     OnDestroy,
-    ViewChild
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
     UiAction,
-    delay1Tick
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -32,7 +37,7 @@ import {
     SettingsNgService,
     SymbolsNgService
 } from 'component-services-ng-api';
-import { BalancesNgComponent } from 'content-ng-api';
+import { BalancesNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -52,11 +57,18 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('balances', { static: true }) private _balancesComponent: BalancesNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
+    @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('dialogContainer', { read: ViewContainerRef }) private _dialogContainer: ViewContainerRef;
+
+    private readonly _frame: BalancesDitemFrame;
 
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _toggleAccountGroupLinkingUiAction: IconButtonUiAction;
+    private _columnsUiAction: IconButtonUiAction;
+    private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
 
-    private readonly _frame: BalancesDitemFrame;
+    private _activeDialogTypeId = BalancesDitemNgComponent.ActiveDialogTypeId.None;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -91,6 +103,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._toggleAccountGroupLinkingUiAction = this.createToggleAccountGroupLinkingUiAction();
+        this._columnsUiAction = this.createColumnsUiAction();
+        this._autoSizeColumnWidthsUiAction = this.createAutoSizeColumnWidthsUiAction();
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
 
@@ -110,6 +124,10 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this.finalise();
     }
 
+    public isDialogActive() {
+        return this._activeDialogTypeId !== BalancesDitemNgComponent.ActiveDialogTypeId.None;
+    }
+
     public override processBrokerageAccountGroupLinkedChanged() {
         this.pushAccountLinkButtonState();
     }
@@ -117,6 +135,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._accountLinkButtonComponent.initialise(this._toggleAccountGroupLinkingUiAction);
+        this._columnsButtonComponent.initialise(this._columnsUiAction);
+        this._autoSizeColumnWidthsButtonComponent.initialise(this._autoSizeColumnWidthsUiAction);
 
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
@@ -128,6 +148,8 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._toggleAccountGroupLinkingUiAction.finalise();
+        this._columnsUiAction.finalise();
+        this._autoSizeColumnWidthsUiAction.finalise();
 
         this._frame.finalise();
         super.finalise();
@@ -150,6 +172,15 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     private handleAccountLinkSignalEvent() {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
+    }
+
+    private handleColumnsUiActionSignalEvent() {
+        this.showLayoutEditorDialog();
+    }
+
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
     }
 
     private handleRecordFocusedEvent(_recordIndex: Integer | undefined) {
@@ -182,6 +213,30 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         return action;
     }
 
+    private createColumnsUiAction() {
+        const commandName = InternalCommand.Id.SelectGridColumns;
+        const displayId = StringId.SelectColumnsCaption;
+        const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.SelectColumnsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.SelectColumns);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleColumnsUiActionSignalEvent();
+        return action;
+    }
+
+    private createAutoSizeColumnWidthsUiAction() {
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
+        const displayId = StringId.AutoSizeColumnWidthsCaption;
+        const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
+        action.pushUnselected();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
+        return action;
+    }
+
     private pushAccountLinkButtonState() {
         if (this._frame.brokerageAccountGroupLinked) {
             this._toggleAccountGroupLinkingUiAction.pushSelected();
@@ -189,8 +244,45 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             this._toggleAccountGroupLinkingUiAction.pushUnselected();
         }
     }
+
+    private showLayoutEditorDialog() {
+        this._activeDialogTypeId = BalancesDitemNgComponent.ActiveDialogTypeId.Layout;
+
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
+
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Balances_ColumnsDialogCaption],
+            allowedFieldsAndLayoutDefinition
+        );
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
+                }
+                this.closeDialog();
+            },
+            (reason) => {
+                throw new AssertInternalError('BDNCSLEDCPTR20987', getErrorMessage(reason));
+            }
+        );
+
+        this.markForCheck();
+    }
+
+    private closeDialog() {
+        this._dialogContainer.clear();
+        this._activeDialogTypeId = BalancesDitemNgComponent.ActiveDialogTypeId.None;
+        this.markForCheck();
+    }
 }
 
 export namespace BalancesDitemNgComponent {
     export const stateSchemaVersion = '2';
+
+    export const enum ActiveDialogTypeId {
+        None,
+        Layout,
+    }
 }

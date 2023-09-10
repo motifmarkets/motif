@@ -4,7 +4,7 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="mainDiv" [style.display]="isMainMode() ? null : 'none'">
+<div id="mainDiv" [style.display]="isDialogActive() ? 'none' : null">
     <div id="mainToolbarDiv">
         <app-brokerage-account-group-input #accountGroupInput id="accountGroupInput" inputId="accountGroupInput"></app-brokerage-account-group-input>
 
@@ -16,8 +16,8 @@
             <app-svg-button #moveButton></app-svg-button>
         </div>
         <div id="columnButtonsDiv">
-            <app-svg-button #columnsButton></app-svg-button>
             <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+            <app-svg-button #columnsButton></app-svg-button>
         </div>
         <div id="linkButtonsDiv">
             <app-svg-button #accountLinkButton></app-svg-button>
@@ -26,6 +26,6 @@
     </div>
     <app-orders #orders id="orders"></app-orders>
 </div>
-<div id="dialogDiv" [style.display]="isDialogMode() ? null : 'none'">
-    <ng-template #dialogContainer></ng-template>
+<div id="dialogDiv" [style.display]="isDialogActive() ? null : 'none'">
+    <ng-container #dialogContainer></ng-container>
 </div>

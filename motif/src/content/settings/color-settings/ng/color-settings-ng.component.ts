@@ -89,7 +89,8 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         const itemId = this._gridComponent.focusedRecordIndex;
         this._itemPropertiesComponent.itemId = itemId;
         this._itemPropertiesComponent.itemChangedEvent = (changedItemId) => this.handleItemPropertiesChangedEvent(changedItemId);
-        this.gridSize = this._itemPropertiesComponent.approximateWidth;
+        // const totalWidth = this._leftAndRightDiv.nativeElement.offsetWidth;
+        // this.gridSize = totalWidth - this._itemPropertiesComponent.approximateWidth;
 
         delay1Tick(() => this.initialise());
     }

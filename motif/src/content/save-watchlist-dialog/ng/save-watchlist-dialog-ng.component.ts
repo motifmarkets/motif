@@ -6,7 +6,7 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewContainerRef } from '@angular/core';
 import { GridSourceOrNamedReferenceDefinition, Result } from '@motifmarkets/motif-core';
-import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
+import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
     selector: 'app-save-watchlist-dialog',

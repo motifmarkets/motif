@@ -12,7 +12,8 @@ import {
     ElementRef,
     Inject,
     OnDestroy,
-    ViewChild
+    ViewChild,
+    ViewContainerRef
 } from '@angular/core';
 import {
     AssertInternalError,
@@ -22,10 +23,13 @@ import {
     Integer,
     InternalCommand,
     JsonElement,
+    ModifierKey,
+    ModifierKeyId,
     StringId,
     Strings,
     UiAction,
-    delay1Tick
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { IOutputData, SplitComponent } from 'angular-split';
 import {
@@ -37,7 +41,7 @@ import {
     TableRecordSourceDefinitionFactoryNgService,
     TextFormatterNgService
 } from 'component-services-ng-api';
-import { BalancesNgComponent, HoldingsNgComponent } from 'content-ng-api';
+import { BalancesNgComponent, HoldingsGridLayoutsDialogNgComponent, HoldingsNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -59,21 +63,28 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     @ViewChild('holdings', { static: true }) private _holdingsComponent: HoldingsNgComponent;
     @ViewChild('accountGroupInput', { static: true }) private _accountGroupInputComponent: BrokerageAccountGroupInputNgComponent;
     @ViewChild('sellButton', { static: true }) private _sellButtonComponent: SvgButtonNgComponent;
+    @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
+    @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('accountLinkButton', { static: true }) private _accountLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('symbolLinkButton', { static: true }) private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild(SplitComponent) private _balancesHoldingsSplitComponent: SplitComponent;
+    @ViewChild('dialogContainer', { read: ViewContainerRef }) private _dialogContainer: ViewContainerRef;
 
     public splitterGutterSize = 3;
     public balancesVisible = false;
     public balancesHeight: AngularSplitTypes.AreaSize.Html = 50;
 
+    private readonly _frame: HoldingsDitemFrame;
+
     private _accountGroupUiAction: BrokerageAccountGroupUiAction;
     private _sellUiAction: IconButtonUiAction;
+    private _columnsUiAction: IconButtonUiAction;
+    private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _accountGroupLinkUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
     private _explicitBalancesHeight = false;
 
-    private _frame: HoldingsDitemFrame;
+    private _activeDialogTypeId = HoldingsDitemNgComponent.ActiveDialogTypeId.None;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -113,6 +124,8 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         );
         this._accountGroupUiAction = this.createAccountIdUiAction();
         this._sellUiAction = this.createSellUiAction();
+        this._columnsUiAction = this.createColumnsUiAction();
+        this._autoSizeColumnWidthsUiAction = this.createAutoSizeColumnWidthsUiAction();
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
         this._accountGroupLinkUiAction = this.createToggleAccountGroupLinkingUiAction();
 
@@ -133,6 +146,10 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
 
     public ngOnDestroy() {
         this.finalise();
+    }
+
+    public isDialogActive() {
+        return this._activeDialogTypeId !== HoldingsDitemNgComponent.ActiveDialogTypeId.None;
     }
 
     public splitDragEnd(data: IOutputData) {
@@ -173,6 +190,8 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected override initialise() {
         this._accountGroupInputComponent.initialise(this._accountGroupUiAction);
         this._sellButtonComponent.initialise(this._sellUiAction);
+        this._columnsButtonComponent.initialise(this._columnsUiAction);
+        this._autoSizeColumnWidthsButtonComponent.initialise(this._autoSizeColumnWidthsUiAction);
         this._symbolLinkButtonComponent.initialise(this._toggleSymbolLinkingUiAction);
         this._accountLinkButtonComponent.initialise(this._accountGroupLinkUiAction);
 
@@ -198,6 +217,8 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     protected override finalise() {
         this._accountGroupUiAction.finalise();
         this._sellUiAction.finalise();
+        this._columnsUiAction.finalise();
+        this._autoSizeColumnWidthsUiAction.finalise();
         this._accountGroupLinkUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
 
@@ -241,6 +262,15 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         this._frame.sellFocused();
     }
 
+    private handleColumnsUiActionSignalEvent() {
+        this.showLayoutEditorDialog();
+    }
+
+    private handleAutoSizeColumnWidthsUiActionSignalEvent(_signalTypeId: UiAction.SignalTypeId, downKeys: ModifierKey.IdSet) {
+        const widenOnly = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
+        this._frame.autoSizeAllColumnWidths(widenOnly);
+    }
+
     private handleAccountLinkSignalEvent() {
         this._frame.brokerageAccountGroupLinked = !this._frame.brokerageAccountGroupLinked;
     }
@@ -277,6 +307,30 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         action.pushIcon(IconButtonUiAction.IconId.SellOrderPad);
         action.pushUnselected();
         action.signalEvent = () => this.handleSellSignalEvent();
+        return action;
+    }
+
+    private createColumnsUiAction() {
+        const commandName = InternalCommand.Id.SelectGridColumns;
+        const displayId = StringId.SelectColumnsCaption;
+        const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.SelectColumnsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.SelectColumns);
+        action.pushUnselected();
+        action.signalEvent = () => this.handleColumnsUiActionSignalEvent();
+        return action;
+    }
+
+    private createAutoSizeColumnWidthsUiAction() {
+        const commandName = InternalCommand.Id.AutoSizeGridColumnWidths;
+        const displayId = StringId.AutoSizeColumnWidthsCaption;
+        const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.AutoSizeColumnWidthsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.AutoSizeColumnWidths);
+        action.pushUnselected();
+        action.signalEvent = (signalTypeId, downKeys) => this.handleAutoSizeColumnWidthsUiActionSignalEvent(signalTypeId, downKeys);
         return action;
     }
 
@@ -339,6 +393,38 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             }
         }
     }
+
+    private showLayoutEditorDialog() {
+        this._activeDialogTypeId = HoldingsDitemNgComponent.ActiveDialogTypeId.Layout;
+
+        const allowedFieldsAndLayoutDefinitions = this._frame.createAllowedFieldsAndLayoutDefinition();
+
+        const closePromise = HoldingsGridLayoutsDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Holdings_ColumnsDialogCaption],
+            allowedFieldsAndLayoutDefinitions
+        );
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
+                }
+                this.closeDialog();
+            },
+            (reason) => {
+                throw new AssertInternalError('HDNCSLEDCPTR20987', getErrorMessage(reason));
+            }
+        );
+
+        this.markForCheck();
+    }
+
+    private closeDialog() {
+        this._dialogContainer.clear();
+        this._activeDialogTypeId = HoldingsDitemNgComponent.ActiveDialogTypeId.None;
+        this.markForCheck();
+    }
 }
 
 export namespace HoldingsDitemNgComponent {
@@ -346,5 +432,10 @@ export namespace HoldingsDitemNgComponent {
 
     export namespace JsonName {
         export const balancesHeight = 'balancesHeight';
+    }
+
+    export const enum ActiveDialogTypeId {
+        None,
+        Layout,
     }
 }
