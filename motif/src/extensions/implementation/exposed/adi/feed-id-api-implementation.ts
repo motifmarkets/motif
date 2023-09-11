@@ -22,6 +22,7 @@ export namespace FeedIdImplementation {
             case FeedId.Trading_Motif: return FeedIdEnumApi.Trading_Motif;
             case FeedId.Trading_Malacca: return FeedIdEnumApi.Trading_Malacca;
             case FeedId.Trading_Finplex: return FeedIdEnumApi.Trading_Finplex;
+            case FeedId.Trading_CFMarkets: return FeedIdEnumApi.Trading_CFMarkets;
             case FeedId.Market_AsxBookBuild: throw new AssertInternalError('FIAITAABB5662349843');
             case FeedId.Market_AsxPureMatch: throw new AssertInternalError('FIAITAAPM5662349843');
             case FeedId.Market_AsxTradeMatch: return FeedIdEnumApi.Market_AsxTradeMatch;
@@ -45,6 +46,7 @@ export namespace FeedIdImplementation {
             case FeedId.Market_Ptx: return FeedIdEnumApi.Market_Ptx;
             case FeedId.Market_Fnsx: return FeedIdEnumApi.Market_Fnsx;
             case FeedId.Market_Fpsx: return FeedIdEnumApi.Market_Fpsx;
+            case FeedId.Market_Cfxt: return FeedIdEnumApi.Market_Cfxt;
             case FeedId.Market_Calastone: throw new AssertInternalError('FIAITACLS5662349843');
             case FeedId.Market_AsxCxa: throw new AssertInternalError('FIAITAASC5662349843');
             case FeedId.News_Asx: return FeedIdEnumApi.News_Asx;
@@ -69,6 +71,7 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.Trading_Motif: return FeedId.Trading_Motif;
             case FeedIdEnumApi.Trading_Malacca: return FeedId.Trading_Malacca;
             case FeedIdEnumApi.Trading_Finplex: return FeedId.Trading_Finplex;
+            case FeedIdEnumApi.Trading_CFMarkets: return FeedId.Trading_CFMarkets;
             case FeedIdEnumApi.Market_AsxTradeMatch: return FeedId.Market_AsxTradeMatch;
             case FeedIdEnumApi.Market_AsxCentrePoint: return FeedId.Market_AsxCentrePoint;
             case FeedIdEnumApi.Market_MyxNormal: return FeedId.Market_MyxNormal;
@@ -79,6 +82,7 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.Market_Ptx: return FeedId.Market_Ptx;
             case FeedIdEnumApi.Market_Fnsx: return FeedId.Market_Fnsx;
             case FeedIdEnumApi.Market_Fpsx: return FeedId.Market_Fpsx;
+            case FeedIdEnumApi.Market_Cfxt: return FeedId.Market_Cfxt;
             case FeedIdEnumApi.News_Asx: return FeedId.News_Asx;
             case FeedIdEnumApi.News_Nsx: return FeedId.News_Nsx;
             case FeedIdEnumApi.News_Nzx: return FeedId.News_Nzx;

@@ -35,6 +35,7 @@ export namespace MarketIdImplementation {
             case MarketId.Ptx: return MarketIdEnumApi.Ptx;
             case MarketId.Fnsx: return MarketIdEnumApi.Fnsx;
             case MarketId.Fpsx: return MarketIdEnumApi.Fpsx;
+            case MarketId.Cfxt: return MarketIdEnumApi.Cfxt;
             default: throw new UnreachableCaseError('MIAITADEF98887722', value);
         }
     }
@@ -53,6 +54,7 @@ export namespace MarketIdImplementation {
             case MarketIdEnumApi.Ptx: return MarketId.Ptx;
             case MarketIdEnumApi.Fnsx: return MarketId.Fnsx;
             case MarketIdEnumApi.Fpsx: return MarketId.Fpsx;
+            case MarketIdEnumApi.Cfxt: return MarketId.Cfxt;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidMarketId, enumValue);
         }
     }

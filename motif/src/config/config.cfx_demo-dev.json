@@ -2,25 +2,25 @@
   "configFormatVersion": "2",
   "configComment": "",
   "service": {
-    "name": "FNSX Demo",
-    "description": "First National Stock Exchange Demo (Development impersonating production)"
+    "name": "CFX Test",
+    "description": "CF Markets Test exchange (Development impersonating)"
   },
   "environment": {
     "defaultDataEnvironment": "demo"
   },
   "exchange": {
-    "defaultDefault": "Fnsx"
+    "defaultDefault": "Cfx"
   },
   "endpoints": {
     "motifServices": [
-      "https://motif-services.paritech.com"
+      "https://motif-services.for.cf-markets.com"
     ],
     "zenith": [
-      "wss://websocket-staging.paritech.com/"
+      "wss://ws-testing.for.cf-markets.com/"
     ]
   },
   "openId": {
-    "authority": "https://passport.paritech.com",
+    "authority": "https://passport.for.cf-markets.com",
     "clientId": "MotifDev$Web",
     "redirectUri": "http://localhost:4200/auth-callback",
     "silentRedirectUri": "http://localhost:4200/silent-refresh.html",

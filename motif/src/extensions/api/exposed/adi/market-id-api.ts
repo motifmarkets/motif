@@ -19,6 +19,7 @@ export const enum MarketIdEnum {
     Ptx = 'Ptx',
     Fnsx = 'Fnsx',
     Fpsx = 'Fpsx',
+    Cfxt = 'Cfxt',
 }
 
 /** @public */
