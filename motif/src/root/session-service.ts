@@ -24,6 +24,7 @@ import {
     MultiEvent,
     PublisherSessionTerminatedReasonId,
     ScansService,
+    ServiceOperatorId,
     SessionInfoService,
     SessionState,
     SessionStateId,
@@ -57,6 +58,7 @@ export class SessionService {
 
     private _serviceName: string;
     private _serviceDescription: string | undefined;
+    private _serviceOperatorId: ServiceOperatorId;
 
     private _motifServicesEndpoint: string;
 
@@ -171,10 +173,10 @@ export class SessionService {
                 storageTypeId = AppStorageService.TypeId.MotifServices;
             }
         }
-        this._appStorageService.initialise(storageTypeId, config.service.groupId);
+        this._appStorageService.initialise(storageTypeId, this._serviceOperatorId);
 
         await this.processLoadSettings();
-        await this.processLoadExtensions();
+        this.processLoadExtensions();
         this.finishStartup();
     }
 
@@ -231,6 +233,11 @@ export class SessionService {
     private setServiceDescription(value: string | undefined) {
         this._serviceDescription = value;
         this._infoService.serviceDescription = value;
+    }
+
+    private setServiceOperatorId(value: ServiceOperatorId) {
+        this._serviceOperatorId = value;
+        this._infoService.serviceOperatorId = value;
     }
 
     private setZenithEndpoints(value: readonly string[]) {
@@ -363,6 +370,7 @@ export class SessionService {
     private applyConfig(config: Config) {
         this.setServiceName(config.service.name);
         this.setServiceDescription(config.service.description);
+        this.setServiceOperatorId(config.service.operatorId);
 
         this._capabilitiesService.setAdvertisingEnabled(config.capabilities.advertising);
         this._capabilitiesService.setDtrEnabled(config.capabilities.dtr);
@@ -414,34 +422,58 @@ export class SessionService {
     }
 
     private async processLoadSettings() {
-        this.logInfo('Retrieving Settings');
-        const appSettingsGetResult = await this._appStorageService.getItem(KeyValueStore.Key.Settings);
         if (!this.final) {
-            let rootElement: JsonElement | undefined;
-            if (appSettingsGetResult.isErr()) {
-                this.logWarning(`Error retrieving saved settings: "${appSettingsGetResult.error}". Using defaults`);
-                rootElement = undefined;
+            this.logInfo('Retrieving Settings');
+            const [userSettingsGetResult, operatorSettingsGetResult] = await Promise.all([
+                this._appStorageService.getItem(KeyValueStore.Key.Settings),
+                this._appStorageService.getItem(KeyValueStore.Key.Settings, true)
+            ]);
+
+            let userElement: JsonElement | undefined;
+            if (userSettingsGetResult.isErr()) {
+                this.logWarning(`Settings: Error retrieving user settings: "${userSettingsGetResult.error}". Using defaults`);
+                userElement = undefined;
             } else {
-                const appSettings = appSettingsGetResult.value;
-                if (appSettings === undefined || appSettings === '') {
-                    this.logWarning('App Settings not specified. Using defaults');
-                    rootElement = undefined;
+                const userSettings = userSettingsGetResult.value;
+                if (userSettings === undefined || userSettings === '') {
+                    this.logWarning('Settings: User settings not specified. Using defaults');
+                    userElement = undefined;
                 } else {
-                    this.logInfo('Loading Settings');
-                    rootElement = new JsonElement();
-                    const parseResult = rootElement.parse(appSettings);
+                    this.logInfo('Parsing Settings');
+                    userElement = new JsonElement();
+                    const parseResult = userElement.parse(userSettings);
                     if (parseResult.isErr()) {
-                        this.logWarning('Could not parse saved settings. Using defaults.  ' + parseResult.error);
-                        rootElement = undefined;
+                        this.logWarning('Settings: Could not parse saved user settings. Using defaults.  ' + parseResult.error);
+                        userElement = undefined;
                     }
                 }
             }
 
-            this._settingsService.load(rootElement);
+            let operatorElement: JsonElement | undefined;
+            if (operatorSettingsGetResult.isErr()) {
+                this.logWarning(`Settings: Error retrieving operator settings: "${operatorSettingsGetResult.error}". Using defaults`);
+                operatorElement = undefined;
+            } else {
+                const operatorSettings = operatorSettingsGetResult.value;
+                if (operatorSettings === undefined || operatorSettings === '') {
+                    this.logWarning('Settings: Operator settings not specified. Using defaults');
+                    operatorElement = undefined;
+                } else {
+                    this.logInfo('Parsing Settings');
+                    operatorElement = new JsonElement();
+                    const parseResult = operatorElement.parse(operatorSettings);
+                    if (parseResult.isErr()) {
+                        this.logWarning('Settings: Could not parse saved operator settings. Using defaults.  ' + parseResult.error);
+                        operatorElement = undefined;
+                    }
+                }
+            }
+
+            this._settingsService.load(userElement, operatorElement);
         }
     }
 
-    private async processLoadExtensions() {
+    private processLoadExtensions() {
         this.logInfo('Retrieving Extensions');
         this._extensionService.processBundled();
         // const loadedExtensions = await this._appStorageService.getItem(AppStorageService.Key.LoadedExtensions);
@@ -459,13 +491,6 @@ export class SessionService {
         //         }
         //     }
         // }
-    }
-
-    private saveSettings() {
-        const rootElement = new JsonElement();
-        this._settingsService.save(rootElement);
-        const settingsAsJsonString = rootElement.stringify();
-        return this._appStorageService.setItem(KeyValueStore.Key.Settings, settingsAsJsonString);
     }
 
     private finishStartup() {

@@ -224,7 +224,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_FontFamily]);
         action.pushTitle(Strings[StringId.SettingTitle_FontFamily]);
         action.commitEvent = () => {
-            this.coreSettings.grid_FontFamily = this._fontFamilyUiAction.definedValue;
+            this.userSettings.grid_FontFamily = this._fontFamilyUiAction.definedValue;
         };
         return action;
     }
@@ -234,7 +234,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_FontSize]);
         action.pushTitle(Strings[StringId.SettingTitle_FontSize]);
         action.commitEvent = () => {
-            this.coreSettings.grid_FontSize = this._fontSizeUiAction.definedValue;
+            this.userSettings.grid_FontSize = this._fontSizeUiAction.definedValue;
         };
         return action;
     }
@@ -244,7 +244,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_ColumnHeaderFontSize]);
         action.pushTitle(Strings[StringId.SettingTitle_ColumnHeaderFontSize]);
         action.commitEvent = () => {
-            this.coreSettings.grid_ColumnHeaderFontSize = this._columnHeaderFontSizeUiAction.definedValue;
+            this.userSettings.grid_ColumnHeaderFontSize = this._columnHeaderFontSizeUiAction.definedValue;
         };
         return action;
     }
@@ -254,7 +254,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_RowHeight]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_RowHeight]);
         action.commitEvent = () => {
-            this.coreSettings.grid_RowHeight = this._rowHeightUiAction.definedValue;
+            this.userSettings.grid_RowHeight = this._rowHeightUiAction.definedValue;
         };
         return action;
     }
@@ -264,7 +264,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarThumbInactiveOpacity]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarThumbInactiveOpacity]);
         action.commitEvent = () => {
-            this.coreSettings.grid_ScrollbarThumbInactiveOpacity = this._scrollbarThumbInactiveOpacityUiAction.definedValue;
+            this.userSettings.grid_ScrollbarThumbInactiveOpacity = this._scrollbarThumbInactiveOpacityUiAction.definedValue;
         };
         return action;
     }
@@ -274,7 +274,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_ScrollbarMargin]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_ScrollbarMargin]);
         action.commitEvent = () => {
-            this.coreSettings.grid_ScrollbarMargin = this._scrollbarMarginUiAction.definedValue;
+            this.userSettings.grid_ScrollbarMargin = this._scrollbarMarginUiAction.definedValue;
         };
         return action;
     }
@@ -284,7 +284,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalScrollbarWidth]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalScrollbarWidth]);
         action.commitEvent = () => {
-            this.coreSettings.grid_VerticalScrollbarWidth = this._verticalScrollbarWidthUiAction.definedValue;
+            this.userSettings.grid_VerticalScrollbarWidth = this._verticalScrollbarWidthUiAction.definedValue;
         };
         return action;
     }
@@ -294,7 +294,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalScrollbarWidth]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalScrollbarWidth]);
         action.commitEvent = () => {
-            this.coreSettings.grid_HorizontalScrollbarWidth = this._horizontalScrollbarWidthUiAction.definedValue;
+            this.userSettings.grid_HorizontalScrollbarWidth = this._horizontalScrollbarWidthUiAction.definedValue;
         };
         return action;
     }
@@ -304,7 +304,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_SmoothHorizontalScrolling]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_SmoothHorizontalScrolling]);
         action.commitEvent = () => {
-            this.coreSettings.grid_ScrollHorizontallySmoothly = this._smoothHorizontalScrollingUiAction.definedValue;
+            this.userSettings.grid_ScrollHorizontallySmoothly = this._smoothHorizontalScrollingUiAction.definedValue;
         };
         return action;
     }
@@ -314,7 +314,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBorderWidth]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBorderWidth]);
         action.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowBorderWidth = this._focusRowBorderWidthUiAction.definedValue;
+            this.userSettings.grid_FocusedRowBorderWidth = this._focusRowBorderWidthUiAction.definedValue;
         };
         return action;
     }
@@ -324,7 +324,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowBordered]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowBordered]);
         action.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowBordered = this._focusRowBorderedUiAction.definedValue;
+            this.userSettings.grid_FocusedRowBordered = this._focusRowBorderedUiAction.definedValue;
         };
         return action;
     }
@@ -334,7 +334,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_FocusedRowColored]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_FocusedRowColored]);
         action.commitEvent = () => {
-            this.coreSettings.grid_FocusedRowColored = this._focusRowColoredUiAction.definedValue;
+            this.userSettings.grid_FocusedRowColored = this._focusRowColoredUiAction.definedValue;
         };
         return action;
     }
@@ -344,7 +344,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedAllHighlightDuration]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedAllHighlightDuration]);
         action.commitEvent = () => {
-            this.coreSettings.grid_AllChangedRecentDuration = this._changedAllHighlightDurationUiAction.definedValue;
+            this.userSettings.grid_AllChangedRecentDuration = this._changedAllHighlightDurationUiAction.definedValue;
         };
         return action;
     }
@@ -354,7 +354,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_AddedRowHighlightDuration]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_AddedRowHighlightDuration]);
         action.commitEvent = () => {
-            this.coreSettings.grid_RecordInsertedRecentDuration = this._addedRowHighlightDurationUiAction.definedValue;
+            this.userSettings.grid_RecordInsertedRecentDuration = this._addedRowHighlightDurationUiAction.definedValue;
         };
         return action;
     }
@@ -364,7 +364,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedRowRecordHighlightDuration]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedRowRecordHighlightDuration]);
         action.commitEvent = () => {
-            this.coreSettings.grid_RecordUpdatedRecentDuration = this._changedRowRecordHighlightDurationUiAction.definedValue;
+            this.userSettings.grid_RecordUpdatedRecentDuration = this._changedRowRecordHighlightDurationUiAction.definedValue;
         };
         return action;
     }
@@ -374,7 +374,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_ChangedValueHighlightDuration]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_ChangedValueHighlightDuration]);
         action.commitEvent = () => {
-            this.coreSettings.grid_ValueChangedRecentDuration = this._changedValueHighlightDurationUiAction.definedValue;
+            this.userSettings.grid_ValueChangedRecentDuration = this._changedValueHighlightDurationUiAction.definedValue;
         };
         return action;
     }
@@ -384,7 +384,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_CellPadding]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_CellPadding]);
         action.commitEvent = () => {
-            this.coreSettings.grid_CellPadding = this._cellPaddingUiAction.definedValue;
+            this.userSettings.grid_CellPadding = this._cellPaddingUiAction.definedValue;
         };
         return action;
     }
@@ -394,7 +394,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLineWidth]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLineWidth]);
         action.commitEvent = () => {
-            this.coreSettings.grid_VerticalLineWidth = this._gridLineVerticalWidthUiAction.definedValue;
+            this.userSettings.grid_VerticalLineWidth = this._gridLineVerticalWidthUiAction.definedValue;
         };
         return action;
     }
@@ -404,7 +404,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLineWidth]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLineWidth]);
         action.commitEvent = () => {
-            this.coreSettings.grid_HorizontalLineWidth = this._gridLineHorizontalWidthUiAction.definedValue;
+            this.userSettings.grid_HorizontalLineWidth = this._gridLineHorizontalWidthUiAction.definedValue;
         };
         return action;
     }
@@ -414,7 +414,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLinesVisible]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLinesVisible]);
         action.commitEvent = () => {
-            this.coreSettings.grid_VerticalLinesVisible = this._showVerticalGridLinesUiAction.definedValue;
+            this.userSettings.grid_VerticalLinesVisible = this._showVerticalGridLinesUiAction.definedValue;
         };
         return action;
     }
@@ -424,33 +424,33 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_HorizontalLinesVisible]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_HorizontalLinesVisible]);
         action.commitEvent = () => {
-            this.coreSettings.grid_HorizontalLinesVisible = this._showHorizontalGridLinesUiAction.definedValue;
+            this.userSettings.grid_HorizontalLinesVisible = this._showHorizontalGridLinesUiAction.definedValue;
         };
         return action;
     }
 
     private pushValues() {
-        this._fontFamilyUiAction.pushValue(this.coreSettings.grid_FontFamily);
-        this._fontSizeUiAction.pushValue(this.coreSettings.grid_FontSize);
-        this._columnHeaderFontSizeUiAction.pushValue(this.coreSettings.grid_ColumnHeaderFontSize);
-        this._rowHeightUiAction.pushValue(this.coreSettings.grid_RowHeight);
-        this._showHorizontalGridLinesUiAction.pushValue(this.coreSettings.grid_HorizontalLinesVisible);
-        this._showVerticalGridLinesUiAction.pushValue(this.coreSettings.grid_VerticalLinesVisible);
-        this._gridLineHorizontalWidthUiAction.pushValue(this.coreSettings.grid_HorizontalLineWidth);
-        this._gridLineVerticalWidthUiAction.pushValue(this.coreSettings.grid_VerticalLineWidth);
-        this._cellPaddingUiAction.pushValue(this.coreSettings.grid_CellPadding);
-        this._changedAllHighlightDurationUiAction.pushValue(this.coreSettings.grid_AllChangedRecentDuration);
-        this._addedRowHighlightDurationUiAction.pushValue(this.coreSettings.grid_RecordInsertedRecentDuration);
-        this._changedRowRecordHighlightDurationUiAction.pushValue(this.coreSettings.grid_RecordUpdatedRecentDuration);
-        this._changedValueHighlightDurationUiAction.pushValue(this.coreSettings.grid_ValueChangedRecentDuration);
-        this._focusRowColoredUiAction.pushValue(this.coreSettings.grid_FocusedRowColored);
-        this._focusRowBorderedUiAction.pushValue(this.coreSettings.grid_FocusedRowBordered);
-        this._focusRowBorderWidthUiAction.pushValue(this.coreSettings.grid_FocusedRowBorderWidth);
-        this._smoothHorizontalScrollingUiAction.pushValue(this.coreSettings.grid_ScrollHorizontallySmoothly);
-        this._horizontalScrollbarWidthUiAction.pushValue(this.coreSettings.grid_HorizontalScrollbarWidth);
-        this._verticalScrollbarWidthUiAction.pushValue(this.coreSettings.grid_VerticalScrollbarWidth);
-        this._scrollbarMarginUiAction.pushValue(this.coreSettings.grid_ScrollbarMargin);
-        this._scrollbarThumbInactiveOpacityUiAction.pushValue(this.coreSettings.grid_ScrollbarThumbInactiveOpacity);
+        this._fontFamilyUiAction.pushValue(this.userSettings.grid_FontFamily);
+        this._fontSizeUiAction.pushValue(this.userSettings.grid_FontSize);
+        this._columnHeaderFontSizeUiAction.pushValue(this.userSettings.grid_ColumnHeaderFontSize);
+        this._rowHeightUiAction.pushValue(this.userSettings.grid_RowHeight);
+        this._showHorizontalGridLinesUiAction.pushValue(this.userSettings.grid_HorizontalLinesVisible);
+        this._showVerticalGridLinesUiAction.pushValue(this.userSettings.grid_VerticalLinesVisible);
+        this._gridLineHorizontalWidthUiAction.pushValue(this.userSettings.grid_HorizontalLineWidth);
+        this._gridLineVerticalWidthUiAction.pushValue(this.userSettings.grid_VerticalLineWidth);
+        this._cellPaddingUiAction.pushValue(this.userSettings.grid_CellPadding);
+        this._changedAllHighlightDurationUiAction.pushValue(this.userSettings.grid_AllChangedRecentDuration);
+        this._addedRowHighlightDurationUiAction.pushValue(this.userSettings.grid_RecordInsertedRecentDuration);
+        this._changedRowRecordHighlightDurationUiAction.pushValue(this.userSettings.grid_RecordUpdatedRecentDuration);
+        this._changedValueHighlightDurationUiAction.pushValue(this.userSettings.grid_ValueChangedRecentDuration);
+        this._focusRowColoredUiAction.pushValue(this.userSettings.grid_FocusedRowColored);
+        this._focusRowBorderedUiAction.pushValue(this.userSettings.grid_FocusedRowBordered);
+        this._focusRowBorderWidthUiAction.pushValue(this.userSettings.grid_FocusedRowBorderWidth);
+        this._smoothHorizontalScrollingUiAction.pushValue(this.userSettings.grid_ScrollHorizontallySmoothly);
+        this._horizontalScrollbarWidthUiAction.pushValue(this.userSettings.grid_HorizontalScrollbarWidth);
+        this._verticalScrollbarWidthUiAction.pushValue(this.userSettings.grid_VerticalScrollbarWidth);
+        this._scrollbarMarginUiAction.pushValue(this.userSettings.grid_ScrollbarMargin);
+        this._scrollbarThumbInactiveOpacityUiAction.pushValue(this.userSettings.grid_ScrollbarThumbInactiveOpacity);
     }
 }
 

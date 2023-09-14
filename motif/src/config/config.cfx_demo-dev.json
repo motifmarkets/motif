@@ -3,7 +3,8 @@
   "configComment": "",
   "service": {
     "name": "CFX Test",
-    "description": "CF Markets Test exchange (Development impersonating)"
+    "description": "CF Markets Test exchange (Development impersonating)",
+    "operator": "CFMarkets"
   },
   "environment": {
     "defaultDataEnvironment": "demo"

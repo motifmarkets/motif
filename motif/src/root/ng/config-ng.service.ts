@@ -8,9 +8,6 @@ import { Injectable } from '@angular/core';
 import { DomSanitizer, SafeResourceUrl } from '@angular/platform-browser';
 import {
     ConfigError,
-    ConfigServiceGroup,
-    ConfigServiceGroupId,
-    createRandomUrlSearch,
     DataEnvironment,
     DataEnvironmentId,
     ErrorCode,
@@ -20,7 +17,9 @@ import {
     JsonElement,
     LitIvemId,
     Logger,
-    ZenithPublisherSubscriptionManager
+    ServiceOperator,
+    ZenithPublisherSubscriptionManager,
+    createRandomUrlSearch
 } from '@motifmarkets/motif-core';
 import { Config } from '../config';
 
@@ -111,17 +110,17 @@ export namespace ConfigNgService {
 
         export function parseJson(json: unknown, serviceName: string) {
             if (json === undefined) {
-                throw new ConfigError(ErrorCode.ConfigMissingEnvironment, serviceName, '');
+                throw new ConfigError(ErrorCode.Config_MissingEnvironment, serviceName, '');
             } else {
                 const jsonType = typeof json;
                 if (jsonType !== 'object') {
-                    throw new ConfigError(ErrorCode.ConfigEnvironmentInvalidType, serviceName, jsonType);
+                    throw new ConfigError(ErrorCode.Config_EnvironmentInvalidType, serviceName, jsonType);
                 } else {
                     const environmentJson = json as EnvironmentJson;
                     const defaultDataEnvironment = environmentJson.defaultDataEnvironment;
                     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                     if (defaultDataEnvironment === undefined) {
-                        throw new ConfigError(ErrorCode.ConfigEnvironmentMissingDefaultData, serviceName, '');
+                        throw new ConfigError(ErrorCode.Config_EnvironmentMissingDefaultData, serviceName, '');
                     } else {
                         const defaultDataEnvironmentId = tryDataEnvironmentToId(defaultDataEnvironment);
                         if (defaultDataEnvironmentId === undefined) {
@@ -154,39 +153,38 @@ export namespace ConfigNgService {
         export interface ServiceJson {
             readonly name: string;
             readonly description?: string;
-            readonly group?: string;
+            readonly operator?: string;
         }
 
         export function parseJson(json: ServiceJson, jsonText: string) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ErrorCode.ConfigMissingService, '?', jsonText);
+                throw new ConfigError(ErrorCode.Config_MissingService, '?', jsonText);
             } else {
                 const name = json.name;
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                 if (name === undefined) {
-                    throw new ConfigError(ErrorCode.CSSPJN14499232322, '?', jsonText);
+                    throw new ConfigError(ErrorCode.Config_ServiceMissingName, '?', jsonText);
                 } else {
-                    const description = json.description;
-
-                    const group = json.group;
-                    let groupId: ConfigServiceGroupId | undefined;
-                    if (group === undefined) {
-                        groupId = undefined;
+                    const operator = json.operator;
+                    if (operator === undefined) {
+                        throw new ConfigError(ErrorCode.Config_ServiceMissingOperator, '?', jsonText);
                     } else {
-                        groupId = ConfigServiceGroup.tryJsonValueToId(group);
-                        if (groupId === undefined) {
-                            throw new ConfigError(ErrorCode.ConfigServiceInvalidGroup, name, group);
+                        const operatorId = ServiceOperator.tryJsonValueToId(operator);
+                        if (operatorId === undefined) {
+                            throw new ConfigError(ErrorCode.Config_ServiceInvalidOperator, name, operator);
+                        } else {
+                            const description = json.description;
+
+                            const service: Config.Service = {
+                                name,
+                                operatorId,
+                                description,
+                            };
+
+                            return service;
                         }
                     }
-
-                    const service: Config.Service = {
-                        name,
-                        groupId,
-                        description,
-                    };
-
-                    return service;
                 }
             }
         }
@@ -208,7 +206,7 @@ export namespace ConfigNgService {
         export function parseJson(json: ExchangeJson, serviceName: string) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ErrorCode.ConfigMissingExchange, serviceName, '');
+                throw new ConfigError(ErrorCode.Config_MissingExchange, serviceName, '');
             } else {
                 const defaultDefault = json.defaultDefault;
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -278,7 +276,7 @@ export namespace ConfigNgService {
         export function parseJson(json: EndPointsJson, serviceName: string) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ErrorCode.ConfigMissingEndpoints, serviceName, '');
+                throw new ConfigError(ErrorCode.Config_MissingEndpoints, serviceName, '');
             } else {
                 const motifServices = json.motifServices;
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
@@ -330,7 +328,7 @@ export namespace ConfigNgService {
         export function parseJson(json: OpenIdJson, serviceName: string) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
             if (json === undefined) {
-                throw new ConfigError(ErrorCode.ConfigMissingOpenId, serviceName, '');
+                throw new ConfigError(ErrorCode.Config_MissingOpenId, serviceName, '');
             } else {
                 const authority = json.authority;
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition

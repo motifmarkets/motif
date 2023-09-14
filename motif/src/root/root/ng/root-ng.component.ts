@@ -11,9 +11,9 @@ import {
     CapabilitiesService,
     ColorScheme,
     CommandContext,
-    CoreSettings,
     KeyboardService,
     MultiEvent,
+    ScalarSettings,
     SessionStateId,
     SettingsService,
     StringId,
@@ -57,7 +57,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     private _session: SessionService;
     private _sessionStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _settingsService: SettingsService;
-    private _coreSettings: CoreSettings;
+    private _scalarSettings: ScalarSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     private _measureFontFamily: string;
@@ -82,7 +82,7 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
             this._session.subscribeStateChangeEvent((stateId) => this.handleSessionStateChangeEvent(stateId));
 
         this._settingsService = settingsNgService.service;
-        this._coreSettings = this._settingsService.core;
+        this._scalarSettings = this._settingsService.scalar;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
 
         this._titleService.setTitle('Motif'); // need to improve this
@@ -128,8 +128,8 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
     }
 
     private applySettings() {
-        this.rootHtmlElement.style.setProperty('font-family', this._settingsService.core.fontFamily);
-        this.rootHtmlElement.style.setProperty('font-size', this._settingsService.core.fontSize);
+        this.rootHtmlElement.style.setProperty('font-family', this._settingsService.scalar.fontFamily);
+        this.rootHtmlElement.style.setProperty('font-size', this._settingsService.scalar.fontSize);
 
         const panelItemId = ColorScheme.ItemId.Panel;
         const bkgdPanelColor = this._settingsService.color.getBkgd(panelItemId);
@@ -142,9 +142,9 @@ export class RootNgComponent extends ComponentBaseNgDirective implements OnInit,
 
         this._cdr.markForCheck();
 
-        if (this._coreSettings.fontFamily !== this._measureFontFamily || this._coreSettings.fontSize !== this._measureFontSize) {
-            this._measureFontFamily = this._coreSettings.fontFamily;
-            this._measureFontSize = this._coreSettings.fontSize;
+        if (this._scalarSettings.fontFamily !== this._measureFontFamily || this._scalarSettings.fontSize !== this._measureFontSize) {
+            this._measureFontFamily = this._scalarSettings.fontFamily;
+            this._measureFontSize = this._scalarSettings.fontSize;
 
             delay1Tick(() => this._overlayOriginComponent.updateMeasure(this._measureFontFamily, this._measureFontSize));
         }

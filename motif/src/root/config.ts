@@ -5,7 +5,7 @@
  */
 
 import { SafeResourceUrl } from '@angular/platform-browser';
-import { ConfigServiceGroupId, DataEnvironmentId, ExchangeId, LitIvemId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
+import { DataEnvironmentId, ExchangeId, LitIvemId, ServiceOperatorId, ZenithPublisherSubscriptionManager } from '@motifmarkets/motif-core';
 import { ExtensionsService } from 'src/extensions/internal-api';
 
 export interface Config {
@@ -30,7 +30,7 @@ export namespace Config {
     export interface Service {
         readonly name: string;
         readonly description: string | undefined;
-        readonly groupId: ConfigServiceGroupId | undefined;
+        readonly operatorId: ServiceOperatorId;
     }
 
     export interface Exchange {

@@ -88,18 +88,18 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     private handleDefaultOrderTypeIdUiActionCommit() {
         const enumValue = this._defaultOrderTypeIdUiAction.definedValue;
         if (enumValue < 0) {
-            this.coreSettings.orderPad_DefaultOrderTypeId = undefined;
+            this.userSettings.orderPad_DefaultOrderTypeId = undefined;
         } else {
-            this.coreSettings.orderPad_DefaultOrderTypeId = enumValue;
+            this.userSettings.orderPad_DefaultOrderTypeId = enumValue;
         }
     }
 
     private handleDefaultTimeInForceIdUiActionCommit() {
         const enumValue = this._defaultTimeInForceIdUiAction.definedValue;
         if (enumValue < 0) {
-            this.coreSettings.orderPad_DefaultTimeInForceId = undefined;
+            this.userSettings.orderPad_DefaultTimeInForceId = undefined;
         } else {
-            this.coreSettings.orderPad_DefaultTimeInForceId = enumValue;
+            this.userSettings.orderPad_DefaultTimeInForceId = enumValue;
         }
     }
 
@@ -171,7 +171,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         action.pushCaption(Strings[StringId.SettingCaption_OrderPad_ReviewEnabled]);
         action.pushTitle(Strings[StringId.SettingTitle_OrderPad_ReviewEnabled]);
         action.commitEvent = () => {
-            this.coreSettings.orderPad_ReviewEnabled = this._reviewEnabledUiAction.definedValue;
+            this.userSettings.orderPad_ReviewEnabled = this._reviewEnabledUiAction.definedValue;
         };
         return action;
     }
@@ -186,16 +186,16 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     }
 
     private pushValues() {
-        this._reviewEnabledUiAction.pushValue(this.coreSettings.orderPad_ReviewEnabled);
+        this._reviewEnabledUiAction.pushValue(this.userSettings.orderPad_ReviewEnabled);
 
-        const defaultOrderTypeId = this.coreSettings.orderPad_DefaultOrderTypeId === undefined ?
+        const defaultOrderTypeId = this.userSettings.orderPad_DefaultOrderTypeId === undefined ?
             OrderPadSettingsNgComponent.UndefinedOrderTypeIdEnumValue :
-            this.coreSettings.orderPad_DefaultOrderTypeId;
+            this.userSettings.orderPad_DefaultOrderTypeId;
         this._defaultOrderTypeIdUiAction.pushValue(defaultOrderTypeId);
 
-        const defaultTimeInForceId = this.coreSettings.orderPad_DefaultTimeInForceId === undefined ?
+        const defaultTimeInForceId = this.userSettings.orderPad_DefaultTimeInForceId === undefined ?
             OrderPadSettingsNgComponent.UndefinedTimeInForceIdEnumValue :
-            this.coreSettings.orderPad_DefaultTimeInForceId;
+            this.userSettings.orderPad_DefaultTimeInForceId;
         this._defaultTimeInForceIdUiAction.pushValue(defaultTimeInForceId);
     }
 }

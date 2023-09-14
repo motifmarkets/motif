@@ -12,7 +12,6 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    CoreSettings,
     GridLayoutDefinition,
     GridLayoutOrNamedReferenceDefinition,
     Holding,
@@ -20,6 +19,7 @@ import {
     Integer,
     JsonElement,
     OrderPad,
+    ScalarSettings,
     SettingsService,
     SingleBrokerageAccountGroup,
     SymbolDetailCacheService,
@@ -32,7 +32,7 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class HoldingsDitemFrame extends BuiltinDitemFrame {
-    private readonly _coreSettings: CoreSettings;
+    private readonly _scalarSettings: ScalarSettings;
 
     private _holdingsFrame: HoldingsFrame | undefined;
     private _balancesFrame: BalancesFrame | undefined;
@@ -64,7 +64,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             adiService
         );
 
-        this._coreSettings = settingsService.core;
+        this._scalarSettings = settingsService.scalar;
     }
 
     get initialised() { return this._holdingsFrame !== undefined; }
@@ -145,7 +145,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             } else {
                 orderPad.loadSell();
             }
-            orderPad.applySettingsDefaults(this._coreSettings);
+            orderPad.applySettingsDefaults(this._scalarSettings);
             this.desktopAccessService.editOrderRequest(orderPad);
         }
     }

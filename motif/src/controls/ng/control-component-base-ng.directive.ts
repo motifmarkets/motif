@@ -8,12 +8,12 @@ import { ChangeDetectorRef, Directive, ElementRef, HostBinding, Input, OnDestroy
 import {
     ColorScheme,
     ColorSettings,
-    CoreSettings,
     ExchangeSettings,
     GridField,
     HtmlTypes,
     Integer,
     MultiEvent,
+    ScalarSettings,
     SettingsService,
     UiAction,
     UnreachableCaseError,
@@ -45,7 +45,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     private _uiAction: UiAction;
     private _pushEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _coreSettings: CoreSettings;
+    private _scalarSettings: ScalarSettings;
     private _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -61,7 +61,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
     ) {
         super(elRef, typeInstanceCreateId);
-        this._coreSettings = this._settingsService.core;
+        this._scalarSettings = this._settingsService.scalar;
         this._colorSettings = this._settingsService.color;
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
@@ -96,7 +96,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get stateId() { return this._stateId; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
-    protected get coreSettings() { return this._coreSettings; }
+    protected get coreSettings() { return this._scalarSettings; }
     // eslint-disable-next-line @typescript-eslint/member-ordering
     protected get colorSettings() { return this._colorSettings; }
 
@@ -321,7 +321,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     protected pushSettings() {
-        const dropDownEditableSearchTerm = this._coreSettings.control_DropDownEditableSearchTerm;
+        const dropDownEditableSearchTerm = this._scalarSettings.control_DropDownEditableSearchTerm;
         if (dropDownEditableSearchTerm !== this.dropDownEditableSearchTerm) {
             this.dropDownEditableSearchTerm = dropDownEditableSearchTerm;
             this.markForCheck();

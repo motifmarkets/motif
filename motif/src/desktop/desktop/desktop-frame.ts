@@ -617,7 +617,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         const component = this.createOrderRequestBuiltinComponent();
         const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadBuy();
-        pad.applySettingsDefaults(this._settingsService.core);
+        pad.applySettingsDefaults(this._settingsService.scalar);
         component.setOrderPad(pad);
     }
 
@@ -625,7 +625,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         const component = this.createOrderRequestBuiltinComponent();
         const pad = new OrderPad(this._symbolDetailCacheService, this._adiService);
         pad.loadSell();
-        pad.applySettingsDefaults(this._settingsService.core);
+        pad.applySettingsDefaults(this._settingsService.scalar);
         component.setOrderPad(pad);
     }
 

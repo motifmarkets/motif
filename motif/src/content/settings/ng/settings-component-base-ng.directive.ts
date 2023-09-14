@@ -5,12 +5,12 @@
  */
 
 import { ChangeDetectorRef, Directive, ElementRef } from '@angular/core';
-import { ColorSettings, CoreSettings, Integer, MultiEvent, SettingsService } from '@motifmarkets/motif-core';
+import { ColorSettings, Integer, MultiEvent, ScalarSettings, SettingsService } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Directive()
 export abstract class SettingsComponentBaseNgDirective extends ContentComponentBaseNgDirective {
-    private _coreSettings: CoreSettings;
+    private _scalarSettings: ScalarSettings;
     private _colorSettings: ColorSettings;
     private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -22,13 +22,13 @@ export abstract class SettingsComponentBaseNgDirective extends ContentComponentB
     ) {
         super(elRef, typeInstanceCreateId);
 
-        this._coreSettings = this._settingsService.core;
+        this._scalarSettings = this._settingsService.scalar;
         this._colorSettings = this._settingsService.color;
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 
     protected get settingsService() { return this._settingsService; }
-    protected get coreSettings() { return this._coreSettings; }
+    protected get userSettings() { return this._scalarSettings; }
     protected get colorSettings() { return this._colorSettings; }
 
     protected markForCheck() {

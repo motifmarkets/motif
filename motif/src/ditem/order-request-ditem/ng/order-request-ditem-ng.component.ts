@@ -146,7 +146,7 @@ export class OrderRequestDitemNgComponent extends BuiltinDitemNgComponentBaseNgD
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
 
-        this.reviewButtonInitDisplayed = this.settingsService.core.orderPad_ReviewEnabled;
+        this.reviewButtonInitDisplayed = this.settingsService.scalar.orderPad_ReviewEnabled;
 
         this.pushPrimarySelectState();
         this.pushSymbolLinkedSelectState();

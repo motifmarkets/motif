@@ -19,6 +19,7 @@ import {
     AssertInternalError,
     Badness,
     DataEnvironment,
+    ServiceOperator,
     SessionInfoService,
     TradingEnvironment
 } from '@motifmarkets/motif-core';
@@ -44,6 +45,7 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
 
     public serviceName: string;
     public serviceDescription: string;
+    public serviceOperator: string;
     public clientVersion: string;
     public codeCommit: string;
     public dataEnvironment: string;
@@ -73,6 +75,7 @@ export class StatusSummaryNgComponent extends ContentComponentBaseNgDirective
 
         this.serviceName = this._sessionInfoService.serviceName;
         this.serviceDescription = this._sessionInfoService.serviceDescription ?? '';
+        this.serviceOperator = ServiceOperator.idToDisplay(this._sessionInfoService.serviceOperatorId);
         this.clientVersion = `${Version.app} (${isDevMode() ? 'DevMode' : 'ProdMode'})`;
         this.codeCommit = `${Version.commit}`;
         this.dataEnvironment = `${DataEnvironment.idToDisplay(DataEnvironment.getDefaultId())}`;

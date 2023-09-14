@@ -203,7 +203,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_FontFamily]);
         action.pushTitle(Strings[StringId.SettingTitle_FontFamily]);
         action.commitEvent = () => {
-            this.coreSettings.fontFamily = this._fontFamilyUiAction.definedValue;
+            this.userSettings.fontFamily = this._fontFamilyUiAction.definedValue;
         };
         return action;
     }
@@ -213,7 +213,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_FontSize]);
         action.pushTitle(Strings[StringId.SettingTitle_FontSize]);
         action.commitEvent = () => {
-            this.coreSettings.fontSize = this._fontSizeUiAction.definedValue;
+            this.userSettings.fontSize = this._fontSizeUiAction.definedValue;
         };
         return action;
     }
@@ -274,7 +274,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Control_DropDownEditableSearchTerm]);
         action.pushTitle(Strings[StringId.SettingTitle_Control_DropDownEditableSearchTerm]);
         action.commitEvent = () => {
-            this.coreSettings.control_DropDownEditableSearchTerm = this._dropDownEditableSearchTermUiAction.definedValue;
+            this.userSettings.control_DropDownEditableSearchTerm = this._dropDownEditableSearchTermUiAction.definedValue;
         };
         return action;
     }
@@ -284,7 +284,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Format_NumberGroupingActive]);
         action.pushTitle(Strings[StringId.SettingTitle_Format_NumberGroupingActive]);
         action.commitEvent = () => {
-            this.coreSettings.format_NumberGroupingActive = this._numberGroupingActiveUiAction.definedValue;
+            this.userSettings.format_NumberGroupingActive = this._numberGroupingActiveUiAction.definedValue;
         };
         return action;
     }
@@ -294,7 +294,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Format_MinimumPriceFractionDigitsCount]);
         action.pushTitle(Strings[StringId.SettingTitle_Format_MinimumPriceFractionDigitsCount]);
         action.commitEvent = () => {
-            this.coreSettings.format_MinimumPriceFractionDigitsCount = this._minimumPriceFractionDigitsCountUiAction.definedValue;
+            this.userSettings.format_MinimumPriceFractionDigitsCount = this._minimumPriceFractionDigitsCountUiAction.definedValue;
         };
         return action;
     }
@@ -304,7 +304,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         action.pushCaption(Strings[StringId.SettingCaption_Format_24Hour]);
         action.pushTitle(Strings[StringId.SettingTitle_Format_24Hour]);
         action.commitEvent = () => {
-            this.coreSettings.format_24Hour = this._24HourUiAction.definedValue;
+            this.userSettings.format_24Hour = this._24HourUiAction.definedValue;
         };
         return action;
     }
@@ -325,7 +325,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this.coreSettings.format_DateTimeTimezoneModeId = this._dateTimeTimezoneModeUiAction.definedValue;
+            this.userSettings.format_DateTimeTimezoneModeId = this._dateTimeTimezoneModeUiAction.definedValue;
         };
         return action;
     }
@@ -426,17 +426,17 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private pushValues() {
-        this._fontFamilyUiAction.pushValue(this.coreSettings.fontFamily);
-        this._fontSizeUiAction.pushValue(this.coreSettings.fontSize);
+        this._fontFamilyUiAction.pushValue(this.userSettings.fontFamily);
+        this._fontSizeUiAction.pushValue(this.userSettings.fontSize);
         this._defaultExchangeUiAction.pushValue(this._symbolsService.defaultExchangeId);
         this._exchangeHideModeUiAction.pushValue(this._symbolsService.pscExchangeHideModeId);
         this._defaultMarketHiddenUiAction.pushValue(this._symbolsService.pscDefaultMarketHidden);
         this._marketCodeAsLocalWheneverPossibleUiAction.pushValue(this._symbolsService.pscMarketCodeAsLocalWheneverPossible);
-        this._dropDownEditableSearchTermUiAction.pushValue(this.coreSettings.control_DropDownEditableSearchTerm);
-        this._numberGroupingActiveUiAction.pushValue(this.coreSettings.format_NumberGroupingActive);
-        this._minimumPriceFractionDigitsCountUiAction.pushValue(this.coreSettings.format_MinimumPriceFractionDigitsCount);
-        this._24HourUiAction.pushValue(this.coreSettings.format_24Hour);
-        this._dateTimeTimezoneModeUiAction.pushValue(this.coreSettings.format_DateTimeTimezoneModeId);
+        this._dropDownEditableSearchTermUiAction.pushValue(this.userSettings.control_DropDownEditableSearchTerm);
+        this._numberGroupingActiveUiAction.pushValue(this.userSettings.format_NumberGroupingActive);
+        this._minimumPriceFractionDigitsCountUiAction.pushValue(this.userSettings.format_MinimumPriceFractionDigitsCount);
+        this._24HourUiAction.pushValue(this.userSettings.format_24Hour);
+        this._dateTimeTimezoneModeUiAction.pushValue(this.userSettings.format_DateTimeTimezoneModeId);
         this._explicitSymbolSearchFieldsEnabledUiAction.pushValue(this._symbolsService.explicitSearchFieldsEnabled);
         this._explicitSymbolSearchFieldsUiAction.pushValue(this._symbolsService.explicitSearchFieldIds);
         this.updateExplicitSearchFieldsUiActionEnabled();

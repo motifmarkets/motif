@@ -5,7 +5,8 @@
  */
 
 import {
-    AppStorageService, JsonElement, KeyValueStore, Logger,
+    AppStorageService, AssertInternalError, getErrorMessage,
+    KeyValueStore, Logger,
     mSecsPerSec,
     SettingsService,
     SysTick
@@ -42,16 +43,22 @@ export class IdleProcessor {
         this._requestIdleCallbackHandle = window.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
     }
 
-    private async idleCallback(deadline: IdleDeadline) {
+    private idleCallback(deadline: IdleDeadline) {
+        let settingSaveInitiated = false;
         let nowTime: number | undefined;
         if (this._settingsService.saveRequired) {
             nowTime = SysTick.now();
             if (nowTime > this._settingsSaveNotAllowedUntilTime) {
-                await this.saveSettings();
+                const promise = this.saveSettings();
+                promise.then(
+                    () => {/**/},
+                    (e) => { throw AssertInternalError.createIfNotError(e, 'IPICS10987') }
+                );
+                settingSaveInitiated = true;
             }
         }
 
-        if (deadline.timeRemaining() > 0) {
+        if (!settingSaveInitiated) {
             const localDesktopFrame = this._workspaceService.localDesktopFrame;
             if (localDesktopFrame !== undefined) {
                 if (localDesktopFrame.layoutSaveRequired) {
@@ -59,7 +66,11 @@ export class IdleProcessor {
                         nowTime = SysTick.now();
                     }
                     if (nowTime > this._localDesktopLayoutSaveNotAllowedUntilTime) {
-                        await this.saveLocalDesktopLayout(localDesktopFrame);
+                        const promise = this.saveLocalDesktopLayout(localDesktopFrame);
+                        promise.then(
+                            () => {/**/},
+                            (e) => { throw AssertInternalError.createIfNotError(e, 'IPICLDL10987') }
+                        );
                     }
                 }
             }
@@ -69,11 +80,27 @@ export class IdleProcessor {
     }
 
     private async saveSettings() {
-        const rootElement = new JsonElement();
-        this._settingsService.save(rootElement);
-        const settingsAsJsonString = rootElement.stringify();
+        const { user: userElement, operator: operatorElement } = this._settingsService.save();
         try {
-            await this._appStorageService.setItem(KeyValueStore.Key.Settings, settingsAsJsonString);
+            if (userElement === undefined) {
+                if (operatorElement === undefined) {
+                    return;
+                } else {
+                    const operatorSettings = operatorElement.stringify()
+                    await this._appStorageService.setItem(KeyValueStore.Key.Settings, operatorSettings, true);
+                }
+            } else {
+                const userSettings = userElement.stringify()
+                if (operatorElement === undefined) {
+                    await this._appStorageService.setItem(KeyValueStore.Key.Settings, userSettings, false);
+                } else {
+                    const operatorSettings = operatorElement.stringify()
+                    await Promise.all([
+                        this._appStorageService.setItem(KeyValueStore.Key.Settings, userSettings, false),
+                        this._appStorageService.setItem(KeyValueStore.Key.Settings, operatorSettings, true)
+                    ]);
+                }
+            }
             this._settingsService.reportSaved();
             if (this._lastSettingsSaveFailed) {
                 this.logWarning(`Save settings succeeded`);
@@ -81,7 +108,7 @@ export class IdleProcessor {
             }
             this._settingsSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumSettingsSaveRepeatSpan;
         } catch (e) {
-            this.logWarning(`Save settings error: ${e}`);
+            this.logWarning(`Save settings error: ${getErrorMessage(e)}`);
             this._lastSettingsSaveFailed = true;
             this._settingsSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumSettingsSaveRepeatSpan;
         }
@@ -96,7 +123,7 @@ export class IdleProcessor {
             }
             this._localDesktopLayoutSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumLocalDesktopLayoutSaveRepeatSpan;
         } catch (e) {
-            this.logWarning(`Save local desktop layout error: ${e}`);
+            this.logWarning(`Save local desktop layout error: ${getErrorMessage(e)}`);
             this._lastLocalDesktopLayoutSaveFailed = true;
             this._localDesktopLayoutSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumLocalDesktopLayoutSaveRepeatSpan;
         }

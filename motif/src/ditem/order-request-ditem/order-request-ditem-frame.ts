@@ -70,7 +70,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         );
 
         this._settingsChangedSubscriptionId = this.settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
-        this._reviewEnabled = this.settingsService.core.orderPad_ReviewEnabled;
+        this._reviewEnabled = this.settingsService.scalar.orderPad_ReviewEnabled;
     }
 
     get initialised() { return this._initialised; }
@@ -137,7 +137,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
     newOrderPad() {
         const orderPad = new OrderPad(this._symbolDetailCacheService, this.adiService);
         orderPad.loadPlace();
-        orderPad.applySettingsDefaults(this.settingsService.core);
+        orderPad.applySettingsDefaults(this.settingsService.scalar);
         if (this.brokerageAccountGroupLinked) {
             const group = this.brokerageAccountGroup;
             if (group !== undefined) {
@@ -219,7 +219,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     review() {
         if (this._stepId !== OrderRequestStepFrame.StepId.Pad ||
-            !this.settingsService.core.orderPad_ReviewEnabled ||
+            !this.settingsService.scalar.orderPad_ReviewEnabled ||
             !this._reviewEnabled ||
             this._padFrame === undefined
         ) {
@@ -491,7 +491,7 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     private canSendFromStep() {
         switch (this._stepId) {
-            case OrderRequestStepFrame.StepId.Pad: return !this._reviewEnabled && !this.settingsService.core.orderPad_ReviewEnabled;
+            case OrderRequestStepFrame.StepId.Pad: return !this._reviewEnabled && !this.settingsService.scalar.orderPad_ReviewEnabled;
             case OrderRequestStepFrame.StepId.Review: return this._reviewEnabled;
             case OrderRequestStepFrame.StepId.Result: return false;
             default: throw new UnreachableCaseError('ORDFCSFS4344499321', this._stepId);
@@ -502,8 +502,8 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
         if (this._stepId !== OrderRequestStepFrame.StepId.Pad) {
             throw new AssertInternalError('ORDFCPPRE121299535');
         } else {
-            if (this.settingsService.core.orderPad_ReviewEnabled !== this._reviewEnabled || force) {
-                this._reviewEnabled = this.settingsService.core.orderPad_ReviewEnabled;
+            if (this.settingsService.scalar.orderPad_ReviewEnabled !== this._reviewEnabled || force) {
+                this._reviewEnabled = this.settingsService.scalar.orderPad_ReviewEnabled;
                 if (this._reviewEnabled) {
                     this._componentAccess.pushReviewEnabled(this._orderPadSendable);
                     this._componentAccess.pushSendEnabled(false);

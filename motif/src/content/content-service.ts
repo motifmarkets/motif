@@ -69,7 +69,7 @@ export class ContentService {
     }
 
     createMarketsFrame(componentAccess: MarketsFrame.ComponentAccess) {
-        return new MarketsFrame(componentAccess, this._settingsService.core, this._adiService, this._textFormatterService);
+        return new MarketsFrame(componentAccess, this._settingsService.scalar, this._adiService, this._textFormatterService);
     }
 
     // createGridSourceFrame(

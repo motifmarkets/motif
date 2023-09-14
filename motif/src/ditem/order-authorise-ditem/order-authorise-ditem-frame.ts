@@ -10,13 +10,13 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    CoreSettings,
     GridLayoutOrNamedReferenceDefinition,
     Integer,
     JsonElement,
     Order,
     OrderPad,
     OrderTableRecordSourceDefinition,
+    ScalarSettings,
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
@@ -27,7 +27,7 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
-    private readonly _coreSettings: CoreSettings;
+    private readonly _scalarSettings: ScalarSettings;
 
     private _orderAuthoriseFrame: OrderAuthoriseFrame | undefined;
     private _currentFocusedLitIvemIdAccountGroupSetting: boolean;
@@ -49,7 +49,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
         );
 
-        this._coreSettings = settingsService.core;
+        this._scalarSettings = settingsService.scalar;
     }
 
     override get builtinDitemTypeId() { return BuiltinDitemFrame.BuiltinTypeId.OrderAuthorise; }
@@ -142,7 +142,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             } else {
                 orderPad.loadBuy();
             }
-            orderPad.applySettingsDefaults(this._coreSettings);
+            orderPad.applySettingsDefaults(this._scalarSettings);
             this.desktopAccessService.editOrderRequest(orderPad);
         }
     }
@@ -158,7 +158,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             } else {
                 orderPad.loadSell();
             }
-            orderPad.applySettingsDefaults(this._coreSettings);
+            orderPad.applySettingsDefaults(this._scalarSettings);
             this.desktopAccessService.editOrderRequest(orderPad);
         }
     }

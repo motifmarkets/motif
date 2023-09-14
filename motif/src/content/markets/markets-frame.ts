@@ -8,7 +8,6 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
-    CoreSettings,
     Correctness,
     FeedStatus,
     Integer,
@@ -18,6 +17,7 @@ import {
     MarketsDataDefinition,
     MarketsDataItem,
     MultiEvent,
+    ScalarSettings,
     SourceTzOffsetDate,
     SourceTzOffsetDateTime,
     TextFormatterService,
@@ -47,7 +47,7 @@ export class MarketsFrame extends ContentFrame {
 
     constructor(
         private readonly _componentAccess: MarketsFrame.ComponentAccess,
-        private readonly _coreSettings: CoreSettings,
+        private readonly _scalarSettings: ScalarSettings,
         private readonly _adi: AdiService,
         private readonly _textFormatterService: TextFormatterService,
     ) {
@@ -290,7 +290,7 @@ export class MarketsFrame extends ContentFrame {
             marketTimeStr = '';
         } else {
             const utcTimezonedMarketTime =
-                SourceTzOffsetDateTime.getTimezonedDate(marketTime, this._coreSettings.format_DateTimeTimezoneModeId);
+                SourceTzOffsetDateTime.getTimezonedDate(marketTime, this._scalarSettings.format_DateTimeTimezoneModeId);
             marketTimeStr = this._textFormatterService.formatDateTime(utcTimezonedMarketTime); // utcTimezonedMarketTime.toLocaleString();
         }
 

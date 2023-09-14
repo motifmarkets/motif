@@ -41,7 +41,7 @@ export abstract class AdaptedRevgridComponentNgDirective extends ContentComponen
     // applySettings() {
     //     // this._gridHostElement.style.setProperty(CssVar.scrollbarThumbColor, colorSettings.getFore(settings.scrollbar));
     //     // this._gridHostElement.style.setProperty(CssVar.scrollbarThumbShadowColor, colors.scrollbarThumbShadowColor);
-    //     const coreSettings = this._settingsService.core;
+    //     const coreSettings = this._settingsService.scalar;
 
     //     const newHorizontalScrollbarWidth = coreSettings.grid_HorizontalScrollbarWidth;
     //     if (newHorizontalScrollbarWidth !== this._horizontalScrollbarWidth) {
