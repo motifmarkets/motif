@@ -3,7 +3,8 @@
   "configComment": "Do NOT use!!  Template only",
   "service": {
     "name": "Paritech Staging",
-    "description": "Paritech Staging"
+    "description": "Paritech Staging",
+    "operator": "Paritech"
   },
   "environment": {
     "defaultDataEnvironment": "demo",

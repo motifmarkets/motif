@@ -4,7 +4,7 @@
     "service": {
         "name": "Finplex production",
         "description": "Finplex production",
-        "group": "Fpsx"
+        "operator": "Fpsx"
     },
     "environment": {
         "defaultDataEnvironment": "production"

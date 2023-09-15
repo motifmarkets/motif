@@ -3,7 +3,8 @@
   "configComment": "",
   "service": {
     "name": "EM2 Customer Test (Development)",
-    "description": "Empower Hub Customer Test (Development)"
+    "description": "Empower Hub Customer Test (Development)",
+    "operator": "EM2"
   },
   "environment": {
     "defaultDataEnvironment": "demo"

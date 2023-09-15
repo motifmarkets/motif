@@ -3,7 +3,8 @@
   "configComment": "",
   "service": {
     "name": "FNSX Demo",
-    "description": "First National Stock Exchange Demo (Development impersonating production)"
+    "description": "First National Stock Exchange Demo (Development impersonating production)",
+    "operator": "Fnsx"
   },
   "environment": {
     "defaultDataEnvironment": "demo"
