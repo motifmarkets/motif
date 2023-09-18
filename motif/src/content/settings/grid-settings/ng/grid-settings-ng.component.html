@@ -15,7 +15,10 @@
 <app-caption-label #showHorizontalGridLinesLabel for="showHorizontalGridLinesCheckbox"></app-caption-label>
 <app-checkbox-input #showHorizontalGridLinesCheckbox inputId="showHorizontalGridLinesCheckbox"></app-checkbox-input>
 <app-caption-label #showVerticalGridLinesLabel for="showVerticalGridLinesCheckbox"></app-caption-label>
-<app-checkbox-input #showVerticalGridLinesCheckbox inputId="showVerticalGridLinesCheckbox"></app-checkbox-input>
+<div id="showVerticalGridLinesValue">
+    <app-checkbox-input #showVerticalGridLinesCheckbox inputId="showVerticalGridLinesCheckbox"></app-checkbox-input>
+    <div id="inHeaderOnly"><span>(</span><app-captioned-checkbox #showVerticalGridLinesInHeaderOnlyControl></app-captioned-checkbox><span>)</span></div>
+</div>
 <app-caption-label #gridLineHorizontalWidthLabel for="gridLineHorizontalWidthInput"></app-caption-label>
 <app-integer-text-input #gridLineHorizontalWidthEdit id="gridLineHorizontalWidthEdit" inputId="gridLineHorizontalWidthInput"></app-integer-text-input>
 <app-caption-label #gridLineVerticalWidthLabel for="gridLineVerticalWidthInput"></app-caption-label>

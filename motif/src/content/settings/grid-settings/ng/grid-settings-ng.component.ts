@@ -18,6 +18,7 @@ import { BooleanUiAction, IntegerUiAction, NumberUiAction, StringId, StringUiAct
 import { SettingsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
+    CaptionedCheckboxNgComponent,
     CheckboxInputNgComponent,
     IntegerTextInputNgComponent,
     NumberInputNgComponent,
@@ -47,6 +48,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     @ViewChild('showHorizontalGridLinesCheckbox', { static: true }) private _showHorizontalGridLinesCheckbox: CheckboxInputNgComponent;
     @ViewChild('showVerticalGridLinesLabel', { static: true }) private _showVerticalGridLinesLabel: CaptionLabelNgComponent;
     @ViewChild('showVerticalGridLinesCheckbox', { static: true }) private _showVerticalGridLinesCheckbox: CheckboxInputNgComponent;
+    @ViewChild('showVerticalGridLinesInHeaderOnlyControl', { static: true }) private _showVerticalGridLinesInHeaderOnlyControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('gridLineHorizontalWidthLabel', { static: true }) private _gridLineHorizontalWidthLabel: CaptionLabelNgComponent;
     @ViewChild('gridLineHorizontalWidthEdit', { static: true }) private _gridLineHorizontalWidthEdit: IntegerTextInputNgComponent;
     @ViewChild('gridLineVerticalWidthLabel', { static: true }) private _gridLineVerticalWidthLabel: CaptionLabelNgComponent;
@@ -90,6 +92,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
     private readonly _rowHeightUiAction: IntegerUiAction;
     private readonly _showHorizontalGridLinesUiAction: BooleanUiAction;
     private readonly _showVerticalGridLinesUiAction: BooleanUiAction;
+    private readonly _showVerticalGridLinesInHeaderOnlyUiAction: BooleanUiAction;
     private readonly _gridLineHorizontalWidthUiAction: IntegerUiAction;
     private readonly _gridLineVerticalWidthUiAction: IntegerUiAction;
     private readonly _cellPaddingUiAction: IntegerUiAction;
@@ -115,6 +118,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._rowHeightUiAction = this.createRowHeightUiAction();
         this._showHorizontalGridLinesUiAction = this.createShowHorizontalGridLinesUiAction();
         this._showVerticalGridLinesUiAction = this.createShowVerticalGridLinesUiAction();
+        this._showVerticalGridLinesInHeaderOnlyUiAction = this.createShowVerticalGridLinesInHeaderOnlyUiAction();
         this._gridLineHorizontalWidthUiAction = this.createGridLineHorizontalWidthUiAction();
         this._gridLineVerticalWidthUiAction = this.createGridLineVerticalWidthUiAction();
         this._cellPaddingUiAction = this.createCellPaddingUiAction();
@@ -155,6 +159,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._rowHeightUiAction.finalise();
         this._showHorizontalGridLinesUiAction.finalise();
         this._showVerticalGridLinesUiAction.finalise();
+        this._showVerticalGridLinesInHeaderOnlyUiAction.finalise();
         this._gridLineHorizontalWidthUiAction.finalise();
         this._gridLineVerticalWidthUiAction.finalise();
         this._cellPaddingUiAction.finalise();
@@ -187,6 +192,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._showHorizontalGridLinesCheckbox.initialise(this._showHorizontalGridLinesUiAction);
         this._showVerticalGridLinesLabel.initialise(this._showVerticalGridLinesUiAction);
         this._showVerticalGridLinesCheckbox.initialise(this._showVerticalGridLinesUiAction);
+        this._showVerticalGridLinesInHeaderOnlyControlComponent.initialise(this._showVerticalGridLinesInHeaderOnlyUiAction);
         this._gridLineHorizontalWidthLabel.initialise(this._gridLineHorizontalWidthUiAction);
         this._gridLineHorizontalWidthEdit.initialise(this._gridLineHorizontalWidthUiAction);
         this._gridLineVerticalWidthLabel.initialise(this._gridLineVerticalWidthUiAction);
@@ -414,7 +420,23 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLinesVisible]);
         action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLinesVisible]);
         action.commitEvent = () => {
-            this.userSettings.grid_VerticalLinesVisible = this._showVerticalGridLinesUiAction.definedValue;
+            const value = this._showVerticalGridLinesUiAction.definedValue;
+            this.userSettings.grid_VerticalLinesVisible = value;
+            if (value) {
+                this._showVerticalGridLinesInHeaderOnlyUiAction.pushAccepted();
+            } else {
+                this._showVerticalGridLinesInHeaderOnlyUiAction.pushDisabled();
+            }
+        };
+        return action;
+    }
+
+    private createShowVerticalGridLinesInHeaderOnlyUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.SettingCaption_Grid_VerticalLinesVisibleInHeaderOnly]);
+        action.pushTitle(Strings[StringId.SettingTitle_Grid_VerticalLinesVisibleInHeaderOnly]);
+        action.commitEvent = () => {
+            this.userSettings.grid_VerticalLinesVisibleInHeaderOnly = this._showVerticalGridLinesInHeaderOnlyUiAction.definedValue;
         };
         return action;
     }
@@ -436,6 +458,7 @@ export class GridSettingsNgComponent extends SettingsComponentBaseNgDirective im
         this._rowHeightUiAction.pushValue(this.userSettings.grid_RowHeight);
         this._showHorizontalGridLinesUiAction.pushValue(this.userSettings.grid_HorizontalLinesVisible);
         this._showVerticalGridLinesUiAction.pushValue(this.userSettings.grid_VerticalLinesVisible);
+        this._showVerticalGridLinesInHeaderOnlyUiAction.pushValue(this.userSettings.grid_VerticalLinesVisibleInHeaderOnly);
         this._gridLineHorizontalWidthUiAction.pushValue(this.userSettings.grid_HorizontalLineWidth);
         this._gridLineVerticalWidthUiAction.pushValue(this.userSettings.grid_VerticalLineWidth);
         this._cellPaddingUiAction.pushValue(this.userSettings.grid_CellPadding);

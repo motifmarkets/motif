@@ -4,6 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+@import './partials/checkbox-followed-by-caption';
+
 :host {
     display: grid;
     grid-template-columns: max-content max-content;
@@ -26,6 +28,15 @@
 
 #rowHeightControl {
     width: 12em;
+}
+
+#showVerticalGridLinesValue {
+    display: flex;
+    gap: 2em;
+    #inHeaderOnly {
+        display: flex;
+        @include checkboxFollowedByCaptionMixin;
+    }
 }
 
 #gridLineHorizontalWidthEdit {
