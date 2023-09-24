@@ -115,6 +115,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private _newHoldingsDitemUiAction: CommandUiAction;
     private _newBalancesDitemUiAction: CommandUiAction;
     private _newSettingsDitemUiAction: CommandUiAction;
+    private _newDiagnosticsDitemUiAction: CommandUiAction;
     private _newEtoPriceQuotationDitemUiAction: CommandUiAction;
 
     private _newBuyOrderRequestDitemUiAction: CommandUiAction;
@@ -141,11 +142,12 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private _newOrderAuthoriseDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newHoldingsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBalancesDitemMenuItem: MenuBarService.CommandMenuItem;
-    private _newSettingsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newBuyOrderRequestDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSellOrderRequestDitemMenuItem: MenuBarService.CommandMenuItem;
     private _saveLayoutMenuItem: MenuBarService.CommandMenuItem;
     private _resetLayoutMenuItem: MenuBarService.CommandMenuItem;
+    private _newSettingsDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newDiagnosticsDitemMenuItem: MenuBarService.CommandMenuItem;
 
     private _requestGlobalLinkedLitIvemIdEvent: DesktopFrame.RequestAppLinkedLitIvemIdEvent;
     private _requestGlobalLinkedBrokerageAccountGroupEvent: DesktopFrame.RequestAppLinkedBrokerageAccountGroupEvent;
@@ -693,6 +695,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         this._newHoldingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Holdings);
         this._newBalancesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Balances);
         this._newSettingsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Settings);
+        this._newDiagnosticsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Diagnostics);
         this._newEtoPriceQuotationDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.EtoPriceQuotation);
 
         const buySellOrderRequestMenuPath = [...DesktopFrame.BuySellOrderRequestParentMenuPath, DesktopFrame.BuySellOrderRequestMenuName];
@@ -760,6 +763,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         this._newHoldingsDitemUiAction.finalise();
         this._newBalancesDitemUiAction.finalise();
         this._newSettingsDitemUiAction.finalise();
+        this._newDiagnosticsDitemUiAction.finalise();
         this._newEtoPriceQuotationDitemUiAction.finalise();
         this._newBuyOrderRequestDitemUiAction.finalise();
         this._newSellOrderRequestDitemUiAction.finalise();
@@ -818,13 +822,16 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             this._newOrdersDitemMenuItem = this._menuBarService.connectMenuItem(this._newOrdersDitemUiAction);
             this._newHoldingsDitemMenuItem = this._menuBarService.connectMenuItem(this._newHoldingsDitemUiAction);
             this._newBalancesDitemMenuItem = this._menuBarService.connectMenuItem(this._newBalancesDitemUiAction);
-            this._newSettingsDitemMenuItem = this._menuBarService.connectMenuItem(this._newSettingsDitemUiAction);
             this._newBuyOrderRequestDitemMenuItem = this._menuBarService.connectMenuItem(this._newBuyOrderRequestDitemUiAction);
             this._newSellOrderRequestDitemMenuItem = this._menuBarService.connectMenuItem(this._newSellOrderRequestDitemUiAction);
             this._saveLayoutMenuItem = this._menuBarService.connectMenuItem(this._saveLayoutUiAction);
             this._resetLayoutMenuItem = this._menuBarService.connectMenuItem(this._resetLayoutUiAction);
             if (this._capabilitiesService.dtrEnabled) {
                 this._newOrderAuthoriseDitemMenuItem = this._menuBarService.connectMenuItem(this._newOrderAuthoriseDitemUiAction);
+            }
+            this._newSettingsDitemMenuItem = this._menuBarService.connectMenuItem(this._newSettingsDitemUiAction);
+            if (this._capabilitiesService.diagnosticToolsEnabled) {
+                this._newDiagnosticsDitemMenuItem = this._menuBarService.connectMenuItem(this._newDiagnosticsDitemUiAction);
             }
         } finally {
             this._menuBarService.endChanges();
@@ -852,13 +859,16 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             this._menuBarService.disconnectMenuItem(this._newOrdersDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newHoldingsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newBalancesDitemMenuItem);
-            this._menuBarService.disconnectMenuItem(this._newSettingsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newBuyOrderRequestDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newSellOrderRequestDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._saveLayoutMenuItem);
             this._menuBarService.disconnectMenuItem(this._resetLayoutMenuItem);
             if (this._capabilitiesService.dtrEnabled) {
                 this._menuBarService.disconnectMenuItem(this._newOrderAuthoriseDitemMenuItem);
+            }
+            this._menuBarService.disconnectMenuItem(this._newSettingsDitemMenuItem);
+            if (this._capabilitiesService.diagnosticToolsEnabled) {
+                this._menuBarService.disconnectMenuItem(this._newDiagnosticsDitemMenuItem);
             }
         } finally {
             this._menuBarService.endChanges();

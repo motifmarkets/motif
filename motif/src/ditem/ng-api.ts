@@ -6,7 +6,9 @@
 
 export * from './balances-ditem/ng-api';
 export * from './brokerage-accounts-ditem/ng-api';
+export * from './depth-and-sales-ditem/ng-api';
 export * from './depth-ditem/ng-api';
+export * from './diagnostics-ditem/ng-api';
 export * from './eto-price-quotation-ditem/ng-api';
 export * from './extensions-ditem/ng-api';
 export * from './holdings-ditem/ng-api';
@@ -16,11 +18,10 @@ export { BuiltinDitemNgComponentBaseNgDirective } from './ng/builtin-ditem-ng-co
 export { DesktopAccessNgService } from './ng/desktop-access-ng.service';
 export { DitemComponentFactoryNgService } from './ng/ditem-component-factory-ng.service';
 export { DitemNgComponentIdAndType } from './ng/ditem-ng-component-id-and-type';
-export * from './ng/ditem-ng.module';
+export * from './ng/eager-ditem-ng.module';
 export * from './order-authorise-ditem/ng-api';
 export * from './order-request-ditem/ng-api';
 export * from './orders-ditem/ng-api';
-export * from './depth-and-sales-ditem/ng-api';
 export * from './placeholder-ditem/ng-api';
 export * from './scans-ditem/ng-api';
 export * from './search-symbols-ditem/ng-api';

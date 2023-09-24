@@ -437,10 +437,7 @@ export class LitIvemIdSelectNgComponent extends ControlComponentBaseNgDirective 
 
     private applyValueWithoutWait(value: LitIvemId | undefined, edited: boolean, selectAll = true) {
         const applyPromise = this.applyValue(value, edited, selectAll);
-        applyPromise.then(
-            () => {/**/},
-            (error) => { throw AssertInternalError.createIfNotError(error, 'RIISNCIAOSF34344'); }
-        )
+        AssertInternalError.throwErrorIfVoidPromiseRejected(applyPromise, 'RIISNCIAOSF34344');
     }
 
     private async applyValue(value: LitIvemId | undefined, edited: boolean, selectAll: boolean) {

@@ -69,6 +69,9 @@
 	        }
             ]
         },
+        "toolsEnabled": true,
+        "fullDepthDebugLoggingEnabled": true,
+        "fullDepthConsistencyCheckingEnabled": true,
         "dataSubscriptionCachingDisabled": false
     },
     "branding": {

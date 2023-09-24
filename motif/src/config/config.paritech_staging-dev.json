@@ -134,7 +134,10 @@
           "message": "^Zenith Reconnection: "
         }
       ]
-    }
+    },
+    "toolsEnabled": true,
+    "fullDepthDebugLoggingEnabled": true,
+    "fullDepthConsistencyCheckingEnabled": true
   },
   "branding": {
     "desktopBarLeftImageUrl": "branding/images/desktop-bar-left-icon.svg"

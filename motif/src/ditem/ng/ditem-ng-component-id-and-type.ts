@@ -9,7 +9,9 @@ import { AlertsDitemNgComponent } from '../alerts-ditem/ng-api';
 import { BalancesDitemNgComponent } from '../balances-ditem/ng-api';
 import { BrokerageAccountsDitemNgComponent } from '../brokerage-accounts-ditem/ng-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
+import { DepthAndSalesDitemNgComponent } from '../depth-and-sales-ditem/ng-api';
 import { DepthDitemNgComponent } from '../depth-ditem/ng-api';
+import { DiagnosticsDitemNgComponent } from '../diagnostics-ditem/ng-api';
 import { EtoPriceQuotationDitemNgComponent } from '../eto-price-quotation-ditem/ng-api';
 import { ExtensionsDitemNgComponent } from '../extensions-ditem/ng-api';
 import { HoldingsDitemNgComponent } from '../holdings-ditem/ng-api';
@@ -18,7 +20,6 @@ import { NewsHeadlinesDitemNgComponent } from '../news-headlines-ditem/ng-api';
 import { OrderAuthoriseDitemNgComponent } from '../order-authorise-ditem/ng-api';
 import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
-import { DepthAndSalesDitemNgComponent } from '../depth-and-sales-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
 import { ScansDitemNgComponent } from '../scans-ditem/ng-api';
 import { SearchDitemNgComponent } from '../search-ditem/ng-api';
@@ -127,6 +128,10 @@ export namespace DitemNgComponentIdAndType {
         Settings: {
             id: BuiltinDitemFrame.BuiltinTypeId.Settings,
             type: SettingsDitemNgComponent,
+        },
+        Diagnostics: {
+            id: BuiltinDitemFrame.BuiltinTypeId.Diagnostics,
+            type: DiagnosticsDitemNgComponent,
         },
         EtoPriceQuotation: {
             id: BuiltinDitemFrame.BuiltinTypeId.EtoPriceQuotation,

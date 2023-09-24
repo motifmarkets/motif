@@ -111,6 +111,9 @@
         }
       ]
     },
+    "toolsEnabled": true,
+    "fullDepthDebugLoggingEnabled": true,
+    "fullDepthConsistencyCheckingEnabled": true,
     "zenithLogLevel": "off",
     "dataSubscriptionCachingDisabled": true
   },

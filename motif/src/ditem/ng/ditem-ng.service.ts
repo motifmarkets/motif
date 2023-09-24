@@ -8,10 +8,10 @@ import { Injectable, OnDestroy } from '@angular/core';
 import { CoreNgService, SessionInfoNgService } from 'component-services-ng-api';
 import { DitemService } from '../ditem-service';
 import { DesktopAccessNgService } from './desktop-access-ng.service';
-import { DitemNgModule } from './ditem-ng.module';
+import { EagerDitemNgModule } from './eager-ditem-ng.module';
 
 @Injectable({
-    providedIn: DitemNgModule
+    providedIn: EagerDitemNgModule
 })
 export class DitemNgService implements OnDestroy {
     private _service: DitemService;

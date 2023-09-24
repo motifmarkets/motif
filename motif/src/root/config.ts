@@ -68,16 +68,22 @@ export namespace Config {
     export type BundledExtensions = readonly ExtensionsService.BundledExtension[];
 
     export interface Diagnostics {
+        readonly toolsEnabled: boolean;
         readonly appNotifyErrors: boolean;
         readonly telemetry: Diagnostics.Telemetry;
         readonly zenithLogLevelId: ZenithPublisherSubscriptionManager.LogLevelId;
         readonly dataSubscriptionCachingDisabled: boolean;
         readonly motifServicesBypass: Diagnostics.MotifServicesBypass;
+        readonly fullDepthDebugLoggingEnabled: boolean;
+        readonly fullDepthConsistencyCheckingEnabled: boolean;
     }
 
     export namespace Diagnostics {
+        export const defaultToolsEnabled = false;
         export const defaultAppNotifyErrors = true;
         export const defaultDataSubscriptionCachingDisabled = false;
+        export const defaultFullDepthDebugLoggingEnabled = false;
+        export const defaultFullDepthConsistencyCheckingEnabled = false;
 
         export interface Telemetry {
             enabled: boolean;

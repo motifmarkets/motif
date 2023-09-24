@@ -295,18 +295,12 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleOpenUiActionSignalEvent() {
         const promise = this.showOpenDialog();
-        promise.then(
-            () => {/**/},
-            (error) => { throw AssertInternalError.createIfNotError(error, 'WDNCHOUASE11109'); }
-        );
+        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDNCHOUASE11109');
     }
 
     private handleSaveUiActionEvent() {
         const promise = this.showSaveDialog();
-        promise.then(
-            () => {/**/},
-            (error) => { throw AssertInternalError.createIfNotError(error, 'WDNCHSUAE11109'); }
-        );
+        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDNCHSUAE11109');
     }
 
     private handleColumnsUiActionSignalEvent() {

@@ -9,8 +9,8 @@
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
-import { ContentNgModule } from 'content-ng-api';
-import { ControlsNgModule } from 'controls-ng-api';
+import { EagerContentNgModule } from 'content-ng-api';
+import { EagerControlsNgModule } from 'controls-ng-api';
 import { DesktopNgModule } from 'desktop-ng-api';
 import { ExtensionsNgModule } from 'src/extensions/ng-api';
 import { OverlayNgModule } from 'src/overlay/ng-api';
@@ -47,8 +47,8 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
         FormsModule,
         OverlayNgModule,
         DesktopNgModule,
-        ContentNgModule,
-        ControlsNgModule,
+        EagerContentNgModule,
+        EagerControlsNgModule,
         WorkspaceNgModule,
         ExtensionsNgModule,
     ],

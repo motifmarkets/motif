@@ -31,7 +31,7 @@ export class MenuBarOverlayNgComponent {
     @ViewChild('menusContainer', {read: ViewContainerRef}) private _menusContainerRef: ViewContainerRef;
 
     private readonly _menuBarService: MenuBarService;
-    private readonly _activeMenus: MenuBarOverlayComponent.Menu[] = [];
+    private readonly _activeMenus: MenuBarOverlayNgComponent.Menu[] = [];
 
     constructor(
         private readonly _cdr: ChangeDetectorRef,
@@ -87,7 +87,7 @@ export class MenuBarOverlayNgComponent {
     }
 }
 
-export namespace MenuBarOverlayComponent {
+export namespace MenuBarOverlayNgComponent {
     export interface Menu {
         readonly childMenu: MenuBarService.ChildMenu;
         readonly viewRef: ViewRef;

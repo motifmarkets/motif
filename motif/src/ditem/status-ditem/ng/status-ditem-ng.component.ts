@@ -71,8 +71,8 @@ export class StatusDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         );
     }
 
-    get ditemFrame() { return this._frame; }
-    protected get stateSchemaVersion() { return StatusDitemNgComponent.stateSchemaVersion; }
+    override get ditemFrame() { return this._frame; }
+    protected override get stateSchemaVersion() { return StatusDitemNgComponent.stateSchemaVersion; }
 
     ngOnInit() {
         this.initialise();

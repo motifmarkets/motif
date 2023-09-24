@@ -473,32 +473,40 @@ export namespace ConfigNgService {
 
     export namespace Diagnostics {
         export interface DiagnosticsJson {
+            readonly toolsEnabled?: boolean;
             readonly appNotifyErrors?: boolean;
             readonly telemetry?: Telemetry.TelemetryJson;
             readonly zenithLogLevel?: ZenithLog.Level;
             readonly dataSubscriptionCachingDisabled?: boolean;
             readonly motifServicesBypass?: MotifServicesBypass.MotifServicesByPassJson;
+            readonly fullDepthDebugLoggingEnabled?: boolean;
+            readonly fullDepthConsistencyCheckingEnabled?: boolean;
         }
 
         export function parseJson(json: DiagnosticsJson | undefined, serviceName: string) {
             if (json === undefined) {
                 const diagnostics: Config.Diagnostics = {
+                    toolsEnabled: Config.Diagnostics.defaultToolsEnabled,
                     appNotifyErrors: Config.Diagnostics.defaultAppNotifyErrors,
                     telemetry: Telemetry.parseJson(undefined, serviceName),
                     zenithLogLevelId: Config.Diagnostics.ZenithLog.defaultLevelId,
                     dataSubscriptionCachingDisabled: Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
                     motifServicesBypass: MotifServicesBypass.parseJson(undefined),
+                    fullDepthDebugLoggingEnabled: Config.Diagnostics.defaultFullDepthDebugLoggingEnabled,
+                    fullDepthConsistencyCheckingEnabled: Config.Diagnostics.defaultFullDepthConsistencyCheckingEnabled,
                 };
 
                 return diagnostics;
             } else {
                 const diagnostics: Config.Diagnostics = {
+                    toolsEnabled: json.toolsEnabled ?? Config.Diagnostics.defaultToolsEnabled,
                     appNotifyErrors: json.appNotifyErrors ?? Config.Diagnostics.defaultAppNotifyErrors,
                     telemetry: Telemetry.parseJson(json.telemetry, serviceName),
                     zenithLogLevelId: ZenithLog.parseJson(json.zenithLogLevel, serviceName),
-                    dataSubscriptionCachingDisabled: json.dataSubscriptionCachingDisabled ??
-                        Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
+                    dataSubscriptionCachingDisabled: json.dataSubscriptionCachingDisabled ?? Config.Diagnostics.defaultDataSubscriptionCachingDisabled,
                     motifServicesBypass: MotifServicesBypass.parseJson(json.motifServicesBypass),
+                    fullDepthDebugLoggingEnabled: json.fullDepthDebugLoggingEnabled ?? Config.Diagnostics.defaultFullDepthDebugLoggingEnabled,
+                    fullDepthConsistencyCheckingEnabled: json.fullDepthConsistencyCheckingEnabled ?? Config.Diagnostics.defaultFullDepthConsistencyCheckingEnabled,
                 };
 
                 return diagnostics;

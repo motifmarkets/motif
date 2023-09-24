@@ -44,6 +44,7 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
+        private readonly _sessionInfoService: SessionInfoService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _rankedLitIvemIdListReferentialsService: RankedLitIvemIdListReferentialsService,
         private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
@@ -213,7 +214,12 @@ export class ContentService {
     }
 
     createDepthSideFrame(hostElement: HTMLElement) {
-        return new DepthSideFrame(this._settingsService, this._cellPainterFactoryService, hostElement);
+        return new DepthSideFrame(
+            this._settingsService,
+            this._sessionInfoService,
+            this._cellPainterFactoryService,
+            hostElement
+        );
     }
 
     createDepthFrame(componentAccess: DepthFrame.ComponentAccess) {

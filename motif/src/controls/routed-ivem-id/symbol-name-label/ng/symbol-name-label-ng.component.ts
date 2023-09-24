@@ -55,10 +55,7 @@ export class SymbolNameLabelNgComponent extends RoutedIvemIdComponentBaseNgDirec
             this.checkApplyCaption('');
         } else {
             const promise = this.applyRoutedIvemId(value);
-            promise.then(
-                () => {/**/},
-                (error) => { throw AssertInternalError.createIfNotError(error, 'SNLNCAVA43344'); }
-            );
+            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNLNCAVA43344');
         }
     }
 

@@ -35,7 +35,7 @@ import {
     UserAlertNgService
 } from 'component-services-ng-api';
 import { ExtensionsAccessNgService } from 'content-ng-api';
-import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuComponent } from 'controls-ng-api';
+import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuNgComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
 import { CapabilitiesNgService } from 'src/component-services/ng/capabilities-ng.service';
@@ -53,7 +53,7 @@ import { DesktopFrame } from '../desktop-frame';
 export class DesktopNgComponent extends ComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuComponent;
+    @ViewChild('menuBarRootMenu', { static: true }) private _menuBarRootMenuComponent: MenuBarRootMenuNgComponent;
     @ViewChild('aboutAdvertisingButton') private _aboutAdvertisingButtonComponent: ButtonInputNgComponent | undefined;
     @ViewChild('commandBar', { static: true }) private _commandBarComponent: CommandBarNgComponent;
     @ViewChild('signOutButton', { static: true }) private _signOutButtonComponent: ButtonInputNgComponent;

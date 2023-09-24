@@ -6,6 +6,7 @@
 
 import { Injectable, OnDestroy } from '@angular/core';
 import { Router } from '@angular/router';
+import { AssertInternalError } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -93,11 +94,13 @@ export class SessionNgService implements OnDestroy {
     }
 
     completeAuthentication() {
-        this.session.completeAuthentication(this._config);
+        const promise = this.session.completeAuthentication(this._config);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNSCA20256');
     }
 
     start() {
-        this.session.start(this._config);
+        const promise = this.session.start(this._config);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNSS20256');
     }
 
     private handleAuthenticatedEvent() {
@@ -109,6 +112,14 @@ export class SessionNgService implements OnDestroy {
     }
 
     private navigate(path: string) {
-        this._router.navigate([path]);
+        const promise = this._router.navigate([path]);
+        promise.then(
+            (success) => {
+                if (!success) {
+                    throw new AssertInternalError('SNSNF20256', path);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SNSNR20256', path); }
+        )
     }
 }

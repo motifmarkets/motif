@@ -26,6 +26,7 @@ import {
     OrderSideId,
     RecordGrid,
     RenderValueRecordGridCellPainter,
+    SessionInfoService,
     SettingsService,
     ShortDepthSideGridField,
     ShortDepthSideGridRecordStore,
@@ -58,6 +59,7 @@ export class DepthSideFrame extends ContentFrame {
 
     constructor(
         private readonly _settingsService: SettingsService,
+        private readonly _sessionInfoService: SessionInfoService,
         private readonly _cellPainterFactoryService: CellPainterFactoryService,
         private readonly _hostElement: HTMLElement,
     ) {
@@ -285,7 +287,7 @@ export class DepthSideFrame extends ContentFrame {
         switch (styleId) {
             case DepthStyleId.Full: {
                 fields = FullDepthSideGridField.createAll(this._sideId, () => this.handleGetDataItemCorrectnessIdEvent());
-                store = new FullDepthSideGridRecordStore(styleId, this._sideId);
+                store = new FullDepthSideGridRecordStore(this._sessionInfoService, styleId, this._sideId);
 
                 if (initialGridLayoutDefinition === undefined) {
                     initialGridLayoutDefinition = FullDepthSideGridField.createDefaultGridLayoutDefinition(this._sideId);
@@ -391,7 +393,7 @@ export class DepthSideFrame extends ContentFrame {
                         this.waitRendered();
                     }
                 },
-                (error) => AssertInternalError.createIfNotError(error, 'DSFAS69114')
+                (error) => { throw AssertInternalError.createIfNotError(error, 'DSFAS69114'); }
             );
         }
     }
@@ -470,7 +472,7 @@ export class DepthSideFrame extends ContentFrame {
                     this.openedPopulatedAndRenderedEvent()
                 }
             },
-            (error) => AssertInternalError.createIfNotError(error, 'DSFWR69114')
+            (error) => { throw AssertInternalError.createIfNotError(error, 'DSFWR69114') }
         );
     }
 }

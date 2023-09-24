@@ -30,7 +30,7 @@ export * from './ivem-holdings/ng-api';
 export * from './markets/ng-api';
 export * from './nameable-grid-layout-editor-dialog/ng-api';
 export * from './ng/content-component-base-ng.directive';
-export * from './ng/content-ng.module';
+export * from './ng/eager-content-ng.module';
 export * from './open-watchlist-dialog/ng-api';
 export * from './order-authorise/ng-api';
 export * from './order-request-step/ng-api';

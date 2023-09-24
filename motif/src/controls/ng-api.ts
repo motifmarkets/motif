@@ -16,11 +16,11 @@ export * from './label/ng-api';
 export * from './lit-ivem-id/ng-api';
 export {
     MenuBarNgService,
-    MenuBarOverlayNgComponent as MenuBarOverlayComponent,
-    MenuBarRootMenuNgComponent as MenuBarRootMenuComponent
+    MenuBarOverlayNgComponent,
+    MenuBarRootMenuNgComponent
 } from './menu-bar/ng-api';
 export * from './ng/control-component-base-ng.directive';
-export * from './ng/controls-ng.module';
+export * from './ng/eager-controls-ng.module';
 export * from './ng/ng-select-overlay-ng.service';
 export * from './number/ng-api';
 export * from './order-route/ng-api';

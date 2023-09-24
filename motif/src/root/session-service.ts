@@ -240,6 +240,13 @@ export class SessionService {
         this._infoService.serviceOperatorId = value;
     }
 
+    private setDiagnostics(diagnostics: Config.Diagnostics) {
+        this._infoService.setDiagnostics(
+            diagnostics.fullDepthDebugLoggingEnabled,
+            diagnostics.fullDepthConsistencyCheckingEnabled
+        );
+    }
+
     private setZenithEndpoints(value: readonly string[]) {
         this._zenithEndpoints = value;
         this._infoService.zenithEndpoints = value;
@@ -371,7 +378,9 @@ export class SessionService {
         this.setServiceName(config.service.name);
         this.setServiceDescription(config.service.description);
         this.setServiceOperatorId(config.service.operatorId);
+        this.setDiagnostics(config.diagnostics);
 
+        this._capabilitiesService.setDiagnosticToolsEnabled(config.diagnostics.toolsEnabled);
         this._capabilitiesService.setAdvertisingEnabled(config.capabilities.advertising);
         this._capabilitiesService.setDtrEnabled(config.capabilities.dtr);
 

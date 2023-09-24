@@ -7,8 +7,8 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
-import { ContentNgModule } from 'content-ng-api';
-import { ControlsNgModule } from 'controls-ng-api';
+import { EagerContentNgModule } from 'content-ng-api';
+import { EagerControlsNgModule } from 'controls-ng-api';
 import { AlertsDitemNgComponent } from '../alerts-ditem/ng-api';
 import { BalancesDitemNgComponent } from '../balances-ditem/ng-api';
 import { BrokerageAccountsDitemNgComponent } from '../brokerage-accounts-ditem/ng-api';
@@ -63,13 +63,13 @@ import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } 
     ],
     imports: [
         CommonModule,
-        ControlsNgModule,
-        ContentNgModule,
+        EagerControlsNgModule,
+        EagerContentNgModule,
         AngularSplitModule,
     ],
 })
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class DitemNgModule {
+export class EagerDitemNgModule {
     constructor() {
         StaticInitialise.initialise();
     }

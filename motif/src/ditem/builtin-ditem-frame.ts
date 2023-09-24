@@ -85,6 +85,7 @@ export namespace BuiltinDitemFrame {
         Holdings,
         Balances,
         Settings,
+        Diagnostics,
         EtoPriceQuotation,
         GeneralWebPage,
         BrandingSplashWebPage,
@@ -307,6 +308,16 @@ export namespace BuiltinDitemFrame {
                 name: 'Settings',
                 newInternalCommandId: InternalCommand.Id.NewSettingsDitem,
                 menuDisplayId: StringId.DitemMenuDisplay_Settings,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 90000,
+                },
+            },
+            Diagnostics: {
+                id: BuiltinTypeId.Diagnostics,
+                name: 'Settings',
+                newInternalCommandId: InternalCommand.Id.NewDiagnosticsDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_Diagnostics,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
                     rank: 80000,

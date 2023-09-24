@@ -90,6 +90,9 @@
         }
       ]
     },
+    "toolsEnabled": false,
+    "fullDepthDebugLoggingEnabled": false,
+    "fullDepthConsistencyCheckingEnabled": false,
     "zenithLogLevel": "off",
     "appNotifyErrors": true,
     "dataSubscriptionCachingDisabled": false,

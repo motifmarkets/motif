@@ -26,12 +26,12 @@ export class SignedOutNgComponent extends ComponentBaseNgDirective implements On
 
     public signedOutText = Strings[StringId.SignedOut];
 
-    private _commandRegisterService: CommandRegisterService;
-    private _signInAgainUiAction: ButtonUiAction;
+    private readonly _commandRegisterService: CommandRegisterService;
+    private readonly _signInAgainUiAction: ButtonUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
-        private _router: Router,
+        private readonly _router: Router,
         commandRegisterNgService: CommandRegisterNgService
     ) {
         super(elRef, ++SignedOutNgComponent.typeInstanceCreateCount);

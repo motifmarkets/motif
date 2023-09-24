@@ -50,10 +50,7 @@ export class IdleProcessor {
             nowTime = SysTick.now();
             if (nowTime > this._settingsSaveNotAllowedUntilTime) {
                 const promise = this.saveSettings();
-                promise.then(
-                    () => {/**/},
-                    (e) => { throw AssertInternalError.createIfNotError(e, 'IPICS10987') }
-                );
+                AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICS10987');
                 settingSaveInitiated = true;
             }
         }
@@ -67,10 +64,7 @@ export class IdleProcessor {
                     }
                     if (nowTime > this._localDesktopLayoutSaveNotAllowedUntilTime) {
                         const promise = this.saveLocalDesktopLayout(localDesktopFrame);
-                        promise.then(
-                            () => {/**/},
-                            (e) => { throw AssertInternalError.createIfNotError(e, 'IPICLDL10987') }
-                        );
+                        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICLDL10987');
                     }
                 }
             }

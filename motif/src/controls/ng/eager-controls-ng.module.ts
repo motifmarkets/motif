@@ -142,7 +142,7 @@ import { TabListNgComponent } from '../tab-list/ng-api';
 })
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class ControlsNgModule {
+export class EagerControlsNgModule {
     constructor(
         ngSelectConfig: NgSelectConfig,
         settingsNgService: SettingsNgService

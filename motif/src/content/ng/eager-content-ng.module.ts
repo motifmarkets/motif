@@ -7,7 +7,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
-import { ControlsNgModule } from 'controls-ng-api';
+import { EagerControlsNgModule } from 'controls-ng-api';
 import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
     AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
@@ -212,12 +212,12 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
     imports: [
         CommonModule,
         AngularSplitModule,
-        ControlsNgModule
+        EagerControlsNgModule
     ]
 })
 
 // eslint-disable-next-line @typescript-eslint/no-extraneous-class
-export class ContentNgModule {
+export class EagerContentNgModule {
     constructor() {
         StaticInitialise.initialise();
     }
