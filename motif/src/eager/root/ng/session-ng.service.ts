@@ -108,7 +108,9 @@ export class SessionNgService implements OnDestroy {
     }
 
     private handleOnlineEvent() {
-        this.navigate('/desktop');
+        if (this._router.routerState.snapshot.url !== '/desktop') {
+            this.navigate('/desktop');
+        }
     }
 
     private navigate(path: string) {
