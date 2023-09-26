@@ -2,7 +2,7 @@
   "compileOnSave": false,
   "compilerOptions": {
     "target": "ES2022",
-    "module": "es2020",
+    "module": "ES2022",
     "downlevelIteration": true,
     "resolveJsonModule": true,
     "importHelpers": true,
@@ -32,29 +32,35 @@
       "src/@types"
     ],
     "lib": [
-      "es2019",
+      "ES2022",
       "dom"
     ],
     "rootDir": ".",
     "paths": {
-      "@motifmarkets/motif-core": ["../motif-core/src/code/public-api"], // for debugging only
+      // "@motifmarkets/motif-core": ["../motif-core/src/code/public-api"], // for debugging only
       "third-party-internal-api": ["src/third-party/internal-api"],
-      "third-party-ng-api": ["src/third-party/ng-api"],
-      "third-party-code-mirror-component": ["src/third-party/code-mirror-module/code-mirror/ng/code-mirror-ng.component"],
       "generated-internal-api": ["src/generated/internal-api"],
-      "component-internal-api": ["src/component/internal-api"],
-      "component-ng-api": ["src/component/ng-api"],
-      "component-services-internal-api": ["src/component-services/internal-api"],
-      "component-services-ng-api": ["src/component-services/ng-api"],
-      "controls-internal-api": ["src/controls/internal-api"],
-      "controls-ng-api": ["src/controls/ng-api"],
-      "content-internal-api": ["src/content/internal-api"],
-      "content-ng-api": ["src/content/ng-api"],
-      "ditem-internal-api": ["src/ditem/internal-api"],
-      "ditem-ng-api": ["src/ditem/ng-api"],
-      "desktop-ng-api": ["src/desktop/ng-api"],
-      "workspace-internal-api": ["src/workspace/internal-api"],
-      "workspace-ng-api": ["src/workspace/ng-api"]
+      "component-internal-api": ["src/eager/component/internal-api"],
+      "component-ng-api": ["src/eager/component/ng-api"],
+      "component-services-internal-api": ["src/eager/component-services/internal-api"],
+      "component-services-ng-api": ["src/eager/component-services/ng-api"],
+      "controls-internal-api": ["src/eager/controls/internal-api"],
+      "controls-ng-api": ["src/eager/controls/ng-api"],
+      "content-internal-api": ["src/eager/content/internal-api"],
+      "content-ng-api": ["src/eager/content/ng-api"],
+      "ditem-internal-api": ["src/eager/ditem/internal-api"],
+      "ditem-ng-api": ["src/eager/ditem/ng-api"],
+      "desktop-internal-api": ["src/eager/desktop/internal-api"],
+      "desktop-ng-api": ["src/eager/desktop/ng-api"],
+      "workspace-internal-api": ["src/eager/workspace/internal-api"],
+      "workspace-ng-api": ["src/eager/workspace/ng-api"],
+      "extensions-internal-api": ["src/eager/extensions/internal-api"],
+      "extensions-ng-api": ["src/eager/extensions/ng-api"],
+      "overlay-ng-api": ["src/eager/overlay/ng-api"],
+      "root-ng-api": ["src/eager/root/ng-api"],
+      "diagnostics-ng-api": ["src/lazy/diagnostics/ng-api"],
+      "code-mirror-ng-api": ["src/lazy/code-mirror-module/ng-api"],
+      // "code-mirror-component": ["src/lazy/code-mirror-module/code-mirror/ng/code-mirror-ng.component"],
     },
     "useDefineForClassFields": false
     // "traceResolution": true, // can use this to debug paths below

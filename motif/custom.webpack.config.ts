@@ -12,7 +12,7 @@ const path = require('path');
 // const JavaScriptObfuscator = require('webpack-obfuscator');
 
 const webpackConfigFileName = 'webpack.config.dev';
-const svgButtonIconsFolderPath = path.resolve(__dirname, 'src/controls/boolean/button/icon/svg-button/ng/svg/');
+const svgButtonIconsFolderPath = path.resolve(__dirname, 'src/eager/controls/boolean/button/icon/svg-button/ng/svg/');
 const productionMode = 'production';
 const developmentMode = 'development';
 
