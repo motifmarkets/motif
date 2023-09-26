@@ -5,8 +5,8 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { ButtonUiAction, CommandRegisterService, InternalCommand, StringId } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import { AdiService, ButtonUiAction, CommandRegisterService, InternalCommand, StringId, ZenithExtConnectionDataDefinition, ZenithExtConnectionDataItem } from '@motifmarkets/motif-core';
+import { AdiNgService, CommandRegisterNgService, SessionInfoNgService } from 'component-services-ng-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
 import { DiagnosticsComponentBaseNgDirective } from '../../ng/diagnostics-component-base-ng.directive';
 
@@ -21,14 +21,22 @@ export class DebugDiagnosticsNgComponent extends DiagnosticsComponentBaseNgDirec
 
     @ViewChild('closeSocketConnectionButton', { static: true }) private _closeSocketConnectionButtonComponent: ButtonInputNgComponent;
 
+    private readonly _zenithEndpoints: readonly string[];
+    private readonly _adiService: AdiService;
+
     private readonly _closeSocketConnectionUiAction: ButtonUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        adiNgService: AdiNgService,
+        sessionInfoNgService: SessionInfoNgService,
     ) {
         super(elRef, ++DebugDiagnosticsNgComponent.typeInstanceCreateCount, cdr);
+
+        this._zenithEndpoints = sessionInfoNgService.service.zenithEndpoints;
+        this._adiService = adiNgService.service;
 
         const commandRegisterService = commandRegisterNgService.service;
         this._closeSocketConnectionUiAction = this.createCloseSocketConnectionUiAction(commandRegisterService);
@@ -49,7 +57,11 @@ export class DebugDiagnosticsNgComponent extends DiagnosticsComponentBaseNgDirec
     }
 
     private handleCreateCloseSocketConnectionSignalEvent() {
-
+        const zenithExtConnectionDataDefinition = new ZenithExtConnectionDataDefinition();
+        zenithExtConnectionDataDefinition.zenithWebsocketEndpoints = this._zenithEndpoints;
+        const zenithExtConnectionDataItem = this._adiService.subscribe(zenithExtConnectionDataDefinition) as ZenithExtConnectionDataItem;
+        zenithExtConnectionDataItem.diagnosticCloseSocket();
+        this._adiService.unsubscribe(zenithExtConnectionDataItem);
     }
 
     private createCloseSocketConnectionUiAction(commandRegisterService: CommandRegisterService) {
