@@ -12,6 +12,7 @@ import {
     ComponentRef,
     ElementRef,
     EnvironmentInjector,
+    Injector,
     OnDestroy,
     ViewChild,
     ViewContainerRef,
@@ -90,6 +91,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
     constructor(
         elRef: ElementRef<HTMLElement>,
         environmentInjector: EnvironmentInjector,
+        elementInjector: Injector,
         private readonly _cdr: ChangeDetectorRef,
         private readonly _appRef: ApplicationRef,
         sessionNgService: SessionInfoNgService,
@@ -104,7 +106,7 @@ export class GoldenLayoutHostNgComponent extends ComponentBaseNgDirective implem
         this._colorSettings = this._settingsService.color;
         this._extensionsAccessService = extensionsAccessNgService.service as FrameExtensionsAccessService;
 
-        this._ditemComponentFactoryNgService = new DitemComponentFactoryNgService(environmentInjector),
+        this._ditemComponentFactoryNgService = new DitemComponentFactoryNgService(environmentInjector, elementInjector),
 
         this._virtualLayout = new VirtualLayout(
             this._componentsParentHtmlElement,

@@ -27,7 +27,7 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
         cdr: ChangeDetectorRef,
         private readonly _sanitizer: DomSanitizer,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
-        @Inject(BrandingNgService.injectionToken) brandingService: BrandingNgService,
+        @Inject(BrandingNgService.injectionToken) brandingNgService: BrandingNgService,
         settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
         desktopAccessNgService: DesktopAccessNgService,
@@ -47,7 +47,7 @@ export class BrandingSplashWebPageDitemNgComponent extends WebPageDitemNgCompone
         this._frame = new BrandingSplashWebPageDitemFrame(this, settingsService, this.commandRegisterService,
             desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
 
-        const startupSplashWebPageSafeResourceUrl = brandingService.startupSplashWebPageSafeResourceUrl;
+        const startupSplashWebPageSafeResourceUrl = brandingNgService.startupSplashWebPageSafeResourceUrl;
         if (startupSplashWebPageSafeResourceUrl === undefined) {
             throw new AssertInternalError('BSWPDNCC30309');
         } else {

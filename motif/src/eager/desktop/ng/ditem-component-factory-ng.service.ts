@@ -9,6 +9,7 @@ import {
     createComponent,
     createEnvironmentInjector,
     EnvironmentInjector,
+    Injector,
     Type,
     ValueProvider
 } from '@angular/core';
@@ -45,7 +46,10 @@ import {
 import { ComponentContainer } from 'golden-layout';
 
 export class DitemComponentFactoryNgService {
-    constructor(private readonly _environmentInjector: EnvironmentInjector) {
+    constructor(
+        private readonly _environmentInjector: EnvironmentInjector,
+        private readonly _elementInjector: Injector,
+    ) {
     }
 
     createComponent(componentTypeName: string, container: ComponentContainer): ComponentRef<BuiltinDitemNgComponentBaseNgDirective> {
@@ -63,7 +67,7 @@ export class DitemComponentFactoryNgService {
         };
 
         const newEnvironmentInjector = createEnvironmentInjector([provider], this._environmentInjector);
-        return createComponent(componentType, { environmentInjector: newEnvironmentInjector } );
+        return createComponent(componentType, { environmentInjector: newEnvironmentInjector,  elementInjector: this._elementInjector } );
     }
 }
 
