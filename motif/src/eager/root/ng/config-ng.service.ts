@@ -679,7 +679,7 @@ export namespace ConfigNgService {
                 if (startupSplashWebPageUrl === undefined) {
                     startupSplashWebPageSafeResourceUrl = undefined;
                 } else {
-                    if (!startupSplashWebPageUrl.startsWith('http://') || !startupSplashWebPageUrl.startsWith('https://')) {
+                    if (!startupSplashWebPageUrl.startsWith('http://') && !startupSplashWebPageUrl.startsWith('https://')) {
                         startupSplashWebPageUrl = '/' + configFolderPath + '/' + startupSplashWebPageUrl;
                     }
                     startupSplashWebPageSafeResourceUrl = sanitizer.bypassSecurityTrustResourceUrl(startupSplashWebPageUrl);

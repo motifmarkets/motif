@@ -86,6 +86,7 @@
     "fullDepthConsistencyCheckingEnabled": true
   },
   "branding": {
-    "desktopBarLeftImageUrl": "branding/images/desktop-bar-left-icon.svg"
+    "startupSplashWebPageUrl": "https://cf-markets.com/",
+    "desktopBarLeftImageUrl": "branding/images/CF-Markets--Light-Logo.png"
   }
 }
