@@ -61,9 +61,9 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
         }
 
         this._watchGridSourceFrame = watchFrame;
-        this._watchGridSourceFrame.opener = this.opener;
+        this._watchGridSourceFrame.setOpener(this.opener);
         this._watchGridSourceFrame.keepPreviousLayoutIfPossible = true;
-        this._callPutGridSourceFrame.opener = this.opener;
+        this._callPutGridSourceFrame.setOpener(this.opener);
         this._callPutGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         // something
@@ -93,7 +93,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
     }
 
     private initialiseWatch(element: JsonElement | undefined) {
-        this._watchGridSourceFrame.opener = this.opener;
+        this._watchGridSourceFrame.setOpener(this.opener);
         this._watchGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (element !== undefined) {
@@ -113,7 +113,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
     }
 
     private initialiseCallPut(element: JsonElement | undefined) {
-        this._callPutGridSourceFrame.opener = this.opener;
+        this._callPutGridSourceFrame.setOpener(this.opener);
         this._callPutGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (element !== undefined) {

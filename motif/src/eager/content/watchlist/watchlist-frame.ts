@@ -105,7 +105,8 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
     newEmpty(keepView: boolean) {
         const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
-        this.tryOpenGridSource(definition, keepView);
+        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(definition, keepView);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WFNE57774', this.opener.lockerName);
     }
 
     createGridSourceOrNamedReferenceDefinitionFromList(
@@ -125,7 +126,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
     }
 
-    saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
+    async saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition): Promise<void> {
         const oldLitIvemIdList = this._litIvemIdList;
         const count = oldLitIvemIdList.count;
         const rankedLitIvemIds = new Array<RankedLitIvemId>(count);
@@ -153,7 +154,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             this.notifySaveRequired();
         } else {
             if (as.id !== undefined) {
-                const referentialLockResult = this._rankedLitIvemIdListReferentialsService.tryLockItemByKey(as.id, this.opener);
+                const referentialLockResult = await this._rankedLitIvemIdListReferentialsService.tryLockItemByKey(as.id, this.opener);
                 if (referentialLockResult.isOk()) {
                     const referential = referentialLockResult.value;
                     if (referential !== undefined) {
@@ -180,7 +181,8 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             rowOrderDefinition,
         );
 
-        this.tryOpenGridSource(definition, true);
+        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(definition, true);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WFSGSA49991', `${this.opener.lockerName}: ${as.name ?? ''}`);
     }
 
     getAt(index: Integer) {

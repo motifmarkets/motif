@@ -74,7 +74,7 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         subRangeStartIndex: IntegerApi,
         subRangeCount: IntegerApi
     ): void {
-        this._baseActual.addItemsRange(values, subRangeStartIndex, subRangeCount);
+        this._baseActual.addSubRange(values, subRangeStartIndex, subRangeCount);
     }
 
     insert(index: IntegerApi, value: T): void {
@@ -168,14 +168,33 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         }
     }
 
-    binarySearch(
-        item: T,
-        compareCallback?: ComparableListApi.CompareCallback<T>
-    ): ComparableListApi.BinarySearchResult {
+    binarySearchEarliest(item: T, compareCallback?: ComparableListApi.CompareCallback<T>): ComparableListApi.BinarySearchResult {
         if (compareCallback === undefined) {
-            return this._baseActual.binarySearch(item, undefined);
+            return this._baseActual.binarySearchEarliest(item, undefined);
         } else {
-            return this._baseActual.binarySearch(item, (left, right) => {
+            return this._baseActual.binarySearchEarliest(item, (left, right) => {
+                const comparisonResult = compareCallback(left, right);
+                return ComparisonResultImplementation.fromApi(comparisonResult);
+            });
+        }
+    }
+
+    binarySearchLatest(item: T, compareCallback?: ComparableListApi.CompareCallback<T>): ComparableListApi.BinarySearchResult {
+        if (compareCallback === undefined) {
+            return this._baseActual.binarySearchLatest(item, undefined);
+        } else {
+            return this._baseActual.binarySearchLatest(item, (left, right) => {
+                const comparisonResult = compareCallback(left, right);
+                return ComparisonResultImplementation.fromApi(comparisonResult);
+            });
+        }
+    }
+
+    binarySearchAny(item: T, compareCallback?: ComparableListApi.CompareCallback<T>): ComparableListApi.BinarySearchResult {
+        if (compareCallback === undefined) {
+            return this._baseActual.binarySearchAny(item, undefined);
+        } else {
+            return this._baseActual.binarySearchAny(item, (left, right) => {
                 const comparisonResult = compareCallback(left, right);
                 return ComparisonResultImplementation.fromApi(comparisonResult);
             });

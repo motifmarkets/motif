@@ -110,15 +110,17 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFTOGS10174');
         } else {
-            this._watchlistFrame.tryOpenGridSource(definition, keepView);
+            const gridSourceOrNamedReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.namedReferenceId ?? ''}`);
         }
     }
 
     saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
         if (this._watchlistFrame === undefined) {
-            throw new AssertInternalError('WDFSGSA10174');
+            throw new AssertInternalError('WDFSGSAU10174');
         } else {
-            this._watchlistFrame.saveGridSourceAs(as);
+            const promise = this._watchlistFrame.saveGridSourceAs(as);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDFSGSAS10174', this._watchlistFrame.opener.lockerName);
         }
     }
 

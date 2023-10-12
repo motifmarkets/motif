@@ -6,6 +6,7 @@
 
 import {
     AdaptedRevgridBehavioredColumnSettings,
+    AssertInternalError,
     GridField,
     GridSourceDefinition,
     GridSourceOrNamedReference,
@@ -55,7 +56,8 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
 
         const gridSourceOrNamedReferenceDefinition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(dataDefinition);
 
-        this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
     }
 
     protected override getDefaultGridSourceOrNamedReferenceDefinition() {

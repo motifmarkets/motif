@@ -36,7 +36,6 @@ import { RevRecordDataServer, Subgrid } from 'revgrid';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {
-    opener: LockOpenListItem.Opener;
     dragDropAllowed: boolean;
     keepPreviousLayoutIfPossible = false;
     keptGridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
@@ -46,7 +45,8 @@ export abstract class GridSourceFrame extends ContentFrame {
     private _grid: RecordGrid;
 
     private readonly _recordStore = new TableGridRecordStore();
-    private readonly _opener: LockOpenListItem.Opener;
+
+    private _opener: LockOpenListItem.Opener;
 
     private _lockedGridSourceOrNamedReference: GridSourceOrNamedReference | undefined;
     private _openedGridSource: GridSource | undefined;
@@ -76,6 +76,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         super();
     }
 
+    get opener() { return this._opener; }
     get grid() { return this._grid; }
 
     get isNamed() {
@@ -107,7 +108,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
     ) {
-        this.opener = opener;
+        this._opener = opener;
 
         let gridSourceOrNamedReferenceDefinition: GridSourceOrNamedReferenceDefinition | undefined;
         if (frameElement === undefined) {
@@ -146,7 +147,8 @@ export abstract class GridSourceFrame extends ContentFrame {
                 this.keptGridLayoutOrNamedReferenceDefinition = gridSourceOrNamedReferenceDefinition.gridSourceDefinition?.gridLayoutOrNamedReferenceDefinition;
             }
 
-            this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+            const promise = this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }
 
@@ -157,6 +159,11 @@ export abstract class GridSourceFrame extends ContentFrame {
             this._grid.destroy();
             super.finalise();
         }
+    }
+
+    /** @deprecated will be removed when no longer used */
+    setOpener(value: LockOpenListItem.Opener) {
+        this._opener = value;
     }
 
     setupGrid(gridHost: HTMLElement) {
@@ -196,7 +203,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     }
 
 
-    tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): GridSourceOrNamedReference | undefined {
+    async tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean): Promise<GridSourceOrNamedReference | undefined> {
         this.closeGridSource(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrNamedReference() &&
@@ -212,7 +219,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             definition
         );
 
-        const lockResult = gridSourceOrNamedReference.tryLock(this.opener);
+        const lockResult = await gridSourceOrNamedReference.tryLock(this._opener);
         if (lockResult.isErr()) {
             const badness: Badness = {
                 reasonId: Badness.ReasonId.LockError,
@@ -225,7 +232,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             if (gridSource === undefined) {
                 throw new AssertInternalError('GSFOGSL22209');
             } else {
-                gridSource.openLocked(this.opener);
+                gridSource.openLocked(this._opener);
                 const table = gridSource.table;
                 if (table === undefined) {
                     throw new AssertInternalError('GSFOGSTA22209');
@@ -303,8 +310,9 @@ export abstract class GridSourceFrame extends ContentFrame {
                     this._keptRowOrderDefinition = undefined;
                     this._keptGridRowAnchor = undefined;
                 }
-                this._openedGridSource.closeLocked(this._opener);
-                this._lockedGridSourceOrNamedReference.unlock(this._opener);
+                const opener = this._opener;
+                this._openedGridSource.closeLocked(opener);
+                this._lockedGridSourceOrNamedReference.unlock(opener);
                 this._lockedGridSourceOrNamedReference = undefined;
                 this._openedTable = undefined;
             }
@@ -346,7 +354,8 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFOGLONRD22209');
         } else {
-            this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
+            const promise = this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition, this._opener);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }
 
@@ -354,7 +363,8 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFAGLD22209');
         } else {
-            this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
+            const promise = this._openedGridSource.openGridLayoutOrNamedReferenceDefinition(definition, this._opener);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }
 

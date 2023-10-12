@@ -247,11 +247,15 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
     private checkApplyBalancesSingleGroup(group: SingleBrokerageAccountGroup) {
         if (this._balancesSingleGroup === undefined || !this._balancesSingleGroup.isEqualTo(group)) {
             this._balancesSingleGroup = group;
-            if (this._balancesFrame === undefined) {
+            const balancesFrame = this._balancesFrame;
+            if (balancesFrame === undefined) {
                 throw new AssertInternalError('HDFTOBGS23330');
             } else {
-                this._balancesFrame.tryOpenWithDefaultLayout(group, false);
-                this._componentAccess.setBalancesVisible(true);
+                const promise = balancesFrame.tryOpenWithDefaultLayout(group, false);
+                promise.then(
+                    () => { this._componentAccess.setBalancesVisible(true); },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`); }
+                );
             }
         }
     }
@@ -281,15 +285,21 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             if (group !== undefined) {
                 // TODO add support for clearTable
 
-                if (holdingsFrame.tryOpenWithDefaultLayout(group, keepView) === undefined) {
-                    this.closeAndHideBalances();
-                } else {
-                    if (BrokerageAccountGroup.isSingle(group)) {
-                        this.checkApplyBalancesSingleGroup(group);
-                    } else {
-                        this.closeAndHideBalances();
-                    }
-                }
+                const gridSourceOrNamedReferencePromise = holdingsFrame.tryOpenWithDefaultLayout(group, keepView);
+                gridSourceOrNamedReferencePromise.then(
+                    (gridSourceOrNamedReference) => {
+                        if (gridSourceOrNamedReference === undefined) {
+                            this.closeAndHideBalances();
+                        } else {
+                            if (BrokerageAccountGroup.isSingle(group)) {
+                                this.checkApplyBalancesSingleGroup(group);
+                            } else {
+                                this.closeAndHideBalances();
+                            }
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'HDFABAGWO22095', `${this.opener.lockerName}: ${group.id}`); }
+                );
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

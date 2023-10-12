@@ -49,7 +49,9 @@ export interface ComparableList<T> {
     compareItems(left: T, right: T): ComparisonResult;
 
     sort(compareCallback?: ComparableList.CompareCallback<T>): void;
-    binarySearch(item: T, compareCallback?: ComparableList.CompareCallback<T>): ComparableList.BinarySearchResult;
+    binarySearchEarliest(item: T, compareCallback?: ComparableList.CompareCallback<T>): ComparableList.BinarySearchResult;
+    binarySearchLatest(item: T, compareCallback?: ComparableList.CompareCallback<T>): ComparableList.BinarySearchResult;
+    binarySearchAny(item: T, compareCallback?: ComparableList.CompareCallback<T>): ComparableList.BinarySearchResult;
 }
 
 /** @public */

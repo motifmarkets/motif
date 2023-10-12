@@ -184,7 +184,8 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
                 // TODO add support for clearTable
-                balancesFrame.tryOpenWithDefaultLayout(group, keepView);
+                const promise = balancesFrame.tryOpenWithDefaultLayout(group, keepView);
+                AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`)
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

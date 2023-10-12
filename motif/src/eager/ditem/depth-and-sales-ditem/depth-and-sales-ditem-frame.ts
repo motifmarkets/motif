@@ -8,6 +8,7 @@ import {
     AdiService,
     AllowedFieldsGridLayoutDefinition,
     AllowedGridField,
+    AssertInternalError,
     BidAskAllowedFieldsGridLayoutDefinitions,
     BidAskGridLayoutDefinitions,
     BidAskPair,
@@ -140,8 +141,11 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
                     undefined,
                     undefined
                 );
-                this._watchlistFrame.tryOpenGridSource(definition, false);
-                this._watchlistFrame.focusItem(0);
+                const gridSourceOrNamedReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, false);
+                gridSourceOrNamedReferencePromise.then(
+                    () => { this._watchlistFrame.focusItem(0) },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'DASDFO88552', litIvemId.name)}
+                );
             } else {
                 if (this._watchlistFrame.recordCount === 0) {
                     this._watchlistFrame.addLitIvemIds([litIvemId], true);

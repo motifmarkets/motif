@@ -43,10 +43,9 @@ import {
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
+import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame, BrandingSplashWebPageDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
-import { BrandingSplashWebPageDitemFrame } from 'ditem-internal-api';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
 export class DesktopFrame implements DitemFrame.DesktopAccessService {

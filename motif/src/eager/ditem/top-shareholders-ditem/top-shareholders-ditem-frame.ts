@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     GridLayoutOrNamedReferenceDefinition,
     GridSourceDefinition,
@@ -50,7 +51,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
 
     initialise(gridSourceFrame: GridSourceFrame, frameElement: JsonElement | undefined): void {
         this._gridSourceFrame = gridSourceFrame;
-        this._gridSourceFrame.opener = this.opener;
+        this._gridSourceFrame.setOpener(this.opener);
         this._gridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (frameElement !== undefined) {
@@ -91,25 +92,29 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
     }
 
     tryOpenGridSource() {
-        if (!this.getParamsFromGui() || this.litIvemId === undefined) {
+        const litIvemId = this.litIvemId;
+        if (!this.getParamsFromGui() || litIvemId === undefined) {
             return false;
         } else {
             const tableRecordSourceDefinition = this._tableRecordSourceDefinitionFactoryService.createTopShareholder(
-                this.litIvemId,
+                litIvemId,
                 this._historicalDate,
                 this._compareDate
             );
             const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
             const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-            const gridSourceOrNamedReference = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-            if (gridSourceOrNamedReference === undefined) {
-                return false;
-            } else {
-                const table = this._gridSourceFrame.openedTable;
-                this._recordSource = table.recordSource as TopShareholderTableRecordSource;
-                this._recordList = this._recordSource.recordList;
-                return true;
-            }
+            const gridSourceOrNamedReferencePromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+            gridSourceOrNamedReferencePromise.then(
+                (gridSourceOrNamedReference) => {
+                    if (gridSourceOrNamedReference !== undefined) {
+                        const table = this._gridSourceFrame.openedTable;
+                        this._recordSource = table.recordSource as TopShareholderTableRecordSource;
+                        this._recordList = this._recordSource.recordList;
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'TSDFTOGS44409', litIvemId.name) }
+            );
+            return true;
         }
     }
 
