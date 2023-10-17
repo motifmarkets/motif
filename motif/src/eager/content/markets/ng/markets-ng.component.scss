@@ -5,35 +5,35 @@
  */
 
 :host {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 #markets {
-  display: grid;
-  grid-template-columns: max-content max-content max-content max-content max-content max-content max-content;
-  column-gap: 2rem;
-  row-gap: 0.5rem;
-  align-items: center;
+    display: grid;
+    grid-template-columns: max-content max-content max-content max-content max-content max-content max-content;
+    column-gap: 2rem;
+    row-gap: 0.5rem;
+    align-items: center;
 }
 
 .tableHeading {
-  font-size: larger;
-  margin: 0;
+    font-size: larger;
+    margin: 0;
 }
 
 .marketName {
-  display: inline;
-  margin: 0;
+    display: inline;
+    margin: 0;
 }
 
 .marketBoardName {
-  display: inline;
-  margin: 0 0 0 2em;
+    display: inline;
+    margin: 0 0 0 2em;
 }
 
 .marketCell {
-  display: inline;
-  margin: 0;
+    display: inline;
+    margin: 0;
 }

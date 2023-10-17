@@ -51,7 +51,7 @@ import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
-import { OpenWatchlistDialogNgComponent } from '../open-watchlist-dialog/ng-api';
+import { OpenWatchlistDialogNgComponent } from '../open-watchlist/ng-api';
 import { OrderAuthoriseNgComponent } from '../order-authorise/ng-api';
 import {
     PadOrderRequestStepNgComponent,
@@ -64,7 +64,7 @@ import {
     ReviewPlaceOrderRequestNgComponent
 } from '../order-request-step/ng-api';
 import { OrdersNgComponent } from '../orders/ng-api';
-import { SaveWatchlistDialogNgComponent } from '../save-watchlist-dialog/ng-api';
+import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
     CriteriaScanPropertiesSectionNgComponent,
     GeneralScanPropertiesSectionNgComponent,

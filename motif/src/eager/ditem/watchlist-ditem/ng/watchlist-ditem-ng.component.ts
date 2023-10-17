@@ -25,7 +25,6 @@ import {
     JsonElement,
     LitIvemId,
     LitIvemIdUiAction,
-    Logger,
     ModifierKey,
     ModifierKeyId,
     NamedGridLayoutDefinition,
@@ -37,8 +36,7 @@ import {
     UnreachableCaseError,
     assert,
     assigned,
-    delay1Tick,
-    getErrorMessage
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -294,13 +292,11 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     }
 
     private handleOpenUiActionSignalEvent() {
-        const promise = this.showOpenDialog();
-        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDNCHOUASE11109');
+        this.showOpenDialog();
     }
 
     private handleSaveUiActionEvent() {
-        const promise = this.showSaveDialog();
-        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDNCHSUAE11109');
+        this.showSaveDialog();
     }
 
     private handleColumnsUiActionSignalEvent() {
@@ -446,32 +442,44 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         return action;
     }
 
-    private async showOpenDialog() {
+    private showOpenDialog() {
         this._modeId = WatchlistDitemNgComponent.ModeId.OpenDialog;
 
-        try {
-            const openDialogResult = await OpenWatchlistDialogNgComponent.open(this._dialogContainer);
-            if (openDialogResult.isOk()) {
-                this._frame.tryOpenGridSource(openDialogResult.value, false);
-            }
-        } finally {
-            this.closeDialog();
-        }
+        const closePromise = OpenWatchlistDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Watchlist_OpenDialogCaption],
+        );
+        closePromise.then(
+            (gridSourceOrNamedReferenceDefinition) => {
+                if (gridSourceOrNamedReferenceDefinition !== undefined) {
+                    this._frame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
+                    this.closeDialog();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSOD32223', this._frame.opener.lockerName); }
+        );
 
         this.markForCheck();
     }
 
-    private async showSaveDialog() {
+    private showSaveDialog() {
         this._modeId = WatchlistDitemNgComponent.ModeId.SaveDialog;
 
-        try {
-            const openDialogResult = await SaveWatchlistDialogNgComponent.open(this._dialogContainer);
-            if (openDialogResult.isOk()) {
-                this._frame.saveGridSourceAs(openDialogResult.value);
-            }
-        } finally {
-            this.closeDialog();
-        }
+        const closePromise = SaveWatchlistDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            Strings[StringId.Watchlist_SaveDialogCaption],
+        );
+        closePromise.then(
+            (saveAsDefinition) => {
+                if (saveAsDefinition !== undefined) {
+                    this._frame.saveGridSourceAs(saveAsDefinition);
+                    this.closeDialog();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSOD32223', this._frame.opener.lockerName); }
+        );
 
         this.markForCheck();
     }
@@ -493,11 +501,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
                 }
                 this.closeDialog();
             },
-            (reason) => {
-                const errorText = getErrorMessage(reason);
-                Logger.logError(`Watchlist Layout Editor error: ${errorText}`);
-                this.closeDialog();
-            }
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSLE32223', this._frame.opener.lockerName); }
         );
 
         this.markForCheck();

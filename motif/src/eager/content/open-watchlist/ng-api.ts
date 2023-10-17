@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/save-watchlist-dialog-ng.component';
+export * from './dialog/ng-api';
 

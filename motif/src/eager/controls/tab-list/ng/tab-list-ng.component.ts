@@ -9,7 +9,7 @@ import { ColorScheme, ColorSettings, HtmlTypes, Integer, ModifierKey, MultiEvent
 import { SettingsNgService } from 'component-services-ng-api';
 
 @Component({
-    selector: 'app-tab-list-ng',
+    selector: 'app-tab-list',
     templateUrl: './tab-list-ng.component.html',
     styleUrls: ['./tab-list-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,

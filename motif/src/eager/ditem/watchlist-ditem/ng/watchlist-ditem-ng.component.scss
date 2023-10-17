@@ -41,7 +41,6 @@
             }
 
             > #listButtonsDiv {
-                display: none !important;
                 @include centeredToolbarGroupMixin;
                 margin-left: $toolbar-button-group-separation;
             }
