@@ -10,7 +10,7 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     Order,
@@ -94,7 +94,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             throw new AssertInternalError('OADFS04418');
         } else {
             const contentElement = element.newElement(OrderAuthoriseDitemFrame.JsonName.orderAuthoriseFrame);
-            const definition = orderAuthoriseFrame.createGridSourceOrNamedReferenceDefinition();
+            const definition = orderAuthoriseFrame.createGridSourceOrReferenceDefinition();
             definition.saveToJson(contentElement);
         }
     }
@@ -107,11 +107,11 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._orderAuthoriseFrame === undefined) {
             throw new AssertInternalError('OADFOGLONRD04418');
         } else {
-            this._orderAuthoriseFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+            this._orderAuthoriseFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -277,8 +277,8 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
                 // TODO add support for clearTable
-                const gridSourceOrNamedReferencePromise = orderAuthoriseFrame.tryOpenWithDefaultLayout(group, keepView);
-                AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'OADFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
+                const gridSourceOrReferencePromise = orderAuthoriseFrame.tryOpenWithDefaultLayout(group, keepView);
+                AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'OADFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

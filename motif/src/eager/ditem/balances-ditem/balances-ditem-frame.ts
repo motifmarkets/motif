@@ -12,7 +12,7 @@ import {
     BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     SettingsService,
@@ -101,11 +101,11 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('BDFOGLONRD04418');
         } else {
-            this._balancesFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+            this._balancesFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 

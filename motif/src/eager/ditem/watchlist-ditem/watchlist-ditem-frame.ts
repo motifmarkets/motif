@@ -8,10 +8,10 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService,
-    FavouriteNamedGridLayoutDefinitionReferencesService,
+    FavouriteReferenceableGridLayoutDefinitionsStoreService,
     GridLayout,
-    GridLayoutOrNamedReferenceDefinition,
-    GridSourceOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
+    GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemId,
@@ -44,7 +44,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteNamedGridLayoutDefinitionReferencesService,
+        private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteReferenceableGridLayoutDefinitionsStoreService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: WatchlistDitemFrame.RecordFocusedEventer,
@@ -106,16 +106,16 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridSource(definition: GridSourceOrNamedReferenceDefinition, keepView: boolean) {
+    tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFTOGS10174');
         } else {
-            const gridSourceOrNamedReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.namedReferenceId ?? ''}`);
+            const gridSourceOrReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
+            AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.referenceId ?? ''}`);
         }
     }
 
-    saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition) {
+    saveGridSourceAs(as: GridSourceOrReferenceDefinition.SaveAsDefinition) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFSGSAU10174');
         } else {
@@ -124,11 +124,11 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFOGLONRD10174');
         } else {
-            this._watchlistFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+            this._watchlistFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -159,9 +159,9 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     //     rankedLitIvemIds.sort((left, right) => compareInteger(left.rank, right.rank));
     //     const newLitIvemIds = rankedLitIvemIds.map((rankedLitIvemId) => rankedLitIvemId.litIvemId);
 
-    //     const definition = this.createGridSourceOrNamedReferenceDefinitionFromList(
+    //     const definition = this.createGridSourceOrReferenceDefinitionFromList(
     //         jsonRankedLitIvemIdListDefinition,
-    //         this._gridSourceFrame.createLayoutOrNamedReferenceDefinition(),
+    //         this._gridSourceFrame.createLayoutOrReferenceDefinition(),
     //         this._gridSourceFrame.createRowOrderDefinition(),
     //     );
 

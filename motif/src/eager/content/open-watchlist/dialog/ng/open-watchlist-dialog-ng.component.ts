@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Inject, InjectionToken, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
-import { CommandRegisterService, GridSourceOrNamedReferenceDefinition, IconButtonUiAction, InternalCommand, LockOpenListItem, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
+import { CommandRegisterService, IconButtonUiAction, InternalCommand, LockOpenListItem, StringId, Strings, UnreachableCaseError, delay1Tick } from '@motifmarkets/motif-core';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { CommandRegisterNgService, CoreInjectionTokens } from '../../../../component-services/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
@@ -30,10 +30,13 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
 
-    private _closeResolve: (value: GridSourceOrNamedReferenceDefinition | undefined) => void;
+    private _visibleExistingListsTypeId: OpenWatchlistDialogNgComponent.ExistingListsTypeId;
+
+    private _closeResolve: (this: void) => void;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
+        private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(OpenWatchlistDialogNgComponent.captionInjectionToken) public readonly caption: string,
     ) {
@@ -55,7 +58,7 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     }
 
     open(): OpenWatchlistDialogNgComponent.ClosePromise {
-        return new Promise<GridSourceOrNamedReferenceDefinition | undefined>((resolve) => {
+        return new Promise<void>((resolve) => {
             this._closeResolve = resolve;
         });
     }
@@ -66,6 +69,12 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
 
     private handleCancelSignal() {
         this.close(false);
+    }
+
+    private handleActiveTabChangedEvent(tab: TabListNgComponent.Tab, existingListsTypeId: OpenWatchlistDialogNgComponent.ExistingListsTypeId) {
+        if (tab.active) {
+            this.showExistingListsTypeId(existingListsTypeId);
+        }
     }
 
     private createOkUiAction() {
@@ -97,41 +106,57 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
                 caption: Strings[StringId.SymbolList],
                 initialActive: true,
                 initialDisabled: false,
-                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(tab, DepthAndSalesGridLayoutsDialogNgComponent.SubFrameId.Watchlist),
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(tab, OpenWatchlistDialogNgComponent.ExistingListsTypeId.SymbolList),
             },
             {
                 caption: Strings[StringId.Watchlist],
                 initialActive: false,
                 initialDisabled: false,
-                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(tab, DepthAndSalesGridLayoutsDialogNgComponent.SubFrameId.BidDepth),
+                activeChangedEventer: (tab) => this.handleActiveTabChangedEvent(tab, OpenWatchlistDialogNgComponent.ExistingListsTypeId.Watchlist),
             },
         ];
         this._tabListComponent.setTabs(tabDefinitions);
 
-        this.setSubFrameId(DepthAndSalesGridLayoutsDialogNgComponent.SubFrameId.Watchlist);
+        this.showExistingListsTypeId(OpenWatchlistDialogNgComponent.ExistingListsTypeId.SymbolList);
+    }
+
+    private showExistingListsTypeId(value: OpenWatchlistDialogNgComponent.ExistingListsTypeId) {
+        if (value !== this._visibleExistingListsTypeId) {
+            switch (value) {
+                case OpenWatchlistDialogNgComponent.ExistingListsTypeId.SymbolList:
+                    break;
+
+                case OpenWatchlistDialogNgComponent.ExistingListsTypeId.Watchlist:
+                    break;
+
+                default:
+                    throw new UnreachableCaseError('OWDNCSELTI74773', value);
+            }
+
+            this._visibleExistingListsTypeId = value;
+            this._cdr.markForCheck();
+        }
     }
 
     private close(ok: boolean) {
         if (ok) {
-            this.checkLoadLayoutFromEditor();
-            const layouts: HoldingsDitemFrame.GridLayoutDefinitions = {
-                holdings: this._holdingsLayoutDefinition,
-                balances: this._balancesLayoutDefinition,
-            };
-            this._closeResolve(layouts);
-        } else {
-            this._closeResolve(undefined);
+            // this.checkLoadLayoutFromEditor();
+            // const layouts: HoldingsDitemFrame.GridLayoutDefinitions = {
+            //     holdings: this._holdingsLayoutDefinition,
+            //     balances: this._balancesLayoutDefinition,
+            // };
         }
+        this._closeResolve();
     }
 }
 
 export namespace OpenWatchlistDialogNgComponent {
-    export const enum ExistingListTypeId {
+    export const enum ExistingListsTypeId {
         SymbolList,
         Watchlist,
     }
 
-    export type ClosePromise = Promise<GridSourceOrNamedReferenceDefinition | undefined>;
+    export type ClosePromise = Promise<void>;
     export const captionInjectionToken = new InjectionToken<string>('OpenWatchlistDialogNgComponent.Caption');
 
     export function open(

@@ -94,6 +94,7 @@ export namespace BadnessImplementation {
                 case Badness.ReasonId.FeedStatus_Initialising: return BadnessApi.ReasonEnum.FeedStatus_Initialising;
                 case Badness.ReasonId.FeedStatus_Impaired: return BadnessApi.ReasonEnum.FeedStatus_Impaired;
                 case Badness.ReasonId.FeedStatus_Expired: return BadnessApi.ReasonEnum.FeedStatus_Expired;
+                case Badness.ReasonId.Opening: return BadnessApi.ReasonEnum.Opening;
                 case Badness.ReasonId.Reading: return BadnessApi.ReasonEnum.Reading;
                 case Badness.ReasonId.SymbolMatching_None: return BadnessApi.ReasonEnum.SymbolMatching_None;
                 case Badness.ReasonId.SymbolMatching_Ambiguous: return BadnessApi.ReasonEnum.SymbolMatching_Ambiguous;
@@ -103,8 +104,9 @@ export namespace BadnessImplementation {
                 case Badness.ReasonId.OrderStatusesFetching: return BadnessApi.ReasonEnum.OrderStatusesFetching;
                 case Badness.ReasonId.BrokerageAccountDataListsIncubating: return BadnessApi.ReasonEnum.BrokerageAccountDataListsIncubating;
                 case Badness.ReasonId.OneOrMoreAccountsInError: return BadnessApi.ReasonEnum.OneOrMoreAccountsInError;
-                case Badness.ReasonId.ResourceWarnings: return BadnessApi.ReasonEnum.ResourceWarnings;
-                case Badness.ReasonId.ResourceErrors: return BadnessApi.ReasonEnum.ResourceErrors;
+                case Badness.ReasonId.MultipleUsable: return BadnessApi.ReasonEnum.MultipleUsable;
+                case Badness.ReasonId.MultipleSuspect: return BadnessApi.ReasonEnum.MultipleSuspect;
+                case Badness.ReasonId.MultipleError: return BadnessApi.ReasonEnum.MultipleError;
                 case Badness.ReasonId.StatusWarnings: return BadnessApi.ReasonEnum.StatusWarnings;
                 case Badness.ReasonId.StatusRetrieving: return BadnessApi.ReasonEnum.StatusRetrieving;
                 case Badness.ReasonId.StatusErrors: return BadnessApi.ReasonEnum.StatusErrors;
@@ -188,6 +190,7 @@ export namespace BadnessImplementation {
                 case BadnessApi.ReasonEnum.FeedStatus_Initialising: return Badness.ReasonId.FeedStatus_Initialising;
                 case BadnessApi.ReasonEnum.FeedStatus_Impaired: return Badness.ReasonId.FeedStatus_Impaired;
                 case BadnessApi.ReasonEnum.FeedStatus_Expired: return Badness.ReasonId.FeedStatus_Expired;
+                case BadnessApi.ReasonEnum.Opening: return Badness.ReasonId.Opening;
                 case BadnessApi.ReasonEnum.Reading: return Badness.ReasonId.Reading;
                 case BadnessApi.ReasonEnum.SymbolMatching_None: return Badness.ReasonId.SymbolMatching_None;
                 case BadnessApi.ReasonEnum.SymbolMatching_Ambiguous: return Badness.ReasonId.SymbolMatching_Ambiguous;
@@ -197,8 +200,9 @@ export namespace BadnessImplementation {
                 case BadnessApi.ReasonEnum.OrderStatusesFetching: return Badness.ReasonId.OrderStatusesFetching;
                 case BadnessApi.ReasonEnum.BrokerageAccountDataListsIncubating: return Badness.ReasonId.BrokerageAccountDataListsIncubating;
                 case BadnessApi.ReasonEnum.OneOrMoreAccountsInError: return Badness.ReasonId.OneOrMoreAccountsInError;
-                case BadnessApi.ReasonEnum.ResourceWarnings: return Badness.ReasonId.ResourceWarnings;
-                case BadnessApi.ReasonEnum.ResourceErrors: return Badness.ReasonId.ResourceErrors;
+                case BadnessApi.ReasonEnum.MultipleUsable: return Badness.ReasonId.MultipleUsable;
+                case BadnessApi.ReasonEnum.MultipleSuspect: return Badness.ReasonId.MultipleSuspect;
+                case BadnessApi.ReasonEnum.MultipleError: return Badness.ReasonId.MultipleError;
                 case BadnessApi.ReasonEnum.StatusWarnings: return Badness.ReasonId.StatusWarnings;
                 case BadnessApi.ReasonEnum.StatusRetrieving: return Badness.ReasonId.StatusRetrieving;
                 case BadnessApi.ReasonEnum.StatusErrors: return Badness.ReasonId.StatusErrors;

@@ -10,9 +10,9 @@ import {
     CellPainterFactoryService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
-    RankedLitIvemIdListReferentialsService,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourceDefinitionsStoreService,
+    ReferenceableGridSourcesService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
@@ -46,11 +46,11 @@ export class ContentService {
         private readonly _symbolsService: SymbolsService,
         private readonly _sessionInfoService: SessionInfoService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _rankedLitIvemIdListReferentialsService: RankedLitIvemIdListReferentialsService,
-        private readonly _namedGridLayoutDefinitionsService: NamedGridLayoutsService,
+        private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        private readonly _namedGridSourcesService: NamedGridSourcesService,
+        private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
+        private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
         private readonly _cellPainterFactoryService: CellPainterFactoryService,
 ) { }
 
@@ -61,10 +61,10 @@ export class ContentService {
     createFeedsFrame() {
         return new FeedsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -98,11 +98,11 @@ export class ContentService {
     createWatchlistFrame() {
         return new WatchlistFrame(
             this._settingsService,
-            this._rankedLitIvemIdListReferentialsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourceDefinitionsStoreService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -110,10 +110,10 @@ export class ContentService {
     createBrokerageAccountsFrame() {
         return new BrokerageAccountsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -121,10 +121,10 @@ export class ContentService {
     createOrdersFrame() {
         return new OrdersFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -132,10 +132,10 @@ export class ContentService {
     createOrderAuthoriseFrame() {
         return new OrderAuthoriseFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -143,10 +143,10 @@ export class ContentService {
     createHoldingsFrame() {
         return new HoldingsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -154,10 +154,10 @@ export class ContentService {
     createBalancesFrame() {
         return new BalancesFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -165,10 +165,10 @@ export class ContentService {
     createSearchSymbolsFrame() {
         return new SearchSymbolsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -176,10 +176,10 @@ export class ContentService {
     createScanListFrame() {
         return new ScanListFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );
     }
@@ -187,10 +187,10 @@ export class ContentService {
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
             allowedFields,
             columnList,
@@ -200,10 +200,10 @@ export class ContentService {
     createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorColumnsFrame(
             this._settingsService,
-            this._namedGridLayoutDefinitionsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
-            this._namedGridSourcesService,
+            this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
             columnList,
         );

@@ -10,7 +10,7 @@ import {
     EnumInfoOutOfOrderError,
     ExchangeId,
     ExchangeInfo,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemDetail,
@@ -192,12 +192,12 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition) {
+    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
         } else {
-            gridSourceFrame.openGridLayoutOrNamedReferenceDefinition(gridLayoutOrNamedReferenceDefinition);
+            gridSourceFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -364,7 +364,7 @@ export namespace SearchSymbolsDitemFrame {
 
         export function initialise() {
             for (let i = 0; i < idCount; i++) {
-                if (infos[i].id !== i) {
+                if (infos[i].id !== i as IndicesInclusionId) {
                     throw new EnumInfoOutOfOrderError('SearchSymbolsDitemFrame.IndicesInclusion', i, idToCaption(i));
                 }
             }

@@ -23,7 +23,7 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
@@ -55,7 +55,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
 
-    private _closeResolve: (value: GridLayoutOrNamedReferenceDefinition | undefined) => void;
+    private _closeResolve: (value: GridLayoutOrReferenceDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
     constructor(
@@ -85,7 +85,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     }
 
     open(): NameableGridLayoutEditorDialogNgComponent.ClosePromise {
-        return new Promise<GridLayoutOrNamedReferenceDefinition | undefined>((resolve) => {
+        return new Promise<GridLayoutOrReferenceDefinition | undefined>((resolve) => {
             this._closeResolve = resolve;
         });
     }
@@ -126,8 +126,8 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
     private close(ok: boolean) {
         if (ok) {
             const gridLayoutDefinition = this._editorComponent.getGridLayoutDefinition();
-            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(gridLayoutDefinition);
-            this._closeResolve(gridLayoutOrNamedReferenceDefinition);
+            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(gridLayoutDefinition);
+            this._closeResolve(gridLayoutOrReferenceDefinition);
         } else {
             this._closeResolve(undefined);
         }
@@ -135,7 +135,7 @@ export class NameableGridLayoutEditorDialogNgComponent extends ContentComponentB
 }
 
 export namespace NameableGridLayoutEditorDialogNgComponent {
-    export type ClosePromise = Promise<GridLayoutOrNamedReferenceDefinition | undefined>;
+    export type ClosePromise = Promise<GridLayoutOrReferenceDefinition | undefined>;
     export const captionInjectionToken = new InjectionToken<string>('NameableGridLayoutEditorDialogNgComponent.Caption');
 
     export function open(

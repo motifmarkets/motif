@@ -16,13 +16,13 @@ import {
     EditableGridLayoutDefinitionColumnTableRecordSource,
     GridField,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
@@ -46,10 +46,10 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        namedGridLayoutsService: NamedGridLayoutsService,
+        namedGridLayoutsService: ReferenceableGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        namedGridSourcesService: NamedGridSourcesService,
+        namedGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
@@ -199,13 +199,13 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         }
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+    protected override getDefaultGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createEditableGridLayoutDefinitionColumn(this._columnList);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as EditableGridLayoutDefinitionColumnTableRecordSource;
         this._recordList = recordSource.list;

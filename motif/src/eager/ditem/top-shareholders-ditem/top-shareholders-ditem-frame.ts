@@ -8,9 +8,9 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReferenceDefinition,
     JsonElement,
     LitIvemId,
     SettingsService,
@@ -61,9 +61,9 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = contentElement.tryGetElement(TopShareholdersDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
-                        this._gridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                        this._gridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }
                 }
             }
@@ -81,7 +81,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
 
         const contentElement = frameElement.newElement(TopShareholdersDitemFrame.JsonName.content);
         const keptLayoutElement = contentElement.newElement(TopShareholdersDitemFrame.JsonName.keptLayout);
-        const layoutDefinition = this._gridSourceFrame.createGridLayoutOrNamedReferenceDefinition();
+        const layoutDefinition = this._gridSourceFrame.createGridLayoutOrReferenceDefinition();
         layoutDefinition.saveToJson(keptLayoutElement);
     }
 
@@ -102,11 +102,11 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 this._compareDate
             );
             const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-            const gridSourceOrNamedReferenceDefinition = new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
-            const gridSourceOrNamedReferencePromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-            gridSourceOrNamedReferencePromise.then(
-                (gridSourceOrNamedReference) => {
-                    if (gridSourceOrNamedReference !== undefined) {
+            const gridSourceOrReferenceDefinition = new GridSourceOrReferenceDefinition(gridSourceDefinition);
+            const gridSourceOrReferencePromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+            gridSourceOrReferencePromise.then(
+                (gridSourceOrReference) => {
+                    if (gridSourceOrReference !== undefined) {
                         const table = this._gridSourceFrame.openedTable;
                         this._recordSource = table.recordSource as TopShareholderTableRecordSource;
                         this._recordList = this._recordSource.recordList;

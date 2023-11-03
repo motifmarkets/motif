@@ -9,8 +9,8 @@ import {
     AssertInternalError,
     GridField,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     LitIvemDetail,
     LitIvemIdFromSearchSymbolsTableRecordSource,
@@ -54,17 +54,17 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         this.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
         this._showFull = dataDefinition.fullSymbol;
 
-        const gridSourceOrNamedReferenceDefinition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(dataDefinition);
+        const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(dataDefinition);
 
-        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
+        const gridSourceOrReferencePromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+    protected override getDefaultGridSourceOrReferenceDefinition() {
         return undefined;
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
         this._recordList = recordSource.recordList;
@@ -80,10 +80,10 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    private createDefaultLayoutGridSourceOrNamedReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
+    private createDefaultLayoutGridSourceOrReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdFromSearchSymbols(dataDefinition);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

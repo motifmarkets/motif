@@ -14,9 +14,9 @@ import {
     CoreService,
     KeyboardService,
     MotifServicesService,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
-    RankedLitIvemIdListReferentialsService,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourceDefinitionsStoreService,
+    ReferenceableGridSourcesService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
@@ -46,15 +46,15 @@ export class CoreNgService implements OnDestroy {
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
     get scansService(): ScansService { return this._service.scansService; }
-    get rankedLitIvemIdListReferentialsService(): RankedLitIvemIdListReferentialsService { return this._service.rankedLitIvemIdListReferentialsService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
     get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
         return this._service.tableRecordSourceDefinitionFactoryService;
     }
     get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
-    get namedGridLayoutsService(): NamedGridLayoutsService { return this._service.namedGridLayoutsService; }
-    get namedGridSourcesService(): NamedGridSourcesService { return this._service.namedGridSourcesService; }
+    get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
+    get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }
+    get referenceableGridSourcesService(): ReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }
     get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }

@@ -65,12 +65,12 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         return this._baseActual.add(value);
     }
 
-    addRange(values: T[]): void {
+    addRange(values: readonly T[]): void {
         this._baseActual.addRange(values);
     }
 
-    addItemsRange(
-        values: T[],
+    addSubRange(
+        values: readonly T[],
         subRangeStartIndex: IntegerApi,
         subRangeCount: IntegerApi
     ): void {
@@ -81,7 +81,7 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         this._baseActual.insert(index, value);
     }
 
-    insertRange(index: IntegerApi, values: T[]): void {
+    insertRange(index: IntegerApi, values: readonly T[]): void {
         this._baseActual.insertRange(index, values);
     }
 
@@ -97,6 +97,11 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         this._baseActual.removeRange(index, deleteCount);
     }
 
+    removeItems(items: readonly T[], beforeRemoveRangeCallBack?: ComparableListApi.BeforeRemoveRangeCallBack): void {
+        this._baseActual.removeItems(items, beforeRemoveRangeCallBack);
+    }
+
+
     clear(): void {
         this._baseActual.clear();
     }
@@ -107,13 +112,6 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
 
     extract(value: T): T {
         return this._baseActual.extract(value);
-    }
-
-    pack(
-        unusedValue: T,
-        beforeDeleteRangeCallBackFtn?: ComparableListApi.BeforeDeleteRangeCallBack
-    ): void {
-        this._baseActual.pack(unusedValue, beforeDeleteRangeCallBackFtn);
     }
 
     exchange(left: IntegerApi, right: IntegerApi): void {
@@ -132,12 +130,12 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         return this._baseActual.last();
     }
 
-    setMinimumCapacity(value: IntegerApi): void {
-        this._baseActual.setMinimumCapacity(value);
+    setGrowthCapacity(growth: IntegerApi): void {
+        this._baseActual.setGrowthCapacity(growth);
     }
 
-    expand(): void {
-        this._baseActual.expand();
+    setMinimumCapacity(value: IntegerApi): void {
+        this._baseActual.setMinimumCapacity(value);
     }
 
     trimExcess(): void {

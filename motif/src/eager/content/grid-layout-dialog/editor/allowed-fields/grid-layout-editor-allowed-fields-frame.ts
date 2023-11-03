@@ -13,16 +13,16 @@ import {
     GridField,
     GridFieldTableRecordSource,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
     LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
     MultiEvent,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
@@ -47,10 +47,10 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        namedGridLayoutsService: NamedGridLayoutsService,
+        namedGridLayoutsService: ReferenceableGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        namedGridSourcesService: NamedGridSourcesService,
+        namedGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         private readonly _allowedFields: readonly GridField[],
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
@@ -159,13 +159,13 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         }
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
+    protected override getDefaultGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as GridFieldTableRecordSource;
         this._records = recordSource.records;

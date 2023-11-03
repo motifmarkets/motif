@@ -10,8 +10,8 @@ import {
     BrokerageAccountTableRecordSource,
     GridField,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
     RenderValueRecordGridCellPainter,
@@ -47,11 +47,11 @@ export class BrokerageAccountsFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
+    protected override getDefaultGridSourceOrReferenceDefinition() {
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as BrokerageAccountTableRecordSource;
         this._recordList = this._recordSource.recordList;
@@ -63,10 +63,10 @@ export class BrokerageAccountsFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    private createDefaultLayoutGridSourceOrNamedReferenceDefinition() {
+    private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBrokerageAccount();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

@@ -27,9 +27,9 @@ import {
     LitIvemIdUiAction,
     ModifierKey,
     ModifierKeyId,
-    NamedGridLayoutDefinition,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
+    ReferenceableGridLayoutDefinition,
     StringId,
     Strings,
     UiAction,
@@ -41,8 +41,7 @@ import {
 import {
     AdiNgService,
     CommandRegisterNgService,
-    FavouriteNamedGridLayoutDefinitionReferencesNgService,
-    RankedLitIvemIdListReferentialsNgService,
+    FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService,
@@ -94,7 +93,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _newUiAction: IconButtonUiAction;
     private _openUiAction: IconButtonUiAction;
     private _saveUiAction: IconButtonUiAction;
-    private _favouriteLayoutsUiAction: ExplicitElementsArrayUiAction<NamedGridLayoutDefinition>;
+    private _favouriteLayoutsUiAction: ExplicitElementsArrayUiAction<ReferenceableGridLayoutDefinition>;
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
@@ -112,8 +111,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
-        namedJsonRankedLitIvemIdListsNgService: RankedLitIvemIdListReferentialsNgService,
-        favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteNamedGridLayoutDefinitionReferencesNgService,
+        favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
@@ -451,12 +449,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             Strings[StringId.Watchlist_OpenDialogCaption],
         );
         closePromise.then(
-            (gridSourceOrNamedReferenceDefinition) => {
-                if (gridSourceOrNamedReferenceDefinition !== undefined) {
-                    this._frame.tryOpenGridSource(gridSourceOrNamedReferenceDefinition, false);
-                    this.closeDialog();
-                }
-            },
+            () => { this.closeDialog(); },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSOD32223', this._frame.opener.lockerName); }
         );
 
@@ -497,7 +490,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
+                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
                 }
                 this.closeDialog();
             },

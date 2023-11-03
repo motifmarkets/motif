@@ -15,14 +15,13 @@ import {
     CommandRegisterService,
     DepthStyleId,
     GridLayoutDefinition,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     JsonElement,
     JsonRankedLitIvemIdListDefinition,
     LitIvemId,
     SettingsService,
     SymbolsService,
-    TextFormatterService,
-    newGuid
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 import {
     DepthFrame,
@@ -134,15 +133,14 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         } else {
             // watchlist
             if (!this._watchlistFrame.opened) {
-                const id = newGuid();
-                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', [litIvemId]);
-                const definition = this._watchlistFrame.createGridSourceOrNamedReferenceDefinitionFromList(
+                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', [litIvemId]);
+                const definition = this._watchlistFrame.createGridSourceOrReferenceDefinitionFromList(
                     litIvemIdListDefinition,
                     undefined,
                     undefined
                 );
-                const gridSourceOrNamedReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, false);
-                gridSourceOrNamedReferencePromise.then(
+                const gridSourceOrReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, false);
+                gridSourceOrReferencePromise.then(
                     () => { this._watchlistFrame.focusItem(0) },
                     (reason) => { throw AssertInternalError.createIfNotError(reason, 'DASDFO88552', litIvemId.name)}
                 );
@@ -215,8 +213,8 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
 
     applyGridLayoutDefinitions(layouts: DepthAndSalesDitemFrame.GridLayoutDefinitions) {
         this._depthFrame.applyGridLayoutDefinitions(layouts.depth);
-        const watchlistGridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.watchlist);
-        this._watchlistFrame.applyGridLayoutDefinition(watchlistGridLayoutOrNamedReferenceDefinition);
+        const watchlistGridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.watchlist);
+        this._watchlistFrame.applyGridLayoutDefinition(watchlistGridLayoutOrReferenceDefinition);
         this._tradesFrame.applyGridLayoutDefinition(layouts.trades);
     }
 

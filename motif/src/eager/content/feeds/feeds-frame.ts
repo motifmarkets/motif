@@ -10,8 +10,8 @@ import {
     FeedTableRecordSource,
     GridField,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
     RenderValueRecordGridCellPainter,
@@ -46,21 +46,21 @@ export class FeedsFrame extends DelayedBadnessGridSourceFrame {
     }
 
     tryOpenWithDefaultLayout(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
+        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    createDefaultLayoutGridSourceOrNamedReferenceDefinition() {
+    createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createFeed();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition();
+    protected override getDefaultGridSourceOrReferenceDefinition() {
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as FeedTableRecordSource;
         this._recordList = this._recordSource.recordList;

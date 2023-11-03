@@ -5,17 +5,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { NamedGridLayoutsService } from '@motifmarkets/motif-core';
+import { ReferenceableGridLayoutsService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
     providedIn: 'root',
 })
-export class NamedGridLayoutsNgService {
-    private _service: NamedGridLayoutsService;
+export class ReferenceableGridLayoutsNgService {
+    private _service: ReferenceableGridLayoutsService;
 
     constructor(coreNgService: CoreNgService) {
-        this._service = coreNgService.namedGridLayoutsService;
+        this._service = coreNgService.referenceableGridLayoutsService;
     }
 
     get service() { return this._service; }

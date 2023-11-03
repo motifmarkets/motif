@@ -7,7 +7,7 @@
 import {
     AdiService,
     CommandRegisterService,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     SettingsService,
@@ -103,9 +103,9 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = watchElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
-                        this._watchGridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                        this._watchGridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }
                 }
             }
@@ -123,9 +123,9 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = callPutElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrNamedReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
-                        this._callPutGridSourceFrame.keptGridLayoutOrNamedReferenceDefinition = keptLayoutResult.value;
+                        this._callPutGridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }
                 }
             }
@@ -134,7 +134,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
 
     private saveWatchCallPut(frame: GridSourceFrame, element: JsonElement) {
         const keptLayoutElement = element.newElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
-        const layoutDefinition = frame.createGridLayoutOrNamedReferenceDefinition();
+        const layoutDefinition = frame.createGridLayoutOrReferenceDefinition();
         layoutDefinition.saveToJson(keptLayoutElement);
     }
 }

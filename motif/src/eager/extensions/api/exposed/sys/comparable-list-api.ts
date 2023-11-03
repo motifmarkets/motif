@@ -21,19 +21,19 @@ export interface ComparableList<T> {
     toArray(): T[];
 
     add(value: T): Integer;
-    addRange(values: T[]): void;
-    addItemsRange(values: T[], subRangeStartIndex: Integer, subRangeCount: Integer): void;
+    addRange(values: readonly T[]): void;
+    addSubRange(values: readonly T[], subRangeStartIndex: Integer, subRangeCount: Integer): void;
     insert(index: Integer, value: T): void;
     insertRange(index: Integer, values: T[]): void;
     remove(value: T): void;
     removeAtIndex(index: Integer): void;
     removeRange(index: Integer, deleteCount: Integer): void;
+    removeItems(items: readonly T[], beforeRemoveRangeCallBack?: ComparableList.BeforeRemoveRangeCallBack): void;
     clear(): void;
 
     replace(index: Integer, value: T): void;
     extract(value: T): T;
 
-    pack(unusedValue: T, beforeDeleteRangeCallBackFtn?: ComparableList.BeforeDeleteRangeCallBack): void;
     exchange(index1: Integer, index2: Integer): void;
     move(curIndex: Integer, newIndex: Integer): void;
 
@@ -41,7 +41,7 @@ export interface ComparableList<T> {
     last(): T;
 
     setMinimumCapacity(value: Integer): void;
-    expand(): void;
+    setGrowthCapacity(growth: Integer): void;
     trimExcess(): void;
 
     contains(value: T): boolean;
@@ -62,5 +62,5 @@ export namespace ComparableList {
     }
 
     export type CompareCallback<T> = (this: void, left: T, right: T) => ComparisonResult;
-    export type BeforeDeleteRangeCallBack = (this: void, index: Integer, count: Integer) => void;
+    export type BeforeRemoveRangeCallBack = (this: void, index: Integer, count: Integer) => void;
 }

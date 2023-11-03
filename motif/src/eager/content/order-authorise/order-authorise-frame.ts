@@ -9,8 +9,8 @@ import {
     BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
     Order,
@@ -77,21 +77,21 @@ export class OrderAuthoriseFrame extends DelayedBadnessGridSourceFrame {
     }
 
     tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(group);
+        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(group);
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    createDefaultLayoutGridSourceOrNamedReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
+    createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createOrder(brokerageAccountGroup);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrNamedReferenceDefinition(OrderAuthoriseFrame.defaultBrokerageAccountGroup);
+    protected override getDefaultGridSourceOrReferenceDefinition() {
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition(OrderAuthoriseFrame.defaultBrokerageAccountGroup);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as OrderTableRecordSource;
         this._recordList = this._recordSource.recordList;

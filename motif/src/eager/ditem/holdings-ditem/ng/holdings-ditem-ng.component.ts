@@ -408,7 +408,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrNamedReferenceDefinition(layoutOrReferenceDefinition);
+                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
                 }
                 this.closeDialog();
             },

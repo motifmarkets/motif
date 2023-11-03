@@ -9,31 +9,28 @@ import {
     AssertInternalError,
     CellPainterFactoryService,
     GridField,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
-    GridSourceOrNamedReference,
-    GridSourceOrNamedReferenceDefinition,
+    GridSourceOrReference,
+    GridSourceOrReferenceDefinition,
     Integer,
     JsonRankedLitIvemIdListDefinition,
-    JsonScoredRankedLitIvemIdList,
     LitIvemId,
-    NamedGridLayoutsService,
-    NamedGridSourcesService,
     RankedLitIvemId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
-    RankedLitIvemIdListOrReferenceDefinition,
-    RankedLitIvemIdListReferentialsService,
     RankedLitIvemIdListTableRecordSource,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourceDefinitionsStoreService,
+    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    compareInteger,
-    newGuid
+    compareInteger
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -55,11 +52,11 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        private readonly _rankedLitIvemIdListReferentialsService: RankedLitIvemIdListReferentialsService,
-        namedGridLayoutsService: NamedGridLayoutsService,
+        namedGridLayoutsService: ReferenceableGridLayoutsService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        namedGridSourcesService: NamedGridSourcesService,
+        private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
+        referenceableGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
     ) {
         super(
@@ -67,7 +64,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             namedGridLayoutsService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
-            namedGridSourcesService,
+            referenceableGridSourcesService,
             cellPainterFactoryService,
         );
     }
@@ -104,29 +101,26 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     }
 
     newEmpty(keepView: boolean) {
-        const definition = this.createEmptyGridSourceOrNamedReferenceDefinition();
-        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(definition, keepView);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WFNE57774', this.opener.lockerName);
+        const definition = this.createEmptyGridSourceOrReferenceDefinition();
+        const gridSourceOrReferencePromise = this.tryOpenGridSource(definition, keepView);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WFNE57774', this.opener.lockerName);
     }
 
-    createGridSourceOrNamedReferenceDefinitionFromList(
+    createGridSourceOrReferenceDefinitionFromList(
         listDefinition: RankedLitIvemIdListDefinition,
-        gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined,
+        gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined,
         rowOrderDefinition: GridRowOrderDefinition | undefined,
     ) {
-        const listOrNamedReferenceDefinition = new RankedLitIvemIdListOrReferenceDefinition(listDefinition);
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
-            listOrNamedReferenceDefinition
-        );
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(listDefinition);
         const gridSourceDefinition = new GridSourceDefinition(
             tableRecordSourceDefinition,
-            gridLayoutOrNamedReferenceDefinition,
+            gridLayoutOrReferenceDefinition,
             rowOrderDefinition,
         );
-        return new GridSourceOrNamedReferenceDefinition(gridSourceDefinition);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    async saveGridSourceAs(as: GridSourceOrNamedReferenceDefinition.SaveAsDefinition): Promise<void> {
+    async saveGridSourceAs(as: GridSourceOrReferenceDefinition.SaveAsDefinition): Promise<void> {
         const oldLitIvemIdList = this._litIvemIdList;
         const count = oldLitIvemIdList.count;
         const rankedLitIvemIds = new Array<RankedLitIvemId>(count);
@@ -137,52 +131,53 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         rankedLitIvemIds.sort((left, right) => compareInteger(left.rank, right.rank));
         const newLitIvemIds = rankedLitIvemIds.map((rankedLitIvemId) => rankedLitIvemId.litIvemId);
 
-        let gridLayoutOrNamedReferenceDefinition: GridLayoutOrNamedReferenceDefinition | undefined;
+        let gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined;
         let rowOrderDefinition: GridRowOrderDefinition | undefined;
         if (as.tableRecordSourceOnly) {
-            gridLayoutOrNamedReferenceDefinition = undefined;
+            gridLayoutOrReferenceDefinition = undefined;
             rowOrderDefinition = undefined;
         } else {
-            gridLayoutOrNamedReferenceDefinition = this.createGridLayoutOrNamedReferenceDefinition();
+            gridLayoutOrReferenceDefinition = this.createGridLayoutOrReferenceDefinition();
             rowOrderDefinition = this.createRowOrderDefinition();
         }
 
         let jsonRankedLitIvemIdListDefinition: JsonRankedLitIvemIdListDefinition | undefined;
         if (as.name === undefined) {
-            const id = newGuid();
-            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', newLitIvemIds);
+            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', newLitIvemIds);
             this.notifySaveRequired();
         } else {
-            if (as.id !== undefined) {
-                const referentialLockResult = await this._rankedLitIvemIdListReferentialsService.tryLockItemByKey(as.id, this.opener);
-                if (referentialLockResult.isOk()) {
-                    const referential = referentialLockResult.value;
-                    if (referential !== undefined) {
-                        const list = referential.lockedList;
-                        if (list instanceof JsonScoredRankedLitIvemIdList) {
-                            list.set(newLitIvemIds);
-                            jsonRankedLitIvemIdListDefinition = list.createDefinition();
-                        }
-                    }
-                }
-            }
+            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', newLitIvemIds); // remove when implemented
+            // if (as.id !== undefined) {
+            //     const referentialLockResult = await this._referenceableGridSourceDefinitionsStoreService.tryLockItemByKey(as.id, this.opener);
+            //     if (referentialLockResult.isOk()) {
+            //         const referential = referentialLockResult.value;
+            //         if (referential !== undefined) {
+            //             const list = referential.lockedList;
+            //             if (list instanceof JsonScoredRankedLitIvemIdList) {
+            //                 list.set(newLitIvemIds);
+            //                 jsonRankedLitIvemIdListDefinition = list.createDefinition();
+            //             }
+            //         }
+            //     }
+            // }
 
-            if (jsonRankedLitIvemIdListDefinition === undefined) {
-                const id = newGuid();
-                const namedJsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, as.name, '', '', newLitIvemIds);
-                this._rankedLitIvemIdListReferentialsService.new(namedJsonRankedLitIvemIdListDefinition);
-                jsonRankedLitIvemIdListDefinition = namedJsonRankedLitIvemIdListDefinition;
-            }
+            // if (jsonRankedLitIvemIdListDefinition === undefined) {
+            //     const namedJsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(as.name, '', '', newLitIvemIds);
+            //     this._referenceableGridSourceDefinitionsStoreService.new(namedJsonRankedLitIvemIdListDefinition);
+            //     jsonRankedLitIvemIdListDefinition = namedJsonRankedLitIvemIdListDefinition;
+            // }
         }
 
-        const definition = this.createGridSourceOrNamedReferenceDefinitionFromList(
+        const definition = this.createGridSourceOrReferenceDefinitionFromList(
             jsonRankedLitIvemIdListDefinition,
-            gridLayoutOrNamedReferenceDefinition,
+            gridLayoutOrReferenceDefinition,
             rowOrderDefinition,
         );
 
-        const gridSourceOrNamedReferencePromise = this.tryOpenGridSource(definition, true);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrNamedReferencePromise, 'WFSGSA49991', `${this.opener.lockerName}: ${as.name ?? ''}`);
+        const gridSourceOrReferencePromise = this.tryOpenGridSource(definition, true);
+        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WFSGSA49991', `${this.opener.lockerName}: ${as.name ?? ''}`);
+
+        return Promise.resolve(undefined); // remove when fixed
     }
 
     getAt(index: Integer) {
@@ -258,11 +253,11 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         this.updateFlexBasis();
     }
 
-    protected override getDefaultGridSourceOrNamedReferenceDefinition() {
-        return this.createGridSourceOrNamedReferenceDefinitionFromLitIvemIds(this.defaultLitIvemIds);
+    protected override getDefaultGridSourceOrReferenceDefinition() {
+        return this.createGridSourceOrReferenceDefinitionFromLitIvemIds(this.defaultLitIvemIds);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrNamedReference: GridSourceOrNamedReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         const litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;
@@ -284,21 +279,19 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    private createGridSourceOrNamedReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[] | undefined) {
+    private createGridSourceOrReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[] | undefined) {
         if (litIvemIds === undefined) {
-            return this.createEmptyGridSourceOrNamedReferenceDefinition();
+            return this.createEmptyGridSourceOrReferenceDefinition();
         } else {
-            const id = newGuid();
-            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', litIvemIds);
-            return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
+            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', litIvemIds);
+            return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
         }
     }
 
-    private createEmptyGridSourceOrNamedReferenceDefinition() {
-        const id = newGuid();
+    private createEmptyGridSourceOrReferenceDefinition() {
         const litIvemIds: readonly LitIvemId[] = [];
-        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition(id, '', '', '', litIvemIds);
-        return this.createGridSourceOrNamedReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
+        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', litIvemIds);
+        return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

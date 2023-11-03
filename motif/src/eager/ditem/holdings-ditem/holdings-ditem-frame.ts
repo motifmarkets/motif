@@ -13,7 +13,7 @@ import {
     BrokerageAccountGroup,
     CommandRegisterService,
     GridLayoutDefinition,
-    GridLayoutOrNamedReferenceDefinition,
+    GridLayoutOrReferenceDefinition,
     Holding,
     HoldingTableRecordSourceDefinition,
     Integer,
@@ -161,18 +161,18 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrNamedReferenceDefinition(layouts: HoldingsDitemFrame.GridLayoutDefinitions) {
+    openGridLayoutOrReferenceDefinition(layouts: HoldingsDitemFrame.GridLayoutDefinitions) {
         if (this._holdingsFrame === undefined) {
             throw new AssertInternalError('HDFAGLDH22298');
         } else {
-            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.holdings);
-            this._holdingsFrame.applyGridLayoutDefinition(gridLayoutOrNamedReferenceDefinition);
+            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.holdings);
+            this._holdingsFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('HDFAGLDB22298');
         } else {
-            const gridLayoutOrNamedReferenceDefinition = new GridLayoutOrNamedReferenceDefinition(layouts.balances);
-            this._balancesFrame.applyGridLayoutDefinition(gridLayoutOrNamedReferenceDefinition);
+            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.balances);
+            this._balancesFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -285,10 +285,10 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             if (group !== undefined) {
                 // TODO add support for clearTable
 
-                const gridSourceOrNamedReferencePromise = holdingsFrame.tryOpenWithDefaultLayout(group, keepView);
-                gridSourceOrNamedReferencePromise.then(
-                    (gridSourceOrNamedReference) => {
-                        if (gridSourceOrNamedReference === undefined) {
+                const gridSourceOrReferencePromise = holdingsFrame.tryOpenWithDefaultLayout(group, keepView);
+                gridSourceOrReferencePromise.then(
+                    (gridSourceOrReference) => {
+                        if (gridSourceOrReference === undefined) {
                             this.closeAndHideBalances();
                         } else {
                             if (BrokerageAccountGroup.isSingle(group)) {
