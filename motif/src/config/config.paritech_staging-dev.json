@@ -17,6 +17,10 @@
         "overriddenDefaultDataEnvironment": "sample"
       },
       {
+        "exchange": "Myx",
+        "overriddenDefaultDataEnvironment": "sample"
+      },
+      {
         "exchange": "Nzx",
         "overriddenDefaultDataEnvironment": "sample"
       }
