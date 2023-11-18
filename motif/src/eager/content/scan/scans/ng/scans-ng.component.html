@@ -7,9 +7,12 @@
 <app-delayed-badness #delayedBadness></app-delayed-badness>
 <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
     <as-split-area id="gridArea" [size]="gridSize" [minSize]="gridMinSize">
+        <div id="scanListToolbar">
+            <app-svg-button #newButton id="newButton"></app-svg-button>
+        </div>
         <app-scan-list #scanList id="scanList"></app-scan-list>
     </as-split-area>
-    <as-split-area id="propertiesArea" [size]="null"> <!-- was size="*"-->
-        <app-scan-properties #scanProperties id="scanProperties"></app-scan-properties>
+    <as-split-area id="editorArea" [size]="null"> <!-- was size="*"-->
+        <app-scan-editor #scanEditor id="scanEditor"></app-scan-editor>
     </as-split-area>
 </as-split>

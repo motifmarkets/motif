@@ -3,7 +3,7 @@ import {
     BooleanUiAction,
     ExplicitElementsEnumArrayUiAction,
     IntegerUiAction,
-    Scan,
+    ScanEditor,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
@@ -13,15 +13,15 @@ import {
     EnumArrayInputNgComponent, IntegerTextInputNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
-import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
+import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 
 @Component({
-    selector: 'app-notifiers-scan-properties-section',
-    templateUrl: './notifiers-scan-properties-section-ng.component.html',
-    styleUrls: ['./notifiers-scan-properties-section-ng.component.scss'],
+    selector: 'app-notifiers-scan-editor-section',
+    templateUrl: './notifiers-scan-editor-section-ng.component.html',
+    styleUrls: ['./notifiers-scan-editor-section-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
+export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDirective
     implements  OnInit, OnDestroy, AfterViewInit {
 
     private static typeInstanceCreateCount = 0;
@@ -50,7 +50,7 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
     private readonly _minimumElapsedTimeUiAction: IntegerUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>) {
-        super(elRef, ++NotifiersScanPropertiesSectionNgComponent.typeInstanceCreateCount);
+        super(elRef, ++NotifiersScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._mobileNotifierUiAction = this.createMobileNotifierUiAction();
         this._smsNotifierUiAction = this.createSmsNotifierUiAction();
@@ -73,8 +73,8 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
         this.initialiseComponents();
     }
 
-    override setScan(value: Scan | undefined) {
-        super.setScan(value);
+    override setEditor(value: ScanEditor | undefined) {
+        super.setEditor(value);
         this.pushValues();
     }
 
@@ -88,7 +88,7 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
         this._minimumElapsedTimeUiAction.finalise();
     }
 
-    protected override processChangedProperties(valueChanges: Scan.ValueChange[]) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
     }
 
     private initialiseComponents() {
@@ -191,7 +191,7 @@ export class NotifiersScanPropertiesSectionNgComponent extends ScanPropertiesSec
     }
 
     private pushValues() {
-        if (this._scan === undefined) {
+        if (this._scanEditor === undefined) {
             this._mobileNotifierUiAction.pushValue(undefined);
             this._smsNotifierUiAction.pushValue(undefined);
             this._emailNotifierUiAction.pushValue(undefined);

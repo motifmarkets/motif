@@ -10,20 +10,20 @@ import {
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     Integer,
-    Scan,
+    ScanEditor,
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
-import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
+import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 
 @Component({
-    selector: 'app-criteria-scan-properties-section',
-    templateUrl: './criteria-scan-properties-section-ng.component.html',
-    styleUrls: ['./criteria-scan-properties-section-ng.component.scss'],
+    selector: 'app-criteria-scan-editor-section',
+    templateUrl: './criteria-scan-editor-section-ng.component.html',
+    styleUrls: ['./criteria-scan-editor-section-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective
+export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDirective
     implements OnInit, OnDestroy, AfterViewInit {
 
     private static typeInstanceCreateCount = 0;
@@ -36,7 +36,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
-        super(elRef, ++CriteriaScanPropertiesSectionNgComponent.typeInstanceCreateCount);
+        super(elRef, ++CriteriaScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._viewUiAction = this.createViewUiAction();
     }
@@ -53,8 +53,8 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this.initialiseComponents();
     }
 
-    override setScan(value: Scan | undefined) {
-        super.setScan(value);
+    override setEditor(value: ScanEditor | undefined) {
+        super.setEditor(value);
         this.pushValues();
     }
 
@@ -62,7 +62,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         this._viewUiAction.finalise();
     }
 
-    protected override processChangedProperties(valueChanges: Scan.ValueChange[]) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;
         // for (const fieldId of changedFieldIds) {
@@ -87,12 +87,12 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanCriteriaCaption_View]);
         action.pushTitle(Strings[StringId.ScanCriteriaDescription_View]);
-        const ids = CriteriaScanPropertiesSectionNgComponent.View.getAllIds();
+        const ids = CriteriaScanEditorSectionNgComponent.View.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: CriteriaScanPropertiesSectionNgComponent.View.idToDisplay(id),
-                    title: CriteriaScanPropertiesSectionNgComponent.View.idToDescription(id),
+                    caption: CriteriaScanEditorSectionNgComponent.View.idToDisplay(id),
+                    title: CriteriaScanEditorSectionNgComponent.View.idToDescription(id),
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
@@ -104,8 +104,8 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
     }
 
     private pushValues() {
-        if (this._scan === undefined) {
-            this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
+        if (this._scanEditor === undefined) {
+            this._viewUiAction.pushValue(CriteriaScanEditorSectionNgComponent.ViewId.Default);
         // } else {
         //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {
         //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
@@ -116,7 +116,7 @@ export class CriteriaScanPropertiesSectionNgComponent extends ScanPropertiesSect
     }
 }
 
-export namespace CriteriaScanPropertiesSectionNgComponent {
+export namespace CriteriaScanEditorSectionNgComponent {
     export const enum ViewId {
         Default,
         List,
@@ -167,7 +167,7 @@ export namespace CriteriaScanPropertiesSectionNgComponent {
         const infos = Object.values(infosObject);
 
         export function initialise() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as ViewId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError(
                     'CriteriaScanPropertiesSectionNgComponent.ViewId', outOfOrderIdx, infos[outOfOrderIdx].name
@@ -199,6 +199,6 @@ export namespace CriteriaScanPropertiesSectionNgComponent {
 
 export namespace CriteriaScanPropertiesSectionNgComponentModule {
     export function initialiseStatic() {
-        CriteriaScanPropertiesSectionNgComponent.View.initialise();
+        CriteriaScanEditorSectionNgComponent.View.initialise();
     }
 }

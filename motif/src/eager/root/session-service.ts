@@ -506,7 +506,7 @@ export class SessionService {
         this._adiService.start();
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
-        this._scansService.start();
+        this._scansService.initialise();
         this._idleProcessor = new IdleProcessor(this._settingsService, this._appStorageService, this._workspaceService);
     }
 

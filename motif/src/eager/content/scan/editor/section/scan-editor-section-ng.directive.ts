@@ -5,16 +5,16 @@
  */
 
 import { Directive } from '@angular/core';
-import { MultiEvent, Scan } from '@motifmarkets/motif-core';
+import { MultiEvent, ScanEditor } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../expandable-collapsible-lined-heading/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()
-export abstract class ScanPropertiesSectionNgDirective extends ContentComponentBaseNgDirective {
+export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseNgDirective {
     protected _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    protected _scan: Scan | undefined;
+    protected _scanEditor: ScanEditor | undefined;
 
-    private _scanPropertiesChangedSubscriptionId: MultiEvent.SubscriptionId | undefined;
+    private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
     public abstract sectionHeadingText: string;
 
@@ -24,15 +24,15 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
         this._sectionHeadingComponent.collapseEventer = () => this.handleCollapseEvent();
     }
 
-    setScan(value: Scan | undefined) {
-        if (this._scan !== undefined) {
-            this._scan.unsubscribeValuesChangedEvent(this._scanPropertiesChangedSubscriptionId);
-            this._scanPropertiesChangedSubscriptionId = undefined;
+    setEditor(value: ScanEditor | undefined) {
+        if (this._scanEditor !== undefined) {
+            this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
+            this._scanEditorFieldChangesSubscriptionId = undefined;
         }
-        this._scan = value;
-        if (this._scan !== undefined) {
-            this._scanPropertiesChangedSubscriptionId = this._scan.subscribeValuesChangedEvent(
-                (valueChanges) => this.processChangedProperties(valueChanges)
+        this._scanEditor = value;
+        if (this._scanEditor !== undefined) {
+            this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
+                (fieldIds) => this.processFieldChanges(fieldIds)
             );
         }
     }
@@ -49,5 +49,5 @@ export abstract class ScanPropertiesSectionNgDirective extends ContentComponentB
 
     }
 
-    protected abstract processChangedProperties(valueChanges: readonly Scan.ValueChange[]): void;
+    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]): void;
 }

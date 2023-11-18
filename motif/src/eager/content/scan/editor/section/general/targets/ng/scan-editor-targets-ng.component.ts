@@ -9,7 +9,7 @@ import {
     IntegerUiAction,
     LitIvemIdUiAction,
     MarketId,
-    Scan,
+    ScanEditor,
     ScanTargetTypeId,
     StringId,
     Strings,
@@ -27,12 +27,12 @@ import {
 import { ContentComponentBaseNgDirective } from '../../../../../../ng/content-component-base-ng.directive';
 
 @Component({
-    selector: 'app-targets-scan-properties',
-    templateUrl: './targets-scan-properties-ng.component.html',
-    styleUrls: ['./targets-scan-properties-ng.component.scss'],
+    selector: 'app-scan-editor-targets',
+    templateUrl: './scan-editor-targets-ng.component.html',
+    styleUrls: ['./scan-editor-targets-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirective implements  OnInit, OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('singleSymbolTargetSubTypeControl', { static: true })
@@ -69,11 +69,11 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
     private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
-    private _scan: Scan | undefined;
-    private _targetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
+    private _scanEditor: ScanEditor | undefined;
+    private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
-        super(elRef, ++TargetsScanPropertiesNgComponent.typeInstanceCreateCount);
+        super(elRef, ++ScanEditorTargetsNgComponent.typeInstanceCreateCount);
 
         this.targetSubTypeRadioName = this.generateInstancedRadioName('targetSubType');
 
@@ -85,7 +85,7 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         this._multiMarketUiAction = this.createMultiMarketUiAction();
         this._maxMatchCountUiAction = this.createMaxMatchCountUiAction();
 
-        this._targetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
+        this._targetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
     }
 
     ngOnInit() {
@@ -101,23 +101,23 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
     }
 
     public isSingleSymbolSubTargetType() {
-        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
+        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
     }
 
     public isMultiSymbolSubTargetType() {
-        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol;
+        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
     }
 
     public isSingleMarketSubTargetType() {
-        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
+        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
     }
 
     public isMultiMarketSubTargetType() {
-        return this._targetSubTypeId === TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket;
+        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
     }
 
-    setScan(value: Scan | undefined) {
-        this._scan = value;
+    setEditor(value: ScanEditor | undefined) {
+        this._scanEditor = value;
         this.pushValues();
     }
 
@@ -131,16 +131,16 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
 
     private initialiseComponents() {
         this._singleSymbolTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol
+            this._targetSubTypeUiAction, ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol
         );
         this._multiSymbolTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol
+            this._targetSubTypeUiAction, ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol
         );
         this._singleMarketTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket
+            this._targetSubTypeUiAction, ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket
         );
         this._multiMarketTargetSubTypeControlComponent.initialiseEnum(
-            this._targetSubTypeUiAction, TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket
+            this._targetSubTypeUiAction, ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket
         );
         this._singleSymbolControlComponent.initialise(this._singleSymbolUiAction);
         this._singleMarketControlComponent.initialise(this._singleMarketUiAction);
@@ -155,12 +155,12 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanTargetsCaption_TargetType]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_TargetType]);
-        const ids = TargetsScanPropertiesNgComponent.TargetSubType.getAllIds();
+        const ids = ScanEditorTargetsNgComponent.TargetSubType.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: TargetsScanPropertiesNgComponent.TargetSubType.idToDisplay(id),
-                    title: TargetsScanPropertiesNgComponent.TargetSubType.idToDescription(id),
+                    caption: ScanEditorTargetsNgComponent.TargetSubType.idToDisplay(id),
+                    title: ScanEditorTargetsNgComponent.TargetSubType.idToDescription(id),
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
@@ -176,9 +176,9 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.pushCaption(Strings[StringId.ScanTargetsCaption_SingleSymbol]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_SingleSymbol]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
+            if (this._scanEditor !== undefined) {
                 const litItemId = this._singleSymbolUiAction.definedValue;
-                this._scan.setTargetLitIvemIds([litItemId]);
+                this._scanEditor.targetLitIvemIds = [litItemId];
             }
         };
         return action;
@@ -189,9 +189,9 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.pushCaption(Strings[StringId.ScanTargetsCaption_SingleMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_SingleMarket]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
+            if (this._scanEditor !== undefined) {
                 const id = this._singleMarketUiAction.definedValue as MarketId;
-                this._scan.setTargetMarketIds([id]);
+                this._scanEditor.targetMarketIds = [id];
             }
         };
         return action;
@@ -202,9 +202,9 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MultiMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MultiMarket]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
+            if (this._scanEditor !== undefined) {
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scan.setTargetMarketIds(ids);
+                this._scanEditor.targetMarketIds = ids;
             }
         };
         return action;
@@ -215,58 +215,58 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MaxMatchCount]);
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
+            if (this._scanEditor !== undefined) {
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scan.setTargetMarketIds(ids);
+                this._scanEditor.targetMarketIds = ids;
             }
         };
         return action;
     }
 
     private pushValues() {
-        if (this._scan === undefined) {
-            this._targetSubTypeUiAction.pushValue(TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol);
+        if (this._scanEditor === undefined) {
+            this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
             this._singleSymbolUiAction.pushValue(undefined);
             this._singleMarketUiAction.pushValue(undefined);
             this._multiMarketUiAction.pushValue([]);
             this._maxMatchCountUiAction.pushValue(undefined);
         } else {
-            const litIvemIds = this._scan.targetLitIvemIds;
-            let symbolTargetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
-            if (litIvemIds === undefined || litIvemIds.length === 0) {
-                symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
+            const litIvemIds = this._scanEditor.targetLitIvemIds;
+            let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+            if (litIvemIds.length === 0) {
+                symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
                 this._singleSymbolUiAction.pushValue(undefined);
             } else {
                 if (litIvemIds.length === 1) {
-                    symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleSymbol;
+                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
                     this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                 } else {
-                    symbolTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiSymbol;
+                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
                     this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                 }
             }
 
-            const marketIds = this._scan.targetMarketIds;
-            let marketTargetSubTypeId: TargetsScanPropertiesNgComponent.TargetSubTypeId;
-            if (marketIds === undefined || marketIds.length === 0) {
-                marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
+            const marketIds = this._scanEditor.targetMarketIds;
+            let marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+            if (marketIds.length === 0) {
+                marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
                 this._singleMarketUiAction.pushValue(undefined);
                 this._multiMarketUiAction.pushValue([]);
             } else {
                 if (marketIds.length === 1) {
-                    marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.SingleMarket;
+                    marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
                     this._singleMarketUiAction.pushValue(marketIds[0]);
                     this._multiMarketUiAction.pushValue(marketIds);
                 } else {
-                    marketTargetSubTypeId = TargetsScanPropertiesNgComponent.TargetSubTypeId.MultiMarket;
+                    marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
                     this._singleMarketUiAction.pushValue(marketIds[0]);
                     this._multiMarketUiAction.pushValue(marketIds);
                 }
             }
 
-            this._maxMatchCountUiAction.pushValue(this._scan.maxMatchCount);
+            this._maxMatchCountUiAction.pushValue(this._scanEditor.maxMatchCount);
 
-            switch (this._scan.targetTypeId) {
+            switch (this._scanEditor.targetTypeId) {
                 case undefined: {
                     this._targetSubTypeUiAction.pushDisabled();
                     break;
@@ -280,14 +280,14 @@ export class TargetsScanPropertiesNgComponent extends ContentComponentBaseNgDire
                     break;
                 }
                 default:
-                    throw new UnreachableCaseError('STNCPV33017', this._scan.targetTypeId);
+                    throw new UnreachableCaseError('STNCPV33017', this._scanEditor.targetTypeId);
             }
             this._cdr.markForCheck();
         }
     }
 }
 
-export namespace TargetsScanPropertiesNgComponent {
+export namespace ScanEditorTargetsNgComponent {
     export const enum TargetSubTypeId {
         SingleSymbol,
         MultiSymbol,
@@ -369,6 +369,6 @@ export namespace TargetsScanPropertiesNgComponent {
 
 export namespace ScanTargetsNgComponentModule {
     export function initialiseStatic() {
-        TargetsScanPropertiesNgComponent.TargetSubType.initialise();
+        ScanEditorTargetsNgComponent.TargetSubType.initialise();
     }
 }

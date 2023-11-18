@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
-    Scan,
+    ScanEditor,
     StringId,
     StringUiAction,
     Strings
@@ -10,16 +10,16 @@ import {
     CaptionLabelNgComponent, CheckboxInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
-import { ScanPropertiesSectionNgDirective } from '../../scan-properties-section-ng.directive';
-import { TargetsScanPropertiesNgComponent } from '../targets-scan-properties/ng-api';
+import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
+import { ScanEditorTargetsNgComponent } from '../targets/ng-api';
 
 @Component({
-    selector: 'app-general-scan-properties-section',
-    templateUrl: './general-scan-properties-section-ng.component.html',
-    styleUrls: ['./general-scan-properties-section-ng.component.scss'],
+    selector: 'app-general-scan-editor-section',
+    templateUrl: './general-scan-editor-section-ng.component.html',
+    styleUrls: ['./general-scan-editor-section-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
+export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDirective implements  OnInit, OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
@@ -31,7 +31,7 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     @ViewChild('descriptionControl', { static: true }) private _descriptionControlComponent: TextInputNgComponent;
     // @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
     // @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
-    @ViewChild('targetsScanProperties', { static: true }) private _targetsScanPropertiesComponent: TargetsScanPropertiesNgComponent;
+    @ViewChild('targetsComponent', { static: true }) private _targetsComponent: ScanEditorTargetsNgComponent;
     @ViewChild('symbolListLabel', { static: true }) private _symbolListLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolListControl', { static: true }) private _symbolListControlComponent: CheckboxInputNgComponent;
 
@@ -45,7 +45,7 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
     private readonly _symbolListUiAction: BooleanUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>) {
-        super(elRef, ++GeneralScanPropertiesSectionNgComponent.typeInstanceCreateCount);
+        super(elRef, ++GeneralScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._enabledUiAction = this.createEnabledUiAction();
         this._nameUiAction = this.createNameUiAction();
@@ -66,10 +66,10 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this.initialiseComponents();
     }
 
-    override setScan(value: Scan | undefined) {
-        super.setScan(value);
+    override setEditor(value: ScanEditor | undefined) {
+        super.setEditor(value);
         this.pushValues();
-        this._targetsScanPropertiesComponent.setScan(value);
+        this._targetsComponent.setEditor(value);
     }
 
     protected finalise() {
@@ -80,22 +80,21 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         this._symbolListUiAction.finalise();
     }
 
-    protected override processChangedProperties(valueChanges: Scan.ValueChange[]) {
-        const scan = this._scan;
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
+        const scan = this._scanEditor;
         if (scan !== undefined) {
-            for (const valueChange of valueChanges) {
-                const fieldId = valueChange.fieldId;
+            for (const fieldId of fieldIds) {
                 switch (fieldId) {
-                    case Scan.FieldId.Name:
+                    case ScanEditor.FieldId.Name:
                         this._nameUiAction.pushValue(scan.name);
                         break;
-                    case Scan.FieldId.Description:
+                    case ScanEditor.FieldId.Description:
                         this._descriptionUiAction.pushValue(scan.description);
                         break;
-                    case Scan.FieldId.Enabled:
-                        this._enabledUiAction.pushValue(scan.enabled);
-                        break;
-                    case Scan.FieldId.SymbolListEnabled:
+                    // case Scan.FieldId.Enabled:
+                    //     this._enabledUiAction.pushValue(scan.enabled);
+                    //     break;
+                    case ScanEditor.FieldId.SymbolListEnabled:
                         this._symbolListUiAction.pushValue(scan.symbolListEnabled);
                         break;
                 }
@@ -123,8 +122,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Enabled]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Enabled]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
-                this._scan.enabled = this._enabledUiAction.definedValue;
+            if (this._scanEditor !== undefined) {
+                // this._scan.enabled = this._enabledUiAction.definedValue;
             }
         };
         return action;
@@ -135,8 +134,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Name]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Name]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
-                this._scan.name = this._nameUiAction.definedValue;
+            if (this._scanEditor !== undefined) {
+                this._scanEditor.name = this._nameUiAction.definedValue;
             }
         };
         return action;
@@ -147,8 +146,8 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Description]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Description]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
-                this._scan.description = this._nameUiAction.definedValue;
+            if (this._scanEditor !== undefined) {
+                this._scanEditor.description = this._nameUiAction.definedValue;
             }
         };
         return action;
@@ -182,26 +181,26 @@ export class GeneralScanPropertiesSectionNgComponent extends ScanPropertiesSecti
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolList]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolList]);
         action.commitEvent = () => {
-            if (this._scan !== undefined) {
-                this._scan.symbolListEnabled = this._symbolListUiAction.definedValue;
+            if (this._scanEditor !== undefined) {
+                this._scanEditor.symbolListEnabled = this._symbolListUiAction.definedValue;
             }
         };
         return action;
     }
 
     private pushValues() {
-        if (this._scan === undefined) {
+        if (this._scanEditor === undefined) {
             this._enabledUiAction.pushValue(undefined);
             this._nameUiAction.pushValue(undefined);
             this._descriptionUiAction.pushValue(undefined);
             // this._typeUiAction.pushValue(undefined);
             this._symbolListUiAction.pushValue(undefined);
         } else {
-            this._enabledUiAction.pushValue(this._scan.enabled);
-            this._nameUiAction.pushValue(this._scan.name);
-            this._descriptionUiAction.pushValue(this._scan.description);
+            this._enabledUiAction.pushValue(this._scanEditor.enabled);
+            this._nameUiAction.pushValue(this._scanEditor.name);
+            this._descriptionUiAction.pushValue(this._scanEditor.description);
             // this._typeUiAction.pushValue(this._scan.criteriaTypeId);
-            this._symbolListUiAction.pushValue(this._scan.symbolListEnabled);
+            this._symbolListUiAction.pushValue(this._scanEditor.symbolListEnabled);
         }
     }
 }

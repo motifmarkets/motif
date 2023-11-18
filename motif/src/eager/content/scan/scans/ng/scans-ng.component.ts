@@ -1,9 +1,10 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, ViewChild } from '@angular/core';
 import { RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { ScanPropertiesNgComponent } from '../../properties/ng-api';
+import { ScanEditorNgComponent } from '../../editor/ng-api';
 import { ScanListFrame } from '../../scan-list/internal-api';
 import { ScanListNgComponent } from '../../scan-list/ng-api';
+import { AssertInternalError } from '@motifmarkets/motif-core';
 
 @Component({
     selector: 'app-scans',
@@ -16,7 +17,7 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('scanList', { static: true }) private _listComponent: ScanListNgComponent;
-    @ViewChild('scanProperties', { static: true }) private _propertiesComponent: ScanPropertiesNgComponent;
+    @ViewChild('scanEditor', { static: true }) private _editorComponent: ScanEditorNgComponent;
 
     readonly gridSize = 540;
     readonly gridMinSize = 50;
@@ -38,10 +39,11 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
         this._listFrame = this._listComponent.frame;
         this._listFrame.recordFocusedEventer = (newRecordIndex) => {
             if (newRecordIndex === undefined) {
-                this._propertiesComponent.setScan(undefined);
+                this._editorComponent.closeEditor();
             } else {
-                const scan = this._listFrame.recordList.getAt(newRecordIndex);
-                this._propertiesComponent.setScan(scan);
+                const scan = this._listFrame.scanList.getAt(newRecordIndex);
+                const promise = this._editorComponent.editScan(scan.id);
+                AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNCNAVI50355');
             }
         }
     }

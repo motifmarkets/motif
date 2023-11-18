@@ -25,6 +25,9 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     @ViewChild('tabList', { static: true }) private _tabListComponent: TabListNgComponent;
     @ViewChild('rankedLitIvemIdListContainer', { read: ViewContainerRef, static: true }) private _rankedLitIvemIdListContainer: ViewContainerRef;
 
+    public symbolListVisible = false;
+    public watchlistVisible = false;
+
     private _commandRegisterService: CommandRegisterService;
 
     private _okUiAction: IconButtonUiAction;
@@ -122,11 +125,14 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
 
     private showExistingListsTypeId(value: OpenWatchlistDialogNgComponent.ExistingListsTypeId) {
         if (value !== this._visibleExistingListsTypeId) {
+            let selectedListName: string;
             switch (value) {
                 case OpenWatchlistDialogNgComponent.ExistingListsTypeId.SymbolList:
+                    // selectedListName = this._symbolListDirectoryComponent.selectedListName
                     break;
 
                 case OpenWatchlistDialogNgComponent.ExistingListsTypeId.Watchlist:
+                    // selectedListName = this._symbolListDirectoryComponent.selectedListName
                     break;
 
                 default:

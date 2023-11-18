@@ -7,8 +7,8 @@ import {
     Integer,
     RenderValueRecordGridCellPainter,
     Scan,
+    ScanList,
     ScanTableRecordSource,
-    ScansService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
@@ -20,7 +20,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     recordFocusedEventer: ScanListFrame.RecordFocusedEventer | undefined
 
     private _recordSource: ScanTableRecordSource;
-    private _scansService: ScansService;
+    private _scanList: ScanList;
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
@@ -33,7 +33,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     // private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     // private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
-    get recordList() { return this._scansService; }
+    get scanList() { return this._scanList; }
 
     public get filterText() { return this._filterText; }
     public set filterText(value: string) {
@@ -82,7 +82,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as ScanTableRecordSource;
-        this._scansService = this._recordSource.recordList;
+        this._scanList = this._recordSource.recordList;
         if (this.gridSourceOpenedEventer !== undefined) {
             this.gridSourceOpenedEventer();
         }

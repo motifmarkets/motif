@@ -5,7 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, EnvironmentInjector, Injector, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
-import { delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
 
 @Component({
@@ -26,7 +26,10 @@ export class ZenithScanCriteriaViewNgComponent implements AfterViewInit {
     }
 
     ngAfterViewInit(): void {
-        delay1Tick(() => this.loadEditorComponent());
+        delay1Tick(() => {
+            const loadPromise = this.loadEditorComponent();
+            AssertInternalError.throwErrorIfVoidPromiseRejected(loadPromise, 'ZSCVNCNAVID1T29871');
+        });
     }
 
     async loadEditorComponent() {
