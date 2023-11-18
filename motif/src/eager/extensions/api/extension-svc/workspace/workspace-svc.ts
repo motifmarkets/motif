@@ -9,7 +9,7 @@ import { LocalDesktop } from '../../exposed/extension-api';
 /** @public */
 export interface WorkspaceSvc {
     readonly localDesktop: LocalDesktop;
-    localDesktopLoadedEventer: WorkspaceSvc.LocalDesktopLoadedEventHandler;
+    localDesktopLoadedEventer: WorkspaceSvc.LocalDesktopLoadedEventHandler | undefined;
     getLoadedLocalDesktop(): Promise<LocalDesktop | undefined>;
 }
 

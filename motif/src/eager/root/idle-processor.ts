@@ -5,53 +5,110 @@
  */
 
 import {
-    AppStorageService, AssertInternalError, getErrorMessage,
-    KeyValueStore, Logger,
+    AppStorageService,
+    AssertInternalError,
+    getErrorMessage,
+    KeyValueStore,
+    Logger,
     mSecsPerSec,
+    MultiEvent,
     SettingsService,
-    SysTick
+    SysTick,
 } from '@motifmarkets/motif-core';
 import { DesktopFrame } from 'desktop-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
 
 export class IdleProcessor {
     private _requestIdleCallbackHandle: number | undefined;
+    private _fallbackSetTimeoutHandle: ReturnType<typeof setTimeout> | undefined; // used if RequestIdleCallback not available
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
     private _localDesktopLayoutSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastLocalDesktopLayoutSaveFailed = false;
+
+    private _settingsServiceSaveRequiredSubscriptionId: MultiEvent.SubscriptionId;
+    private _workspaceServiceLocalDesktopFrameLoadedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         private readonly _settingsService: SettingsService,
         private readonly _appStorageService: AppStorageService,
         private readonly _workspaceService: WorkspaceService
     ) {
-        this.initiateRequestIdleCallback();
-    }
-
-    destroy() {
-        if (this._requestIdleCallbackHandle !== undefined) {
-            window.cancelIdleCallback(this._requestIdleCallbackHandle);
-            this._requestIdleCallbackHandle = undefined;
+        this._settingsServiceSaveRequiredSubscriptionId = this._settingsService.subscribeSaveRequiredEvent(() => this.ensureIdleCallbackRequested());
+        const desktopFrame = this._workspaceService.localDesktopFrame;
+        if (desktopFrame !== undefined) {
+            desktopFrame.layoutSaveRequiredEventer = () => this.ensureIdleCallbackRequested();
+        } else {
+            this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId = this._workspaceService.subscribeLocalDesktopFrameLoadedEvent((loadedDesktopFrame) => {
+                loadedDesktopFrame.layoutSaveRequiredEventer = () => this.ensureIdleCallbackRequested();
+                this.checkUnsubscribeLocalDesktopFrameLoadedEvent();
+            })
         }
     }
 
-    private initiateRequestIdleCallback() {
-        const options: IdleRequestOptions = {
-            timeout: IdleProcessor.idleCallbackTimeout,
-        };
-        this._requestIdleCallbackHandle = window.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
+    destroy() {
+        this.checkUnsubscribeLocalDesktopFrameLoadedEvent();
+        const localDesktopFrame = this._workspaceService.localDesktopFrame;
+        if (localDesktopFrame !== undefined) {
+            localDesktopFrame.layoutSaveRequiredEventer = undefined;
+        }
+        if (this._settingsServiceSaveRequiredSubscriptionId !== undefined) {
+            this._settingsService.unsubscribeSaveRequiredEvent(this._settingsServiceSaveRequiredSubscriptionId);
+            this._settingsServiceSaveRequiredSubscriptionId = undefined;
+        }
+        if (this._requestIdleCallbackHandle !== undefined) {
+            cancelIdleCallback(this._requestIdleCallbackHandle);
+            this._requestIdleCallbackHandle = undefined;
+        }
+        // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
+        if (this._fallbackSetTimeoutHandle !== undefined) {
+            clearTimeout(this._fallbackSetTimeoutHandle);
+            this._fallbackSetTimeoutHandle = undefined;
+        }
+    }
+
+    private checkUnsubscribeLocalDesktopFrameLoadedEvent() {
+        if (this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId !== undefined) {
+            this._workspaceService.unsubscribeLocalDesktopFrameLoadedEvent(this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId);
+            this._workspaceServiceLocalDesktopFrameLoadedSubscriptionId = undefined;
+        }
+    }
+
+    private ensureIdleCallbackRequested() {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (globalThis.requestIdleCallback !== undefined) {
+            if (this._requestIdleCallbackHandle === undefined) {
+                const options: IdleRequestOptions = {
+                    timeout: IdleProcessor.idleCallbackTimeout,
+                };
+                this._requestIdleCallbackHandle = globalThis.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
+            }
+        } else {
+            // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
+            if (this._fallbackSetTimeoutHandle === undefined) {
+                const deadline: IdleDeadline = {
+                    didTimeout: true,
+                    timeRemaining: () => 50,
+                }
+                this._fallbackSetTimeoutHandle = setTimeout(() => { this.idleCallback(deadline) }, IdleProcessor.idleCallbackTimeout);
+            }
+        }
     }
 
     private idleCallback(deadline: IdleDeadline) {
+        this._requestIdleCallbackHandle = undefined;
+
         let settingSaveInitiated = false;
         let nowTime: number | undefined;
         if (this._settingsService.saveRequired) {
             nowTime = SysTick.now();
-            if (nowTime > this._settingsSaveNotAllowedUntilTime) {
+            if (nowTime < this._settingsSaveNotAllowedUntilTime) {
+                this.ensureIdleCallbackRequested(); // Initiate another one to try again later
+            } else {
                 const promise = this.saveSettings();
                 AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICS10987');
                 settingSaveInitiated = true;
+                this.ensureIdleCallbackRequested(); // Initiate another one in case desktop save also required
             }
         }
 
@@ -62,15 +119,15 @@ export class IdleProcessor {
                     if (nowTime === undefined) {
                         nowTime = SysTick.now();
                     }
-                    if (nowTime > this._localDesktopLayoutSaveNotAllowedUntilTime) {
+                    if (nowTime < this._localDesktopLayoutSaveNotAllowedUntilTime) {
+                        this.ensureIdleCallbackRequested(); // Initiate another one to try again later
+                    } else {
                         const promise = this.saveLocalDesktopLayout(localDesktopFrame);
                         AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICLDL10987');
                     }
                 }
             }
         }
-
-        this.initiateRequestIdleCallback();
     }
 
     private async saveSettings() {
@@ -133,7 +190,7 @@ export class IdleProcessor {
 }
 
 export namespace IdleProcessor {
-    export const idleCallbackTimeout = 30 * mSecsPerSec;
-    export const minimumSettingsSaveRepeatSpan = 15 * mSecsPerSec;
-    export const minimumLocalDesktopLayoutSaveRepeatSpan = 30 * mSecsPerSec;
+    export const idleCallbackTimeout = 10 * mSecsPerSec;
+    export const minimumSettingsSaveRepeatSpan = 5 * mSecsPerSec;
+    export const minimumLocalDesktopLayoutSaveRepeatSpan = 5 * mSecsPerSec;
 }

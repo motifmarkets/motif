@@ -14,11 +14,11 @@ export class WorkspaceService {
 
     get localDesktopFrame() { return this._localDesktopFrame; }
 
-    subcribeLocalDesktopFrameLoadedEvent(handler: WorkspaceService.LocalDesktopFrameLoadedEventHandler) {
+    subscribeLocalDesktopFrameLoadedEvent(handler: WorkspaceService.LocalDesktopFrameLoadedEventHandler) {
         return this._localDesktopFrameLoadedMultiEvent.subscribe(handler);
     }
 
-    unsubcribeLocalDesktopFrameLoadedEvent(subscriptionId: MultiEvent.SubscriptionId) {
+    unsubscribeLocalDesktopFrameLoadedEvent(subscriptionId: MultiEvent.SubscriptionId) {
         return this._localDesktopFrameLoadedMultiEvent.unsubscribe(subscriptionId);
     }
 
@@ -27,18 +27,18 @@ export class WorkspaceService {
             throw new AssertInternalError('WSSLDF22293546');
         } else {
             this._localDesktopFrame = value;
-            this.notifyLocalDesktopFrameLoaded();
+            this.notifyLocalDesktopFrameLoaded(value);
         }
     }
 
-    private notifyLocalDesktopFrameLoaded() {
+    private notifyLocalDesktopFrameLoaded(desktopFrame: DesktopFrame) {
         const handlers = this._localDesktopFrameLoadedMultiEvent.copyHandlers();
         for (const handler of handlers) {
-            handler();
+            handler(desktopFrame);
         }
     }
 }
 
 export namespace WorkspaceService {
-    export type LocalDesktopFrameLoadedEventHandler = (this: void) => void;
+    export type LocalDesktopFrameLoadedEventHandler = (this: void, desktopFrame: DesktopFrame) => void;
 }

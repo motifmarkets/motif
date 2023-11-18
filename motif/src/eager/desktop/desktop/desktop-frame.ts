@@ -43,7 +43,7 @@ import {
 import { SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
-import { BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame, BrandingSplashWebPageDitemFrame } from 'ditem-internal-api';
+import { BrandingSplashWebPageDitemFrame, BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
 import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
@@ -53,6 +53,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private static readonly DefaultMaxHistoricalAccountIdCount = 15;
 
     initialLoadedEvent: DitemFrame.DesktopAccessService.InitialLoadedEvent;
+    layoutSaveRequiredEventer: DesktopFrame.LayoutSaveRequiredEventer | undefined;
 
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
@@ -520,7 +521,12 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     flagLayoutSaveRequired() {
-        this._layoutSaveRequired = true;
+        if (!this._layoutSaveRequired) {
+            this._layoutSaveRequired = true;
+            if (this.layoutSaveRequiredEventer !== undefined) {
+                this.layoutSaveRequiredEventer();
+            }
+        }
     }
 
     async saveLayout() {
@@ -1069,6 +1075,7 @@ export namespace DesktopFrame {
     export type LayoutSaveEventHandler = (this: void) => Json;
     export type LayoutLoadEventHandler = (this: void, layoutJson: Json) => void;
     export type ResetLayoutEventHandler = (this: void) => void;
+    export type LayoutSaveRequiredEventer = (this: void) => void;
     export type NewTabEventHandler = (typeId: BuiltinDitemFrame.BuiltinTypeId, componentState?: Json) => void;
 
     export type LitIvemIdChangeEventHandler = (this: void, initiatingFrame: DitemFrame | undefined) => void;
