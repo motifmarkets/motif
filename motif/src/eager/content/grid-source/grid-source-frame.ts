@@ -245,6 +245,8 @@ export abstract class GridSourceFrame extends ContentFrame {
                         this._openedGridSource = gridSource;
                         this._openedTable = table;
 
+                        this.processGridSourceOpenedEvent(gridSourceOrReference);
+
                         this._gridSourceGridLayoutSetSubscriptionId = this._openedGridSource.subscribeGridLayoutSetEvent(
                             () => this.handleGridSourceGridLayoutSetEvent()
                         );
@@ -271,8 +273,6 @@ export abstract class GridSourceFrame extends ContentFrame {
                         this.hideBadnessWithVisibleDelay(Badness.notBad);
 
                         this.notifyGridLayoutSet(layout);
-
-                        this.processGridSourceOpenedEvent(gridSourceOrReference);
 
                         return gridSourceOrReference;
                     }
