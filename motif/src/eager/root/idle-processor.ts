@@ -19,8 +19,9 @@ import { DesktopFrame } from 'desktop-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
 
 export class IdleProcessor {
-    private _requestIdleCallbackHandle: number | undefined;
-    private _fallbackSetTimeoutHandle: ReturnType<typeof setTimeout> | undefined; // used if RequestIdleCallback not available
+    private readonly _requestIdleCallbackAvailable: boolean;
+
+    private _callbackOrTimeoutHandle: number | ReturnType<typeof setTimeout> | undefined;
     private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastSettingsSaveFailed = false;
     private _localDesktopLayoutSaveNotAllowedUntilTime: SysTick.Time = 0;
@@ -34,6 +35,8 @@ export class IdleProcessor {
         private readonly _appStorageService: AppStorageService,
         private readonly _workspaceService: WorkspaceService
     ) {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        this._requestIdleCallbackAvailable = globalThis.requestIdleCallback !== undefined;
         this._settingsServiceSaveRequiredSubscriptionId = this._settingsService.subscribeSaveRequiredEvent(() => this.ensureIdleCallbackRequested());
         const desktopFrame = this._workspaceService.localDesktopFrame;
         if (desktopFrame !== undefined) {
@@ -56,14 +59,14 @@ export class IdleProcessor {
             this._settingsService.unsubscribeSaveRequiredEvent(this._settingsServiceSaveRequiredSubscriptionId);
             this._settingsServiceSaveRequiredSubscriptionId = undefined;
         }
-        if (this._requestIdleCallbackHandle !== undefined) {
-            cancelIdleCallback(this._requestIdleCallbackHandle);
-            this._requestIdleCallbackHandle = undefined;
-        }
-        // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
-        if (this._fallbackSetTimeoutHandle !== undefined) {
-            clearTimeout(this._fallbackSetTimeoutHandle);
-            this._fallbackSetTimeoutHandle = undefined;
+        if (this._callbackOrTimeoutHandle !== undefined) {
+            if (this._requestIdleCallbackAvailable) {
+                cancelIdleCallback(this._callbackOrTimeoutHandle as number);
+            } else {
+                // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
+                clearTimeout(this._callbackOrTimeoutHandle);
+            }
+            this._callbackOrTimeoutHandle = undefined;
         }
     }
 
@@ -76,27 +79,25 @@ export class IdleProcessor {
 
     private ensureIdleCallbackRequested() {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (globalThis.requestIdleCallback !== undefined) {
-            if (this._requestIdleCallbackHandle === undefined) {
+        if (this._callbackOrTimeoutHandle === undefined) {
+            if (this._requestIdleCallbackAvailable) {
                 const options: IdleRequestOptions = {
                     timeout: IdleProcessor.idleCallbackTimeout,
                 };
-                this._requestIdleCallbackHandle = globalThis.requestIdleCallback((deadline) => this.idleCallback(deadline), options);
-            }
-        } else {
-            // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
-            if (this._fallbackSetTimeoutHandle === undefined) {
+                this._callbackOrTimeoutHandle = requestIdleCallback((deadline) => this.idleCallback(deadline), options);
+            } else {
+                // Safari does not support requestIdleCallback at this point in time.  Use setTimeout instead
                 const deadline: IdleDeadline = {
                     didTimeout: true,
                     timeRemaining: () => 50,
                 }
-                this._fallbackSetTimeoutHandle = setTimeout(() => { this.idleCallback(deadline) }, IdleProcessor.idleCallbackTimeout);
+                this._callbackOrTimeoutHandle = setTimeout(() => { this.idleCallback(deadline) }, IdleProcessor.idleCallbackTimeout);
             }
         }
     }
 
     private idleCallback(deadline: IdleDeadline) {
-        this._requestIdleCallbackHandle = undefined;
+        this._callbackOrTimeoutHandle = undefined;
 
         let settingSaveInitiated = false;
         let nowTime: number | undefined;
