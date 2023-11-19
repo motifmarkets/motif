@@ -188,47 +188,47 @@ export namespace Config {
         // }
     }
 
-    function hasDemoZenithEndpoint(config: Config) {
-        const endpoints = config.endpoints;
-        const zenithEndpoints = endpoints.zenith;
-        for (const endpoint of zenithEndpoints) {
-            const demo = isDemoEndpoint(endpoint);
-            if (demo) {
-                return true;
-            }
-        }
+    // function hasDemoZenithEndpoint(config: Config) {
+    //     const endpoints = config.endpoints;
+    //     const zenithEndpoints = endpoints.zenith;
+    //     for (const endpoint of zenithEndpoints) {
+    //         const demo = isDemoEndpoint(endpoint);
+    //         if (demo) {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 
-    function hasOnlyDemoZenithEndpoints(config: Config) {
-        const endpoints = config.endpoints;
-        const zenithEndpoints = endpoints.zenith;
-        for (const endpoint of zenithEndpoints) {
-            const demo = isDemoEndpoint(endpoint);
-            if (!demo) {
-                return false;
-            }
-        }
+    // function hasOnlyDemoZenithEndpoints(config: Config) {
+    //     const endpoints = config.endpoints;
+    //     const zenithEndpoints = endpoints.zenith;
+    //     for (const endpoint of zenithEndpoints) {
+    //         const demo = isDemoEndpoint(endpoint);
+    //         if (!demo) {
+    //             return false;
+    //         }
+    //     }
 
-        return true;
-    }
+    //     return true;
+    // }
 
-    function isDemoEndpoint(endpoint: string) {
-        const demoUpperSubStrings: string[] = [
-            'STAGING',
-            'DEMO',
-            'CTE',
-            'TEST',
-        ];
-        const upperEndpoint = endpoint.toUpperCase();
+    // function isDemoEndpoint(endpoint: string) {
+    //     const demoUpperSubStrings: string[] = [
+    //         'STAGING',
+    //         'DEMO',
+    //         'CTE',
+    //         'TEST',
+    //     ];
+    //     const upperEndpoint = endpoint.toUpperCase();
 
-        for (const demoUpperSubString of demoUpperSubStrings) {
-            if (upperEndpoint.includes(demoUpperSubString)) {
-                return true;
-            }
-        }
+    //     for (const demoUpperSubString of demoUpperSubStrings) {
+    //         if (upperEndpoint.includes(demoUpperSubString)) {
+    //             return true;
+    //         }
+    //     }
 
-        return false;
-    }
+    //     return false;
+    // }
 }
