@@ -24,7 +24,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     public loading = false;
 
     private _pushBrokerageAccountIdEventsSubscriptionId: MultiEvent.SubscriptionId;
-    private _dataItem: BrokerageAccountsDataItem;
+    private _dataItem: BrokerageAccountsDataItem | undefined;
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
     constructor(elRef: ElementRef<HTMLElement>, typeInstanceCreateId: Integer, cdr: ChangeDetectorRef, settingsService: SettingsService,

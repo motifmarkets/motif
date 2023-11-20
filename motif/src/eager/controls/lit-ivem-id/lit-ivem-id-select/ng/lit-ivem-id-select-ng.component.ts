@@ -569,7 +569,7 @@ export namespace LitIvemIdSelectNgComponent {
             typeId: AurcChangeTypeId.Add,
             litIvemId,
             ivemClassId: cacheDetail.ivemClassId,
-            subscriptionDataIds: cacheDetail.subscriptionDataIds,
+            subscriptionDataTypeIds: cacheDetail.subscriptionDataTypeIds,
             tradingMarketIds: cacheDetail.tradingMarketIds,
             name,
             exchangeId: cacheDetail.exchangeId,

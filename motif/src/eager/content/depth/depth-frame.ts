@@ -23,10 +23,10 @@ import {
     Logger,
     MultiEvent,
     OrderSideId,
+    PublisherSubscriptionDataTypeId,
     SecurityDataDefinition,
     SecurityDataItem,
     UnreachableCaseError,
-    ZenithSubscriptionDataId,
     uniqueElementArraysOverlap,
 } from '@motifmarkets/motif-core';
 import { ServerNotificationId } from 'revgrid';
@@ -442,21 +442,21 @@ export class DepthFrame extends ContentFrame {
     // }
 
     private resolveDepthStyleId() {
-        const subscriptionData = this._securityDataItem.subscriptionData;
+        const subscriptionDataTypeIds = this._securityDataItem.subscriptionDataTypeIds;
         let resolvedDepthStyleId: DepthStyleId;
-        if (subscriptionData === undefined) {
+        if (subscriptionDataTypeIds === undefined) {
             Logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
             resolvedDepthStyleId = this._preferredDepthStyleId; // try this
         } else {
             switch (this._preferredDepthStyleId) {
                 case DepthStyleId.Full:
-                    if (subscriptionData.includes(ZenithSubscriptionDataId.DepthFull)) {
+                    if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthFull)) {
                         resolvedDepthStyleId = DepthStyleId.Full;
                     } else {
-                        if (subscriptionData.includes(ZenithSubscriptionDataId.Depth)) {
+                        if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.Depth)) {
                             resolvedDepthStyleId = DepthStyleId.Full;
                         } else {
-                            if (subscriptionData.includes(ZenithSubscriptionDataId.DepthShort)) {
+                            if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthShort)) {
                                 resolvedDepthStyleId = DepthStyleId.Short;
                             } else {
                                 Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
@@ -467,13 +467,13 @@ export class DepthFrame extends ContentFrame {
                     break;
 
                 case DepthStyleId.Short:
-                    if (subscriptionData.includes(ZenithSubscriptionDataId.DepthShort)) {
+                    if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthShort)) {
                         resolvedDepthStyleId = DepthStyleId.Short;
                     } else {
-                        if (subscriptionData.includes(ZenithSubscriptionDataId.Depth)) {
+                        if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.Depth)) {
                             resolvedDepthStyleId = DepthStyleId.Short;
                         } else {
-                            if (subscriptionData.includes(ZenithSubscriptionDataId.DepthFull)) {
+                            if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthFull)) {
                                 resolvedDepthStyleId = DepthStyleId.Full;
                             } else {
                                 Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
