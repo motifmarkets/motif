@@ -75,6 +75,8 @@ import nounWorldSvg from './svg/noun_world_2593665.svg';
 // 5. Change id="only" (can only include one symbol in SVG)
 // 6. Add to imports above
 // 7. Add to infosObject below
+// Links
+// https://www.sitepoint.com/use-svg-image-sprites/
 
 @Component({
     selector: 'app-svg-button',

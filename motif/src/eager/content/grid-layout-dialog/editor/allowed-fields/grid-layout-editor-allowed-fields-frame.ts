@@ -16,8 +16,6 @@ import {
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
-    JsonElement,
-    LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
     MultiEvent,
@@ -116,17 +114,12 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return grid;
     }
 
-    override initialiseGrid(
-        opener: LockOpenListItem.Opener,
-        frameElement: JsonElement | undefined,
-        keepPreviousLayoutIfPossible: boolean,
-    ) {
-        super.initialiseGrid(opener, frameElement, keepPreviousLayoutIfPossible);
-        this.applyColumnListFilter();
-    }
-
     selectAll() {
         this.grid.selectAll();
+    }
+
+    applyColumnListFilter() {
+        this.grid.applyFilter((record) => this.filterInuseFields(record));
     }
 
     tryFocusFirstSearchMatch(searchText: string) {
@@ -230,10 +223,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
-    }
-
-    private applyColumnListFilter() {
-        this.grid.applyFilter((record) => this.filterInuseFields(record));
     }
 
     private filterInuseFields(record: RevRecord) {

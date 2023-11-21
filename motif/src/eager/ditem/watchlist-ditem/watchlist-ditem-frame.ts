@@ -79,13 +79,20 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        watchlistFrame.initialiseGrid(
+        const initialisePromise = watchlistFrame.initialiseGrid(
             this.opener,
             watchlistFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference !== undefined) {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFIP50134') }
+        );
     }
 
     override finalise() {

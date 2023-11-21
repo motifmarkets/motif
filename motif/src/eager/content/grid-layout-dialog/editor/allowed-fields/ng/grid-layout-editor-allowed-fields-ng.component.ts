@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
+    AssertInternalError,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     LockOpenListItem,
@@ -66,7 +67,11 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
 
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
-        this.frame.initialiseGrid(this._opener, undefined, false);
+        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
+        initialisePromise.then(
+            () => { this.frame.applyColumnListFilter() },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'GLEAFNCIPRJ31310'); }
+        );
 
         this.frame.grid.columnsViewWidthsChangedEventer = (_fixedChanged, _nonFixedChanged, allChanged) => {
             if (allChanged && this.columnsViewWithsChangedEventer !== undefined) {

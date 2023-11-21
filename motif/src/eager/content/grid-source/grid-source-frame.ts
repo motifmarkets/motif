@@ -107,7 +107,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         opener: LockOpenListItem.Opener,
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
-    ) {
+    ): Promise<GridSourceOrReference | undefined> {
         this._opener = opener;
 
         let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
@@ -147,8 +147,9 @@ export abstract class GridSourceFrame extends ContentFrame {
                 this.keptGridLayoutOrReferenceDefinition = gridSourceOrReferenceDefinition.gridSourceDefinition?.gridLayoutOrReferenceDefinition;
             }
 
-            const promise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
+            return this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+        } else {
+            return Promise.resolve(undefined);
         }
     }
 
