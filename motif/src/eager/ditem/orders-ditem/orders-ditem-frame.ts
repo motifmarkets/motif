@@ -70,13 +70,22 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        ordersFrame.initialiseGrid(
+        const initialisePromise = ordersFrame.initialiseGrid(
             this.opener,
             ordersFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('ODFIPU50137');
+                } else {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'ODFIPR50137') }
+        );
     }
 
     override finalise() {

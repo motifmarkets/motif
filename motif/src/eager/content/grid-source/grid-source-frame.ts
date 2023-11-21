@@ -1293,7 +1293,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     protected abstract createGridAndCellPainters(gridHost: HTMLElement): RecordGrid;
-    protected abstract getDefaultGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition | undefined;
+    protected abstract getDefaultGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition | undefined; // Some ditems (such as SearchSymbol) do not have a default
 
     protected abstract setBadness(value: Badness): void;
     protected abstract hideBadnessWithVisibleDelay(badness: Badness): void;

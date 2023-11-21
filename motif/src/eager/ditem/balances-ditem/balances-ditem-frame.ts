@@ -65,13 +65,22 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        balancesFrame.initialiseGrid(
+        const initialisePromise = balancesFrame.initialiseGrid(
             this.opener,
             balancesFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('BDFIPU50139');
+                } else {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'BDFIPR50139') }
+        );
     }
 
     override finalise() {

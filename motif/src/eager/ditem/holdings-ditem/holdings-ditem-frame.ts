@@ -91,23 +91,39 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        holdingsFrame.initialiseGrid(
+        const holdingsInitialisePromise = holdingsFrame.initialiseGrid(
             this.opener,
             holdingsFrameElement,
             true,
         );
 
-        balancesFrame.initialiseGrid(
+        const balancesInitialisePromise = balancesFrame.initialiseGrid(
             this.opener,
             balancesFrameElement,
             true,
         );
 
-        if (balancesFrame.opened) {
-            this._componentAccess.setBalancesVisible(true);
-        }
+        const allInitialisePromise = Promise.all([holdingsInitialisePromise, balancesInitialisePromise]);
 
-        this.applyLinked();
+        allInitialisePromise.then(
+            (gridSourceOrReferences) => {
+                // Show balances if balances initialised and opened
+                if (gridSourceOrReferences[0] === undefined) {
+                    throw new AssertInternalError('HDFIPHU50137');
+                } else {
+                    if (gridSourceOrReferences[1] === undefined) {
+                        throw new AssertInternalError('HDFIPBU50137');
+                    } else {
+                        if (balancesFrame.opened) {
+                            this._componentAccess.setBalancesVisible(true);
+                        }
+
+                        this.applyLinked();
+                    }
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'HDFIPR50137') }
+        );
     }
 
     override finalise() {

@@ -6,6 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import {
+    AssertInternalError,
     EditableGridLayoutDefinitionColumnList,
     IntegerUiAction,
     LockOpenListItem,
@@ -60,7 +61,15 @@ export class GridLayoutEditorColumnsNgComponent extends GridSourceNgDirective {
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
         this._widthEditorComponent.dataServer = this.frame.grid.mainDataServer;
-        this.frame.initialiseGrid(this._opener, undefined, false);
+        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('GLECNCPU50137');
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'GLECNCPR50137') }
+        );
         delay1Tick(() => this.initialiseComponents());
     }
 

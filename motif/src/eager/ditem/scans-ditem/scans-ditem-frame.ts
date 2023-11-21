@@ -60,13 +60,22 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        scanListFrame.initialiseGrid(
+        const initialisePromise = scanListFrame.initialiseGrid(
             this.opener,
             scanListFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('SDFIPU50135');
+                } else {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
+        );
     }
 
     override finalise() {

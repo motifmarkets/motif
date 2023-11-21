@@ -54,13 +54,22 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        brokerageAccountsFrame.initialiseGrid(
+        const initialisePromise = brokerageAccountsFrame.initialiseGrid(
             this.opener,
             brokerageAccountsFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('BADFIPU50137');
+                } else {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'BADFIPR50137') }
+        );
     }
 
     override finalise() {

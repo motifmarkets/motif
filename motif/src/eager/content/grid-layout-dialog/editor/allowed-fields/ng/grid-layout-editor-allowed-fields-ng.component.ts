@@ -69,7 +69,13 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         this.frame.setupGrid(this._gridHost.nativeElement);
         const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
         initialisePromise.then(
-            () => { this.frame.applyColumnListFilter() },
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('GLEAFNCIPU31310');
+                } else {
+                    this.frame.applyColumnListFilter();
+                }
+            },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'GLEAFNCIPRJ31310'); }
         );
 

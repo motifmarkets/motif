@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     EnumInfoOutOfOrderError,
     ExchangeId,
@@ -169,13 +170,20 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        searchSymbolsFrame.initialiseGrid(
+        const initialisePromise = searchSymbolsFrame.initialiseGrid(
             this.opener,
             searchSymbolsFrameElement,
             false,
         );
 
-        this.applyLinked();
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference !== undefined) {
+                    this.applyLinked();
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSDFIP50134') }
+        );
     }
 
     override finalise(): void {

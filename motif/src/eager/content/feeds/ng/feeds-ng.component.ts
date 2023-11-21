@@ -14,7 +14,7 @@ import {
     ValueProvider,
     ViewContainerRef
 } from '@angular/core';
-import { LockOpenListItem } from '@motifmarkets/motif-core';
+import { AssertInternalError, LockOpenListItem } from '@motifmarkets/motif-core';
 import { CoreInjectionTokens } from 'component-services-ng-api';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
@@ -43,7 +43,15 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
 
     protected override processAfterViewInit() {
         super.processAfterViewInit();
-        this.frame.initialiseGrid(this._opener, undefined, false);
+        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
+        initialisePromise.then(
+            (gridSourceOrReference) => {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('FNCPU50139');
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'FNCPR50139') }
+        );
     }
 }
 

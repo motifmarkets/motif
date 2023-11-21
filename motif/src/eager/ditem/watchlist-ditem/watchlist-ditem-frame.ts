@@ -87,11 +87,13 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
         initialisePromise.then(
             (gridSourceOrReference) => {
-                if (gridSourceOrReference !== undefined) {
+                if (gridSourceOrReference === undefined) {
+                    throw new AssertInternalError('WDFIPU50134');
+                } else {
                     this.applyLinked();
                 }
             },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFIP50134') }
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFIPR50134') }
         );
     }
 
