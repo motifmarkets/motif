@@ -67,6 +67,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     override setEditor(value: ScanEditor | undefined) {
+        if (value )
         super.setEditor(value);
         this.pushValues();
         this._targetsComponent.setEditor(value);
@@ -100,6 +101,14 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
                 }
             }
         }
+    }
+
+    protected override processLifeCycleStateChange(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    protected override processModifiedStateChange(): void {
+        throw new Error('Method not implemented.');
     }
 
     private initialiseComponents() {

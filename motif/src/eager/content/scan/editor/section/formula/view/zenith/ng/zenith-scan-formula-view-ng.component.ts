@@ -4,25 +4,30 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, EnvironmentInjector, Injector, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, EnvironmentInjector, Injector, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
 import { AssertInternalError, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
+import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 
 @Component({
-    selector: 'app-zenith-scan-criteria-view-ng',
-    templateUrl: './zenith-scan-criteria-view-ng.component.html',
-    styleUrls: ['./zenith-scan-criteria-view-ng.component.scss'],
+    selector: 'app-zenith-scan-formula-view',
+    templateUrl: './zenith-scan-formula-view-ng.component.html',
+    styleUrls: ['./zenith-scan-formula-view-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ZenithScanCriteriaViewNgComponent implements AfterViewInit {
+export class ZenithScanFormulaViewNgComponent extends ScanFormulaViewNgDirective implements AfterViewInit {
+    private static typeInstanceCreateCount = 0;
+
     @ViewChild('editorContainer', { read: ViewContainerRef, static: true })
     private _editorContainer: ViewContainerRef;
     private _editorComponent: CodeMirrorNgComponent;
 
     constructor(
+        elRef: ElementRef<HTMLElement>,
         private readonly _environmentInjector: EnvironmentInjector,
         private readonly _injector: Injector,
     ) {
+        super(elRef, ++ZenithScanFormulaViewNgComponent.typeInstanceCreateCount);
     }
 
     ngAfterViewInit(): void {
@@ -39,7 +44,7 @@ export class ZenithScanCriteriaViewNgComponent implements AfterViewInit {
         this._editorContainer.clear();
         const editorComponentRef = this._editorContainer.createComponent(componentType, {
             ngModuleRef: moduleRef,
-            environmentInjector: this._environmentInjector,
+            // environmentInjector: this._environmentInjector,
             injector: this._injector,
         });
         this._editorComponent = editorComponentRef.instance;
@@ -59,5 +64,5 @@ export class ZenithScanCriteriaViewNgComponent implements AfterViewInit {
     }
 }
 
-export namespace ZenithScanCriteriaViewNgComponent {
+export namespace ZenithScanFormulaViewNgComponent {
 }

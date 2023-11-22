@@ -18,25 +18,25 @@ import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../exp
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 
 @Component({
-    selector: 'app-criteria-scan-editor-section',
-    templateUrl: './criteria-scan-editor-section-ng.component.html',
-    styleUrls: ['./criteria-scan-editor-section-ng.component.scss'],
+    selector: 'app-formula-scan-editor-section',
+    templateUrl: './formula-scan-editor-section-ng.component.html',
+    styleUrls: ['./formula-scan-editor-section-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDirective
+export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDirective
     implements OnInit, OnDestroy, AfterViewInit {
 
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
 
-    public readonly sectionHeadingText = Strings[StringId.Criteria];
     public readonly genericSelectorCaption = Strings[StringId.View] + ':';
+    public sectionHeadingText = Strings[StringId.Criteria];
 
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
-        super(elRef, ++CriteriaScanEditorSectionNgComponent.typeInstanceCreateCount);
+        super(elRef, ++FormulaScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._viewUiAction = this.createViewUiAction();
     }
@@ -77,6 +77,14 @@ export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDir
         // }
     }
 
+    protected override processLifeCycleStateChange(): void {
+        throw new Error('Method not implemented.');
+    }
+
+    protected override processModifiedStateChange(): void {
+        throw new Error('Method not implemented.');
+    }
+
     private initialiseComponents() {
         super.initialiseSectionHeadingComponent();
 
@@ -87,12 +95,12 @@ export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDir
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanCriteriaCaption_View]);
         action.pushTitle(Strings[StringId.ScanCriteriaDescription_View]);
-        const ids = CriteriaScanEditorSectionNgComponent.View.getAllIds();
+        const ids = FormulaScanEditorSectionNgComponent.View.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: CriteriaScanEditorSectionNgComponent.View.idToDisplay(id),
-                    title: CriteriaScanEditorSectionNgComponent.View.idToDescription(id),
+                    caption: FormulaScanEditorSectionNgComponent.View.idToDisplay(id),
+                    title: FormulaScanEditorSectionNgComponent.View.idToDescription(id),
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
@@ -105,7 +113,7 @@ export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDir
 
     private pushValues() {
         if (this._scanEditor === undefined) {
-            this._viewUiAction.pushValue(CriteriaScanEditorSectionNgComponent.ViewId.Default);
+            this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.Default);
         // } else {
         //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {
         //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
@@ -116,7 +124,7 @@ export class CriteriaScanEditorSectionNgComponent extends ScanEditorSectionNgDir
     }
 }
 
-export namespace CriteriaScanEditorSectionNgComponent {
+export namespace FormulaScanEditorSectionNgComponent {
     export const enum ViewId {
         Default,
         List,
@@ -197,8 +205,8 @@ export namespace CriteriaScanEditorSectionNgComponent {
     }
 }
 
-export namespace CriteriaScanPropertiesSectionNgComponentModule {
+export namespace FormulaScanPropertiesSectionNgComponentModule {
     export function initialiseStatic() {
-        CriteriaScanEditorSectionNgComponent.View.initialise();
+        FormulaScanEditorSectionNgComponent.View.initialise();
     }
 }

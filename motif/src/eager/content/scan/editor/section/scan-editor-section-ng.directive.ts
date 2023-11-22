@@ -15,6 +15,8 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
     protected _scanEditor: ScanEditor | undefined;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
+    private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
+    private _scanEditorModifiedStateChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
     public abstract sectionHeadingText: string;
 
@@ -28,11 +30,21 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
             this._scanEditorFieldChangesSubscriptionId = undefined;
+            this._scanEditor.unsubscribeLifeCycleStateChangeEvents(this._scanEditorLifeCycleStateChangeSubscriptionId);
+            this._scanEditorFieldChangesSubscriptionId = undefined;
+            this._scanEditor.unsubscribeModifiedStateChangeEvents(this._scanEditorModifiedStateChangeSubscriptionId);
+            this._scanEditorFieldChangesSubscriptionId = undefined;
         }
         this._scanEditor = value;
         if (this._scanEditor !== undefined) {
             this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
-                (fieldIds) => this.processFieldChanges(fieldIds)
+                (fieldIds) => { this.processFieldChanges(fieldIds); }
+            );
+            this._scanEditorLifeCycleStateChangeSubscriptionId = this._scanEditor.subscribeLifeCycleStateChangeEvents(
+                () => { this.processLifeCycleStateChange(); }
+            );
+            this._scanEditorModifiedStateChangeSubscriptionId = this._scanEditor.subscribeModifiedStateChangeEvents(
+                () => { this.processModifiedStateChange(); }
             );
         }
     }
@@ -50,4 +62,6 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
     }
 
     protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]): void;
+    protected abstract processLifeCycleStateChange(): void;
+    protected abstract processModifiedStateChange(): void;
 }

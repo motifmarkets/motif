@@ -8,5 +8,5 @@ import { Directive } from '@angular/core';
 import { ContentComponentBaseNgDirective } from '../../../../../ng/content-component-base-ng.directive';
 
 @Directive()
-export abstract class ScanCriteriaViewNgDirective extends ContentComponentBaseNgDirective {
+export abstract class ScanFormulaViewNgDirective extends ContentComponentBaseNgDirective {
 }

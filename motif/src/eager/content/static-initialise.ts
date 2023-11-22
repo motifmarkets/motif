@@ -6,13 +6,13 @@
 
 import { ColorControlsComponentModule } from './color-controls/ng-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
-import { CriteriaScanPropertiesSectionNgComponentModule, ScanTargetsNgComponentModule } from './scan/ng-api';
+import { FormulaScanPropertiesSectionNgComponentModule, ScanTargetsNgComponentModule } from './scan/ng-api';
 
 export namespace StaticInitialise {
     export function initialise() {
         ColorControlsComponentModule.initialiseStatic();
         ResultOrderRequestStepFrameModule.initialiseStatic();
-        CriteriaScanPropertiesSectionNgComponentModule.initialiseStatic();
+        FormulaScanPropertiesSectionNgComponentModule.initialiseStatic();
         ScanTargetsNgComponentModule.initialiseStatic();
     }
 }

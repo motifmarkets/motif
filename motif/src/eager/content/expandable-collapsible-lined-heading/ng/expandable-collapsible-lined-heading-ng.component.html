@@ -1,5 +1,10 @@
 <div id="preHeadingTextLine" class="line" [style.background-color]="lineColor"></div>
 <span id="headingText">{{headingText}}</span>
+<section id="genericText" *ngIf="genericSelectorWidth !== undefined">
+    <div id="preGenericSelectorLine" class="line" [style.background-color]="lineColor"></div>
+    <span id="genericSelectorCaption" *ngIf="genericSelectorCaption !== undefined">{{genericSelectorCaption}}</span>
+    <app-enum-input #genericSelector id="genericSelectorControl" inputId="genericSelectorInput" [style.width]="genericSelectorWidth"></app-enum-input>
+</section>
 <section id="genericSelectorSection" *ngIf="genericSelectorWidth !== undefined">
     <div id="preGenericSelectorLine" class="line" [style.background-color]="lineColor"></div>
     <span id="genericSelectorCaption" *ngIf="genericSelectorCaption !== undefined">{{genericSelectorCaption}}</span>

@@ -19,8 +19,8 @@ export class ScansNgComponent extends ContentComponentBaseNgDirective implements
     @ViewChild('scanList', { static: true }) private _listComponent: ScanListNgComponent;
     @ViewChild('scanEditor', { static: true }) private _editorComponent: ScanEditorNgComponent;
 
-    readonly gridSize = 540;
-    readonly gridMinSize = 50;
+    readonly listAreaWidth = 540;
+    readonly listAreaMinWidth = 50;
     readonly splitterGutterSize = 3;
 
     recordFocusEventer: ScansNgComponent.RecordFocusEventer;

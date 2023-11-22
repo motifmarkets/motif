@@ -13,7 +13,7 @@ import {
 import { ScansNgService } from '../../../../component-services/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import {
-    CriteriaScanEditorSectionNgComponent,
+    FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
     NotifiersScanEditorSectionNgComponent
 } from '../section/ng-api';
@@ -28,8 +28,8 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('generalSection', { static: true }) private _generalSectionComponent: GeneralScanEditorSectionNgComponent;
-    @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: CriteriaScanEditorSectionNgComponent;
-    // @ViewChild('rankSection', { static: true }) private _rankSectionComponent: RankScanPropertiesSectionNgComponent;
+    @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: FormulaScanEditorSectionNgComponent;
+    @ViewChild('rankSection', { static: true }) private _rankSectionComponent: FormulaScanEditorSectionNgComponent;
     @ViewChild('notifiersSection', { static: true }) private _notifiersSectionComponent: NotifiersScanEditorSectionNgComponent;
 
     private readonly _opener: LockOpenListItem.Opener = {
@@ -70,7 +70,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 this._scanEditor = scanEditor;
                 this._generalSectionComponent.setEditor(scanEditor);
                 this._criteriaSectionComponent.setEditor(scanEditor);
-                // this._rankSectionComponent.setScan(value);
+                this._rankSectionComponent.setEditor(scanEditor);
                 this._notifiersSectionComponent.setEditor(scanEditor);
             }
         }

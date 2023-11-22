@@ -4,5 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/zenith-scan-criteria-view-ng.component';
+export * from './ng/formula-scan-editor-section-ng.component';
+export * from './view/ng-api';
 

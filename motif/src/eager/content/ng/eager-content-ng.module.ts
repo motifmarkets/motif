@@ -66,7 +66,7 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
-    CriteriaScanEditorSectionNgComponent,
+    FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
     NotifiersScanEditorSectionNgComponent,
     ScanEditorNgComponent,
@@ -77,7 +77,7 @@ import {
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
     ScansNgComponent,
-    ZenithScanCriteriaViewNgComponent
+    ZenithScanFormulaViewNgComponent
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
 import { SearchSymbolsNgComponent } from '../search-symbols/ng-api';
@@ -165,9 +165,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanTypeDescriptionNgComponent,
         ScanEditorTargetsNgComponent,
         NotifiersScanEditorSectionNgComponent,
-        CriteriaScanEditorSectionNgComponent,
+        FormulaScanEditorSectionNgComponent,
         ExpandableCollapsibleLinedHeadingNgComponent,
-        ZenithScanCriteriaViewNgComponent,
+        ZenithScanFormulaViewNgComponent,
         OpenWatchlistDialogNgComponent,
         SaveWatchlistDialogNgComponent,
         WatchlistNgComponent,
