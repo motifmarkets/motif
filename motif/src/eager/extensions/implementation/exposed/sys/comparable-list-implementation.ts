@@ -49,15 +49,15 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
         this._baseActual.count = value;
     }
 
-    getItem(index: IntegerApi): T {
-        return this._baseActual.getItem(index);
+    getAt(index: IntegerApi): T {
+        return this._baseActual.getAt(index);
     }
 
-    setItem(index: IntegerApi, value: T): void {
-        this._baseActual.setItem(index, value);
+    setAt(index: IntegerApi, value: T): void {
+        this._baseActual.setAt(index, value);
     }
 
-    toArray(): T[] {
+    toArray(): readonly T[] {
         return this._baseActual.toArray();
     }
 
@@ -104,10 +104,6 @@ export class ComparableListImplementation<T> implements ComparableListApi<T> {
 
     clear(): void {
         this._baseActual.clear();
-    }
-
-    replace(index: IntegerApi, value: T): void {
-        this._baseActual.replace(index, value);
     }
 
     extract(value: T): T {

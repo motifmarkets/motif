@@ -15,10 +15,10 @@ export interface ComparableList<T> {
     count: Integer;
     readonly lastIndex: Integer;
 
-    getItem(index: Integer): T;
-    setItem(index: Integer, value: T): void;
+    getAt(index: Integer): T;
+    setAt(index: Integer, value: T): void;
 
-    toArray(): T[];
+    toArray(): readonly T[];
 
     add(value: T): Integer;
     addRange(values: readonly T[]): void;
@@ -31,7 +31,6 @@ export interface ComparableList<T> {
     removeItems(items: readonly T[], beforeRemoveRangeCallBack?: ComparableList.BeforeRemoveRangeCallBack): void;
     clear(): void;
 
-    replace(index: Integer, value: T): void;
     extract(value: T): T;
 
     exchange(index1: Integer, index2: Integer): void;
