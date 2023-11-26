@@ -26,13 +26,13 @@ import {
     IconButtonUiAction,
     Integer,
     InternalCommand,
-    LitIvemDetail,
     LitIvemId,
     LitIvemIdUiAction,
     MarketId,
     MarketInfo,
     MultiEvent,
     SearchSymbolsDataDefinition,
+    SearchSymbolsLitIvemBaseDetail,
     StringId,
     Strings,
     SymbolDetailCacheService,
@@ -518,7 +518,7 @@ export namespace LitIvemIdSelectNgComponent {
 
     export interface Item {
         exists: boolean | undefined;
-        detail: LitIvemDetail | undefined;
+        detail: SearchSymbolsLitIvemBaseDetail | undefined;
         litIvemId: LitIvemId;
         idDisplay: string;
     }
@@ -588,7 +588,7 @@ export namespace LitIvemIdSelectNgComponent {
             categories: undefined,
         };
 
-        return new LitIvemDetail(addUpdateChange);
+        return new SearchSymbolsLitIvemBaseDetail(addUpdateChange);
     }
 
     export function createItemFromCacheDetail(litIvemId: LitIvemId,
@@ -652,7 +652,7 @@ export namespace LitIvemIdSelectNgComponent {
             } else {
                 const cachedDetail = this._symbolDetailCacheService.getLitIvemIdFromCache(termLitIvemId);
                 let exists: boolean | undefined;
-                let detail: LitIvemDetail | undefined;
+                let detail: SearchSymbolsLitIvemBaseDetail | undefined;
                 if (cachedDetail === undefined) {
                     exists = undefined;
                     detail = undefined;

@@ -14,8 +14,8 @@ import {
     GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
-    LitIvemDetail,
-    LitIvemIdFromSearchSymbolsTableRecordSource,
+    LitIvemBaseDetail,
+    LitIvemDetailFromSearchSymbolsTableRecordSource,
     MarketId,
     MarketInfo,
     SearchSymbolsDataDefinition,
@@ -56,7 +56,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
 
-        this._uiDataDefinition = LitIvemIdFromSearchSymbolsTableRecordSource.createDefaultDataDefinition(
+        this._uiDataDefinition = LitIvemDetailFromSearchSymbolsTableRecordSource.createDefaultDataDefinition(
             defaultExchangeId, defaultMarketId
         );
         this.setUiConditions();
@@ -236,7 +236,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    private processRecordFocusChange(newFocusedRecord: LitIvemDetail) {
+    private processRecordFocusChange(newFocusedRecord: LitIvemBaseDetail) {
         if (!this._symbolApplying) {
             const litIvemId = newFocusedRecord.litIvemId;
             this.applyDitemLitIvemIdFocus(litIvemId, true);
@@ -307,7 +307,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         if (conditions !== undefined && conditions.length > 0) {
             this._uiConditions = conditions;
         } else {
-            const condition = LitIvemIdFromSearchSymbolsTableRecordSource.createDefaultCondition();
+            const condition = LitIvemDetailFromSearchSymbolsTableRecordSource.createDefaultCondition();
             this._uiConditions = [condition];
             this._uiDataDefinition.conditions = this._uiConditions;
         }

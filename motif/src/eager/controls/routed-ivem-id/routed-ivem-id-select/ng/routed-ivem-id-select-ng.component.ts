@@ -687,7 +687,7 @@ export namespace RoutedIvemIdSelectNgComponent {
                     let activeIvemId = firstRecord.litIvemId.ivemId;
                     let activeDefaultMarketId = ExchangeInfo.idToDefaultMarketId(activeIvemId.exchangeId);
                     let activeIvemName = this._symbolsService.calculateSymbolNameFromLitIvemDetail(firstRecord);
-                    let tradingMarketIds = firstRecord.tradingMarketIds;
+                    let tradingMarketIds = firstRecord.tradingMarketIds.slice();
                     let tradingMarketIdCount = tradingMarketIds.length;
                     for (let i = 1; i < count; i++) {
                         const record = records[i];
@@ -706,7 +706,7 @@ export namespace RoutedIvemIdSelectNgComponent {
                             activeIvemId = recordIvemId;
                             activeDefaultMarketId = ExchangeInfo.idToDefaultMarketId(activeIvemId.exchangeId);
                             activeIvemName = this._symbolsService.calculateSymbolNameFromLitIvemDetail(record);
-                            tradingMarketIds = record.tradingMarketIds;
+                            tradingMarketIds = record.tradingMarketIds.slice();
                             tradingMarketIdCount = tradingMarketIds.length;
                         }
                     }
@@ -743,7 +743,7 @@ export namespace RoutedIvemIdSelectNgComponent {
         }
 
         private addIvemIdToItems(items: Item[], itemCount: Integer,
-            ivemId: IvemId, ivemName: string, tradingMarketIds: MarketId[], tradingMarketIdCount: Integer
+            ivemId: IvemId, ivemName: string, tradingMarketIds: readonly MarketId[], tradingMarketIdCount: Integer
         ) {
             for (let i = 0; i < tradingMarketIdCount; i++) {
                 const orderRoute = new MarketOrderRoute(tradingMarketIds[i]);

@@ -12,8 +12,8 @@ import {
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
-    LitIvemDetail,
-    LitIvemIdFromSearchSymbolsTableRecordSource,
+    LitIvemBaseDetail,
+    LitIvemDetailFromSearchSymbolsTableRecordSource,
     RenderValueRecordGridCellPainter,
     SearchSymbolsDataDefinition,
     TextHeaderCellPainter,
@@ -26,7 +26,7 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
     gridSourceOpenedEventer: SearchSymbolsFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: SearchSymbolsFrame.RecordFocusedEventer | undefined
 
-    private _recordList: LitIvemDetail[];
+    private _recordList: LitIvemBaseDetail[];
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
@@ -66,7 +66,7 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
-        const recordSource = table.recordSource as LitIvemIdFromSearchSymbolsTableRecordSource;
+        const recordSource = table.recordSource as LitIvemDetailFromSearchSymbolsTableRecordSource;
         this._recordList = recordSource.recordList;
         const dataDefinition = recordSource.dataDefinition;
         if (this.gridSourceOpenedEventer !== undefined) {
