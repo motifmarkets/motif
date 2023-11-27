@@ -20,10 +20,12 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
 
     public abstract sectionHeadingText: string;
 
+    get expandCollapseRestoreStateId() { return this._sectionHeadingComponent.stateId; }
+
     initialiseSectionHeadingComponent() {
-        this._sectionHeadingComponent.expandEventer = () => this.handleExpandEvent();
-        this._sectionHeadingComponent.restoreEventer = () => this.handleRestoreEvent();
-        this._sectionHeadingComponent.collapseEventer = () => this.handleCollapseEvent();
+        this._sectionHeadingComponent.expandEventer = () => this.processExpandCollapseRestoreStateChanged();
+        this._sectionHeadingComponent.restoreEventer = () => this.processExpandCollapseRestoreStateChanged();
+        this._sectionHeadingComponent.collapseEventer = () => this.processExpandCollapseRestoreStateChanged();
     }
 
     setEditor(value: ScanEditor | undefined) {
@@ -35,7 +37,9 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
             this._scanEditor.unsubscribeModifiedStateChangeEvents(this._scanEditorModifiedStateChangeSubscriptionId);
             this._scanEditorFieldChangesSubscriptionId = undefined;
         }
+
         this._scanEditor = value;
+
         if (this._scanEditor !== undefined) {
             this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
                 (fieldIds) => { this.processFieldChanges(fieldIds); }
@@ -49,17 +53,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
         }
     }
 
-    private handleExpandEvent() {
-
-    }
-
-    private handleRestoreEvent() {
-
-    }
-
-    private handleCollapseEvent() {
-
-    }
+    protected abstract processExpandCollapseRestoreStateChanged(): void;
 
     protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]): void;
     protected abstract processLifeCycleStateChange(): void;

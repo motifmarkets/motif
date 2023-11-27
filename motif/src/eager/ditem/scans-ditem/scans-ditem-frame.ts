@@ -7,7 +7,12 @@
 import {
     AdiService,
     AssertInternalError,
-    CommandRegisterService, JsonElement,
+    CommandRegisterService, ErrorCode, Integer, JsonElement,
+    LockOpenListItem,
+    Logger,
+    ScanEditor,
+    ScanList,
+    ScansService,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
@@ -17,6 +22,8 @@ import { DitemFrame } from '../ditem-frame';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
     private _scanListFrame: ScanListFrame | undefined;
+    private _scanList: ScanList | undefined;
+    private _activeScanEditor: ScanEditor | undefined;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -24,7 +31,10 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         commandRegisterService: CommandRegisterService,
         desktopInterface: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
-        adiService: AdiService
+        adiService: AdiService,
+        private readonly _scansService: ScansService,
+        private readonly _opener: LockOpenListItem.Opener,
+        private readonly _editScanEventer: ScansDitemFrame.EditScanEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Scans, ditemComponentAccess,
             settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
@@ -51,6 +61,9 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     initialise(ditemFrameElement: JsonElement | undefined, scanListFrame: ScanListFrame): void {
         this._scanListFrame = scanListFrame;
+        this._scanList = scanListFrame.scanList;
+
+        scanListFrame.recordFocusedEventer = (newRecordIndex) => { this.handleScanListFrameRecordFocusedEvent(newRecordIndex); }
 
         let scanListFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
@@ -76,6 +89,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
         );
+
+
     }
 
     override finalise() {
@@ -104,6 +119,50 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             this._scanListFrame.autoSizeAllColumnWidths(widenOnly);
         }
     }
+
+    newScan() {
+        this.checkCloseActiveScanEditor();
+        this._activeScanEditor = this._scansService.openNewScanEditor(this._opener);
+        this._editScanEventer(this._activeScanEditor);
+    }
+
+    private handleScanListFrameRecordFocusedEvent(newRecordIndex: Integer | undefined) {
+        if (newRecordIndex === undefined) {
+            this.checkCloseActiveScanEditor();
+        } else {
+            const scanList = this._scanList;
+            if (scanList === undefined) {
+                throw new AssertInternalError('SCFHSCFRFESLU50515');
+            } else {
+                const scan = scanList.getAt(newRecordIndex);
+                const openResultPromise = this._scansService.tryOpenScanEditor(scan.id, this._opener);
+                openResultPromise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            Logger.logWarning(ErrorCode.ScanEditorFrame_RecordFocusedTryOpenEditor, scan.id);
+                        } else {
+                            const scanEditor = openResult.value;
+                            if (scanEditor === undefined) {
+                                throw new AssertInternalError('SDFHSLFRFESM50515'); // should always exist
+                            } else {
+                                this._activeScanEditor = scanEditor;
+                                this._editScanEventer(scanEditor);
+                            }
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFHSLFRFEPR50515'); }
+                )
+            }
+        }
+    }
+
+    private checkCloseActiveScanEditor() {
+        if (this._activeScanEditor !== undefined) {
+            this._editScanEventer(undefined);
+            this._scansService.closeScanEditor(this._activeScanEditor, this._opener);
+            this._activeScanEditor = undefined;
+        }
+    }
 }
 
 
@@ -113,4 +172,5 @@ export namespace ScansDitemFrame {
     }
 
     export type OpenedEventHandler = (this: void) => void;
+    export type EditScanEventer = (this: void, scanEditor: ScanEditor | undefined) => void;
 }

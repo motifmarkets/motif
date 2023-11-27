@@ -81,22 +81,31 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._symbolListUiAction.finalise();
     }
 
+    protected override processExpandCollapseRestoreStateChanged() {
+
+    }
+
     protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
-        const scan = this._scanEditor;
-        if (scan !== undefined) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor !== undefined) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
+                    case ScanEditor.FieldId.Id:
+                        if (scanEditor.existsOrUpdating && scanEditor.id !== undefined) {
+                            this._sectionHeadingComponent.setGenericText(scanEditor.id)
+                        }
+                        break;
                     case ScanEditor.FieldId.Name:
-                        this._nameUiAction.pushValue(scan.name);
+                        this._nameUiAction.pushValue(scanEditor.name);
                         break;
                     case ScanEditor.FieldId.Description:
-                        this._descriptionUiAction.pushValue(scan.description);
+                        this._descriptionUiAction.pushValue(scanEditor.description);
                         break;
-                    // case Scan.FieldId.Enabled:
-                    //     this._enabledUiAction.pushValue(scan.enabled);
-                    //     break;
+                    case ScanEditor.FieldId.Enabled:
+                        this._enabledUiAction.pushValue(scanEditor.enabled);
+                        break;
                     case ScanEditor.FieldId.SymbolListEnabled:
-                        this._symbolListUiAction.pushValue(scan.symbolListEnabled);
+                        this._symbolListUiAction.pushValue(scanEditor.symbolListEnabled);
                         break;
                 }
             }

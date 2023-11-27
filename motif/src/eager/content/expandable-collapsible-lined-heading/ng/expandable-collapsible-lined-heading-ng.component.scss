@@ -22,6 +22,20 @@
         flex: 0 0 1em;
     }
 
+    #genericTextSection {
+        display: flex;
+        align-items: center;
+        margin-right: 0.4em;
+
+        #preGenericTextLine {
+            flex: 0 0 1em;
+        }
+
+        #genericTextSpan {
+            margin: 0em 0.4em 0em 0.4em;
+        }
+    }
+
     #genericSelectorSection {
         display: flex;
         align-items: center;

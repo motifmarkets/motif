@@ -9,6 +9,7 @@ import {
     IntegerUiAction,
     LitIvemIdUiAction,
     MarketId,
+    MultiEvent,
     ScanEditor,
     ScanTargetTypeId,
     StringId,
@@ -72,6 +73,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     private _scanEditor: ScanEditor | undefined;
     private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
 
+    private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
+
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef, symbolsNgService: SymbolsNgService) {
         super(elRef, ++ScanEditorTargetsNgComponent.typeInstanceCreateCount);
 
@@ -117,7 +120,19 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     setEditor(value: ScanEditor | undefined) {
+        if (this._scanEditor !== undefined) {
+            this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
+            this._scanEditorFieldChangesSubscriptionId = undefined;
+        }
+
         this._scanEditor = value;
+
+        if (this._scanEditor !== undefined) {
+            this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
+                (fieldIds) => { this.processFieldChanges(fieldIds); }
+            );
+        }
+
         this.pushValues();
     }
 
@@ -223,30 +238,83 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         return action;
     }
 
+    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]) {
+        for (const fieldId of fieldIds) {
+            switch (fieldId) {
+                case ScanEditor.FieldId.TargetTypeId: {
+                    const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
+                    const marketTargetSubTypeId = this.pushTargetMarketIds();
+                    this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
+                    break;
+                }
+                case ScanEditor.FieldId.TargetMarkets:
+                    this.pushTargetMarketIds();
+                    break;
+                case ScanEditor.FieldId.TargetLitIvemIds:
+                    this.pushTargetLitIvemIds();
+                    break;
+                case ScanEditor.FieldId.MaxMatchCount:
+                    this.pushMaxMatchCount();
+                    break;
+            }
+        }
+    }
+
     private pushValues() {
         if (this._scanEditor === undefined) {
             this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
-            this._singleSymbolUiAction.pushValue(undefined);
-            this._singleMarketUiAction.pushValue(undefined);
-            this._multiMarketUiAction.pushValue([]);
+        } else {
+            this.pushMaxMatchCount();
+            const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
+            const marketTargetSubTypeId = this.pushTargetMarketIds();
+            this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
+        }
+    }
+
+    private pushTargetTypeId(
+        symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined,
+        marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined
+    ) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
+        } else {
+            switch (scanEditor.targetTypeId) {
+                case undefined: {
+                    this._targetSubTypeUiAction.pushDisabled();
+                    break;
+                }
+                case ScanTargetTypeId.Symbols: {
+                    this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
+                    break;
+                }
+                case ScanTargetTypeId.Markets: {
+                    this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
+                    break;
+                }
+                default:
+                    throw new UnreachableCaseError('SETNCPTTI33017', scanEditor.targetTypeId);
+            }
+        }
+    }
+
+    private pushMaxMatchCount() {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
             this._maxMatchCountUiAction.pushValue(undefined);
         } else {
-            const litIvemIds = this._scanEditor.targetLitIvemIds;
-            let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
-            if (litIvemIds.length === 0) {
-                symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-                this._singleSymbolUiAction.pushValue(undefined);
-            } else {
-                if (litIvemIds.length === 1) {
-                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
-                } else {
-                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
-                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
-                }
-            }
+            this._maxMatchCountUiAction.pushValue(scanEditor.maxMatchCount);
+        }
+    }
 
-            const marketIds = this._scanEditor.targetMarketIds;
+    private pushTargetMarketIds() {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            this._singleMarketUiAction.pushValue(undefined);
+            this._multiMarketUiAction.pushValue([]);
+            return undefined;
+        } else {
+            const marketIds = scanEditor.targetMarketIds;
             let marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
             if (marketIds.length === 0) {
                 marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
@@ -263,26 +331,31 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     this._multiMarketUiAction.pushValue(marketIds);
                 }
             }
+            return marketTargetSubTypeId;
+        }
+    }
 
-            this._maxMatchCountUiAction.pushValue(this._scanEditor.maxMatchCount);
-
-            switch (this._scanEditor.targetTypeId) {
-                case undefined: {
-                    this._targetSubTypeUiAction.pushDisabled();
-                    break;
+    private pushTargetLitIvemIds() {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            this._singleSymbolUiAction.pushValue(undefined);
+            return undefined;
+        } else {
+            const litIvemIds = scanEditor.targetLitIvemIds;
+            let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+            if (litIvemIds.length === 0) {
+                symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+                this._singleSymbolUiAction.pushValue(undefined);
+            } else {
+                if (litIvemIds.length === 1) {
+                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
+                } else {
+                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                 }
-                case ScanTargetTypeId.Symbols: {
-                    this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
-                    break;
-                }
-                case ScanTargetTypeId.Markets: {
-                    this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
-                    break;
-                }
-                default:
-                    throw new UnreachableCaseError('STNCPV33017', this._scanEditor.targetTypeId);
             }
-            this._cdr.markForCheck();
+            return symbolTargetSubTypeId;
         }
     }
 }

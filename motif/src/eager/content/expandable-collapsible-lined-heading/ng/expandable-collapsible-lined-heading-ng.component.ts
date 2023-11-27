@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, ViewChild } from '@angular/core';
 import {
     ColorScheme,
     ColorSettings,
@@ -31,6 +31,7 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
     private static typeInstanceCreateCount = 0;
 
     @Input() public headingText: string;
+    @Input() public genericText: string | undefined;
     @Input() public genericSelectorWidth: string;
     @Input() public genericSelectorCaption: string;
 
@@ -56,8 +57,14 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
     private readonly _collapseUiAction: IconButtonUiAction;
 
     private _stateId: ExpandableCollapsibleLinedHeadingNgComponent.StateId;
+    private _genericText: string | undefined;
 
-    constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService, commandRegisterNgService: CommandRegisterNgService) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private readonly _cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService,
+        commandRegisterNgService: CommandRegisterNgService
+    ) {
         super(elRef, ++ExpandableCollapsibleLinedHeadingNgComponent.typeInstanceCreateCount);
 
         this._commandRegisterService = commandRegisterNgService.service;
@@ -106,6 +113,11 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
 
     ngAfterViewInit() {
         this.initialiseComponents();
+    }
+
+    setGenericText(value: string) {
+        this._genericText = value;
+        this._cdr.markForCheck();
     }
 
     private createExpandUiAction() {

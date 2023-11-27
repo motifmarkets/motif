@@ -2,10 +2,12 @@ import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestro
 import {
     BooleanUiAction,
     ExplicitElementsEnumArrayUiAction,
+    HtmlTypes,
     IntegerUiAction,
     ScanEditor,
     StringId,
-    Strings
+    Strings,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
     CaptionLabelNgComponent,
@@ -27,6 +29,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
+    @ViewChild('content', { static: true }) private _contentSection: HTMLElement;
     @ViewChild('mobileNotifierControl', { static: true }) private _mobileNotifierControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('smsNotifierControl', { static: true }) private _smsNotifierControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('emailNotifierControl', { static: true }) private _emailNotifierControlComponent: CaptionedCheckboxNgComponent;
@@ -86,6 +89,22 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         this._allNotifiersUiAction.finalise();
         this._minimumStableTimeUiAction.finalise();
         this._minimumElapsedTimeUiAction.finalise();
+    }
+
+    protected override processExpandCollapseRestoreStateChanged() {
+        switch (this.expandCollapseRestoreStateId) {
+            case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Expanded:
+                this._contentSection.style.display = HtmlTypes.Display.Flex;
+                break;
+            case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Restored:
+                this._contentSection.style.display = HtmlTypes.Display.Flex;
+                break;
+            case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Collapsed:
+                this._contentSection.style.display = HtmlTypes.Display.Flex;
+                break;
+            default:
+                throw new UnreachableCaseError('NSESNC10198', this.expandCollapseRestoreStateId);
+        }
     }
 
     protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {

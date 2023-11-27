@@ -18,7 +18,14 @@
             </div>
         </div>
     </div>
-    <app-scans #scans id="scans"></app-scans>
+    <as-split id="scans" unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area id="listArea" [size]="listAreaWidth" [minSize]="listAreaMinWidth">
+            <app-scan-list #scanList id="scanList"></app-scan-list>
+        </as-split-area>
+        <as-split-area id="editorArea" [size]="null"> <!-- was size="*"-->
+            <app-scan-editor #scanEditor id="scanEditor"></app-scan-editor>
+        </as-split-area>
+    </as-split>
 </div>
 <div id="dialogDiv" [style.display]="dialogActive ? null : 'none'">
     <ng-template #dialogContainer></ng-template>

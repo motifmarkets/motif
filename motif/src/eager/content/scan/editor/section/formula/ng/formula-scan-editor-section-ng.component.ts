@@ -62,6 +62,10 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._viewUiAction.finalise();
     }
 
+    protected override processExpandCollapseRestoreStateChanged() {
+
+    }
+
     protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;

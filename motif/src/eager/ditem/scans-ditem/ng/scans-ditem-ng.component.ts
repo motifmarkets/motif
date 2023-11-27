@@ -14,6 +14,7 @@ import {
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
     StringId,
@@ -22,8 +23,8 @@ import {
     UiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ScansNgComponent } from 'content-ng-api';
+import { AdiNgService, CommandRegisterNgService, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -44,10 +45,21 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     @ViewChild('symbolLinkButton') private _symbolLinkButtonComponent: SvgButtonNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('scans', { static: true }) private _scansComponent: ScansNgComponent;
     @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
+    @ViewChild('scanList', { static: true }) private _listComponent: ScanListNgComponent;
+    @ViewChild('scanEditor', { static: true }) private _editorComponent: ScanEditorNgComponent;
+
+    readonly listAreaWidth = 540;
+    readonly listAreaMinWidth = 50;
+    readonly splitterGutterSize = 3;
+
+    // recordFocusEventer: ScansNgComponent.RecordFocusEventer;
+    // gridClickEventer: ScansNgComponent.GridClickEventer;
+    // columnsViewWithsChangedEventer: ScansNgComponent.ColumnsViewWithsChangedEventer;
 
     public dialogActive = false;
+
+    private readonly _opener: LockOpenListItem.Opener;
 
     private _newUiAction: ButtonUiAction;
     private _filterEditUiAction: StringUiAction;
@@ -66,6 +78,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        scansNgService: ScansNgService,
     ) {
         super(
             elRef,
@@ -76,9 +89,21 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             commandRegisterNgService.service
         );
 
+        this._opener = {
+            lockerName: `${Strings[StringId.ScanEditor]}:${ScansDitemNgComponent.typeInstanceCreateCount}`,
+        };
 
-        this._frame = new ScansDitemFrame(this, this.settingsService, this.commandRegisterService,
-            desktopAccessNgService.service, symbolsNgService.service, adiNgService.service);
+        this._frame = new ScansDitemFrame(
+            this,
+            this.settingsService,
+            this.commandRegisterService,
+            desktopAccessNgService.service,
+            symbolsNgService.service,
+            adiNgService.service,
+            scansNgService.service,
+            this._opener,
+            (editor) => this._editorComponent.setEditor(editor),
+        );
 
         this._newUiAction = this.createNewUiAction();
         this._filterEditUiAction = this.createFilterEditUiAction();
@@ -101,6 +126,10 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         delay1Tick(() => this.initialise());
     }
 
+    handleSplitterDragEnd() {
+        //
+    }
+
     override processSymbolLinkedChanged() {
         this.pushSymbolLinkSelectState();
     }
@@ -108,7 +137,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     protected override initialise() {
         const componentStateElement = this.getInitialComponentStateJsonElement();
         const frameElement = this.tryGetChildFrameJsonElement(componentStateElement);
-        this._frame.initialise(frameElement, this._scansComponent.listFrame);
+        this._frame.initialise(frameElement, this._listComponent.frame);
 
         // this.pushFilterSelectState();
         this.pushFilterEditValue();
@@ -142,7 +171,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleNewUiActionSignalEvent() {
-        //
+        this._frame.newScan();
     }
 
     private handleFilterEditUiActionCommitEvent() {

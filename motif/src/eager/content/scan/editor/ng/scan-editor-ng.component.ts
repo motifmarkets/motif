@@ -6,8 +6,6 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
-    AssertInternalError,
-    LockOpenListItem,
     ScanEditor, ScansService
 } from '@motifmarkets/motif-core';
 import { ScansNgService } from '../../../../component-services/ng-api';
@@ -32,10 +30,6 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('rankSection', { static: true }) private _rankSectionComponent: FormulaScanEditorSectionNgComponent;
     @ViewChild('notifiersSection', { static: true }) private _notifiersSectionComponent: NotifiersScanEditorSectionNgComponent;
 
-    private readonly _opener: LockOpenListItem.Opener = {
-        lockerName: 'ScanEditor',
-    };
-
     private _scansService: ScansService;
     private _scanEditor: ScanEditor | undefined;
 
@@ -49,34 +43,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     }
 
     ngOnDestroy(): void {
-        this.closeEditor();
+        this.setEditor(undefined);
     }
 
-    newScan() {
-
-    }
-
-    async editScan(scanId: string) {
-        this.closeEditor();
-
-        const openResult = await this._scansService.tryOpenScanEditor(scanId, this._opener);
-        if (openResult.isErr()) {
-
-        } else {
-            const scanEditor = openResult.value;
-            if (scanEditor === undefined) {
-                throw new AssertInternalError('SENCESU40612'); // should always exist
-            } else {
-                this._scanEditor = scanEditor;
-                this._generalSectionComponent.setEditor(scanEditor);
-                this._criteriaSectionComponent.setEditor(scanEditor);
-                this._rankSectionComponent.setEditor(scanEditor);
-                this._notifiersSectionComponent.setEditor(scanEditor);
-            }
-        }
-    }
-
-    closeEditor() {
-
+    setEditor(scanEditor: ScanEditor | undefined) {
+        this._generalSectionComponent.setEditor(scanEditor);
+        this._criteriaSectionComponent.setEditor(scanEditor);
+        this._rankSectionComponent.setEditor(scanEditor);
+        this._notifiersSectionComponent.setEditor(scanEditor);
+        this._scanEditor = scanEditor;
     }
 }
