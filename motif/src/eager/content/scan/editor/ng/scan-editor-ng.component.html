@@ -4,7 +4,18 @@
     License: motionite.trade/license/motif
 -->
 
-<app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
-<app-formula-scan-editor-section #criteriaSection></app-formula-scan-editor-section>
-<app-formula-scan-editor-section #rankSection></app-formula-scan-editor-section>
-<app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
+<div id="sectionsAndTest">
+    <div id="sections">
+        <app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
+        <app-formula-scan-editor-section #criteriaSection></app-formula-scan-editor-section>
+        <app-formula-scan-editor-section #rankSection></app-formula-scan-editor-section>
+        <app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
+    </div>
+    <app-scan-test #test id="test" [style.display]="'none'"></app-scan-test>
+</div>
+<div id="editButtons">
+    <app-button-input #applyButton></app-button-input>
+    <app-button-input #revertButton></app-button-input>
+    <app-button-input #deleteButton></app-button-input>
+    <app-button-input #testButton></app-button-input>
+</div>

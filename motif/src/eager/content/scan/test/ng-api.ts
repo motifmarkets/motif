@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/scan-new-ng.component';
+export * from './ng/scan-test-ng.component';
 

@@ -7,5 +7,22 @@
 :host {
     display: flex;
     flex-direction: column;
-    gap: 1em;
+
+    #sectionsAndTest {
+        display: flex;
+
+        #sections {
+            flex: 1 1 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1em;
+        }
+        #test {
+            flex: 0 0 auto;
+        }
+    }
+
+    #editButtons {
+        display: flex;
+    }
 }

@@ -67,7 +67,6 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     override setEditor(value: ScanEditor | undefined) {
-        if (value )
         super.setEditor(value);
         this.pushValues();
         this._targetsComponent.setEditor(value);
