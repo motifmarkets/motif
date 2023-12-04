@@ -350,9 +350,9 @@ export namespace BuiltinDitemFrame {
         const infos = Object.values(infoObjects);
 
         export function staticConstructor() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: number) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: number) => info.id !== index as BuiltinTypeId);
             if (outOfOrderIdx >= 0) {
-                throw new EnumInfoOutOfOrderError('InputComponent.Id', outOfOrderIdx, infos[outOfOrderIdx].name);
+                throw new EnumInfoOutOfOrderError('BuiltinDitemFrame.BuiltinTypeId', outOfOrderIdx, infos[outOfOrderIdx].name);
             }
         }
 

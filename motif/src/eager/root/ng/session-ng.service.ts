@@ -95,12 +95,12 @@ export class SessionNgService implements OnDestroy {
 
     completeAuthentication() {
         const promise = this.session.completeAuthentication(this._config);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNSCA20256');
+        AssertInternalError.throwErrorIfPromiseRejected(promise, 'SNSCA20256');
     }
 
     start() {
         const promise = this.session.start(this._config);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'SNSS20256');
+        AssertInternalError.throwErrorIfPromiseRejected(promise, 'SNSS20256');
     }
 
     private handleAuthenticatedEvent() {

@@ -6,7 +6,7 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, InjectionToken, Injector, OnDestroy, ValueProvider, ViewContainerRef } from '@angular/core';
 import { GridSourceOrReferenceDefinition, LockOpenListItem } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from '../../../../component-services/ng-api';
+import { CoreInjectionTokens } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Component({

@@ -356,7 +356,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFOGLONRD22209');
         } else {
             const promise = this._openedGridSource.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition, this._opener);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
+            AssertInternalError.throwErrorIfPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }
 
@@ -365,7 +365,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             throw new AssertInternalError('GSFAGLD22209');
         } else {
             const promise = this._openedGridSource.openGridLayoutOrReferenceDefinition(definition, this._opener);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
+            AssertInternalError.throwErrorIfPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }
 

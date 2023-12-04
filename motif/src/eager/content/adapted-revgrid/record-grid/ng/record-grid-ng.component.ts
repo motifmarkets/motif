@@ -28,9 +28,7 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     get recordGrid() { return this._grid; }
 
     ngOnDestroy() {
-        if (this.destroyEventer !== undefined) {
-            this.destroyEventer();
-        }
+        this.destroyGrid();
     }
 
     createGrid(
@@ -63,8 +61,6 @@ export class RecordGridNgComponent extends AdaptedRevgridComponentNgDirective im
     }
 
     override destroyGrid() {
-        super.destroyGrid();
-
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._grid !== undefined) {
             this._grid.destroy();

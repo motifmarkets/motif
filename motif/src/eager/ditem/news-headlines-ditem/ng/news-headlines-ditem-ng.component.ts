@@ -106,10 +106,6 @@ export class NewsHeadlinesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     ngAfterViewInit() {
-        this._gridComponent.destroyEventer = () => {
-            this._gridComponent.destroyGrid();
-        };
-
         delay1Tick(() => this.initialise());
     }
 

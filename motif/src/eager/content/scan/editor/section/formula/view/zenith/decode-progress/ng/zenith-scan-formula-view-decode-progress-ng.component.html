@@ -1,0 +1,17 @@
+<div id="">
+    <div id="titleBar">
+        <span id="title">{{title}}</span>
+        <app-svg-button #closeButton id="closeButton"></app-svg-button>
+    </div>
+    <div id="countDepth">
+        <div id="count">
+            <app-caption-label #countLabel></app-caption-label>
+            <app-integer-text-input #countControl></app-integer-text-input>
+        </div>
+        <div id="depth">
+            <app-caption-label #depthLabel></app-caption-label>
+            <app-integer-text-input #depthControl></app-integer-text-input>
+        </div>
+    </div>
+</div>
+<app-row-data-array-grid #nodesGrid id="nodesGrid"></app-row-data-array-grid>

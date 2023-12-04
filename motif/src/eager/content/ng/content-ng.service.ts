@@ -98,6 +98,10 @@ export class ContentNgService {
         return this._content.createWatchlistFrame();
     }
 
+    createScanTestMatchesFrame() {
+        return this._content.createScanTestMatchesFrame();
+    }
+
     createBrokerageAccountsFrame() {
         return this._content.createBrokerageAccountsFrame();
     }

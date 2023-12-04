@@ -12,11 +12,6 @@
 
     #content {
         @include sectionContentLeftMarginMixin;
-
-        #viewSelector {
-            display: flex;
-            gap: 1em;
-        }
     }
 }
 

@@ -66,17 +66,20 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
+    CriteriaZenithScanFormulaViewNgComponent,
     FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
     NotifiersScanEditorSectionNgComponent,
+    RankZenithScanFormulaViewNgComponent,
     ScanEditorNgComponent,
     ScanEditorTargetsNgComponent,
     ScanListNgComponent,
+    ScanTestMatchesNgComponent,
     ScanTestNgComponent,
     ScanTypeDescriptionNgComponent,
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
-    ZenithScanFormulaViewNgComponent
+    ZenithScanFormulaViewDecodeProgressNgComponent,
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
 import { SearchSymbolsNgComponent } from '../search-symbols/ng-api';
@@ -107,6 +110,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSchemeItemPropertiesNgComponent,
         ColorSchemePresetCodeNgComponent,
         ColorSettingsNgComponent,
+        CriteriaZenithScanFormulaViewNgComponent,
         DelayedBadnessNgComponent,
         DepthAndSalesGridLayoutsDialogNgComponent,
         DepthGridLayoutsDialogNgComponent,
@@ -145,6 +149,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         OrderPadSettingsNgComponent,
         OrdersNgComponent,
         PadOrderRequestStepNgComponent,
+        RankZenithScanFormulaViewNgComponent,
         RecordGridNgComponent,
         ResultOrderRequestStepNgComponent,
         ReviewAmendOrderRequestNgComponent,
@@ -158,6 +163,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ScanEditorNgComponent,
         ScanEditorTargetsNgComponent,
         ScanListNgComponent,
+        ScanTestMatchesNgComponent,
         ScanTestNgComponent,
         ScanTypeDescriptionNgComponent,
         ScanTypesControlsNgComponent,
@@ -167,7 +173,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         StatusSummaryNgComponent,
         TradesNgComponent,
         WatchlistNgComponent,
-        ZenithScanFormulaViewNgComponent,
+        ZenithScanFormulaViewDecodeProgressNgComponent,
         ZenithStatusNgComponent,
     ],
     exports: [

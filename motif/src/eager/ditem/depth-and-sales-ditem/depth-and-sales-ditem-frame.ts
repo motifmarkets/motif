@@ -18,7 +18,7 @@ import {
     GridLayoutOrReferenceDefinition,
     GridSourceOrReference,
     JsonElement,
-    JsonRankedLitIvemIdListDefinition,
+    LitIvemIdArrayRankedLitIvemIdListDefinition,
     LitIvemId,
     SettingsService,
     SymbolsService,
@@ -144,7 +144,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         } else {
             // watchlist
             if (!this._watchlistFrame.opened) {
-                const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', [litIvemId]);
+                const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', [litIvemId]);
                 const definition = this._watchlistFrame.createGridSourceOrReferenceDefinitionFromList(
                     litIvemIdListDefinition,
                     undefined,

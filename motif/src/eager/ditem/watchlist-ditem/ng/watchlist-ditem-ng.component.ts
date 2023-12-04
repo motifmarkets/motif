@@ -317,7 +317,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         if (rankedLitIvemIdListName === undefined) {
             tabTitle = baseTabDisplay;
             this.watchlistAbbreviatedDescription = '';
-            this.watchListFullDescription = Strings[StringId.RankedLitIvemIdListDisplay_Json];
+            this.watchListFullDescription = Strings[StringId.RankedLitIvemIdListDisplay_LitIvemIdArray];
         } else {
             tabTitle = `${baseTabDisplay} ${rankedLitIvemIdListName}`;
             const typeId = rankedLitIvemIdList.typeId;

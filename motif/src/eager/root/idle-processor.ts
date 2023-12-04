@@ -107,7 +107,7 @@ export class IdleProcessor {
                 this.ensureIdleCallbackRequested(); // Initiate another one to try again later
             } else {
                 const promise = this.saveSettings();
-                AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICS10987');
+                AssertInternalError.throwErrorIfPromiseRejected(promise, 'IPICS10987');
                 settingSaveInitiated = true;
                 this.ensureIdleCallbackRequested(); // Initiate another one in case desktop save also required
             }
@@ -124,7 +124,7 @@ export class IdleProcessor {
                         this.ensureIdleCallbackRequested(); // Initiate another one to try again later
                     } else {
                         const promise = this.saveLocalDesktopLayout(localDesktopFrame);
-                        AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'IPICLDL10987');
+                        AssertInternalError.throwErrorIfPromiseRejected(promise, 'IPICLDL10987');
                     }
                 }
             }

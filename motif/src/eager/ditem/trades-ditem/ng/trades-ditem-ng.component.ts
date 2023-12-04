@@ -222,7 +222,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
 
     private handleColumnsUiActionSignalEvent() {
         const dialogPromise = this.showGridLayoutDialog();
-        AssertInternalError.throwErrorIfVoidPromiseRejected(dialogPromise, 'TDNCHCUASE34009');
+        AssertInternalError.throwErrorIfPromiseRejected(dialogPromise, 'TDNCHCUASE34009');
     }
 
     private createSymbolEditUiAction() {

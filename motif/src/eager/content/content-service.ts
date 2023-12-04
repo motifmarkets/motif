@@ -31,7 +31,7 @@ import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { OrdersFrame } from './orders/internal-api';
-import { ScanListFrame } from './scan/internal-api';
+import { ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
 import { SearchSymbolsFrame } from './search-symbols/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TradesFrame } from './trades/internal-api';
@@ -102,6 +102,17 @@ export class ContentService {
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourceDefinitionsStoreService,
+            this._referenceableGridSourcesService,
+            this._cellPainterFactoryService,
+        );
+    }
+
+    createScanTestMatchesFrame() {
+        return new ScanTestMatchesFrame(
+            this._settingsService,
+            this._referenceableGridLayoutsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
         );

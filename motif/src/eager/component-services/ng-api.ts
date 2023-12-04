@@ -15,6 +15,7 @@ export * from './ng/core-ng.service';
 export * from './ng/favourite-referenceable-grid-layout-definitions-store-ng.service';
 export * from './ng/idle-processing-ng.service';
 export * from './ng/keyboard-ng.service';
+export * from './ng/lock-open-list-item-opener-ng.use-class';
 export * from './ng/motif-services-ng.service';
 export * from './ng/referenceable-grid-layouts-ng.service';
 export * from './ng/referenceable-grid-source-definitions-store-ng.service';

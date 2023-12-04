@@ -1,6 +1,9 @@
-import { ChangeDetectionStrategy, Component, ElementRef, OnInit } from '@angular/core';
-import { ScanEditor } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
+import { AssertInternalError, LockOpenListItem } from '@motifmarkets/motif-core';
+import { CoreInjectionTokens } from 'component-services-ng-api';
 import { DelayedBadnessGridSourceNgDirective } from '../../../../delayed-badness-grid-source/ng-api';
+import { ContentNgService } from '../../../../ng/content-ng.service';
+import { ScanTestMatchesFrame } from '../scan-test-matches-frame';
 
 @Component({
     selector: 'app-scan-test-matches',
@@ -8,26 +11,24 @@ import { DelayedBadnessGridSourceNgDirective } from '../../../../delayed-badness
     styleUrls: ['./scan-test-matches-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScanTestMatchesNgComponent extends DelayedBadnessGridSourceNgDirective implements OnInit {
+export class ScanTestMatchesNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
-    private _scanEditor: ScanEditor | undefined;
+    readonly declare frame: ScanTestMatchesFrame;
 
-    constructor(elRef: ElementRef<HTMLElement>) {
-        super(elRef, ++ScanTestNgComponent.typeInstanceCreateCount);
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        cdr: ChangeDetectorRef,
+        contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
+    ) {
+        const frame = contentNgService.createScanTestMatchesFrame();
+        super(elRef, ++ScanTestMatchesNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
-    ngOnInit(): void {}
-
-    finalise() {
-
-    }
-
-    setEditor(value: ScanEditor | undefined) {
-        this._scanEditor = value;
-    }
-
-    execute() {
-
+    protected override processAfterViewInit() {
+        super.processAfterViewInit();
+        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
+        AssertInternalError.throwErrorIfPromiseRejected(initialisePromise, 'STMNCPR50139');
     }
 }

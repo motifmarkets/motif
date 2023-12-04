@@ -316,7 +316,7 @@ export namespace SvgButtonNgComponent {
         const infos = Object.values(infosObject);
 
         export function initialise() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as IconButtonUiAction.IconId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError('SvgButtonComponent.Lookup', outOfOrderIdx, outOfOrderIdx.toString(10));
             }

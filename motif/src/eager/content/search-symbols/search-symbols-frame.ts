@@ -57,7 +57,7 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(dataDefinition);
 
         const gridSourceOrReferencePromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
+        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {

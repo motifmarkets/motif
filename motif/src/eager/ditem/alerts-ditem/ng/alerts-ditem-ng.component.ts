@@ -99,10 +99,6 @@ export class AlertsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     ngAfterViewInit() {
-        this._gridComponent.destroyEventer = () => {
-            this._gridComponent.destroyGrid();
-        };
-
         delay1Tick(() => this.initialise());
     }
 

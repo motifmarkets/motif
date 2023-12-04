@@ -120,7 +120,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             throw new AssertInternalError('WDFTOGS10174');
         } else {
             const gridSourceOrReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.referenceId ?? ''}`);
+            AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.referenceId ?? ''}`);
         }
     }
 
@@ -129,7 +129,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             throw new AssertInternalError('WDFSGSAU10174');
         } else {
             const promise = this._watchlistFrame.saveGridSourceAs(as);
-            AssertInternalError.throwErrorIfVoidPromiseRejected(promise, 'WDFSGSAS10174', this._watchlistFrame.opener.lockerName);
+            AssertInternalError.throwErrorIfPromiseRejected(promise, 'WDFSGSAS10174', this._watchlistFrame.opener.lockerName);
         }
     }
 

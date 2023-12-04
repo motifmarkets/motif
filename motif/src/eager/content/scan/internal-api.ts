@@ -5,4 +5,5 @@
  */
 
 export * from './list/internal-api';
+export * from './test/internal-api';
 

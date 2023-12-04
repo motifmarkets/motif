@@ -15,8 +15,8 @@ import {
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
-    JsonRankedLitIvemIdListDefinition,
     LitIvemId,
+    LitIvemIdArrayRankedLitIvemIdListDefinition,
     RankedLitIvemId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
@@ -26,6 +26,7 @@ import {
     ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
+    TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextHeaderCellPainter,
@@ -103,7 +104,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     newEmpty(keepView: boolean) {
         const definition = this.createEmptyGridSourceOrReferenceDefinition();
         const gridSourceOrReferencePromise = this.tryOpenGridSource(definition, keepView);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WFNE57774', this.opener.lockerName);
+        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'WFNE57774', this.opener.lockerName);
     }
 
     createGridSourceOrReferenceDefinitionFromList(
@@ -111,7 +112,10 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined,
         rowOrderDefinition: GridRowOrderDefinition | undefined,
     ) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(listDefinition);
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
+            TableRecordSourceDefinition.TypeId.Watchlist,
+            listDefinition
+        );
         const gridSourceDefinition = new GridSourceDefinition(
             tableRecordSourceDefinition,
             gridLayoutOrReferenceDefinition,
@@ -141,12 +145,12 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             rowOrderDefinition = this.createRowOrderDefinition();
         }
 
-        let jsonRankedLitIvemIdListDefinition: JsonRankedLitIvemIdListDefinition | undefined;
+        let litIvemIdArrayRankedLitIvemIdListDefinition: LitIvemIdArrayRankedLitIvemIdListDefinition | undefined;
         if (as.name === undefined) {
-            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', newLitIvemIds);
+            litIvemIdArrayRankedLitIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', newLitIvemIds);
             this.notifySaveRequired();
         } else {
-            jsonRankedLitIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', newLitIvemIds); // remove when implemented
+            litIvemIdArrayRankedLitIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', newLitIvemIds); // remove when implemented
             // if (as.id !== undefined) {
             //     const referentialLockResult = await this._referenceableGridSourceDefinitionsStoreService.tryLockItemByKey(as.id, this.opener);
             //     if (referentialLockResult.isOk()) {
@@ -169,13 +173,13 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         }
 
         const definition = this.createGridSourceOrReferenceDefinitionFromList(
-            jsonRankedLitIvemIdListDefinition,
+            litIvemIdArrayRankedLitIvemIdListDefinition,
             gridLayoutOrReferenceDefinition,
             rowOrderDefinition,
         );
 
         const gridSourceOrReferencePromise = this.tryOpenGridSource(definition, true);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'WFSGSA49991', `${this.opener.lockerName}: ${as.name ?? ''}`);
+        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'WFSGSA49991', `${this.opener.lockerName}: ${as.name ?? ''}`);
 
         return Promise.resolve(undefined); // remove when fixed
     }
@@ -283,14 +287,14 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         if (litIvemIds === undefined) {
             return this.createEmptyGridSourceOrReferenceDefinition();
         } else {
-            const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', litIvemIds);
+            const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
             return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
         }
     }
 
     private createEmptyGridSourceOrReferenceDefinition() {
         const litIvemIds: readonly LitIvemId[] = [];
-        const litIvemIdListDefinition = new JsonRankedLitIvemIdListDefinition('', '', '', litIvemIds);
+        const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
         return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }
 

@@ -6,8 +6,8 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
 import { CommandRegisterService, IconButtonUiAction, InternalCommand, LockOpenListItem, StringId, Strings, UnreachableCaseError, delay1Tick } from '@motifmarkets/motif-core';
+import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
-import { CommandRegisterNgService, CoreInjectionTokens } from '../../../../component-services/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -125,7 +125,7 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
 
     private showExistingListsTypeId(value: OpenWatchlistDialogNgComponent.ExistingListsTypeId) {
         if (value !== this._visibleExistingListsTypeId) {
-            let selectedListName: string;
+            // let selectedListName: string;
             switch (value) {
                 case OpenWatchlistDialogNgComponent.ExistingListsTypeId.SymbolList:
                     // selectedListName = this._symbolListDirectoryComponent.selectedListName

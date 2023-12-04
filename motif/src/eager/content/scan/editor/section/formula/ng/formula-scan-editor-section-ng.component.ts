@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
 import {
     EnumInfoOutOfOrderError,
     EnumUiAction,
@@ -12,7 +12,8 @@ import {
     Integer,
     ScanEditor,
     StringId,
-    Strings
+    Strings,
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
@@ -29,16 +30,33 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
+    @ViewChild('viewContainer', { read: ViewContainerRef }) private _viewContainer: ViewContainerRef;
 
+    public sectionHeadingText: string;
     public readonly genericSelectorCaption = Strings[StringId.View] + ':';
-    public sectionHeadingText = Strings[StringId.Criteria];
 
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
+
+    private _formulaField: FormulaScanEditorSectionNgComponent.FormulaField;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
         super(elRef, ++FormulaScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._viewUiAction = this.createViewUiAction();
+    }
+
+    @Input({required: true }) set formulaField(value: FormulaScanEditorSectionNgComponent.FormulaField) {
+        this._formulaField = value;
+        switch (value) {
+            case 'Criteria':
+                this.sectionHeadingText = Strings[StringId.Criteria];
+                break;
+            case 'Rank':
+                this.sectionHeadingText = Strings[StringId.Rank];
+                break;
+            default:
+                throw new UnreachableCaseError('ZSFVNC66674', value);
+        }
     }
 
     ngOnInit() {
@@ -55,6 +73,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
+        this._zenithViewComponent.setEditor(value);
         this.pushValues();
     }
 
@@ -129,6 +148,12 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 }
 
 export namespace FormulaScanEditorSectionNgComponent {
+    export const enum FormulaFieldEnum {
+        Criteria,
+        Rank,
+    }
+    export type FormulaField = keyof typeof FormulaFieldEnum;
+
     export const enum ViewId {
         Default,
         List,

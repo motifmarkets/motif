@@ -296,7 +296,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
             if (group !== undefined) {
                 // TODO add support for clearTable
                 const gridSourceOrReferencePromise = ordersFrame.tryOpenWithDefaultLayout(group, keepView);
-                AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'ODFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
+                AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'ODFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

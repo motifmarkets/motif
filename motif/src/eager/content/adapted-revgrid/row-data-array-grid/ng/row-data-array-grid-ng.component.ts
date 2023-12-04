@@ -26,9 +26,7 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
     }
 
     ngOnDestroy() {
-        if (this.destroyEventer !== undefined) {
-            this.destroyEventer();
-        }
+        this.destroyGrid();
     }
 
     createGrid(
@@ -74,8 +72,6 @@ export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirect
     }
 
     override destroyGrid() {
-        super.destroyGrid();
-
         if (this._grid !== undefined) {
             this._grid.destroy();
         }

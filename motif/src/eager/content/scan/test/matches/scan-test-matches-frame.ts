@@ -12,28 +12,29 @@ import {
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
-    LitIvemBaseDetail,
-    LitIvemDetailFromSearchSymbolsTableRecordSource,
+    LitIvemIdExecuteScanDataDefinition,
+    LitIvemIdExecuteScanRankedLitIvemIdListDefinition,
+    RankedLitIvemIdList,
+    RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
-    SearchSymbolsDataDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../../delayed-badness-grid-source/internal-api';
 
-export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
-    gridSourceOpenedEventer: SearchSymbolsFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: SearchSymbolsFrame.RecordFocusedEventer | undefined
+export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
+    gridSourceOpenedEventer: ScanTestMatchesFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: ScanTestMatchesFrame.RecordFocusedEventer | undefined
 
-    private _recordList: LitIvemBaseDetail[];
+    private _rankedLitIvemIdList: RankedLitIvemIdList;
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
     private _showFull: boolean;
 
-    get recordList() { return this._recordList; }
+    get rankedLitIvemIdList() { return this._rankedLitIvemIdList; }
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
@@ -50,14 +51,18 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    executeRequest(dataDefinition: SearchSymbolsDataDefinition) {
-        this.keepPreviousLayoutIfPossible = dataDefinition.fullSymbol === this._showFull;
-        this._showFull = dataDefinition.fullSymbol;
+    executeTest(
+        name: string,
+        description: string,
+        category: string,
+        dataDefinition: LitIvemIdExecuteScanDataDefinition
+    ) {
+        this.keepPreviousLayoutIfPossible = true;
 
-        const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(dataDefinition);
+        const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(name, description, category, dataDefinition);
 
         const gridSourceOrReferencePromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
+        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
@@ -66,11 +71,10 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
-        const recordSource = table.recordSource as LitIvemDetailFromSearchSymbolsTableRecordSource;
-        this._recordList = recordSource.recordList;
-        const dataDefinition = recordSource.dataDefinition;
+        const recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
+        this._rankedLitIvemIdList = recordSource.recordList;
         if (this.gridSourceOpenedEventer !== undefined) {
-            this.gridSourceOpenedEventer(dataDefinition);
+            this.gridSourceOpenedEventer();
         }
     }
 
@@ -80,8 +84,19 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    private createDefaultLayoutGridSourceOrReferenceDefinition(dataDefinition: SearchSymbolsDataDefinition) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdFromSearchSymbols(dataDefinition);
+    private createDefaultLayoutGridSourceOrReferenceDefinition(
+        name: string,
+        description: string,
+        category: string,
+        dataDefinition: LitIvemIdExecuteScanDataDefinition
+    ) {
+        const listDefinition = new LitIvemIdExecuteScanRankedLitIvemIdListDefinition(
+            name,
+            description,
+            category,
+            dataDefinition
+        )
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScanTest(listDefinition);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
@@ -99,7 +114,7 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
     }
 }
 
-export namespace SearchSymbolsFrame {
-    export type GridSourceOpenedEventer = (this: void, dataDefinition: SearchSymbolsDataDefinition) => void;
+export namespace ScanTestMatchesFrame {
+    export type GridSourceOpenedEventer = (this: void) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }

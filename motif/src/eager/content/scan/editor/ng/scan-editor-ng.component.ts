@@ -15,8 +15,8 @@ import {
     StringId,
     Strings
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from '../../../../component-services/ng-api';
-import { ButtonInputNgComponent } from '../../../../controls/ng-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
+import { ButtonInputNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ScanTestNgComponent } from '../../test/ng-api';
 import {
@@ -43,6 +43,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('revertButton', { static: false }) private _revertButtonComponent: ButtonInputNgComponent;
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: ButtonInputNgComponent;
     @ViewChild('testButton', { static: true }) private _testButtonComponent: ButtonInputNgComponent;
+
+    public criteriaFieldId = ScanEditor.FieldId.Criteria;
+    public rankFieldId = ScanEditor.FieldId.Rank;
 
     private readonly _applyUiAction: ButtonUiAction;
     private readonly _revertUiAction: ButtonUiAction;
@@ -81,7 +84,6 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._criteriaSectionComponent.setEditor(scanEditor);
         this._rankSectionComponent.setEditor(scanEditor);
         this._notifiersSectionComponent.setEditor(scanEditor);
-        this._testComponent.setEditor(scanEditor);
 
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeLifeCycleStateChangeEvents(this._scanEditorLifeCycleStateChangeSubscriptionId);
@@ -109,7 +111,6 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._revertUiAction.finalise();
         this._deleteUiAction.finalise();
         this._testUiAction.finalise();
-        this._testComponent.finalise();
     }
 
     private handleScanEditorLifeCycleStateChangeEvent(editor: ScanEditor) {
@@ -202,13 +203,25 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private handleDeleteUiActionSignalEvent() {
         const editor = this._scanEditor;
         if (editor === undefined) {
-            throw new AssertInternalError('SENCHRUASE20241');
+            throw new AssertInternalError('SENCHDUASE20241');
         } else {
             editor.deleteScan();
         }
     }
 
     private handleTestUiActionSignalEvent() {
-        this._testComponent.execute();
+        const editor = this._scanEditor;
+        if (editor === undefined) {
+            throw new AssertInternalError('SENCHTUASE20241');
+        } else {
+            this._testComponent.execute(
+                editor.name,
+                editor.description,
+                editor.targetTypeId,
+                editor.targets,
+                editor.criteriaAsZenithEncoded,
+                editor.rankAsZenithEncoded,
+            );
+        }
     }
 }

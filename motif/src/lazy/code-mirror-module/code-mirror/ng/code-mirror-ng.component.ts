@@ -24,11 +24,19 @@ export class CodeMirrorNgComponent implements OnDestroy {
     constructor(private _ngZone: NgZone, private readonly _elRef: ElementRef<HTMLElement>) {
     }
 
-    get doc() {
-        return this._editor.state.doc;
+    get text() {
+        return this._editor.state.doc.sliceString(0);
+    }
+
+    set text(value: string) {
+        const editor = this._editor;
+        editor.dispatch({
+            changes: { from: 0, to: editor.state.doc.length, insert: value }
+        });
     }
 
     ngOnDestroy(): void {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._editor !== undefined) {
             this._editor.destroy();
         }

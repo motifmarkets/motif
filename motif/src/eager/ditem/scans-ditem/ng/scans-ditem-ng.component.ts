@@ -6,6 +6,7 @@ import {
     ElementRef,
     Inject,
     OnDestroy,
+    Self,
     ViewChild,
     ViewContainerRef
 } from '@angular/core';
@@ -23,7 +24,7 @@ import {
     UiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -36,6 +37,7 @@ import { ScansDitemFrame } from '../scans-ditem-frame';
     templateUrl: './scans-ditem-ng.component.html',
     styleUrls: ['./scans-ditem-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    providers: [ { provide: CoreInjectionTokens.lockOpenListItemOpener, useClass: LockOpenListItemOpenerNgUseClass }],
 })
 export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
@@ -59,8 +61,6 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
     public dialogActive = false;
 
-    private readonly _opener: LockOpenListItem.Opener;
-
     private _newUiAction: ButtonUiAction;
     private _filterEditUiAction: StringUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
@@ -79,6 +79,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         scansNgService: ScansNgService,
+        @Self() @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         super(
             elRef,

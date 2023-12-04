@@ -105,7 +105,7 @@ export class DiagnosticsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDi
 
     private setGroupId(groupId: DiagnosticsDitemFrame.GroupId) {
         const promise = this.asyncSetGroupId(groupId);
-        AssertInternalError.throwErrorIfVoidPromiseRejected(
+        AssertInternalError.throwErrorIfPromiseRejected(
             promise,
             'DDNCSGI41499',
             DiagnosticsDitemFrame.Group.idToCaption(groupId),
