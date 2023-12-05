@@ -5,8 +5,9 @@
  */
 
 import { AfterViewInit, Directive, ElementRef, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
-import { AssertInternalError, MultiEvent, ScanEditor, ScanFormulaZenithEncoding, delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, MultiEvent, Result, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
+import { TextInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ZenithScanFormulaViewDecodeProgressNgComponent } from '../decode-progress/ng-api';
 
@@ -17,8 +18,12 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('editorContainer', { read: ViewContainerRef, static: true }) private _editorContainer: ViewContainerRef;
-    @ViewChild('decodeProgress', { static: true }) private _decodeProgresComponent: ZenithScanFormulaViewDecodeProgressNgComponent;
+    @ViewChild('decodeProgress', { static: true }) private _decodeProgressComponent: ZenithScanFormulaViewDecodeProgressNgComponent;
+    @ViewChild('errorControl', { static: true }) private _errorControl: TextInputNgComponent;
+
     private _editorComponent: CodeMirrorNgComponent;
+
+    private readonly _errorUiAction: StringUiAction;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _docChangedDebounceTimeoutHandle: ReturnType<typeof setInterval> | undefined;
@@ -28,9 +33,12 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         private readonly _injector: Injector,
     ) {
         super(elRef, ++ZenithScanFormulaViewNgDirective.typeInstanceCreateCount);
+        this._errorUiAction = this.createErrorUiAction();
     }
 
     ngOnDestroy(): void {
+        this._errorUiAction.finalise();
+
         if (this._docChangedDebounceTimeoutHandle !== undefined) {
             clearTimeout(this._docChangedDebounceTimeoutHandle);
             this._docChangedDebounceTimeoutHandle = undefined;
@@ -39,6 +47,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
 
     ngAfterViewInit(): void {
         delay1Tick(() => {
+            this._errorControl.initialise(this._errorUiAction);
             const loadPromise = this.loadEditorComponent();
             AssertInternalError.throwErrorIfPromiseRejected(loadPromise, 'ZSCVNCNAVID1T29871');
         });
@@ -73,9 +82,17 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
             const text = this.getFormulaAsZenithText(value);
             this._editorComponent.text = text;
             this._scanEditorFieldChangesSubscriptionId = value.subscribeFieldChangesEvents(
-                (changedFieldIds) => { this.processScanEditorFieldChanges(value, changedFieldIds); }
+                (changedFieldIds, fieldChanger) => { this.processScanEditorFieldChanges(value, changedFieldIds, fieldChanger); }
             );
         }
+    }
+
+    private createErrorUiAction() {
+        const action = new StringUiAction(false);
+        action.pushReadonly();
+        action.pushCaption(Strings[StringId.ZenithScanFormulaView_ErrorCaption]);
+        action.pushTitle(Strings[StringId.ZenithScanFormulaView_ErrorTitle]);
+        return action;
     }
 
     private async getCodeMirrorModuleInstance() {
@@ -88,8 +105,11 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         if (this._docChangedDebounceTimeoutHandle !== undefined) {
             clearTimeout(this._docChangedDebounceTimeoutHandle);
         }
-        this._docChangedDebounceTimeoutHandle = setInterval(
-            () => this.processDebouncedDocChanged(),
+        this._docChangedDebounceTimeoutHandle = setTimeout(
+            () => {
+                this._docChangedDebounceTimeoutHandle = undefined;
+                this.processDebouncedDocChanged();
+            },
             ZenithScanFormulaViewNgDirective.docChangedDebounceInterval
         );
     }
@@ -98,25 +118,32 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         const scanEditor = this.scanEditor;
         if (scanEditor !== undefined) {
             const text = this._editorComponent.text;
-            const error = this.setFormulaAsZenithText(scanEditor, text);
-            if (error === undefined) {
-                this._decodeProgresComponent.setDecodeProgress(undefined);
-            } else {
-                this._decodeProgresComponent.setDecodeProgress(error.progress);
+            const setResult = this.setFormulaAsZenithText(scanEditor, text, this);
+            if (setResult !== undefined) {
+                if (setResult.isOk()) {
+                    this._errorUiAction.pushValue('');
+                    this._errorUiAction.pushReadonly();
+                    this._decodeProgressComponent.setDecodeProgress(undefined);
+                } else {
+                    const decodeError = setResult.error;
+                    this._errorUiAction.pushValue(decodeError.message);
+                    this._errorUiAction.pushReadonly();
+                    this._decodeProgressComponent.setDecodeProgress(decodeError.progress);
+                }
             }
         }
     }
 
-    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]) {
+    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger | undefined) {
         const text = this.getFormulaAsZenithTextIfChanged(editor, changedFieldIds);
-        if (text !== undefined) {
+        if (text !== undefined && fieldChanger !== this) {
             this._editorComponent.text = text;
         }
     }
 
     protected abstract getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined;
     protected abstract getFormulaAsZenithText(editor: ScanEditor): string;
-    protected abstract setFormulaAsZenithText(editor: ScanEditor, text: string): ScanFormulaZenithEncoding.DecodeError | undefined;
+    protected abstract setFormulaAsZenithText(editor: ScanEditor, text: string, fieldChanger: ScanEditor.FieldChanger): Result<void, ScanFormulaZenithEncoding.DecodeError> | undefined;
 }
 
 export namespace ZenithScanFormulaViewNgDirective {

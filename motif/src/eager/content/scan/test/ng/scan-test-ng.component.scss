@@ -1,0 +1,29 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/close-button-mixin';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 25em;
+
+    #titleBar {
+        flex: 0 0 auto;
+        display: flex;
+        justify-content: space-between;
+
+        #titleBarLeft {
+            display: flex;
+            gap: 2em;
+        }
+    }
+
+    #closeButton {
+        @include close-button-mixin.closeButtonMixin;
+    }
+}

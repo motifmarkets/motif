@@ -12,5 +12,8 @@
 </app-expandable-collapsible-lined-heading-ng>
 
 <section id="content">
-    <ng-container #viewContainer></ng-container>
+    <ng-container [ngSwitch]="formulaField">
+        <app-criteria-zenith-scan-formula-view #criteriaView *ngSwitchCase="'Criteria'"></app-criteria-zenith-scan-formula-view>
+        <app-rank-zenith-scan-formula-view #rankView *ngSwitchCase="'Rank'"></app-rank-zenith-scan-formula-view>
+    </ng-container>
 </section>

@@ -84,9 +84,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger) {
         const scanEditor = this._scanEditor;
-        if (scanEditor !== undefined) {
+        if (scanEditor !== undefined && fieldChanger !== this) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
                     case ScanEditor.FieldId.Id:
@@ -152,7 +152,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Name]);
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
+                this._scanEditor.beginFieldChanges(this);
                 this._scanEditor.name = this._nameUiAction.definedValue;
+                this._scanEditor.endFieldChanges();
             }
         };
         return action;
@@ -164,7 +166,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Description]);
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
+                this._scanEditor.beginFieldChanges(this);
                 this._scanEditor.description = this._nameUiAction.definedValue;
+                this._scanEditor.endFieldChanges();
             }
         };
         return action;
@@ -199,7 +203,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolList]);
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
+                this._scanEditor.beginFieldChanges(this);
                 this._scanEditor.symbolListEnabled = this._symbolListUiAction.definedValue;
+                this._scanEditor.endFieldChanges();
             }
         };
         return action;

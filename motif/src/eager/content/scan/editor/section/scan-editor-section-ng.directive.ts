@@ -42,7 +42,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
 
         if (this._scanEditor !== undefined) {
             this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
-                (fieldIds) => { this.processFieldChanges(fieldIds); }
+                (fieldIds, fieldChanger) => { this.processFieldChanges(fieldIds, fieldChanger); }
             );
             this._scanEditorLifeCycleStateChangeSubscriptionId = this._scanEditor.subscribeLifeCycleStateChangeEvents(
                 () => { this.processLifeCycleStateChange(); }
@@ -55,7 +55,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
 
     protected abstract processExpandCollapseRestoreStateChanged(): void;
 
-    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]): void;
+    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger| undefined): void;
     protected abstract processLifeCycleStateChange(): void;
     protected abstract processModifiedStateChange(): void;
 }

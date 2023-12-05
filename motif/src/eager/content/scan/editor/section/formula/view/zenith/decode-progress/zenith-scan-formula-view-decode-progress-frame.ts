@@ -61,7 +61,12 @@ export class ZenithScanFormulaViewDecodeProgressFrame {
 
     setData(nodes: readonly ScanFormulaZenithEncoding.DecodeProgress.DecodedNode[] | undefined) {
         if (nodes === undefined) {
-            this._grid.setData([], false);
+            const rows = new Array<ZenithScanFormulaViewDecodeProgressFrame.DataRow>(1);
+            rows[0] = {
+                depth: Strings[StringId.Depth],
+                nodeType: Strings[StringId.NodeType],
+            };
+            this._grid.setData(rows, false);
         } else {
             const count = nodes.length;
             const rows = new Array<ZenithScanFormulaViewDecodeProgressFrame.DataRow>(count + 1);

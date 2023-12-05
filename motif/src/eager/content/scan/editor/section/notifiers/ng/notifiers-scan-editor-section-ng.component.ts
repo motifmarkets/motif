@@ -107,7 +107,10 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         }
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor !== undefined && fieldChanger !== this) {
+        }
     }
 
     protected override processLifeCycleStateChange(): void {

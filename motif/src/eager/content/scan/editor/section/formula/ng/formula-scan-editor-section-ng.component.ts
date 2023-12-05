@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
+    AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -17,6 +18,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
+import { CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent, ZenithScanFormulaViewNgDirective } from '../view/ng-api';
 
 @Component({
     selector: 'app-formula-scan-editor-section',
@@ -30,7 +32,8 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    @ViewChild('viewContainer', { read: ViewContainerRef }) private _viewContainer: ViewContainerRef;
+    @ViewChild('criteriaView') private _criteriaViewComponent: CriteriaZenithScanFormulaViewNgComponent | undefined;
+    @ViewChild('rankView') private _rankViewComponent: RankZenithScanFormulaViewNgComponent | undefined;
 
     public sectionHeadingText: string;
     public readonly genericSelectorCaption = Strings[StringId.View] + ':';
@@ -38,6 +41,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     private _formulaField: FormulaScanEditorSectionNgComponent.FormulaField;
+    private _viewComponent: ZenithScanFormulaViewNgDirective;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
         super(elRef, ++FormulaScanEditorSectionNgComponent.typeInstanceCreateCount);
@@ -57,7 +61,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             default:
                 throw new UnreachableCaseError('ZSFVNC66674', value);
         }
+        this._cdr.markForCheck();
     }
+    get formulaField() { return this._formulaField; }
 
     ngOnInit() {
         this.pushValues();
@@ -68,12 +74,30 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     ngAfterViewInit() {
+        switch (this._formulaField) {
+            case 'Criteria':
+                if (this._criteriaViewComponent === undefined) {
+                    throw new AssertInternalError('FSESNCNAVIC43434');
+                } else {
+                    this._viewComponent = this._criteriaViewComponent;
+                    break;
+                }
+            case 'Rank':
+                if (this._rankViewComponent === undefined) {
+                    throw new AssertInternalError('FSESNCNAVIR43434');
+                } else {
+                    this._viewComponent = this._rankViewComponent;
+                    break;
+                }
+            default:
+                throw new UnreachableCaseError('FSESNCNAVID43434', this._formulaField);
+        }
         this.initialiseComponents();
     }
 
     override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
-        this._zenithViewComponent.setEditor(value);
+        this._viewComponent.setEditor(value);
         this.pushValues();
     }
 
@@ -85,7 +109,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[]) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor !== undefined && fieldChanger !== this) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;
         // for (const fieldId of changedFieldIds) {
@@ -98,6 +124,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         //             break;
         //     }
         // }
+        }
     }
 
     protected override processLifeCycleStateChange(): void {

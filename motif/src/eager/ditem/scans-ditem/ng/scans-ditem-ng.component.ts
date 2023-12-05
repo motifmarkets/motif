@@ -103,7 +103,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             adiNgService.service,
             scansNgService.service,
             this._opener,
-            (editor) => this._editorComponent.setEditor(editor),
+            () => this._editorComponent.setEditor(this._frame.scanEditor),
         );
 
         this._newUiAction = this.createNewUiAction();

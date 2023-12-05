@@ -79,6 +79,7 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
             this._depthUiAction.pushDisabled();
             this._frame.setData(undefined);
         } else {
+            this._hostDisplay = HtmlTypes.Display.Block;
             this._countUiAction.pushValue(progress.tupleNodeCount);
             this._countUiAction.pushReadonly();
             this._depthUiAction.pushValue(progress.tupleNodeDepth);

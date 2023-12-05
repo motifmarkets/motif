@@ -13,7 +13,7 @@ export * from './ng/command-register-ng.service';
 export * from './ng/core-injection-tokens';
 export * from './ng/core-ng.service';
 export * from './ng/favourite-referenceable-grid-layout-definitions-store-ng.service';
-export * from './ng/idle-processing-ng.service';
+export * from './ng/idle-ng.service';
 export * from './ng/keyboard-ng.service';
 export * from './ng/lock-open-list-item-opener-ng.use-class';
 export * from './ng/motif-services-ng.service';

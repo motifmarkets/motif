@@ -5,8 +5,10 @@
 -->
 
 <div id="titleBar">
-    <span #titleSpan>{{title}}</span>
-    <span #matchCountSpan>{{matchCount}}</span>
+    <div id="titleBarLeft">
+        <span #titleSpan>{{title}}</span>
+        <span #matchCountSpan>{{matchCount}}</span>
+    </div>
     <app-svg-button #closeButton id="closeButton"></app-svg-button>
 </div>
 <app-scan-test-matches #matches></app-scan-test-matches>

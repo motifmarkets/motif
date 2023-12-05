@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
+    AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -129,7 +130,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
         if (this._scanEditor !== undefined) {
             this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
-                (fieldIds) => { this.processFieldChanges(fieldIds); }
+                (fieldIds, fieldChanger) => { this.processFieldChanges(fieldIds, fieldChanger); }
             );
         }
 
@@ -238,24 +239,26 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         return action;
     }
 
-    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[]) {
-        for (const fieldId of fieldIds) {
-            switch (fieldId) {
-                case ScanEditor.FieldId.TargetTypeId: {
-                    const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
-                    const marketTargetSubTypeId = this.pushTargetMarketIds();
-                    this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
-                    break;
+    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger | undefined) {
+        if (fieldChanger !== this) {
+            for (const fieldId of fieldIds) {
+                switch (fieldId) {
+                    case ScanEditor.FieldId.TargetTypeId: {
+                        const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
+                        const marketTargetSubTypeId = this.pushTargetMarketIds();
+                        this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
+                        break;
+                    }
+                    case ScanEditor.FieldId.TargetMarkets:
+                        this.pushTargetMarketIds();
+                        break;
+                    case ScanEditor.FieldId.TargetLitIvemIds:
+                        this.pushTargetLitIvemIds();
+                        break;
+                    case ScanEditor.FieldId.MaxMatchCount:
+                        this.pushMaxMatchCount();
+                        break;
                 }
-                case ScanEditor.FieldId.TargetMarkets:
-                    this.pushTargetMarketIds();
-                    break;
-                case ScanEditor.FieldId.TargetLitIvemIds:
-                    this.pushTargetLitIvemIds();
-                    break;
-                case ScanEditor.FieldId.MaxMatchCount:
-                    this.pushMaxMatchCount();
-                    break;
             }
         }
     }
@@ -269,6 +272,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             const marketTargetSubTypeId = this.pushTargetMarketIds();
             this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
         }
+        this._cdr.markForCheck();
     }
 
     private pushTargetTypeId(
@@ -285,11 +289,21 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     break;
                 }
                 case ScanTargetTypeId.Symbols: {
-                    this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
-                    break;
+                    if (symbolTargetSubTypeId === undefined) {
+                        throw new AssertInternalError('SETNCPTTIS74109');
+                    } else {
+                        this._targetSubTypeId = symbolTargetSubTypeId;
+                        this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
+                        break;
+                    }
                 }
                 case ScanTargetTypeId.Markets: {
-                    this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
+                    if (marketTargetSubTypeId === undefined) {
+                        throw new AssertInternalError('SETNCPTTIM74109');
+                    } else {
+                        this._targetSubTypeId = marketTargetSubTypeId;
+                        this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
+                    }
                     break;
                 }
                 default:

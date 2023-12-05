@@ -7,11 +7,12 @@
 import {
     AdiService,
     AssertInternalError,
-    CommandRegisterService, ErrorCode, Integer, JsonElement,
+    CommandRegisterService, ErrorCode, ExchangeInfo, Integer, JsonElement,
     LockOpenListItem,
     Logger,
     ScanEditor,
     ScanList,
+    ScanTargetTypeId,
     ScansService,
     SettingsService,
     SymbolsService
@@ -23,7 +24,7 @@ import { DitemFrame } from '../ditem-frame';
 export class ScansDitemFrame extends BuiltinDitemFrame {
     private _scanListFrame: ScanListFrame | undefined;
     private _scanList: ScanList | undefined;
-    private _activeScanEditor: ScanEditor | undefined;
+    private _scanEditor: ScanEditor | undefined;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -34,7 +35,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _scansService: ScansService,
         private readonly _opener: LockOpenListItem.Opener,
-        private readonly _editScanEventer: ScansDitemFrame.EditScanEventer,
+        private readonly _setEditorEventer: ScansDitemFrame.SetEditorEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Scans, ditemComponentAccess,
             settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
@@ -43,6 +44,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._scanListFrame !== undefined; }
+
+    get scanEditor() { return this._scanEditor; }
 
     get filterText() {
         if (this._scanListFrame === undefined) {
@@ -122,8 +125,12 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     newScan() {
         this.checkCloseActiveScanEditor();
-        this._activeScanEditor = this._scansService.openNewScanEditor(this._opener);
-        this._editScanEventer(this._activeScanEditor);
+        this._scanEditor = this._scansService.openNewScanEditor(this._opener);
+        const defaultExchangeId = this.symbolsService.defaultExchangeId;
+        const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
+        this._scanEditor.targetMarketIds = [defaultMarketId];
+        this._scanEditor.targetTypeId = ScanTargetTypeId.Markets;
+        this._setEditorEventer();
     }
 
     private handleScanListFrameRecordFocusedEvent(newRecordIndex: Integer | undefined) {
@@ -145,8 +152,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                             if (scanEditor === undefined) {
                                 throw new AssertInternalError('SDFHSLFRFESM50515'); // should always exist
                             } else {
-                                this._activeScanEditor = scanEditor;
-                                this._editScanEventer(scanEditor);
+                                this._scanEditor = scanEditor;
+                                this._setEditorEventer();
                             }
                         }
                     },
@@ -157,10 +164,10 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     }
 
     private checkCloseActiveScanEditor() {
-        if (this._activeScanEditor !== undefined) {
-            this._editScanEventer(undefined);
-            this._scansService.closeScanEditor(this._activeScanEditor, this._opener);
-            this._activeScanEditor = undefined;
+        if (this._scanEditor !== undefined) {
+            this._setEditorEventer();
+            this._scansService.closeScanEditor(this._scanEditor, this._opener);
+            this._scanEditor = undefined;
         }
     }
 }
@@ -172,5 +179,5 @@ export namespace ScansDitemFrame {
     }
 
     export type OpenedEventHandler = (this: void) => void;
-    export type EditScanEventer = (this: void, scanEditor: ScanEditor | undefined) => void;
+    export type SetEditorEventer = (this: void) => void;
 }

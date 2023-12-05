@@ -5,16 +5,16 @@
  */
 
 import { Injectable } from '@angular/core';
-import { IdleProcessingService } from '@motifmarkets/motif-core';
+import { IdleService } from '@motifmarkets/motif-core';
 
 @Injectable({
     providedIn: 'root',
 })
-export class IdleProcessingNgService {
-    private _service: IdleProcessingService;
+export class IdleNgService {
+    private _service: IdleService;
 
     constructor() {
-        this._service = new IdleProcessingService();
+        this._service = new IdleService();
     }
 
     get service() { return this._service; }

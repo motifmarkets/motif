@@ -15,7 +15,7 @@ import { ScanTestMatchesNgComponent } from '../matches/ng-api';
 export class ScanTestNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    @HostBinding('style.display') private _hostDisplay = HtmlTypes.Display.None;
+    @HostBinding('style.display') hostDisplay: HtmlTypes.Display;
 
     @ViewChild('closeButton', { static: true }) private _closeButtonComponent: SvgButtonNgComponent;
     @ViewChild('matches', { static: true }) private _matchesComponent: ScanTestMatchesNgComponent;
@@ -74,14 +74,14 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
 
         this._matchesFrame.executeTest(name, description, 'ExecuteScan', definition);
 
-        this._hostDisplay = HtmlTypes.Display.Flex;
+        this.hostDisplay = HtmlTypes.Display.Flex;
         this._cdr.markForCheck();
     }
 
     private handleCloseSignal() {
         this.finaliseMatchesInfo();
         this._matchesFrame.closeGridSource(true);
-        this._hostDisplay = HtmlTypes.Display.None;
+        this.hostDisplay = HtmlTypes.Display.None;
         this._cdr.markForCheck();
     }
 

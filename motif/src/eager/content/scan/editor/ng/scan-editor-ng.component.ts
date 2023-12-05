@@ -4,11 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import {
     AssertInternalError,
     ButtonUiAction,
     CommandRegisterService,
+    HtmlTypes,
     InternalCommand,
     MultiEvent,
     ScanEditor,
@@ -33,6 +34,8 @@ import {
 })
 export class ScanEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
+
+    @HostBinding('style.visibility') visibility = HtmlTypes.Visibility.Hidden;
 
     @ViewChild('generalSection', { static: true }) private _generalSectionComponent: GeneralScanEditorSectionNgComponent;
     @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: FormulaScanEditorSectionNgComponent;
@@ -91,8 +94,13 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             this._scanEditor.unsubscribeModifiedStateChangeEvents(this._scanEditorModifiedStateChangeSubscriptionId);
             this._scanEditorModifiedStateChangeSubscriptionId = undefined;
         }
+
         this._scanEditor = scanEditor;
-        if (scanEditor !== undefined) {
+
+        let newVisibility: HtmlTypes.Visibility;
+        if (scanEditor === undefined) {
+            newVisibility = HtmlTypes.Visibility.Hidden;
+        } else {
             this._scanEditorLifeCycleStateChangeSubscriptionId = scanEditor.subscribeLifeCycleStateChangeEvents(
                 () => this.handleScanEditorLifeCycleStateChangeEvent(scanEditor)
             )
@@ -101,6 +109,12 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 () => this.handleScanEditorModifiedStateChangeEvent(scanEditor)
             )
             this._scanEditorModifiedStateChangeSubscriptionId = undefined;
+            newVisibility = HtmlTypes.Visibility.Visible;
+        }
+
+        if (newVisibility !== this.visibility) {
+            this.visibility = newVisibility;
+            this._cdr.markForCheck();
         }
     }
 
