@@ -8,7 +8,6 @@ import { isDevMode } from '@angular/core';
 import {
     AdiService,
     AppStorageService,
-    AssertInternalError,
     CapabilitiesService,
     DataEnvironment,
     DataEnvironmentId,
@@ -118,12 +117,8 @@ export class SessionService {
     get userFullName() { return this._openIdService.userFullName; }
 
     startAuthentication(config: Config) {
-        if (config === undefined) {
-            throw new AssertInternalError('SSACU89888982232');
-        } else {
-            this.applyConfig(config);
-            this._openIdService.startAuthentication();
-        }
+        this.applyConfig(config);
+        this._openIdService.startAuthentication();
     }
 
     async completeAuthentication(config: Config) {
@@ -263,6 +258,7 @@ export class SessionService {
         this._infoService.userFullName = this._openIdService.userFullName;
         this._infoService.userAccessTokenExpiryTime = this._openIdService.userAccessTokenExpiryTime;
 
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         const telemetryUsername = username ?? userFullName ?? userId;
         this._telemetryService.setUser(userId, telemetryUsername);
 

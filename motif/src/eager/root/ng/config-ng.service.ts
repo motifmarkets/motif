@@ -32,14 +32,8 @@ export class ConfigNgService {
 
     // eslint-disable-next-line @typescript-eslint/no-useless-constructor, @typescript-eslint/no-empty-function
     constructor() { }
-}
 
-export namespace ConfigNgService {
-    export function getLoadFtn(domSanitizer: DomSanitizer, configService: ConfigNgService) {
-        return (): Promise<boolean> => load(domSanitizer, configService);
-    }
-
-    export async function load(domSanitizer: DomSanitizer, configService: ConfigNgService): Promise<boolean> {
+    async load(domSanitizer: DomSanitizer) {
         const versionFileName = 'version.txt';
 
         const configFolderPath = '_config-do-not-delete';
@@ -55,19 +49,79 @@ export namespace ConfigNgService {
                 `${versionResponse.status}: "${versionResponse.statusText}" Uri: ${configJsonUri}`);
         } else {
             const versionText = await versionResponse.text();
-            configService.version = versionText.trim();
+            this.version = versionText.trim();
 
             if (configResponse.status !== 200) {
                 throw new ConfigError(ErrorCode.CSL23230003998, 'ConfigHTTP',
                     `${configResponse.status}: "${configResponse.statusText}" Uri: ${configJsonUri}`);
             } else {
                 const configText = await configResponse.text();
-                return loadText(domSanitizer, configService, configText, configFolderPath);
+                return this.loadText(domSanitizer, configText, configFolderPath);
             }
         }
     }
 
-    const acceptedConfigFormatVersion = '2';
+    loadText(
+        sanitizer: DomSanitizer,
+        jsonText: string,
+        configFolderPath: string,
+    ): Promise<boolean> {
+        let configJson: ConfigNgService.ConfigJson;
+        try {
+            configJson = JSON.parse(jsonText) as ConfigNgService.ConfigJson;
+        } catch (e) {
+            ConfigNgService.logConfigError('CSLTP988871038839', jsonText);
+            throw (e);
+        }
+
+        if (configJson.configFormatVersion !== ConfigNgService.acceptedConfigFormatVersion) {
+            throw new ConfigError(ErrorCode.CSLTF1988871038839, '?', jsonText);
+        } else {
+            const service = ConfigNgService.Service.parseJson(configJson.service, jsonText);
+            const environment = ConfigNgService.Environment.parseJson(configJson.environment, service.name);
+            const exchange = ConfigNgService.Exchange.parseJson(configJson.exchange, service.name);
+            const endpoints = ConfigNgService.Endpoints.parseJson(configJson.endpoints, service.name);
+            const openId = ConfigNgService.OpenId.parseJson(configJson.openId, service.name);
+            const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout);
+            const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions, service.name);
+            const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
+            const capabilities = ConfigNgService.Capabilities.parseJson(configJson.capabilities ?? configJson.features);
+            const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
+            const config: Config = {
+                environment,
+                service,
+                exchange,
+                endpoints,
+                openId,
+                defaultLayout,
+                bundledExtensions,
+                diagnostics,
+                capabilities,
+                branding,
+            };
+
+            const validationError = Config.checkForValidationError(config);
+            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+            if (validationError !== undefined) {
+                throw new ConfigError(ErrorCode.CSLTV777333999, service.name, validationError);
+            } else {
+                this.config = config;
+                return Promise.resolve(true);
+            }
+        }
+    }
+}
+
+export namespace ConfigNgService {
+    export function getLoadConfigFtn(domSanitizer: DomSanitizer, configService: ConfigNgService) {
+        return (): Promise<boolean> => loadConfig(domSanitizer, configService);
+    }
+
+    export function loadConfig(domSanitizer: DomSanitizer, configService: ConfigNgService): Promise<boolean> {
+        return configService.load(domSanitizer);
+    }
+
+    export const acceptedConfigFormatVersion = '2';
 
     export interface ConfigJson {
         readonly configFormatVersion: string;
@@ -700,58 +754,7 @@ export namespace ConfigNgService {
         }
     }
 
-    function logConfigError(code: string, jsonText: string) {
+    export function logConfigError(code: string, jsonText: string) {
         Logger.logConfigError(code, jsonText, 500);
-    }
-
-    function loadText(
-        sanitizer: DomSanitizer,
-        configService: ConfigNgService,
-        jsonText: string,
-        configFolderPath: string,
-    ): Promise<boolean> {
-        let configJson: ConfigJson;
-        try {
-            configJson = JSON.parse(jsonText) as ConfigJson;
-        } catch (e) {
-            logConfigError('CSLTP988871038839', jsonText);
-            throw (e);
-        }
-
-        if (configJson.configFormatVersion !== acceptedConfigFormatVersion) {
-            throw new ConfigError(ErrorCode.CSLTF1988871038839, '?', jsonText);
-        } else {
-            const service = ConfigNgService.Service.parseJson(configJson.service, jsonText);
-            const environment = ConfigNgService.Environment.parseJson(configJson.environment, service.name);
-            const exchange = ConfigNgService.Exchange.parseJson(configJson.exchange, service.name);
-            const endpoints = ConfigNgService.Endpoints.parseJson(configJson.endpoints, service.name);
-            const openId = ConfigNgService.OpenId.parseJson(configJson.openId, service.name);
-            const defaultLayout = ConfigNgService.DefaultLayout.parseJson(configJson.defaultLayout);
-            const bundledExtensions = ConfigNgService.BundledExtensions.parseJson(configJson.bundledExtensions, service.name);
-            const diagnostics = ConfigNgService.Diagnostics.parseJson(configJson.diagnostics, service.name);
-            const capabilities = ConfigNgService.Capabilities.parseJson(configJson.capabilities ?? configJson.features);
-            const branding = ConfigNgService.Branding.parseJson(sanitizer, configJson.branding, configFolderPath);
-            const config: Config = {
-                environment,
-                service,
-                exchange,
-                endpoints,
-                openId,
-                defaultLayout,
-                bundledExtensions,
-                diagnostics,
-                capabilities,
-                branding,
-            };
-
-            const validationError = Config.checkForValidationError(config);
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            if (validationError !== undefined) {
-                throw new ConfigError(ErrorCode.CSLTV777333999, service.name, validationError);
-            } else {
-                configService.config = config;
-                return Promise.resolve(true);
-            }
-        }
     }
 }
