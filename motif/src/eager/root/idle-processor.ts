@@ -8,12 +8,11 @@ import {
     AppStorageService,
     AssertInternalError,
     getErrorMessage,
-    KeyValueStore,
     Logger,
     mSecsPerSec,
     MultiEvent,
     SettingsService,
-    SysTick,
+    SysTick
 } from '@motifmarkets/motif-core';
 import { DesktopFrame } from 'desktop-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
@@ -22,8 +21,6 @@ export class IdleProcessor {
     private readonly _requestIdleCallbackAvailable: boolean;
 
     private _callbackOrTimeoutHandle: number | ReturnType<typeof setTimeout> | undefined;
-    private _settingsSaveNotAllowedUntilTime: SysTick.Time = 0;
-    private _lastSettingsSaveFailed = false;
     private _localDesktopLayoutSaveNotAllowedUntilTime: SysTick.Time = 0;
     private _lastLocalDesktopLayoutSaveFailed = false;
 
@@ -99,70 +96,20 @@ export class IdleProcessor {
     private idleCallback(deadline: IdleDeadline) {
         this._callbackOrTimeoutHandle = undefined;
 
-        let settingSaveInitiated = false;
         let nowTime: number | undefined;
-        if (this._settingsService.saveRequired) {
-            nowTime = SysTick.now();
-            if (nowTime < this._settingsSaveNotAllowedUntilTime) {
-                this.ensureIdleCallbackRequested(); // Initiate another one to try again later
-            } else {
-                const promise = this.saveSettings();
-                AssertInternalError.throwErrorIfPromiseRejected(promise, 'IPICS10987');
-                settingSaveInitiated = true;
-                this.ensureIdleCallbackRequested(); // Initiate another one in case desktop save also required
-            }
-        }
-
-        if (!settingSaveInitiated) {
-            const localDesktopFrame = this._workspaceService.localDesktopFrame;
-            if (localDesktopFrame !== undefined) {
-                if (localDesktopFrame.layoutSaveRequired) {
-                    if (nowTime === undefined) {
-                        nowTime = SysTick.now();
-                    }
-                    if (nowTime < this._localDesktopLayoutSaveNotAllowedUntilTime) {
-                        this.ensureIdleCallbackRequested(); // Initiate another one to try again later
-                    } else {
-                        const promise = this.saveLocalDesktopLayout(localDesktopFrame);
-                        AssertInternalError.throwErrorIfPromiseRejected(promise, 'IPICLDL10987');
-                    }
+        const localDesktopFrame = this._workspaceService.localDesktopFrame;
+        if (localDesktopFrame !== undefined) {
+            if (localDesktopFrame.layoutSaveRequired) {
+                if (nowTime === undefined) {
+                    nowTime = SysTick.now();
                 }
-            }
-        }
-    }
-
-    private async saveSettings() {
-        const { user: userElement, operator: operatorElement } = this._settingsService.save();
-        try {
-            if (userElement === undefined) {
-                if (operatorElement === undefined) {
-                    return;
+                if (nowTime < this._localDesktopLayoutSaveNotAllowedUntilTime) {
+                    this.ensureIdleCallbackRequested(); // Initiate another one to try again later
                 } else {
-                    const operatorSettings = operatorElement.stringify()
-                    await this._appStorageService.setItem(KeyValueStore.Key.Settings, operatorSettings, true);
-                }
-            } else {
-                const userSettings = userElement.stringify()
-                if (operatorElement === undefined) {
-                    await this._appStorageService.setItem(KeyValueStore.Key.Settings, userSettings, false);
-                } else {
-                    const operatorSettings = operatorElement.stringify()
-                    await Promise.all([
-                        this._appStorageService.setItem(KeyValueStore.Key.Settings, userSettings, false),
-                        this._appStorageService.setItem(KeyValueStore.Key.Settings, operatorSettings, true)
-                    ]);
+                    const promise = this.saveLocalDesktopLayout(localDesktopFrame);
+                    AssertInternalError.throwErrorIfPromiseRejected(promise, 'IPICLDL10987');
                 }
             }
-            this._settingsService.reportSaved();
-            if (this._lastSettingsSaveFailed) {
-                this.logWarning(`Save settings succeeded`);
-                this._lastSettingsSaveFailed = false;
-            }
-            this._settingsSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumSettingsSaveRepeatSpan;
-        } catch (e) {
-            this.logWarning(`Save settings error: ${getErrorMessage(e)}`);
-            this._lastSettingsSaveFailed = true;
-            this._settingsSaveNotAllowedUntilTime = SysTick.now() + IdleProcessor.minimumSettingsSaveRepeatSpan;
         }
     }
 
@@ -192,6 +139,5 @@ export class IdleProcessor {
 
 export namespace IdleProcessor {
     export const idleCallbackTimeout = 10 * mSecsPerSec;
-    export const minimumSettingsSaveRepeatSpan = 5 * mSecsPerSec;
     export const minimumLocalDesktopLayoutSaveRepeatSpan = 5 * mSecsPerSec;
 }

@@ -166,13 +166,14 @@ export class SessionService {
                 this.logInfo('State Storage: MotifServices');
                 this._motifServicesEndpoint = this._motifServicesEndpoints[0];
                 this.logInfo(`MotifServices Endpoint: ${this._motifServicesEndpoint}`);
-                await this._motifServicesService.initialise(this._motifServicesEndpoint,
-                    DataEnvironment.getDefaultId(),
+                this._motifServicesService.initialise(
+                    this._motifServicesEndpoint,
                     () => this.getAuthorizationHeaderValue()
                 );
                 storageTypeId = AppStorageService.TypeId.MotifServices;
             }
         }
+        await this._settingsService.loadMasterSettings(DataEnvironment.getDefaultId()); // can load this before app storage initialised as directly uses Motif Storage
         this._appStorageService.initialise(storageTypeId, this._serviceOperatorId);
 
         await this.processLoadSettings();
