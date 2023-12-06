@@ -55,7 +55,7 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
     providers: [
         {
             provide: APP_INITIALIZER,
-            useFactory: (domSanitizer: DomSanitizer, configService: ConfigNgService) => ConfigNgService.getLoadConfigFtn(domSanitizer, configService),
+            useFactory: (domSanitizer: DomSanitizer, configNgService: ConfigNgService) => ConfigNgService.getLoadConfigFtn(domSanitizer, configNgService),
             deps: [
                 // order must match parameters in useFactory
                 DomSanitizer,

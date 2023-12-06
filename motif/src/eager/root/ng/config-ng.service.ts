@@ -113,12 +113,12 @@ export class ConfigNgService {
 }
 
 export namespace ConfigNgService {
-    export function getLoadConfigFtn(domSanitizer: DomSanitizer, configService: ConfigNgService) {
-        return (): Promise<boolean> => loadConfig(domSanitizer, configService);
+    export function getLoadConfigFtn(domSanitizer: DomSanitizer, configNgService: ConfigNgService) {
+        return (): Promise<boolean> => loadConfig(domSanitizer, configNgService);
     }
 
-    export function loadConfig(domSanitizer: DomSanitizer, configService: ConfigNgService): Promise<boolean> {
-        return configService.load(domSanitizer);
+    export function loadConfig(domSanitizer: DomSanitizer, configNgService: ConfigNgService): Promise<boolean> {
+        return configNgService.load(domSanitizer);
     }
 
     export const acceptedConfigFormatVersion = '2';
