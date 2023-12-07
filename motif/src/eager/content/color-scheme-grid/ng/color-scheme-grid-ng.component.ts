@@ -79,7 +79,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
     get focusedRecordIndex() { return this._grid.focusedRecordIndex; }
     get fixedColumnsViewWidth() { return this._grid.fixedColumnsViewWidth; }
     get activeColumnsViewWidth() { return this._grid.activeColumnsViewWidth; }
-    get emWidth() { return this._grid.canvas.gc.getEmWidth(); }
+    get emWidth() { return this._grid.emWidth; }
 
     public get filterFolderId() { return this._filterFolderId; }
     public set filterFolderId(value: ColorScheme.Item.FolderId) {

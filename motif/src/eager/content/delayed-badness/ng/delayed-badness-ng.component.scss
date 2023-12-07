@@ -6,4 +6,8 @@
 
 :host {
     display: block;
+
+    #displaySpan {
+        white-space: nowrap;
+    }
 }

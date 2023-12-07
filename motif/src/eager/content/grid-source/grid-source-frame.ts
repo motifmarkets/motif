@@ -93,6 +93,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     }
     get gridRowHeight() { return this._grid.rowHeight; }
     get gridHorizontalScrollbarInsideOverlap() { return this._grid.horizontalScroller.insideOverlap; }
+    get emWidth() { return this._grid.emWidth; }
 
     // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
     // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }

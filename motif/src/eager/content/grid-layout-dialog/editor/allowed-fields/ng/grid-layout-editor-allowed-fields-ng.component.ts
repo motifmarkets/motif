@@ -51,8 +51,6 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         super(elRef, ++GridLayoutEditorAllowedFieldsNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
-    get emWidth() { return this.frame.grid.canvas.gc.getEmWidth(); }
-
     calculateFixedColumnsWidth() {
         return this.frame.grid.columnsManager.calculateFixedColumnsWidth();
     }

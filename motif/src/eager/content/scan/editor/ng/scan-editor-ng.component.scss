@@ -7,18 +7,14 @@
 :host {
     display: flex;
     flex-direction: column;
+    height: 100%;
 
     #sectionsAndTest {
-        display: flex;
-
         #sections {
             flex: 1 1 auto;
             display: flex;
             flex-direction: column;
             gap: 1em;
-        }
-        #test {
-            flex: 0 0 auto;
         }
     }
 

@@ -5,13 +5,19 @@
 -->
 
 <div id="sectionsAndTest">
-    <div id="sections">
-        <app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
-        <app-formula-scan-editor-section #criteriaSection [formulaField]="'Criteria'"></app-formula-scan-editor-section>
-        <app-formula-scan-editor-section #rankSection [formulaField]="'Rank'"></app-formula-scan-editor-section>
-        <app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
-    </div>
-    <app-scan-test #test id="test"></app-scan-test>
+    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area [size]="sectionsSize" [minSize]="sectionsMinSize">
+            <div id="sections">
+                <app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
+                <app-formula-scan-editor-section #criteriaSection [formulaField]="'Criteria'"></app-formula-scan-editor-section>
+                <app-formula-scan-editor-section #rankSection [formulaField]="'Rank'"></app-formula-scan-editor-section>
+                <app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
+            </div>
+        </as-split-area>
+        <as-split-area [size]="testSize"> <!-- was size="*"-->
+            <app-scan-test #test id="test"></app-scan-test>
+        </as-split-area>
+    </as-split>
 </div>
 <div id="editButtons">
     <app-button-input #applyButton></app-button-input>

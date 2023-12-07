@@ -30,6 +30,7 @@ export abstract class GridSourceNgDirective extends ContentComponentBaseNgDirect
     }
 
     get gridRowHeight() { return this.frame.gridRowHeight; }
+    get emWidth() { return this.frame.emWidth; }
 
     // Component Access members
 

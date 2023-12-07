@@ -10,13 +10,16 @@ import {
     ButtonUiAction,
     CommandRegisterService,
     HtmlTypes,
+    Integer,
     InternalCommand,
     MultiEvent,
     ScanEditor,
     StringId,
-    Strings
+    Strings,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
+import { AngularSplitTypes } from 'controls-internal-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { ScanTestNgComponent } from '../../test/ng-api';
@@ -31,6 +34,7 @@ import {
     templateUrl: './scan-editor-ng.component.html',
     styleUrls: ['./scan-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
+    // encapsulation: ViewEncapsulation.None, // needed to get splitter working  - https://github.com/angular-split/angular-split/issues/268
 })
 export class ScanEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
@@ -49,6 +53,10 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     public criteriaFieldId = ScanEditor.FieldId.Criteria;
     public rankFieldId = ScanEditor.FieldId.Rank;
+    public sectionsSize: AngularSplitTypes.AreaSize.Html;
+    public sectionsMinSize: AngularSplitTypes.AreaSize.Html;
+    public testSize: null | number = null;
+    public splitterGutterSize = 3;
 
     private readonly _applyUiAction: ButtonUiAction;
     private readonly _revertUiAction: ButtonUiAction;
@@ -58,6 +66,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private _scanEditor: ScanEditor | undefined;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorModifiedStateChangeSubscriptionId: MultiEvent.SubscriptionId;
+
+    private _resizeObserver: ResizeObserver;
+    private _splitterDragged = false;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -80,6 +91,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     ngAfterViewInit() {
         this.initialiseComponents();
+        this._resizeObserver = new ResizeObserver(() => this.updateWidths());
+        // this._resizeObserver.observe(this.rootHtmlElement);
+        this._testComponent.displayedChangedEventer = () => {
+            this._splitterDragged = false;
+            this.updateTestDisplayed();
+            delay1Tick(() => this.updateWidths());
+        }
+        this.updateTestDisplayed();
     }
 
     setEditor(scanEditor: ScanEditor | undefined) {
@@ -118,7 +137,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         }
     }
 
+    public handleSplitterDragEnd() {
+        this._splitterDragged = true;
+    }
+
     protected finalise() {
+        this._testComponent.displayedChangedEventer = undefined;
+        this._resizeObserver.disconnect();
+
         this.setEditor(undefined);
 
         this._applyUiAction.finalise();
@@ -236,6 +262,37 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 editor.criteriaAsZenithEncoded,
                 editor.rankAsZenithEncoded,
             );
+        }
+    }
+
+    private updateTestDisplayed() {
+        if (this._testComponent.displayed) {
+            this.testSize = null;
+            this.splitterGutterSize = 3;
+        } else {
+            this.testSize = 0;
+            this.splitterGutterSize = 0;
+        }
+    }
+
+    private updateWidths() {
+        const sectionsMinWidth = 15 * this._testComponent.emWidth;
+        this.sectionsMinSize = sectionsMinWidth;
+
+        if (!this._splitterDragged) {
+            const totalWidth = this.rootHtmlElement.offsetWidth;
+            const availableTotalWidth = totalWidth - this.splitterGutterSize;
+            const testWidth = this._testComponent.approximateWidth;
+
+            let calculatedSectionsWidth: Integer;
+            if (availableTotalWidth >= (testWidth + this.sectionsMinSize)) {
+                calculatedSectionsWidth = availableTotalWidth - testWidth;
+            } else {
+                calculatedSectionsWidth = sectionsMinWidth;
+            }
+
+            this.sectionsSize = calculatedSectionsWidth;
+            this._cdr.markForCheck();
         }
     }
 }

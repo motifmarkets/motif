@@ -15,11 +15,12 @@ import { ScanTestMatchesNgComponent } from '../matches/ng-api';
 export class ScanTestNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    @HostBinding('style.display') hostDisplay: HtmlTypes.Display;
+    @HostBinding('style.display') hostDisplay: HtmlTypes.Display = HtmlTypes.Display.None;
 
     @ViewChild('closeButton', { static: true }) private _closeButtonComponent: SvgButtonNgComponent;
     @ViewChild('matches', { static: true }) private _matchesComponent: ScanTestMatchesNgComponent;
 
+    displayedChangedEventer: ScanTestNgComponent.DisplayedChangedEventer | undefined;
 
     public title = Strings[StringId.Test];
     public matchCount = '';
@@ -41,6 +42,10 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
         const commandRegisterService = commandRegisterNgService.service;
         this._closeUiAction = this.createCloseUiAction(commandRegisterService);
     }
+
+    get displayed() { return this.hostDisplay === HtmlTypes.Display.Flex; }
+    get emWidth() { return this._matchesComponent.emWidth; }
+    get approximateWidth() { return this.rootHtmlElement.offsetWidth; }
 
     ngAfterViewInit() {
         delay1Tick(() => {
@@ -74,14 +79,14 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
 
         this._matchesFrame.executeTest(name, description, 'ExecuteScan', definition);
 
-        this.hostDisplay = HtmlTypes.Display.Flex;
+        this.setDisplayed(true);
         this._cdr.markForCheck();
     }
 
     private handleCloseSignal() {
         this.finaliseMatchesInfo();
         this._matchesFrame.closeGridSource(true);
-        this.hostDisplay = HtmlTypes.Display.None;
+        this.setDisplayed(false);
         this._cdr.markForCheck();
     }
 
@@ -154,4 +159,20 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
             this._cdr.markForCheck();
         }
     }
+
+    private setDisplayed(value: boolean) {
+        const hostDisplay = value ? HtmlTypes.Display.Flex : HtmlTypes.Display.None;
+        if (hostDisplay !== this.hostDisplay) {
+            this.hostDisplay = hostDisplay;
+            this._cdr.markForCheck();
+
+            if (this.displayedChangedEventer !== undefined) {
+                this.displayedChangedEventer();
+            }
+        }
+    }
+}
+
+export namespace ScanTestNgComponent {
+    export type DisplayedChangedEventer = (this: void) => void;
 }
