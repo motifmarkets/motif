@@ -45,7 +45,6 @@ import { ExtensionsService } from 'extensions-internal-api';
 import { Version } from 'generated-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
 import { Config } from './config';
-import { IdleProcessor } from './idle-processor';
 import { OpenIdService } from './open-id-service';
 import { TelemetryService } from './telemetry-service';
 
@@ -62,7 +61,6 @@ export class SessionService {
     private _motifServicesEndpoint: string;
 
     private _infoService: SessionInfoService = new SessionInfoService();
-    private _idleProcessor: IdleProcessor;
 
     private _useLocalStateStorage: boolean;
     private _motifServicesEndpoints: readonly string[];
@@ -186,13 +184,7 @@ export class SessionService {
 
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
-
-            if (this._idleProcessor !== undefined) {
-                this._idleProcessor.destroy();
-            }
-
             this.unsubscribeZenithExtConnection();
-
             this.setStateId(SessionStateId.Finalised);
         }
     }
@@ -504,7 +496,6 @@ export class SessionService {
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
         this._scansService.initialise();
-        this._idleProcessor = new IdleProcessor(this._settingsService, this._appStorageService, this._workspaceService);
     }
 
     private subscribeZenithExtConnection() {

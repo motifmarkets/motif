@@ -17,6 +17,7 @@ import {
     Err,
     ExtensionHandle,
     getErrorMessage,
+    IdleService,
     Integer,
     InternalCommand,
     Json,
@@ -27,6 +28,7 @@ import {
     LitIvemId,
     Logger,
     MarketOrderId,
+    mSecsPerSec,
     MultiEvent,
     Ok,
     OrderPad,
@@ -53,12 +55,13 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private static readonly DefaultMaxHistoricalAccountIdCount = 15;
 
     initialLoadedEvent: DitemFrame.DesktopAccessService.InitialLoadedEvent;
-    layoutSaveRequiredEventer: DesktopFrame.LayoutSaveRequiredEventer | undefined;
 
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
     private _activeLayoutName: string | undefined;
-    private _layoutSaveRequired = false;
+    private _layoutSaveTimeoutHandle: ReturnType<typeof setTimeout> | undefined;
+    private _layoutSaveRequestPromise: Promise<Result<void> | undefined> | undefined;
+    private _lastLayoutSaveFailed = false;
 
     private _frames: DitemFrame[] = [];
     private _primaryFrames: DitemFrame[] = [];
@@ -162,8 +165,9 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
     constructor(
         frameHtmlElement: HTMLElement,
-        private readonly _settingsService: SettingsService,
+        private readonly _idleService: IdleService,
         private readonly _storage: AppStorageService,
+        private readonly _settingsService: SettingsService,
         private readonly _userAlertService: UserAlertService,
         private readonly _capabilitiesService: CapabilitiesService,
         private readonly _extensionsAccessService: ExtensionsAccessService,
@@ -178,9 +182,8 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     ) {
         this._commandContext = this.createCommandContext(frameHtmlElement);
         this.createUiActions();
+        document.addEventListener('visibilitychange', this._documentVisibilityChangeListener);
     }
-
-    get layoutSaveRequired() { return this._layoutSaveRequired; }
 
     get historicalAccountIds(): string[] { return this._historicalAccountIds; }
     get FrameCount(): Integer { return this.getFrameCount(); }
@@ -256,6 +259,8 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     finalise() {
+        document.removeEventListener('visibilitychange', this._documentVisibilityChangeListener);
+        this.checkClearScheduledSave(); // should already have been saved in visibility change
         this.disconnectMenuBarItems();
         this.finaliseUiActions();
     }
@@ -521,46 +526,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     flagLayoutSaveRequired() {
-        if (!this._layoutSaveRequired) {
-            this._layoutSaveRequired = true;
-            if (this.layoutSaveRequiredEventer !== undefined) {
-                this.layoutSaveRequiredEventer();
-            }
-        }
-    }
-
-    async saveLayout() {
-        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
-
-        const layoutElement = new JsonElement();
-        let goldenLayoutConfig: LayoutConfig;
-        const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
-        // In version 3 of GoldenLayout GoldenLayout.saveLayout() will return a LayoutConfig instead of a ResolvedLayoutConfig
-        if ('resolved' in savedGoldenLayoutConfig) {
-            goldenLayoutConfig = LayoutConfig.fromResolved(savedGoldenLayoutConfig);
-        } else {
-            goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
-        }
-        // remove eslint disable when can save with different names
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (this._activeLayoutName !== undefined) {
-            layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
-        }
-        layoutElement.setString(DesktopFrame.JsonName.layoutSchemaVersion, DesktopFrame.layoutStateSchemaVersion);
-        layoutElement.setJson(DesktopFrame.JsonName.layoutGolden, goldenLayoutConfig as Json);
-
-        const layoutStr = JSON.stringify(layoutElement.json);
-        try {
-            const result = await this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
-            if (result.isErr()) {
-                Logger.logError(`DesktopService save layout error: ${result.error}`);
-            } else {
-                this._layoutSaveRequired = false;
-            }
-        } catch (e) {
-            const errorText = getErrorMessage(e);
-            Logger.logError(`DesktopService save layout error: ${errorText}`);
-        }
+        this.checkLayoutSaveScheduled();
     }
 
     addAccountIdToHistory(AAccountId: string) {
@@ -615,6 +581,27 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         this._BrokerageAccountGroupChangeMultiEvent.unsubscribe(id);
     }
 
+    private _documentVisibilityChangeListener = () => { this.handleDocumentVisibilityChange(); };
+
+    private handleDocumentVisibilityChange() {
+        const documentHidden = document.hidden;
+        if (documentHidden) {
+            const saveRequired = this.checkClearScheduledSave();
+            if (saveRequired) {
+                // do save immediately (may be shutting down)
+                const promise = this.saveLayout();
+                promise.then(
+                    (result) => {
+                        this.processSaveLayoutResult(result, true);
+                    },
+                    (reason) => {
+                        throw AssertInternalError.createIfNotError(reason, 'DFHDVC30398');
+                    }
+                );
+            }
+        }
+    }
+
     private handleNewDitemUiActionSignal(ditemTypeId: BuiltinDitemFrame.BuiltinTypeId) {
         this._goldenLayoutHostFrame.createBuiltinComponent(ditemTypeId, undefined, undefined);
     }
@@ -633,18 +620,6 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         pad.loadSell();
         pad.applySettingsDefaults(this._settingsService.scalar);
         component.setOrderPad(pad);
-    }
-
-    private handleSaveLayoutUiActionSignal() {
-        const saveLayoutPromise = this.saveLayout();
-        saveLayoutPromise.then(
-            () => {
-                // nothing to do
-            },
-            (error) => {
-                throw new AssertInternalError('DFHSLUAS69333', getErrorMessage(error)); // should never occur
-            }
-        )
     }
 
     private handleResetLayoutUiActionSignal() {
@@ -724,7 +699,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
         this._saveLayoutUiAction = this.createCommandUiAction(InternalCommand.Id.SaveLayout,
             StringId.Desktop_SaveLayoutCaption,
-            () => this.handleSaveLayoutUiActionSignal(),
+            () => this.checkLayoutSaveScheduled(),
             {
                 menuPath: [MenuBarService.Menu.Name.Root.tools],
                 rank: 30000,
@@ -1051,6 +1026,98 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             }
         }
     }
+
+    private checkClearScheduledSave() {
+        let saveRequired = false;
+
+        if (this._layoutSaveTimeoutHandle !== undefined) {
+            clearTimeout(this._layoutSaveTimeoutHandle);
+            this._layoutSaveTimeoutHandle = undefined;
+            saveRequired = true;
+        }
+
+        if (this._layoutSaveRequestPromise !== undefined) {
+            this._idleService.cancelRequest(this._layoutSaveRequestPromise);
+            this._layoutSaveRequestPromise = undefined;
+            saveRequired = true;
+        }
+
+        return saveRequired;
+    }
+
+    // In future, use a delayed idle request service to implement saveLayout
+    private checkLayoutSaveScheduled() {
+        if (this._layoutSaveTimeoutHandle === undefined && this._layoutSaveRequestPromise === undefined) {
+            this._layoutSaveTimeoutHandle = setTimeout(
+                () => {
+                    this._layoutSaveTimeoutHandle = undefined;
+                    this.requestLayoutSave()
+                },
+                DesktopFrame.layoutSaveDebounceTime
+            );
+        }
+    }
+
+    private requestLayoutSave() {
+        if (this._layoutSaveRequestPromise === undefined) {
+            this._layoutSaveRequestPromise = this._idleService.addRequest<Result<void>>(() => this.idleRequestSaveLayout(), DesktopFrame.layoutSaveWaitIdleTime);
+            this._layoutSaveRequestPromise.then(
+                (result) => {
+                    if (result !== undefined) {
+                        this.processSaveLayoutResult(result, false);
+                    }
+                },
+                (reason) => {
+                    throw AssertInternalError.createIfNotError(reason, 'SSRS40498');
+                }
+            );
+        }
+    }
+
+    private idleRequestSaveLayout(): Promise<Result<void>> {
+        // Do not undefine this._layoutSaveRequestPromise in Promise.then(). The then() function runs in next microtask, so it is possible for save to be completed while this._layoutSaveRequestPromise is still defined
+        this._layoutSaveRequestPromise = undefined;
+        return this.saveLayout();
+    }
+
+    private saveLayout() {
+        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
+
+        const layoutElement = new JsonElement();
+        let goldenLayoutConfig: LayoutConfig;
+        const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
+        // In version 3 of GoldenLayout GoldenLayout.saveLayout() will return a LayoutConfig instead of a ResolvedLayoutConfig
+        if ('resolved' in savedGoldenLayoutConfig) {
+            goldenLayoutConfig = LayoutConfig.fromResolved(savedGoldenLayoutConfig);
+        } else {
+            goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
+        }
+        // remove eslint disable when can save with different names
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._activeLayoutName !== undefined) {
+            layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
+        }
+        layoutElement.setString(DesktopFrame.JsonName.layoutSchemaVersion, DesktopFrame.layoutStateSchemaVersion);
+        layoutElement.setJson(DesktopFrame.JsonName.layoutGolden, goldenLayoutConfig as Json);
+
+        const layoutStr = JSON.stringify(layoutElement.json);
+        const setReturnPromise = this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
+        return setReturnPromise
+    }
+
+    private processSaveLayoutResult(result: Result<void>, docHiding: boolean) {
+        if (result.isOk()) {
+            if (this._lastLayoutSaveFailed) {
+                // Logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
+                this._lastLayoutSaveFailed = false;
+            }
+        } else {
+            if (!this._lastLayoutSaveFailed) {
+                Logger.log(Logger.LevelId.Warning, `${docHiding ? 'Hiding s' : 'S' }ave layout error: ${getErrorMessage(result.error)}`);
+                this._lastLayoutSaveFailed = true;
+            }
+        }
+    }
 }
 
 export namespace DesktopFrame {
@@ -1112,4 +1179,7 @@ export namespace DesktopFrame {
     }
 
     export const mainLayoutName = 'main';
+
+    export const layoutSaveDebounceTime = 5 * mSecsPerSec;
+    export const layoutSaveWaitIdleTime = 3 * mSecsPerSec;
 }

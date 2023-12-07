@@ -33,6 +33,7 @@ import {
     BrandingNgService,
     CapabilitiesNgService,
     CommandRegisterNgService,
+    IdleNgService,
     KeyboardNgService,
     SettingsNgService,
     SignOutNgService,
@@ -80,8 +81,9 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
     constructor(
         elRef: ElementRef<HTMLElement>,
         // configNgService: ConfigNgService,
-        settingsNgService: SettingsNgService,
+        idleNgService: IdleNgService,
         appStorageNgService: AppStorageNgService,
+        settingsNgService: SettingsNgService,
         userAlertNgService: UserAlertNgService,
         capabilitiesNgService: CapabilitiesNgService,
         extensionsAccessNgService: ExtensionsAccessNgService,
@@ -116,8 +118,9 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
 
         this._desktopFrame = new DesktopFrame(
             this.rootHtmlElement,
-            this._settingsService,
+            idleNgService.service,
             appStorageNgService.service,
+            this._settingsService,
             userAlertNgService.service,
             capabilitiesService,
             extensionsAccessNgService.service,
