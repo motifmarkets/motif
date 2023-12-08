@@ -59,7 +59,6 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private _goldenLayoutHostFrame: GoldenLayoutHostFrame;
 
     private _activeLayoutName: string | undefined;
-    private _layoutSaveTimeoutHandle: ReturnType<typeof setTimeout> | undefined;
     private _layoutSaveRequestPromise: Promise<Result<void> | undefined> | undefined;
     private _lastLayoutSaveFailed = false;
 
@@ -260,7 +259,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
     finalise() {
         document.removeEventListener('visibilitychange', this._documentVisibilityChangeListener);
-        this.checkClearScheduledSave(); // should already have been saved in visibility change
+        this.checkCancelLayoutSaveRequest(); // should already have been saved in visibility change
         this.disconnectMenuBarItems();
         this.finaliseUiActions();
     }
@@ -526,7 +525,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     flagLayoutSaveRequired() {
-        this.checkLayoutSaveScheduled();
+        this.requestLayoutSave();
     }
 
     addAccountIdToHistory(AAccountId: string) {
@@ -586,7 +585,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private handleDocumentVisibilityChange() {
         const documentHidden = document.hidden;
         if (documentHidden) {
-            const saveRequired = this.checkClearScheduledSave();
+            const saveRequired = this.checkCancelLayoutSaveRequest();
             if (saveRequired) {
                 // do save immediately (may be shutting down)
                 const promise = this.saveLayout();
@@ -699,7 +698,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
         this._saveLayoutUiAction = this.createCommandUiAction(InternalCommand.Id.SaveLayout,
             StringId.Desktop_SaveLayoutCaption,
-            () => this.checkLayoutSaveScheduled(),
+            () => this.requestLayoutSave(),
             {
                 menuPath: [MenuBarService.Menu.Name.Root.tools],
                 rank: 30000,
@@ -1027,40 +1026,23 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         }
     }
 
-    private checkClearScheduledSave() {
-        let saveRequired = false;
-
-        if (this._layoutSaveTimeoutHandle !== undefined) {
-            clearTimeout(this._layoutSaveTimeoutHandle);
-            this._layoutSaveTimeoutHandle = undefined;
-            saveRequired = true;
-        }
-
-        if (this._layoutSaveRequestPromise !== undefined) {
+    private checkCancelLayoutSaveRequest() {
+        if (this._layoutSaveRequestPromise === undefined) {
+            return false;
+        } else {
             this._idleService.cancelRequest(this._layoutSaveRequestPromise);
             this._layoutSaveRequestPromise = undefined;
-            saveRequired = true;
-        }
-
-        return saveRequired;
-    }
-
-    // In future, use a delayed idle request service to implement saveLayout
-    private checkLayoutSaveScheduled() {
-        if (this._layoutSaveTimeoutHandle === undefined && this._layoutSaveRequestPromise === undefined) {
-            this._layoutSaveTimeoutHandle = setTimeout(
-                () => {
-                    this._layoutSaveTimeoutHandle = undefined;
-                    this.requestLayoutSave()
-                },
-                DesktopFrame.layoutSaveDebounceTime
-            );
+            return true;
         }
     }
 
     private requestLayoutSave() {
         if (this._layoutSaveRequestPromise === undefined) {
-            this._layoutSaveRequestPromise = this._idleService.addRequest<Result<void>>(() => this.idleRequestSaveLayout(), DesktopFrame.layoutSaveWaitIdleTime);
+            this._layoutSaveRequestPromise = this._idleService.addRequest<Result<void>>(
+                () => this.idleRequestSaveLayout(),
+                DesktopFrame.layoutSaveWaitIdleTime,
+                DesktopFrame.layoutSaveDebounceTime,
+            );
             this._layoutSaveRequestPromise.then(
                 (result) => {
                     if (result !== undefined) {
