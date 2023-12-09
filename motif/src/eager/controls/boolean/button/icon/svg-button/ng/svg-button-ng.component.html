@@ -14,7 +14,9 @@
     (keydown.enter)="onEnterKeyDown($event)"
     (keydown.spacebar)="onSpacebarKeyDown($event)">
 
-    <svg #svg role="img" aria-hidden="true" ariaLabelledBy="null" ariaTitle="null" focusable="false" [ngClass]="selectedDisabledClass">
+    <svg-icon #svgIcon id="svgIcon" [name]="svgName" [svgClass]="selectedDisabledClass">
+    </svg-icon>
+    <!-- <svg #svg role="img" aria-hidden="true" ariaLabelledBy="null" ariaTitle="null" focusable="false" [ngClass]="selectedDisabledClass">
         <use [attr.href]="spriteLink"/>
-    </svg>
+    </svg> -->
 </button>

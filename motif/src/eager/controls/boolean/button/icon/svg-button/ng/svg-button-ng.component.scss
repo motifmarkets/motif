@@ -31,14 +31,21 @@ button {
         background-color: var(--color-icon-button-hover-bkgd);
     }
 
-    svg {
-        height: inherit;
-        width: inherit;
-        padding: 1px;
-        border-style: solid;
-        border-width: thin;
-        color: inherit;
-        box-sizing: border-box;
+    #svgIcon {
+        display: inline-flex;
+        align-items: center;
+        height: 100%;
+        width: 100%;
+
+        > svg {
+            height: 100%;
+            width: 100%;
+            padding: 1px;
+            border-style: solid;
+            border-width: thin;
+            color: inherit;
+            box-sizing: border-box;
+        }
     }
 }
 

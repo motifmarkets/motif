@@ -61,6 +61,7 @@
     "@motifmarkets/motif-core": "^0.0.27",
     "@ng-select/ng-select": "^11.1.1",
     "angular-split": "^16.1.1",
+    "angular-svg-icon": "^16.1.0",
     "codemirror": "^6.0.1",
     "decimal.js-light": "^2.5.1",
     "file-saver": "^2.0.5",

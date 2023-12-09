@@ -6,9 +6,11 @@
 
 // import { OverlayModule } from '@angular/cdk/overlay';
 // import { PortalModule } from '@angular/cdk/portal';
+import { HttpClientModule } from '@angular/common/http';
 import { APP_INITIALIZER, ErrorHandler, NgModule } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { BrowserModule, DomSanitizer } from '@angular/platform-browser';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { EagerContentNgModule } from 'content-ng-api';
 import { EagerControlsNgModule } from 'controls-ng-api';
 import { EagerDesktopNgModule } from 'desktop-ng-api';
@@ -32,25 +34,27 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
 
 @NgModule({
     declarations: [
-        RootNgComponent,
-        StartupNgComponent,
-        ModalNgComponent,
         AuthCallbackNgComponent,
-        SignedOutNgComponent,
-        UserAlertNgComponent,
-        NotCurrentVersionNgComponent,
         BottomAdvertStripNgComponent,
+        ModalNgComponent,
+        NotCurrentVersionNgComponent,
+        RootNgComponent,
+        SignedOutNgComponent,
+        StartupNgComponent,
+        UserAlertNgComponent,
     ],
     imports: [
-        BrowserModule,
+        AngularSvgIconModule.forRoot(),
         AppRoutingModule,
-        FormsModule,
-        EagerOverlayNgModule,
-        EagerDesktopNgModule,
+        BrowserModule,
         EagerContentNgModule,
         EagerControlsNgModule,
-        EagerWorkspaceNgModule,
+        EagerDesktopNgModule,
         EagerExtensionsNgModule,
+        EagerOverlayNgModule,
+        EagerWorkspaceNgModule,
+        FormsModule,
+        HttpClientModule,
     ],
     providers: [
         {

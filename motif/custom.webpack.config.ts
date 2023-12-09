@@ -133,7 +133,7 @@ function updateRules(config: webpack.WebpackOptionsNormalized, development: bool
             throw new Error(`${webpackConfigFileName}: module.rules undefined`);
         } else {
             excludeSvgButtonIconFolderFromModuleRules(rules);
-            addSvgInlineAssetsRule(rules);
+            addSvgAssetSourcesRule(rules);
             addSourceMapLoaderRule(rules);
         }
     }
@@ -168,10 +168,10 @@ function excludeSvgButtonIconFolderFromModuleRule(rule: webpack.RuleSetRule) {
     rule.exclude = [rule.exclude, svgButtonIconsFolderPath];
 }
 
-function addSvgInlineAssetsRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
+function addSvgAssetSourcesRule(rules: (undefined | null | false | "" | 0 | webpack.RuleSetRule | "...")[]) {
     const rule: webpack.RuleSetRule = {
         test: /\.svg$/,
-        type: 'asset/inline',
+        type: 'asset/source',
     };
     rules.push(rule);
 }

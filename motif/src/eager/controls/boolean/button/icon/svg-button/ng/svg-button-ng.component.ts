@@ -4,17 +4,17 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, Renderer2, ViewChild } from '@angular/core';
 import {
     AssertInternalError,
     ColorScheme,
     EnumInfoOutOfOrderError,
     IconButtonUiAction,
-    Integer,
     ModifierKey,
     MultiEvent,
     UiAction
 } from '@motifmarkets/motif-core';
+import { SvgIconComponent, SvgIconRegistryService } from 'angular-svg-icon';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import nounArrowDownSvg from './svg/noun-arrow-down-70422.svg';
@@ -84,16 +84,16 @@ import nounWorldSvg from './svg/noun_world_2593665.svg';
     styleUrls: ['./svg-button-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implements OnInit {
+export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implements OnInit, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
     @Input() inputId: string;
+    @Input() public svgName: string;
 
     @ViewChild('button', { static: true }) private _buttonRef: ElementRef;
-    @ViewChild('svg', { static: true }) private _iconComponent: ElementRef;
+    @ViewChild('svgIcon', { static: true }) private _iconComponent: SvgIconComponent;
 
     public selectedDisabledClass: string;
-    public spriteLink: string;
 
     private _pushFaButtonEventsSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -101,11 +101,15 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
     private _foreColorCssVarName: string;
     private _selectedBorderForeColorCssVarName: string;
     private _hoverBkgdColorCssVarName: string;
-    private _svg: string;
 
     private _value: boolean | undefined;
 
-    constructor(elRef: ElementRef<HTMLElement>, private _renderer: Renderer2, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private _renderer: Renderer2,
+        cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService
+    ) {
         super(
             elRef,
             ++SvgButtonNgComponent.typeInstanceCreateCount,
@@ -121,14 +125,17 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this.inputId = 'SvgButton' + this.typeInstanceId;
     }
 
-    @Input() set svg(value: string) {
-        this._svg = value;
-        this.spriteLink = `${value}#only`;
-    }
     public override get uiAction() { return super.uiAction as IconButtonUiAction; }
 
     ngOnInit() {
         this.setInitialiseReady();
+    }
+
+    ngAfterViewInit(): void {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._iconComponent === undefined) {
+            throw new AssertInternalError('SBNCNAVI66698');
+        }
     }
 
     public onClick(event: Event) {
@@ -209,10 +216,10 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
     }
 
     private applyIcon(iconId: IconButtonUiAction.IconId | undefined) {
-        const newSvg = iconId === undefined ? '' : SvgButtonNgComponent.Lookup.idToSvg(iconId);
+        const newSvgName = iconId === undefined ? '' : SvgButtonNgComponent.Lookup.idToName(iconId);
 
-        if (newSvg !== this.svg) {
-            this.svg = newSvg;
+        if (newSvgName !== this.svgName) {
+            this.svgName = newSvgName;
             this.markForCheck();
         }
     }
@@ -254,76 +261,237 @@ export namespace SvgButtonNgComponent {
 
         interface Info {
             readonly id: Id;
+            readonly name: string;
             readonly svg: string;
         }
 
         type InfosObject = { [id in keyof typeof IconButtonUiAction.IconId]: Info };
 
         const infosObject: InfosObject = {
-            Blankest: { id: IconButtonUiAction.IconId.Blankest, svg: nounBlankSvg },
-            PrimaryDitemFrame: { id: IconButtonUiAction.IconId.PrimaryDitemFrame, svg: nounTargetSvg },
-            SymbolLink: { id: IconButtonUiAction.IconId.SymbolLink, svg: nounSymbolLinkSvg },
-            AccountGroupLink: { id: IconButtonUiAction.IconId.AccountGroupLink, svg: nounAccountLinkSvg },
-            SubWindowReturn: { id: IconButtonUiAction.IconId.SubWindowReturn, svg: nounReturnSvg },
-            CopyToClipboard: { id: IconButtonUiAction.IconId.CopyToClipboard, svg: nounClipboardSvg },
-            Execute: { id: IconButtonUiAction.IconId.Execute, svg: nounBoltSvg },
-            BuyOrderPad: { id: IconButtonUiAction.IconId.BuyOrderPad, svg: nounFilePlusSvg },
-            SellOrderPad: { id: IconButtonUiAction.IconId.SellOrderPad, svg: nounFileMinusSvg },
-            AmendOrderPad: { id: IconButtonUiAction.IconId.AmendOrderPad, svg: nounWriteFileSvg },
-            CancelOrderPad: { id: IconButtonUiAction.IconId.CancelOrderPad, svg: nounFileRemoveSvg },
-            MoveOrderPad: { id: IconButtonUiAction.IconId.MoveOrderPad, svg: nounNextFileSvg },
-            SelectColumns: { id: IconButtonUiAction.IconId.SelectColumns, svg: nounSelectColumnSvg },
-            AutoSizeColumnWidths: { id: IconButtonUiAction.IconId.AutoSizeColumnWidths, svg: nounGridWidthSvg },
-            RollUp: { id: IconButtonUiAction.IconId.RollUp, svg: nounUpChevronSvg },
-            RollDown: { id: IconButtonUiAction.IconId.RollDown, svg: nounDownChevronSvg },
-            Filter: { id: IconButtonUiAction.IconId.Filter, svg: nounFilterSvg },
-            Save: { id: IconButtonUiAction.IconId.Save, svg: nounSaveOperationSvg },
-            DeleteSymbol: { id: IconButtonUiAction.IconId.DeleteSymbol, svg: nounCloseSvg },
-            NewWatchlist: { id: IconButtonUiAction.IconId.NewWatchlist, svg: nounListSvg },
-            OpenWatchlist: { id: IconButtonUiAction.IconId.OpenWatchlist, svg: nounFolderSvg },
-            SaveWatchlist: { id: IconButtonUiAction.IconId.SaveWatchlist, svg: nounSaveDocumentSvg },
-            Lighten: { id: IconButtonUiAction.IconId.Lighten, svg: nounLightBulbSvg },
-            Darken: { id: IconButtonUiAction.IconId.Darken, svg: nounSunglassesSvg },
-            Brighten: { id: IconButtonUiAction.IconId.Brighten, svg: nounBrightnessFullSvg },
-            Complement: { id: IconButtonUiAction.IconId.Complement, svg: nounFlipSvg },
-            Saturate: { id: IconButtonUiAction.IconId.Saturate, svg: nounTintHollowSvg },
-            Desaturate: { id: IconButtonUiAction.IconId.Desaturate, svg: nounNoTintSvg },
-            SpinColor: { id: IconButtonUiAction.IconId.SpinColor, svg: nounSpinningSvg },
-            CopyColor: { id: IconButtonUiAction.IconId.CopyColor, svg: nounMirrorSvg },
-            ReturnOk: { id: IconButtonUiAction.IconId.ReturnOk, svg: nounReturnSvg },
-            ReturnCancel: { id: IconButtonUiAction.IconId.ReturnCancel, svg: nounCancelSvg },
-            SearchNext: { id: IconButtonUiAction.IconId.SearchNext, svg: nounSearchNextSvg },
-            CancelSearch: { id: IconButtonUiAction.IconId.CancelSearch, svg: nounCancelSearchSvg },
-            MoveUp: { id: IconButtonUiAction.IconId.MoveUp, svg: nounArrowUpSvg },
-            MoveToTop: { id: IconButtonUiAction.IconId.MoveToTop, svg: nounMoveToTopSvg },
-            MoveDown: { id: IconButtonUiAction.IconId.MoveDown, svg: nounArrowDownSvg, },
-            MoveToBottom: { id: IconButtonUiAction.IconId.MoveToBottom, svg: nounMoveToBottomSvg },
-            NotHistorical: { id: IconButtonUiAction.IconId.NotHistorical, svg: nounRemoveEventSvg },
-            Historical: { id: IconButtonUiAction.IconId.Historical, svg: nounSearchEventSvg },
-            HistoricalCompare: { id: IconButtonUiAction.IconId.HistoricalCompare, svg: nounCodeEventSvg },
-            Details: { id: IconButtonUiAction.IconId.Details, svg: nounDetailsSvg },
-            ToggleSearchTermNotExchangedMarketProcessed: { id: IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed, svg: nounWorldSvg },
-            ExpandVertically: { id: IconButtonUiAction.IconId.ExpandVertically, svg: nounExpandVerticalSvg },
-            RestoreVertically: { id: IconButtonUiAction.IconId.RestoreVertically, svg: nounMinimizeSvg },
-            CollapseVertically: { id: IconButtonUiAction.IconId.CollapseVertically, svg: nounCollapseVerticalSvg },
-            MarkAll: { id: IconButtonUiAction.IconId.MarkAll, svg: nounMarkAllSvg },
-            InsertIntoListFromLeft: { id: IconButtonUiAction.IconId.InsertIntoListFromLeft, svg: nounLoginSvg },
-            RemoveFromListToLeft: { id: IconButtonUiAction.IconId.RemoveFromListToLeft, svg: nounLogoutSvg },
-            Dot: { id: IconButtonUiAction.IconId.Dot, svg: nounDotSvg },
+            Blankest: { id: IconButtonUiAction.IconId.Blankest,
+                name: 'Blankest',
+                svg: nounBlankSvg
+            },
+            PrimaryDitemFrame: { id: IconButtonUiAction.IconId.PrimaryDitemFrame,
+                name: 'PrimaryDitemFrame',
+                svg: nounTargetSvg
+            },
+            SymbolLink: { id: IconButtonUiAction.IconId.SymbolLink,
+                name: 'SymbolLink',
+                svg: nounSymbolLinkSvg
+            },
+            AccountGroupLink: { id: IconButtonUiAction.IconId.AccountGroupLink,
+                name: 'AccountGroupLink',
+                svg: nounAccountLinkSvg
+            },
+            SubWindowReturn: { id: IconButtonUiAction.IconId.SubWindowReturn,
+                name: 'SubWindowReturn',
+                svg: nounReturnSvg
+            },
+            CopyToClipboard: { id: IconButtonUiAction.IconId.CopyToClipboard,
+                name: 'CopyToClipboard',
+                svg: nounClipboardSvg
+            },
+            Execute: { id: IconButtonUiAction.IconId.Execute,
+                name: 'Execute',
+                svg: nounBoltSvg
+            },
+            BuyOrderPad: { id: IconButtonUiAction.IconId.BuyOrderPad,
+                name: 'BuyOrderPad',
+                svg: nounFilePlusSvg
+            },
+            SellOrderPad: { id: IconButtonUiAction.IconId.SellOrderPad,
+                name: 'SellOrderPad',
+                svg: nounFileMinusSvg
+            },
+            AmendOrderPad: { id: IconButtonUiAction.IconId.AmendOrderPad,
+                name: 'AmendOrderPad',
+                svg: nounWriteFileSvg
+            },
+            CancelOrderPad: { id: IconButtonUiAction.IconId.CancelOrderPad,
+                name: 'CancelOrderPad',
+                svg: nounFileRemoveSvg
+            },
+            MoveOrderPad: { id: IconButtonUiAction.IconId.MoveOrderPad,
+                name: 'MoveOrderPad',
+                svg: nounNextFileSvg
+            },
+            SelectColumns: { id: IconButtonUiAction.IconId.SelectColumns,
+                name: 'SelectColumns',
+                svg: nounSelectColumnSvg
+            },
+            AutoSizeColumnWidths: { id: IconButtonUiAction.IconId.AutoSizeColumnWidths,
+                name: 'AutoSizeColumnWidths',
+                svg: nounGridWidthSvg
+            },
+            RollUp: { id: IconButtonUiAction.IconId.RollUp,
+                name: 'RollUp',
+                svg: nounUpChevronSvg
+            },
+            RollDown: { id: IconButtonUiAction.IconId.RollDown,
+                name: 'RollDown',
+                svg: nounDownChevronSvg
+            },
+            Filter: { id: IconButtonUiAction.IconId.Filter,
+                name: 'Filter',
+                svg: nounFilterSvg
+            },
+            Save: { id: IconButtonUiAction.IconId.Save,
+                name: 'Save',
+                svg: nounSaveOperationSvg
+            },
+            DeleteSymbol: { id: IconButtonUiAction.IconId.DeleteSymbol,
+                name: 'DeleteSymbol',
+                svg: nounCloseSvg
+            },
+            NewWatchlist: { id: IconButtonUiAction.IconId.NewWatchlist,
+                name: 'NewWatchlist',
+                svg: nounListSvg
+            },
+            OpenWatchlist: { id: IconButtonUiAction.IconId.OpenWatchlist,
+                name: 'OpenWatchlist',
+                svg: nounFolderSvg
+            },
+            SaveWatchlist: { id: IconButtonUiAction.IconId.SaveWatchlist,
+                name: 'SaveWatchlist',
+                svg: nounSaveDocumentSvg
+            },
+            Lighten: { id: IconButtonUiAction.IconId.Lighten,
+                name: 'Lighten',
+                svg: nounLightBulbSvg
+            },
+            Darken: { id: IconButtonUiAction.IconId.Darken,
+                name: 'Darken',
+                svg: nounSunglassesSvg
+            },
+            Brighten: { id: IconButtonUiAction.IconId.Brighten,
+                name: 'Brighten',
+                svg: nounBrightnessFullSvg
+            },
+            Complement: { id: IconButtonUiAction.IconId.Complement,
+                name: 'Complement',
+                svg: nounFlipSvg
+            },
+            Saturate: { id: IconButtonUiAction.IconId.Saturate,
+                name: 'Saturate',
+                svg: nounTintHollowSvg
+            },
+            Desaturate: { id: IconButtonUiAction.IconId.Desaturate,
+                name: 'Desaturate',
+                svg: nounNoTintSvg
+            },
+            SpinColor: { id: IconButtonUiAction.IconId.SpinColor,
+                name: 'SpinColor',
+                svg: nounSpinningSvg
+            },
+            CopyColor: { id: IconButtonUiAction.IconId.CopyColor,
+                name: 'CopyColor',
+                svg: nounMirrorSvg
+            },
+            ReturnOk: { id: IconButtonUiAction.IconId.ReturnOk,
+                name: 'ReturnOk',
+                svg: nounReturnSvg
+            },
+            ReturnCancel: { id: IconButtonUiAction.IconId.ReturnCancel,
+                name: 'ReturnCancel',
+                svg: nounCancelSvg
+            },
+            SearchNext: { id: IconButtonUiAction.IconId.SearchNext,
+                name: 'SearchNext',
+                svg: nounSearchNextSvg
+            },
+            CancelSearch: { id: IconButtonUiAction.IconId.CancelSearch,
+                name: 'CancelSearch',
+                svg: nounCancelSearchSvg
+            },
+            MoveUp: { id: IconButtonUiAction.IconId.MoveUp,
+                name: 'MoveUp',
+                svg: nounArrowUpSvg
+            },
+            MoveToTop: { id: IconButtonUiAction.IconId.MoveToTop,
+                name: 'MoveToTop',
+                svg: nounMoveToTopSvg
+            },
+            MoveDown: { id: IconButtonUiAction.IconId.MoveDown,
+                name: 'MoveDown',
+                svg: nounArrowDownSvg,
+            },
+            MoveToBottom: { id: IconButtonUiAction.IconId.MoveToBottom,
+                name: 'MoveToBottom',
+                svg: nounMoveToBottomSvg
+            },
+            NotHistorical: { id: IconButtonUiAction.IconId.NotHistorical,
+                name: 'NotHistorical',
+                svg: nounRemoveEventSvg
+            },
+            Historical: { id: IconButtonUiAction.IconId.Historical,
+                name: 'Historical',
+                svg: nounSearchEventSvg
+            },
+            HistoricalCompare: { id: IconButtonUiAction.IconId.HistoricalCompare,
+                name: 'HistoricalCompare',
+                svg: nounCodeEventSvg
+            },
+            Details: { id: IconButtonUiAction.IconId.Details,
+                name: 'Details',
+                svg: nounDetailsSvg
+            },
+            ToggleSearchTermNotExchangedMarketProcessed: { id: IconButtonUiAction.IconId.ToggleSearchTermNotExchangedMarketProcessed,
+                name: 'ToggleSearchTermNotExchangedMarketProcessed',
+                svg: nounWorldSvg
+            },
+            ExpandVertically: { id: IconButtonUiAction.IconId.ExpandVertically,
+                name: 'ExpandVertically',
+                svg: nounExpandVerticalSvg
+            },
+            RestoreVertically: { id: IconButtonUiAction.IconId.RestoreVertically,
+                name: 'RestoreVertically',
+                svg: nounMinimizeSvg
+            },
+            CollapseVertically: { id: IconButtonUiAction.IconId.CollapseVertically,
+                name: 'CollapseVertically',
+                svg: nounCollapseVerticalSvg
+            },
+            MarkAll: { id: IconButtonUiAction.IconId.MarkAll,
+                name: 'MarkAll',
+                svg: nounMarkAllSvg
+            },
+            InsertIntoListFromLeft: { id: IconButtonUiAction.IconId.InsertIntoListFromLeft,
+                name: 'InsertIntoListFromLeft',
+                svg: nounLoginSvg
+            },
+            RemoveFromListToLeft: { id: IconButtonUiAction.IconId.RemoveFromListToLeft,
+                name: 'RemoveFromListToLeft',
+                svg: nounLogoutSvg
+            },
+            Dot: { id: IconButtonUiAction.IconId.Dot,
+                name: 'Dot',
+                svg: nounDotSvg
+            },
         };
 
-        export const idCount = Object.keys(infosObject).length;
         const infos = Object.values(infosObject);
+        export const idCount = infos.length;
 
-        export function initialise() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as IconButtonUiAction.IconId);
-            if (outOfOrderIdx >= 0) {
-                throw new EnumInfoOutOfOrderError('SvgButtonComponent.Lookup', outOfOrderIdx, outOfOrderIdx.toString(10));
+        export function initialise(svgIconRegistryService: SvgIconRegistryService) {
+            for (let i = 0; i < idCount; i++) {
+                const info = infos[i];
+                if (info.id !== i as IconButtonUiAction.IconId) {
+                    throw new EnumInfoOutOfOrderError('SvgButtonComponent.Lookup', i, info.name);
+                } else {
+                    svgIconRegistryService.addSvg(info.name, info.svg);
+                }
             }
         }
 
-        export function idToSvg(id: Id) {
-            return infos[id].svg;
+        export function idToName(id: Id) {
+            return infos[id].name;
         }
+    }
+}
+
+export namespace SvgButtonNgComponentModule {
+    export function initialiseStatic(svgIconRegistryService: SvgIconRegistryService) {
+        SvgButtonNgComponent.Lookup.initialise(svgIconRegistryService);
     }
 }
