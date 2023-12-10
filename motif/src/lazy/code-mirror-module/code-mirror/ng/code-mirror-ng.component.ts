@@ -5,11 +5,27 @@
  */
 
 import { ChangeDetectionStrategy, Component, ElementRef, NgZone, OnDestroy } from '@angular/core';
+import { autocompletion, closeBrackets, closeBracketsKeymap, completionKeymap } from "@codemirror/autocomplete";
+import { defaultKeymap, history, historyKeymap } from "@codemirror/commands";
 import { json, jsonParseLinter } from '@codemirror/lang-json';
-import { lintGutter, linter } from '@codemirror/lint';
+import { bracketMatching, defaultHighlightStyle, foldGutter, foldKeymap, indentOnInput, syntaxHighlighting } from "@codemirror/language";
+import { lintGutter, lintKeymap, linter } from '@codemirror/lint';
+import { highlightSelectionMatches, searchKeymap } from "@codemirror/search";
 import { EditorState } from '@codemirror/state';
-import { EditorView, ViewUpdate } from '@codemirror/view';
-import { basicSetup } from 'codemirror';
+import { oneDark } from '@codemirror/theme-one-dark';
+import {
+    EditorView,
+    ViewUpdate,
+    crosshairCursor,
+    drawSelection,
+    dropCursor,
+    highlightActiveLine,
+    highlightActiveLineGutter,
+    highlightSpecialChars,
+    keymap,
+    lineNumbers,
+    rectangularSelection,
+} from '@codemirror/view';
 
 @Component({
     selector: 'app-code-mirror-ng',
@@ -49,10 +65,39 @@ export class CodeMirrorNgComponent implements OnDestroy {
     private createCodeMirror() {
         const state = EditorState.create({
             extensions: [
-                basicSetup,
+                [
+                    // basicSetup
+                    lineNumbers(),
+                    highlightActiveLineGutter(),
+                    highlightSpecialChars(),
+                    history(),
+                    foldGutter(),
+                    drawSelection(),
+                    dropCursor(),
+                    // EditorState.allowMultipleSelections.of(true),
+                    indentOnInput(),
+                    syntaxHighlighting(defaultHighlightStyle, { fallback: true }),
+                    bracketMatching(),
+                    closeBrackets(),
+                    autocompletion(),
+                    rectangularSelection(),
+                    crosshairCursor(),
+                    highlightActiveLine(),
+                    highlightSelectionMatches(),
+                    keymap.of([
+                        ...closeBracketsKeymap,
+                        ...defaultKeymap,
+                        ...searchKeymap,
+                        ...historyKeymap,
+                        ...foldKeymap,
+                        ...completionKeymap,
+                        ...lintKeymap
+                    ])
+                ],
                 json(),
                 lintGutter(),
                 linter(jsonParseLinter()),
+                oneDark,
                 EditorView.updateListener.of(
                     (v: ViewUpdate) => {
                         if (v.docChanged) {

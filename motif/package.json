@@ -56,6 +56,7 @@
     "@angular/platform-browser-dynamic": "^16.2.2",
     "@angular/router": "^16.2.2",
     "@codemirror/lang-json": "^6.0.1",
+    "@codemirror/theme-one-dark": "^6.1.2",
     "@ctrl/tinycolor": "^3.5.0",
     "@jaames/iro": "^5.5.1",
     "@motifmarkets/motif-core": "^0.0.27",
