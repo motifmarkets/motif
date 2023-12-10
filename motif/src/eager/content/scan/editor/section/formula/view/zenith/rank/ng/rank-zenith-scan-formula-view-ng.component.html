@@ -1,5 +1,11 @@
 <div id="editorAndDecodeProgress">
-    <ng-container #editorContainer id="editorContainer"></ng-container>
-    <app-zenith-scan-formula-view-decode-progress #decodeProgress id="decodeProgress"></app-zenith-scan-formula-view-decode-progress>
+    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area [size]="editorSize" [minSize]="editorMinSize">
+            <ng-container #editorContainer id="editorContainer"></ng-container>
+        </as-split-area>
+        <as-split-area [size]="decodeProgressSize"> <!-- was size="*"-->
+            <app-zenith-scan-formula-view-decode-progress #decodeProgress id="decodeProgress"></app-zenith-scan-formula-view-decode-progress>
+        </as-split-area>
+    </as-split>
 </div>
 <app-text-input #errorControl></app-text-input>

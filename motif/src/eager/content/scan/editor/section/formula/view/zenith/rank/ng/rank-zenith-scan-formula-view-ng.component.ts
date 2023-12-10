@@ -26,7 +26,7 @@ export class RankZenithScanFormulaViewNgComponent extends ZenithScanFormulaViewN
     protected getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined {
         for (const fieldId of changedFieldIds) {
             if (fieldId === ScanEditor.FieldId.RankAsZenithText || fieldId === ScanEditor.FieldId.Rank) {
-                return editor.criteriaAsZenithText;
+                return editor.rankAsZenithText;
             }
         }
         return undefined;

@@ -92,7 +92,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     ngAfterViewInit() {
         this.initialiseComponents();
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
-        // this._resizeObserver.observe(this.rootHtmlElement);
+        this._resizeObserver.observe(this.rootHtmlElement);
         this._testComponent.displayedChangedEventer = () => {
             this._splitterDragged = false;
             this.updateTestDisplayed();

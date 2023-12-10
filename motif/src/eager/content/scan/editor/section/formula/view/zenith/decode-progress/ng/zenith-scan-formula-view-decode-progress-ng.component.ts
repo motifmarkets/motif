@@ -21,7 +21,7 @@ import { ZenithScanFormulaViewDecodeProgressFrame } from '../zenith-scan-formula
 export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
-    @HostBinding('style.display') private _hostDisplay = HtmlTypes.Display.None;
+    @HostBinding('style.display') private hostDisplay = HtmlTypes.Display.None;
 
     @ViewChild('closeButton', { static: true }) private _closeButtonComponent: SvgButtonNgComponent;
     @ViewChild('countLabel', { static: true }) private _countLabelComponent: CaptionLabelNgComponent;
@@ -29,6 +29,8 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
     @ViewChild('depthLabel', { static: true }) private _depthLabelComponent: CaptionLabelNgComponent;
     @ViewChild('depthControl', { static: true }) private _depthControlComponent: IntegerTextInputNgComponent;
     @ViewChild('nodesGrid', { static: true }) private _nodesGridComponent: RowDataArrayGridNgComponent;
+
+    displayedChangedEventer: ZenithScanFormulaViewDecodeProgressNgComponent.DisplayedChangedEventer | undefined;
 
     public title = Strings[StringId.ZenithScanFormulaViewDecodeProgress_Title];
 
@@ -53,6 +55,9 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
         this._countUiAction = this.createCountUiAction();
         this._depthUiAction = this.createDepthUiAction();
     }
+
+    get displayed() { return this.hostDisplay === HtmlTypes.Display.Flex; }
+    get approximateWidth() { return this.rootHtmlElement.offsetWidth; }
 
     ngOnDestroy(): void {
         this._closeUiAction.finalise();
@@ -79,7 +84,7 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
             this._depthUiAction.pushDisabled();
             this._frame.setData(undefined);
         } else {
-            this._hostDisplay = HtmlTypes.Display.Block;
+            this.setDisplayed(true);
             this._countUiAction.pushValue(progress.tupleNodeCount);
             this._countUiAction.pushReadonly();
             this._depthUiAction.pushValue(progress.tupleNodeDepth);
@@ -115,7 +120,24 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
     }
 
     private handleCloseSignal() {
-        this._hostDisplay = HtmlTypes.Display.None;
+        // this._frame.closeGridSource(true);
+        this.setDisplayed(false);
         this._cdr.markForCheck();
     }
+
+    private setDisplayed(value: boolean) {
+        const hostDisplay = value ? HtmlTypes.Display.Flex : HtmlTypes.Display.None;
+        if (hostDisplay !== this.hostDisplay) {
+            this.hostDisplay = hostDisplay;
+            this._cdr.markForCheck();
+
+            if (this.displayedChangedEventer !== undefined) {
+                this.displayedChangedEventer();
+            }
+        }
+    }
+}
+
+export namespace ZenithScanFormulaViewDecodeProgressNgComponent {
+    export type DisplayedChangedEventer = (this: void) => void;
 }
