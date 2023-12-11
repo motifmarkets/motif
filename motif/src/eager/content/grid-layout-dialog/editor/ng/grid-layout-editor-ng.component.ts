@@ -76,11 +76,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
         this._resizeObserver.observe(this.rootHtmlElement);
         this._allowedFieldsComponent.waitLastServerNotificationRendered().then(
-            (success) => {
-                if (success) {
-                    this.updateWidths();
-                }
-            },
+            () => { this.updateWidths(); },
             (error) => { throw AssertInternalError.createIfNotError(error, 'GLENCNAFI20718'); }
         );
 

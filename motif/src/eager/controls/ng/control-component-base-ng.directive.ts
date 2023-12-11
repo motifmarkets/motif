@@ -30,6 +30,8 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     initialiseReady = false;
     initialiseReadyEventer: ControlComponentBaseNgDirective.InitialiseReadyEventHandler | undefined;
 
+    readonly stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray;
+
     public disabled = true;
     public readonly = true;
     public waiting = true;
@@ -58,12 +60,13 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
         typeInstanceCreateId: Integer,
         private _cdr: ChangeDetectorRef,
         private _settingsService: SettingsService,
-        private _stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
+        stateColorItemIdArray: ControlComponentBaseNgDirective.ReadonlyStateColorItemIdArray,
     ) {
         super(elRef, typeInstanceCreateId);
         this._scalarSettings = this._settingsService.scalar;
         this._colorSettings = this._settingsService.color;
         this.exchangeSettingsArray = this._settingsService.exchanges.exchanges;
+        this.stateColorItemIdArray = stateColorItemIdArray.slice();
         this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.handleSettingsChangedEvent());
     }
 
@@ -358,7 +361,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     private getStateColorItemId(stateId: UiAction.StateId) {
-        return this._stateColorItemIdArray[stateId];
+        return this.stateColorItemIdArray[stateId];
     }
 
     private handleSettingsChangedEvent() {
@@ -396,8 +399,23 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
 export namespace ControlComponentBaseNgDirective {
     export type StateColorItemIdArray = ColorScheme.ItemId[];
+    export type ReadonlyStateColorItemIdArray = readonly ColorScheme.ItemId[];
 
-    export const textControlStateColorItemIdArray: StateColorItemIdArray = [
+    export namespace StateColorItemIdArray {
+        export const enum Index {
+            Disabled,
+            ReadOnly,
+            Missing,
+            Invalid,
+            Valid,
+            Accepted,
+            Waiting,
+            Warning,
+            Error,
+        }
+    }
+
+    export const textControlStateColorItemIdArray: ReadonlyStateColorItemIdArray = [
         ColorScheme.ItemId.TextControl_Disabled,
         ColorScheme.ItemId.TextControl_ReadOnly,
         ColorScheme.ItemId.TextControl_Missing,
@@ -409,7 +427,19 @@ export namespace ControlComponentBaseNgDirective {
         ColorScheme.ItemId.TextControl_Error,
     ];
 
-    export const clickControlStateColorItemIdArray: StateColorItemIdArray = [
+    export const readonlyValidTextControlStateColorItemIdArray: ReadonlyStateColorItemIdArray = [
+        ColorScheme.ItemId.TextControl_Disabled,
+        ColorScheme.ItemId.TextControl_Valid,
+        ColorScheme.ItemId.TextControl_Missing,
+        ColorScheme.ItemId.TextControl_Invalid,
+        ColorScheme.ItemId.TextControl_Valid,
+        ColorScheme.ItemId.TextControl_Accepted,
+        ColorScheme.ItemId.TextControl_Waiting,
+        ColorScheme.ItemId.TextControl_Warning,
+        ColorScheme.ItemId.TextControl_Error,
+    ];
+
+    export const clickControlStateColorItemIdArray: ReadonlyStateColorItemIdArray = [
         ColorScheme.ItemId.ClickControl_Disabled,
         ColorScheme.ItemId.ClickControl_ReadOnly,
         ColorScheme.ItemId.ClickControl_Missing,
@@ -421,7 +451,7 @@ export namespace ControlComponentBaseNgDirective {
         ColorScheme.ItemId.ClickControl_Error,
     ];
 
-    export const labelStateColorItemIdArray: StateColorItemIdArray = [
+    export const labelStateColorItemIdArray: ReadonlyStateColorItemIdArray = [
         ColorScheme.ItemId.Label_Disabled,
         ColorScheme.ItemId.Label_ReadOnly,
         ColorScheme.ItemId.Label_Missing,

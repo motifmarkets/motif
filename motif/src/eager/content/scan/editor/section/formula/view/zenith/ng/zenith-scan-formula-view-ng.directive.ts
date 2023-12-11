@@ -5,7 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
-import { AssertInternalError, IdleService, Integer, MultiEvent, Result, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, IdleService, Integer, MultiEvent, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
 import { IdleNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -23,9 +23,9 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     @ViewChild('decodeProgress', { static: true }) private _decodeProgressComponent: ZenithScanFormulaViewDecodeProgressNgComponent;
     @ViewChild('errorControl', { static: true }) private _errorControl: TextInputNgComponent;
 
-    public editorSize: AngularSplitTypes.AreaSize.Html;
+    public editorSize: AngularSplitTypes.AreaSize.Html = null;
     public editorMinSize: AngularSplitTypes.AreaSize.Html;
-    public decodeProgressSize: null | number = null;
+    public decodeProgressSize: AngularSplitTypes.AreaSize.Html;
     public splitterGutterSize = 3;
 
     private readonly _idleService: IdleService;
@@ -53,6 +53,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
 
     ngOnDestroy(): void {
         this._decodeProgressComponent.displayedChangedEventer = undefined;
+        this._decodeProgressComponent.defaultWidthSetEventer = undefined;
         this._resizeObserver.disconnect();
 
         this._errorUiAction.finalise();
@@ -71,6 +72,10 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         this._decodeProgressComponent.displayedChangedEventer = () => {
             this._splitterDragged = false;
             this.updateDecodeProgressDisplayed();
+            delay1Tick(() => this.updateWidths());
+        }
+        this._decodeProgressComponent.defaultWidthSetEventer = () => {
+            this._splitterDragged = false;
             delay1Tick(() => this.updateWidths());
         }
         this.updateDecodeProgressDisplayed();
@@ -117,6 +122,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     }
 
     public handleSplitterDragEnd() {
+        this.decodeProgressSize = this._decodeProgressComponent.rootHtmlElement.offsetWidth;
         this._splitterDragged = true;
     }
 
@@ -152,21 +158,23 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
             const text = this._editorComponent.text;
             const setResult = this.setFormulaAsZenithText(scanEditor, text, this);
             if (setResult !== undefined) {
-                if (setResult.isOk()) {
+                const progress = setResult.progress;
+                const error = setResult.error;
+                if (error === undefined) {
                     this._errorUiAction.pushValue('');
                     this._errorUiAction.pushReadonly();
-                    this._decodeProgressComponent.setDecodeProgress(undefined);
+                    this._decodeProgressComponent.setDecodeProgress(progress);
                 } else {
-                    const decodeErrorAndProgress = setResult.error;
-                    const errorId = decodeErrorAndProgress.errorId;
+                    const errorId = error.errorId;
                     let errorText = ScanFormulaZenithEncoding.Error.idToSummary(errorId);
-                    const extraErrorText = decodeErrorAndProgress.extraErrorText;
+                    const extraErrorText = error.extraErrorText;
                     if (extraErrorText !== undefined) {
                         errorText += ': ' + extraErrorText;
                     }
                     this._errorUiAction.pushValue(errorText);
                     this._errorUiAction.pushReadonly();
-                    this._decodeProgressComponent.setDecodeProgress(decodeErrorAndProgress.progress);
+                    this._decodeProgressComponent.setDecodeProgress(progress);
+                    this._decodeProgressComponent.displayed = true;
                 }
             }
         }
@@ -191,15 +199,19 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     }
 
     private updateWidths() {
-        const editorMinWidth = 40;
+        const editorMinWidth = 20 * this._decodeProgressComponent.emWidth;
         this.editorMinSize = editorMinWidth;
 
         if (!this._splitterDragged) {
             const totalWidth = this.rootHtmlElement.offsetWidth;
             const availableTotalWidth = totalWidth - this.splitterGutterSize;
-            const decodeProgressWidth = this._decodeProgressComponent.approximateWidth;
 
             let calculatedEditorWidth: Integer;
+            let decodeProgressWidth = this._decodeProgressComponent.defaultWidth;
+            if (decodeProgressWidth === undefined) {
+                decodeProgressWidth = 15 * this._decodeProgressComponent.emWidth;
+            }
+
             if (availableTotalWidth >= (decodeProgressWidth + this.editorMinSize)) {
                 calculatedEditorWidth = availableTotalWidth - decodeProgressWidth;
             } else {
@@ -216,7 +228,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     protected abstract setFormulaAsZenithText(
         editor: ScanEditor,
         text: string, fieldChanger: ScanEditor.FieldChanger
-    ): Result<void, ScanFormulaZenithEncoding.DecodeErrorAndProgress> | undefined;
+    ): ScanEditor.SetAsZenithTextResult | undefined;
 }
 
 export namespace ZenithScanFormulaViewNgDirective {

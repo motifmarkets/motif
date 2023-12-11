@@ -3,6 +3,7 @@ import { Integer, SettingsService } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Directive()
+/** @deprecated Remove when RowDataArrayGrid no longer is used */
 export abstract class AdaptedRevgridComponentNgDirective extends ContentComponentBaseNgDirective {
     private _horizontalScrollbarWidth: number;
     private _horizontalScrollbarThumbWidth: number;

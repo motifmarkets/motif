@@ -156,10 +156,8 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
         this._resizeObserver = new ResizeObserver(() => this.updateWidths());
         this._resizeObserver.observe(this._leftAndRightDiv.nativeElement);
         this._gridComponent.waitLastServerNotificationRendered().then(
-            (success) => {
-                if (success) {
-                    this.updateWidths();
-                }
+            () => {
+                this.updateWidths();
             },
             (error) => { throw AssertInternalError.createIfNotError(error, 'CSNCI21199'); }
         );

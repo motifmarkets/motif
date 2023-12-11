@@ -11,7 +11,6 @@ import {
     CellPainterFactoryService,
     CommandRegisterService,
     GridField,
-    GridFieldSourceDefinition,
     IndexSignatureHack,
     Integer,
     RenderValue,
@@ -98,7 +97,6 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
 
     private createField(index: Integer, key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            gridFieldSourceDefinition,
             key,
             heading,
             HorizontalAlignEnum.left,
@@ -118,8 +116,6 @@ export class SearchDitemFrame extends BuiltinDitemFrame {
         return this._gridMainCellPainter;
     }
 }
-
-const gridFieldSourceDefinition = new GridFieldSourceDefinition('Search');
 
 interface SearchResult {
     code: string | StringRenderValue;

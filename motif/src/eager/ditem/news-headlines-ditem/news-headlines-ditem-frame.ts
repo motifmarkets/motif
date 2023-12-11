@@ -11,7 +11,6 @@ import {
     CommandRegisterService,
     DateTimeRenderValue,
     GridField,
-    GridFieldSourceDefinition,
     IndexSignatureHack,
     Integer,
     RenderValue,
@@ -87,7 +86,6 @@ export class NewsHeadlinesDitemFrame extends BuiltinDitemFrame {
 
     private createField(index: Integer, key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            gridFieldSourceDefinition,
             key,
             heading,
             HorizontalAlignEnum.left,
@@ -107,8 +105,6 @@ export class NewsHeadlinesDitemFrame extends BuiltinDitemFrame {
         return this._gridMainCellPainter;
     }
 }
-
-const gridFieldSourceDefinition = new GridFieldSourceDefinition('NewsHeadlines');
 
 interface Headline {
     code: string | StringRenderValue;

@@ -5,10 +5,10 @@
  */
 
 import {
+    AdaptedRevgrid,
     AdaptedRevgridBehavioredColumnSettings,
     CellPainterFactoryService,
     GridField,
-    GridFieldSourceDefinition,
     Integer,
     IntegerRenderValue,
     RenderValueRowDataArrayGridCellPainter,
@@ -24,39 +24,28 @@ import {
 import { DatalessViewCell, HorizontalAlignEnum, SingleHeadingDataRowArrayServerSet } from 'revgrid';
 
 export class ZenithScanFormulaViewDecodeProgressFrame {
-    readonly initialised = true;
+    private _grid: RowDataArrayGrid;
 
-    private readonly _grid: RowDataArrayGrid;
-
-    private readonly _gridHeaderCellPainter: TextHeaderCellPainter;
-    private readonly _gridMainCellPainter: RenderValueRowDataArrayGridCellPainter<TextRenderValueCellPainter>;
+    private _gridHeaderCellPainter: TextHeaderCellPainter;
+    private _gridMainCellPainter: RenderValueRowDataArrayGridCellPainter<TextRenderValueCellPainter>;
+    private _dataBeenSet: boolean;
 
     constructor(
-        settingsService: SettingsService,
-        cellPainterFactoryService: CellPainterFactoryService,
-        ditemHtmlElement: HTMLElement,
+        private readonly _settingsService: SettingsService,
+        private readonly _cellPainterFactoryService: CellPainterFactoryService,
     ) {
-        const grid = new RowDataArrayGrid(
-            settingsService,
-            ditemHtmlElement,
-            {},
-            (index, key, heading) => this.createField(key, heading),
-            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
-            (viewCell) => this.getGridHeaderCellPainter(viewCell),
-            (viewCell) => this.getGridMainCellPainter(viewCell),
-            this,
-        );
-        this._grid = grid;
-
-        grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
-        grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
-
-        this._gridHeaderCellPainter = cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
-        this._gridMainCellPainter = cellPainterFactoryService.createTextRenderValueRowDataArrayGrid(grid, grid.mainDataServer);
     }
+
+    get dataBeenSet() { return this._dataBeenSet; }
+    get emWidth() { return this._grid.emWidth; }
 
     finalise() {
         this._grid.destroy();
+    }
+
+    setupGrid(gridHost: HTMLElement) {
+        this._grid = this.createGridAndCellPainters(gridHost);
+        this._grid.activate();
     }
 
     setData(nodes: readonly ScanFormulaZenithEncoding.DecodeProgress.DecodedNode[] | undefined) {
@@ -84,6 +73,16 @@ export class ZenithScanFormulaViewDecodeProgressFrame {
             }
             this._grid.setData(rows, false);
         }
+
+        this._dataBeenSet = true;
+    }
+
+    waitLastServerNotificationRendered() {
+        return this._grid.renderer.waitLastServerNotificationRendered();
+    }
+
+    calculateActiveColumnsWidth() {
+        return this._grid.calculateActiveColumnsWidth();
     }
 
     private handleRowFocusEvent(newRowIndex: Integer | undefined) {
@@ -94,9 +93,37 @@ export class ZenithScanFormulaViewDecodeProgressFrame {
         //
     }
 
+    private createGridAndCellPainters(gridHostElement: HTMLElement) {
+        const grid = this.createGrid(gridHostElement);
+
+        grid.rowFocusEventer = (newRowIndex) => this.handleRowFocusEvent(newRowIndex);
+        grid.mainClickEventer = (fieldIndex, rowIndex) => this.handleGridClickEvent(fieldIndex, rowIndex);
+
+        this._gridHeaderCellPainter = this._cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
+        this._gridMainCellPainter = this._cellPainterFactoryService.createTextRenderValueRowDataArrayGrid(grid, grid.mainDataServer);
+
+        return grid;
+    }
+
+    private createGrid(gridHostElement: HTMLElement) {
+        const customGridSettings: AdaptedRevgrid.CustomGridSettings = {
+        }
+
+        const grid = new RowDataArrayGrid(
+            this._settingsService,
+            gridHostElement,
+            customGridSettings,
+            (index, key, heading) => this.createField(key, heading),
+            (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
+            (viewCell) => this.getGridMainCellPainter(viewCell),
+            (viewCell) => this.getGridHeaderCellPainter(viewCell),
+            this,
+        );
+        return grid;
+    }
+
     private createField(key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            ZenithScanFormulaViewDecodeProgressFrame.gridFieldSourceDefinition,
             key,
             heading,
             HorizontalAlignEnum.left,
@@ -115,11 +142,15 @@ export class ZenithScanFormulaViewDecodeProgressFrame {
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
     }
+
+    // private createDefaultGridLayout() {
+    //     const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
+    //     return new GridLayout(definition);
+    // }
+
 }
 
 export namespace ZenithScanFormulaViewDecodeProgressFrame {
-    export const gridFieldSourceDefinition = new GridFieldSourceDefinition('ZenithScanFormulaViewDecodeProgress');
-
     export interface DataRow extends SingleHeadingDataRowArrayServerSet.DataRow {
         readonly depth: string | IntegerRenderValue;
         readonly nodeType: string | StringRenderValue;

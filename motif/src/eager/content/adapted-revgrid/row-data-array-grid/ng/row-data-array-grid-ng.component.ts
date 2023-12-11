@@ -17,6 +17,7 @@ import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-com
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
+/** @deprecated Use RowDataArrayGrid directly - see ZenithScanFormulaViewDecodeProgressFrame */
 export class RowDataArrayGridNgComponent extends AdaptedRevgridComponentNgDirective implements OnDestroy {
     private _grid: RowDataArrayGrid | undefined;
 

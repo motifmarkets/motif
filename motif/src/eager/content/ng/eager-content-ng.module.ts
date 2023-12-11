@@ -8,7 +8,7 @@ import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
 import { EagerControlsNgModule } from 'controls-ng-api';
-import { RecordGridNgComponent, RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
+import { RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
     AdvertTickerNgComponent, AdvertWebPageNgComponent, BannerAdvertNgComponent
 } from '../advert/ng-api';
@@ -150,7 +150,6 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         OrdersNgComponent,
         PadOrderRequestStepNgComponent,
         RankZenithScanFormulaViewNgComponent,
-        RecordGridNgComponent,
         ResultOrderRequestStepNgComponent,
         ReviewAmendOrderRequestNgComponent,
         ReviewCancelOrderRequestNgComponent,

@@ -28,7 +28,7 @@ export abstract class BrokerageAccountGroupComponentBaseNgDirective extends Cont
     private _dataItemIncubator: DataItemIncubator<BrokerageAccountsDataItem>;
 
     constructor(elRef: ElementRef<HTMLElement>, typeInstanceCreateId: Integer, cdr: ChangeDetectorRef, settingsService: SettingsService,
-        pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray
+        pulseService: CoreNgService, stateColorItemIdArray: ControlComponentBaseNgDirective.ReadonlyStateColorItemIdArray
     ) {
         super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);
         this._dataItemIncubator = new DataItemIncubator<BrokerageAccountsDataItem>(pulseService.adiService);

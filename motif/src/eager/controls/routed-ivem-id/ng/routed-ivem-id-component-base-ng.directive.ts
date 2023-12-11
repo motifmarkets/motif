@@ -31,7 +31,7 @@ export abstract class RoutedIvemIdComponentBaseNgDirective extends ControlCompon
         typeInstanceCreateId: Integer,
         cdr: ChangeDetectorRef,
         settingsService: SettingsService,
-        stateColorItemIdArray: ControlComponentBaseNgDirective.StateColorItemIdArray,
+        stateColorItemIdArray: ControlComponentBaseNgDirective.ReadonlyStateColorItemIdArray,
         symbolsNgService: SymbolsNgService
     ) {
         super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);

@@ -10,7 +10,6 @@ import {
     CellPainterFactoryService,
     CommandRegisterService,
     GridField,
-    GridFieldSourceDefinition,
     IndexSignatureHack,
     Integer,
     RenderValue,
@@ -87,7 +86,6 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
 
     private createField(key: string, heading: string) {
         const field = RowDataArrayGrid.createField(
-            gridFieldSourceDefinition,
             key,
             heading,
             HorizontalAlignEnum.left,
@@ -107,8 +105,6 @@ export class AlertsDitemFrame extends BuiltinDitemFrame {
         return this._gridMainCellPainter;
     }
 }
-
-const gridFieldSourceDefinition = new GridFieldSourceDefinition('Alerts');
 
 interface Alert {
     code: string | StringRenderValue;
