@@ -128,8 +128,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         this._scanEditor = this._scansService.openNewScanEditor(this._opener);
         const defaultExchangeId = this.symbolsService.defaultExchangeId;
         const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
-        this._scanEditor.targetMarketIds = [defaultMarketId];
-        this._scanEditor.targetTypeId = ScanTargetTypeId.Markets;
+        this._scanEditor.setTargetMarketIds([defaultMarketId]);
+        this._scanEditor.setTargetTypeId(ScanTargetTypeId.Markets);
         this._setEditorEventer();
     }
 

@@ -252,16 +252,36 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private handleTestUiActionSignalEvent() {
         const editor = this._scanEditor;
         if (editor === undefined) {
-            throw new AssertInternalError('SENCHTUASE20241');
+            throw new AssertInternalError('SENCHTUASEE20241');
         } else {
-            this._testComponent.execute(
-                editor.name,
-                editor.description,
-                editor.targetTypeId,
-                editor.targets,
-                editor.criteriaAsZenithEncoded,
-                editor.rankAsZenithEncoded,
-            );
+            const targetTypeId = editor.targetTypeId;
+            if (targetTypeId === undefined) {
+                throw new AssertInternalError('SENCHTUASETT20241');
+            } else {
+                const targets = editor.targets;
+                if (targets === undefined) {
+                    throw new AssertInternalError('SENCHTUASET20241');
+                } else {
+                    const criteriaAsZenithEncoded = editor.criteriaAsZenithEncoded;
+                    if (criteriaAsZenithEncoded === undefined) {
+                        throw new AssertInternalError('SENCHTUASEC20241');
+                    } else {
+                        const rankAsZenithEncoded = editor.rankAsZenithEncoded;
+                        if (rankAsZenithEncoded === undefined) {
+                            throw new AssertInternalError('SENCHTUASER20241');
+                        } else {
+                            this._testComponent.execute(
+                                editor.name,
+                                editor.description,
+                                targetTypeId,
+                                targets,
+                                criteriaAsZenithEncoded,
+                                rankAsZenithEncoded,
+                            );
+                        }
+                    }
+                }
+            }
         }
     }
 

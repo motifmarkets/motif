@@ -153,7 +153,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.name = this._nameUiAction.definedValue;
+                this._scanEditor.setName(this._nameUiAction.definedValue);
                 this._scanEditor.endFieldChanges();
             }
         };
@@ -167,7 +167,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.description = this._nameUiAction.definedValue;
+                this._scanEditor.setDescription(this._nameUiAction.definedValue);
                 this._scanEditor.endFieldChanges();
             }
         };
@@ -204,7 +204,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.symbolListEnabled = this._symbolListUiAction.definedValue;
+                this._scanEditor.setSymbolListEnabled(this._symbolListUiAction.definedValue);
                 this._scanEditor.endFieldChanges();
             }
         };

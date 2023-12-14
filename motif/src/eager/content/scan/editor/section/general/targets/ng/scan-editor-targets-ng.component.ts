@@ -2,7 +2,6 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
-    AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -194,7 +193,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 const litItemId = this._singleSymbolUiAction.definedValue;
-                this._scanEditor.targetLitIvemIds = [litItemId];
+                this._scanEditor.setTargetLitIvemIds([litItemId]);
             }
         };
         return action;
@@ -207,7 +206,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 const id = this._singleMarketUiAction.definedValue as MarketId;
-                this._scanEditor.targetMarketIds = [id];
+                this._scanEditor.setTargetMarketIds([id]);
             }
         };
         return action;
@@ -220,7 +219,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scanEditor.targetMarketIds = ids;
+                this._scanEditor.setTargetMarketIds(ids);
             }
         };
         return action;
@@ -232,8 +231,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);
         action.commitEvent = () => {
             if (this._scanEditor !== undefined) {
-                const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scanEditor.targetMarketIds = ids;
+                const maxMatchCount = this._maxMatchCountUiAction.definedValue;
+                this._scanEditor.setMaxMatchCount(maxMatchCount);
             }
         };
         return action;
@@ -290,20 +289,22 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 }
                 case ScanTargetTypeId.Symbols: {
                     if (symbolTargetSubTypeId === undefined) {
-                        throw new AssertInternalError('SETNCPTTIS74109');
+                        this._targetSubTypeId = this.calculateSymbolEquivalentTargetSubTypeId(this._targetSubTypeId);
                     } else {
                         this._targetSubTypeId = symbolTargetSubTypeId;
-                        this._targetSubTypeUiAction.pushValue(symbolTargetSubTypeId);
-                        break;
                     }
+                    this._targetSubTypeUiAction.pushValue(this._targetSubTypeId);
+                    this._targetSubTypeUiAction.pushValid();
+                    break;
                 }
                 case ScanTargetTypeId.Markets: {
                     if (marketTargetSubTypeId === undefined) {
-                        throw new AssertInternalError('SETNCPTTIM74109');
+                        this._targetSubTypeId = this.calculateMarketEquivalentTargetSubTypeId(this._targetSubTypeId);
                     } else {
                         this._targetSubTypeId = marketTargetSubTypeId;
-                        this._targetSubTypeUiAction.pushValue(marketTargetSubTypeId);
                     }
+                    this._targetSubTypeUiAction.pushValue(this._targetSubTypeId);
+                    this._targetSubTypeUiAction.pushValid();
                     break;
                 }
                 default:
@@ -329,23 +330,35 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             return undefined;
         } else {
             const marketIds = scanEditor.targetMarketIds;
-            let marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
-            if (marketIds.length === 0) {
-                marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
+            if (marketIds === undefined) {
                 this._singleMarketUiAction.pushValue(undefined);
+                this._singleMarketUiAction.pushDisabled();
                 this._multiMarketUiAction.pushValue([]);
+                this._multiMarketUiAction.pushDisabled();
+                return undefined;
             } else {
-                if (marketIds.length === 1) {
-                    marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
-                    this._singleMarketUiAction.pushValue(marketIds[0]);
-                    this._multiMarketUiAction.pushValue(marketIds);
+                if (marketIds.length === 0) {
+                    this._singleMarketUiAction.pushValue(undefined);
+                    this._singleMarketUiAction.pushMissing();
+                    this._multiMarketUiAction.pushValue([]);
+                    this._multiMarketUiAction.pushMissing();
+                    return undefined;
                 } else {
-                    marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
-                    this._singleMarketUiAction.pushValue(marketIds[0]);
-                    this._multiMarketUiAction.pushValue(marketIds);
+                    this._singleMarketUiAction.pushValid();
+                    this._multiMarketUiAction.pushValid();
+                    let marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+                    if (marketIds.length === 1) {
+                        marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
+                        this._singleMarketUiAction.pushValue(marketIds[0]);
+                        this._multiMarketUiAction.pushValue(marketIds);
+                    } else {
+                        marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
+                        this._singleMarketUiAction.pushValue(marketIds[0]);
+                        this._multiMarketUiAction.pushValue(marketIds);
+                    }
+                    return marketTargetSubTypeId;
                 }
             }
-            return marketTargetSubTypeId;
         }
     }
 
@@ -356,20 +369,50 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             return undefined;
         } else {
             const litIvemIds = scanEditor.targetLitIvemIds;
-            let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
-            if (litIvemIds.length === 0) {
-                symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+            if (litIvemIds === undefined) {
                 this._singleSymbolUiAction.pushValue(undefined);
+                this._singleSymbolUiAction.pushDisabled();
+                return undefined;
             } else {
-                if (litIvemIds.length === 1) {
-                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
+                if (litIvemIds.length === 0) {
+                    this._singleSymbolUiAction.pushValue(undefined);
+                    this._singleSymbolUiAction.pushMissing();
+                    return undefined;
                 } else {
-                    symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
-                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
+                    this._singleMarketUiAction.pushValid();
+                    let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+                    if (litIvemIds.length === 1) {
+                        symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+                        this._singleSymbolUiAction.pushValue(litIvemIds[0]);
+                    } else {
+                        symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+                        this._singleSymbolUiAction.pushValue(litIvemIds[0]);
+                    }
+                    return symbolTargetSubTypeId;
                 }
             }
-            return symbolTargetSubTypeId;
+        }
+    }
+
+    private calculateSymbolEquivalentTargetSubTypeId(value: ScanEditorTargetsNgComponent.TargetSubTypeId) {
+        switch (value) {
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+            default:
+                throw new UnreachableCaseError('SETNCCSETSTI50932', value);
+        }
+    }
+
+    private calculateMarketEquivalentTargetSubTypeId(value: ScanEditorTargetsNgComponent.TargetSubTypeId) {
+        switch (value) {
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
+            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
+            default:
+                throw new UnreachableCaseError('SETNCCSETSTI50932', value);
         }
     }
 }
