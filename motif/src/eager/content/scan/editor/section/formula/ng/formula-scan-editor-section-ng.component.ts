@@ -128,11 +128,11 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     protected override processLifeCycleStateChange(): void {
-        throw new Error('Method not implemented.');
+
     }
 
     protected override processModifiedStateChange(): void {
-        throw new Error('Method not implemented.');
+
     }
 
     private initialiseComponents() {

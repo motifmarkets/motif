@@ -16,6 +16,7 @@ import {
     ScanEditor,
     StringId,
     Strings,
+    UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
@@ -121,15 +122,18 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             newVisibility = HtmlTypes.Visibility.Hidden;
         } else {
             this._scanEditorLifeCycleStateChangeSubscriptionId = scanEditor.subscribeLifeCycleStateChangeEvents(
-                () => this.handleScanEditorLifeCycleStateChangeEvent(scanEditor)
+                () => this.handleScanEditorLifeCycleStateChangeEvent()
             )
-            this._scanEditorLifeCycleStateChangeSubscriptionId = undefined;
             this._scanEditorModifiedStateChangeSubscriptionId = scanEditor.subscribeModifiedStateChangeEvents(
-                () => this.handleScanEditorModifiedStateChangeEvent(scanEditor)
+                () => this.handleScanEditorModifiedStateChangeEvent()
             )
-            this._scanEditorModifiedStateChangeSubscriptionId = undefined;
+
             newVisibility = HtmlTypes.Visibility.Visible;
         }
+
+        this.updateApplyButton();
+        this.updateRevertButton();
+        this.updateDeleteButton();
 
         if (newVisibility !== this.visibility) {
             this.visibility = newVisibility;
@@ -153,22 +157,15 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._testUiAction.finalise();
     }
 
-    private handleScanEditorLifeCycleStateChangeEvent(editor: ScanEditor) {
-        switch (editor.lifeCycleStateId) {
-            case ScanEditor.LifeCycleStateId.NotYetCreated:
-            case ScanEditor.LifeCycleStateId.Creating:
-            case ScanEditor.LifeCycleStateId.Exists:
-            case ScanEditor.LifeCycleStateId.Updating:
-            case ScanEditor.LifeCycleStateId.Deleted:
-        }
+    private handleScanEditorLifeCycleStateChangeEvent() {
+        this.updateApplyButton();
+        this.updateRevertButton();
+        this.updateDeleteButton();
     }
 
-    private handleScanEditorModifiedStateChangeEvent(editor: ScanEditor) {
-        switch (editor.modifiedStatedId) {
-            case ScanEditor.ModifiedStateId.Unmodified:
-            case ScanEditor.ModifiedStateId.Modified:
-            case ScanEditor.ModifiedStateId.Conflict:
-        }
+    private handleScanEditorModifiedStateChangeEvent() {
+        this.updateApplyButton();
+        this.updateRevertButton();
     }
 
     private createApplyUiAction(commandRegisterService: CommandRegisterService) {
@@ -187,6 +184,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         const displayId = StringId.Revert;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
+        action.pushCaption(Strings[StringId.Revert]);
         action.pushTitle(Strings[StringId.ScanEditorComponent_RevertTitle]);
         action.pushUnselected();
         action.signalEvent = () => this.handleRevertUiActionSignalEvent();
@@ -198,6 +196,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         const displayId = StringId.Delete;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
+        action.pushCaption(Strings[StringId.Delete]);
         action.pushTitle(Strings[StringId.ScanEditorComponent_DeleteTitle]);
         action.pushUnselected();
         action.signalEvent = () => this.handleDeleteUiActionSignalEvent();
@@ -281,6 +280,112 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                         }
                     }
                 }
+            }
+        }
+    }
+
+    private updateApplyButton() {
+        const editor = this._scanEditor;
+        const action = this._applyUiAction;
+        if (editor === undefined) {
+            action.pushCaption(Strings[StringId.Apply]);
+            action.pushDisabled();
+        } else {
+            switch (editor.lifeCycleStateId) {
+                case ScanEditor.LifeCycleStateId.NotYetCreated:
+                    action.pushCaption(Strings[StringId.Create]);
+                    action.pushValid();
+                    break;
+                case ScanEditor.LifeCycleStateId.Creating:
+                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                    action.pushDisabled();
+                    break;
+                case ScanEditor.LifeCycleStateId.Exists:
+                    switch (editor.modifiedStateId) {
+                        case ScanEditor.ModifiedStateId.Unmodified:
+                            action.pushDisabled();
+                            break;
+                        case ScanEditor.ModifiedStateId.Modified:
+                            action.pushCaption(Strings[StringId.Update]);
+                            action.pushValid();
+                            break;
+                        case ScanEditor.ModifiedStateId.Conflict:
+                            action.pushCaption(Strings[StringId.Overwrite]);
+                            action.pushValid();
+                            break;
+                        default:
+                            throw new UnreachableCaseError('SENCUABMD32221', editor.modifiedStateId);
+                    }
+                    break;
+                case ScanEditor.LifeCycleStateId.Updating:
+                case ScanEditor.LifeCycleStateId.Deleting:
+                case ScanEditor.LifeCycleStateId.Deleted:
+                    action.pushDisabled();
+                    break;
+                default:
+                    throw new UnreachableCaseError('SENCUABLD32221', editor.lifeCycleStateId);
+            }
+        }
+    }
+
+    private updateRevertButton() {
+        const editor = this._scanEditor;
+        const action = this._revertUiAction;
+        if (editor === undefined) {
+            action.pushDisabled();
+        } else {
+            switch (editor.lifeCycleStateId) {
+                case ScanEditor.LifeCycleStateId.NotYetCreated:
+                case ScanEditor.LifeCycleStateId.Exists:
+                    switch (editor.modifiedStateId) {
+                        case ScanEditor.ModifiedStateId.Unmodified:
+                            action.pushDisabled();
+                            break;
+                        case ScanEditor.ModifiedStateId.Modified:
+                            action.pushCaption(Strings[StringId.Revert]);
+                            action.pushValid();
+                            break;
+                        case ScanEditor.ModifiedStateId.Conflict:
+                            action.pushCaption(Strings[StringId.Revert]);
+                            action.pushValid();
+                            break;
+                        default:
+                            throw new UnreachableCaseError('SENCUMBMD32221', editor.modifiedStateId);
+                    }
+                    break;
+                case ScanEditor.LifeCycleStateId.Creating:
+                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                case ScanEditor.LifeCycleStateId.Updating:
+                case ScanEditor.LifeCycleStateId.Deleting:
+                case ScanEditor.LifeCycleStateId.Deleted:
+                    action.pushDisabled();
+                    break;
+                default:
+                    throw new UnreachableCaseError('SENCUABLD32221', editor.lifeCycleStateId);
+            }
+        }
+    }
+
+    private updateDeleteButton() {
+        const editor = this._scanEditor;
+        const action = this._deleteUiAction;
+        if (editor === undefined) {
+            action.pushDisabled();
+        } else {
+            switch (editor.lifeCycleStateId) {
+                case ScanEditor.LifeCycleStateId.Exists:
+                    action.pushValid();
+                    break;
+                case ScanEditor.LifeCycleStateId.NotYetCreated:
+                case ScanEditor.LifeCycleStateId.Creating:
+                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                case ScanEditor.LifeCycleStateId.Updating:
+                case ScanEditor.LifeCycleStateId.Deleting:
+                case ScanEditor.LifeCycleStateId.Deleted:
+                    action.pushDisabled();
+                    break;
+                default:
+                    throw new UnreachableCaseError('SENCUABLD32221', editor.lifeCycleStateId);
             }
         }
     }

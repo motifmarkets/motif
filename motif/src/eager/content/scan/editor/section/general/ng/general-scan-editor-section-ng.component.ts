@@ -1,4 +1,4 @@
-import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
     ScanEditor,
@@ -29,14 +29,14 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     @ViewChild('nameControl', { static: true }) private _nameControlComponent: TextInputNgComponent;
     @ViewChild('descriptionLabel', { static: true }) private _descriptionLabelComponent: CaptionLabelNgComponent;
     @ViewChild('descriptionControl', { static: true }) private _descriptionControlComponent: TextInputNgComponent;
-    // @ViewChild('typeLabel', { static: true }) private _typeLabelComponent: CaptionLabelNgComponent;
-    // @ViewChild('typeControl', { static: true }) private _typeControlComponent: EnumInputNgComponent;
     @ViewChild('targetsComponent', { static: true }) private _targetsComponent: ScanEditorTargetsNgComponent;
     @ViewChild('symbolListLabel', { static: true }) private _symbolListLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolListControl', { static: true }) private _symbolListControlComponent: CheckboxInputNgComponent;
 
     public sectionHeadingText = Strings[StringId.General];
     public targetsRowHeading = Strings[StringId.Targets];
+    public deleteStateText: string | undefined;
+    public deletingOrDeleted = false;
 
     private readonly _enabledUiAction: BooleanUiAction;
     private readonly _nameUiAction: StringUiAction;
@@ -44,7 +44,10 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     // private readonly _typeUiAction: ExplicitElementsEnumUiAction;
     private readonly _symbolListUiAction: BooleanUiAction;
 
-    constructor(elRef: ElementRef<HTMLElement>) {
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private readonly _cdr: ChangeDetectorRef,
+    ) {
         super(elRef, ++GeneralScanEditorSectionNgComponent.typeInstanceCreateCount);
 
         this._enabledUiAction = this.createEnabledUiAction();
@@ -56,6 +59,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     ngOnInit() {
         this.pushValues();
+        this.pushDeleteState();
     }
 
     ngOnDestroy() {
@@ -69,7 +73,13 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
         this.pushValues();
+        this.pushDeleteState();
         this._targetsComponent.setEditor(value);
+    }
+
+    isDeleted() {
+        const scanEditor = this._scanEditor;
+        return scanEditor !== undefined && scanEditor.lifeCycleStateId === ScanEditor.LifeCycleStateId.Deleted;
     }
 
     protected finalise() {
@@ -112,11 +122,11 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     protected override processLifeCycleStateChange(): void {
-        throw new Error('Method not implemented.');
+        this.pushDeleteState();
     }
 
     protected override processModifiedStateChange(): void {
-        throw new Error('Method not implemented.');
+        // nothing to do
     }
 
     private initialiseComponents() {
@@ -128,8 +138,6 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._nameControlComponent.initialise(this._nameUiAction);
         this._descriptionLabelComponent.initialise(this._descriptionUiAction);
         this._descriptionControlComponent.initialise(this._descriptionUiAction);
-        // this._typeLabelComponent.initialise(this._typeUiAction);
-        // this._typeControlComponent.initialise(this._typeUiAction);
         this._symbolListLabelComponent.initialise(this._symbolListUiAction);
         this._symbolListControlComponent.initialise(this._symbolListUiAction);
     }
@@ -174,29 +182,6 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         return action;
     }
 
-    // private createTypeUiAction() {
-    //     const action = new ExplicitElementsEnumUiAction(false);
-    //     action.pushCaption(Strings[StringId.ScanPropertiesCaption_Type]);
-    //     action.pushTitle(Strings[StringId.ScanPropertiesTitle_Type]);
-    //     const ids = Scan.CriteriaType.getAllIds();
-    //     const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
-    //         (id) => (
-    //             {
-    //                 element: id,
-    //                 caption: Scan.CriteriaType.idToDisplay(id),
-    //                 title: Scan.CriteriaType.idToDisplay(id),
-    //             }
-    //         )
-    //     );
-    //     action.pushElements(elementPropertiesArray, undefined);
-    //     action.commitEvent = () => {
-    //         if (this._scan !== undefined) {
-    //             this._scan.criteriaTypeId = this._typeUiAction.definedValue;
-    //         }
-    //     };
-    //     return action;
-    // }
-
     private createSymbolListUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolList]);
@@ -212,18 +197,67 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     private pushValues() {
-        if (this._scanEditor === undefined) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            this.deletingOrDeleted = false;
+
             this._enabledUiAction.pushValue(undefined);
             this._nameUiAction.pushValue(undefined);
             this._descriptionUiAction.pushValue(undefined);
-            // this._typeUiAction.pushValue(undefined);
             this._symbolListUiAction.pushValue(undefined);
         } else {
-            this._enabledUiAction.pushValue(this._scanEditor.enabled);
-            this._nameUiAction.pushValue(this._scanEditor.name);
-            this._descriptionUiAction.pushValue(this._scanEditor.description);
-            // this._typeUiAction.pushValue(this._scan.criteriaTypeId);
-            this._symbolListUiAction.pushValue(this._scanEditor.symbolListEnabled);
+            this._enabledUiAction.pushValue(scanEditor.enabled);
+            this._nameUiAction.pushValue(scanEditor.name);
+            this._descriptionUiAction.pushValue(scanEditor.description);
+            this._symbolListUiAction.pushValue(scanEditor.symbolListEnabled);
+        }
+
+    }
+
+    private pushDeleteState() {
+        let newDeleteStateText: string | undefined;
+        let deletingOrDeleted: boolean;
+
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            newDeleteStateText = undefined;
+            deletingOrDeleted = false;
+        } else {
+            switch (scanEditor.lifeCycleStateId) {
+                case ScanEditor.LifeCycleStateId.Deleting:
+                    newDeleteStateText = Strings[StringId.Deleting];
+                    deletingOrDeleted = true;
+                    break;
+                case ScanEditor.LifeCycleStateId.Deleted:
+                    newDeleteStateText = Strings[StringId.Deleted];
+                    deletingOrDeleted = true;
+                    break;
+                default:
+                    newDeleteStateText = undefined;
+                    deletingOrDeleted = false;
+            }
+        }
+
+        if (deletingOrDeleted !== this.deletingOrDeleted) {
+            this.deletingOrDeleted = deletingOrDeleted;
+            this._cdr.markForCheck();
+
+            if (deletingOrDeleted) {
+                this._enabledUiAction.pushReadonly();
+                this._nameUiAction.pushReadonly();
+                this._descriptionUiAction.pushReadonly();
+                this._symbolListUiAction.pushReadonly();
+            } else {
+                this._enabledUiAction.pushValid();
+                this._nameUiAction.pushValid();
+                this._descriptionUiAction.pushValid();
+                this._symbolListUiAction.pushValid();
+            }
+        }
+
+        if (newDeleteStateText !== this.deleteStateText) {
+            this.deleteStateText = newDeleteStateText;
+            this._cdr.markForCheck();
         }
     }
 }

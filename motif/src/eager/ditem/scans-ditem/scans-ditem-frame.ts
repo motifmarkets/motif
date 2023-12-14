@@ -7,12 +7,12 @@
 import {
     AdiService,
     AssertInternalError,
-    CommandRegisterService, ErrorCode, ExchangeInfo, Integer, JsonElement,
+    CommandRegisterService, ErrorCode,
+    Integer, JsonElement,
     LockOpenListItem,
     Logger,
     ScanEditor,
     ScanList,
-    ScanTargetTypeId,
     ScansService,
     SettingsService,
     SymbolsService
@@ -126,10 +126,6 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     newScan() {
         this.checkCloseActiveScanEditor();
         this._scanEditor = this._scansService.openNewScanEditor(this._opener);
-        const defaultExchangeId = this.symbolsService.defaultExchangeId;
-        const defaultMarketId = ExchangeInfo.idToDefaultMarketId(defaultExchangeId);
-        this._scanEditor.setTargetMarketIds([defaultMarketId]);
-        this._scanEditor.setTargetTypeId(ScanTargetTypeId.Markets);
         this._setEditorEventer();
     }
 

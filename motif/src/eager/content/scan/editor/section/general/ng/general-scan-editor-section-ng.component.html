@@ -8,7 +8,10 @@
 
 <section id="content">
     <section id="propertyControls">
-        <app-caption-label #enabledLabel for="enabledCheckbox"></app-caption-label>
+        <div>
+            <app-caption-label #enabledLabel for="enabledCheckbox" [style.display]="!deletingOrDeleted"></app-caption-label>
+            <span [style.display]="deletingOrDeleted">{{"deletedText"}}</span>
+        </div>
         <app-checkbox-input #enabledControl id="enabledControl" inputId="enabledCheckbox"></app-checkbox-input>
         <app-caption-label #nameLabel for="nameInput"></app-caption-label>
         <app-text-input #nameControl id="nameControl" inputId="nameInput" spellCheck="false"></app-text-input>
