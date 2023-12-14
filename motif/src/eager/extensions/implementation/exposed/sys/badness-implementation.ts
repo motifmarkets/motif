@@ -52,8 +52,12 @@ export namespace BadnessImplementation {
                     return BadnessApi.ReasonEnum.PublisherSubscriptionError_DataError_Suspect;
                 case Badness.ReasonId.PublisherSubscriptionError_DataError_Error:
                     return BadnessApi.ReasonEnum.PublisherSubscriptionError_DataError_Error;
-                case Badness.ReasonId.PublisherServerWarning: return BadnessApi.ReasonEnum.PublisherServerWarning;
-                case Badness.ReasonId.PublisherServerError: return BadnessApi.ReasonEnum.PublisherServerError;
+                case Badness.ReasonId.PublisherServerWarning_Usable:
+                    return BadnessApi.ReasonEnum.PublisherServerWarning_Usable;
+                case Badness.ReasonId.PublisherServerWarning_Suspect:
+                    return BadnessApi.ReasonEnum.PublisherServerWarning_Suspect;
+                case Badness.ReasonId.PublisherServerError:
+                    return BadnessApi.ReasonEnum.PublisherServerError;
                 case Badness.ReasonId.PublisherSubscriptionState_NeverSubscribed:
                     return BadnessApi.ReasonEnum.PublisherSubscriptionState_NeverSubscribed;
                 case Badness.ReasonId.PublisherSubscriptionState_PublisherOnlineWaiting:
@@ -148,8 +152,12 @@ export namespace BadnessImplementation {
                     return Badness.ReasonId.PublisherSubscriptionError_DataError_Suspect;
                 case BadnessApi.ReasonEnum.PublisherSubscriptionError_DataError_Error:
                     return Badness.ReasonId.PublisherSubscriptionError_DataError_Error;
-                case BadnessApi.ReasonEnum.PublisherServerWarning: return Badness.ReasonId.PublisherServerWarning;
-                case BadnessApi.ReasonEnum.PublisherServerError: return Badness.ReasonId.PublisherServerError;
+                case BadnessApi.ReasonEnum.PublisherServerWarning_Usable:
+                    return Badness.ReasonId.PublisherServerWarning_Usable;
+                case BadnessApi.ReasonEnum.PublisherServerWarning_Suspect:
+                    return Badness.ReasonId.PublisherServerWarning_Suspect;
+                case BadnessApi.ReasonEnum.PublisherServerError:
+                    return Badness.ReasonId.PublisherServerError;
                 case BadnessApi.ReasonEnum.PublisherSubscriptionState_NeverSubscribed:
                     return Badness.ReasonId.PublisherSubscriptionState_NeverSubscribed;
                 case BadnessApi.ReasonEnum.PublisherSubscriptionState_PublisherOnlineWaiting:
