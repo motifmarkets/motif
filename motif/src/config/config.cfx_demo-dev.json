@@ -17,7 +17,7 @@
       "https://motif-services.for.cf-markets.com"
     ],
     "zenith": [
-      "wss://ws-testing.for.cf-markets.com/"
+      "wss://ws-testing.for.cf-markets.com/Zenith?version=2.0"
     ]
   },
   "openId": {
