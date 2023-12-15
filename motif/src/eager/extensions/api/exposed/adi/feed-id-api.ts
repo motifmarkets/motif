@@ -35,6 +35,7 @@ export const enum FeedIdEnum {
     News_Fnsx = 'News_Fnsx',
     Watchlist = 'Watchlist',
     Scanner = 'Scanner',
+    Channel = 'Channel',
 }
 
 /** @public */

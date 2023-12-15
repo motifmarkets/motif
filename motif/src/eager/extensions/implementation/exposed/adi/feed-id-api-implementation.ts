@@ -57,6 +57,7 @@ export namespace FeedIdImplementation {
             case FeedId.News_Fnsx: return FeedIdEnumApi.News_Fnsx;
             case FeedId.Watchlist: return FeedIdEnumApi.Watchlist;
             case FeedId.Scanner: return FeedIdEnumApi.Scanner;
+            case FeedId.Channel: return FeedIdEnumApi.Channel;
             default: throw new UnreachableCaseError('FIAITAU5662349843', value);
         }
     }
@@ -91,6 +92,7 @@ export namespace FeedIdImplementation {
             case FeedIdEnumApi.News_Fnsx: return FeedId.News_Fnsx;
             case FeedIdEnumApi.Watchlist: return FeedId.Watchlist;
             case FeedIdEnumApi.Scanner: return FeedId.Scanner;
+            case FeedIdEnumApi.Channel: return FeedId.Channel;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidFeedId, enumValue);
         }
     }

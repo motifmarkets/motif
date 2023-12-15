@@ -12,6 +12,7 @@ export const enum FeedClassEnum {
     Trading = 'Trading',
     Watchlist = 'Watchlist',
     Scanner = 'Scanner',
+    Channel = 'Channel',
 }
 
 /** @public */
