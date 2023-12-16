@@ -2,6 +2,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
+    AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -71,7 +72,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
     private _scanEditor: ScanEditor | undefined;
-    private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
+    // private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
+    private _lastTargetTypeIdWasMulti = false;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
@@ -87,12 +89,10 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this._singleMarketUiAction = this.createSingleMarketUiAction();
         this._multiMarketUiAction = this.createMultiMarketUiAction();
         this._maxMatchCountUiAction = this.createMaxMatchCountUiAction();
-
-        this._targetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
     }
 
     ngOnInit() {
-        this.pushValues();
+        this.pushInitialScanEditorValues();
     }
 
     ngOnDestroy() {
@@ -104,19 +104,19 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     public isSingleSymbolSubTargetType() {
-        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
+        return this.isSymbolsTargetTypeId() && !this._lastTargetTypeIdWasMulti;
     }
 
     public isMultiSymbolSubTargetType() {
-        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
+        return this.isSymbolsTargetTypeId() && this._lastTargetTypeIdWasMulti;
     }
 
     public isSingleMarketSubTargetType() {
-        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
+        return this.isMarketsTargetTypeId() && !this._lastTargetTypeIdWasMulti;
     }
 
     public isMultiMarketSubTargetType() {
-        return this._targetSubTypeId === ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
+        return this.isMarketsTargetTypeId() && this._lastTargetTypeIdWasMulti;
     }
 
     setEditor(value: ScanEditor | undefined) {
@@ -133,7 +133,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             );
         }
 
-        this.pushValues();
+        this.pushInitialScanEditorValues();
     }
 
     protected finalise() {
@@ -180,8 +180,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._targetSubTypeId = this._targetSubTypeUiAction.definedValue;
-            this._cdr.markForCheck();
+            const targetSubTypeId = this._targetSubTypeUiAction.definedValue as ScanEditorTargetsNgComponent.TargetSubTypeId;
+            this.setTargetSubTypeId(targetSubTypeId);
         };
         return action;
     }
@@ -243,9 +243,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
                     case ScanEditor.FieldId.TargetTypeId: {
-                        const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
-                        const marketTargetSubTypeId = this.pushTargetMarketIds();
-                        this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
+                        this.pushTargetTypeId();
                         break;
                     }
                     case ScanEditor.FieldId.TargetMarkets:
@@ -262,48 +260,63 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         }
     }
 
-    private pushValues() {
-        if (this._scanEditor === undefined) {
-            this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
-        } else {
-            this.pushMaxMatchCount();
-            const symbolTargetSubTypeId = this.pushTargetLitIvemIds();
-            const marketTargetSubTypeId = this.pushTargetMarketIds();
-            this.pushTargetTypeId(symbolTargetSubTypeId, marketTargetSubTypeId);
-        }
-        this._cdr.markForCheck();
-    }
-
-    private pushTargetTypeId(
-        symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined,
-        marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined
-    ) {
+    private isSymbolsTargetTypeId() {
         const scanEditor = this._scanEditor;
         if (scanEditor === undefined) {
-            this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
+            return false;
+        } else {
+            return scanEditor.targetTypeId === ScanTargetTypeId.Symbols;
+        }
+    }
+
+    private isMarketsTargetTypeId() {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            return false;
+        } else {
+            return scanEditor.targetTypeId === ScanTargetTypeId.Markets;
+        }
+    }
+
+    private pushInitialScanEditorValues() {
+        const lastTargetTypeIdWasMulti: boolean = this.calculateLastTargetTypeIdWasMultiFromScanEditor();
+        this.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti);
+
+        this.pushMaxMatchCount();
+        this.pushTargetLitIvemIds();
+        this.pushTargetMarketIds();
+        this.pushTargetTypeId();
+    }
+
+    private pushTargetTypeId() {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            this._targetSubTypeUiAction.pushValue(undefined);
+            this._targetSubTypeUiAction.pushDisabled();
         } else {
             switch (scanEditor.targetTypeId) {
                 case undefined: {
+                    this._targetSubTypeUiAction.pushValue(undefined);
                     this._targetSubTypeUiAction.pushDisabled();
                     break;
                 }
                 case ScanTargetTypeId.Symbols: {
-                    if (symbolTargetSubTypeId === undefined) {
-                        this._targetSubTypeId = this.calculateSymbolEquivalentTargetSubTypeId(this._targetSubTypeId);
+                    if (this._lastTargetTypeIdWasMulti) {
+                        this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol);
                     } else {
-                        this._targetSubTypeId = symbolTargetSubTypeId;
+                        this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
                     }
-                    this._targetSubTypeUiAction.pushValue(this._targetSubTypeId);
+
                     this._targetSubTypeUiAction.pushValid();
                     break;
                 }
                 case ScanTargetTypeId.Markets: {
-                    if (marketTargetSubTypeId === undefined) {
-                        this._targetSubTypeId = this.calculateMarketEquivalentTargetSubTypeId(this._targetSubTypeId);
+                    if (this._lastTargetTypeIdWasMulti) {
+                        this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket);
                     } else {
-                        this._targetSubTypeId = marketTargetSubTypeId;
+                        this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket);
                     }
-                    this._targetSubTypeUiAction.pushValue(this._targetSubTypeId);
+
                     this._targetSubTypeUiAction.pushValid();
                     break;
                 }
@@ -317,8 +330,10 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         const scanEditor = this._scanEditor;
         if (scanEditor === undefined) {
             this._maxMatchCountUiAction.pushValue(undefined);
+            this._maxMatchCountUiAction.pushDisabled();
         } else {
             this._maxMatchCountUiAction.pushValue(scanEditor.maxMatchCount);
+            this._maxMatchCountUiAction.pushValid();
         }
     }
 
@@ -326,8 +341,9 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         const scanEditor = this._scanEditor;
         if (scanEditor === undefined) {
             this._singleMarketUiAction.pushValue(undefined);
+            this._singleMarketUiAction.pushDisabled();
             this._multiMarketUiAction.pushValue([]);
-            return undefined;
+            this._multiMarketUiAction.pushDisabled();
         } else {
             const marketIds = scanEditor.targetMarketIds;
             if (marketIds === undefined) {
@@ -335,28 +351,17 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 this._singleMarketUiAction.pushDisabled();
                 this._multiMarketUiAction.pushValue([]);
                 this._multiMarketUiAction.pushDisabled();
-                return undefined;
             } else {
                 if (marketIds.length === 0) {
                     this._singleMarketUiAction.pushValue(undefined);
                     this._singleMarketUiAction.pushMissing();
                     this._multiMarketUiAction.pushValue([]);
                     this._multiMarketUiAction.pushMissing();
-                    return undefined;
                 } else {
+                    this._singleMarketUiAction.pushValue(marketIds[0]);
+                    this._multiMarketUiAction.pushValue(marketIds);
                     this._singleMarketUiAction.pushValid();
                     this._multiMarketUiAction.pushValid();
-                    let marketTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
-                    if (marketIds.length === 1) {
-                        marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
-                        this._singleMarketUiAction.pushValue(marketIds[0]);
-                        this._multiMarketUiAction.pushValue(marketIds);
-                    } else {
-                        marketTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
-                        this._singleMarketUiAction.pushValue(marketIds[0]);
-                        this._multiMarketUiAction.pushValue(marketIds);
-                    }
-                    return marketTargetSubTypeId;
                 }
             }
         }
@@ -366,54 +371,98 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         const scanEditor = this._scanEditor;
         if (scanEditor === undefined) {
             this._singleSymbolUiAction.pushValue(undefined);
-            return undefined;
+            this._singleSymbolUiAction.pushDisabled();
         } else {
             const litIvemIds = scanEditor.targetLitIvemIds;
             if (litIvemIds === undefined) {
                 this._singleSymbolUiAction.pushValue(undefined);
                 this._singleSymbolUiAction.pushDisabled();
-                return undefined;
             } else {
                 if (litIvemIds.length === 0) {
                     this._singleSymbolUiAction.pushValue(undefined);
                     this._singleSymbolUiAction.pushMissing();
-                    return undefined;
                 } else {
+                    this._singleSymbolUiAction.pushValue(litIvemIds[0]);
                     this._singleMarketUiAction.pushValid();
-                    let symbolTargetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId;
-                    if (litIvemIds.length === 1) {
-                        symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-                        this._singleSymbolUiAction.pushValue(litIvemIds[0]);
-                    } else {
-                        symbolTargetSubTypeId = ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
-                        this._singleSymbolUiAction.pushValue(litIvemIds[0]);
-                    }
-                    return symbolTargetSubTypeId;
                 }
             }
         }
     }
 
-    private calculateSymbolEquivalentTargetSubTypeId(value: ScanEditorTargetsNgComponent.TargetSubTypeId) {
-        switch (value) {
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol;
-            default:
-                throw new UnreachableCaseError('SETNCCSETSTI50932', value);
+    private setTargetSubTypeId(targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId) {
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            throw new AssertInternalError('SETNCSTSTIS66821');
+        } else {
+            let lastTargetTypeIdWasMulti: boolean;
+            let targetTypeId: ScanTargetTypeId;
+            switch (targetSubTypeId) {
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
+                    lastTargetTypeIdWasMulti = false;
+                    targetTypeId = ScanTargetTypeId.Symbols;
+                    break;
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
+                    lastTargetTypeIdWasMulti = true;
+                    targetTypeId = ScanTargetTypeId.Symbols;
+                    break;
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
+                    lastTargetTypeIdWasMulti = false;
+                    targetTypeId = ScanTargetTypeId.Markets;
+                    break;
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
+                    lastTargetTypeIdWasMulti = true;
+                    targetTypeId = ScanTargetTypeId.Markets;
+                    break;
+                default:
+                    throw new UnreachableCaseError('SETNCSTSTIU66821', targetSubTypeId);
+            }
+
+            this.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti); // make sure this is set before TargetTypeId
+            scanEditor.setTargetTypeId(targetTypeId);
         }
     }
 
-    private calculateMarketEquivalentTargetSubTypeId(value: ScanEditorTargetsNgComponent.TargetSubTypeId) {
-        switch (value) {
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket;
-            case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket: return ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket;
-            default:
-                throw new UnreachableCaseError('SETNCCSETSTI50932', value);
+    private setLastTargetTypeIdWasMulti(value: boolean) {
+        if (value !== this._lastTargetTypeIdWasMulti) {
+            this._lastTargetTypeIdWasMulti = value;
+            this._cdr.markForCheck();
         }
+    }
+
+    private calculateLastTargetTypeIdWasMultiFromScanEditor() {
+        const scanEditor = this._scanEditor;
+        let lastTargetTypeIdWasMulti: boolean;
+        if (scanEditor === undefined) {
+            lastTargetTypeIdWasMulti = false;
+        } else {
+            switch (scanEditor.targetTypeId) {
+                case undefined: {
+                    lastTargetTypeIdWasMulti = false;
+                    break;
+                }
+                case ScanTargetTypeId.Symbols: {
+                    const targetLitIvemIds = scanEditor.targetLitIvemIds;
+                    if (targetLitIvemIds === undefined) {
+                        lastTargetTypeIdWasMulti = false;
+                    } else {
+                        lastTargetTypeIdWasMulti = targetLitIvemIds.length !== 1;
+                    }
+                    break;
+                }
+                case ScanTargetTypeId.Markets: {
+                    const targetMarketIds = scanEditor.targetMarketIds;
+                    if (targetMarketIds === undefined) {
+                        lastTargetTypeIdWasMulti = false;
+                    } else {
+                        lastTargetTypeIdWasMulti = targetMarketIds.length !== 1;
+                    }
+                    break;
+                }
+                default:
+                    throw new UnreachableCaseError('SETNCSE55971', scanEditor.targetTypeId);
+            }
+        }
+        return lastTargetTypeIdWasMulti;
     }
 }
 
@@ -468,7 +517,7 @@ export namespace ScanEditorTargetsNgComponent {
         const infos = Object.values(infosObject);
 
         export function initialise() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as TargetSubTypeId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError('ScanTargetNgComponent.TargetSubTypeId', outOfOrderIdx, infos[outOfOrderIdx].name);
             }
