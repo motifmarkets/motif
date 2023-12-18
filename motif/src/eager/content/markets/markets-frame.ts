@@ -165,6 +165,12 @@ export class MarketsFrame extends ContentFrame {
             case UsableListChangeTypeId.AfterReplace: {
                 throw new AssertInternalError('CIDFPMLCAR09134');
             }
+            case UsableListChangeTypeId.BeforeMove: {
+                throw new AssertInternalError('CIDFPMLCBM09134');
+            }
+            case UsableListChangeTypeId.AfterMove: {
+                throw new AssertInternalError('CIDFPMLCAM09134');
+            }
             case UsableListChangeTypeId.Remove: {
                 return this.removeMarkets(index, count);
             }

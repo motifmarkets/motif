@@ -133,6 +133,8 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
             case UsableListChangeTypeId.Insert:
             case UsableListChangeTypeId.BeforeReplace:
             case UsableListChangeTypeId.AfterReplace:
+            case UsableListChangeTypeId.BeforeMove:
+            case UsableListChangeTypeId.AfterMove:
             case UsableListChangeTypeId.Remove:
             case UsableListChangeTypeId.Clear:
                 break;
