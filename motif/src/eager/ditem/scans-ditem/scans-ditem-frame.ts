@@ -64,8 +64,8 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     initialise(ditemFrameElement: JsonElement | undefined, scanListFrame: ScanListFrame): void {
         this._scanListFrame = scanListFrame;
-        this._scanList = scanListFrame.scanList;
 
+        scanListFrame.gridSourceOpenedEventer = () => { this._scanList = scanListFrame.scanList; }
         scanListFrame.recordFocusedEventer = (newRecordIndex) => { this.handleScanListFrameRecordFocusedEvent(newRecordIndex); }
 
         let scanListFrameElement: JsonElement | undefined;
@@ -97,8 +97,12 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     }
 
     override finalise() {
-        if (this._scanListFrame !== undefined) {
-            this._scanListFrame.finalise();
+        const scanListFrame = this._scanListFrame;
+        if (scanListFrame !== undefined) {
+            scanListFrame.gridSourceOpenedEventer = undefined;
+            scanListFrame.recordFocusedEventer = undefined;
+            scanListFrame.finalise();
+            this._scanListFrame = undefined;
         }
         super.finalise();
     }
