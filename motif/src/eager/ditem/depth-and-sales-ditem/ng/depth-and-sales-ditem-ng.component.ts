@@ -538,8 +538,8 @@ export class DepthAndSalesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private pushValid() {
-        this._symbolApplyUiAction.pushValid();
-        this._historicalTradesDateUiAction.pushValid();
+        this._symbolApplyUiAction.pushValidOrMissing();
+        this._historicalTradesDateUiAction.pushValidOrMissing();
     }
 
     private updateColumnsEnabledDisabled() {

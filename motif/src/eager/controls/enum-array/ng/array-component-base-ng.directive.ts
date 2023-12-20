@@ -16,7 +16,7 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
 
     private _filter: readonly T[] | undefined;
 
-    protected override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
+    override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
 
     protected applyValue(_value: readonly T[] | undefined, _edited: boolean) {
         this.markForCheck();

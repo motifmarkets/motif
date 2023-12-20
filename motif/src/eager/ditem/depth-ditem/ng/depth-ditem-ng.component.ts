@@ -393,7 +393,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private pushValid() {
-        this._symbolApplyUiAction.pushValid();
+        this._symbolApplyUiAction.pushValidOrMissing();
     }
 
     private showLayoutEditor() {

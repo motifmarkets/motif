@@ -307,7 +307,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         if (ivemId.exchangeId !== ExchangeId.Nzx) {
             this._symbolUiAction.pushInvalid(Strings[StringId.TopShareholdersOnlySupportNzx]);
         } else {
-            this._symbolUiAction.pushValid();
+            this._symbolUiAction.pushValidOrMissing();
             const litIvemId = new LitIvemId(ivemId.code, MarketId.Nzx); // need to create LitIvemId to pass into DitemFrame
             this._frame.setLitIvemIdFromDitem(litIvemId, this._forceNextSymbolCommit);
             this._forceNextSymbolCommit = false;
@@ -320,7 +320,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private handleHistoricalDateCommitEvent() {
-        this._historicalDateUiAction.pushValid();
+        this._historicalDateUiAction.pushValidOrMissing();
     }
 
     private handleHistoricalDateInputEvent() {
@@ -329,7 +329,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
     }
 
     private handleCompareDateCommitEvent() {
-        this._compareDateUiAction.pushValid();
+        this._compareDateUiAction.pushValidOrMissing();
     }
 
     private handleCompareDateInputEvent() {

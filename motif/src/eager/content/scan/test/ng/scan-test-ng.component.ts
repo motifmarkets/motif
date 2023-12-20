@@ -66,14 +66,16 @@ export class ScanTestNgComponent extends ContentComponentBaseNgDirective impleme
         description: string,
         targetTypeId: ScanTargetTypeId,
         targets: readonly MarketId[] | readonly LitIvemId[],
+        maxMatchCount: Integer | undefined,
         zenithCriteria: ZenithEncodedScanFormula.BooleanTupleNode,
-        zenithRank: ZenithEncodedScanFormula.NumericTupleNode,
+        zenithRank: ZenithEncodedScanFormula.NumericTupleNode | undefined,
     ) {
         this.finaliseMatchesInfo();
 
         const definition = new LitIvemIdExecuteScanDataDefinition();
         definition.targetTypeId = targetTypeId;
         definition.targets = targets;
+        definition.maxMatchCount = maxMatchCount;
         definition.zenithCriteria = zenithCriteria;
         definition.zenithRank = zenithRank;
 

@@ -360,7 +360,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         if (newRecordIndex === undefined) {
             this._sellUiAction.pushDisabled();
         } else {
-            this._sellUiAction.pushValid();
+            this._sellUiAction.pushValidOrMissing();
         }
     }
 

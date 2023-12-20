@@ -152,7 +152,7 @@ export class ResultOrderRequestStepNgComponent extends OrderRequestStepComponent
         const action = new StringUiAction();
         action.pushTitle(Strings[StringId.OrderRequestResultTitle_Errors]);
         action.pushCaption(Strings[StringId.OrderRequestResultCaption_Errors]);
-        action.pushValid();
+        action.pushValidOrMissing();
         return action;
     }
 

@@ -421,18 +421,18 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         } else {
             // TODO should also subscribe to order in case amend or cancel become possible/impossible
             if (this._frame.canAmendFocusedOrder()) {
-                this._amendUiAction.pushValid();
+                this._amendUiAction.pushValidOrMissing();
             } else {
                 this._amendUiAction.pushDisabled();
             }
 
             if (this._frame.canCancelFocusedOrder()) {
-                this._cancelUiAction.pushValid();
+                this._cancelUiAction.pushValidOrMissing();
             } else {
                 this._cancelUiAction.pushDisabled();
             }
 
-            this._moveUiAction.pushValid();
+            this._moveUiAction.pushValidOrMissing();
         }
     }
 

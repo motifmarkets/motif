@@ -63,6 +63,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     public readonly targetSubTypeRadioName: string;
 
+    controlInputOrCommitEventer: ScanEditorTargetsNgComponent.ControlInputOrCommitEventer | undefined;
+
     private readonly _symbolsService: SymbolsService;
 
     private readonly _targetSubTypeUiAction: ExplicitElementsEnumUiAction;
@@ -136,6 +138,34 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this.pushInitialScanEditorValues();
     }
 
+    areAllControlValuesOk() {
+        const targetSubTypeId = this._targetSubTypeUiAction.value as ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
+        if (targetSubTypeId === undefined) {
+            return false;
+        } else {
+            switch (targetSubTypeId) {
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
+                    return this._singleSymbolControlComponent.uiAction.isValueOk();
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
+                    return false; // to do
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
+                    return this._singleMarketControlComponent.uiAction.isValueOk() && this._singleMarketMaxMatchCountControlComponent.uiAction.isValueOk();
+                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
+                    return this._multiMarketControlComponent.uiAction.isValueOk() && this._multiMarketMaxMatchCountControlComponent.uiAction.isValueOk();
+                default:
+                    throw new UnreachableCaseError('SETNCAACED65134', targetSubTypeId);
+            }
+        }
+    }
+
+    cancelAllControlsEdited() {
+        this._singleSymbolControlComponent.uiAction.cancelEdit();
+        this._singleMarketControlComponent.uiAction.cancelEdit();
+        this._singleMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
+        this._multiMarketControlComponent.uiAction.cancelEdit();
+        this._multiMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
+    }
+
     protected finalise() {
         this._targetSubTypeUiAction.finalise();
         this._singleSymbolUiAction.finalise();
@@ -168,6 +198,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private createTargetSubTypeUiAction() {
         const action = new ExplicitElementsEnumUiAction();
+        action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_TargetType]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_TargetType]);
         const ids = ScanEditorTargetsNgComponent.TargetSubType.getAllIds();
@@ -179,21 +210,29 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
             const targetSubTypeId = this._targetSubTypeUiAction.definedValue as ScanEditorTargetsNgComponent.TargetSubTypeId;
             this.setTargetSubTypeId(targetSubTypeId);
+            this.notifyControlInputOrCommit();
         };
         return action;
     }
 
     private createSingleSymbolUiAction() {
         const action = new LitIvemIdUiAction();
+        action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_SingleSymbol]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_SingleSymbol]);
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
                 const litItemId = this._singleSymbolUiAction.definedValue;
-                this._scanEditor.setTargetLitIvemIds([litItemId]);
+                editor.setTargetLitIvemIds([litItemId]);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit();
             }
         };
         return action;
@@ -201,12 +240,18 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private createSingleMarketUiAction() {
         const action = new AllowedMarketsEnumUiAction(this._symbolsService);
+        action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_SingleMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_SingleMarket]);
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
                 const id = this._singleMarketUiAction.definedValue as MarketId;
-                this._scanEditor.setTargetMarketIds([id]);
+                editor.setTargetMarketIds([id]);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit();
             }
         };
         return action;
@@ -214,12 +259,18 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private createMultiMarketUiAction() {
         const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
+        action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MultiMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MultiMarket]);
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
-                this._scanEditor.setTargetMarketIds(ids);
+                editor.setTargetMarketIds(ids);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit();
             }
         };
         return action;
@@ -227,18 +278,24 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private createMaxMatchCountUiAction() {
         const action = new IntegerUiAction();
+        action.commitOnAnyValidInput = true;
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MaxMatchCount]);
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
                 const maxMatchCount = this._maxMatchCountUiAction.definedValue;
-                this._scanEditor.setMaxMatchCount(maxMatchCount);
+                editor.setMaxMatchCount(maxMatchCount);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit();
             }
         };
         return action;
     }
 
-    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger | undefined) {
+    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier | undefined) {
         if (fieldChanger !== this) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
@@ -307,7 +364,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
                     }
 
-                    this._targetSubTypeUiAction.pushValid();
+                    this._targetSubTypeUiAction.pushValidOrMissing();
                     break;
                 }
                 case ScanTargetTypeId.Markets: {
@@ -317,7 +374,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket);
                     }
 
-                    this._targetSubTypeUiAction.pushValid();
+                    this._targetSubTypeUiAction.pushValidOrMissing();
                     break;
                 }
                 default:
@@ -333,7 +390,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             this._maxMatchCountUiAction.pushDisabled();
         } else {
             this._maxMatchCountUiAction.pushValue(scanEditor.maxMatchCount);
-            this._maxMatchCountUiAction.pushValid();
+            this._maxMatchCountUiAction.pushValidOrMissing();
         }
     }
 
@@ -354,14 +411,14 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             } else {
                 if (marketIds.length === 0) {
                     this._singleMarketUiAction.pushValue(undefined);
-                    this._singleMarketUiAction.pushMissing();
+                    this._singleMarketUiAction.pushValidOrMissing();
                     this._multiMarketUiAction.pushValue([]);
-                    this._multiMarketUiAction.pushMissing();
+                    this._multiMarketUiAction.pushValidOrMissing();
                 } else {
                     this._singleMarketUiAction.pushValue(marketIds[0]);
                     this._multiMarketUiAction.pushValue(marketIds);
-                    this._singleMarketUiAction.pushValid();
-                    this._multiMarketUiAction.pushValid();
+                    this._singleMarketUiAction.pushValidOrMissing();
+                    this._multiMarketUiAction.pushValidOrMissing();
                 }
             }
         }
@@ -380,10 +437,10 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             } else {
                 if (litIvemIds.length === 0) {
                     this._singleSymbolUiAction.pushValue(undefined);
-                    this._singleSymbolUiAction.pushMissing();
+                    this._singleSymbolUiAction.pushValidOrMissing();
                 } else {
                     this._singleSymbolUiAction.pushValue(litIvemIds[0]);
-                    this._singleMarketUiAction.pushValid();
+                    this._singleMarketUiAction.pushValidOrMissing();
                 }
             }
         }
@@ -418,7 +475,9 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
             }
 
             this.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti); // make sure this is set before TargetTypeId
+            scanEditor.beginFieldChanges(this);
             scanEditor.setTargetTypeId(targetTypeId);
+            scanEditor.endFieldChanges();
         }
     }
 
@@ -464,9 +523,17 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         }
         return lastTargetTypeIdWasMulti;
     }
+
+    private notifyControlInputOrCommit(): void {
+        if (this.controlInputOrCommitEventer !== undefined) {
+            this.controlInputOrCommitEventer();
+        }
+    }
 }
 
 export namespace ScanEditorTargetsNgComponent {
+    export type ControlInputOrCommitEventer = (this: void) => void;
+
     export const enum TargetSubTypeId {
         SingleSymbol,
         MultiSymbol,

@@ -14,6 +14,7 @@ import {
     InternalCommand,
     MultiEvent,
     ScanEditor,
+    ScanTargetTypeId,
     StringId,
     Strings,
     UnreachableCaseError,
@@ -65,6 +66,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private readonly _testUiAction: ButtonUiAction;
 
     private _scanEditor: ScanEditor | undefined;
+    private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorModifiedStateChangeSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -109,6 +111,8 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._notifiersSectionComponent.setEditor(scanEditor);
 
         if (this._scanEditor !== undefined) {
+            this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
+            this._scanEditorFieldChangesSubscriptionId = undefined;
             this._scanEditor.unsubscribeLifeCycleStateChangeEvents(this._scanEditorLifeCycleStateChangeSubscriptionId);
             this._scanEditorLifeCycleStateChangeSubscriptionId = undefined;
             this._scanEditor.unsubscribeModifiedStateChangeEvents(this._scanEditorModifiedStateChangeSubscriptionId);
@@ -121,6 +125,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (scanEditor === undefined) {
             newVisibility = HtmlTypes.Visibility.Hidden;
         } else {
+            this._scanEditorFieldChangesSubscriptionId = scanEditor.subscribeFieldChangesEvents(
+                () => this.handleScanEditorFieldChangesEvent()
+            )
             this._scanEditorLifeCycleStateChangeSubscriptionId = scanEditor.subscribeLifeCycleStateChangeEvents(
                 () => this.handleScanEditorLifeCycleStateChangeEvent()
             )
@@ -131,9 +138,12 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             newVisibility = HtmlTypes.Visibility.Visible;
         }
 
+        this.cancelAllControlsEdited();
+
         this.updateApplyButton();
         this.updateRevertButton();
         this.updateDeleteButton();
+        this.updateTestButton();
 
         if (newVisibility !== this.visibility) {
             this.visibility = newVisibility;
@@ -157,6 +167,11 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._testUiAction.finalise();
     }
 
+    private handleScanEditorFieldChangesEvent() {
+        this.updateApplyButton();
+        this.updateTestButton();
+    }
+
     private handleScanEditorLifeCycleStateChangeEvent() {
         this.updateApplyButton();
         this.updateRevertButton();
@@ -166,6 +181,12 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private handleScanEditorModifiedStateChangeEvent() {
         this.updateApplyButton();
         this.updateRevertButton();
+    }
+
+    private handleControlInputOrCommitEvent() {
+        this.updateApplyButton();
+        this.updateRevertButton();
+        this.updateDeleteButton();
     }
 
     private createApplyUiAction(commandRegisterService: CommandRegisterService) {
@@ -215,6 +236,8 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     }
 
     private initialiseComponents() {
+        this._generalSectionComponent.controlInputOrCommitEventer = () => { this.handleControlInputOrCommitEvent(); }
+
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
         this._deleteButtonComponent.initialise(this._deleteUiAction);
@@ -235,6 +258,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (editor === undefined) {
             throw new AssertInternalError('SENCHRUASE20241');
         } else {
+            this.cancelAllControlsEdited();
             editor.revert();
         }
     }
@@ -257,23 +281,25 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             if (targetTypeId === undefined) {
                 throw new AssertInternalError('SENCHTUASETT20241');
             } else {
-                const targets = editor.targets;
-                if (targets === undefined) {
-                    throw new AssertInternalError('SENCHTUASET20241');
+                const maxMatchCount = editor.maxMatchCount;
+                if (targetTypeId === ScanTargetTypeId.Markets && maxMatchCount === undefined) {
+                    throw new AssertInternalError('SENCHTUASESM20241');
                 } else {
-                    const criteriaAsZenithEncoded = editor.criteriaAsZenithEncoded;
-                    if (criteriaAsZenithEncoded === undefined) {
-                        throw new AssertInternalError('SENCHTUASEC20241');
+                    const targets = editor.targets;
+                    if (targets === undefined) {
+                        throw new AssertInternalError('SENCHTUASET20241');
                     } else {
-                        const rankAsZenithEncoded = editor.rankAsZenithEncoded;
-                        if (rankAsZenithEncoded === undefined) {
-                            throw new AssertInternalError('SENCHTUASER20241');
+                        const criteriaAsZenithEncoded = editor.criteriaAsZenithEncoded;
+                        if (criteriaAsZenithEncoded === undefined) {
+                            throw new AssertInternalError('SENCHTUASEC20241');
                         } else {
+                            const rankAsZenithEncoded = editor.rankAsZenithEncoded;
                             this._testComponent.execute(
                                 editor.name,
                                 editor.description,
                                 targetTypeId,
                                 targets,
+                                maxMatchCount,
                                 criteriaAsZenithEncoded,
                                 rankAsZenithEncoded,
                             );
@@ -294,27 +320,43 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             switch (editor.lifeCycleStateId) {
                 case ScanEditor.LifeCycleStateId.NotYetCreated:
                     action.pushCaption(Strings[StringId.Create]);
-                    action.pushValid();
+                    if (editor.canCreateScan() && this.areAllControlValuesOk()) {
+                        action.pushValidOrMissing();
+                    } else {
+                        action.pushDisabled();
+                    }
                     break;
                 case ScanEditor.LifeCycleStateId.Creating:
-                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                case ScanEditor.LifeCycleStateId.ExistsInitialDetailLoading:
                     action.pushDisabled();
                     break;
-                case ScanEditor.LifeCycleStateId.Exists:
-                    switch (editor.modifiedStateId) {
-                        case ScanEditor.ModifiedStateId.Unmodified:
-                            action.pushDisabled();
-                            break;
-                        case ScanEditor.ModifiedStateId.Modified:
-                            action.pushCaption(Strings[StringId.Update]);
-                            action.pushValid();
-                            break;
-                        case ScanEditor.ModifiedStateId.Conflict:
-                            action.pushCaption(Strings[StringId.Overwrite]);
-                            action.pushValid();
-                            break;
-                        default:
-                            throw new UnreachableCaseError('SENCUABMD32221', editor.modifiedStateId);
+                case ScanEditor.LifeCycleStateId.ExistsDetailLoaded:
+                    if (!this.areAllControlValuesOk()) {
+                        action.pushDisabled();
+                    } else {
+                        switch (editor.modifiedStateId) {
+                            case ScanEditor.ModifiedStateId.Unmodified:
+                                action.pushDisabled();
+                                break;
+                            case ScanEditor.ModifiedStateId.Modified:
+                                action.pushCaption(Strings[StringId.Update]);
+                                if (editor.canUpdateScan()) {
+                                    action.pushValidOrMissing();
+                                } else {
+                                    action.pushDisabled();
+                                }
+                                break;
+                            case ScanEditor.ModifiedStateId.Conflict:
+                                action.pushCaption(Strings[StringId.Overwrite]);
+                                if (editor.canUpdateScan()) {
+                                    action.pushValidOrMissing();
+                                } else {
+                                    action.pushDisabled();
+                                }
+                                break;
+                            default:
+                                throw new UnreachableCaseError('SENCUABMD32221', editor.modifiedStateId);
+                        }
                     }
                     break;
                 case ScanEditor.LifeCycleStateId.Updating:
@@ -336,25 +378,25 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         } else {
             switch (editor.lifeCycleStateId) {
                 case ScanEditor.LifeCycleStateId.NotYetCreated:
-                case ScanEditor.LifeCycleStateId.Exists:
+                case ScanEditor.LifeCycleStateId.ExistsDetailLoaded:
                     switch (editor.modifiedStateId) {
                         case ScanEditor.ModifiedStateId.Unmodified:
                             action.pushDisabled();
                             break;
                         case ScanEditor.ModifiedStateId.Modified:
                             action.pushCaption(Strings[StringId.Revert]);
-                            action.pushValid();
+                            action.pushValidOrMissing();
                             break;
                         case ScanEditor.ModifiedStateId.Conflict:
                             action.pushCaption(Strings[StringId.Revert]);
-                            action.pushValid();
+                            action.pushValidOrMissing();
                             break;
                         default:
                             throw new UnreachableCaseError('SENCUMBMD32221', editor.modifiedStateId);
                     }
                     break;
                 case ScanEditor.LifeCycleStateId.Creating:
-                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                case ScanEditor.LifeCycleStateId.ExistsInitialDetailLoading:
                 case ScanEditor.LifeCycleStateId.Updating:
                 case ScanEditor.LifeCycleStateId.Deleting:
                 case ScanEditor.LifeCycleStateId.Deleted:
@@ -373,12 +415,12 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             action.pushDisabled();
         } else {
             switch (editor.lifeCycleStateId) {
-                case ScanEditor.LifeCycleStateId.Exists:
-                    action.pushValid();
+                case ScanEditor.LifeCycleStateId.ExistsDetailLoaded:
+                    action.pushValidOrMissing();
                     break;
                 case ScanEditor.LifeCycleStateId.NotYetCreated:
                 case ScanEditor.LifeCycleStateId.Creating:
-                case ScanEditor.LifeCycleStateId.initialDetailLoading:
+                case ScanEditor.LifeCycleStateId.ExistsInitialDetailLoading:
                 case ScanEditor.LifeCycleStateId.Updating:
                 case ScanEditor.LifeCycleStateId.Deleting:
                 case ScanEditor.LifeCycleStateId.Deleted:
@@ -386,6 +428,20 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                     break;
                 default:
                     throw new UnreachableCaseError('SENCUABLD32221', editor.lifeCycleStateId);
+            }
+        }
+    }
+
+    private updateTestButton() {
+        const editor = this._scanEditor;
+        const action = this._testUiAction;
+        if (editor === undefined) {
+            action.pushDisabled();
+        } else {
+            if (this.areAllControlValuesOk() && editor.sourceValid) {
+                action.pushValidOrMissing();
+            } else {
+                action.pushDisabled();
             }
         }
     }
@@ -419,5 +475,21 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             this.sectionsSize = calculatedSectionsWidth;
             this._cdr.markForCheck();
         }
+    }
+
+    private areAllControlValuesOk() {
+        return (
+            this._generalSectionComponent.areAllControlValuesOk() &&
+            this._criteriaSectionComponent.areAllControlValuesOk() &&
+            this._rankSectionComponent.areAllControlValuesOk() &&
+            this._notifiersSectionComponent.areAllControlValuesOk()
+        );
+    }
+
+    private cancelAllControlsEdited() {
+        this._generalSectionComponent.cancelAllControlsEdited();
+        this._criteriaSectionComponent.cancelAllControlsEdited();
+        this._rankSectionComponent.cancelAllControlsEdited();
+        this._notifiersSectionComponent.cancelAllControlsEdited();
     }
 }

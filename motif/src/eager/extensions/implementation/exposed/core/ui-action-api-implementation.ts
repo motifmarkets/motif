@@ -70,7 +70,7 @@ export class UiActionImplementation implements UiActionApi {
     }
 
     pushValid(titleText?: string) {
-        this._actual.pushValid(titleText);
+        this._actual.pushValidOrMissing(titleText);
     }
 
     pushAccepted(value?: boolean) {

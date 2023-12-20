@@ -19,8 +19,8 @@ export class RankZenithScanFormulaViewNgComponent extends ZenithScanFormulaViewN
         return editor.rankAsZenithText;
     }
 
-    protected override setFormulaAsZenithText(editor: ScanEditor, text: string, fieldChanger: ScanEditor.FieldChanger) {
-        return editor.setRankAsZenithText(text, fieldChanger);
+    protected override setFormulaAsZenithText(editor: ScanEditor, text: string, modifier: ScanEditor.Modifier) {
+        return editor.setRankAsZenithText(text, modifier);
     }
 
     protected getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined {

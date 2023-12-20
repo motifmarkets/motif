@@ -101,6 +101,15 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this.pushValues();
     }
 
+    areAllControlValuesOk() {
+        return (
+            true // todo
+        );
+    }
+
+    cancelAllControlsEdited() {
+    }
+
     protected finalise() {
         this._viewUiAction.finalise();
     }
@@ -109,7 +118,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier) {
         const scanEditor = this._scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this) {
         // let criteriaChanged = false;

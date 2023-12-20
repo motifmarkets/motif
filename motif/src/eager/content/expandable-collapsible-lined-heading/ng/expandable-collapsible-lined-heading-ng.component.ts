@@ -86,19 +86,19 @@ export class ExpandableCollapsibleLinedHeadingNgComponent extends ContentCompone
         switch (value) {
             case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Expanded: {
                 this._expandUiAction.pushDisabled();
-                this._restoreUiAction.pushValid();
-                this._collapseUiAction.pushValid();
+                this._restoreUiAction.pushValidOrMissing();
+                this._collapseUiAction.pushValidOrMissing();
                 break;
             }
             case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Restored: {
-                this._expandUiAction.pushValid();
+                this._expandUiAction.pushValidOrMissing();
                 this._restoreUiAction.pushDisabled();
-                this._collapseUiAction.pushValid();
+                this._collapseUiAction.pushValidOrMissing();
                 break;
             }
             case ExpandableCollapsibleLinedHeadingNgComponent.StateId.Collapsed: {
-                this._expandUiAction.pushValid();
-                this._restoreUiAction.pushValid();
+                this._expandUiAction.pushValidOrMissing();
+                this._restoreUiAction.pushValidOrMissing();
                 this._collapseUiAction.pushDisabled();
                 break;
             }

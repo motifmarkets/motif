@@ -192,7 +192,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         return Promise.resolve(undefined);
     }
 
-    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger | undefined) {
+    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier | undefined) {
         const text = this.getFormulaAsZenithTextIfChanged(editor, changedFieldIds);
         if (text !== undefined && fieldChanger !== this) {
             this._editorComponent.text = text;
@@ -238,7 +238,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     protected abstract getFormulaAsZenithText(editor: ScanEditor): string | undefined;
     protected abstract setFormulaAsZenithText(
         editor: ScanEditor,
-        text: string, fieldChanger: ScanEditor.FieldChanger
+        text: string, fieldChanger: ScanEditor.Modifier
     ): ScanEditor.SetAsZenithTextResult | undefined;
 }
 

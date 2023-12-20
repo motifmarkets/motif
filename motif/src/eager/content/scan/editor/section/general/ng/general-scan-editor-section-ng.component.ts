@@ -38,6 +38,8 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     public deleteStateText: string | undefined;
     public deletingOrDeleted = false;
 
+    controlInputOrCommitEventer: GeneralScanEditorSectionNgComponent.ControlInputOrCommitEventer | undefined;
+
     private readonly _enabledUiAction: BooleanUiAction;
     private readonly _nameUiAction: StringUiAction;
     private readonly _descriptionUiAction: StringUiAction;
@@ -82,7 +84,27 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         return scanEditor !== undefined && scanEditor.lifeCycleStateId === ScanEditor.LifeCycleStateId.Deleted;
     }
 
+    areAllControlValuesOk() {
+        return (
+            this._enabledControlComponent.uiAction.isValueOk() &&
+            this._nameControlComponent.uiAction.isValueOk() &&
+            this._descriptionControlComponent.uiAction.isValueOk() &&
+            this._symbolListControlComponent.uiAction.isValueOk() &&
+            this._targetsComponent.areAllControlValuesOk()
+        );
+    }
+
+    cancelAllControlsEdited() {
+        this._enabledControlComponent.uiAction.cancelEdit();
+        this._nameControlComponent.uiAction.cancelEdit();
+        this._descriptionControlComponent.uiAction.cancelEdit();
+        this._symbolListControlComponent.uiAction.cancelEdit();
+        this._targetsComponent.cancelAllControlsEdited();
+    }
+
     protected finalise() {
+        this._targetsComponent.controlInputOrCommitEventer = undefined;
+
         this._enabledUiAction.finalise();
         this._nameUiAction.finalise();
         this._descriptionUiAction.finalise();
@@ -94,7 +116,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.FieldChanger) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier) {
         const scanEditor = this._scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this) {
             for (const fieldId of fieldIds) {
@@ -140,29 +162,39 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._descriptionControlComponent.initialise(this._descriptionUiAction);
         this._symbolListLabelComponent.initialise(this._symbolListUiAction);
         this._symbolListControlComponent.initialise(this._symbolListUiAction);
+
+        this._targetsComponent.controlInputOrCommitEventer = () => { this.notifyControlInputOrCommit() };
     }
 
     private createEnabledUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Enabled]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Enabled]);
+        action.commitOnAnyValidInput = true;
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
                 // this._scan.enabled = this._enabledUiAction.definedValue;
+                this.notifyControlInputOrCommit()
             }
         };
         return action;
     }
 
     private createNameUiAction() {
-        const action = new StringUiAction(false);
+        const action = new StringUiAction(true);
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Name]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Name]);
+        action.commitOnAnyValidInput = true;
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
-                this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.setName(this._nameUiAction.definedValue);
-                this._scanEditor.endFieldChanges();
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
+                editor.setName(this._nameUiAction.definedValue);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit()
             }
         };
         return action;
@@ -172,11 +204,15 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         const action = new StringUiAction(false);
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_Description]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_Description]);
+        action.commitOnAnyValidInput = true;
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
-                this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.setDescription(this._nameUiAction.definedValue);
-                this._scanEditor.endFieldChanges();
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
+                editor.setDescription(this._nameUiAction.definedValue);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit()
             }
         };
         return action;
@@ -186,11 +222,15 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_SymbolList]);
         action.pushTitle(Strings[StringId.ScanPropertiesTitle_SymbolList]);
+        action.commitOnAnyValidInput = true;
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            if (this._scanEditor !== undefined) {
-                this._scanEditor.beginFieldChanges(this);
-                this._scanEditor.setSymbolListEnabled(this._symbolListUiAction.definedValue);
-                this._scanEditor.endFieldChanges();
+            const editor = this._scanEditor;
+            if (editor !== undefined) {
+                editor.beginFieldChanges(this);
+                editor.setSymbolListEnabled(this._symbolListUiAction.definedValue);
+                editor.endFieldChanges();
+                this.notifyControlInputOrCommit()
             }
         };
         return action;
@@ -248,10 +288,10 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
                 this._descriptionUiAction.pushReadonly();
                 this._symbolListUiAction.pushReadonly();
             } else {
-                this._enabledUiAction.pushValid();
-                this._nameUiAction.pushValid();
-                this._descriptionUiAction.pushValid();
-                this._symbolListUiAction.pushValid();
+                this._enabledUiAction.pushValidOrMissing();
+                this._nameUiAction.pushValidOrMissing();
+                this._descriptionUiAction.pushValidOrMissing();
+                this._symbolListUiAction.pushValidOrMissing();
             }
         }
 
@@ -260,4 +300,14 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             this._cdr.markForCheck();
         }
     }
+
+    private notifyControlInputOrCommit(): void {
+        if (this.controlInputOrCommitEventer !== undefined) {
+            this.controlInputOrCommitEventer();
+        }
+    }
+}
+
+export namespace GeneralScanEditorSectionNgComponent {
+    export type ControlInputOrCommitEventer = (this: void) => void;
 }

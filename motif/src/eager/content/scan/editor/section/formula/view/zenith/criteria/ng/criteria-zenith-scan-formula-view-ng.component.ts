@@ -19,7 +19,7 @@ export class CriteriaZenithScanFormulaViewNgComponent extends ZenithScanFormulaV
         return editor.criteriaAsZenithText;
     }
 
-    protected override setFormulaAsZenithText(editor: ScanEditor, text: string, fieldChanger: ScanEditor.FieldChanger) {
+    protected override setFormulaAsZenithText(editor: ScanEditor, text: string, fieldChanger: ScanEditor.Modifier) {
         return editor.setCriteriaAsZenithText(text, fieldChanger);
     }
 
