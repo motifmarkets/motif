@@ -87,7 +87,7 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
     }
 
     private linkSearchComponent() {
-        this._searchComponent.selectAllEventer = () => this.frame.selectAll();
+        this._searchComponent.selectAllEventer = () => this.frame.selectAllRows();
         this._searchComponent.searchTextChangedEventer = (searchText) => this.frame.tryFocusFirstSearchMatch(searchText);
         this._searchComponent.searchNextEventer = (searchText, downKeys) => this.frame.tryFocusNextSearchMatch(searchText, downKeys);
     }

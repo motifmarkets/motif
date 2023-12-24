@@ -14,8 +14,8 @@
     <div id="singleSymbolSubTargetType" [style.display]="isSingleSymbolSubTargetType() ? null : 'none'">
         <app-lit-ivem-id-select #singleSymbolControl id="singleSymbolControl"></app-lit-ivem-id-select>
     </div>
-    <div [style.display]="isMultiSymbolSubTargetType() ? null : 'none'">
-
+    <div id="multiSymbolSubTargetType" [style.display]="isMultiSymbolSubTargetType() ? null : 'none'">
+        <app-lit-ivem-id-list-editor #multiSymbolEditor id="multiSymbolEditor"></app-lit-ivem-id-list-editor>
     </div>
     <div class="marketSubTargetType" [style.display]="isSingleMarketSubTargetType() ? null : 'none'">
         <app-enum-input #singleMarketControl id="singleMarketControl"></app-enum-input>

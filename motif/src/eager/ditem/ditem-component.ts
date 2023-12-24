@@ -124,7 +124,7 @@ export namespace DitemComponent {
         export function initialise() {
             for (let i = 0; i < idCount; i++) {
                 const info = infos[i];
-                if (info.id !== i) {
+                if (info.id !== i as ConstructionMethodId) {
                     throw new EnumInfoOutOfOrderError('DitemComponent.ConstructionMethodId', i, info.jsonValue);
                 }
             }

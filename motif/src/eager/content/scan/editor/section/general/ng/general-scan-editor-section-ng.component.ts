@@ -1,6 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
+    AllowedFieldsGridLayoutDefinition,
     BooleanUiAction,
+    GridLayoutOrReferenceDefinition,
     ScanEditor,
     StringId,
     StringUiAction,
@@ -39,6 +41,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     public deletingOrDeleted = false;
 
     controlInputOrCommitEventer: GeneralScanEditorSectionNgComponent.ControlInputOrCommitEventer | undefined;
+    editTargetsMultiSymbolGridColumnsEventer: GeneralScanEditorSectionNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
 
     private readonly _enabledUiAction: BooleanUiAction;
     private readonly _nameUiAction: StringUiAction;
@@ -164,6 +167,13 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._symbolListControlComponent.initialise(this._symbolListUiAction);
 
         this._targetsComponent.controlInputOrCommitEventer = () => { this.notifyControlInputOrCommit() };
+        this._targetsComponent.editMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editTargetsMultiSymbolGridColumnsEventer !== undefined) {
+                return this.editTargetsMultiSymbolGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+            } else {
+                return Promise.resolve(undefined);
+            }
+        };
     }
 
     private createEnabledUiAction() {
@@ -310,4 +320,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
 export namespace GeneralScanEditorSectionNgComponent {
     export type ControlInputOrCommitEventer = (this: void) => void;
+    export type EditTargetsMultiSymbolGridColumnsEventer = (
+        this: void,
+        caption: string,
+        allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition,
+    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
 }

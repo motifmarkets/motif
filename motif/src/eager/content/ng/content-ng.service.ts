@@ -94,6 +94,10 @@ export class ContentNgService {
     //     );
     // }
 
+    createLitIvemIdListFrame() {
+        return this._content.createLitIvemIdListFrame();
+    }
+
     createWatchlistFrame() {
         return this._content.createWatchlistFrame();
     }

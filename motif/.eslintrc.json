@@ -63,7 +63,9 @@
         "@typescript-eslint/naming-convention": ["error", { "selector": "enumMember", "format": null }],
         "@typescript-eslint/no-explicit-any": "error",
         "@typescript-eslint/no-invalid-void-type": ["warn", { "allowAsThisParameter": true }],
-        "@typescript-eslint/member-ordering": ["warn", {
+        "@typescript-eslint/prefer-nullish-coalescing": ["warn", { "ignoreTernaryTests": true }],
+        "@typescript-eslint/member-ordering": ["warn",
+          {
             "default": [
               // Index signature
               "signature",

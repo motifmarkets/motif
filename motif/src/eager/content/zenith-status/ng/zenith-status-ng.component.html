@@ -53,14 +53,16 @@
         <div class="nameValuePairs">
             <span>Auth Fetch Successive Failure:</span>
             <span>{{ authFetchSuccessiveFailureCount }}</span>
-            <span>Socket Open Successive Failure:</span>
-            <span>{{ socketOpenSuccessiveFailureCount }}</span>
+            <span>Socket Connect Successive Error:</span>
+            <span>{{ socketConnectingSuccessiveErrorCount }}</span>
             <span>Token Fetch Successive Failure:</span>
             <span>{{ zenithTokenFetchSuccessiveFailureCount }}</span>
             <span>Token Refresh Successive Failure:</span>
             <span>{{ zenithTokenRefreshSuccessiveFailureCount }}</span>
-            <span>Socket Close Successive Failure:</span>
-            <span>{{ socketCloseSuccessiveFailureCount }}</span>
+            <span>Shortlived Socket Successive Error:</span>
+            <span>{{ socketShortLivedClosedSuccessiveErrorCount }}</span>
+            <span>Socket Closing Successive Error:</span>
+            <span>{{ socketClosingSuccessiveErrorCount }}</span>
             <span>Unexpected Socket Close:</span>
             <span>{{ unexpectedSocketCloseCount }}</span>
             <span>timeouts:</span>

@@ -165,10 +165,6 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         }
     }
 
-    selectAll() {
-        this.grid.selectAllRows();
-    }
-
     tryFocusFirstSearchMatch(searchText: string) {
         if (searchText.length > 0) {
             const rowCount = this.grid.mainDataServer.getRowCount();

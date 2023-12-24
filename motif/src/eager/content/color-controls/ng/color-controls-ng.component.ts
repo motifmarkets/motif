@@ -86,7 +86,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     requestActiveInPickerEventer: ColorControlsNgComponent.RequestActiveInPickerEventer;
     colorHiddenInPickerChangedEventer: ColorControlsNgComponent.ColorHiddenInPickerChangedEventer;
 
-    public activeInPickerIndicatorFontWeight: string;
+    public activeInPickerIndicatorFontWeight: HtmlTypes.FontWeight | '';
     public heading: string;
 
     private _commandRegisterService: CommandRegisterService;
@@ -924,7 +924,7 @@ export namespace ColorControlsNgComponent {
 
         export function initialise() {
             for (let i = 0; i < idCount; i++) {
-                if (infos[i].id !== i) {
+                if (infos[i].id !== i as ItemColorTypeId) {
                     throw new EnumInfoOutOfOrderError('ColorSelectComponent.ItemColorTypeId', i, idToCaption(i));
                 }
             }

@@ -5,7 +5,7 @@
  */
 
 import { ErrorHandler, Injectable } from '@angular/core';
-import { UserAlertService } from '@motifmarkets/motif-core';
+import { UserAlertService, getErrorMessage } from '@motifmarkets/motif-core';
 import { UserAlertNgService } from 'component-services-ng-api';
 import { TelemetryService } from '../telemetry-service';
 import { TelemetryNgService } from './telemetry-ng.service';
@@ -27,7 +27,7 @@ export class ErrorHandlerNgService implements ErrorHandler {
 
         this._telemetry.error(err);
 
-        this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.Exception, `${err}`);
+        this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.Exception, getErrorMessage(err));
     }
 }
 

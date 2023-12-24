@@ -27,6 +27,7 @@ import { DepthFrame } from './depth/internal-api';
 import { FeedsFrame } from './feeds/internal-api';
 import { GridLayoutEditorAllowedFieldsFrame, GridLayoutEditorColumnsFrame } from './grid-layout-dialog/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
+import { LitIvemIdListFrame } from './lit-ivem-id-list/lit-ivem-id-list-frame';
 import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
@@ -94,6 +95,17 @@ export class ContentService {
     //         getHeaderCellPainterEventer,
     //     );
     // }
+
+    createLitIvemIdListFrame() {
+        return new LitIvemIdListFrame(
+            this._settingsService,
+            this._referenceableGridLayoutsService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._referenceableGridSourcesService,
+            this._cellPainterFactoryService,
+        );
+    }
 
     createWatchlistFrame() {
         return new WatchlistFrame(

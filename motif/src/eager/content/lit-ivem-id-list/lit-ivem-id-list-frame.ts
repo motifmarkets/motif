@@ -1,26 +1,28 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
+    BadnessComparableList,
     GridField,
     GridSourceDefinition,
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
+    LitIvemId,
+    LitIvemIdComparableListTableRecordSource,
+    MarketInfo,
     RenderValueRecordGridCellPainter,
-    Scan,
-    ScanList,
-    ScanTableRecordSource,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
-import { DelayedBadnessGridSourceFrame } from '../../delayed-badness-grid-source/internal-api';
+import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
-export class ScanListFrame extends DelayedBadnessGridSourceFrame {
-    gridSourceOpenedEventer: ScanListFrame.GridSourceOpenedEventer | undefined;
-    recordFocusedEventer: ScanListFrame.RecordFocusedEventer | undefined
+export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
+    getListEventer: LitIvemIdListFrame.GetListEventer | undefined;
+    gridSourceOpenedEventer: LitIvemIdListFrame.GridSourceOpenedEventer | undefined;
+    recordFocusedEventer: LitIvemIdListFrame.RecordFocusedEventer | undefined
 
-    private _recordSource: ScanTableRecordSource;
-    private _scanList: ScanList;
+    private _recordSource: LitIvemIdComparableListTableRecordSource;
+    private _list: BadnessComparableList<LitIvemId>;
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
@@ -33,7 +35,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     // private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
     // private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
 
-    get scanList() { return this._scanList; }
+    get list() { return this._list; }
 
     public get filterText() { return this._filterText; }
     public set filterText(value: string) {
@@ -44,8 +46,8 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
             if (this._uppercaseFilterText.length > 0) {
                 this.applyFilter((record) => {
                     const index = record.index;
-                    const scan = this._scanList.getAt(index);
-                    return this.filterItems(scan);
+                    const listIvemId = this.list.getAt(index);
+                    return this.filterItems(listIvemId);
             });
             } else {
                 this.clearFilter();
@@ -68,25 +70,48 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenWithDefaultLayout(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
+    tryOpenWithDefaultLayout(list: BadnessComparableList<LitIvemId>, keepView: boolean) {
+        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(list);
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    createDefaultLayoutGridSourceOrReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
+    createDefaultLayoutGridSourceOrReferenceDefinition(list: BadnessComparableList<LitIvemId>) {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdComparableList(list);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
+    deleteSelected() {
+        const grid = this.grid;
+        if (!grid.isFiltered && grid.selection.allSelected) {
+            this._list.clear();
+        } else {
+            const rowIndices = grid.selection.getRowIndices(true);
+            const count = rowIndices.length;
+            const recordIndices = new Array<Integer>(count);
+            for (let i = 0; i < count; i++) {
+                const rowIndex = rowIndices[i];
+                recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
+            }
+            this.list.removeAtIndices(recordIndices);
+        }
+    }
+
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        return this.createDefaultLayoutGridSourceOrReferenceDefinition();
+        let list: BadnessComparableList<LitIvemId> | undefined;
+        if (this.getListEventer !== undefined) {
+            list = this.getListEventer();
+        }
+        if (list === undefined) {
+            list = new BadnessComparableList<LitIvemId>();
+        }
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition(list);
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
-        this._recordSource = table.recordSource as ScanTableRecordSource;
-        this._scanList = this._recordSource.recordList;
+        this._recordSource = table.recordSource as LitIvemIdComparableListTableRecordSource;
+        this._list = this._recordSource.list;
         if (this.gridSourceOpenedEventer !== undefined) {
             this.gridSourceOpenedEventer();
         }
@@ -110,16 +135,17 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return this._gridMainCellPainter;
     }
 
-    private filterItems(scan: Scan) {
+    private filterItems(litIvemId: LitIvemId) {
         if (this._uppercaseFilterText.length === 0) {
             return true;
         } else {
-            return scan.upperCaseName.includes(this._uppercaseFilterText) || scan.upperCaseDescription.includes(this._uppercaseFilterText);
+            return litIvemId.code.toUpperCase().includes(this._uppercaseFilterText) || MarketInfo.idToDisplay(litIvemId.litId).toUpperCase().includes(this._uppercaseFilterText);
         }
     }
 }
 
-export namespace ScanListFrame {
+export namespace LitIvemIdListFrame {
+    export type GetListEventer = (this: void) => BadnessComparableList<LitIvemId> | undefined;
     export type GridSourceOpenedEventer = (this: void) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }

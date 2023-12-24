@@ -15,7 +15,6 @@ import {
 import {
     Command, CommandRegisterService, CommandUiAction, delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
 // import { CommandParametersComponentRegister } from '../../command-parameters-component-register';
 // import { CommandSelectNgComponent } from '../../command-select/ng-api';
 // import { CommandParametersComponentNgDirective } from '../../ng/ng-api';
@@ -34,11 +33,11 @@ export class CommandBarNgComponent implements OnDestroy, AfterViewInit {
 
     private _activeCommand: Command | undefined;
 
-    constructor(commandRegisterNgService: CommandRegisterNgService) {
-        // this._commandUiAction = this.createCommandUiAction(
-        //     commandRegisterNgService.service
-        // );
-    }
+    // constructor(commandRegisterNgService: CommandRegisterNgService) {
+    //     // this._commandUiAction = this.createCommandUiAction(
+    //     //     commandRegisterNgService.service
+    //     // );
+    // }
 
     ngOnDestroy() {
         this.finalise();

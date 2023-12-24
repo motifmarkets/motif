@@ -59,12 +59,13 @@ export class ZenithStatusFrame extends ContentFrame {
         return time.toLocaleTimeString();
     }
     get authFetchSuccessiveFailureCount() { return this._extConnectionDataItem.authFetchSuccessiveFailureCount.toString(10); }
-    get socketOpenSuccessiveFailureCount() { return this._extConnectionDataItem.socketOpenSuccessiveFailureCount.toString(10); }
+    get socketConnectingSuccessiveErrorCount() { return this._extConnectionDataItem.socketConnectingSuccessiveErrorCount.toString(10); }
     get zenithTokenFetchSuccessiveFailureCount() { return this._extConnectionDataItem.zenithTokenFetchSuccessiveFailureCount.toString(10); }
     get zenithTokenRefreshSuccessiveFailureCount() {
         return this._extConnectionDataItem.zenithTokenRefreshSuccessiveFailureCount.toString(10);
     }
-    get socketCloseSuccessiveFailureCount() { return this._extConnectionDataItem.socketCloseSuccessiveFailureCount.toString(10); }
+    get socketClosingSuccessiveErrorCount() { return this._extConnectionDataItem.socketClosingSuccessiveErrorCount.toString(10); }
+    get socketShortLivedClosedSuccessiveErrorCount() { return this._extConnectionDataItem.socketShortLivedClosedSuccessiveErrorCount.toString(10); }
     get unexpectedSocketCloseCount() { return this._extConnectionDataItem.unexpectedSocketCloseCount.toString(10); }
     get timeoutCount() { return this._extConnectionDataItem.timeoutCount.toString(10); }
     get lastTimeoutStateId() {
@@ -202,12 +203,14 @@ export class ZenithStatusFrame extends ContentFrame {
     }
 
     private unsubscribeZenithServerInfo() {
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (this._serverInfoDataItem !== undefined) {
             this._serverInfoDataItem.unsubscribeFieldValuesChangedEvent(this._serverInfoFieldValuesChangedSubscriptionId);
             this._serverInfoFieldValuesChangedSubscriptionId = undefined;
             this._serverInfoDataItem.unsubscribeBadnessChangeEvent(this._serverInfoCorrectnessChangeSubscriptionId);
             this._serverInfoCorrectnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._serverInfoDataItem);
+            this._serverInfoDataItem = undefined as unknown as ZenithServerInfoDataItem;
         }
     }
 

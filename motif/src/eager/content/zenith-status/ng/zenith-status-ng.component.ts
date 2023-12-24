@@ -47,10 +47,11 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
 
     public authExpiryTime: string;
     public authFetchSuccessiveFailureCount: string;
-    public socketOpenSuccessiveFailureCount: string;
+    public socketConnectingSuccessiveErrorCount: string;
     public zenithTokenFetchSuccessiveFailureCount: string;
     public zenithTokenRefreshSuccessiveFailureCount: string;
-    public socketCloseSuccessiveFailureCount: string;
+    public socketClosingSuccessiveErrorCount: string;
+    public socketShortLivedClosedSuccessiveErrorCount: string;
     public unexpectedSocketCloseCount: string;
     public timeoutCount: string;
     public lastTimeoutStateId: string;
@@ -168,10 +169,11 @@ export class ZenithStatusNgComponent extends ContentComponentBaseNgDirective
     private processCounter() {
         this.authExpiryTime = this._frame.authExpiryTime;
         this.authFetchSuccessiveFailureCount = this._frame.authFetchSuccessiveFailureCount;
-        this.socketOpenSuccessiveFailureCount = this._frame.socketOpenSuccessiveFailureCount;
+        this.socketConnectingSuccessiveErrorCount = this._frame.socketConnectingSuccessiveErrorCount;
         this.zenithTokenFetchSuccessiveFailureCount = this._frame.zenithTokenFetchSuccessiveFailureCount;
         this.zenithTokenRefreshSuccessiveFailureCount = this._frame.zenithTokenRefreshSuccessiveFailureCount;
-        this.socketCloseSuccessiveFailureCount = this._frame.socketCloseSuccessiveFailureCount;
+        this.socketClosingSuccessiveErrorCount = this._frame.socketClosingSuccessiveErrorCount;
+        this.socketShortLivedClosedSuccessiveErrorCount = this._frame.socketShortLivedClosedSuccessiveErrorCount;
         this.unexpectedSocketCloseCount = this._frame.unexpectedSocketCloseCount;
         this.timeoutCount = this._frame.timeoutCount;
         this.lastTimeoutStateId = this._frame.lastTimeoutStateId;

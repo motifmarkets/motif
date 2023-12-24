@@ -11,7 +11,10 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
+    AllowedFieldsGridLayoutDefinition,
+    AssertInternalError,
     ButtonUiAction,
+    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -22,10 +25,11 @@ import {
     StringUiAction,
     Strings,
     UiAction,
-    delay1Tick
+    delay1Tick,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
+import { NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -103,7 +107,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             adiNgService.service,
             scansNgService.service,
             this._opener,
-            () => this._editorComponent.setEditor(this._frame.scanEditor),
+            (editor) => this._editorComponent.setEditor(editor),
         );
 
         this._newUiAction = this.createNewUiAction();
@@ -253,6 +257,11 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._autoSizeColumnWidthsButtonComponent.initialise(this._autoSizeColumnWidthsUiAction);
         this._columnsButtonComponent.initialise(this._columnsUiAction);
 
+        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = (
+            caption,
+            allowedFieldsAndLayoutDefinition
+        ) => this.openGridColumnsEditorDialog(caption, allowedFieldsAndLayoutDefinition);
+
         // this._frame.open();
     }
 
@@ -268,6 +277,45 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._filterEditUiAction.pushValue(this._frame.filterText);
     }
 
+    private openGridColumnsEditorDialog(caption: string, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
+        this.dialogActive = true;
+
+        // We cannot just return the promise from the dialog as we need to close the dialog as well.
+        // So return a separate promise which is resolved when dialog is closed.
+        let definitonResolveFtn: (this: void, definition: GridLayoutOrReferenceDefinition | undefined) => void;
+
+        const definitionPromise = new Promise<GridLayoutOrReferenceDefinition | undefined>(
+            (resolve) => {
+                definitonResolveFtn = resolve;
+            }
+        )
+
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            caption,
+            allowedFieldsAndLayoutDefinition,
+        );
+        closePromise.then(
+            (definition) => {
+                definitonResolveFtn(definition);
+                this.closeDialog();
+            },
+            (reason) => {
+                throw new AssertInternalError('ODNCSLEDCPTR20987', getErrorMessage(reason));
+            }
+        );
+
+        this.markForCheck();
+
+        return definitionPromise;
+    }
+
+    private closeDialog() {
+        this._dialogContainer.clear();
+        this.dialogActive = false;
+        this.markForCheck();
+    }
 }
 
 export namespace ScansDitemNgComponent {

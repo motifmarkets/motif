@@ -67,7 +67,7 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     constructor(
         protected readonly settingsService: SettingsService,
-        private readonly _namedGridLayoutsService: ReferenceableGridLayoutsService,
+        private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
@@ -215,7 +215,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             definition.updateGridLayoutDefinitionOrReference(this.keptGridLayoutOrReferenceDefinition);
         }
         const gridSourceOrReference = new GridSourceOrReference(
-            this._namedGridLayoutsService,
+            this._referenceableGridLayoutsService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
             definition
@@ -970,6 +970,26 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     applyFilter(filter?: RevRecordDataServer.RecordFilterCallback): void {
         this._grid.applyFilter(filter);
+    }
+
+    selectAllRows() {
+        this._grid.selectAllRows();
+    }
+
+    selectAll() {
+        this.grid.selectAll();
+    }
+
+    getSelectedRecordIndices() {
+        const selection = this.grid.selection
+        const rowIndices = selection.getRowIndices(true);
+        const count = rowIndices.length;
+        const recordIndices = new Array<Integer>(count);
+        for (let i = 0; i < count; i++) {
+            const rowIndex = rowIndices[i];
+            recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
+        }
+        return recordIndices;
     }
 
     protected createGrid(

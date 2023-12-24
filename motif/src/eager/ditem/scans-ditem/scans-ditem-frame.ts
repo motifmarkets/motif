@@ -25,6 +25,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     private _scanListFrame: ScanListFrame | undefined;
     private _scanList: ScanList | undefined;
     private _scanEditor: ScanEditor | undefined;
+    private _newScanEditor: ScanEditor | undefined;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -127,10 +128,28 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         }
     }
 
+    newOrFocusNewScan() {
+        if (this._newScanEditor === undefined) {
+            this.newScan();
+        } else {
+            if (this._newScanEditor.lifeCycleStateId !== ScanEditor.LifeCycleStateId.NotYetCreated) {
+                this._newScanEditor = undefined;
+                this.newScan();
+            } else {
+                if (this._scanEditor !== this._newScanEditor) {
+                    this.checkCloseActiveScanEditor();
+                    this._scanEditor = this._newScanEditor;
+                    this._setEditorEventer(this._scanEditor);
+                }
+            }
+        }
+    }
+
     newScan() {
         this.checkCloseActiveScanEditor();
         this._scanEditor = this._scansService.openNewScanEditor(this._opener);
-        this._setEditorEventer();
+        this._newScanEditor = this._scanEditor;
+        this._setEditorEventer(this._scanEditor);
     }
 
     private handleScanListFrameRecordFocusedEvent(newRecordIndex: Integer | undefined) {
@@ -153,7 +172,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                                 throw new AssertInternalError('SDFHSLFRFESM50515'); // should always exist
                             } else {
                                 this._scanEditor = scanEditor;
-                                this._setEditorEventer();
+                                this._setEditorEventer(scanEditor);
                             }
                         }
                     },
@@ -165,7 +184,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     private checkCloseActiveScanEditor() {
         if (this._scanEditor !== undefined) {
-            this._setEditorEventer();
+            this._setEditorEventer(undefined);
             this._scansService.closeScanEditor(this._scanEditor, this._opener);
             this._scanEditor = undefined;
         }
@@ -179,5 +198,5 @@ export namespace ScansDitemFrame {
     }
 
     export type OpenedEventHandler = (this: void) => void;
-    export type SetEditorEventer = (this: void) => void;
+    export type SetEditorEventer = (this: void, editor: ScanEditor | undefined) => void;
 }

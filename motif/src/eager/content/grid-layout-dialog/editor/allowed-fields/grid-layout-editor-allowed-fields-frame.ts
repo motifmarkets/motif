@@ -114,10 +114,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return grid;
     }
 
-    selectAll() {
-        this.grid.selectAll();
-    }
-
     applyColumnListFilter() {
         this.grid.applyFilter((record) => this.filterInuseFields(record));
     }

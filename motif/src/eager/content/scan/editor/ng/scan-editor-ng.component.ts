@@ -6,9 +6,11 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy, ViewChild } from '@angular/core';
 import {
+    AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     ButtonUiAction,
     CommandRegisterService,
+    GridLayoutOrReferenceDefinition,
     HtmlTypes,
     Integer,
     InternalCommand,
@@ -52,6 +54,8 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('revertButton', { static: false }) private _revertButtonComponent: ButtonInputNgComponent;
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: ButtonInputNgComponent;
     @ViewChild('testButton', { static: true }) private _testButtonComponent: ButtonInputNgComponent;
+
+    editTargetsMultiSymbolGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
 
     public criteriaFieldId = ScanEditor.FieldId.Criteria;
     public rankFieldId = ScanEditor.FieldId.Rank;
@@ -237,6 +241,13 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     private initialiseComponents() {
         this._generalSectionComponent.controlInputOrCommitEventer = () => { this.handleControlInputOrCommitEvent(); }
+        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editTargetsMultiSymbolGridColumnsEventer !== undefined) {
+                return this.editTargetsMultiSymbolGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+            } else {
+                return Promise.resolve(undefined);
+            }
+        };
 
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
@@ -492,4 +503,12 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._rankSectionComponent.cancelAllControlsEdited();
         this._notifiersSectionComponent.cancelAllControlsEdited();
     }
+}
+
+export namespace ScanEditorNgComponent {
+    export type EditTargetsMultiSymbolGridColumnsEventer = (
+        this: void,
+        caption: string,
+        allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
+    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
 }

@@ -216,7 +216,7 @@ export namespace MenuBarMenuItemComponentNgDirective {
         export function initialise() {
             const count = infos.length;
             for (let i = 0; i < count; i++) {
-                if (i !== infos[i].id) {
+                if (i as MenuBarService.MenuItem.StateId !== infos[i].id) {
                     throw new EnumInfoOutOfOrderError('MenuBarMenuItemComponentDirective.State', i, infos[i].cssClass);
                 }
             }

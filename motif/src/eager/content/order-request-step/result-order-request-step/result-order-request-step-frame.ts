@@ -280,7 +280,7 @@ export namespace ResultOrderRequestStepFrame {
         const infos = Object.values(infosObject);
 
         export function initialiseStatus() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as StatusId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError('OrderRequestErrorCode', outOfOrderIdx, idToDisplay(infos[outOfOrderIdx].id));
             }

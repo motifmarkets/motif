@@ -698,7 +698,7 @@ export namespace TopShareholdersDitemNgComponent {
         const infos = Object.values(infosObject);
 
         export function initialiseStatic() {
-            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index);
+            const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as ModeId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError('TopShareholdersInputComponent.ModeId', outOfOrderIdx, infos[outOfOrderIdx].jsonValue);
             }

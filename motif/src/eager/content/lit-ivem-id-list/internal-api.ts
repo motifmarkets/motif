@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './desktop-frame';
+export * from './lit-ivem-id-list-frame';
 

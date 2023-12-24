@@ -257,7 +257,7 @@ export namespace ColorSchemeItemPropertiesComponent {
 
         export function initialise() {
             for (let i = 0; i < idCount; i++) {
-                if (infos[i].id !== i) {
+                if (infos[i].id !== i as MultiColorPickerNgComponent.PickerTypeId) {
                     throw new EnumInfoOutOfOrderError('ColorSchemeItemPropertiesComponent.PickerType', i, idToCaption(i));
                 }
             }

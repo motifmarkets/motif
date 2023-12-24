@@ -76,7 +76,7 @@ export class MenuBarService {
 
     finalise() {
         globalThis.removeEventListener('mousedown', this._globalMouseDownListener);
-        for (const [key, menuItem] of this._menuItemByIdMap) {
+        for (const [ignoredKey, menuItem] of this._menuItemByIdMap) {
             menuItem.finalise();
         }
     }
@@ -170,15 +170,20 @@ export class MenuBarService {
     }
 
     positionChildMenuItem(childMenuName: MenuBarService.Menu.Name, defaultPosition: MenuBarService.MenuItem.Position,
-        displayId?: ExtStringId, accessKeyId?: ExtStringId, embedded: boolean = false
+        displayId?: ExtStringId, accessKeyId?: ExtStringId, embedded = false
     ) {
         this.beginChanges();
         try {
             const menuItem = this.registerChildMenuItem(childMenuName, defaultPosition);
-            menuItem.embedded = embedded === true;
+            menuItem.embedded = embedded;
             menuItem.setDisplayIdAndAccessKeyId(displayId, accessKeyId);
-            menuItem.ownerMenu.flagModified();
-            return menuItem;
+            const menuItemOwnerMenu = menuItem.ownerMenu;
+            if (menuItemOwnerMenu === undefined) {
+                throw new AssertInternalError('MBSPCMI50778');
+            } else {
+                menuItemOwnerMenu.flagModified();
+                return menuItem;
+            }
         } finally {
             this.endChanges();
         }
@@ -299,10 +304,15 @@ export class MenuBarService {
                 break;
             }
             case MenuBarService.MenuItem.StateId.Enabled: {
-                const childMenuToBeShown = !menuItem.ownerMenu.isRoot || this._focusedChildMenuStack.length > 0;
-                this.focusMenuItem(menuItem);
-                if (childMenuToBeShown) {
-                    this.renderChildMenuToFocusStack(menuItem.childMenu, childMenuContactDocumentLine);
+                const menuItemOwnerMenu = menuItem.ownerMenu;
+                if (menuItemOwnerMenu === undefined) {
+                    throw new AssertInternalError('MBSHCMIME50778');
+                } else {
+                    const childMenuToBeShown = !menuItemOwnerMenu.isRoot || this._focusedChildMenuStack.length > 0;
+                    this.focusMenuItem(menuItem);
+                    if (childMenuToBeShown) {
+                        this.renderChildMenuToFocusStack(menuItem.childMenu, childMenuContactDocumentLine);
+                    }
                 }
                 break;
             }
@@ -320,7 +330,7 @@ export class MenuBarService {
     private handleChildMenuItemMouseLeave(menuItem: MenuBarService.ChildMenuItem) {
         switch (menuItem.stateId) {
             case MenuBarService.MenuItem.StateId.NotRendered: {
-                throw new AssertInternalError('MBSHCMIMEN668344');
+                throw new AssertInternalError('MBSHCMIMEN66834');
             }
             case MenuBarService.MenuItem.StateId.Disabled: {
                 break;
@@ -332,13 +342,18 @@ export class MenuBarService {
                 break;
             }
             case MenuBarService.MenuItem.StateId.FocusHighlighted: {
-                if (menuItem.ownerMenu.isRoot && this._focusedChildMenuStack.length === 0) {
-                    this.checkUnfocusFocusedMenuItem();
+                const menuItemOwnerMenu = menuItem.ownerMenu;
+                if (menuItemOwnerMenu === undefined) {
+                    throw new AssertInternalError('MBSHCMIMEF66834');
+                } else {
+                    if (menuItemOwnerMenu.isRoot && this._focusedChildMenuStack.length === 0) {
+                        this.checkUnfocusFocusedMenuItem();
+                    }
                 }
                 break;
             }
             default:
-                throw new UnreachableCaseError('MBSHCMIMEU2299112', menuItem.stateId);
+                throw new UnreachableCaseError('MBSHCMIMEU22991', menuItem.stateId);
         }
     }
 
@@ -469,9 +484,13 @@ export class MenuBarService {
     private removeChildMenuItem(menuItem: MenuBarService.ChildMenuItem) {
         const childMenu = menuItem.childMenu;
         this.removeChildMenu(childMenu);
-        const ownerMenu = menuItem.ownerMenu;
-        ownerMenu.deregisterItem(menuItem);
-        this._menuItemByIdMap.delete(menuItem.id);
+        const menuItemOwnerMenu = menuItem.ownerMenu;
+        if (menuItemOwnerMenu === undefined) {
+            throw new AssertInternalError('MBSRCMI66834');
+        } else {
+            menuItemOwnerMenu.deregisterItem(menuItem);
+            this._menuItemByIdMap.delete(menuItem.id);
+        }
     }
 
     private tryRemoveCommandMenuItem(item: MenuBarService.CommandMenuItem) {
@@ -513,7 +532,7 @@ export class MenuBarService {
     }
 
     private update() {
-        for (const [id, menu] of this._menuByIdMap) {
+        for (const [ignoredId, menu] of this._menuByIdMap) {
             if (menu.modified) {
                 menu.update();
             }
@@ -528,25 +547,29 @@ export class MenuBarService {
     // }
 
     private focusMenuItem(menuItem: MenuBarService.MenuItem) {
-        const ownerMenu = menuItem.ownerMenu;
-        let newFocusedChildMenuStack: MenuBarService.ChildMenu.Stack;
-        if (!MenuBarService.Menu.isChild(ownerMenu)) {
-            this.clearChildMenus();
-            newFocusedChildMenuStack = [];
+        const menuItemOwnerMenu = menuItem.ownerMenu;
+        if (menuItemOwnerMenu === undefined) {
+            throw new AssertInternalError('MBSFMI66834');
         } else {
-            newFocusedChildMenuStack = ownerMenu.generateUnembeddedStack();
-            const currentFocusedChildMenuStack = this._focusedChildMenuStack;
-            const overlayMenuCount = currentFocusedChildMenuStack.length;
-            for (let i = 0; i < overlayMenuCount; i++) {
-                if (currentFocusedChildMenuStack[i] !== newFocusedChildMenuStack[i]) {
-                    this.trimFocusedChildMenus(overlayMenuCount - i);
+            let newFocusedChildMenuStack: MenuBarService.ChildMenu.Stack;
+            if (!MenuBarService.Menu.isChild(menuItemOwnerMenu)) {
+                this.clearChildMenus();
+                newFocusedChildMenuStack = [];
+            } else {
+                newFocusedChildMenuStack = menuItemOwnerMenu.generateUnembeddedStack();
+                const currentFocusedChildMenuStack = this._focusedChildMenuStack;
+                const overlayMenuCount = currentFocusedChildMenuStack.length;
+                for (let i = 0; i < overlayMenuCount; i++) {
+                    if (currentFocusedChildMenuStack[i] !== newFocusedChildMenuStack[i]) {
+                        this.trimFocusedChildMenus(overlayMenuCount - i);
+                    }
                 }
             }
+            this.checkUnfocusFocusedMenuItem();
+            menuItem.setHighlightTypeId(MenuBarService.MenuItem.HighlightTypeId.Focus);
+            this._focusedChildMenuStack = newFocusedChildMenuStack;
+            this._focusedMenuItem = menuItem;
         }
-        this.checkUnfocusFocusedMenuItem();
-        menuItem.setHighlightTypeId(MenuBarService.MenuItem.HighlightTypeId.Focus);
-        this._focusedChildMenuStack = newFocusedChildMenuStack;
-        this._focusedMenuItem = menuItem;
     }
 
     private checkUnfocusFocusedMenuItem() {
@@ -852,10 +875,10 @@ export namespace MenuBarService {
         captionChangedEvent: MenuItem.CaptionChangedEvent | undefined;
         accessibleCaptionChangedEvent: MenuItem.AccessibleCaptionChangedEvent | undefined;
         clearChildMenusEvent: MenuItem.ClearChildMenusEvent;
-        unrenderedEvent: MenuItem.UnrenderedEvent;
+        unrenderedEvent: MenuItem.UnrenderedEvent | undefined;
 
         private readonly _id: Integer;
-        private _ownerMenu: Menu;
+        private _ownerMenu: Menu | undefined;
 
         private _rendered = false;
         private _enabled = true;
@@ -1189,11 +1212,12 @@ export namespace MenuBarService {
                     };
                     accessibleCaption = unaccessibleCaption;
                 } else {
-                    this._accessibleCaption = CommandUiAction.AccessibleCaption.create(this._caption,
-                        extStrings[accessKeyId.handle][accessKeyId.index]
-                    );
+                    accessibleCaption = CommandUiAction.AccessibleCaption.create(this._caption, extStrings[accessKeyId.handle][accessKeyId.index]);
                 }
-                this.notifyAccessibleCaptionChanged();
+                if (accessibleCaption !== this._accessibleCaption) {
+                    this._accessibleCaption = accessibleCaption;
+                    this.notifyAccessibleCaptionChanged();
+                }
             }
         }
 
@@ -1201,8 +1225,12 @@ export namespace MenuBarService {
             if (!this.childMenu.rendered) {
                 this.childMenuRenderEvent(this.childMenu, contactDocumentLine);
             } else {
-                if (this.ownerMenu.isRoot) {
-                    this.notifyClearChildMenus();
+                if (this.ownerMenu === undefined) {
+                    throw new AssertInternalError('MBSOMC66834');
+                } else {
+                    if (this.ownerMenu.isRoot) {
+                        this.notifyClearChildMenus();
+                    }
                 }
             }
         }

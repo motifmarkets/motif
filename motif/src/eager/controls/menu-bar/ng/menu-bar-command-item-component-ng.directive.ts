@@ -11,7 +11,7 @@ import { MenuBarMenuItemComponentNgDirective } from './menu-bar-menu-item-compon
 
 @Directive()
 export abstract class MenuBarCommandItemComponentNgDirective extends MenuBarMenuItemComponentNgDirective {
-    @HostBinding('title') title: string;
+    @HostBinding('title') title = '';
     public value: boolean | undefined;
 
     private _menuItem: MenuBarService.CommandMenuItem;
@@ -68,7 +68,7 @@ export abstract class MenuBarCommandItemComponentNgDirective extends MenuBarMenu
     }
 
     private updateTitle() {
-        const title = this._menuItem.title === undefined ? '' : this._menuItem.title;
+        const title = this._menuItem.title;
         if (title !== this.title) {
             this.title = title;
             this.markForCheck();

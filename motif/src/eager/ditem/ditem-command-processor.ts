@@ -33,7 +33,7 @@ export class DitemCommandProcessor {
         const maxCount = this._commandRegister.length;
         const barExecutableCommands = new Array<Command>(maxCount);
         const count = 0;
-        for (const command of this._commandRegister) {
+        for (const ignoredCommand of this._commandRegister) {
             // if (this.isCommandBarExecutable(command)) {
             //     barExecutableCommands[count++] = command;
             // }

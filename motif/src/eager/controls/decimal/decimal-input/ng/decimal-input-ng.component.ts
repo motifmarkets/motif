@@ -112,6 +112,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
 
     private applyValueAsString(valueAsString: string) {
         // hack to get around value attribute change detection not working
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (valueAsString === this.valueAsString && this._decimalInputElement !== undefined) {
             this._decimalInputElement.value = valueAsString;
             // this._renderer.setProperty(this._numberInput, 'value', numberAsStr);
