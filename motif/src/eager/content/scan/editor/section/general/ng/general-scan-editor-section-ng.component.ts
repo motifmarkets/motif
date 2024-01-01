@@ -1,8 +1,10 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     AllowedFieldsGridLayoutDefinition,
+    BadnessComparableList,
     BooleanUiAction,
     GridLayoutOrReferenceDefinition,
+    LitIvemId,
     ScanEditor,
     StringId,
     StringUiAction,
@@ -42,6 +44,8 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     controlInputOrCommitEventer: GeneralScanEditorSectionNgComponent.ControlInputOrCommitEventer | undefined;
     editTargetsMultiSymbolGridColumnsEventer: GeneralScanEditorSectionNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
+    popoutTargetsMultiSymbolListEditorEventer: GeneralScanEditorSectionNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
+
 
     private readonly _enabledUiAction: BooleanUiAction;
     private readonly _nameUiAction: StringUiAction;
@@ -107,6 +111,8 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     protected finalise() {
         this._targetsComponent.controlInputOrCommitEventer = undefined;
+        this._targetsComponent.editMultiSymbolGridColumnsEventer = undefined;
+        this._targetsComponent.popoutMultiSymbolListEditorEventer = undefined;
 
         this._enabledUiAction.finalise();
         this._nameUiAction.finalise();
@@ -174,6 +180,11 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
                 return Promise.resolve(undefined);
             }
         };
+        this._targetsComponent.popoutMultiSymbolListEditorEventer = (caption, list, columnsEditCaption) => {
+            if (this.popoutTargetsMultiSymbolListEditorEventer !== undefined) {
+                this.popoutTargetsMultiSymbolListEditorEventer(caption, list, columnsEditCaption);
+            }
+        }
     }
 
     private createEnabledUiAction() {
@@ -220,7 +231,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             const editor = this._scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this);
-                editor.setDescription(this._nameUiAction.definedValue);
+                editor.setDescription(this._descriptionUiAction.definedValue);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
             }
@@ -325,4 +336,10 @@ export namespace GeneralScanEditorSectionNgComponent {
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition,
     ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    export type PopoutTargetsMultiSymbolListEditorEventer = (
+        this: void,
+        caption: string,
+        list: BadnessComparableList<LitIvemId>,
+        columnsEditCaption: string
+    ) => void;
 }

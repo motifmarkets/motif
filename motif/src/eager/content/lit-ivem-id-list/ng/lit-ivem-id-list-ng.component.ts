@@ -16,6 +16,8 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     declare frame: LitIvemIdListFrame;
 
+    selectionChangedEventer: LitIvemIdListFrame.SelectionChangedEventer | undefined;
+
     private _list: BadnessComparableList<LitIvemId> | undefined;
 
     constructor(
@@ -25,9 +27,16 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
     ) {
         const frame = contentNgService.createLitIvemIdListFrame();
         frame.getListEventer = () => this._list;
+        frame.selectionChangedEventer = () => {
+            if (this.selectionChangedEventer !== undefined) {
+                this.selectionChangedEventer();
+            }
+        }
         super(elRef, ++LitIvemIdListNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
+    get mainRowCount() { return this.frame.mainRowCount; }
+    get filterActive() { return this.frame.filterActive; }
     get filterText() { return this.frame.filterText; }
     set filterText(value: string) { this.frame.filterText = value; }
 
@@ -47,7 +56,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         AssertInternalError.throwErrorIfPromiseRejected(promise, 'LIILNCOL40408');
     }
 
-    selectAll() {
+    selectAllRows() {
         this.frame.selectAllRows();
     }
 
@@ -61,5 +70,14 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         this.frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
+    }
+
+    areRowsSelected(includeAllAuto: boolean) {
+        return this.frame.areRowsSelected(includeAllAuto);
+    }
+
+    protected override processOnDestroy() {
+        this.frame.selectionChangedEventer = undefined;
+        super.processOnDestroy();
     }
 }

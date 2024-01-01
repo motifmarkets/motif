@@ -63,6 +63,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     controlInputOrCommitEventer: ScanEditorTargetsNgComponent.ControlInputOrCommitEventer | undefined;
     editMultiSymbolGridColumnsEventer: ScanEditorTargetsNgComponent.EditMultiSymbolGridColumnsEventer | undefined;
+    popoutMultiSymbolListEditorEventer: ScanEditorTargetsNgComponent.PopoutMultiSymbolListEditorEventer | undefined;
 
     private readonly _symbolsService: SymbolsService;
     private readonly _multiSymbolList: BadnessComparableList<LitIvemId>;
@@ -75,7 +76,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private _scanEditor: ScanEditor | undefined;
     // private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
-    private _lastTargetTypeIdWasMulti = false;
+    // private _lastTargetTypeIdWasMulti = false;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
     private _multiSymbolEditorComponentListChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
@@ -108,19 +109,55 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     public isSingleSymbolSubTargetType() {
-        return this.isSymbolsTargetTypeId() && !this._lastTargetTypeIdWasMulti;
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            return false;
+        } else {
+            if (scanEditor.targetTypeId !== ScanTargetTypeId.Symbols) {
+                return false;
+            } else {
+                return scanEditor.lastTargetTypeIdWasMulti === false;
+            }
+        }
     }
 
     public isMultiSymbolSubTargetType() {
-        return this.isSymbolsTargetTypeId() && this._lastTargetTypeIdWasMulti;
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            return false;
+        } else {
+            if (scanEditor.targetTypeId !== ScanTargetTypeId.Symbols) {
+                return false;
+            } else {
+                return scanEditor.lastTargetTypeIdWasMulti === true;
+            }
+        }
     }
 
     public isSingleMarketSubTargetType() {
-        return this.isMarketsTargetTypeId() && !this._lastTargetTypeIdWasMulti;
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            return false;
+        } else {
+            if (scanEditor.targetTypeId !== ScanTargetTypeId.Markets) {
+                return false;
+            } else {
+                return scanEditor.lastTargetTypeIdWasMulti === false;
+            }
+        }
     }
 
     public isMultiMarketSubTargetType() {
-        return this.isMarketsTargetTypeId() && this._lastTargetTypeIdWasMulti;
+        const scanEditor = this._scanEditor;
+        if (scanEditor === undefined) {
+            return false;
+        } else {
+            if (scanEditor.targetTypeId !== ScanTargetTypeId.Markets) {
+                return false;
+            } else {
+                return scanEditor.lastTargetTypeIdWasMulti === true;
+            }
+        }
     }
 
     setEditor(value: ScanEditor | undefined) {
@@ -173,6 +210,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this._multiSymbolEditorComponent.unsubscribeListChangeEvent(this._multiSymbolEditorComponentListChangeSubscriptionId);
         this._multiSymbolEditorComponentListChangeSubscriptionId = undefined;
         this._multiSymbolEditorComponent.editGridColumnsEventer = undefined;
+        this._multiSymbolEditorComponent.popoutEventer = undefined;
 
         this._targetSubTypeUiAction.finalise();
         this._singleSymbolUiAction.finalise();
@@ -225,6 +263,15 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 );
             } else {
                 return Promise.resolve(undefined);
+            }
+        }
+        this._multiSymbolEditorComponent.popoutEventer = (list) => {
+            if (this.popoutMultiSymbolListEditorEventer !== undefined) {
+                this.popoutMultiSymbolListEditorEventer(
+                    Strings[StringId.ScanEditorTargetsComponent_EditMultiSymbolList],
+                    list,
+                    Strings[StringId.ScanEditorTargetsComponent_EditMultiSymbolGridColumns],
+                );
             }
         }
     }
@@ -310,7 +357,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createMaxMatchCountUiAction() {
-        const action = new IntegerUiAction();
+        const action = new IntegerUiAction(false);
         action.commitOnAnyValidInput = true;
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MaxMatchCount]);
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);
@@ -330,12 +377,15 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], modifier: ScanEditor.Modifier | undefined) {
         if (modifier !== this) {
+            let targetTypeIdPushRequired = false;
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
-                    case ScanEditor.FieldId.TargetTypeId: {
-                        this.pushTargetTypeId();
+                    case ScanEditor.FieldId.LastTargetTypeIdWasMulti:
+                        targetTypeIdPushRequired = true;
                         break;
-                    }
+                    case ScanEditor.FieldId.TargetTypeId:
+                        targetTypeIdPushRequired = true;
+                        break;
                     case ScanEditor.FieldId.TargetMarkets:
                         this.pushTargetMarketIds();
                         break;
@@ -346,6 +396,10 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                         this.pushMaxMatchCount();
                         break;
                 }
+            }
+
+            if (targetTypeIdPushRequired) {
+                this.pushTargetTypeId();
             }
         }
     }
@@ -369,9 +423,6 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private pushInitialScanEditorValues() {
-        const lastTargetTypeIdWasMulti: boolean = this.calculateLastTargetTypeIdWasMultiFromScanEditor();
-        this.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti);
-
         this.pushMaxMatchCount();
         this.pushTargetLitIvemIds();
         this.pushTargetMarketIds();
@@ -391,7 +442,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     break;
                 }
                 case ScanTargetTypeId.Symbols: {
-                    if (this._lastTargetTypeIdWasMulti) {
+                    if (scanEditor.lastTargetTypeIdWasMulti) {
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol);
                     } else {
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol);
@@ -401,7 +452,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     break;
                 }
                 case ScanTargetTypeId.Markets: {
-                    if (this._lastTargetTypeIdWasMulti) {
+                    if (scanEditor.lastTargetTypeIdWasMulti) {
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket);
                     } else {
                         this._targetSubTypeUiAction.pushValue(ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket);
@@ -529,54 +580,11 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     throw new UnreachableCaseError('SETNCSTSTIU66821', targetSubTypeId);
             }
 
-            this.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti); // make sure this is set before TargetTypeId
             scanEditor.beginFieldChanges(this);
+            scanEditor.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti); // make sure this is set before TargetTypeId
             scanEditor.setTargetTypeId(targetTypeId);
             scanEditor.endFieldChanges();
         }
-    }
-
-    private setLastTargetTypeIdWasMulti(value: boolean) {
-        if (value !== this._lastTargetTypeIdWasMulti) {
-            this._lastTargetTypeIdWasMulti = value;
-            this._cdr.markForCheck();
-        }
-    }
-
-    private calculateLastTargetTypeIdWasMultiFromScanEditor() {
-        const scanEditor = this._scanEditor;
-        let lastTargetTypeIdWasMulti: boolean;
-        if (scanEditor === undefined) {
-            lastTargetTypeIdWasMulti = false;
-        } else {
-            switch (scanEditor.targetTypeId) {
-                case undefined: {
-                    lastTargetTypeIdWasMulti = false;
-                    break;
-                }
-                case ScanTargetTypeId.Symbols: {
-                    const targetLitIvemIds = scanEditor.targetLitIvemIds;
-                    if (targetLitIvemIds === undefined) {
-                        lastTargetTypeIdWasMulti = false;
-                    } else {
-                        lastTargetTypeIdWasMulti = targetLitIvemIds.length !== 1;
-                    }
-                    break;
-                }
-                case ScanTargetTypeId.Markets: {
-                    const targetMarketIds = scanEditor.targetMarketIds;
-                    if (targetMarketIds === undefined) {
-                        lastTargetTypeIdWasMulti = false;
-                    } else {
-                        lastTargetTypeIdWasMulti = targetMarketIds.length !== 1;
-                    }
-                    break;
-                }
-                default:
-                    throw new UnreachableCaseError('SETNCSE55971', scanEditor.targetTypeId);
-            }
-        }
-        return lastTargetTypeIdWasMulti;
     }
 
     private notifyControlInputOrCommit(): void {
@@ -593,6 +601,12 @@ export namespace ScanEditorTargetsNgComponent {
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
     ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    export type PopoutMultiSymbolListEditorEventer = (
+        this: void,
+        caption: string,
+        list: BadnessComparableList<LitIvemId>,
+        columnsEditCaption: string
+    ) => void;
 
     export const enum TargetSubTypeId {
         SingleSymbol,

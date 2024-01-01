@@ -79,6 +79,11 @@ export abstract class GridSourceFrame extends ContentFrame {
     get opener() { return this._opener; }
     get grid() { return this._grid; }
 
+    get visibleRowCount() { return this._grid.viewLayout.rowCount; }
+    get mainRowCount() { return this._grid.mainRowCount; }
+    get headerRowCount() { return this._grid.headerRowCount; }
+    get filterActive() { return this.grid.isFiltered}
+
     get isReferenceable() {
         return this._lockedGridSourceOrReference?.lockedReferenceableGridSource !== undefined;
     }
@@ -204,6 +209,13 @@ export abstract class GridSourceFrame extends ContentFrame {
         layoutDefinition.saveToJson(keptLayoutElement);
     }
 
+    areRowsSelected(includeAllAuto: boolean) {
+        return this.grid.areRowsSelected(includeAllAuto);
+    }
+
+    areColumnsSelected(includeAllAuto: boolean) {
+        this.grid.areColumnsSelected(includeAllAuto);
+    }
 
     async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<GridSourceOrReference | undefined> {
         this.closeGridSource(keepView);
@@ -974,10 +986,6 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     selectAllRows() {
         this._grid.selectAllRows();
-    }
-
-    selectAll() {
-        this.grid.selectAll();
     }
 
     getSelectedRecordIndices() {

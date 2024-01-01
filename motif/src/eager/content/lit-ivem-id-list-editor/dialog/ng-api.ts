@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './dialog/ng-api';
-export * from './ng/lit-ivem-id-list-editor-ng.component';
+export * from './ng/lit-ivem-id-list-editor-dialog-ng.component';
 

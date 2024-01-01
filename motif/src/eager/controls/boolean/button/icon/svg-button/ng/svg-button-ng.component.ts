@@ -18,6 +18,7 @@ import { SvgIconComponent, SvgIconRegistryService } from 'angular-svg-icon';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import nounArrowDownSvg from './svg/noun-arrow-down-70422.svg';
+import nounClose82107Svg from './svg/noun-close-82107.svg';
 import nounCollapseVerticalSvg from './svg/noun-collapse-vertical-2439339.svg';
 import nounExpandVerticalSvg from './svg/noun-expand-vertical-2439362.svg';
 import nounLoginSvg from './svg/noun-login-4123950.svg';
@@ -26,6 +27,7 @@ import nounMarkAllSvg from './svg/noun-mark-all-3067122.svg';
 import nounMinimizeSvg from './svg/noun-minimize-4143571.svg';
 import nounMoveToBottomSvg from './svg/noun-move-to-bottom-269053.svg';
 import nounMoveToTopSvg from './svg/noun-move-to-top-269054.svg';
+import nounResize4146882Svg from './svg/noun-resize-4146882.svg';
 import nounArrowUpSvg from './svg/noun-up-70478.svg';
 import nounBrightnessFullSvg from './svg/noun_Brightness-Full_218687.svg';
 import nounCancelSearchSvg from './svg/noun_Cancel-Search_677094.svg';
@@ -70,9 +72,9 @@ import nounWorldSvg from './svg/noun_world_2593665.svg';
 // Instructions for adding new Icon
 // 1. Add an entry for it in Motif Core IconButtonUiAction
 // 2. Get file with single SVG inside it
-// 3. Transform to symbol if necessary (can use https://svg-to-symbol-app.pages.dev/)
-// 4. Save in ./svg subfolder
-// 5. Change id="only" (can only include one symbol in SVG)
+// 3. Save in ./svg subfolder
+// 4. Make sure it includes fill="currentcolor"
+// 5. If necessary, remove height and width
 // 6. Add to imports above
 // 7. Add to infosObject below
 // Links
@@ -125,7 +127,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         this.inputId = 'SvgButton' + this.typeInstanceId;
     }
 
-    public override get uiAction() { return super.uiAction as IconButtonUiAction; }
+    public override get uiAction() { return super.uiAction as IconButtonUiAction | undefined; }
 
     ngOnInit() {
         this.setInitialiseReady();
@@ -142,8 +144,13 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof MouseEvent)) {
             throw new AssertInternalError('FBICOE9846652');
         } else {
-            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
-            this.uiAction.signal(UiAction.SignalTypeId.MouseClick, downKeys);
+            const uiAction = this.uiAction;
+            if (uiAction === undefined) {
+                throw new AssertInternalError('SBNCOC555312');
+            } else {
+                const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+                uiAction.signal(UiAction.SignalTypeId.MouseClick, downKeys);
+            }
         }
     }
 
@@ -151,8 +158,13 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('FBICOSED6555739');
         } else {
-            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
-            this.uiAction.signal(UiAction.SignalTypeId.EnterKeyPress, downKeys);
+            const uiAction = this.uiAction;
+            if (uiAction === undefined) {
+                throw new AssertInternalError('SBNCOEKD555312');
+            } else {
+                const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+                uiAction.signal(UiAction.SignalTypeId.EnterKeyPress, downKeys);
+            }
         }
     }
 
@@ -160,8 +172,13 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
         if (!(event instanceof KeyboardEvent)) {
             throw new AssertInternalError('FBICOSKD232005339');
         } else {
-            const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
-            this.uiAction.signal(UiAction.SignalTypeId.SpacebarKeyPress, downKeys);
+            const uiAction = this.uiAction;
+            if (uiAction === undefined) {
+                throw new AssertInternalError('SBNCOSBD555312');
+            } else {
+                const downKeys = ModifierKey.IdSet.create(event.altKey, event.ctrlKey, event.metaKey, event.shiftKey);
+                uiAction.signal(UiAction.SignalTypeId.SpacebarKeyPress, downKeys);
+            }
         }
     }
 
@@ -189,7 +206,7 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
             value: (value, edited) => this.handleValuePushEvent(value, edited),
             icon: (definition) => this.handleIconPushEvent(definition)
         };
-        this._pushFaButtonEventsSubscriptionId = this.uiAction.subscribePushEvents(pushEventHandlersInterface);
+        this._pushFaButtonEventsSubscriptionId = action.subscribePushEvents(pushEventHandlersInterface);
 
         this.applyValue(action.value, action.edited);
         if (action.iconId !== undefined) {
@@ -198,7 +215,10 @@ export class SvgButtonNgComponent extends ControlComponentBaseNgDirective implem
     }
 
     protected override finalise() {
-        this.uiAction.unsubscribePushEvents(this._pushFaButtonEventsSubscriptionId);
+        const uiAction = this.uiAction;
+        if (uiAction !== undefined) {
+            uiAction.unsubscribePushEvents(this._pushFaButtonEventsSubscriptionId);
+        }
         super.finalise();
     }
 
@@ -463,6 +483,14 @@ export namespace SvgButtonNgComponent {
             RemoveFromListToLeft: { id: IconButtonUiAction.IconId.RemoveFromListToLeft,
                 name: 'RemoveFromListToLeft',
                 svg: nounLogoutSvg
+            },
+            RemoveSelectedFromList: { id: IconButtonUiAction.IconId.RemoveSelectedFromList,
+                name: 'RemoveSelectedFromList',
+                svg: nounClose82107Svg
+            },
+            EnlargeToTopLeft: { id: IconButtonUiAction.IconId.EnlargeToTopLeft,
+                name: 'EnlargeToTopLeft',
+                svg: nounResize4146882Svg
             },
             Dot: { id: IconButtonUiAction.IconId.Dot,
                 name: 'Dot',

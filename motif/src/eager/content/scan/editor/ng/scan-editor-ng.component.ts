@@ -8,12 +8,14 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
+    BadnessComparableList,
     ButtonUiAction,
     CommandRegisterService,
     GridLayoutOrReferenceDefinition,
     HtmlTypes,
     Integer,
     InternalCommand,
+    LitIvemId,
     MultiEvent,
     ScanEditor,
     ScanTargetTypeId,
@@ -56,6 +58,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('testButton', { static: true }) private _testButtonComponent: ButtonInputNgComponent;
 
     editTargetsMultiSymbolGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
+    popoutTargetsMultiSymbolListEditorEventer: ScanEditorNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
 
     public criteriaFieldId = ScanEditor.FieldId.Criteria;
     public rankFieldId = ScanEditor.FieldId.Rank;
@@ -160,6 +163,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     }
 
     protected finalise() {
+        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._generalSectionComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
+
         this._testComponent.displayedChangedEventer = undefined;
         this._resizeObserver.disconnect();
 
@@ -248,6 +254,11 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 return Promise.resolve(undefined);
             }
         };
+        this._generalSectionComponent.popoutTargetsMultiSymbolListEditorEventer = (caption, list, columnsEditCaption) => {
+            if (this.popoutTargetsMultiSymbolListEditorEventer !== undefined) {
+                this.popoutTargetsMultiSymbolListEditorEventer(caption, list, columnsEditCaption);
+            }
+        }
 
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
@@ -511,4 +522,10 @@ export namespace ScanEditorNgComponent {
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
     ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    export type PopoutTargetsMultiSymbolListEditorEventer = (
+        this: void,
+        caption: string,
+        list: BadnessComparableList<LitIvemId>,
+        columnsEditCaption: string
+    ) => void;
 }

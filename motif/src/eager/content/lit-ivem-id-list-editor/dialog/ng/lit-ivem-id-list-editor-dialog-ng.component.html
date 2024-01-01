@@ -1,0 +1,31 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="okGridToolbar">
+    <app-svg-button #okButton id="okButton"></app-svg-button>
+    <app-svg-button #cancelButton id="cancelButton"></app-svg-button>
+    <div id="caption">{{caption}}</div>
+    <span id="counts">{{counts}}</span>
+</div>
+<div id="contentAndDialog">
+    <div id="content" [style.display]="dialogActive ? 'none' : null">
+        <div id="contentToolbar">
+            <app-lit-ivem-id-select #addLitIvemIdControl id="addLitIvemIdControl"></app-lit-ivem-id-select>
+            <div id="removeControls">
+                <app-svg-button #selectAllControl></app-svg-button>
+                <app-svg-button #removeSelectedControl></app-svg-button>
+            </div>
+            <div id="gridControls">
+                <app-svg-button #columnsControl></app-svg-button>
+                <app-text-input #filterControl id="filterControl"></app-text-input>
+            </div>
+        </div>
+        <app-lit-ivem-id-list #grid id="grid"></app-lit-ivem-id-list>
+    </div>
+    <div id="dialog" [style.display]="dialogActive ? null : 'none'">
+        <ng-container #dialogContainer></ng-container>
+    </div>
+</div>

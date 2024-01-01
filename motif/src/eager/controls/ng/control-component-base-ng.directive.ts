@@ -44,7 +44,7 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
 
     protected readonly exchangeSettingsArray: readonly ExchangeSettings[];
 
-    private _uiAction: UiAction;
+    private _uiAction: UiAction | undefined;
     private _pushEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     private _scalarSettings: ScalarSettings;
@@ -167,9 +167,8 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     protected finalise() {
-        const action = this._uiAction;
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (action !== undefined) {
+        if (this._uiAction !== undefined) {
             this._uiAction.unsubscribePushEvents(this._pushEventsSubscriptionId);
         }
         this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
@@ -230,8 +229,10 @@ export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDir
     }
 
     protected applySettingColors() {
-        this.setStateColors(this.uiAction.stateId);
-        this.markForCheck();
+        if (this._uiAction !== undefined) {
+            this.setStateColors(this._uiAction.stateId);
+            this.markForCheck();
+        }
     }
 
     protected getBkgdColorCssVariableName(itemId: ColorScheme.ItemId) {

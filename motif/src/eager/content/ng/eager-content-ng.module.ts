@@ -48,7 +48,7 @@ import {
 import { HoldingsGridLayoutsDialogNgComponent } from '../holdings-grid-layouts-dialog/ng-api';
 import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
-import { LitIvemIdListEditorNgComponent } from '../lit-ivem-id-list-editor/ng-api';
+import { LitIvemIdListEditorDialogNgComponent, LitIvemIdListEditorNgComponent } from '../lit-ivem-id-list-editor/ng-api';
 import { LitIvemIdListNgComponent } from '../lit-ivem-id-list/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
@@ -143,6 +143,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         InstalledExtensionListNgComponent,
         IvemHoldingsNgComponent,
         LitIvemIdListNgComponent,
+        LitIvemIdListEditorDialogNgComponent,
         LitIvemIdListEditorNgComponent,
         MarketsNgComponent,
         MultiColorPickerNgComponent,

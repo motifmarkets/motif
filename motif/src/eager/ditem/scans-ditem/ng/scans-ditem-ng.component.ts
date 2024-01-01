@@ -13,11 +13,13 @@ import {
 import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
+    BadnessComparableList,
     ButtonUiAction,
     GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
+    LitIvemId,
     LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
@@ -29,7 +31,7 @@ import {
     getErrorMessage
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
-import { NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
+import { LitIvemIdListEditorDialogNgComponent, NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -155,6 +157,9 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     protected override finalise() {
+        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._editorComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
+
         this._newUiAction.finalise();
         this._toggleSymbolLinkingUiAction.finalise();
         this._filterEditUiAction.finalise();
@@ -262,6 +267,10 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             allowedFieldsAndLayoutDefinition
         ) => this.openGridColumnsEditorDialog(caption, allowedFieldsAndLayoutDefinition);
 
+        this._editorComponent.popoutTargetsMultiSymbolListEditorEventer = (caption, list, columnsEditCaption) => {
+            this.openTargetMultiSymbolListEditorDialog(caption, list, columnsEditCaption);
+        }
+
         // this._frame.open();
     }
 
@@ -309,6 +318,28 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this.markForCheck();
 
         return definitionPromise;
+    }
+
+    private openTargetMultiSymbolListEditorDialog(caption: string, list: BadnessComparableList<LitIvemId>, columnsEditCaption: string) {
+        this.dialogActive = true;
+
+        const closePromise = LitIvemIdListEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._frame.opener,
+            caption,
+            list,
+            columnsEditCaption
+        );
+        closePromise.then(
+            () => {
+                this.closeDialog();
+            },
+            (reason) => {
+                throw new AssertInternalError('ODNCSLEDCPTR20987', getErrorMessage(reason));
+            }
+        );
+
+        this.markForCheck();
     }
 
     private closeDialog() {

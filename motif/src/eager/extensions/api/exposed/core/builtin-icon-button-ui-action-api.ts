@@ -65,6 +65,8 @@ export namespace BuiltinIconButtonUiAction {
         MarkAll = 'MarkAll',
         InsertIntoListFromLeft = 'InsertIntoListFromLeft',
         RemoveFromListToLeft = 'RemoveFromListToLeft',
+        RemoveSelectedFromList = 'RemoveSelectedFromList',
+        EnlargeToTopLeft = 'EnlargeToTopLeft',
         Dot = 'Dot',
     }
 

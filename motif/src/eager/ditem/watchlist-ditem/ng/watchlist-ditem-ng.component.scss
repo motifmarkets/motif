@@ -4,9 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-@import 'partials/variables';
-@import './partials/main-toolbar-css-mixin';
-@import './partials/centered-toolbar-group-mixin';
+@use 'partials/variables';
+@use './partials/main-toolbar-css-mixin';
+@use './partials/centered-toolbar-group-mixin';
 
 :host {
     display: block;
@@ -21,7 +21,7 @@
     height: 100%;
 
     > #mainToolbarDiv {
-        @include mainToolbarCssMixin;
+        @include main-toolbar-css-mixin.mainToolbarCssMixin;
 
         > #symbolSelect {
             width: 12em;
@@ -33,30 +33,30 @@
             align-items: center;
 
             > #symbolButton {
-                margin-left: $toolbar-button-separation;
+                margin-left: variables.$toolbar-button-separation;
             }
 
             > #deleteButton {
-                margin-left: $toolbar-button-separation;
+                margin-left: variables.$toolbar-button-separation;
             }
 
             > #listButtonsDiv {
-                @include centeredToolbarGroupMixin;
-                margin-left: $toolbar-button-group-separation;
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
             }
 
             > #columnButtonsDiv {
-                @include centeredToolbarGroupMixin;
-                margin-left: $toolbar-button-group-separation;
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
             }
 
             > #linkButtonsDiv {
-                @include centeredToolbarGroupMixin;
-                margin-left: $toolbar-button-group-separation;
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
             }
 
             > #watchlistDescriptonSpan {
-                margin-left: $toolbar-button-group-separation;
+                margin-left: variables.$toolbar-button-group-separation;
             }
         }
     }

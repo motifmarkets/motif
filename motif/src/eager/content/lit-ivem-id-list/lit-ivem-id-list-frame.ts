@@ -20,6 +20,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     getListEventer: LitIvemIdListFrame.GetListEventer | undefined;
     gridSourceOpenedEventer: LitIvemIdListFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: LitIvemIdListFrame.RecordFocusedEventer | undefined
+    selectionChangedEventer: LitIvemIdListFrame.SelectionChangedEventer | undefined;
 
     private _recordSource: LitIvemIdComparableListTableRecordSource;
     private _list: BadnessComparableList<LitIvemId>;
@@ -55,6 +56,11 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
+    override finalise() {
+        this.grid.selectionChangedEventer = undefined;
+        super.finalise();
+    }
+
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
@@ -66,6 +72,12 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
 
         this._gridHeaderCellPainter = this.cellPainterFactoryService.createTextHeader(grid, grid.headerDataServer);
         this._gridMainCellPainter = this.cellPainterFactoryService.createTextRenderValueRecordGrid(grid, grid.mainDataServer);
+
+        grid.selectionChangedEventer = () => {
+            if (this.selectionChangedEventer !== undefined) {
+                this.selectionChangedEventer();
+            }
+        }
 
         return grid;
     }
@@ -83,7 +95,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
 
     deleteSelected() {
         const grid = this.grid;
-        if (!grid.isFiltered && grid.selection.allSelected) {
+        if (!grid.isFiltered && grid.selection.allAuto) {
             this._list.clear();
         } else {
             const rowIndices = grid.selection.getRowIndices(true);
@@ -148,4 +160,5 @@ export namespace LitIvemIdListFrame {
     export type GetListEventer = (this: void) => BadnessComparableList<LitIvemId> | undefined;
     export type GridSourceOpenedEventer = (this: void) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
+    export type SelectionChangedEventer = (this: void) => void;
 }
