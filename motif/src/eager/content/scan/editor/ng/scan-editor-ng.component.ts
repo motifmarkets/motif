@@ -8,7 +8,6 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
-    BadnessComparableList,
     ButtonUiAction,
     CommandRegisterService,
     GridLayoutOrReferenceDefinition,
@@ -21,6 +20,7 @@ import {
     ScanTargetTypeId,
     StringId,
     Strings,
+    UiBadnessComparableList,
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -525,7 +525,7 @@ export namespace ScanEditorNgComponent {
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: BadnessComparableList<LitIvemId>,
+        list: UiBadnessComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 }

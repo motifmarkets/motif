@@ -21,6 +21,7 @@ import {
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
+    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService
@@ -48,6 +49,9 @@ export class CoreNgService implements OnDestroy {
     get scansService(): ScansService { return this._service.scansService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
+    get tableFieldSourceDefinitionRegistryService(): TableFieldSourceDefinitionRegistryService {
+        return this._service.tableFieldSourceDefinitionRegistryService;
+    }
     get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
         return this._service.tableRecordSourceDefinitionFactoryService;
     }
