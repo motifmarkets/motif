@@ -65,8 +65,9 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
 
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
-        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
-        initialisePromise.then(
+        this.frame.initialiseGrid(this._opener, undefined, false);
+        const openPromise = this.frame.tryOpenDefault(false);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('GLEAFNCIPU31310');

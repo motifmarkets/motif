@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Injector, Optional, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
-import { AllowedFieldsGridLayoutDefinition, AssertInternalError, BadnessComparableList, CommandRegisterService, GridLayoutOrReferenceDefinition, IconButtonUiAction, InternalCommand, LitIvemId, LockOpenListItem, StringId, getErrorMessage } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
+import { AllowedFieldsGridLayoutDefinition, AssertInternalError, CommandRegisterService, GridLayoutOrReferenceDefinition, IconButtonUiAction, InternalCommand, LitIvemId, LockOpenListItem, StringId, UiBadnessComparableList, getErrorMessage } from '@motifmarkets/motif-core';
+import { CommandRegisterNgService, CoreInjectionTokens, TableFieldSourceDefinitionRegistryNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent } from '../../../nameable-grid-layout-editor-dialog/ng-api';
 import { LitIvemIdListEditorNgDirective } from '../../ng/lit-ivem-id-list-editor-ng.directive';
@@ -9,6 +9,7 @@ import { LitIvemIdListEditorNgDirective } from '../../ng/lit-ivem-id-list-editor
     selector: 'app-lit-ivem-id-list-editor-dialog',
     templateUrl: './lit-ivem-id-list-editor-dialog-ng.component.html',
     styleUrls: ['./lit-ivem-id-list-editor-dialog-ng.component.scss'],
+    providers: [LitIvemIdListEditorNgDirective.initialCustomGridSettingsProvider],
 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -29,11 +30,20 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
         @Inject(LitIvemIdListEditorDialogNgComponent.captionInjectionToken) public readonly caption: string,
-        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: BadnessComparableList<LitIvemId> | null,
+        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiBadnessComparableList<LitIvemId> | null,
     ) {
-        super(elRef, cdr, commandRegisterNgService, ++LitIvemIdListEditorDialogNgComponent.typeInstanceCreateCount, opener, list);
+        super(
+            elRef,
+            cdr,
+            commandRegisterNgService,
+            fieldSourceDefinitionRegistryNgService,
+            ++LitIvemIdListEditorDialogNgComponent.typeInstanceCreateCount,
+            opener,
+            list
+        );
 
         const commandRegisterService = commandRegisterNgService.service;
         this._okUiAction = this.createOkUiAction(commandRegisterService);
@@ -129,7 +139,7 @@ export namespace LitIvemIdListEditorDialogNgComponent {
         container: ViewContainerRef,
         opener: LockOpenListItem.Opener,
         caption: string,
-        list: BadnessComparableList<LitIvemId>,
+        list: UiBadnessComparableList<LitIvemId>,
         columnsEditCaption: string,
     ): ClosePromise {
         container.clear();

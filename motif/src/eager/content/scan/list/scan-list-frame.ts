@@ -56,7 +56,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
-            { fixedColumnCount: 1 },
+            { fixedColumnCount: 1, mouseRowSelectionEnabled: false },
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridMainCellPainter(viewCell),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
@@ -68,15 +68,9 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenWithDefaultLayout(keepView: boolean) {
+    tryOpenDefault(keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
         return this.tryOpenGridSource(definition, keepView);
-    }
-
-    createDefaultLayoutGridSourceOrReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
@@ -108,6 +102,12 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
 
     private getGridMainCellPainter(_viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
+    }
+
+    private createDefaultLayoutGridSourceOrReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private filterItems(scan: Scan) {

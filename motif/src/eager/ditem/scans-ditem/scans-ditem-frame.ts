@@ -77,13 +77,10 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        const initialisePromise = scanListFrame.initialiseGrid(
-            this.opener,
-            scanListFrameElement,
-            false,
-        );
+        scanListFrame.initialiseGrid(this.opener, undefined, true);
 
-        initialisePromise.then(
+        const openPromise = scanListFrame.openJsonOrDefault(scanListFrameElement, true)
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('SDFIPU50135');

@@ -1,12 +1,13 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, Optional } from '@angular/core';
-import { BadnessComparableList, LitIvemId, LockOpenListItem } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
+import { LitIvemId, LockOpenListItem, UiBadnessComparableList } from '@motifmarkets/motif-core';
+import { CommandRegisterNgService, CoreInjectionTokens, TableFieldSourceDefinitionRegistryNgService } from 'component-services-ng-api';
 import { LitIvemIdListEditorNgDirective } from './lit-ivem-id-list-editor-ng.directive';
 
 @Component({
     selector: 'app-lit-ivem-id-list-editor',
     templateUrl: './lit-ivem-id-list-editor-ng.component.html',
     styleUrls: ['./lit-ivem-id-list-editor-ng.component.scss'],
+    providers: [LitIvemIdListEditorNgDirective.initialCustomGridSettingsProvider],
 
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
@@ -17,10 +18,18 @@ export class LitIvemIdListEditorNgComponent extends LitIvemIdListEditorNgDirecti
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
-        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: BadnessComparableList<LitIvemId> | null,
+        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiBadnessComparableList<LitIvemId> | null,
     ) {
-        super(elRef, cdr, commandRegisterNgService, ++LitIvemIdListEditorNgComponent.typeInstanceCreateCount, opener, list);
+        super(
+            elRef,
+            cdr,
+            commandRegisterNgService,
+            fieldSourceDefinitionRegistryNgService,
+            ++LitIvemIdListEditorNgComponent.typeInstanceCreateCount,
+            opener,
+            list
+        );
     }
-
 }

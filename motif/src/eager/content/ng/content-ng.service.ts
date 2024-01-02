@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     AppStorageNgService,
@@ -94,8 +94,8 @@ export class ContentNgService {
     //     );
     // }
 
-    createLitIvemIdListFrame() {
-        return this._content.createLitIvemIdListFrame();
+    createLitIvemIdListFrame(initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined) {
+        return this._content.createLitIvemIdListFrame(initialCustomGridSettings);
     }
 
     createWatchlistFrame() {

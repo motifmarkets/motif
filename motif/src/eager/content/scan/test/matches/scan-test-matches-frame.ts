@@ -66,7 +66,8 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        return undefined;
+        throw new AssertInternalError('SCMFGDGSORD44218');
+        return new GridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {

@@ -11,6 +11,7 @@ import {
     FavouriteReferenceableGridLayoutDefinitionsStoreService,
     GridLayout,
     GridLayoutOrReferenceDefinition,
+    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
@@ -62,7 +63,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
     initialise(ditemFrameElement: JsonElement | undefined, watchlistFrame: WatchlistFrame): void {
         this._watchlistFrame = watchlistFrame;
-        watchlistFrame.defaultLitIvemIds = this.defaultLitIvemIds;
         watchlistFrame.gridSourceOpenedEventer = this._gridSourceOpenedEventer;
         watchlistFrame.gridLayoutSetEventer = this._gridLayoutSetEventer;
         watchlistFrame.gridSourceOpenedEventer = (rankedLitIvemIdList, rankedLitIvemIdListName) =>
@@ -70,22 +70,30 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         watchlistFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
         watchlistFrame.saveRequiredEventer = () => this.flagSaveRequired();
 
+        watchlistFrame.initialiseGrid(this.opener, undefined, false);
 
-        let watchlistFrameElement: JsonElement | undefined;
+        let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (watchlistFrameElementResult.isOk()) {
-                watchlistFrameElement = watchlistFrameElementResult.value;
+                const watchlistFrameElement = watchlistFrameElementResult.value;
+                const definitionCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);
+                if (definitionCreateResult.isErr()) {
+                    // toast in future
+                } else {
+                    gridSourceOrReferenceDefinition = definitionCreateResult.value;
+                }
             }
         }
 
-        const initialisePromise = watchlistFrame.initialiseGrid(
-            this.opener,
-            watchlistFrameElement,
-            false,
-        );
+        let openPromise: Promise<GridSourceOrReference | undefined>;
+        if (gridSourceOrReferenceDefinition === undefined) {
+            openPromise = watchlistFrame.tryOpenLitIvemIdArray(this.defaultLitIvemIds ?? [], false);
+        } else {
+            openPromise = watchlistFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false)
+        }
 
-        initialisePromise.then(
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('WDFIPU50134');
@@ -153,7 +161,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFNE10174');
         } else {
-            return this._watchlistFrame.newEmpty(keepView);
+            return this._watchlistFrame.tryOpenLitIvemIdArray([], keepView);
         }
     }
 

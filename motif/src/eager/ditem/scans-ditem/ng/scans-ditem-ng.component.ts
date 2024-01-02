@@ -13,7 +13,6 @@ import {
 import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
-    BadnessComparableList,
     ButtonUiAction,
     GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
@@ -27,6 +26,7 @@ import {
     StringUiAction,
     Strings,
     UiAction,
+    UiBadnessComparableList,
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
@@ -320,7 +320,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         return definitionPromise;
     }
 
-    private openTargetMultiSymbolListEditorDialog(caption: string, list: BadnessComparableList<LitIvemId>, columnsEditCaption: string) {
+    private openTargetMultiSymbolListEditorDialog(caption: string, list: UiBadnessComparableList<LitIvemId>, columnsEditCaption: string) {
         this.dialogActive = true;
 
         const closePromise = LitIvemIdListEditorDialogNgComponent.open(

@@ -70,13 +70,10 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        const initialisePromise = ordersFrame.initialiseGrid(
-            this.opener,
-            ordersFrameElement,
-            false,
-        );
+        ordersFrame.initialiseGrid(this.opener, undefined, true);
 
-        initialisePromise.then(
+        const openPromise = ordersFrame.openJsonOrDefault(ordersFrameElement, true);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('ODFIPU50137');

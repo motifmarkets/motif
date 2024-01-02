@@ -61,7 +61,8 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        return undefined;
+        throw new AssertInternalError('SSFGDGSORD44218');
+        return new GridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {

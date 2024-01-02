@@ -1,7 +1,9 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
-    BadnessComparableList,
+    AdaptedRevgridGridSettings,
+    CellPainterFactoryService,
     GridField,
+    GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
@@ -9,9 +11,15 @@ import {
     LitIvemId,
     LitIvemIdComparableListTableRecordSource,
     MarketInfo,
+    ReferenceableGridLayoutsService,
+    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
+    SettingsService,
+    TableRecordSourceDefinitionFactoryService,
+    TableRecordSourceFactoryService,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    UiBadnessComparableList
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -22,8 +30,10 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     recordFocusedEventer: LitIvemIdListFrame.RecordFocusedEventer | undefined
     selectionChangedEventer: LitIvemIdListFrame.SelectionChangedEventer | undefined;
 
+    private readonly _initialCustomGridSettings: Partial<AdaptedRevgridGridSettings>;
+
     private _recordSource: LitIvemIdComparableListTableRecordSource;
-    private _list: BadnessComparableList<LitIvemId>;
+    private _list: UiBadnessComparableList<LitIvemId>;
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
@@ -31,10 +41,30 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     private _filterText = '';
     private _uppercaseFilterText = '';
 
-    // private _dataItem: DayTradesDataItem | undefined;
-    // private _dataItemBadnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
-    // private _dataItemDataCorrectnessChangeEventSubscriptionId: MultiEvent.SubscriptionId;
-    // private _dataItemDataCorrectnessId = CorrectnessId.Suspect;
+    constructor(
+        settingsService: SettingsService,
+        referenceableGridLayoutsService: ReferenceableGridLayoutsService,
+        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        tableRecordSourceFactoryService: TableRecordSourceFactoryService,
+        referenceableGridSourcesService: ReferenceableGridSourcesService,
+        cellPainterFactoryService: CellPainterFactoryService,
+        initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined,
+    ) {
+        super(
+            settingsService,
+            referenceableGridLayoutsService,
+            tableRecordSourceDefinitionFactoryService,
+            tableRecordSourceFactoryService,
+            referenceableGridSourcesService,
+            cellPainterFactoryService,
+        );
+
+        if (initialCustomGridSettings === undefined) {
+            this._initialCustomGridSettings = LitIvemIdListFrame.defaultCustomGridSettings;
+        } else {
+            this._initialCustomGridSettings = initialCustomGridSettings;
+        }
+    }
 
     get list() { return this._list; }
 
@@ -64,7 +94,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
             gridHostElement,
-            { fixedColumnCount: 1 },
+            this._initialCustomGridSettings,
             (columnSettings) => this.customiseSettingsForNewGridColumn(columnSettings),
             (viewCell) => this.getGridMainCellPainter(viewCell),
             (viewCell) => this.getGridHeaderCellPainter(viewCell),
@@ -82,15 +112,9 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenWithDefaultLayout(list: BadnessComparableList<LitIvemId>, keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(list);
+    tryOpenList(list: UiBadnessComparableList<LitIvemId>, keepView: boolean) {
+        const definition = this.createListGridSourceOrReferenceDefinition(list, undefined);
         return this.tryOpenGridSource(definition, keepView);
-    }
-
-    createDefaultLayoutGridSourceOrReferenceDefinition(list: BadnessComparableList<LitIvemId>) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdComparableList(list);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     deleteSelected() {
@@ -110,14 +134,14 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        let list: BadnessComparableList<LitIvemId> | undefined;
+        let list: UiBadnessComparableList<LitIvemId> | undefined;
         if (this.getListEventer !== undefined) {
             list = this.getListEventer();
         }
         if (list === undefined) {
-            list = new BadnessComparableList<LitIvemId>();
+            list = new UiBadnessComparableList<LitIvemId>();
         }
-        return this.createDefaultLayoutGridSourceOrReferenceDefinition(list);
+        return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
@@ -147,6 +171,12 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         return this._gridMainCellPainter;
     }
 
+    private createListGridSourceOrReferenceDefinition(list: UiBadnessComparableList<LitIvemId>, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdComparableList(list);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+    }
+
     private filterItems(litIvemId: LitIvemId) {
         if (this._uppercaseFilterText.length === 0) {
             return true;
@@ -157,8 +187,10 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
 }
 
 export namespace LitIvemIdListFrame {
-    export type GetListEventer = (this: void) => BadnessComparableList<LitIvemId> | undefined;
+    export type GetListEventer = (this: void) => UiBadnessComparableList<LitIvemId> | undefined;
     export type GridSourceOpenedEventer = (this: void) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
     export type SelectionChangedEventer = (this: void) => void;
+
+    export const defaultCustomGridSettings: Partial<AdaptedRevgridGridSettings> = { fixedColumnCount: 1 } as const;
 }

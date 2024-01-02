@@ -111,6 +111,11 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return grid;
     }
 
+    tryOpenDefault(keepView: boolean) {
+        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
+        return this.tryOpenGridSource(definition, keepView)
+    }
+
     setWidthEditor(value: CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         this._widthEditor = value;
     }
@@ -196,9 +201,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createEditableGridLayoutDefinitionColumn(this._columnList);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
@@ -215,6 +218,12 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     protected override hideBadnessWithVisibleDelay(_badness: Badness) {
         // always hidden as never bad
+    }
+
+    private createDefaultLayoutGridSourceOrReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createEditableGridLayoutDefinitionColumn(this._columnList);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

@@ -1,14 +1,14 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     AllowedFieldsGridLayoutDefinition,
-    BadnessComparableList,
     BooleanUiAction,
     GridLayoutOrReferenceDefinition,
     LitIvemId,
     ScanEditor,
     StringId,
     StringUiAction,
-    Strings
+    Strings,
+    UiBadnessComparableList
 } from '@motifmarkets/motif-core';
 import {
     CaptionLabelNgComponent, CheckboxInputNgComponent, TextInputNgComponent
@@ -339,7 +339,7 @@ export namespace GeneralScanEditorSectionNgComponent {
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: BadnessComparableList<LitIvemId>,
+        list: UiBadnessComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 }

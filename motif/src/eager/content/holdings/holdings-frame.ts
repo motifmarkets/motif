@@ -17,7 +17,7 @@ import {
     KeyedCorrectnessList,
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -49,15 +49,9 @@ export class HoldingsFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
+    tryOpenBrokerageAccountGroup(group: BrokerageAccountGroup, keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(group);
         return this.tryOpenGridSource(definition, keepView);
-    }
-
-    createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createHolding(brokerageAccountGroup);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
@@ -90,6 +84,12 @@ export class HoldingsFrame extends DelayedBadnessGridSourceFrame {
 
     private getGridMainCellPainter(viewCell: DatalessViewCell<AdaptedRevgridBehavioredColumnSettings, GridField>) {
         return this._gridMainCellPainter;
+    }
+
+    private createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createHolding(brokerageAccountGroup);
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 }
 

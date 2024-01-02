@@ -54,13 +54,10 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        const initialisePromise = brokerageAccountsFrame.initialiseGrid(
-            this.opener,
-            brokerageAccountsFrameElement,
-            false,
-        );
+        brokerageAccountsFrame.initialiseGrid(this.opener, undefined, true);
 
-        initialisePromise.then(
+        const openPromise = brokerageAccountsFrame.openJsonOrDefault(brokerageAccountsFrameElement, true);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('BADFIPU50137');

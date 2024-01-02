@@ -1,6 +1,33 @@
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy, ViewChild } from '@angular/core';
-import { AllowedFieldsGridLayoutDefinition, AssertInternalError, BadnessComparableList, CommandRegisterService, GridLayoutOrReferenceDefinition, IconButtonUiAction, Integer, InternalCommand, LitIvemId, LitIvemIdUiAction, LockOpenListItem, MultiEvent, StringId, StringUiAction, Strings, UsableListChangeTypeId, getErrorMessage } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import {
+    AllowedFieldsGridLayoutDefinition,
+    AssertInternalError,
+    CommandRegisterService,
+    GridLayoutOrReferenceDefinition,
+    IconButtonUiAction,
+    Integer,
+    InternalCommand,
+    LitIvemBaseDetail,
+    LitIvemBaseDetailTableFieldSourceDefinition,
+    LitIvemId,
+    LitIvemIdComparableListTableRecordSourceDefinition,
+    LitIvemIdTableFieldSourceDefinition,
+    LitIvemIdUiAction,
+    LockOpenListItem,
+    MultiEvent,
+    StringId,
+    StringUiAction,
+    Strings,
+    TableFieldSourceDefinition,
+    TableFieldSourceDefinitionRegistryService,
+    UiBadnessComparableList,
+    UsableListChangeTypeId,
+    getErrorMessage,
+} from '@motifmarkets/motif-core';
+import {
+    CommandRegisterNgService,
+    TableFieldSourceDefinitionRegistryNgService,
+} from 'component-services-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { LitIvemIdListNgComponent } from '../../lit-ivem-id-list/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -20,7 +47,9 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
     editGridColumnsEventer: LitIvemIdListEditorNgDirective.EditGridColumnsEventer | undefined;
     popoutEventer: LitIvemIdListEditorNgDirective.PopoutEventer | undefined;
 
-    readonly list: BadnessComparableList<LitIvemId>;
+    readonly list: UiBadnessComparableList<LitIvemId>;
+
+    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService;
 
     private readonly _addLitIvemIdUiAction: LitIvemIdUiAction;
     private readonly _selectAllUiAction: IconButtonUiAction;
@@ -31,7 +60,6 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private _enabled = true;
 
-    private _uiListChange = false;
     private _listChangeMultiEvent = new MultiEvent<LitIvemIdListEditorNgDirective.ListChangeEventHandler>();
     private _listChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
@@ -39,17 +67,20 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         elRef: ElementRef<HTMLElement>,
         protected readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
-        list: BadnessComparableList<LitIvemId> | null,
+        list: UiBadnessComparableList<LitIvemId> | null,
     ) {
         super(elRef, typeInstanceCreateCount);
 
         if (list === null) {
-            this.list = new BadnessComparableList<LitIvemId>();
+            this.list = new UiBadnessComparableList<LitIvemId>();
         } else {
             this.list = list;
         }
+
+        this._fieldSourceDefinitionRegistryService = fieldSourceDefinitionRegistryNgService.service;
 
         const commandRegisterService = commandRegisterNgService.service;
 
@@ -113,10 +144,9 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         this._filterControlComponent.initialise(this._filterUiAction);
 
         this._listChangeSubscriptionId = this.list.subscribeListChangeEvent(
-            (listChangeTypeId, index, count) => {
-                this.updateCounts();
+            (listChangeTypeId, index, count, ui) => {
                 this.updateControlsEnabled();
-                this.notifyListChange(listChangeTypeId, index, count);
+                this.notifyListChange(listChangeTypeId, index, count, ui);
             }
         );
 
@@ -125,12 +155,19 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
             this.updateCounts();
         }
 
-        const initialisePromise = this._litIvemIdListComponent.initialise(this.opener, undefined, false, this.list);
-        initialisePromise.then(
+        const layoutDefinition = this.createDefaultLayoutDefinition();
+        const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layoutDefinition);
+
+        this._litIvemIdListComponent.initialise(this.opener, gridLayoutOrReferenceDefinition, undefined, true);
+
+        const openPromise = this._litIvemIdListComponent.tryOpenList(this.list, true);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('LIILENCICU56569');
                 } else {
+                    this._litIvemIdListComponent.frame.grid.dataServersRowListChangedEventer = () => this.updateCounts();
+                    this.updateControlsEnabled();
                     this.updateCounts();
                 }
             },
@@ -139,6 +176,8 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
     }
 
     protected finalise() {
+        this._litIvemIdListComponent.frame.grid.dataServersRowListChangedEventer = undefined;
+
         this.list.unsubscribeListChangeEvent(this._listChangeSubscriptionId);
         this._listChangeSubscriptionId = undefined;
 
@@ -156,7 +195,6 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         } else {
             return this.editGridColumnsEventer(allowedFieldsAndLayoutDefinition);
         }
-
     }
 
     private createAddLitIvemIdUiAction() {
@@ -164,9 +202,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         action.valueRequired = false;
         action.pushTitle(Strings[StringId.SymbolInputTitle]);
         action.commitEvent = () => {
-            this._uiListChange = true;
-            this.list.add(action.definedValue);
-            this._uiListChange = false;
+            this.list.uiAdd(action.definedValue);
         }
         return action;
     }
@@ -194,10 +230,8 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         action.pushIcon(IconButtonUiAction.IconId.RemoveSelectedFromList);
         action.pushUnselected();
         action.signalEvent = () => {
-            this._uiListChange = true;
             const selectedIndices = this._litIvemIdListComponent.getSelectedRecordIndices();
-            this.list.removeAtIndices(selectedIndices);
-            this._uiListChange = false;
+            this.list.uiRemoveAtIndices(selectedIndices);
         };
         return action;
     }
@@ -239,6 +273,22 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
             this.updateCounts();
         }
         return action;
+    }
+
+    private createDefaultLayoutDefinition() {
+        const litIvemIdFieldId: LitIvemIdTableFieldSourceDefinition.FieldId = {
+            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemId,
+            id: LitIvemId.FieldId.LitIvemId,
+        };
+        const nameFieldId: LitIvemBaseDetailTableFieldSourceDefinition.FieldId = {
+            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemBaseDetail,
+            id: LitIvemBaseDetail.Field.Id.Name,
+        };
+
+        return LitIvemIdComparableListTableRecordSourceDefinition.createLayoutDefinition(
+            this._fieldSourceDefinitionRegistryService,
+            [litIvemIdFieldId, nameFieldId],
+        );
     }
 
     private handleColumnsSignalEvent() {
@@ -290,10 +340,10 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         }
     }
 
-    private notifyListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer) {
+    private notifyListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer, ui: boolean) {
         const handlers = this._listChangeMultiEvent.copyHandlers();
         for (let i = 0; i < handlers.length; i++) {
-            handlers[i](listChangeTypeId, index, count, this._uiListChange);
+            handlers[i](listChangeTypeId, index, count, ui);
         }
     }
 }
@@ -301,7 +351,15 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 export namespace LitIvemIdListEditorNgDirective {
     export type ListChangeEventHandler = (this: void, listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer, ui: boolean) => void;
     export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<GridLayoutOrReferenceDefinition | undefined>;
-    export type PopoutEventer = (this: void, list: BadnessComparableList<LitIvemId>) => void;
+    export type PopoutEventer = (this: void, list: UiBadnessComparableList<LitIvemId>) => void;
 
-    export const listInjectionToken = new InjectionToken<BadnessComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
+    export const listInjectionToken = new InjectionToken<UiBadnessComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
+
+    export const initialCustomGridSettingsProvider: LitIvemIdListNgComponent.InitialCustomGridSettingsProvider = {
+        provide: LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken,
+        useValue: {
+            fixedColumnCount: 1,
+            switchNewRectangleSelectionToRowOrColumn: 'row',
+        }
+    }
 }

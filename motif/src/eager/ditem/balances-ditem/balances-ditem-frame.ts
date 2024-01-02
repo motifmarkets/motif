@@ -65,13 +65,10 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        const initialisePromise = balancesFrame.initialiseGrid(
-            this.opener,
-            balancesFrameElement,
-            false,
-        );
+        balancesFrame.initialiseGrid(this.opener, undefined, false);
 
-        initialisePromise.then(
+        const openPromise = balancesFrame.openJsonOrDefault(balancesFrameElement, true);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('BDFIPU50139');
@@ -193,7 +190,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
                 // TODO add support for clearTable
-                const promise = balancesFrame.tryOpenWithDefaultLayout(group, keepView);
+                const promise = balancesFrame.tryOpenBrokerageAccountGroup(group, keepView);
                 AssertInternalError.throwErrorIfPromiseRejected(promise, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`)
             }
         } finally {

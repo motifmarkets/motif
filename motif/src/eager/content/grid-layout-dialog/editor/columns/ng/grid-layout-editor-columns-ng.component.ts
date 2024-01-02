@@ -61,7 +61,8 @@ export class GridLayoutEditorColumnsNgComponent extends GridSourceNgDirective {
     protected override processAfterViewInit() {
         this.frame.setupGrid(this._gridHost.nativeElement);
         this._widthEditorComponent.dataServer = this.frame.grid.mainDataServer;
-        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
+        this.frame.initialiseGrid(this._opener, undefined, false);
+        const initialisePromise = this.frame.tryOpenDefault(false);
         initialisePromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {

@@ -43,8 +43,9 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
 
     protected override processAfterViewInit() {
         super.processAfterViewInit();
-        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
-        initialisePromise.then(
+        this.frame.initialiseGrid(this._opener, undefined, false);
+        const openPromise = this.frame.tryOpenWithDefaultLayout(false);
+        openPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('FNCPU50139');

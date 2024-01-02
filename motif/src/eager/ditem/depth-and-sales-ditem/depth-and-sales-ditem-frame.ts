@@ -16,10 +16,9 @@ import {
     DepthStyleId,
     GridLayoutDefinition,
     GridLayoutOrReferenceDefinition,
-    GridSourceOrReference,
     JsonElement,
-    LitIvemIdArrayRankedLitIvemIdListDefinition,
     LitIvemId,
+    LitIvemIdArrayRankedLitIvemIdListDefinition,
     SettingsService,
     SymbolsService,
     TextFormatterService
@@ -78,17 +77,20 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame.fixedRowCount = 1;
         this._watchlistFrame.focusedRowColoredAllowed = false;
 
-        let watchlistInitialisedPromise: Promise<GridSourceOrReference | undefined>;
+        let watchlistLayoutDefinition: GridLayoutOrReferenceDefinition | undefined;
         if (frameElement === undefined) {
-            watchlistInitialisedPromise = this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
         } else {
             const watchlistElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.watchlist);
-            if (watchlistElementResult.isErr()) {
-                watchlistInitialisedPromise = this._watchlistFrame.initialiseGrid(this.opener, undefined, true);
-            } else {
-                watchlistInitialisedPromise = this._watchlistFrame.initialiseGrid(this.opener, watchlistElementResult.value, true);
+            if (watchlistElementResult.isOk()) {
+                const watchlistElement = watchlistElementResult.value;
+                const layoutDefinitionResult = this._watchlistFrame.tryCreateLayoutDefinitionFromJson(watchlistElement);
+                if (layoutDefinitionResult.isErr()) {
+                    // toast in future
+                } else {
+                    watchlistLayoutDefinition = layoutDefinitionResult.value;
+                }
             }
 
             const tradesElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.trades);
@@ -106,7 +108,9 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        watchlistInitialisedPromise.then(
+        this._watchlistFrame.initialiseGrid(this.opener, watchlistLayoutDefinition, true);
+        const watchlistOpenPromise = this._watchlistFrame.tryOpenLitIvemIdArray([], true);
+        watchlistOpenPromise.then(
             (gridSourceOrReference) => {
                 if (gridSourceOrReference === undefined) {
                     throw new AssertInternalError('OADFIPWU50137');

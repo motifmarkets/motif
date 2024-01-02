@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
-import { AssertInternalError, LockOpenListItem } from '@motifmarkets/motif-core';
+import { LockOpenListItem } from '@motifmarkets/motif-core';
 import { CoreInjectionTokens } from 'component-services-ng-api';
 import { DelayedBadnessGridSourceNgDirective } from '../../../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../../../ng/content-ng.service';
@@ -28,7 +28,6 @@ export class ScanTestMatchesNgComponent extends DelayedBadnessGridSourceNgDirect
 
     protected override processAfterViewInit() {
         super.processAfterViewInit();
-        const initialisePromise = this.frame.initialiseGrid(this._opener, undefined, false);
-        AssertInternalError.throwErrorIfPromiseRejected(initialisePromise, 'STMNCPR50139');
+        this.frame.initialiseGrid(this._opener, undefined, false);
     }
 }

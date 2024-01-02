@@ -1,5 +1,5 @@
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { AssertInternalError, BadnessComparableList, GridLayoutOrReferenceDefinition, GridSourceOrReference, JsonElement, LitIvemId, LockOpenListItem } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Optional, ValueProvider } from '@angular/core';
+import { AdaptedRevgridGridSettings, GridLayoutOrReferenceDefinition, JsonElement, LitIvemId, LockOpenListItem, UiBadnessComparableList } from '@motifmarkets/motif-core';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { LitIvemIdListFrame } from '../lit-ivem-id-list-frame';
@@ -18,14 +18,15 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     selectionChangedEventer: LitIvemIdListFrame.SelectionChangedEventer | undefined;
 
-    private _list: BadnessComparableList<LitIvemId> | undefined;
+    private _list: UiBadnessComparableList<LitIvemId> | undefined;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
+        @Optional() @Inject(LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken) initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | null,
     ) {
-        const frame = contentNgService.createLitIvemIdListFrame();
+        const frame = contentNgService.createLitIvemIdListFrame(initialCustomGridSettings === null ? undefined : initialCustomGridSettings);
         frame.getListEventer = () => this._list;
         frame.selectionChangedEventer = () => {
             if (this.selectionChangedEventer !== undefined) {
@@ -42,18 +43,29 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     initialise(
         opener: LockOpenListItem.Opener,
+        layoutDefinition: GridLayoutOrReferenceDefinition | undefined,
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
-        list: BadnessComparableList<LitIvemId> | undefined,
-    ): Promise<GridSourceOrReference | undefined> {
-        this._list = list;
-        return this.frame.initialiseGrid(opener, frameElement, keepPreviousLayoutIfPossible);
+    ) {
+        if (layoutDefinition === undefined) {
+            const layoutDefinitionResult = this.frame.tryCreateLayoutDefinitionFromJson(frameElement);
+            if (layoutDefinitionResult.isErr()) {
+                // toast in future
+            } else {
+                layoutDefinition = layoutDefinitionResult.value;
+            }
+        }
+
+        this.frame.initialiseGrid(opener, layoutDefinition, keepPreviousLayoutIfPossible);
     }
 
-    openList(list: BadnessComparableList<LitIvemId>) {
+    tryOpenJson(frameElement: JsonElement | undefined, keepView: boolean) {
+        return this.frame.tryOpenJson(frameElement, keepView)
+    }
+
+    tryOpenList(list: UiBadnessComparableList<LitIvemId>, keepView: boolean) {
         this._list = list;
-        const promise = this.frame.tryOpenWithDefaultLayout(list, true);
-        AssertInternalError.throwErrorIfPromiseRejected(promise, 'LIILNCOL40408');
+        return this.frame.tryOpenList(list, keepView);
     }
 
     selectAllRows() {
@@ -79,5 +91,14 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
     protected override processOnDestroy() {
         this.frame.selectionChangedEventer = undefined;
         super.processOnDestroy();
+    }
+}
+
+export namespace LitIvemIdListNgComponent {
+    export const initialCustomGridSettingsInjectionToken = new InjectionToken<Partial<AdaptedRevgridGridSettings>>('LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken');
+
+    export interface InitialCustomGridSettingsProvider extends ValueProvider {
+        provide: typeof LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken;
+        useValue: Partial<AdaptedRevgridGridSettings>;
     }
 }

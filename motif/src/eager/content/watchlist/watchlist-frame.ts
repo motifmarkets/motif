@@ -37,8 +37,6 @@ import { DatalessViewCell } from 'revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
 export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
-    defaultLitIvemIds: readonly LitIvemId[] | undefined;
-
     gridSourceOpenedEventer: WatchlistFrame.GridSourceOpenedEventer | undefined;
     recordFocusedEventer: WatchlistFrame.RecordFocusedEventer | undefined
     saveRequiredEventer: WatchlistFrame.SaveRequiredEventer | undefined;
@@ -101,10 +99,9 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    newEmpty(keepView: boolean) {
-        const definition = this.createEmptyGridSourceOrReferenceDefinition();
-        const gridSourceOrReferencePromise = this.tryOpenGridSource(definition, keepView);
-        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'WFNE57774', this.opener.lockerName);
+    tryOpenLitIvemIdArray(litIvemIds: readonly LitIvemId[], keepView: boolean) {
+        const definition = this.createGridSourceOrReferenceDefinitionFromLitIvemIds(litIvemIds);
+        return this.tryOpenGridSource(definition, keepView);
     }
 
     createGridSourceOrReferenceDefinitionFromList(
@@ -258,7 +255,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        return this.createGridSourceOrReferenceDefinitionFromLitIvemIds(this.defaultLitIvemIds);
+        return this.createGridSourceOrReferenceDefinitionFromLitIvemIds([]);
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
@@ -283,17 +280,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    private createGridSourceOrReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[] | undefined) {
-        if (litIvemIds === undefined) {
-            return this.createEmptyGridSourceOrReferenceDefinition();
-        } else {
-            const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
-            return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
-        }
-    }
-
-    private createEmptyGridSourceOrReferenceDefinition() {
-        const litIvemIds: readonly LitIvemId[] = [];
+    private createGridSourceOrReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[]) {
         const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
         return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
     }

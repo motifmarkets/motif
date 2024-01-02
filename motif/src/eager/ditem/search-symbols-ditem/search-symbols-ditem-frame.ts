@@ -6,7 +6,6 @@
 
 import {
     AdiService,
-    AssertInternalError,
     CommandRegisterService,
     EnumInfoOutOfOrderError,
     ExchangeId,
@@ -162,32 +161,37 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         searchSymbolsFrame.gridSourceOpenedEventer = (dataDefinition) => this.handleGridSourceOpenedEvent(dataDefinition);
         searchSymbolsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
 
-        let searchSymbolsFrameElement: JsonElement | undefined;
+        let layoutDefinition: GridLayoutOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const searchSymbolsFrameElementResult = ditemFrameElement.tryGetElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
             if (searchSymbolsFrameElementResult.isOk()) {
-                searchSymbolsFrameElement = searchSymbolsFrameElementResult.value;
+                const searchSymbolsFrameElement = searchSymbolsFrameElementResult.value;
+                const layoutDefinitionResult = searchSymbolsFrame.tryCreateLayoutDefinitionFromJson(searchSymbolsFrameElement);
+                if (layoutDefinitionResult.isErr()) {
+                    // toast in future
+                } else {
+                    layoutDefinition = layoutDefinitionResult.value;
+                }
             }
         }
 
-        const initialisePromise = searchSymbolsFrame.initialiseGrid(
-            this.opener,
-            searchSymbolsFrameElement,
-            false,
-        );
-
-        initialisePromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference !== undefined) {
-                    this.applyLinked();
-                }
-            },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSDFIP50134') }
-        );
+        searchSymbolsFrame.initialiseGrid(this.opener, layoutDefinition, false);
     }
 
     override finalise(): void {
         super.finalise();
+    }
+
+    override save(ditemFrameElement: JsonElement) {
+        super.save(ditemFrameElement);
+
+        const searchSymbolsFrame = this._searchSymbolsFrame;
+
+        // eslint-disable-next-line @typescript-eslint/prefer-optional-chain
+        if (searchSymbolsFrame !== undefined && searchSymbolsFrame.opened) {
+            const searchSymbolsFrameElement = ditemFrameElement.newElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
+            searchSymbolsFrame.saveLayout(searchSymbolsFrameElement);
+        }
     }
 
     executeRequest() {

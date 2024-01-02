@@ -114,6 +114,12 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return grid;
     }
 
+    tryOpenDefault(keepView: boolean) {
+        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
+        return this.tryOpenGridSource(definition, keepView);
+    }
+
+
     applyColumnListFilter() {
         this.grid.applyFilter((record) => this.filterInuseFields(record));
     }
@@ -149,9 +155,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
@@ -168,6 +172,12 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     protected override hideBadnessWithVisibleDelay(_badness: Badness) {
         // always hidden as never bad
+    }
+
+    private createDefaultLayoutGridSourceOrReferenceDefinition() {
+        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
+        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

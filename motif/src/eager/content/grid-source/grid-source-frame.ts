@@ -11,6 +11,7 @@ import {
     AssertInternalError,
     Badness,
     CellPainterFactoryService,
+    ErrorCode,
     GridField,
     GridLayout,
     GridLayoutOrReferenceDefinition,
@@ -22,9 +23,11 @@ import {
     JsonElement,
     LockOpenListItem,
     MultiEvent,
+    Ok,
     RecordGrid,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourcesService,
+    Result,
     SettingsService,
     Table,
     TableGridRecordStore,
@@ -100,9 +103,6 @@ export abstract class GridSourceFrame extends ContentFrame {
     get gridHorizontalScrollbarInsideOverlap() { return this._grid.horizontalScroller.insideOverlap; }
     get emWidth() { return this._grid.emWidth; }
 
-    // get standardFieldListId(): TableFieldList.StandardId { return this._standardFieldListId; }
-    // set standardFieldListId(value: TableFieldList.StandardId) { this._standardFieldListId = value; }
-    // get table(): Table | undefined { return this._table; }
     get recordCount(): Integer { return this._openedTable === undefined ? 0 : this._openedTable.recordCount; }
     get opened(): boolean { return this._openedTable !== undefined; }
 
@@ -111,52 +111,12 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     initialiseGrid(
         opener: LockOpenListItem.Opener,
-        frameElement: JsonElement | undefined,
+        previousLayoutDefinition: GridLayoutOrReferenceDefinition | undefined,
         keepPreviousLayoutIfPossible: boolean,
-    ): Promise<GridSourceOrReference | undefined> {
+    ) {
         this._opener = opener;
-
-        let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
-        if (frameElement === undefined) {
-            gridSourceOrReferenceDefinition = this.getDefaultGridSourceOrReferenceDefinition();
-        } else {
-            // If definition exists, load that
-            const definitionElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
-            if (definitionElementResult.isOk()) {
-                const definition = this.tryCreateGridSourceOrReferenceDefinitionFromJson(definitionElementResult.value);
-                if (definition === undefined) {
-                    gridSourceOrReferenceDefinition = this.getDefaultGridSourceOrReferenceDefinition();
-                } else {
-                    gridSourceOrReferenceDefinition = definition;
-                }
-            } else {
-                // If layout exists, then create default and load layout
-                gridSourceOrReferenceDefinition = this.getDefaultGridSourceOrReferenceDefinition();
-                if (gridSourceOrReferenceDefinition !== undefined) {
-                    if (gridSourceOrReferenceDefinition.canUpdateGridLayoutDefinitionOrReference()) {
-                        const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
-                        if (layoutElementResult.isOk()) {
-                            const layoutDefinitionResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(layoutElementResult.value);
-                            if (layoutDefinitionResult.isOk()) {
-                                gridSourceOrReferenceDefinition.updateGridLayoutDefinitionOrReference(layoutDefinitionResult.value);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
         this.keepPreviousLayoutIfPossible = keepPreviousLayoutIfPossible;
-
-        if (gridSourceOrReferenceDefinition !== undefined) {
-            if (keepPreviousLayoutIfPossible) {
-                this.keptGridLayoutOrReferenceDefinition = gridSourceOrReferenceDefinition.gridSourceDefinition?.gridLayoutOrReferenceDefinition;
-            }
-
-            return this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-        } else {
-            return Promise.resolve(undefined);
-        }
+        this.keptGridLayoutOrReferenceDefinition = previousLayoutDefinition;
     }
 
     override finalise() {
@@ -183,19 +143,40 @@ export abstract class GridSourceFrame extends ContentFrame {
         return this._grid.calculateHeaderPlusFixedRowsHeight();
     }
 
-    // grid functions used by Component
+    tryCreateDefinitionFromJson(frameElement: JsonElement | undefined): Result<GridSourceOrReferenceDefinition | undefined> {
+        if (frameElement === undefined) {
+            return new Ok(undefined); // missing
+        } else {
+            const definitionElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
+            if (definitionElementResult.isErr()) {
+                return new Ok(undefined); // missing
+            } else {
+                const definitionResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
+                    this.tableRecordSourceDefinitionFactoryService,
+                    definitionElementResult.value,
+                );
 
-    // setGrid(value: RecordGrid) {
-    //     this.grid = value;
-    //     this.grid.recordFocusedEventer = (newRecordIndex, oldRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex, oldRecordIndex);
-    //     this.grid.mainClickEventer = (fieldIndex, recordIndex) => this.handleGridClickEvent(fieldIndex, recordIndex);
-    //     this.grid.mainDblClickEventer = (fieldIndex, recordIndex) => this.handleGridDblClickEvent(fieldIndex, recordIndex);
+                if (definitionResult.isOk()) {
+                    return definitionResult;
+                } else {
+                    return definitionResult.createOuter(ErrorCode.GridSourceFrame_JsonDefinitionIsInvalid)
+                }
+            }
+        }
+    }
 
-    //     this._settingsChangedSubscriptionId =
-    //         this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
-
-    //     this.applySettings();
-    // }
+    tryCreateLayoutDefinitionFromJson(frameElement: JsonElement | undefined): Result<GridLayoutOrReferenceDefinition | undefined> {
+        if (frameElement === undefined) {
+            return new Ok(undefined); // missing
+        } else {
+            const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
+            if (layoutElementResult.isErr()) {
+                return new Ok(undefined); // missing
+            } else {
+                return GridLayoutOrReferenceDefinition.tryCreateFromJson(layoutElementResult.value);
+            }
+        }
+    }
 
     save(frameElement: JsonElement) {
         const definitionElement = frameElement.newElement(GridSourceFrame.JsonName.definition);
@@ -215,6 +196,57 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     areColumnsSelected(includeAllAuto: boolean) {
         this.grid.areColumnsSelected(includeAllAuto);
+    }
+
+    openJsonOrDefault(frameElement: JsonElement | undefined, keepView: boolean): Promise<GridSourceOrReference | undefined> {
+        let openResolveFtn: (this: void, gridSourceOrReference: GridSourceOrReference | undefined) => void;
+        const openPromise = new Promise<GridSourceOrReference | undefined>(
+            (resolve) => { openResolveFtn = resolve; }
+        )
+        const jsonOpenPromise = this.tryOpenJson(frameElement, keepView);
+        jsonOpenPromise.then(
+            (jsonGridSourceOrReference) => {
+                if (jsonGridSourceOrReference !== undefined) {
+                    openResolveFtn(jsonGridSourceOrReference);
+                } else {
+                    const definition = this.getDefaultGridSourceOrReferenceDefinition();
+                    const defaultOpenPromise = this.tryOpenGridSource(definition, keepView);
+                    defaultOpenPromise.then(
+                        (defaultGridSourceOrReference) => {
+                            if (defaultGridSourceOrReference !== undefined) {
+                                openResolveFtn(defaultGridSourceOrReference);
+                            } else {
+                                throw new AssertInternalError('HFTOJU33345');
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'HFTOJD33345'); }
+                    );
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'HFTOJODJ33345'); }
+        );
+
+        return openPromise;
+    }
+
+    tryOpenJson(frameElement: JsonElement | undefined, keepView: boolean) {
+        if (frameElement === undefined) {
+            return Promise.resolve(undefined);
+        } else {
+            let definition: GridSourceOrReferenceDefinition | undefined;
+            const definitionResult = this.tryCreateDefinitionFromJson(frameElement);
+            if (definitionResult.isErr()) {
+                // toast in future
+                return Promise.resolve(undefined);
+            } else {
+                definition = definitionResult.value;
+                if (definition === undefined) {
+                    return Promise.resolve(undefined);
+                } else {
+                    return this.tryOpenGridSource(definition, keepView);
+                }
+            }
+        }
     }
 
     async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<GridSourceOrReference | undefined> {
@@ -1080,19 +1112,6 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private tryCreateGridSourceOrReferenceDefinitionFromJson(definitionElement: JsonElement): GridSourceOrReferenceDefinition | undefined {
-        const definitionResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
-            this.tableRecordSourceDefinitionFactoryService,
-            definitionElement,
-        );
-        if (definitionResult.isErr()) {
-            // show error toast
-            return undefined;
-        } else {
-            return definitionResult.value;
-        }
-    }
-
     private applyFirstUsable(layout: GridLayout) {
         let rowOrderDefinition = this._keptRowOrderDefinition;
         this._keptRowOrderDefinition = undefined;
@@ -1322,7 +1341,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     protected abstract createGridAndCellPainters(gridHost: HTMLElement): RecordGrid;
-    protected abstract getDefaultGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition | undefined; // Some ditems (such as SearchSymbol) do not have a default
+    protected abstract getDefaultGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition;
 
     protected abstract setBadness(value: Badness): void;
     protected abstract hideBadnessWithVisibleDelay(badness: Badness): void;

@@ -5,6 +5,7 @@
  */
 
 import {
+    AdaptedRevgridGridSettings,
     AdiService,
     AppStorageService,
     CellPainterFactoryService,
@@ -96,7 +97,7 @@ export class ContentService {
     //     );
     // }
 
-    createLitIvemIdListFrame() {
+    createLitIvemIdListFrame(initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined) {
         return new LitIvemIdListFrame(
             this._settingsService,
             this._referenceableGridLayoutsService,
@@ -104,6 +105,7 @@ export class ContentService {
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            initialCustomGridSettings,
         );
     }
 

@@ -91,19 +91,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        const holdingsInitialisePromise = holdingsFrame.initialiseGrid(
-            this.opener,
-            holdingsFrameElement,
-            true,
-        );
+        holdingsFrame.initialiseGrid(this.opener, undefined, true);
+        balancesFrame.initialiseGrid(this.opener, undefined, true);
 
-        const balancesInitialisePromise = balancesFrame.initialiseGrid(
-            this.opener,
-            balancesFrameElement,
-            true,
-        );
+        const holdingsOpenPromise = holdingsFrame.openJsonOrDefault(holdingsFrameElement, true);
+        const balancesOpenPromise = balancesFrame.openJsonOrDefault(balancesFrameElement, true);
 
-        const allInitialisePromise = Promise.all([holdingsInitialisePromise, balancesInitialisePromise]);
+        const allInitialisePromise = Promise.all([holdingsOpenPromise, balancesOpenPromise]);
 
         allInitialisePromise.then(
             (gridSourceOrReferences) => {
@@ -267,7 +261,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             if (balancesFrame === undefined) {
                 throw new AssertInternalError('HDFTOBGS23330');
             } else {
-                const promise = balancesFrame.tryOpenWithDefaultLayout(group, false);
+                const promise = balancesFrame.tryOpenBrokerageAccountGroup(group, false);
                 promise.then(
                     () => { this._componentAccess.setBalancesVisible(true); },
                     (reason) => { throw AssertInternalError.createIfNotError(reason, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`); }
@@ -301,7 +295,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             if (group !== undefined) {
                 // TODO add support for clearTable
 
-                const gridSourceOrReferencePromise = holdingsFrame.tryOpenWithDefaultLayout(group, keepView);
+                const gridSourceOrReferencePromise = holdingsFrame.tryOpenBrokerageAccountGroup(group, keepView);
                 gridSourceOrReferencePromise.then(
                     (gridSourceOrReference) => {
                         if (gridSourceOrReference === undefined) {

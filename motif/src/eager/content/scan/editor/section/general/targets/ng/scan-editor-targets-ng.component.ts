@@ -4,7 +4,6 @@ import {
     AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
     AssertInternalError,
-    BadnessComparableList,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -20,6 +19,7 @@ import {
     StringId,
     Strings,
     SymbolsService,
+    UiBadnessComparableList,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
@@ -66,7 +66,6 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     popoutMultiSymbolListEditorEventer: ScanEditorTargetsNgComponent.PopoutMultiSymbolListEditorEventer | undefined;
 
     private readonly _symbolsService: SymbolsService;
-    private readonly _multiSymbolList: BadnessComparableList<LitIvemId>;
 
     private readonly _targetSubTypeUiAction: ExplicitElementsEnumUiAction;
     private readonly _singleSymbolUiAction: LitIvemIdUiAction;
@@ -75,6 +74,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
     private _scanEditor: ScanEditor | undefined;
+    private _multiSymbolList: UiBadnessComparableList<LitIvemId>;
     // private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
     // private _lastTargetTypeIdWasMulti = false;
 
@@ -91,7 +91,6 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this.targetSubTypeRadioName = this.generateInstancedRadioName('targetSubType');
 
         this._symbolsService = symbolsNgService.service;
-        this._multiSymbolList = new BadnessComparableList<LitIvemId>();
         this._targetSubTypeUiAction = this.createTargetSubTypeUiAction();
         this._singleSymbolUiAction = this.createSingleSymbolUiAction();
         this._singleMarketUiAction = this.createSingleMarketUiAction();
@@ -240,6 +239,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this._multiMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
         this._multiMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
 
+        this._multiSymbolList = this._multiSymbolEditorComponent.list;
         this._multiSymbolEditorComponentListChangeSubscriptionId = this._multiSymbolEditorComponent.subscribeListChangeEvent(
             (_listChangeTypeId, _idx, _count, ui) => {
                 if (ui) {
@@ -604,7 +604,7 @@ export namespace ScanEditorTargetsNgComponent {
     export type PopoutMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: BadnessComparableList<LitIvemId>,
+        list: UiBadnessComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 
