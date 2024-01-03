@@ -79,7 +79,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     // private _lastTargetTypeIdWasMulti = false;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
-    private _multiSymbolEditorComponentListChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
+    private _multiSymbolEditorComponentAfterListChangedSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -169,7 +169,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
         if (this._scanEditor !== undefined) {
             this._scanEditorFieldChangesSubscriptionId = this._scanEditor.subscribeFieldChangesEvents(
-                (fieldIds, fieldChanger) => { this.processFieldChanges(fieldIds, fieldChanger); }
+                (fieldIds, modifier) => { this.processFieldChanges(fieldIds, modifier); }
             );
         }
 
@@ -206,8 +206,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     protected finalise() {
-        this._multiSymbolEditorComponent.unsubscribeListChangeEvent(this._multiSymbolEditorComponentListChangeSubscriptionId);
-        this._multiSymbolEditorComponentListChangeSubscriptionId = undefined;
+        this._multiSymbolEditorComponent.unsubscribeAfterListChangedEvent(this._multiSymbolEditorComponentAfterListChangedSubscriptionId);
+        this._multiSymbolEditorComponentAfterListChangedSubscriptionId = undefined;
         this._multiSymbolEditorComponent.editGridColumnsEventer = undefined;
         this._multiSymbolEditorComponent.popoutEventer = undefined;
 
@@ -240,8 +240,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         this._multiMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
 
         this._multiSymbolList = this._multiSymbolEditorComponent.list;
-        this._multiSymbolEditorComponentListChangeSubscriptionId = this._multiSymbolEditorComponent.subscribeListChangeEvent(
-            (_listChangeTypeId, _idx, _count, ui) => {
+        this._multiSymbolEditorComponentAfterListChangedSubscriptionId = this._multiSymbolEditorComponent.subscribeAfterListChangedEvent(
+            (ui) => {
                 if (ui) {
                     const editor = this._scanEditor;
                     if (editor !== undefined) {

@@ -21,8 +21,7 @@ import {
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionRegistryService,
     UiBadnessComparableList,
-    UsableListChangeTypeId,
-    getErrorMessage,
+    getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     CommandRegisterNgService,
@@ -60,7 +59,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private _enabled = true;
 
-    private _listChangeMultiEvent = new MultiEvent<LitIvemIdListEditorNgDirective.ListChangeEventHandler>();
+    private _afterListChangedMultiEvent = new MultiEvent<LitIvemIdListEditorNgDirective.AfterListChangedEventHandler>();
     private _listChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
 
     constructor(
@@ -125,12 +124,12 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         this._filterUiAction.cancelEdit();
     }
 
-    subscribeListChangeEvent(handler: LitIvemIdListEditorNgDirective.ListChangeEventHandler) {
-        return this._listChangeMultiEvent.subscribe(handler);
+    subscribeAfterListChangedEvent(handler: LitIvemIdListEditorNgDirective.AfterListChangedEventHandler) {
+        return this._afterListChangedMultiEvent.subscribe(handler);
     }
 
-    unsubscribeListChangeEvent(subscriptionId: MultiEvent.SubscriptionId) {
-        this._listChangeMultiEvent.unsubscribe(subscriptionId);
+    unsubscribeAfterListChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
+        this._afterListChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
     protected initialiseComponents() {
@@ -143,10 +142,10 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         }
         this._filterControlComponent.initialise(this._filterUiAction);
 
-        this._listChangeSubscriptionId = this.list.subscribeListChangeEvent(
-            (listChangeTypeId, index, count, ui) => {
+        this._listChangeSubscriptionId = this.list.subscribeAfterListChangedEvent(
+            (ui) => {
                 this.updateControlsEnabled();
-                this.notifyListChange(listChangeTypeId, index, count, ui);
+                this.notifyListChange(ui);
             }
         );
 
@@ -340,16 +339,16 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         }
     }
 
-    private notifyListChange(listChangeTypeId: UsableListChangeTypeId, index: Integer, count: Integer, ui: boolean) {
-        const handlers = this._listChangeMultiEvent.copyHandlers();
+    private notifyListChange(ui: boolean) {
+        const handlers = this._afterListChangedMultiEvent.copyHandlers();
         for (let i = 0; i < handlers.length; i++) {
-            handlers[i](listChangeTypeId, index, count, ui);
+            handlers[i](ui);
         }
     }
 }
 
 export namespace LitIvemIdListEditorNgDirective {
-    export type ListChangeEventHandler = (this: void, listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer, ui: boolean) => void;
+    export type AfterListChangedEventHandler = (this: void, ui: boolean) => void;
     export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<GridLayoutOrReferenceDefinition | undefined>;
     export type PopoutEventer = (this: void, list: UiBadnessComparableList<LitIvemId>) => void;
 
