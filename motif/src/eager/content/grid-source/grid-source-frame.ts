@@ -654,7 +654,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     //     }
     // }
 
-    focusItem(itemIdx: Integer) {
+    focusItem(itemIdx: Integer | undefined) {
         this._grid.focusedRecordIndex = itemIdx;
     }
 

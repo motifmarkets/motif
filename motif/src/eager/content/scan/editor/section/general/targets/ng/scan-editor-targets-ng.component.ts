@@ -185,7 +185,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
                     return this._singleSymbolControlComponent.uiAction.isValueOk();
                 case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
-                    return false; // to do
+                    return true;
                 case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
                     return this._singleMarketControlComponent.uiAction.isValueOk() && this._singleMarketMaxMatchCountControlComponent.uiAction.isValueOk();
                 case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
@@ -357,7 +357,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createMaxMatchCountUiAction() {
-        const action = new IntegerUiAction(false);
+        const action = new IntegerUiAction(true);
         action.commitOnAnyValidInput = true;
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MaxMatchCount]);
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MaxMatchCount]);

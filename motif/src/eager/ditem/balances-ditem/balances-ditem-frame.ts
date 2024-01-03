@@ -99,7 +99,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    createAllowedFieldsAndLayoutDefinition() {
+    createAllowedFieldsGridLayoutDefinition() {
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('BDFCAFALD04418');
         } else {

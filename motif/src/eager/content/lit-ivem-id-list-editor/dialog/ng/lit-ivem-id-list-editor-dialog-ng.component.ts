@@ -66,7 +66,7 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
         super.finalise();
     }
 
-    protected override editGridColumns(allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
+    protected override editGridColumns(allowedFieldsGridLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
         this.dialogActive = true;
 
         // We cannot just return the promise from the dialog as we need to close the dialog as well.
@@ -85,7 +85,7 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
             this._dialogContainer,
             this.opener,
             this._columnsEditCaption,
-            allowedFieldsAndLayoutDefinition,
+            allowedFieldsGridLayoutDefinition,
         );
         closePromise.then(
             (definition) => {

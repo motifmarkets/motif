@@ -8,6 +8,7 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService, ErrorCode,
+    GridLayoutOrReferenceDefinition,
     Integer, JsonElement,
     LockOpenListItem,
     Logger,
@@ -66,7 +67,10 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     initialise(ditemFrameElement: JsonElement | undefined, scanListFrame: ScanListFrame): void {
         this._scanListFrame = scanListFrame;
 
-        scanListFrame.gridSourceOpenedEventer = () => { this._scanList = scanListFrame.scanList; }
+        scanListFrame.gridSourceOpenedEventer = () => {
+            this._scanList = scanListFrame.scanList;
+            this._scanList.suspendUnwantDetailOnScanLastClose();
+        }
         scanListFrame.recordFocusedEventer = (newRecordIndex) => { this.handleScanListFrameRecordFocusedEvent(newRecordIndex); }
 
         let scanListFrameElement: JsonElement | undefined;
@@ -90,11 +94,15 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
         );
-
-
     }
 
     override finalise() {
+        this.checkCloseActiveScanEditor();
+
+        if (this._scanList !== undefined) {
+            this._scanList.unsuspendUnwantDetailOnScanLastClose();
+        }
+
         const scanListFrame = this._scanListFrame;
         if (scanListFrame !== undefined) {
             scanListFrame.gridSourceOpenedEventer = undefined;
@@ -140,6 +148,10 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                 }
             }
         }
+
+        if (this._scanListFrame !== undefined) {
+            this._scanListFrame.focusItem(undefined);
+        }
     }
 
     newScan() {
@@ -149,10 +161,25 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         this._setEditorEventer(this._scanEditor);
     }
 
-    private handleScanListFrameRecordFocusedEvent(newRecordIndex: Integer | undefined) {
-        if (newRecordIndex === undefined) {
-            this.checkCloseActiveScanEditor();
+    createAllowedFieldsGridLayoutDefinition() {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SDFCAFALD04418');
         } else {
+            return this._scanListFrame.createAllowedFieldsGridLayoutDefinition();
+        }
+    }
+
+    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+        if (this._scanListFrame === undefined) {
+            throw new AssertInternalError('SLFOGLONRD04418');
+        } else {
+            this._scanListFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+        }
+    }
+
+    private handleScanListFrameRecordFocusedEvent(newRecordIndex: Integer | undefined) {
+        this.checkCloseActiveScanEditor();
+        if (newRecordIndex !== undefined) {
             const scanList = this._scanList;
             if (scanList === undefined) {
                 throw new AssertInternalError('SCFHSCFRFESLU50515');

@@ -248,7 +248,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
     private showLayoutEditorDialog() {
         this._activeDialogTypeId = BalancesDitemNgComponent.ActiveDialogTypeId.Layout;
 
-        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsAndLayoutDefinition();
+        const allowedFieldsAndLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinition();
 
         const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
             this._dialogContainer,

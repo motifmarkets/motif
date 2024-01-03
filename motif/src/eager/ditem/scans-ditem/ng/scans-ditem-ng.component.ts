@@ -181,7 +181,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleNewUiActionSignalEvent() {
-        this._frame.newScan();
+        this._frame.newOrFocusNewScan();
     }
 
     private handleFilterEditUiActionCommitEvent() {
@@ -194,7 +194,29 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     private handleColumnsUiActionSignalEvent() {
-        // this.showLayoutEditor();
+        const allowedFieldsGridLayoutDefinition = this._frame.createAllowedFieldsGridLayoutDefinition();
+
+        const closePromise = NameableGridLayoutEditorDialogNgComponent.open(
+            this._dialogContainer,
+            this._opener,
+            Strings[StringId.Scans_ColumnsDialogCaption],
+            allowedFieldsGridLayoutDefinition,
+        );
+
+        closePromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                }
+                this.closeDialog();
+            },
+            (reason) => {
+                throw new AssertInternalError('SDNCHCUASE44534', getErrorMessage(reason));
+            }
+        );
+
+        this.dialogActive = true;
+        this.markForCheck();
     }
 
     private handleSymbolLinkUiActionSignalEvent() {
