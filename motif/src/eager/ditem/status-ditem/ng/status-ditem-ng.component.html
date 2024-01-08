@@ -1,0 +1,28 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="statusButtonsDiv" class="horizontalChildrenSeparator">
+    <button [ngClass]="{ 'selected': summaryActive }"
+        (click)="handleSummaryClick()">
+        Summary
+    </button>
+    <button [ngClass]="{ 'selected': marketsActive }"
+        (click)="handleMarketsClick()">
+        Markets
+    </button>
+    <button [ngClass]="{ 'selected': feedsActive }"
+        (click)="handleFeedsClick()">
+        Feeds
+    </button>
+    <button [ngClass]="{ 'selected': zenithActive }"
+        (click)="handleZenithClick()">
+        Zenith
+    </button>
+</div>
+
+<div id="statusDiv">
+    <ng-container #statusContainer></ng-container>
+</div>

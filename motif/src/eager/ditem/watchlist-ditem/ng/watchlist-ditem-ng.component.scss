@@ -1,0 +1,73 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use 'partials/variables';
+@use './partials/main-toolbar-css-mixin';
+@use './partials/centered-toolbar-group-mixin';
+
+:host {
+    display: block;
+    position: absolute;
+    overflow: hidden;
+    height: 100%;
+}
+
+#inputDiv {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+
+    > #mainToolbarDiv {
+        @include main-toolbar-css-mixin.mainToolbarCssMixin;
+
+        > #symbolSelect {
+            width: 12em;
+        }
+
+        > #toolButtonsDiv {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            > #symbolButton {
+                margin-left: variables.$toolbar-button-separation;
+            }
+
+            > #deleteButton {
+                margin-left: variables.$toolbar-button-separation;
+            }
+
+            > #listButtonsDiv {
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
+            }
+
+            > #columnButtonsDiv {
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
+            }
+
+            > #linkButtonsDiv {
+                @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                margin-left: variables.$toolbar-button-group-separation;
+            }
+
+            > #watchlistDescriptonSpan {
+                margin-left: variables.$toolbar-button-group-separation;
+            }
+        }
+    }
+
+    > #gridSource {
+        flex-grow: 1;
+        height: 100%;
+    }
+}
+
+#dialogDiv {
+    height: 100%;
+    width: 100%;
+}

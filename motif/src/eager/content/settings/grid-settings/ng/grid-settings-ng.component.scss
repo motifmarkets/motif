@@ -1,0 +1,88 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@import './partials/checkbox-followed-by-caption';
+
+:host {
+    display: grid;
+    grid-template-columns: max-content max-content;
+    column-gap: 2rem;
+    row-gap: 0.5rem;
+    align-items: center;
+}
+
+#fontFamilyControl {
+    width: 27em;
+}
+
+#fontSizeControl {
+    width: 12em;
+}
+
+#columnHeaderFontSizeControl {
+    width: 12em;
+}
+
+#rowHeightControl {
+    width: 12em;
+}
+
+#showVerticalGridLinesValue {
+    display: flex;
+    gap: 2em;
+    #inHeaderOnly {
+        display: flex;
+        @include checkboxFollowedByCaptionMixin;
+    }
+}
+
+#gridLineHorizontalWidthEdit {
+    width: 12em;
+}
+
+#gridLineVerticalWidthEdit {
+    width: 12em;
+}
+
+#cellPaddingEdit {
+    width: 12em;
+}
+
+#changedAllHighlightDurationEdit {
+    width: 12em;
+}
+
+#addedRowHighlightDurationEdit {
+    width: 12em;
+}
+
+#changedRowRecordHighlightDurationEdit {
+    width: 12em;
+}
+
+#changedValueHighlightDurationEdit {
+    width: 12em;
+}
+
+#focusRowBorderWidthEdit {
+    width: 12em;
+}
+
+#horizontalScrollbarWidthEdit {
+    width: 12em;
+}
+
+#verticalScrollbarWidthEdit {
+    width: 12em;
+}
+
+#scrollbarMarginEdit {
+    width: 12em;
+}
+
+#scrollbarThumbInactiveOpacityControl {
+    width: 12em;
+}

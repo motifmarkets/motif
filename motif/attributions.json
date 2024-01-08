@@ -148,9 +148,25 @@
             "creator": "Smashicons",
             "creatorUrl": "https://thenounproject.com/smashicons/"
         },{
-            "items": "",
-            "creator": "",
-            "creatorUrl": ""
+            "type": "Icon",
+            "item": "Remove selected from list",
+            "itemUrl": "https://thenounproject.com/icon/close-82107/",
+            "creator": "Mario Verduzco",
+            "creatorUrl": "https://thenounproject.com/mario/",
+            "source": "The Noun Project",
+            "sourceUrl": "https://thenounproject.com/",
+            "licence": "Noun Pro",
+            "licenceUrl": "https://thenounproject.com/legal/terms-of-use/#icon-licenses"
+        },{
+            "type": "Icon",
+            "item": "Enlarge to top left",
+            "itemUrl": "https://thenounproject.com/icon/resize-4146882/",
+            "creator": "Cuputo",
+            "creatorUrl": "https://thenounproject.com/imron46/",
+            "source": "The Noun Project",
+            "sourceUrl": "https://thenounproject.com/",
+            "licence": "Noun Pro",
+            "licenceUrl": "https://thenounproject.com/legal/terms-of-use/#icon-licenses"
         },{
             "items": "",
             "creator": "",

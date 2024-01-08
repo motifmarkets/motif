@@ -6,14 +6,12 @@
 
 import { enableProdMode } from '@angular/core';
 import { platformBrowserDynamic } from '@angular/platform-browser-dynamic';
+import { EagerRootNgModule } from 'root-ng-api';
 import { environment } from './environments/environment';
-import { AppNgModule } from './root/ng/app-ng.module';
 
 if (environment.prodMode) {
     enableProdMode();
 }
 
-// CoreStaticInitialise.initialise();
-
-platformBrowserDynamic().bootstrapModule(AppNgModule)
+platformBrowserDynamic().bootstrapModule(EagerRootNgModule)
     .catch((err) => console.log(err));

@@ -1,0 +1,53 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/close-button-mixin';
+@use './partials/revgrid';
+
+:host {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-width: 2em;
+
+    #titleBarAndDecodeDetails {
+        flex: 0 0 auto;
+        display: flex;
+        flex-direction: column;
+
+        #titleBar {
+            flex: 0 0 auto;
+            display: flex;
+            justify-content: space-between;
+
+            #title {
+                white-space: nowrap;
+            }
+
+            #closeButton {
+                @include close-button-mixin.closeButtonMixin;
+            }
+        }
+
+        #decodeDetails {
+            display: flex;
+            gap: 1em;
+
+            .detail {
+                display: flex;
+                gap: 0.4em;
+                app-integer-text-input {
+                    width: 3em;
+                }
+            }
+        }
+    }
+
+    #gridHost {
+        @include revgrid.hostAsColumnFlexItem;
+        flex: 1 1 0;
+    }
+}

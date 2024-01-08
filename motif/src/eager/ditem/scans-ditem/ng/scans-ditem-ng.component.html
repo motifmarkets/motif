@@ -1,0 +1,32 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="inputDiv" [style.display]="dialogActive ? 'none' : null">
+    <div id="mainToolbarDiv">
+        <app-text-input #filterEdit id="filterEdit"></app-text-input>
+        <app-button-input #newButton id="newButton"></app-button-input>
+        <div id="toolButtonsDiv">
+            <div id="columnButtonsDiv">
+                <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+                <app-svg-button #columnsButton></app-svg-button>
+            </div>
+            <div id="linkButtonsDiv">
+                <app-svg-button #symbolLinkButton></app-svg-button>
+            </div>
+        </div>
+    </div>
+    <as-split id="scans" unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area id="listArea" [size]="listAreaWidth" [minSize]="listAreaMinWidth">
+            <app-scan-list #scanList id="scanList"></app-scan-list>
+        </as-split-area>
+        <as-split-area id="editorArea" [size]="null"> <!-- was size="*"-->
+            <app-scan-editor #scanEditor id="scanEditor"></app-scan-editor>
+        </as-split-area>
+    </as-split>
+</div>
+<div id="dialogDiv" [style.display]="dialogActive ? null : 'none'">
+    <ng-container #dialogContainer></ng-container>
+</div>

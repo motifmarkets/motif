@@ -1,0 +1,17 @@
+<div id="titleBarAndDecodeDetails">
+    <div id="titleBar">
+        <span id="title">{{title}}</span>
+        <app-svg-button #closeButton id="closeButton"></app-svg-button>
+    </div>
+    <div id="decodeDetails">
+        <div class="detail">
+            <app-caption-label #countLabel></app-caption-label>
+            <app-integer-text-input #countControl></app-integer-text-input>
+        </div>
+        <div class="detail">
+            <app-caption-label #depthLabel></app-caption-label>
+            <app-integer-text-input #depthControl></app-integer-text-input>
+        </div>
+    </div>
+</div>
+<div #gridHost id="gridHost"></div>

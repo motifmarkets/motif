@@ -4,7 +4,7 @@
     "service": {
         "name": "Finplex production",
         "description": "Finplex production",
-        "group": "Fpsx"
+        "operator": "Fpsx"
     },
     "environment": {
         "defaultDataEnvironment": "production"
@@ -17,7 +17,7 @@
             "https://motif-services.paritech.com"
         ],
         "zenith": [
-            "wss://ws-finplex.paritech.com"
+            "wss://ws-finplex.paritech.com/Zenith?version=2.0"
         ]
     },
     "openId": {
@@ -69,6 +69,9 @@
 	        }
             ]
         },
+        "toolsEnabled": true,
+        "fullDepthDebugLoggingEnabled": true,
+        "fullDepthConsistencyCheckingEnabled": true,
         "dataSubscriptionCachingDisabled": false
     },
     "branding": {

@@ -3,7 +3,8 @@
   "configComment": "Do NOT use!!  Template only",
   "service": {
     "name": "Paritech Staging",
-    "description": "Paritech Staging"
+    "description": "Paritech Staging",
+    "operator": "Paritech"
   },
   "environment": {
     "defaultDataEnvironment": "demo",
@@ -18,7 +19,7 @@
       "https://motif-services.paritech.com"
     ],
     "zenith": [
-      "wss://websocket-staging.paritech.com/"
+      "wss://websocket-staging.paritech.com/Zenith?version=2.0"
     ]
   },
   "openId": {
@@ -89,6 +90,9 @@
         }
       ]
     },
+    "toolsEnabled": false,
+    "fullDepthDebugLoggingEnabled": false,
+    "fullDepthConsistencyCheckingEnabled": false,
     "zenithLogLevel": "off",
     "appNotifyErrors": true,
     "dataSubscriptionCachingDisabled": false,

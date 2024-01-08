@@ -1,0 +1,92 @@
+{
+  "configFormatVersion": "2",
+  "configComment": "",
+  "service": {
+    "name": "CFX Test",
+    "description": "CF Markets Test exchange (Development impersonating)",
+    "operator": "CFMarkets"
+  },
+  "environment": {
+    "defaultDataEnvironment": "demo"
+  },
+  "exchange": {
+    "defaultDefault": "Cfx"
+  },
+  "endpoints": {
+    "motifServices": [
+      "https://motif-services.for.cf-markets.com"
+    ],
+    "zenith": [
+      "wss://ws-testing.for.cf-markets.com/Zenith?version=2.0"
+    ]
+  },
+  "openId": {
+    "authority": "https://passport.for.cf-markets.com",
+    "clientId": "MotifDev$Web",
+    "redirectUri": "http://localhost:4200/auth-callback",
+    "silentRedirectUri": "http://localhost:4200/silent-refresh.html",
+    "scope": "openid profile roles ZenithStaging/Trading ZenithStaging/Market ZenithStaging/News ZenithStaging/OrderPad MotifSvc/RestAPI"
+  },
+  "bundledExtensions": [
+    {
+      "info": {
+        "publisherId": {
+          "type": "Organisation",
+          "name": "Paritech"
+        },
+        "name": "Highcharts",
+        "version": "0.0.2",
+        "apiVersion": "1",
+        "shortDescription": "Highcharts Charting",
+        "longDescription": "Highcharts Charting",
+        "urlPath": "/extensions/highcharts/dist/highcharts.js"
+      },
+      "install": true
+    },
+    {
+      "info": {
+        "publisherId": {
+          "type": "Organisation",
+          "name": "Paritech"
+        },
+        "name": "TsDemo",
+        "version": "0.0.1",
+        "apiVersion": "1",
+        "shortDescription": "TypeScript Demo",
+        "longDescription": "Example extension demonstrating how an Extension is written with TypeScript",
+        "urlPath": "/extensions/tstest/dist/tsdemo.js"
+      },
+      "install": false
+    }
+  ],
+  "diagnostics": {
+    "telemetry": {
+      "enabled": false,
+      "itemIgnores": [
+        {
+          "typeId": "Message",
+          "message": "^Error TRDLLFJI33858"
+        },
+        {
+          "typeId": "Message",
+          "message": "^ResizeObserver loop limit exceeded"
+        },
+        {
+          "typeId": "Message",
+          "message": "^Zenith Publisher: Abnormal closure (1006)"
+        },
+        {
+          "typeId": "Message",
+          "message": "^Zenith Reconnection: "
+        }
+      ]
+    },
+    "toolsEnabled": true,
+    "fullDepthDebugLoggingEnabled": true,
+    "fullDepthConsistencyCheckingEnabled": true
+  },
+  "branding": {
+    "startupSplashWebPageUrl": "https://cf-markets.com/",
+    "desktopBarLeftImageUrl": "branding/images/CF-Markets--Light-Logo.png"
+  }
+}

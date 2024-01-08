@@ -1,0 +1,18 @@
+<div id="preHeadingTextLine" class="line" [style.background-color]="lineColor"></div>
+<span id="headingText">{{headingText}}</span>
+<section id="genericTextSection" *ngIf="genericText !== undefined">
+    <div id="preGenericTextLine" class="line" [style.background-color]="lineColor"></div>
+    <span id="genericTextSpan">{{ genericText }}</span>
+</section>
+<section id="genericSelectorSection" *ngIf="genericSelectorWidth !== undefined">
+    <div id="preGenericSelectorLine" class="line" [style.background-color]="lineColor"></div>
+    <span id="genericSelectorCaption" *ngIf="genericSelectorCaption !== undefined">{{genericSelectorCaption}}</span>
+    <app-enum-input #genericSelector id="genericSelectorControl" inputId="genericSelectorInput" [style.width]="genericSelectorWidth"></app-enum-input>
+</section>
+<div id="midLine" class="line" [style.background-color]="lineColor"></div>
+<div id="buttons">
+    <app-svg-button #expandButton id="expandButton"></app-svg-button>
+    <app-svg-button #restoreButton id="restoreButton"></app-svg-button>
+    <app-svg-button #collapseButton id="collapseButton"></app-svg-button>
+</div>
+<div id="postLine" class="line" [style.background-color]="lineColor"></div>
