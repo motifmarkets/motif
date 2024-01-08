@@ -29,7 +29,7 @@ import {
     UnreachableCaseError,
     uniqueElementArraysOverlap,
 } from '@motifmarkets/motif-core';
-import { ServerNotificationId } from 'revgrid';
+import { ServerNotificationId } from '@xilytix/revgrid';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 

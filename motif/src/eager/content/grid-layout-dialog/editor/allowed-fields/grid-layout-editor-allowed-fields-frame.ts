@@ -30,7 +30,7 @@ import {
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell, RevRecord } from 'revgrid';
+import { DatalessViewCell, RevRecord } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {

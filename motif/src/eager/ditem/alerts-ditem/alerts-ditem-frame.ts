@@ -22,7 +22,7 @@ import {
     TextRenderValueCellPainter,
     TimeRenderValue
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell, HorizontalAlignEnum } from 'revgrid';
+import { DatalessViewCell, HorizontalAlignEnum } from '@xilytix/revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 

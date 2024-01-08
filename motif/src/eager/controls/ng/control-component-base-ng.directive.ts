@@ -20,8 +20,8 @@ import {
     delay1Tick,
     numberToPixels
 } from '@motifmarkets/motif-core';
+import { Focus, Rectangle } from '@xilytix/revgrid';
 import { ComponentBaseNgDirective } from 'component-ng-api';
-import { Focus, Rectangle } from 'revgrid';
 
 @Directive()
 export abstract class ControlComponentBaseNgDirective extends ComponentBaseNgDirective implements OnDestroy {

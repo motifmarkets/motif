@@ -6,8 +6,8 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import { AdaptedRevgridBehavioredColumnSettings, AssertInternalError, GridField, Integer } from '@motifmarkets/motif-core';
+import { CellEditor, DataServer, DatalessViewCell } from '@xilytix/revgrid';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CellEditor, DataServer, DatalessViewCell } from 'revgrid';
 import { ControlComponentBaseNgDirective } from '../../../../ng/control-component-base-ng.directive';
 import { NumberUiActionComponentBaseNgDirective } from '../../../ng/number-ui-action-component-base-ng.directive';
 import { IntegerUiActionComponentBaseNgDirective } from '../../ng/integer-ui-action-component-base-ng.directive';

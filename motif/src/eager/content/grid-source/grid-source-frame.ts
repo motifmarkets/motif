@@ -35,7 +35,7 @@ import {
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService
 } from '@motifmarkets/motif-core';
-import { RevRecordDataServer, Subgrid } from 'revgrid';
+import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {

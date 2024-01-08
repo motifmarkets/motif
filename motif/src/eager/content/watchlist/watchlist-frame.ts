@@ -33,7 +33,7 @@ import {
     TextRenderValueCellPainter,
     compareInteger
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell } from 'revgrid';
+import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
 export class WatchlistFrame extends DelayedBadnessGridSourceFrame {

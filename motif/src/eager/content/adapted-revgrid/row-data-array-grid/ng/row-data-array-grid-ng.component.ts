@@ -6,8 +6,8 @@
 
 import { ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewEncapsulation } from '@angular/core';
 import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, GridField, RowDataArrayGrid } from '@motifmarkets/motif-core';
+import { SingleHeadingDataRowArrayServerSet, Subgrid } from '@xilytix/revgrid';
 import { SettingsNgService, TextFormatterNgService } from 'component-services-ng-api';
-import { SingleHeadingDataRowArrayServerSet, Subgrid } from 'revgrid';
 import { AdaptedRevgridComponentNgDirective } from '../../ng/adapted-revgrid-component-ng.directive';
 
 @Component({

@@ -31,10 +31,10 @@ import {
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
+import { RevRecordIndex } from '@xilytix/revgrid';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
-import { RevRecordIndex } from 'revgrid';
 import { ColorSchemeGridNgComponent } from '../../../color-scheme-grid/ng-api';
 import { ColorSchemeItemPropertiesNgComponent } from '../../../color-scheme-item-properties/ng-api';
 import { ColorSchemePresetCodeNgComponent } from '../../../color-scheme-preset-code/ng-api';

@@ -19,8 +19,8 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
+import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from '@xilytix/revgrid';
 import { CellPainterFactoryNgService, SettingsNgService } from 'component-services-ng-api';
-import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from 'revgrid';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

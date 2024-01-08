@@ -20,7 +20,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell } from 'revgrid';
+import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../../delayed-badness-grid-source/internal-api';
 
 export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {

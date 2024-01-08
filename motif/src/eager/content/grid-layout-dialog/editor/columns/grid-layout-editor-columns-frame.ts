@@ -30,7 +30,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from 'revgrid';
+import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorColumnsFrame extends GridSourceFrame {

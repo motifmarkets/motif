@@ -23,12 +23,12 @@ import {
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { lowestValidServerNotificationId } from '@xilytix/revgrid';
 import {
     DepthFrame,
     TradesFrame,
     WatchlistFrame
 } from 'content-internal-api';
-import { lowestValidServerNotificationId } from 'revgrid';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 

@@ -21,7 +21,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell, HorizontalAlignEnum, SingleHeadingDataRowArrayServerSet } from 'revgrid';
+import { DatalessViewCell, HorizontalAlignEnum, SingleHeadingDataRowArrayServerSet } from '@xilytix/revgrid';
 
 export class ZenithScanFormulaViewDecodeProgressFrame {
     private _grid: RowDataArrayGrid;

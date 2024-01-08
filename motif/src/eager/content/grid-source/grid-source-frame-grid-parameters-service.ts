@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { AdaptedRevgrid, AdaptedRevgridBehavioredColumnSettings, GridField } from '@motifmarkets/motif-core';
-import { Subgrid } from 'revgrid';
+import { Subgrid } from '@xilytix/revgrid';
 
 export interface GridSourceFrameGridParametersService {
     customGridSettings: AdaptedRevgrid.CustomGridSettings;
