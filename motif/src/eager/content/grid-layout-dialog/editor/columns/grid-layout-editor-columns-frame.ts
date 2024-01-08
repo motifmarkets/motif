@@ -334,7 +334,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
                     if (cleared) {
                         grid.selectRow(rowIndex);
                     } else {
-                        grid.clearSelectRow(rowIndex);
+                        grid.onlySelectRow(rowIndex);
                         cleared = true;
                     }
                 }
