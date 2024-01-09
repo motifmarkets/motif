@@ -4,9 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { HtmlTypes, StringId, Strings, UserAlertService } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, HostBinding, OnDestroy } from '@angular/core';
+import { ColorScheme, ColorSettings, HtmlTypes, MultiEvent, SettingsService, StringId, Strings, UserAlertService } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
+import { SettingsNgService } from 'component-services-ng-api';
 
 @Component({
     selector: 'app-user-alert',
@@ -14,9 +15,12 @@ import { ComponentBaseNgDirective } from 'component-ng-api';
     styleUrls: ['./user-alert-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class UserAlertNgComponent extends ComponentBaseNgDirective {
+export class UserAlertNgComponent extends ComponentBaseNgDirective implements OnDestroy {
     private static typeInstanceCreateCount = 0;
 
+    @HostBinding('style.background-color') bkgdColor: string;
+
+    public restartable = true;
     public restartCaption = Strings[StringId.Restart];
     public restartReasonsText = '';
     public restartReasonCount = 0;
@@ -26,19 +30,39 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
     public hideButtonDisplay = HtmlTypes.Display.None;
     public hideCaption = Strings[StringId.Hide];
 
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
+
     private _alerts: UserAlertService.Alert[] = [];
     private _notCancellableCount = 0;
     private _errorCount = 0;
 
-    constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
+    private _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        private readonly _cdr: ChangeDetectorRef,
+        private readonly settingsNgService: SettingsNgService,
+    ) {
         super(elRef, ++UserAlertNgComponent.typeInstanceCreateCount);
+
+        this._settingsService = settingsNgService.service;
+        this._colorSettings = this._settingsService.color;
+        this._settingsChangedSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(() => this.applySettings());
+        // this.applySettings();
+    }
+
+    ngOnDestroy() {
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangedSubscriptionId);
     }
 
     pushAlerts(alerts: UserAlertService.Alert[]) {
         alerts.reverse(); // make latest alert the first in array
 
         this._alerts = alerts;
+        this.alertTexts = '';
 
+        this.restartable = true;
         this.restartReasonsText = '';
         this.restartReasonCount = 0;
         this._notCancellableCount = 0;
@@ -47,6 +71,10 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
         const restartReasons: string[] = [];
 
         for (const alert of alerts) {
+            if (!UserAlertService.Alert.Type.idIsRestartable(alert.typeId)) {
+                this.restartable = false;
+            }
+
             const restartReasonStringId = UserAlertService.Alert.Type.idToRestartReasonStringId(alert.typeId);
             if (restartReasonStringId !== undefined) {
                 const restartReason = Strings[restartReasonStringId];
@@ -54,6 +82,7 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
                     restartReasons.push(restartReason);
                 }
             }
+
             if (!UserAlertService.Alert.Type.idIsCancellable(alert.typeId)) {
                 this._notCancellableCount++;
             }
@@ -102,5 +131,9 @@ export class UserAlertNgComponent extends ComponentBaseNgDirective {
             alert.hide();
         }
         this.rootHtmlElement.style.setProperty(HtmlTypes.Tags.Display, HtmlTypes.Display.None);
+    }
+
+    private applySettings() {
+        this.bkgdColor = this._colorSettings.getBkgd(ColorScheme.ItemId.Panel_Alert);
     }
 }
