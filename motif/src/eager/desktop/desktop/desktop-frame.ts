@@ -34,6 +34,7 @@ import {
     OrderPad,
     OrderRequestTypeId,
     Result,
+    SaveManagement,
     SettingsService,
     SingleBrokerageAccountGroup,
     StringId,
@@ -42,7 +43,7 @@ import {
     UiAction,
     UserAlertService
 } from '@motifmarkets/motif-core';
-import { SignOutService } from 'component-services-internal-api';
+import { HideUnloadSaveService, SignOutService } from 'component-services-internal-api';
 import { ExtensionsAccessService } from 'content-internal-api';
 import { MenuBarService } from 'controls-internal-api';
 import { BrandingSplashWebPageDitemFrame, BuiltinDitemFrame, DitemFrame, ExtensionDitemFrame, OrderRequestDitemFrame } from 'ditem-internal-api';
@@ -50,7 +51,7 @@ import { BuiltinDitemNgComponentBaseNgDirective } from 'ditem-ng-api';
 import { LayoutConfig } from 'golden-layout';
 import { GoldenLayoutHostFrame } from '../golden-layout-host/golden-layout-host-frame';
 
-export class DesktopFrame implements DitemFrame.DesktopAccessService {
+export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManagement {
     private static readonly XmlTag_HistoricalAccountIds = 'HistoricalAccountIds';
     private static readonly DefaultMaxHistoricalAccountIdCount = 15;
 
@@ -90,7 +91,9 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     private _saveLayoutLitIvemIdsAndBrokerageAccountGroups = true;
 
     private _litIvemIdChangeMultiEvent = new MultiEvent<DesktopFrame.LitIvemIdChangeEventHandler>();
-    private _BrokerageAccountGroupChangeMultiEvent = new MultiEvent<DesktopFrame.BrokerageAccountGroupChangeEventHandler>();
+    private _brokerageAccountGroupChangeMultiEvent = new MultiEvent<DesktopFrame.BrokerageAccountGroupChangeEventHandler>();
+    private _beginSaveWaitingMultiEvent = new MultiEvent<SaveManagement.SaveWaitingEventHandler>();
+    private _endSaveWaitingMultiEvent = new MultiEvent<SaveManagement.SaveWaitingEventHandler>();
 
     private _commandContext: CommandContext;
 
@@ -176,12 +179,13 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         private readonly _menuBarService: MenuBarService,
         private readonly _commandRegisterService: CommandRegisterService,
         private readonly _keyboardService: KeyboardService,
+        private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _startupSplashWebPageDefined: boolean,
         private readonly _getBuiltinDitemFrameFromComponent: DesktopFrame.GetBuiltinDitemFrameFromComponent,
     ) {
         this._commandContext = this.createCommandContext(frameHtmlElement);
         this.createUiActions();
-        document.addEventListener('visibilitychange', this._documentVisibilityChangeListener);
+        this._hideUnloadSaveService.registerSaveManagement(this);
     }
 
     get historicalAccountIds(): string[] { return this._historicalAccountIds; }
@@ -258,8 +262,8 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     finalise() {
-        document.removeEventListener('visibilitychange', this._documentVisibilityChangeListener);
-        this.checkCancelLayoutSaveRequest(); // should already have been saved in visibility change
+        this._hideUnloadSaveService.deregisterSaveManagement(this);
+        this.checkCancelSaveRequest(); // should already have been saved in visibility change
         this.disconnectMenuBarItems();
         this.finaliseUiActions();
     }
@@ -525,7 +529,56 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     flagLayoutSaveRequired() {
-        this.requestLayoutSave();
+        this.requestSave(SaveManagement.InitiateReasonId.Change);
+    }
+
+    save() {
+        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
+
+        const layoutElement = new JsonElement();
+        let goldenLayoutConfig: LayoutConfig;
+        const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
+        // In version 3 of GoldenLayout GoldenLayout.saveLayout() will return a LayoutConfig instead of a ResolvedLayoutConfig
+        if ('resolved' in savedGoldenLayoutConfig) {
+            goldenLayoutConfig = LayoutConfig.fromResolved(savedGoldenLayoutConfig);
+        } else {
+            goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
+        }
+        // remove eslint disable when can save with different names
+        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
+        if (this._activeLayoutName !== undefined) {
+            layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
+        }
+        layoutElement.setString(DesktopFrame.JsonName.layoutSchemaVersion, DesktopFrame.layoutStateSchemaVersion);
+        layoutElement.setJson(DesktopFrame.JsonName.layoutGolden, goldenLayoutConfig as Json);
+
+        const layoutStr = JSON.stringify(layoutElement.json);
+        const setReturnPromise = this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
+        return setReturnPromise
+    }
+
+    checkCancelSaveRequest() {
+        if (this._layoutSaveRequestPromise === undefined) {
+            return false;
+        } else {
+            this._idleService.cancelRequest(this._layoutSaveRequestPromise);
+            this._layoutSaveRequestPromise = undefined;
+            return true;
+        }
+    }
+
+    processSaveResult(result: Result<void>, initiateReasonId: SaveManagement.InitiateReasonId) {
+        if (result.isOk()) {
+            if (this._lastLayoutSaveFailed) {
+                // Logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
+                this._lastLayoutSaveFailed = false;
+            }
+        } else {
+            if (!this._lastLayoutSaveFailed) {
+                Logger.log(Logger.LevelId.Warning, `${SaveManagement.InitiateReason.idToName(initiateReasonId)} save layout error: ${getErrorMessage(result.error)}`);
+                this._lastLayoutSaveFailed = true;
+            }
+        }
     }
 
     addAccountIdToHistory(AAccountId: string) {
@@ -573,32 +626,27 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     subscribeBrokerageAccountGroupChangeEvent(handler: DesktopFrame.BrokerageAccountGroupChangeEventHandler) {
-        return this._BrokerageAccountGroupChangeMultiEvent.subscribe(handler);
+        return this._brokerageAccountGroupChangeMultiEvent.subscribe(handler);
     }
 
     unsubscribeBrokerageAccountGroupChangeEvent(id: MultiEvent.SubscriptionId) {
-        this._BrokerageAccountGroupChangeMultiEvent.unsubscribe(id);
+        this._brokerageAccountGroupChangeMultiEvent.unsubscribe(id);
     }
 
-    private _documentVisibilityChangeListener = () => { this.handleDocumentVisibilityChange(); };
+    subscribeBeginSaveWaitingEvent(handler: SaveManagement.SaveWaitingEventHandler): MultiEvent.DefinedSubscriptionId {
+        return this._beginSaveWaitingMultiEvent.subscribe(handler);
+    }
 
-    private handleDocumentVisibilityChange() {
-        const documentHidden = document.hidden;
-        if (documentHidden) {
-            const saveRequired = this.checkCancelLayoutSaveRequest();
-            if (saveRequired) {
-                // do save immediately (may be shutting down)
-                const promise = this.saveLayout();
-                promise.then(
-                    (result) => {
-                        this.processSaveLayoutResult(result, true);
-                    },
-                    (reason) => {
-                        throw AssertInternalError.createIfNotError(reason, 'DFHDVC30398');
-                    }
-                );
-            }
-        }
+    unsubscribeBeginSaveWaitingEvent(id: MultiEvent.SubscriptionId): void {
+        this._beginSaveWaitingMultiEvent.unsubscribe(id);
+    }
+
+    subscribeEndSaveWaitingEvent(handler: SaveManagement.SaveWaitingEventHandler): MultiEvent.DefinedSubscriptionId {
+        return this._endSaveWaitingMultiEvent.subscribe(handler);
+    }
+
+    unsubscribeEndSaveWaitingEvent(id: MultiEvent.SubscriptionId): void {
+        this._endSaveWaitingMultiEvent.unsubscribe(id);
     }
 
     private handleNewDitemUiActionSignal(ditemTypeId: BuiltinDitemFrame.BuiltinTypeId) {
@@ -698,7 +746,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
 
         this._saveLayoutUiAction = this.createCommandUiAction(InternalCommand.Id.SaveLayout,
             StringId.Desktop_SaveLayoutCaption,
-            () => this.requestLayoutSave(),
+            () => this.requestSave(SaveManagement.InitiateReasonId.Ui),
             {
                 menuPath: [MenuBarService.Menu.Name.Root.tools],
                 rank: 30000,
@@ -931,7 +979,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
     }
 
     private notifyAccountIdChange(initiatingFrame: DitemFrame | undefined) {
-        const handlers = this._BrokerageAccountGroupChangeMultiEvent.copyHandlers();
+        const handlers = this._brokerageAccountGroupChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
             handlers[index](initiatingFrame);
         }
@@ -941,6 +989,20 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         const handlers = this._litIvemIdChangeMultiEvent.copyHandlers();
         for (let index = 0; index < handlers.length; index++) {
             handlers[index](initiatingFrame);
+        }
+    }
+
+    private notifyBeginSaveWaiting() {
+        const handlers = this._beginSaveWaitingMultiEvent.copyHandlers();
+        for (let i = 0; i < handlers.length; i++) {
+            handlers[i]();
+        }
+    }
+
+    private notifyEndSaveWaiting() {
+        const handlers = this._endSaveWaitingMultiEvent.copyHandlers();
+        for (let i = 0; i < handlers.length; i++) {
+            handlers[i]();
         }
     }
 
@@ -1026,17 +1088,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
         }
     }
 
-    private checkCancelLayoutSaveRequest() {
-        if (this._layoutSaveRequestPromise === undefined) {
-            return false;
-        } else {
-            this._idleService.cancelRequest(this._layoutSaveRequestPromise);
-            this._layoutSaveRequestPromise = undefined;
-            return true;
-        }
-    }
-
-    private requestLayoutSave() {
+    private requestSave(initiateReasonId: SaveManagement.InitiateReasonId) {
         if (this._layoutSaveRequestPromise === undefined) {
             this._layoutSaveRequestPromise = this._idleService.addRequest<Result<void>>(
                 () => this.idleRequestSaveLayout(),
@@ -1046,59 +1098,22 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService {
             this._layoutSaveRequestPromise.then(
                 (result) => {
                     if (result !== undefined) {
-                        this.processSaveLayoutResult(result, false);
+                        this.processSaveResult(result, initiateReasonId);
                     }
+                    this.notifyEndSaveWaiting();
                 },
                 (reason) => {
                     throw AssertInternalError.createIfNotError(reason, 'SSRS40498');
                 }
             );
+            this.notifyBeginSaveWaiting();
         }
     }
 
     private idleRequestSaveLayout(): Promise<Result<void>> {
         // Do not undefine this._layoutSaveRequestPromise in Promise.then(). The then() function runs in next microtask, so it is possible for save to be completed while this._layoutSaveRequestPromise is still defined
         this._layoutSaveRequestPromise = undefined;
-        return this.saveLayout();
-    }
-
-    private saveLayout() {
-        this._activeLayoutName = DesktopFrame.mainLayoutName; // need to change when can save with different names
-
-        const layoutElement = new JsonElement();
-        let goldenLayoutConfig: LayoutConfig;
-        const savedGoldenLayoutConfig = this._goldenLayoutHostFrame.saveLayout();
-        // In version 3 of GoldenLayout GoldenLayout.saveLayout() will return a LayoutConfig instead of a ResolvedLayoutConfig
-        if ('resolved' in savedGoldenLayoutConfig) {
-            goldenLayoutConfig = LayoutConfig.fromResolved(savedGoldenLayoutConfig);
-        } else {
-            goldenLayoutConfig = savedGoldenLayoutConfig as unknown as LayoutConfig;
-        }
-        // remove eslint disable when can save with different names
-        // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-        if (this._activeLayoutName !== undefined) {
-            layoutElement.setString(DesktopFrame.JsonName.layoutName, this._activeLayoutName);
-        }
-        layoutElement.setString(DesktopFrame.JsonName.layoutSchemaVersion, DesktopFrame.layoutStateSchemaVersion);
-        layoutElement.setJson(DesktopFrame.JsonName.layoutGolden, goldenLayoutConfig as Json);
-
-        const layoutStr = JSON.stringify(layoutElement.json);
-        const setReturnPromise = this._storage.setSubNamedItem(KeyValueStore.Key.Layout, this._activeLayoutName, layoutStr, true);
-        return setReturnPromise
-    }
-
-    private processSaveLayoutResult(result: Result<void>, docHiding: boolean) {
-        if (result.isOk()) {
-            if (this._lastLayoutSaveFailed) {
-                // Logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
-                this._lastLayoutSaveFailed = false;
-            }
-        } else {
-            if (!this._lastLayoutSaveFailed) {
-                Logger.log(Logger.LevelId.Warning, `${docHiding ? 'Hiding s' : 'S' }ave layout error: ${getErrorMessage(result.error)}`);
-                this._lastLayoutSaveFailed = true;
-            }
-        }
+        return this.save();
     }
 }
 

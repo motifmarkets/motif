@@ -1,6 +1,6 @@
 {
   "name": "motif",
-  "version": "2.7.5",
+  "version": "2.7.7",
   "license": "SEE LICENSE IN license.txt",
   "homepage": "https://motifmarkets.com/platform/documentation/motif/",
   "author": {
@@ -59,7 +59,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@ctrl/tinycolor": "^3.5.0",
     "@jaames/iro": "^5.5.1",
-    "@motifmarkets/motif-core": "^0.0.32",
+    "@motifmarkets/motif-core": "^0.0.35",
     "@ng-select/ng-select": "^11.1.1",
     "@xilytix/revgrid": "^0.8.0",
     "angular-split": "^16.1.1",

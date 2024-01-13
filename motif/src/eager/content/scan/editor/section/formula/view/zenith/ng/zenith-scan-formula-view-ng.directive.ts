@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Inject, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
 import { AssertInternalError, IdleService, Integer, MultiEvent, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
 import { IdleNgService } from 'component-services-ng-api';
@@ -12,13 +12,12 @@ import { AngularSplitTypes } from 'controls-internal-api';
 import { TextInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ZenithScanFormulaViewDecodeProgressNgComponent } from '../decode-progress/ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 
 @Directive({
     selector: '[appZenithScanFormulaView]',
 })
 export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
-    private static typeInstanceCreateCount = 0;
-
     @ViewChild('editorContainer', { read: ViewContainerRef, static: true }) private _editorContainer: ViewContainerRef;
     @ViewChild('decodeProgress', { static: true }) private _decodeProgressComponent: ZenithScanFormulaViewDecodeProgressNgComponent;
     @ViewChild('errorControl', { static: true }) private _errorControl: TextInputNgComponent;
@@ -46,8 +45,9 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         private readonly _cdr: ChangeDetectorRef,
         private readonly _injector: Injector,
         idleNgService: IdleNgService,
+        @Inject(ComponentBaseNgDirective.typeInstanceCreateIdInjectionToken) typeInstanceCreateCount: Integer,
     ) {
-        super(elRef, ++ZenithScanFormulaViewNgDirective.typeInstanceCreateCount);
+        super(elRef, typeInstanceCreateCount);
         this._idleService = idleNgService.service;
         this._errorUiAction = this.createErrorUiAction();
     }

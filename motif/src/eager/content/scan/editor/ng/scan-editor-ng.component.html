@@ -10,7 +10,7 @@
             <div id="sections">
                 <app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
                 <app-formula-scan-editor-section #criteriaSection [formulaField]="'Criteria'"></app-formula-scan-editor-section>
-                <app-formula-scan-editor-section #rankSection [formulaField]="'Rank'"></app-formula-scan-editor-section>
+                <app-formula-scan-editor-section #rankSection [formulaField]="'Rank'" [style.display]="rankDisplayed ? null : 'none'"></app-formula-scan-editor-section>
                 <app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
             </div>
         </as-split-area>

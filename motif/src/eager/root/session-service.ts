@@ -40,7 +40,7 @@ import {
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
-import { SignOutService } from 'component-services-internal-api';
+import { HideUnloadSaveService, SignOutService } from 'component-services-internal-api';
 import { ExtensionsService } from 'extensions-internal-api';
 import { Version } from 'generated-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
@@ -93,11 +93,13 @@ export class SessionService {
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _scansService: ScansService,
+        private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _signoutService: SignOutService,
     ) {
         this._openIdService.logErrorEvent = (text) => this.logError(text);
         this._openIdService.userLoadedEvent = () => this.handleUserLoadedEvent();
         this._signoutService.signOutEvent = () => this.handleSignOut();
+        this._hideUnloadSaveService.registerSaveManagement(this._settingsService);
     }
 
     get serviceName() { return this._serviceName; }
@@ -171,6 +173,7 @@ export class SessionService {
 
         await this.processLoadSettings();
         this.processLoadExtensions();
+
         this.finishStartup();
     }
 
@@ -185,6 +188,8 @@ export class SessionService {
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
             this.unsubscribeZenithExtConnection();
+
+            this._hideUnloadSaveService.deregisterSaveManagement(this._settingsService);
             this.setStateId(SessionStateId.Finalised);
         }
     }

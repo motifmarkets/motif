@@ -40,6 +40,15 @@
             #symbolListMaxCountControl {
                 width: 6em;
             }
+
+            #symbolListControls {
+                display: flex;
+                gap: 2em;
+
+                #showRankControl {
+                    margin-left: 2em;
+                }
+            }
         }
     }
 }

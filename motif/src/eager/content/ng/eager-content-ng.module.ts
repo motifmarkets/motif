@@ -68,6 +68,7 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
+    ConditionSetScanFormulaViewNgComponent,
     CriteriaZenithScanFormulaViewNgComponent,
     FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
@@ -112,6 +113,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSchemeItemPropertiesNgComponent,
         ColorSchemePresetCodeNgComponent,
         ColorSettingsNgComponent,
+        ConditionSetScanFormulaViewNgComponent,
         CriteriaZenithScanFormulaViewNgComponent,
         DelayedBadnessNgComponent,
         DepthAndSalesGridLayoutsDialogNgComponent,

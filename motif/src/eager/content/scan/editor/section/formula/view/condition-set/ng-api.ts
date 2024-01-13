@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './hide-unload-save-service';
-export * from './sign-out-service';
+export * from './ng/condition-set-scan-formula-view-ng.component';
 

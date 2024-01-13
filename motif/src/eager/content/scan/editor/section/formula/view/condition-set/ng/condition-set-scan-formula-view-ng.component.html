@@ -1,0 +1,25 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="conditionalDiv" [style.display]="isConditionable() ? null : 'none'">
+    <div id="header">
+        <div id="allOrAnyRadioDiv">
+            <app-captioned-radio #allControl id="allControl" inputId="allRadio" [name]="allAnyRadioName"></app-captioned-radio>
+            <app-captioned-radio #anyControl id="anyControl" inputId="anyRadio" [name]="allAnyRadioName"></app-captioned-radio>
+        </div>
+        <app-captioned-checkbox #excludeControl id="excludeControl" inputId="excludeRadio"></app-captioned-checkbox>
+        <div id="newCondition">
+            <app-caption-label #newConditionLabel id="newConditionLabel" for="newConditionInput"></app-caption-label>
+            <app-enum-input #newConditionControl id="newConditionControl" inputId="newConditionInput"></app-enum-input>
+        </div>
+        <span id="conditionCount">{{conditionCount}}</span>
+    </div>
+
+    <ng-container #conditionsContainer id="conditions"></ng-container>
+</div>
+<div id="notConditionalDiv" [style.display]="!isConditionable() ? null : 'none'">
+    <span id="notConditionalReasonSpan">{{nonConditionalReason}}</span>
+</div>

@@ -35,6 +35,7 @@ export class CoreNgService implements OnDestroy {
 
     constructor() {
         this._service = new CoreService();
+        this._service.symbolsService.settingsServiceLinked = true;
     }
 
     get service() { return this._service; }

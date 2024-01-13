@@ -8,11 +8,11 @@
 
 <section id="content">
     <section id="propertyControls">
-        <div>
-            <app-caption-label #enabledLabel for="enabledCheckbox" [style.display]="!deletingOrDeleted"></app-caption-label>
-            <span [style.display]="deletingOrDeleted">{{"deletedText"}}</span>
+        <app-caption-label #enabledLabel for="enabledCheckbox"></app-caption-label>
+        <div id="enabledControls">
+            <app-checkbox-input #enabledControl id="enabledControl" inputId="enabledCheckbox" [style.display]="deletingOrDeleted ? 'none' : null"></app-checkbox-input>
+            <span [style.display]="deletingOrDeleted ? null : 'none'">{{"deletedText"}}</span>
         </div>
-        <app-checkbox-input #enabledControl id="enabledControl" inputId="enabledCheckbox"></app-checkbox-input>
         <app-caption-label #nameLabel for="nameInput"></app-caption-label>
         <app-text-input #nameControl id="nameControl" inputId="nameInput" spellCheck="false"></app-text-input>
         <app-caption-label #descriptionLabel for="descriptionInput"></app-caption-label>
@@ -22,6 +22,9 @@
         <span>{{targetsRowHeading}}</span>
         <app-scan-editor-targets #targetsComponent id="targetsComponent"></app-scan-editor-targets>
         <app-caption-label #symbolListLabel for="symbolListCheckbox"></app-caption-label>
-        <app-checkbox-input #symbolListControl id="symbolListControl" inputId="symbolListCheckbox"></app-checkbox-input>
+        <div id="symbolListControls">
+            <app-checkbox-input #symbolListControl id="symbolListControl" inputId="symbolListCheckbox"></app-checkbox-input>
+            <app-captioned-checkbox #showRankControl id="showRankControl" inputId="showRankCheckbox"></app-captioned-checkbox>
+        </div>
     </section>
 </section>
