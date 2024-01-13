@@ -6,7 +6,6 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -18,7 +17,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
-import { CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent, ZenithScanFormulaViewNgDirective } from '../view/ng-api';
+import { ConditionSetScanFormulaViewNgComponent, CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent } from '../view/ng-api';
 
 @Component({
     selector: 'app-formula-scan-editor-section',
@@ -32,16 +31,18 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     private static typeInstanceCreateCount = 0;
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    @ViewChild('criteriaView') private _criteriaViewComponent: CriteriaZenithScanFormulaViewNgComponent | undefined;
+    @ViewChild('zenithCriteriaView') private _zenithCriteriaViewComponent: CriteriaZenithScanFormulaViewNgComponent | undefined;
+    @ViewChild('conditionSetCriteriaView') private _conditionSetCriteriaViewComponent: ConditionSetScanFormulaViewNgComponent | undefined;
     @ViewChild('rankView') private _rankViewComponent: RankZenithScanFormulaViewNgComponent | undefined;
 
     public sectionHeadingText: string;
-    public readonly genericSelectorCaption = Strings[StringId.View] + ':';
+    public genericSelectorCaption: string;
+    public genericSelectorWidth: string;
 
     private readonly _viewUiAction: ExplicitElementsEnumUiAction;
 
     private _formulaField: FormulaScanEditorSectionNgComponent.FormulaField;
-    private _viewComponent: ZenithScanFormulaViewNgDirective;
+    private _viewId: FormulaScanEditorSectionNgComponent.ViewId;
 
     constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef) {
         super(elRef, ++FormulaScanEditorSectionNgComponent.typeInstanceCreateCount);
@@ -54,6 +55,8 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         switch (value) {
             case 'Criteria':
                 this.sectionHeadingText = Strings[StringId.Criteria];
+                this.genericSelectorWidth = '10em';
+                this.genericSelectorCaption = Strings[StringId.View] + ':';
                 break;
             case 'Rank':
                 this.sectionHeadingText = Strings[StringId.Rank];
@@ -63,7 +66,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         }
         this._cdr.markForCheck();
     }
-    get formulaField() { return this._formulaField; }
+    public get formulaField() { return this._formulaField; }
+    public isZenithView() { return this._viewId === FormulaScanEditorSectionNgComponent.ViewId.Zenith; }
+    public isConditionSetView() { return this._viewId === FormulaScanEditorSectionNgComponent.ViewId.ConditionSet; }
 
     ngOnInit() {
         this.pushValues();
@@ -74,30 +79,21 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     ngAfterViewInit() {
-        switch (this._formulaField) {
-            case 'Criteria':
-                if (this._criteriaViewComponent === undefined) {
-                    throw new AssertInternalError('FSESNCNAVIC43434');
-                } else {
-                    this._viewComponent = this._criteriaViewComponent;
-                    break;
-                }
-            case 'Rank':
-                if (this._rankViewComponent === undefined) {
-                    throw new AssertInternalError('FSESNCNAVIR43434');
-                } else {
-                    this._viewComponent = this._rankViewComponent;
-                    break;
-                }
-            default:
-                throw new UnreachableCaseError('FSESNCNAVID43434', this._formulaField);
-        }
+        this.setViewId(FormulaScanEditorSectionNgComponent.ViewId.ConditionSet); // get this from settings
         this.initialiseComponents();
     }
 
     override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
-        this._viewComponent.setEditor(value);
+        if (this._zenithCriteriaViewComponent !== undefined) {
+            this._zenithCriteriaViewComponent.setEditor(value);
+        }
+        if (this._conditionSetCriteriaViewComponent !== undefined) {
+            this._conditionSetCriteriaViewComponent.setEditor(value);
+        }
+        if (this._rankViewComponent !== undefined) {
+            this._rankViewComponent.setEditor(value);
+        }
         this.pushValues();
     }
 
@@ -147,7 +143,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     private initialiseComponents() {
         super.initialiseSectionHeadingComponent();
 
-        this._sectionHeadingComponent.genericSelectorComponent.initialise(this._viewUiAction);
+        if (this._formulaField === 'Criteria') {
+            this._sectionHeadingComponent.genericSelectorComponent.initialise(this._viewUiAction);
+        }
     }
 
     private createViewUiAction() {
@@ -163,22 +161,26 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
                 })
         );
         action.pushElements(elementPropertiesArray, undefined);
-        action.commitEvent = () => {
-            // this._targetSubTypeId = this._targetSubTypeUiAction.definedValue;
-            this._cdr.markForCheck();
-        };
+        action.commitEvent = () => { this.setViewId(action.definedValue); }
         return action;
     }
 
     private pushValues() {
         if (this._scanEditor === undefined) {
-            this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.Default);
+            this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.ConditionSet);
         // } else {
         //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {
         //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
         //     } else {
         //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
         //     }
+        }
+    }
+
+    private setViewId(value: FormulaScanEditorSectionNgComponent.ViewId) {
+        if (value !== this._viewId) {
+            this._viewId = value;
+            this._cdr.markForCheck();
         }
     }
 }
@@ -191,9 +193,7 @@ export namespace FormulaScanEditorSectionNgComponent {
     export type FormulaField = keyof typeof FormulaFieldEnum;
 
     export const enum ViewId {
-        Default,
-        List,
-        Formula,
+        ConditionSet,
         Zenith,
     }
 
@@ -210,23 +210,11 @@ export namespace FormulaScanEditorSectionNgComponent {
         type InfosObject = { [id in keyof typeof ViewId]: Info };
 
         const infosObject: InfosObject = {
-            Default: {
-                id: ViewId.Default,
-                name: 'Default',
-                displayId: StringId.ScanCriteriaViewDisplay_Default,
-                descriptionId: StringId.ScanCriteriaViewDescription_Default,
-            },
-            List: {
-                id: ViewId.List,
+            ConditionSet: {
+                id: ViewId.ConditionSet,
                 name: 'List',
-                displayId: StringId.ScanCriteriaViewDisplay_List,
-                descriptionId: StringId.ScanCriteriaViewDescription_List,
-            },
-            Formula: {
-                id: ViewId.Formula,
-                name: 'Formula',
-                displayId: StringId.ScanCriteriaViewDisplay_Formula,
-                descriptionId: StringId.ScanCriteriaViewDescription_Formula,
+                displayId: StringId.ScanCriteriaViewDisplay_ConditionSet,
+                descriptionId: StringId.ScanCriteriaViewDescription_ConditionSet,
             },
             Zenith: {
                 id: ViewId.Zenith,
@@ -243,7 +231,7 @@ export namespace FormulaScanEditorSectionNgComponent {
             const outOfOrderIdx = infos.findIndex((info: Info, index: Integer) => info.id !== index as ViewId);
             if (outOfOrderIdx >= 0) {
                 throw new EnumInfoOutOfOrderError(
-                    'CriteriaScanPropertiesSectionNgComponent.ViewId', outOfOrderIdx, infos[outOfOrderIdx].name
+                    'FormulaScanEditorSectionNgComponent.ViewId', outOfOrderIdx, infos[outOfOrderIdx].name
                 );
             }
         }

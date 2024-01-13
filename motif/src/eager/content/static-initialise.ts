@@ -6,7 +6,7 @@
 
 import { ColorControlsComponentModule } from './color-controls/ng-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
-import { FormulaScanPropertiesSectionNgComponentModule, ScanTargetsNgComponentModule } from './scan/ng-api';
+import { ConditionSetScanFormulaViewNgComponentModule, FormulaScanPropertiesSectionNgComponentModule, ScanTargetsNgComponentModule } from './scan/ng-api';
 
 export namespace StaticInitialise {
     export function initialise() {
@@ -14,5 +14,6 @@ export namespace StaticInitialise {
         ResultOrderRequestStepFrameModule.initialiseStatic();
         FormulaScanPropertiesSectionNgComponentModule.initialiseStatic();
         ScanTargetsNgComponentModule.initialiseStatic();
+        ConditionSetScanFormulaViewNgComponentModule.initialiseStatic();
     }
 }

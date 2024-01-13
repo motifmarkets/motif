@@ -11,7 +11,7 @@ import {
     UiBadnessComparableList
 } from '@motifmarkets/motif-core';
 import {
-    CaptionLabelNgComponent, CheckboxInputNgComponent, TextInputNgComponent
+    CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CheckboxInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
@@ -36,6 +36,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     @ViewChild('targetsComponent', { static: true }) private _targetsComponent: ScanEditorTargetsNgComponent;
     @ViewChild('symbolListLabel', { static: true }) private _symbolListLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolListControl', { static: true }) private _symbolListControlComponent: CheckboxInputNgComponent;
+    @ViewChild('showRankControl', { static: true }) private _showRankControlComponent: CaptionedCheckboxNgComponent;
 
     public sectionHeadingText = Strings[StringId.General];
     public targetsRowHeading = Strings[StringId.Targets];
@@ -45,13 +46,14 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     controlInputOrCommitEventer: GeneralScanEditorSectionNgComponent.ControlInputOrCommitEventer | undefined;
     editTargetsMultiSymbolGridColumnsEventer: GeneralScanEditorSectionNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
     popoutTargetsMultiSymbolListEditorEventer: GeneralScanEditorSectionNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
-
+    rankDisplayedPossiblyChangedEventer: GeneralScanEditorSectionNgComponent.RankDisplayedPossiblyChangedEventer | undefined;
 
     private readonly _enabledUiAction: BooleanUiAction;
     private readonly _nameUiAction: StringUiAction;
     private readonly _descriptionUiAction: StringUiAction;
     // private readonly _typeUiAction: ExplicitElementsEnumUiAction;
     private readonly _symbolListUiAction: BooleanUiAction;
+    private readonly _showRankUiAction: BooleanUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -64,7 +66,11 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._descriptionUiAction = this.createDescriptionUiAction();
         // this._typeUiAction = this.createTypeUiAction();
         this._symbolListUiAction = this.createSymbolListUiAction();
+        this._showRankUiAction = this.createShowRankUiAction();
+        this.updateShowRankUiActionState();
     }
+
+    get rankDisplayed() { return this._symbolListUiAction.definedValue && this._showRankUiAction.definedValue; }
 
     ngOnInit() {
         this.pushValues();
@@ -97,6 +103,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             this._nameControlComponent.uiAction.isValueOk() &&
             this._descriptionControlComponent.uiAction.isValueOk() &&
             this._symbolListControlComponent.uiAction.isValueOk() &&
+            this._showRankControlComponent.uiAction.isValueOk() &&
             this._targetsComponent.areAllControlValuesOk()
         );
     }
@@ -106,6 +113,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._nameControlComponent.uiAction.cancelEdit();
         this._descriptionControlComponent.uiAction.cancelEdit();
         this._symbolListControlComponent.uiAction.cancelEdit();
+        this._showRankControlComponent.uiAction.cancelEdit();
         this._targetsComponent.cancelAllControlsEdited();
     }
 
@@ -119,6 +127,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._descriptionUiAction.finalise();
         // this._typeUiAction.finalise();
         this._symbolListUiAction.finalise();
+        this._showRankUiAction.finalise();
     }
 
     protected override processExpandCollapseRestoreStateChanged() {
@@ -145,7 +154,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
                         this._enabledUiAction.pushValue(scanEditor.enabled);
                         break;
                     case ScanEditor.FieldId.SymbolListEnabled:
-                        this._symbolListUiAction.pushValue(scanEditor.symbolListEnabled);
+                        this.pushSymbolListEnabledValue(scanEditor.symbolListEnabled);
                         break;
                 }
             }
@@ -171,6 +180,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._descriptionControlComponent.initialise(this._descriptionUiAction);
         this._symbolListLabelComponent.initialise(this._symbolListUiAction);
         this._symbolListControlComponent.initialise(this._symbolListUiAction);
+        this._showRankControlComponent.initialise(this._showRankUiAction);
 
         this._targetsComponent.controlInputOrCommitEventer = () => { this.notifyControlInputOrCommit() };
         this._targetsComponent.editMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
@@ -246,14 +256,31 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
+            const value = this._symbolListUiAction.definedValue;
             const editor = this._scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this);
-                editor.setSymbolListEnabled(this._symbolListUiAction.definedValue);
+                editor.setSymbolListEnabled(value);
                 editor.endFieldChanges();
-                this.notifyControlInputOrCommit()
+                this.notifyControlInputOrCommit();
+                this.notifyRankDisplayedPossiblyChanged();
             }
+
+            this.updateShowRankUiActionState();
         };
+        return action;
+    }
+
+    private createShowRankUiAction() {
+        const action = new BooleanUiAction();
+        action.pushCaption(Strings[StringId.ScanPropertiesCaption_ShowRank]);
+        action.pushTitle(Strings[StringId.ScanPropertiesTitle_ShowRank]);
+        action.commitOnAnyValidInput = true;
+        action.inputEvent = () => { this.notifyControlInputOrCommit() };
+        action.commitEvent = () => {
+            this.notifyRankDisplayedPossiblyChanged();
+        };
+        action.pushValue(true);
         return action;
     }
 
@@ -265,14 +292,19 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             this._enabledUiAction.pushValue(undefined);
             this._nameUiAction.pushValue(undefined);
             this._descriptionUiAction.pushValue(undefined);
-            this._symbolListUiAction.pushValue(undefined);
+            this.pushSymbolListEnabledValue(undefined);
         } else {
             this._enabledUiAction.pushValue(scanEditor.enabled);
             this._nameUiAction.pushValue(scanEditor.name);
             this._descriptionUiAction.pushValue(scanEditor.description);
-            this._symbolListUiAction.pushValue(scanEditor.symbolListEnabled);
+            this.pushSymbolListEnabledValue(scanEditor.symbolListEnabled);
         }
 
+    }
+
+    private pushSymbolListEnabledValue(value: boolean | undefined) {
+        this._symbolListUiAction.pushValue(value);
+        this.updateShowRankUiActionState();
     }
 
     private pushDeleteState() {
@@ -322,9 +354,24 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         }
     }
 
+    private updateShowRankUiActionState() {
+        const symbolListEnabled = this._symbolListUiAction.value === true;
+        if (symbolListEnabled) {
+            this._showRankUiAction.pushValidOrMissing();
+        } else {
+            this._showRankUiAction.pushDisabled();
+        }
+    }
+
     private notifyControlInputOrCommit(): void {
         if (this.controlInputOrCommitEventer !== undefined) {
             this.controlInputOrCommitEventer();
+        }
+    }
+
+    private notifyRankDisplayedPossiblyChanged() {
+        if (this.rankDisplayedPossiblyChangedEventer !== undefined) {
+            this.rankDisplayedPossiblyChangedEventer();
         }
     }
 }
@@ -342,4 +389,5 @@ export namespace GeneralScanEditorSectionNgComponent {
         list: UiBadnessComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
+    export type RankDisplayedPossiblyChangedEventer = (this: void) => void;
 }

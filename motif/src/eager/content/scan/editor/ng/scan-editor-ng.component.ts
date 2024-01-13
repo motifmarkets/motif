@@ -66,6 +66,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     public sectionsMinSize: AngularSplitTypes.AreaSize.Html;
     public testSize: null | number = null;
     public splitterGutterSize = 3;
+    public rankDisplayed: boolean;
 
     private readonly _applyUiAction: ButtonUiAction;
     private readonly _revertUiAction: ButtonUiAction;
@@ -109,6 +110,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             delay1Tick(() => this.updateWidths());
         }
         this.updateTestDisplayed();
+        this.checkUpdateRankDisplayed();
     }
 
     setEditor(scanEditor: ScanEditor | undefined) {
@@ -163,8 +165,10 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     }
 
     protected finalise() {
+        this._generalSectionComponent.controlInputOrCommitEventer = undefined;
         this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
         this._generalSectionComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
+        this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = undefined;
 
         this._testComponent.displayedChangedEventer = undefined;
         this._resizeObserver.disconnect();
@@ -259,6 +263,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 this.popoutTargetsMultiSymbolListEditorEventer(caption, list, columnsEditCaption);
             }
         }
+        this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = () => { this.checkUpdateRankDisplayed(); }
 
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
@@ -475,6 +480,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         } else {
             this.testSize = 0;
             this.splitterGutterSize = 0;
+        }
+    }
+
+    private checkUpdateRankDisplayed() {
+        const displayed = this._generalSectionComponent.rankDisplayed;
+        if (displayed !== this.rankDisplayed) {
+            this.rankDisplayed = displayed;
+            this._cdr.markForCheck();
         }
     }
 

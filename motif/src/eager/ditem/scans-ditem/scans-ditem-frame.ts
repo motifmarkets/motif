@@ -13,10 +13,19 @@ import {
     AttributeSubFieldContainsScanCondition,
     AttributeSubFieldHasValueScanCondition,
     BooleanFieldEqualsScanCondition,
-    CommandRegisterService, DateFieldEqualsScanCondition, DateFieldInRangeScanCondition, DateSubFieldEqualsScanCondition, DateSubFieldHasValueScanCondition, DateSubFieldInRangeScanCondition, Err, ErrorCode,
+    CommandRegisterService,
+    DateFieldEqualsScanCondition,
+    DateFieldInRangeScanCondition,
+    DateSubFieldEqualsScanCondition,
+    DateSubFieldHasValueScanCondition,
+    DateSubFieldInRangeScanCondition,
+    Err,
+    ErrorCode,
     FieldHasValueScanCondition,
     GridLayoutOrReferenceDefinition,
-    Integer, JsonElement,
+    Integer,
+    IsScanCondition,
+    JsonElement,
     LockOpenListItem,
     Logger,
     NoneScanCondition,
@@ -41,8 +50,9 @@ import {
     SourceTzOffsetDateTime,
     SymbolsService,
     TextFieldContainsScanCondition,
+    TextFieldIncludesScanCondition,
     UiBadnessComparableList,
-    UnreachableCaseError
+    UnreachableCaseError,
 } from '@motifmarkets/motif-core';
 import { ScanListFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -280,17 +290,40 @@ export namespace ScansDitemFrame {
 
         private createCopyOfCondition(condition: ScanCondition): ScanCondition {
             const typeId = condition.typeId;
-            const not = condition.not;
             switch(condition.typeId) {
                 case ScanCondition.TypeId.NumericComparison: {
                     const originalCondition = condition as NumericComparisonScanCondition;
-                    const copiedLeftOperand = this.createCopyOfNumericComparisonScanConditionOperand(originalCondition.leftOperand);
-                    const copiedRightOperand = this.createCopyOfNumericComparisonScanConditionOperand(originalCondition.rightOperand);
+                    const originalLeftOperand = originalCondition.leftOperand;
+                    const originalRightOperand = originalCondition.rightOperand;
+
+                    let copiedRightOperand: NumericComparisonScanCondition.TypedOperand;
+                    switch (originalRightOperand.typeId) {
+                        case NumericComparisonScanCondition.TypedOperand.TypeId.Number: {
+                            const copiedTypedOperand: NumericComparisonScanCondition.NumberTypedOperand = {
+                                typeId: NumericComparisonScanCondition.TypedOperand.TypeId.Number,
+                                value: (originalRightOperand as NumericComparisonScanCondition.NumberTypedOperand).value,
+                            };
+                            copiedRightOperand = copiedTypedOperand;
+                            break;
+                        }
+                        case NumericComparisonScanCondition.TypedOperand.TypeId.Field: {
+                            const copiedTypedOperand: NumericComparisonScanCondition.FieldTypedOperand = {
+                                typeId: NumericComparisonScanCondition.TypedOperand.TypeId.Field,
+                                fieldId: (originalRightOperand as NumericComparisonScanCondition.FieldTypedOperand).fieldId,
+                            };
+                            copiedRightOperand = copiedTypedOperand;
+                            break;
+                        }
+                        default:
+                            throw new UnreachableCaseError('SDFCCOCU69111', originalRightOperand.typeId);
+                    }
+
                     const copiedCondition: NumericComparisonScanCondition = {
                         typeId,
-                        not,
                         operationId: originalCondition.operationId,
-                        leftOperand: copiedLeftOperand,
+                        leftOperand: {
+                            fieldId: originalLeftOperand.fieldId,
+                        },
                         rightOperand: copiedRightOperand,
                     }
                     return copiedCondition;
@@ -299,7 +332,6 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as AllScanCondition;
                     const copiedCondition: AllScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
                     };
                     return copiedCondition;
                 }
@@ -307,7 +339,15 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as NoneScanCondition;
                     const copiedCondition: NoneScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                    };
+                    return copiedCondition;
+                }
+                case ScanCondition.TypeId.Is: {
+                    const originalCondition = condition as IsScanCondition;
+                    const copiedCondition: IsScanCondition = {
+                        typeId: originalCondition.typeId,
+                        not: originalCondition.not,
+                        categoryId: originalCondition.categoryId,
                     };
                     return copiedCondition;
                 }
@@ -315,7 +355,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as FieldHasValueScanCondition;
                     const copiedCondition: FieldHasValueScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                     };
                     return copiedCondition;
@@ -324,7 +364,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as BooleanFieldEqualsScanCondition;
                     const copiedCondition: BooleanFieldEqualsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         target: originalCondition.target,
                     };
@@ -334,7 +374,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as NumericFieldEqualsScanCondition;
                     const copiedCondition: NumericFieldEqualsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         target: originalCondition.target,
                     };
@@ -344,7 +384,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as NumericFieldInRangeScanCondition;
                     const copiedCondition: NumericFieldInRangeScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         min: originalCondition.min,
                         max: originalCondition.max,
@@ -355,7 +395,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as DateFieldEqualsScanCondition;
                     const copiedCondition: DateFieldEqualsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         target: SourceTzOffsetDateTime.createCopy(originalCondition.target),
                     };
@@ -365,10 +405,20 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as DateFieldInRangeScanCondition;
                     const copiedCondition: DateFieldInRangeScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         min: SourceTzOffsetDateTime.newUndefinable(originalCondition.min),
                         max: SourceTzOffsetDateTime.newUndefinable(originalCondition.max),
+                    };
+                    return copiedCondition;
+                }
+                case ScanCondition.TypeId.TextFieldIncludes: {
+                    const originalCondition = condition as TextFieldIncludesScanCondition;
+                    const copiedCondition: TextFieldIncludesScanCondition = {
+                        typeId: originalCondition.typeId,
+                        not: originalCondition.not,
+                        fieldId: originalCondition.fieldId,
+                        values: originalCondition.values.slice(),
                     };
                     return copiedCondition;
                 }
@@ -376,7 +426,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as TextFieldContainsScanCondition;
                     const copiedCondition: TextFieldContainsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         value: originalCondition.value,
                         asId: originalCondition.asId,
@@ -388,7 +438,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as PriceSubFieldHasValueScanCondition;
                     const copiedCondition: PriceSubFieldHasValueScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                     };
@@ -398,7 +448,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as PriceSubFieldEqualsScanCondition;
                     const copiedCondition: PriceSubFieldEqualsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         subFieldId: originalCondition.subFieldId,
                         fieldId: originalCondition.fieldId,
                         target: originalCondition.target,
@@ -409,7 +459,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as PriceSubFieldInRangeScanCondition;
                     const copiedCondition: PriceSubFieldInRangeScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                         min: originalCondition.min,
@@ -421,7 +471,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as DateSubFieldHasValueScanCondition;
                     const copiedCondition: DateSubFieldHasValueScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                     };
@@ -431,7 +481,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as DateSubFieldEqualsScanCondition;
                     const copiedCondition: DateSubFieldEqualsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         subFieldId: originalCondition.subFieldId,
                         fieldId: originalCondition.fieldId,
                         target: SourceTzOffsetDateTime.createCopy(originalCondition.target),
@@ -442,7 +492,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as DateSubFieldInRangeScanCondition;
                     const copiedCondition: DateSubFieldInRangeScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                         min: SourceTzOffsetDateTime.newUndefinable(originalCondition.min),
@@ -454,7 +504,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as AltCodeSubFieldHasValueScanCondition;
                     const copiedCondition: AltCodeSubFieldHasValueScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                     };
@@ -464,7 +514,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as AltCodeSubFieldContainsScanCondition;
                     const copiedCondition: AltCodeSubFieldContainsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                         value: originalCondition.value,
@@ -477,7 +527,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as AttributeSubFieldHasValueScanCondition;
                     const copiedCondition: AttributeSubFieldHasValueScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                     };
@@ -487,7 +537,7 @@ export namespace ScansDitemFrame {
                     const originalCondition = condition as AttributeSubFieldContainsScanCondition;
                     const copiedCondition: AttributeSubFieldContainsScanCondition = {
                         typeId: originalCondition.typeId,
-                        not,
+                        not: originalCondition.not,
                         fieldId: originalCondition.fieldId,
                         subFieldId: originalCondition.subFieldId,
                         value: originalCondition.value,
@@ -498,69 +548,85 @@ export namespace ScansDitemFrame {
                 }
             }
         }
-
-        private createCopyOfNumericComparisonScanConditionOperand(operand: NumericComparisonScanCondition.Operand): NumericComparisonScanCondition.Operand {
-            switch (operand.typeId) {
-                case NumericComparisonScanCondition.Operand.TypeId.Number: {
-                    const originalOperand = operand as NumericComparisonScanCondition.NumberOperand;
-                    const copiedOperand: NumericComparisonScanCondition.NumberOperand = {
-                        typeId: NumericComparisonScanCondition.Operand.TypeId.Number,
-                        value: originalOperand.value,
-                    }
-                    return copiedOperand;
-                }
-                case NumericComparisonScanCondition.Operand.TypeId.NumericFieldValueGet: {
-                    const originalOperand = operand as NumericComparisonScanCondition.NumericFieldValueGetOperand;
-                    const copiedOperand: NumericComparisonScanCondition.NumericFieldValueGetOperand = {
-                        typeId: NumericComparisonScanCondition.Operand.TypeId.NumericFieldValueGet,
-                        fieldId: originalOperand.fieldId,
-                    }
-                    return copiedOperand;
-                }
-                default:
-                    throw new UnreachableCaseError('SDFCSCCONCSCO60612', operand.typeId);
-            }
-        }
     }
 
     export namespace ConditionSet {
         export class ConditionFactory implements ScanConditionFactory {
             createNumericComparison(
                 formulaNode: ScanFormula.NumericComparisonBooleanNode,
-                not: boolean,
                 operationId: NumericComparisonScanCondition.OperationId
             ): Result<NumericComparisonScanCondition, ScanConditionSetLoadError> {
-                const leftOperandResult = this.createNumericComparisonOperand(formulaNode.leftOperand);
-                if (leftOperandResult.isErr()) {
-                    return new Err(leftOperandResult.error);
-                } else {
-                    const leftOperand = leftOperandResult.value;
+                const formulaLeftOperand = formulaNode.leftOperand;
+                const formulaRightOperand = formulaNode.rightOperand;
+                let possiblySwitchedFormulaLeftOperand: ScanFormula.NumericNode;
+                let possiblySwitchedFormulaRightOperand: number | ScanFormula.NumericNode;
+                let leftRightOperandsSwitched: boolean;
 
-                    const rightOperandResult = this.createNumericComparisonOperand(formulaNode.rightOperand);
-                    if (rightOperandResult.isErr()) {
-                        return new Err(rightOperandResult.error);
+                if (typeof formulaLeftOperand !== 'number') {
+                    possiblySwitchedFormulaLeftOperand = formulaLeftOperand;
+                    possiblySwitchedFormulaRightOperand = formulaRightOperand;
+                    leftRightOperandsSwitched = false;
+                } else {
+                    if (typeof formulaRightOperand !== 'number') {
+                        possiblySwitchedFormulaLeftOperand = formulaRightOperand;
+                        possiblySwitchedFormulaRightOperand = formulaLeftOperand;
+                        leftRightOperandsSwitched = true;
                     } else {
-                        const rightOperand = rightOperandResult.value;
-                        return new Ok({
-                            typeId: ScanCondition.TypeId.NumericComparison,
-                            not,
-                            operationId,
-                            leftOperand,
-                            rightOperand,
-                        });
+                        return new Err( { typeId: ScanConditionSetLoadErrorTypeId.LeftAndRightNumericComparisonOperandTypesAreBothNumber, extra: '' });
                     }
                 }
+
+                if (!ScanFormula.NumericFieldValueGetNode.is(possiblySwitchedFormulaLeftOperand)) {
+                    const errorTypeId = leftRightOperandsSwitched ?
+                        ScanConditionSetLoadErrorTypeId.RightNumericComparisonOperandTypeIsNotSupported :
+                        ScanConditionSetLoadErrorTypeId.LeftNumericComparisonOperandTypeIsNotSupported;
+                    return new Err( { typeId: errorTypeId, extra: possiblySwitchedFormulaLeftOperand.typeId.toString() } );
+                } else {
+                    const leftConditionOperand: NumericComparisonScanCondition.FieldOperand = {
+                        fieldId: possiblySwitchedFormulaLeftOperand.fieldId,
+                    };
+
+                    let rightConditionOperand: NumericComparisonScanCondition.TypedOperand;
+                    if (typeof possiblySwitchedFormulaRightOperand === 'number') {
+                        const numberTypedOperand: NumericComparisonScanCondition.NumberTypedOperand = {
+                            typeId: NumericComparisonScanCondition.TypedOperand.TypeId.Number,
+                            value: possiblySwitchedFormulaRightOperand,
+                        }
+                        rightConditionOperand = numberTypedOperand;
+                    } else {
+                        if (!ScanFormula.NumericFieldValueGetNode.is(possiblySwitchedFormulaRightOperand)) {
+                            const errorTypeId = leftRightOperandsSwitched ?
+                                ScanConditionSetLoadErrorTypeId.LeftNumericComparisonOperandTypeIsNotSupported :
+                                ScanConditionSetLoadErrorTypeId.RightNumericComparisonOperandTypeIsNotSupported;
+                            return new Err( { typeId: errorTypeId, extra: possiblySwitchedFormulaRightOperand.typeId.toString() } );
+                        } else {
+                            const fieldTypedOperand: NumericComparisonScanCondition.FieldTypedOperand = {
+                                typeId: NumericComparisonScanCondition.TypedOperand.TypeId.Field,
+                                fieldId: possiblySwitchedFormulaRightOperand.fieldId,
+                            }
+                            rightConditionOperand = fieldTypedOperand;
+                        }
+                    }
+
+                    return new Ok({
+                        typeId: ScanCondition.TypeId.NumericComparison,
+                        operationId,
+                        leftOperand: leftConditionOperand,
+                        rightOperand: rightConditionOperand,
+                    });
+                }
             }
-            createAll(formulaNode: ScanFormula.AllNode, not: boolean): Result<AllScanCondition, ScanConditionSetLoadError> {
-                return new Ok({
-                    typeId: ScanCondition.TypeId.All,
-                    not
-                });
+            createAll(_formulaNode: ScanFormula.AllNode): Result<AllScanCondition, ScanConditionSetLoadError> {
+                return new Ok({ typeId: ScanCondition.TypeId.All });
             }
-            createNone(formulaNode: ScanFormula.NoneNode, not: boolean): Result<NoneScanCondition, ScanConditionSetLoadError> {
+            createNone(_formulaNode: ScanFormula.NoneNode): Result<NoneScanCondition, ScanConditionSetLoadError> {
+                return new Ok({ typeId: ScanCondition.TypeId.None });
+            }
+            createIs(formulaNode: ScanFormula.IsNode, not: boolean): Result<IsScanCondition, ScanConditionSetLoadError> {
                 return new Ok({
-                    typeId: ScanCondition.TypeId.None,
-                    not
+                    typeId: ScanCondition.TypeId.Is,
+                    not: formulaNode.trueFalse === not, // condition can be not if either trueFalse is false or not is true or vice versa.  Cannot be not if both the same
+                    categoryId: formulaNode.categoryId,
                 });
             }
             createFieldHasValue(formulaNode: ScanFormula.FieldHasValueNode, not: boolean): Result<FieldHasValueScanCondition, ScanConditionSetLoadError> {
@@ -610,6 +676,14 @@ export namespace ScansDitemFrame {
                     fieldId: formulaNode.fieldId,
                     min: SourceTzOffsetDateTime.newUndefinable(formulaNode.min),
                     max: SourceTzOffsetDateTime.newUndefinable(formulaNode.max),
+                });
+            }
+            createTextFieldIncludes(formulaNode: ScanFormula.TextFieldIncludesNode, not: boolean): Result<TextFieldIncludesScanCondition, ScanConditionSetLoadError> {
+                return new Ok({
+                    typeId: ScanCondition.TypeId.TextFieldIncludes,
+                    not,
+                    fieldId: formulaNode.fieldId,
+                    values: formulaNode.values.slice(),
                 });
             }
             createTextFieldContains(formulaNode: ScanFormula.TextFieldContainsNode, not: boolean): Result<TextFieldContainsScanCondition, ScanConditionSetLoadError> {
@@ -713,26 +787,6 @@ export namespace ScansDitemFrame {
                     asId: formulaNode.asId,
                     ignoreCase: formulaNode.ignoreCase,
                 });
-            }
-
-            private createNumericComparisonOperand(formulaOperand: ScanFormula.NumericNode | number): Result<NumericComparisonScanCondition.Operand, ScanConditionSetLoadError> {
-                if (typeof formulaOperand === 'number') {
-                    const conditionOperand: NumericComparisonScanCondition.NumberOperand = {
-                        typeId: NumericComparisonScanCondition.Operand.TypeId.Number,
-                        value: formulaOperand,
-                    }
-                    return new Ok(conditionOperand);
-                } else {
-                    if (ScanFormula.NumericFieldValueGetNode.is(formulaOperand)) {
-                        const conditionOperand: NumericComparisonScanCondition.NumericFieldValueGetOperand = {
-                            typeId: NumericComparisonScanCondition.Operand.TypeId.NumericFieldValueGet,
-                            fieldId: formulaOperand.fieldId,
-                        }
-                        return new Ok(conditionOperand);
-                    } else {
-                        return new Err( { typeId: ScanConditionSetLoadErrorTypeId.UnsupportedNumericComparisonOperandType, extra: formulaOperand.typeId.toString() } );
-                    }
-                }
             }
         }
     }

@@ -7,13 +7,16 @@
 <app-expandable-collapsible-lined-heading-ng
     #sectionHeading
     [headingText]="sectionHeadingText"
-    [genericSelectorWidth]="'10em'"
+    [genericSelectorWidth]="genericSelectorWidth"
     [genericSelectorCaption]="genericSelectorCaption">
 </app-expandable-collapsible-lined-heading-ng>
 
 <section id="content">
     <ng-container [ngSwitch]="formulaField">
-        <app-criteria-zenith-scan-formula-view #criteriaView *ngSwitchCase="'Criteria'"></app-criteria-zenith-scan-formula-view>
+        <ng-container *ngSwitchCase="'Criteria'">
+            <app-criteria-zenith-scan-formula-view #zenithCriteriaView [style.display]="isZenithView() ? null : 'none'"></app-criteria-zenith-scan-formula-view>
+            <app-condition-set-scan-formula-view #conditionSetCriteriaView  [style.display]="isConditionSetView() ? null : 'none'"></app-condition-set-scan-formula-view>
+        </ng-container>
         <app-rank-zenith-scan-formula-view #rankView *ngSwitchCase="'Rank'"></app-rank-zenith-scan-formula-view>
     </ng-container>
 </section>

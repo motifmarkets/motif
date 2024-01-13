@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Directive, ElementRef } from '@angular/core';
+import { Directive, ElementRef, InjectionToken } from '@angular/core';
 import { Integer } from '@motifmarkets/motif-core';
 
 @Directive()
@@ -25,4 +25,8 @@ export abstract class ComponentBaseNgDirective {
     protected generateInstancedRadioName(name: string) {
         return this.typeInstanceId + '_' + name;
     }
+}
+
+export namespace ComponentBaseNgDirective {
+    export const typeInstanceCreateIdInjectionToken = new InjectionToken('typeInstanceCreateIdInjectionToken');
 }
