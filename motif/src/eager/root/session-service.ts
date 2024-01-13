@@ -8,7 +8,6 @@ import { isDevMode } from '@angular/core';
 import {
     AdiService,
     AppStorageService,
-    AssertInternalError,
     CapabilitiesService,
     DataEnvironment,
     DataEnvironmentId,
@@ -41,7 +40,7 @@ import {
     ZenithPublisherStateId,
     ZenithPublisherSubscriptionManager
 } from '@motifmarkets/motif-core';
-import { SignOutService } from 'component-services-internal-api';
+import { HideUnloadSaveService, SignOutService } from 'component-services-internal-api';
 import { ExtensionsService } from 'extensions-internal-api';
 import { Version } from 'generated-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
@@ -81,11 +80,6 @@ export class SessionService {
     private _zenithLogSubscriptionId: MultiEvent.SubscriptionId;
     private _publisherSessionTerminatedSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _settingsServiceBeginSaveWaitingSubscriptionId: MultiEvent.SubscriptionId;
-    private _settingsServiceEndSaveWaitingSubscriptionId: MultiEvent.SubscriptionId;
-    private _documentVisibilityChangeListening = false;
-    private _canLeaveAlert: UserAlertService.Alert | undefined;
-
     constructor(
         private readonly _telemetryService: TelemetryService,
         private readonly _userAlertService: UserAlertService,
@@ -99,11 +93,13 @@ export class SessionService {
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _scansService: ScansService,
+        private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _signoutService: SignOutService,
     ) {
         this._openIdService.logErrorEvent = (text) => this.logError(text);
         this._openIdService.userLoadedEvent = () => this.handleUserLoadedEvent();
         this._signoutService.signOutEvent = () => this.handleSignOut();
+        this._hideUnloadSaveService.registerSaveManagement(this._settingsService);
     }
 
     get serviceName() { return this._serviceName; }
@@ -178,22 +174,6 @@ export class SessionService {
         await this.processLoadSettings();
         this.processLoadExtensions();
 
-        document.addEventListener('visibilitychange', this._documentVisibilityChangeListener);
-        this._documentVisibilityChangeListening = true;
-
-        this._settingsServiceBeginSaveWaitingSubscriptionId = this._settingsService.subscribeBeginSaveWaitingEvent(
-            () => {
-                if (this._canLeaveAlert !== undefined) {
-                    this._userAlertService.clearAlert(this._canLeaveAlert);
-                    this._canLeaveAlert = undefined;
-                }
-                globalThis.addEventListener('beforeunload', this._globalBeforeUnloadListener);
-            }
-        );
-        this._settingsServiceEndSaveWaitingSubscriptionId = this._settingsService.subscribeEndSaveWaitingEvent(
-            () => { globalThis.removeEventListener('beforeunload', this._globalBeforeUnloadListener); }
-        );
-
         this.finishStartup();
     }
 
@@ -209,16 +189,7 @@ export class SessionService {
             this.setStateId(SessionStateId.Finalising);
             this.unsubscribeZenithExtConnection();
 
-            this._settingsService.unsubscribeBeginSaveWaitingEvent(this._settingsServiceBeginSaveWaitingSubscriptionId);
-            this._settingsServiceBeginSaveWaitingSubscriptionId = undefined;
-            this._settingsService.unsubscribeEndSaveWaitingEvent(this._settingsServiceEndSaveWaitingSubscriptionId);
-            this._settingsServiceEndSaveWaitingSubscriptionId = undefined;
-
-            if (this._documentVisibilityChangeListening) {
-                document.removeEventListener('visibilitychange', this._documentVisibilityChangeListener);
-                this._documentVisibilityChangeListening = false;
-            }
-
+            this._hideUnloadSaveService.deregisterSaveManagement(this._settingsService);
             this.setStateId(SessionStateId.Finalised);
         }
     }
@@ -246,58 +217,6 @@ export class SessionService {
     unsubscribeConsolidatedLogEvent(subscriptionId: MultiEvent.SubscriptionId): void {
         this._consolidatedLogMultiEvent.unsubscribe(subscriptionId);
     }
-
-    private _documentVisibilityChangeListener = () => { this.handleDocumentVisibilityChange(); };
-    private _globalBeforeUnloadListener = (event: BeforeUnloadEvent) => { this.handleGlobalBeforeUnload(event); };
-
-    private handleDocumentVisibilityChange() {
-        const documentHidden = document.hidden;
-        if (documentHidden) {
-            const settingsService = this._settingsService
-            const saveRequired = settingsService.checkCancelSaveRequest();
-            if (saveRequired) {
-                // do save immediately (may be shutting down)
-                const promise = settingsService.save();
-                promise.then(
-                    (result) => {
-                        settingsService.processSaveResult(result, SettingsService.SaveInitiator.Hide);
-                    },
-                    (reason) => {
-                        throw AssertInternalError.createIfNotError(reason, 'SSHDVC40498');
-                    }
-                );
-            }
-        }
-    }
-
-    private handleGlobalBeforeUnload(event: BeforeUnloadEvent) {
-        const settingsService = this._settingsService
-        const saveRequired = settingsService.checkCancelSaveRequest();
-        if (saveRequired) {
-            // do save immediately (shutting down)
-            event.preventDefault(); // show leave confirmation dialog
-            event.returnValue = true;
-
-            this._userAlertService.enabled = true;
-            const alert = this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.DataSavingBeforeLeave, Strings[StringId.UserAlert_PleaseWaitSavingChanges]);
-            const promise = settingsService.save();
-            promise.then(
-                (result) => {
-                    settingsService.processSaveResult(result, SettingsService.SaveInitiator.Unload);
-                    if (alert === undefined) {
-                        throw new AssertInternalError('SSHDBU45091');
-                    } else {
-                        this._userAlertService.clearAlert(alert);
-                        this._canLeaveAlert = this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.CanLeave, Strings[StringId.UserAlert_ChangesSavedOkToLeaveOrRestorePage]);
-                    }
-                },
-                (reason) => {
-                    throw AssertInternalError.createIfNotError(reason, 'SSHDVC40498');
-                }
-            );
-        }
-}
-
 
     private setServiceName(value: string) {
         this._serviceName = value;

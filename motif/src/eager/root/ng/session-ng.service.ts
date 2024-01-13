@@ -11,6 +11,7 @@ import {
     AdiNgService,
     AppStorageNgService,
     CapabilitiesNgService,
+    HideUnloadSaveNgService,
     MotifServicesNgService,
     ScansNgService,
     SessionInfoNgService,
@@ -50,6 +51,7 @@ export class SessionNgService implements OnDestroy {
         symbolsNgService: SymbolsNgService,
         scansNgService: ScansNgService,
         sessionInfoNgService: SessionInfoNgService,
+        hideUnloadSaveNgService: HideUnloadSaveNgService,
         signOutNgService: SignOutNgService,
     ) {
         this._config = configNgService.config;
@@ -66,6 +68,7 @@ export class SessionNgService implements OnDestroy {
             adiNgService.service,
             symbolsNgService.service,
             scansNgService.service,
+            hideUnloadSaveNgService.service,
             signOutNgService.service,
         );
 

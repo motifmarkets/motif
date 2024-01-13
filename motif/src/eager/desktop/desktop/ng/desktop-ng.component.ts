@@ -33,6 +33,7 @@ import {
     BrandingNgService,
     CapabilitiesNgService,
     CommandRegisterNgService,
+    HideUnloadSaveNgService,
     IdleNgService,
     KeyboardNgService,
     SettingsNgService,
@@ -94,6 +95,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         menuBarNgService: MenuBarNgService,
         commandRegisterNgService: CommandRegisterNgService,
         keyboardNgService: KeyboardNgService,
+        hideUnloadSaveNgService: HideUnloadSaveNgService,
         @Inject(BrandingNgService.injectionToken) brandingService: BrandingNgService,
     ) {
         super(elRef, ++DesktopNgComponent.typeInstanceCreateCount);
@@ -130,6 +132,7 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
             menuBarNgService.service,
             this._commandRegisterService,
             keyboardNgService.service,
+            hideUnloadSaveNgService.service,
             brandingService.startupSplashWebPageSafeResourceUrl !== undefined,
             (component) => this.getBuiltinDitemFrameFromGoldenLayoutComponent(component),
         );
