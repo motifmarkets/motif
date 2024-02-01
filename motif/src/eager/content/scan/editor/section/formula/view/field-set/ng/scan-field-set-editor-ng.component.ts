@@ -10,12 +10,12 @@ import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNg
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 
 @Component({
-    selector: 'app-condition-set-scan-formula-view',
-    templateUrl: './condition-set-scan-formula-view-ng.component.html',
-    styleUrls: ['./condition-set-scan-formula-view-ng.component.scss'],
+    selector: 'app-scan-field-set-editor',
+    templateUrl: './scan-field-set-editor-ng.component.html',
+    styleUrls: ['./scan-field-set-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
+export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
     @ViewChild('allControl', { static: true }) private _allControlComponent: CaptionedRadioNgComponent;
     @ViewChild('anyControl', { static: true }) private _anyControlComponent: CaptionedRadioNgComponent;
     @ViewChild('excludeControl', { static: true }) private _excludeControlComponent: CaptionedCheckboxNgComponent;
@@ -31,7 +31,7 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
         private readonly _cdr: ChangeDetectorRef,
         private readonly _injector: Injector,
     ) {
-        super(elRef, ++ConditionSetScanFormulaViewNgComponent.typeInstanceCreateCount);
+        super(elRef, ++ScanFieldSetEditorNgComponent.typeInstanceCreateCount);
 
         this._setOperationUiAction = this.createSetOperationUiAction();
         this._excludeUiAction = this.createExcludeUiAction();
@@ -45,7 +45,7 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
     public get allAnyRadioName() { return this.generateInstancedRadioName('allAnyRadioName'); }
     public get conditionCount() { return 0; }
     public get nonConditionalReason() { return 'Too Complicated'; }
-    public isConditionable() { return true; }
+    public isCriteriaCompatible() { return true; }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -73,12 +73,12 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
         const action = new ExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ConditionSetScanFormulaViewNgComponentCaption_SetOperation]);
         action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_SetOperation]);
-        const ids = ConditionSetScanFormulaViewNgComponent.SetOperation.getAllIds();
+        const ids = ScanFieldSetEditorNgComponent.SetOperation.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ConditionSetScanFormulaViewNgComponent.SetOperation.idToCaption(id),
-                    title: ConditionSetScanFormulaViewNgComponent.SetOperation.idToTitle(id),
+                    caption: ScanFieldSetEditorNgComponent.SetOperation.idToCaption(id),
+                    title: ScanFieldSetEditorNgComponent.SetOperation.idToTitle(id),
                 }
             )
         );
@@ -105,12 +105,12 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
         const action = new ExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.New]);
         action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_NewCondition]);
-        const ids = ConditionSetScanFormulaViewNgComponent.ConditionKind.getAllIds();
+        const ids = ScanFieldSetEditorNgComponent.ConditionKind.getAllIds();
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ConditionSetScanFormulaViewNgComponent.ConditionKind.idToCaption(id),
-                    title: ConditionSetScanFormulaViewNgComponent.ConditionKind.idToTitle(id),
+                    caption: ScanFieldSetEditorNgComponent.ConditionKind.idToCaption(id),
+                    title: ScanFieldSetEditorNgComponent.ConditionKind.idToTitle(id),
                 }
             )
         );
@@ -126,7 +126,7 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
 
 }
 
-export namespace ConditionSetScanFormulaViewNgComponent {
+export namespace ScanFieldSetEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
@@ -292,7 +292,7 @@ export namespace ConditionSetScanFormulaViewNgComponent {
 
 export namespace ConditionSetScanFormulaViewNgComponentModule {
     export function initialiseStatic() {
-        ConditionSetScanFormulaViewNgComponent.SetOperation.initialise();
-        ConditionSetScanFormulaViewNgComponent.ConditionKind.initialise();
+        ScanFieldSetEditorNgComponent.SetOperation.initialise();
+        ScanFieldSetEditorNgComponent.ConditionKind.initialise();
     }
 }

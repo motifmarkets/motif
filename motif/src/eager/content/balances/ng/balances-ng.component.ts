@@ -12,14 +12,18 @@ import { BalancesFrame } from '../balances-frame';
 export class BalancesNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
-    declare frame: BalancesFrame;
+    declare frame: BalancesNgComponent.Frame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        const frame = contentNgService.createBalancesFrame();
+        const frame: BalancesNgComponent.Frame = contentNgService.createBalancesFrame();
         super(elRef, ++BalancesNgComponent.typeInstanceCreateCount, cdr, frame);
     }
+}
+
+export namespace BalancesNgComponent {
+    export type Frame = BalancesFrame;
 }

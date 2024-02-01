@@ -18,6 +18,8 @@ import {
     ScanList,
     ScansService,
     SettingsService,
+    StandAloneScanConditionSet,
+    StandAloneScanFieldSet,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { ScanListFrame } from 'content-internal-api';
@@ -158,7 +160,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     newScan() {
         this.checkCloseActiveScanEditor();
-        this._scanEditor = this._scansService.openNewScanEditor(this._opener, new StandAloneScanConditionSet());
+        this._scanEditor = this._scansService.openNewScanEditor(this._opener, new StandAloneScanFieldSet(), new StandAloneScanConditionSet());
         this._newScanEditor = this._scanEditor;
         this._setEditorEventer(this._scanEditor);
     }
@@ -190,6 +192,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                 const openResultPromise = this._scansService.tryOpenScanEditor(
                     scan.id,
                     this._opener,
+                    () => new StandAloneScanFieldSet(),
                     () => new StandAloneScanConditionSet(),
                 );
                 openResultPromise.then(
