@@ -12,10 +12,8 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
     declare readonly typeId: DateSubbedScanFieldEditorFrame.TypeId;
     declare readonly fieldId: DateSubbedScanFieldEditorFrame.FieldId;
     declare readonly subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly conditions: DateSubbedScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: DateSubbedScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId,
@@ -28,6 +26,7 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
             DateSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
             name,
+            new DateSubbedScanFieldEditorFrame.conditions(),
             DateSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -41,6 +40,8 @@ export namespace DateSubbedScanFieldEditorFrame {
     export type FieldId = ScanFormula.FieldId.DateSubbed;
     export const fieldId = ScanFormula.FieldId.DateSubbed;
     export type SubFieldId = ScanFormula.DateSubFieldId;
+    export type Conditions = ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Date;
     export const conditionTypeId = ScanFieldCondition.TypeId.Date;
 }

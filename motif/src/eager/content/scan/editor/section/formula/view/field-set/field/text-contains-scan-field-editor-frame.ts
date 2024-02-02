@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements TextContainsScanField {
     declare readonly typeId: TextContainsScanFieldEditorFrame.TypeId;
     declare readonly fieldId: TextContainsScanFieldEditorFrame.FieldId;
+    declare readonly conditions: TextContainsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: TextContainsScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<TextContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: TextContainsScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
             TextContainsScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new TextContainsScanFieldEditorFrame.conditions(),
             TextContainsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace TextContainsScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.TextContains;
     export const typeId = ScanField.TypeId.TextContains;
     export type FieldId = ScanFormula.TextContainsFieldId;
+    export type Conditions = ChangeSubscribableComparableList<TextContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<TextContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextContains;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextContains;
 }

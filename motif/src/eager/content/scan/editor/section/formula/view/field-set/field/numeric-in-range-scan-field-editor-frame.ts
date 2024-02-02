@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements NumericInRangeScanField {
     declare readonly typeId: NumericInRangeScanFieldEditorFrame.TypeId;
     declare readonly fieldId: NumericInRangeScanFieldEditorFrame.FieldId;
+    declare readonly conditions: NumericInRangeScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: NumericInRangeScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: NumericInRangeScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
             NumericInRangeScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new NumericInRangeScanFieldEditorFrame.conditions(),
             NumericInRangeScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace NumericInRangeScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.NumericInRange;
     export const typeId = ScanField.TypeId.NumericInRange;
     export type FieldId = ScanFormula.NumericRangeFieldId;
+    export type Conditions = ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
     export const conditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
 }

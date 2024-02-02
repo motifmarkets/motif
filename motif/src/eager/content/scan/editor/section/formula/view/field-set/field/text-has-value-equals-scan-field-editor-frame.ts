@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements TextHasValueEqualsScanField {
     declare readonly typeId: TextHasValueEqualsScanFieldEditorFrame.TypeId;
     declare readonly fieldId: TextHasValueEqualsScanFieldEditorFrame.FieldId;
+    declare readonly conditions: TextHasValueEqualsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: TextHasValueEqualsScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: TextHasValueEqualsScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
             TextHasValueEqualsScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new TextHasValueEqualsScanFieldEditorFrame.conditions(),
             TextHasValueEqualsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace TextHasValueEqualsScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.TextHasValueEquals;
     export const typeId = ScanField.TypeId.TextHasValueEquals;
     export type FieldId = ScanFormula.TextHasValueEqualsFieldId;
+    export type Conditions = ChangeSubscribableComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
 }

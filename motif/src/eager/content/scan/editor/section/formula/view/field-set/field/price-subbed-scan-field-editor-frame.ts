@@ -12,10 +12,8 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
     declare readonly typeId: PriceSubbedScanFieldEditorFrame.TypeId;
     declare readonly fieldId: PriceSubbedScanFieldEditorFrame.FieldId;
     declare readonly subFieldId: PriceSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly conditions: PriceSubbedScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: PriceSubbedScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         subFieldId: PriceSubbedScanFieldEditorFrame.SubFieldId,
@@ -28,6 +26,7 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
             PriceSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
             name,
+            new PriceSubbedScanFieldEditorFrame.conditions(),
             PriceSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -41,6 +40,8 @@ export namespace PriceSubbedScanFieldEditorFrame {
     export type FieldId = ScanFormula.FieldId.PriceSubbed;
     export const fieldId = ScanFormula.FieldId.PriceSubbed;
     export type SubFieldId = ScanFormula.PriceSubFieldId;
+    export type Conditions = ChangeSubscribableComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Numeric;
     export const conditionTypeId = ScanFieldCondition.TypeId.Numeric;
 }

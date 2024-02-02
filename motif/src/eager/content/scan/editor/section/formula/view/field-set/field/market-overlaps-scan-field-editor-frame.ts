@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class MarketOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements MarketOverlapsScanField {
     declare readonly typeId: MarketOverlapsScanFieldEditorFrame.TypeId;
     declare readonly fieldId: MarketOverlapsScanFieldEditorFrame.FieldId;
+    declare readonly conditions: MarketOverlapsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: MarketOverlapsScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<MarketOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: MarketOverlapsScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class MarketOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
             MarketOverlapsScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new MarketOverlapsScanFieldEditorFrame.conditions(),
             MarketOverlapsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace MarketOverlapsScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.MarketOverlaps;
     export const typeId = ScanField.TypeId.MarketOverlaps;
     export type FieldId = ScanFormula.MarketOverlapsFieldId;
+    export type Conditions = ChangeSubscribableComparableList<MarketOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<MarketOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.MarketOverlaps;
     export const conditionTypeId = ScanFieldCondition.TypeId.MarketOverlaps;
 }

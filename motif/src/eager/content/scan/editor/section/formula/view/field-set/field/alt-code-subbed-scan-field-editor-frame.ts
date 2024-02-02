@@ -12,10 +12,8 @@ export class AltCodeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impl
     declare readonly typeId: AltCodeSubbedScanFieldEditorFrame.TypeId;
     declare readonly fieldId: AltCodeSubbedScanFieldEditorFrame.FieldId;
     declare readonly subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly conditions: AltCodeSubbedScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: AltCodeSubbedScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId,
@@ -28,6 +26,7 @@ export class AltCodeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impl
             AltCodeSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
             name,
+            new AltCodeSubbedScanFieldEditorFrame.conditions(),
             AltCodeSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -41,6 +40,8 @@ export namespace AltCodeSubbedScanFieldEditorFrame {
     export type FieldId = ScanFormula.FieldId.AltCodeSubbed;
     export const fieldId = ScanFormula.FieldId.AltCodeSubbed;
     export type SubFieldId = ScanFormula.AltCodeSubFieldId;
+    export type Conditions = ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
 }

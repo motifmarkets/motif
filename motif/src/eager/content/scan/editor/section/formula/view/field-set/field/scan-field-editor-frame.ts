@@ -37,6 +37,7 @@ import {
     TextHasValueContainsScanFieldCondition,
     TextHasValueEqualsScanFieldCondition,
     UnreachableCaseError,
+    UsableListChangeTypeId,
 } from '@motifmarkets/motif-core';
 import {
     ContainsTextHasValueContainsScanFieldConditionEditorFrame,
@@ -68,17 +69,21 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private _valid: boolean;
     private _conditionsOperationId = ScanField.BooleanOperationId.And;
 
-    abstract readonly conditions: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>;
+    private _conditionListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         readonly typeId: ScanField.TypeId,
         readonly fieldId: ScanFormula.FieldId,
         readonly subFieldId: Integer | undefined,
         readonly name: string,
+        readonly conditions: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>,
         readonly conditionTypeId: ScanFieldCondition.TypeId,
         private readonly _removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         private readonly _changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
+        this._conditionListChangeSubscriptionId = this.conditions.subscribeListChangeEvent(
+            (listChangeTypeId, idx, count) => this.handleConditionListChangeEvent(listChangeTypeId, idx, count)
+        );
     }
 
     get valid() { return this._valid; }
@@ -90,14 +95,27 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         }
     }
 
+    destroy() {
+        this.conditions.unsubscribeListChangeEvent(this._conditionListChangeSubscriptionId);
+        this._conditionListChangeSubscriptionId = undefined;
+    }
+
     remove() {
         this._removeMeEventer(this);
     }
 
     processConditionChanged(valid: boolean) {
         if (valid !== this._valid) {
-            this._valid = valid;
-            this.notifyChanged();
+            if (!valid) {
+                this._valid = false;
+                this.notifyChanged();
+            } else {
+                valid = this.calculateAllConditionsValid();
+                if (valid) {
+                    this._valid = true;
+                    this.notifyChanged();
+                }
+            }
         }
     }
 
@@ -107,6 +125,37 @@ export abstract class ScanFieldEditorFrame implements ScanField {
 
     unsubscribeChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
         this._changedMultiEvent.unsubscribe(subscriptionId);
+    }
+
+    private handleConditionListChangeEvent(listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer) {
+        switch (listChangeTypeId) {
+            case UsableListChangeTypeId.Unusable:
+            case UsableListChangeTypeId.PreUsableAdd:
+            case UsableListChangeTypeId.PreUsableClear:
+            case UsableListChangeTypeId.Usable:
+            case UsableListChangeTypeId.Insert:
+            case UsableListChangeTypeId.BeforeReplace:
+            case UsableListChangeTypeId.AfterReplace:
+            case UsableListChangeTypeId.BeforeMove:
+            case UsableListChangeTypeId.AfterMove:
+            case UsableListChangeTypeId.Remove:
+            case UsableListChangeTypeId.Clear:
+                break;
+            default:
+                throw new UnreachableCaseError('SFEFHFLCE33971', listChangeTypeId);
+        }
+    }
+
+    private calculateAllConditionsValid() {
+        const conditions = this.conditions;
+        const count = conditions.count;
+        for (let i = 0; i < count; i++) {
+            const condition = conditions.getAt(i);
+            if (!condition.valid) {
+                return false;
+            }
+        }
+        return true;
     }
 
     private notifyChanged() {

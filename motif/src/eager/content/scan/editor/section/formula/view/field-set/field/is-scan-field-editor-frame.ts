@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements IsScanField {
     declare readonly typeId: IsScanFieldEditorFrame.TypeId;
     declare readonly fieldId: IsScanFieldEditorFrame.FieldId;
+    declare readonly conditions: IsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: IsScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: IsScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
             IsScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new IsScanFieldEditorFrame.conditions(),
             IsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace IsScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.Is;
     export const typeId = ScanField.TypeId.Is;
     export type FieldId = ScanFormula.FieldId.Is;
+    export type Conditions = ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Is;
     export const conditionTypeId = ScanFieldCondition.TypeId.Is;
 }

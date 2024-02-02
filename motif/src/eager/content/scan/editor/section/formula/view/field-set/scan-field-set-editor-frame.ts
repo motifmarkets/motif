@@ -101,8 +101,16 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
 
     processFieldChanged(frame: ScanFieldEditorFrame, valid: boolean) {
         if (valid !== this._valid) {
-            this._valid = valid;
-            this._validChangedEventer(valid);
+            if (!valid) {
+                this._valid = false;
+                this._validChangedEventer(valid);
+            } else {
+                valid = this.calculateAllFieldsValid();
+                if (valid) {
+                    this._valid = true;
+                    this._validChangedEventer(valid);
+                }
+            }
         }
     }
 
@@ -123,6 +131,18 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
             default:
                 throw new UnreachableCaseError('SFSEFHFLCE33971', listChangeTypeId);
         }
+    }
+
+    private calculateAllFieldsValid() {
+        const fields = this.fields;
+        const count = fields.count;
+        for (let i = 0; i < count; i++) {
+            const field = fields.getAt(i);
+            if (!field.valid) {
+                return false;
+            }
+        }
+        return true;
     }
 }
 

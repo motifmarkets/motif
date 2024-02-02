@@ -12,10 +12,8 @@ import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements StringOverlapsScanField {
     declare readonly typeId: StringOverlapsScanFieldEditorFrame.TypeId;
     declare readonly fieldId: StringOverlapsScanFieldEditorFrame.FieldId;
+    declare readonly conditions: StringOverlapsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: StringOverlapsScanFieldEditorFrame.ConditionTypeId;
-
-    override conditions =
-        new ChangeSubscribableComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
     constructor(
         fieldId: StringOverlapsScanFieldEditorFrame.FieldId,
@@ -27,6 +25,7 @@ export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
             StringOverlapsScanFieldEditorFrame.typeId,
             fieldId,
             name,
+            new StringOverlapsScanFieldEditorFrame.conditions(),
             StringOverlapsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,
@@ -38,6 +37,8 @@ export namespace StringOverlapsScanFieldEditorFrame {
     export type TypeId = ScanField.TypeId.StringOverlaps;
     export const typeId = ScanField.TypeId.StringOverlaps;
     export type FieldId = ScanFormula.StringOverlapsFieldId;
+    export type Conditions = ChangeSubscribableComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = ChangeSubscribableComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.StringOverlaps;
     export const conditionTypeId = ScanFieldCondition.TypeId.StringOverlaps;
 }
