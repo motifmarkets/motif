@@ -17,7 +17,9 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
     override conditions =
         new ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId,
+    constructor(
+        subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
@@ -25,6 +27,7 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
             DateSubbedScanFieldEditorFrame.typeId,
             DateSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
+            name,
             DateSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

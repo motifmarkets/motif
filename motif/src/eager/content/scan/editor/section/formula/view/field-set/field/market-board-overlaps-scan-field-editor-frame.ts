@@ -17,13 +17,16 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
     override conditions =
         new ChangeSubscribableComparableList<MarketBoardOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: MarketBoardOverlapsScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: MarketBoardOverlapsScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             MarketBoardOverlapsScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             MarketBoardOverlapsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

@@ -5,9 +5,11 @@
  */
 
 import {
+    AssertInternalError,
     BaseNumericScanFieldCondition,
     BaseTextScanFieldCondition,
     ChangeSubscribableComparableList,
+    ComparableList,
     CurrencyId,
     CurrencyOverlapsScanFieldCondition,
     DateScanFieldCondition,
@@ -62,8 +64,6 @@ import {
 } from './condition/internal-api';
 
 export abstract class ScanFieldEditorFrame implements ScanField {
-    readonly name: string;
-
     private readonly _changedMultiEvent = new MultiEvent<ScanFieldEditorFrame.ChangedEventHandler>();
     private _valid: boolean;
     private _conditionsOperationId = ScanField.BooleanOperationId.And;
@@ -74,11 +74,11 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         readonly typeId: ScanField.TypeId,
         readonly fieldId: ScanFormula.FieldId,
         readonly subFieldId: Integer | undefined,
+        readonly name: string,
         readonly conditionTypeId: ScanFieldCondition.TypeId,
         private readonly _removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         private readonly _changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
-        this.name = ScanFieldEditorFrame.calculateName(fieldId, subFieldId);
     }
 
     get valid() { return this._valid; }
@@ -123,28 +123,12 @@ export namespace ScanFieldEditorFrame {
     export type RemoveMeEventHandler = (this: void, frame: ScanFieldEditorFrame) => void;
     export type ChangedEventHandler = (this: void, frame: ScanFieldEditorFrame, valid: boolean) => void;
 
+    export interface Definition extends ScanField.Definition {
+        readonly name: string;
+    }
+
     export const altCodeSubFieldNamePrefix = 'altcode/'
     export const attributeSubFieldNamePrefix = 'attr/'
-
-    export function calculateName(fieldId: ScanFormula.FieldId, subFieldId: Integer | undefined) {
-        const subbed = ScanFormula.Field.idIsSubbed(fieldId);
-        if (!subbed) {
-            return ScanFormula.Field.idToName(fieldId);
-        } else {
-            switch (fieldId) {
-                case ScanFormula.FieldId.AltCodeSubbed:
-                    return altCodeSubFieldNamePrefix + ScanFormula.AltCodeSubField.idToName(subFieldId as ScanFormula.AltCodeSubFieldId);
-                case ScanFormula.FieldId.AttributeSubbed:
-                    return attributeSubFieldNamePrefix + ScanFormula.AttributeSubField.idToName(subFieldId as ScanFormula.AttributeSubFieldId);
-                case ScanFormula.FieldId.DateSubbed:
-                    return ScanFormula.DateSubField.idToName(subFieldId as ScanFormula.DateSubFieldId);
-                case ScanFormula.FieldId.PriceSubbed:
-                    return ScanFormula.DateSubField.idToName(subFieldId as ScanFormula.DateSubFieldId);
-                default:
-                    throw new UnreachableCaseError('SFEFCN39997', fieldId);
-            }
-        }
-    }
 
     export class ConditionFactory implements ScanField.ConditionFactory {
         createNumericComparisonWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericComparisonScanFieldCondition> {
@@ -231,5 +215,203 @@ export namespace ScanFieldEditorFrame {
             const fieldEditorFrame = field as ScanFieldEditorFrame;
             return new Ok(new IsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
         }
+    }
+
+    export function calculateAllDefinitions(): Definition[] {
+        const definitionList = new ComparableList<Definition>();
+        const approxDefinitionCount =
+            ScanFormula.Field.idCount +
+            ScanFormula.PriceSubField.idCount +
+            ScanFormula.DateSubField.idCount +
+            ScanFormula.AltCodeSubField.idCount +
+            ScanFormula.AttributeSubField.idCount;
+        definitionList.capacity = approxDefinitionCount;
+
+        for (let i = 0; i < ScanFormula.Field.idCount; i++) {
+            const fieldId = i as ScanFormula.FieldId;
+
+            const subbed = ScanFormula.Field.idIsSubbed(fieldId);
+            if (subbed) {
+                const subbedDefinitions = createSubbedDefinitions(fieldId);
+                definitionList.addRange(subbedDefinitions);
+            } else {
+                const notSubbedDefinition = createNotSubbedDefinition(fieldId);
+                definitionList.add(notSubbedDefinition);
+            }
+        }
+
+        return definitionList.toArray();
+    }
+
+    function createNotSubbedDefinition(fieldId: ScanFormula.FieldId) {
+        const styleId = ScanFormula.Field.idToStyleId(fieldId);
+        switch (styleId) {
+            case ScanFormula.Field.StyleId.InRange: return createInRangeDefinition(fieldId);
+            case ScanFormula.Field.StyleId.Overlaps: return createOverlapsDefinition(fieldId);
+            case ScanFormula.Field.StyleId.Equals: return createEqualsDefinition(fieldId);
+            case ScanFormula.Field.StyleId.HasValueEquals: return createHasValueEqualsDefinition(fieldId);
+            case ScanFormula.Field.StyleId.Contains:  return createContainsDefinition(fieldId);
+            default:
+                throw new UnreachableCaseError('SFEFCSDD59136', styleId);
+        }
+    }
+
+    function createInRangeDefinition(fieldId: ScanFormula.FieldId): Definition {
+        const name = ScanFormula.Field.idToName(fieldId);
+        const dataTypeId = ScanFormula.Field.idToDataTypeId(fieldId);
+        switch (dataTypeId) {
+            case ScanFormula.Field.DataTypeId.Numeric:
+                return { typeId: ScanField.TypeId.NumericInRange, fieldId, subFieldId: undefined, name };
+            case ScanFormula.Field.DataTypeId.Date:
+                return { typeId: ScanField.TypeId.DateInRange, fieldId, subFieldId: undefined, name };
+            case ScanFormula.Field.DataTypeId.Text:
+            case ScanFormula.Field.DataTypeId.Boolean:
+                throw new AssertInternalError('SFEFCIRDTB35199', dataTypeId.toString());
+            default:
+                throw new UnreachableCaseError('SFEFCIRDD35199', dataTypeId);
+        }
+    }
+
+    function createOverlapsDefinition(fieldId: ScanFormula.FieldId): Definition {
+        const dataTypeId = ScanFormula.Field.idToDataTypeId(fieldId);
+        if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
+            throw new AssertInternalError('SFEFCOD55598');
+        } else {
+            const name = ScanFormula.Field.idToName(fieldId);
+            const textFieldId = fieldId as ScanFormula.TextOverlapFieldId;
+            switch (textFieldId) {
+                case ScanFormula.FieldId.Category:
+                    return { typeId: ScanField.TypeId.StringOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.Currency:
+                    return { typeId: ScanField.TypeId.CurrencyOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.Exchange:
+                    return { typeId: ScanField.TypeId.ExchangeOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.Market:
+                    return { typeId: ScanField.TypeId.MarketOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.MarketBoard:
+                    return { typeId: ScanField.TypeId.MarketBoardOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.QuotationBasis:
+                    return { typeId: ScanField.TypeId.StringOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.TradingStateName:
+                    return { typeId: ScanField.TypeId.StringOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.StatusNote:
+                    return { typeId: ScanField.TypeId.StringOverlaps, fieldId, subFieldId: undefined, name };
+                case ScanFormula.FieldId.TradingMarket:
+                    return { typeId: ScanField.TypeId.MarketOverlaps, fieldId, subFieldId: undefined, name };
+                default:
+                    throw new UnreachableCaseError('SFEFCOD45456', textFieldId);
+            }
+        }
+
+    }
+
+    function createEqualsDefinition(fieldId: ScanFormula.FieldId): Definition {
+        const name = ScanFormula.Field.idToName(fieldId);
+        const dataTypeId = ScanFormula.Field.idToDataTypeId(fieldId);
+        if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
+            throw new AssertInternalError('SFEFCED55598');
+        } else {
+            return { typeId: ScanField.TypeId.TextEquals, fieldId, subFieldId: undefined, name };
+        }
+    }
+
+    function createHasValueEqualsDefinition(fieldId: ScanFormula.FieldId): Definition {
+        const name = ScanFormula.Field.idToName(fieldId);
+        const dataTypeId = ScanFormula.Field.idToDataTypeId(fieldId);
+        if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
+            throw new AssertInternalError('SFEFCHVED55598');
+        } else {
+            return { typeId: ScanField.TypeId.TextHasValueEquals, fieldId, subFieldId: undefined, name };
+        }
+    }
+
+    function createContainsDefinition(fieldId: ScanFormula.FieldId): Definition {
+        const name = ScanFormula.Field.idToName(fieldId);
+        const dataTypeId = ScanFormula.Field.idToDataTypeId(fieldId);
+        if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
+            throw new AssertInternalError('SFEFCCD55598');
+        } else {
+            return { typeId: ScanField.TypeId.TextContains, fieldId, subFieldId: undefined, name };
+        }
+    }
+
+
+    function createSubbedDefinitions(fieldId: ScanFormula.SubbedFieldId) {
+        switch (fieldId) {
+            case ScanFormula.FieldId.AltCodeSubbed:
+                return createAltCodeSubbedDefinitions()
+            case ScanFormula.FieldId.AttributeSubbed:
+                return createAttributeSubbedDefinitions()
+            case ScanFormula.FieldId.DateSubbed:
+                return createDateSubbedDefinitions()
+            case ScanFormula.FieldId.PriceSubbed:
+                return createPriceSubbedDefinitions()
+            default:
+                throw new UnreachableCaseError('SFEFCN39997', fieldId);
+        }
+    }
+
+    function createAltCodeSubbedDefinitions() {
+        const count = ScanFormula.AltCodeSubField.idCount;
+        const definitions = new Array<Definition>(count);
+        for (let i = 0; i < count; i++) {
+            const subFieldId = i as ScanFormula.AltCodeSubFieldId;
+            const definition: Definition = {
+                typeId: ScanField.TypeId.AltCodeSubbed,
+                fieldId: ScanFormula.FieldId.AltCodeSubbed,
+                subFieldId,
+                name: altCodeSubFieldNamePrefix + ScanFormula.AltCodeSubField.idToName(subFieldId),
+            };
+            definitions[i] = definition;
+        }
+        return definitions;
+    }
+
+    function createAttributeSubbedDefinitions() {
+        const count = ScanFormula.AttributeSubField.idCount;
+        const definitions = new Array<Definition>(count);
+        for (let i = 0; i < count; i++) {
+            const subFieldId = i as ScanFormula.AttributeSubFieldId;
+            const definition: Definition = {
+                typeId: ScanField.TypeId.AttributeSubbed,
+                fieldId: ScanFormula.FieldId.AttributeSubbed,
+                subFieldId,
+                name: attributeSubFieldNamePrefix + ScanFormula.AttributeSubField.idToName(subFieldId),
+            };
+            definitions[i] = definition;
+        }
+        return definitions;
+    }
+
+    function createPriceSubbedDefinitions() {
+        const count = ScanFormula.PriceSubField.idCount;
+        const definitions = new Array<Definition>(count);
+        for (let i = 0; i < count; i++) {
+            const subFieldId = i as ScanFormula.PriceSubFieldId;
+            const definition: Definition = {
+                typeId: ScanField.TypeId.PriceSubbed,
+                fieldId: ScanFormula.FieldId.PriceSubbed,
+                subFieldId,
+                name: ScanFormula.PriceSubField.idToName(subFieldId),
+            };
+            definitions[i] = definition;
+        }
+        return definitions;
+    }
+
+    function createDateSubbedDefinitions() {
+        const count = ScanFormula.DateSubField.idCount;
+        const definitions = new Array<Definition>(count);
+        for (let i = 0; i < count; i++) {
+            const subFieldId = i as ScanFormula.DateSubFieldId;
+            const definition: Definition = {
+                typeId: ScanField.TypeId.DateSubbed,
+                fieldId: ScanFormula.FieldId.DateSubbed,
+                subFieldId,
+                name: ScanFormula.DateSubField.idToName(subFieldId),
+            };
+            definitions[i] = definition;
+        }
+        return definitions;
     }
 }

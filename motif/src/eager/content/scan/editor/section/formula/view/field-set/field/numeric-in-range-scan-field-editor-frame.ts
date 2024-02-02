@@ -17,13 +17,16 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
     override conditions =
         new ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: NumericInRangeScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: NumericInRangeScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             NumericInRangeScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             NumericInRangeScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

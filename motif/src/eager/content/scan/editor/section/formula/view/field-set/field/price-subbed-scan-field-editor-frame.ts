@@ -17,7 +17,9 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
     override conditions =
         new ChangeSubscribableComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(subFieldId: PriceSubbedScanFieldEditorFrame.SubFieldId,
+    constructor(
+        subFieldId: PriceSubbedScanFieldEditorFrame.SubFieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
@@ -25,6 +27,7 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
             PriceSubbedScanFieldEditorFrame.typeId,
             PriceSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
+            name,
             PriceSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

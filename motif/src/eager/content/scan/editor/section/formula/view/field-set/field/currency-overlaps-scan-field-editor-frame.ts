@@ -17,13 +17,16 @@ export class CurrencyOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
     override conditions =
         new ChangeSubscribableComparableList<CurrencyOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: CurrencyOverlapsScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: CurrencyOverlapsScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             CurrencyOverlapsScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             CurrencyOverlapsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

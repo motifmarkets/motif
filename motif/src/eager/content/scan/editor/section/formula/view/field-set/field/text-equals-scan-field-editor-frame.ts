@@ -17,13 +17,16 @@ export class TextEqualsScanFieldEditorFrame extends NotSubbedScanFieldEditorFram
     override conditions =
         new ChangeSubscribableComparableList<TextEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: TextEqualsScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: TextEqualsScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             TextEqualsScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             TextEqualsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

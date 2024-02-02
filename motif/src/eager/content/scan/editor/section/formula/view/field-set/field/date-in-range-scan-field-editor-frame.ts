@@ -17,13 +17,16 @@ export class DateInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditorFra
     override conditions =
         new ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: DateInRangeScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: DateInRangeScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             DateInRangeScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             DateInRangeScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

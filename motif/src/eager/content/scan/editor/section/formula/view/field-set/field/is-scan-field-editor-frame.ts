@@ -17,13 +17,16 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
     override conditions =
         new ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(fieldId: IsScanFieldEditorFrame.FieldId,
+    constructor(
+        fieldId: IsScanFieldEditorFrame.FieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
             IsScanFieldEditorFrame.typeId,
             fieldId,
+            name,
             IsScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

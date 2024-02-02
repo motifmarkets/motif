@@ -5,8 +5,8 @@
  */
 
 import { AltCodeSubbedScanField, ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
-import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 import { ScanFieldConditionEditorFrame, TextHasValueContainsScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class AltCodeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implements AltCodeSubbedScanField {
     declare readonly typeId: AltCodeSubbedScanFieldEditorFrame.TypeId;
@@ -17,7 +17,9 @@ export class AltCodeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impl
     override conditions =
         new ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId,
+    constructor(
+        subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
@@ -25,6 +27,7 @@ export class AltCodeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impl
             AltCodeSubbedScanFieldEditorFrame.typeId,
             AltCodeSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
+            name,
             AltCodeSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

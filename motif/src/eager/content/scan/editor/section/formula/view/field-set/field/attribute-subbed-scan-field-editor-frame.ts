@@ -17,7 +17,9 @@ export class AttributeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame im
     override conditions =
         new ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>()
 
-    constructor(subFieldId: AttributeSubbedScanFieldEditorFrame.SubFieldId,
+    constructor(
+        subFieldId: AttributeSubbedScanFieldEditorFrame.SubFieldId,
+        name: string,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
@@ -25,6 +27,7 @@ export class AttributeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame im
             AttributeSubbedScanFieldEditorFrame.typeId,
             AttributeSubbedScanFieldEditorFrame.fieldId,
             subFieldId,
+            name,
             AttributeSubbedScanFieldEditorFrame.conditionTypeId,
             removeMeEventer,
             changedEventer,

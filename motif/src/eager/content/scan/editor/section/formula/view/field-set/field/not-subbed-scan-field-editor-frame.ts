@@ -13,6 +13,7 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
     constructor(
         typeId: ScanField.TypeId,
         fieldId: ScanFormula.FieldId,
+        name: string,
         conditionTypeId: ScanFieldCondition.TypeId,
         removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
@@ -21,6 +22,7 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
             typeId,
             fieldId,
             NotSubbedScanFieldEditorFrame.subFieldId,
+            name,
             conditionTypeId,
             removeMeEventer,
             changedEventer,
