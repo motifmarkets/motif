@@ -7,15 +7,15 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumInfoOutOfOrderError, EnumUiAction, ExplicitElementsEnumUiAction, ScanConditionSet, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent } from 'controls-ng-api';
-import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
+import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
 
 @Component({
-    selector: 'app-scan-field-set-editor',
-    templateUrl: './scan-field-set-editor-ng.component.html',
-    styleUrls: ['./scan-field-set-editor-ng.component.scss'],
+    selector: 'app-scan-field-editor',
+    templateUrl: './scan-field-editor-ng.component.html',
+    styleUrls: ['./scan-field-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
+export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
     @ViewChild('allControl', { static: true }) private _allControlComponent: CaptionedRadioNgComponent;
     @ViewChild('anyControl', { static: true }) private _anyControlComponent: CaptionedRadioNgComponent;
     @ViewChild('excludeControl', { static: true }) private _excludeControlComponent: CaptionedCheckboxNgComponent;
@@ -126,7 +126,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
 
 }
 
-export namespace ScanFieldSetEditorNgComponent {
+export namespace ScanFieldEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
@@ -290,7 +290,7 @@ export namespace ScanFieldSetEditorNgComponent {
     }
 }
 
-export namespace FieldSetScanFormulaViewNgComponentModule {
+export namespace ScanFieldEditorNgComponentModule {
     export function initialiseStatic() {
         ScanFieldSetEditorNgComponent.SetOperation.initialise();
         ScanFieldSetEditorNgComponent.ConditionKind.initialise();

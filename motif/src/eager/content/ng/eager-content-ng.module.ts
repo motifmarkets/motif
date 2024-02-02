@@ -68,6 +68,7 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
+    CategoryValueScanFieldConditionEditorNgComponent,
     ConditionSetScanFormulaViewNgComponent,
     CriteriaZenithScanFormulaViewNgComponent,
     FormulaScanEditorSectionNgComponent,
@@ -76,6 +77,8 @@ import {
     RankZenithScanFormulaViewNgComponent,
     ScanEditorNgComponent,
     ScanEditorTargetsNgComponent,
+    ScanFieldEditorNgComponent,
+    ScanFieldSetEditorNgComponent,
     ScanListNgComponent,
     ScanTestMatchesNgComponent,
     ScanTestNgComponent,
@@ -108,6 +111,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         BrokerageAccountsNgComponent,
         CashHoldingsNgComponent,
+        CategoryValueScanFieldConditionEditorNgComponent,
         ColorControlsNgComponent,
         ColorSchemeGridNgComponent,
         ColorSchemeItemPropertiesNgComponent,
@@ -168,6 +172,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SaveWatchlistDialogNgComponent,
         ScanEditorNgComponent,
         ScanEditorTargetsNgComponent,
+        ScanFieldSetEditorNgComponent,
+        ScanFieldEditorNgComponent,
         ScanListNgComponent,
         ScanTestMatchesNgComponent,
         ScanTestNgComponent,

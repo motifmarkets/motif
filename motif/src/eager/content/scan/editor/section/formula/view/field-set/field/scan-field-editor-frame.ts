@@ -266,7 +266,7 @@ export namespace ScanFieldEditorFrame {
         }
     }
 
-    export function calculateAllDefinitions(): Definition[] {
+    export function calculateAllDefinitions(): readonly Definition[] {
         const definitionList = new ComparableList<Definition>();
         const approxDefinitionCount =
             ScanFormula.Field.idCount +

@@ -4,23 +4,23 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumInfoOutOfOrderError, EnumUiAction, ExplicitElementsEnumUiAction, ScanConditionSet, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent } from 'controls-ng-api';
-import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
+import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { ScanFieldConditionEditorNgDirective } from '../../ng/ng-api';
 
 @Component({
-    selector: 'app-scan-field-set-editor',
-    templateUrl: './scan-field-set-editor-ng.component.html',
-    styleUrls: ['./scan-field-set-editor-ng.component.scss'],
+    selector: 'app-category-value-scan-field-condition-editor',
+    templateUrl: './category-value-scan-field-condition-editor-ng.component.html',
+    styleUrls: ['./category-value-scan-field-condition-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('allControl', { static: true }) private _allControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('anyControl', { static: true }) private _anyControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('excludeControl', { static: true }) private _excludeControlComponent: CaptionedCheckboxNgComponent;
-    @ViewChild('newConditionLabel', { static: true }) private _newConditionLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('newConditionControl', { static: true }) private _newConditionControlComponent: EnumInputNgComponent;
+export class CategoryValueScanFieldConditionEditorNgComponent extends ScanFieldConditionEditorNgDirective implements OnDestroy, AfterViewInit {
+    @ViewChild('validIcon', { static: true }) private _validIconComponent: CaptionedRadioNgComponent;
+    @ViewChild('notControl', { static: true }) private _notControlComponent: CaptionedCheckboxNgComponent;
+    @ViewChild('categoryLabel', { static: true }) private _categoryLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
+    @ViewChild('closeControl', { static: true }) private _closeControlComponent: SvgButtonNgComponent;
 
     private readonly _setOperationUiAction: ExplicitElementsEnumUiAction;
     private readonly _excludeUiAction: BooleanUiAction;
@@ -29,7 +29,6 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     constructor(
         elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _injector: Injector,
     ) {
         super(elRef, ++ScanFieldSetEditorNgComponent.typeInstanceCreateCount);
 
@@ -41,6 +40,8 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         this._setOperationUiAction.pushValue(ScanConditionSet.BooleanOperationId.And);
         this._excludeUiAction.pushValue(false);
     }
+
+    public get affirmativeOperatorName()
 
     public get allAnyRadioName() { return this.generateInstancedRadioName('allAnyRadioName'); }
     public get conditionCount() { return 0; }
@@ -56,11 +57,11 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private initialiseComponents() {
-        this._allControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.And);
-        this._anyControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.Or);
-        this._excludeControlComponent.initialise(this._excludeUiAction);
-        this._newConditionLabelComponent.initialise(this._newConditionUiAction);
-        this._newConditionControlComponent.initialise(this._newConditionUiAction);
+        this._categoryControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.And);
+        this._validIconComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.Or);
+        this._notControlComponent.initialise(this._excludeUiAction);
+        this._categoryLabelComponent.initialise(this._newConditionUiAction);
+        this._closeControlComponent.initialise(this._newConditionUiAction);
     }
 
     private finalise() {
@@ -126,7 +127,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
 
 }
 
-export namespace ScanFieldSetEditorNgComponent {
+export namespace CategoryValueScanFieldConditionEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
@@ -290,7 +291,7 @@ export namespace ScanFieldSetEditorNgComponent {
     }
 }
 
-export namespace FieldSetScanFormulaViewNgComponentModule {
+export namespace CategoryValueScanFieldConditionEditorNgComponentModule {
     export function initialiseStatic() {
         ScanFieldSetEditorNgComponent.SetOperation.initialise();
         ScanFieldSetEditorNgComponent.ConditionKind.initialise();

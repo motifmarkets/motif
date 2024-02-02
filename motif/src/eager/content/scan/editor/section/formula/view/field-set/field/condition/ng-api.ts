@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/condition-set-scan-formula-view-ng.component';
+export * from './operands/ng-api';
 

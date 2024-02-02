@@ -4,9 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ScanFieldCondition } from '@motifmarkets/motif-core';
 
 export interface ScanFieldConditionOperandsEditorFrame {
-    operatorId: ScanFieldCondition.OperatorId;
+    readonly affirmativeOperatorName: string;
     readonly valid: boolean;
 }
