@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, IsScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
+import { ChangeSubscribableComparableList, IsScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
@@ -31,6 +31,24 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return IsScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: IsScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: IsScanFieldEditorFrame.OperatorId): IsScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.Is:
+            case ScanFieldCondition.OperatorId.NotIs:
+                return new IsScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('ISFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace IsScanFieldEditorFrame {
@@ -41,4 +59,5 @@ export namespace IsScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Is;
     export const conditionTypeId = ScanFieldCondition.TypeId.Is;
+    export type OperatorId = IsScanFieldConditionEditorFrame.OperatorId;
 }

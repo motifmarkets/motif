@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, MarketBoardOverlapsScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
-import { MarketBoardOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ChangeSubscribableComparableList, MarketBoardOverlapsScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { MarketBoardOverlapsScanFieldConditionEditorFrame, OverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -31,6 +31,24 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return OverlapsScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: MarketBoardOverlapsScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: MarketBoardOverlapsScanFieldEditorFrame.OperatorId): MarketBoardOverlapsScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.Overlaps:
+            case ScanFieldCondition.OperatorId.NotOverlaps:
+                return new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('MBOSFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace MarketBoardOverlapsScanFieldEditorFrame {
@@ -41,4 +59,5 @@ export namespace MarketBoardOverlapsScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<MarketBoardOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.MarketBoardOverlaps;
     export const conditionTypeId = ScanFieldCondition.TypeId.MarketBoardOverlaps;
+    export type OperatorId = OverlapsScanFieldConditionEditorFrame.OperatorId;
 }

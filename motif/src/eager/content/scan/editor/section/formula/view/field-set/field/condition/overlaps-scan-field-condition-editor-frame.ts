@@ -8,23 +8,32 @@ import {
     OverlapsScanFieldCondition,
     ScanFieldCondition
 } from '@motifmarkets/motif-core';
+import { OverlapsScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
-export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFrame implements OverlapsScanFieldCondition {
+export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFrame
+    implements
+        OverlapsScanFieldCondition,
+        OverlapsScanFieldConditionOperandsEditorFrame {
 
     constructor(
-        protected _operatorId: OverlapsScanFieldCondition.Operands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        typeId: ScanFieldCondition.TypeId,
+        operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        private _operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     get not() { return ScanFieldCondition.Operator.overlapsIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: OverlapsScanFieldCondition.Operands.OperatorId) {
+    set operatorId(value: OverlapsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -37,4 +46,9 @@ export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldCon
         this._operatorId = ScanFieldCondition.Operator.negateOverlaps(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace OverlapsScanFieldConditionEditorFrame {
+    export type OperatorId = OverlapsScanFieldCondition.Operands.OperatorId;
+    export const supportedOperatorIds = OverlapsScanFieldCondition.Operands.supportedOperatorIds;
 }

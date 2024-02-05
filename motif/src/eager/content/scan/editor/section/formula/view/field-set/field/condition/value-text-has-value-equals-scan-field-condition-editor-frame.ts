@@ -10,22 +10,25 @@ import {
     ScanFieldCondition
 } from '@motifmarkets/motif-core';
 import {
-    TextEqualsScanFieldConditionOperandsEditorFrame
+    TextValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 import { TextHasValueEqualsScanFieldConditionEditorFrame } from './text-has-value-equals-scan-field-condition-editor-frame';
 
 export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHasValueEqualsScanFieldConditionEditorFrame
     implements
-        TextEqualsScanFieldConditionOperandsEditorFrame {
+        TextValueScanFieldConditionOperandsEditorFrame {
 
-    private _value: string | undefined;
+    declare readonly operandsTypeId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId,
+        private _value: string | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(ValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
@@ -34,7 +37,7 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
             throw new AssertInternalError('VTHVESFCEFGOV54508');
         } else {
             const operands: BaseTextScanFieldCondition.ValueOperands = {
-                typeId: BaseTextScanFieldCondition.Operands.TypeId.Value,
+                typeId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId,
                 value,
             }
             return operands;
@@ -44,9 +47,10 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
     get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: BaseTextScanFieldCondition.ValueOperands.OperatorId) {
+    override set operatorId(value: ValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -67,4 +71,10 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace ValueTextHasValueEqualsScanFieldConditionEditorFrame {
+    export type OperatorId = TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
 }

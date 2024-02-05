@@ -15,7 +15,9 @@ export * from './market-overlaps/internal-api';
 export * from './numeric-comparison-value/internal-api';
 export * from './numeric-range/internal-api';
 export * from './numeric-value/internal-api';
+export * from './overlaps/internal-api';
+export * from './scan-field-condition-operands-editor-frame';
 export * from './string-overlaps/internal-api';
 export * from './text-contains/internal-api';
-export * from './text-equals/internal-api';
+export * from './text-value/internal-api';
 

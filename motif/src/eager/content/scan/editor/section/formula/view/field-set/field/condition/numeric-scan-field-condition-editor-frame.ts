@@ -8,8 +8,24 @@ import { BaseNumericScanFieldCondition, NumericScanFieldCondition, ScanFieldCond
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export abstract class NumericScanFieldConditionEditorFrame extends ScanFieldConditionEditorFrame implements NumericScanFieldCondition {
-    override readonly typeId: ScanFieldCondition.TypeId.Numeric;
+    declare readonly typeId: NumericScanFieldConditionEditorFrame.TypeId;
+
+    constructor(
+        operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        affirmativeOperatorDisplayLines: readonly string[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(NumericScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+    }
 
     abstract get operands(): BaseNumericScanFieldCondition.Operands;
-    abstract override get operatorId(): NumericScanFieldCondition.Operands.OperatorId;
+    abstract override get operatorId(): NumericScanFieldConditionEditorFrame.OperatorId;
+}
+
+export namespace NumericScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.Numeric;
+    export const typeId = ScanFieldCondition.TypeId.Numeric;
+    export type OperatorId = NumericScanFieldCondition.OperatorId;
+    export const supportedOperatorIds = NumericScanFieldCondition.Operands.supportedOperatorIds;
 }

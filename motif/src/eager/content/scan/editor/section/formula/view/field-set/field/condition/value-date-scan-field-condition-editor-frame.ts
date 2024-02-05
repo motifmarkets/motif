@@ -12,13 +12,16 @@ import {
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements DateValueScanFieldConditionOperandsEditorFrame {
-    private _value: SourceTzOffsetDateTime | undefined;
+    declare readonly operandsTypeId: ValueDateScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: DateScanFieldCondition.ValueOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: ValueDateScanFieldConditionEditorFrame.OperatorId,
+        private _value: SourceTzOffsetDateTime | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands(): DateScanFieldCondition.Operands {
@@ -27,7 +30,7 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
             throw new AssertInternalError('DSFCEFGOV54508');
         } else {
             const operands: DateScanFieldCondition.ValueOperands = {
-                typeId: DateScanFieldCondition.Operands.TypeId.Value,
+                typeId: ValueDateScanFieldConditionEditorFrame.operandsTypeId,
                 value,
             }
             return operands;
@@ -37,9 +40,10 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: DateScanFieldCondition.ValueOperands.OperatorId) {
+    override set operatorId(value: ValueDateScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -59,4 +63,10 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace ValueDateScanFieldConditionEditorFrame {
+    export type OperatorId = DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.DateValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.DateValue;
 }

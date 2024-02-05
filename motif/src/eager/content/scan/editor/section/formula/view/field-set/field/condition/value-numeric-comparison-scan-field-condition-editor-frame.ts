@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, BaseNumericScanFieldCondition } from '@motifmarkets/motif-core';
+import { AssertInternalError, NumericComparisonScanFieldCondition, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { NumericComparisonScanFieldConditionEditorFrame } from './numeric-comparison-scan-field-condition-editor-frame';
 import {
     NumericComparisonValueScanFieldConditionOperandsEditorFrame
@@ -15,13 +15,16 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
     implements
         NumericComparisonValueScanFieldConditionOperandsEditorFrame {
 
-    private _value: number | undefined;
+    declare readonly operandsTypeId: ValueNumericComparisonScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: BaseNumericScanFieldCondition.ValueOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: ValueNumericComparisonScanFieldConditionEditorFrame.OperatorId,
+        private _value: number | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(ValueNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
@@ -29,8 +32,8 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
         if (value === undefined) {
             throw new AssertInternalError('VNCSFCEFGOV54508');
         } else {
-            const operands: BaseNumericScanFieldCondition.ValueOperands = {
-                typeId: BaseNumericScanFieldCondition.Operands.TypeId.Value,
+            const operands: NumericComparisonScanFieldCondition.ValueOperands = {
+                typeId: ValueNumericComparisonScanFieldConditionEditorFrame.operandsTypeId,
                 value,
             }
             return operands;
@@ -38,9 +41,10 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
     }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: BaseNumericScanFieldCondition.ValueOperands.OperatorId) {
+    override set operatorId(value: ValueNumericComparisonScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -56,4 +60,10 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
     override calculateValid() {
         return this._value !== undefined;
     }
+}
+
+export namespace ValueNumericComparisonScanFieldConditionEditorFrame {
+    export type OperatorId = NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.NumericComparisonValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.NumericComparisonValue;
 }

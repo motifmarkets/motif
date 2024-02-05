@@ -4,10 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { BaseNumericScanFieldCondition } from '@motifmarkets/motif-core';
+import { NumericComparisonScanFieldCondition, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
 export interface NumericComparisonValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame {
-    operatorId: BaseNumericScanFieldCondition.ValueOperands.OperatorId;
+    readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.NumericComparisonValue,
+    operatorId: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
     value: number | undefined;
+}
+
+export namespace NumericComparisonValueScanFieldConditionOperandsEditorFrame {
+    export type OperatorId = NumericComparisonScanFieldCondition.ValueOperands.OperatorId;
 }

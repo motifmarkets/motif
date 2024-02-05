@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/category-value-scan-field-condition-editor-ng.component';
+export * from './ng/category-value-scan-field-condition-operands-editor-ng.component';
 

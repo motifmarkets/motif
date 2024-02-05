@@ -20,15 +20,18 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
     implements
         TextContainsScanFieldConditionOperandsEditorFrame {
 
-    private _value: string | undefined;
-    private _asId: ScanFormula.TextContainsAsId | undefined;
-    private _ignoreCase: boolean | undefined;
+    declare readonly operandsTypeId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: BaseTextScanFieldCondition.ContainsOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.OperatorId,
+        private _value: string | undefined,
+        private _asId: ScanFormula.TextContainsAsId | undefined,
+        private _ignoreCase: boolean | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
@@ -50,7 +53,7 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
                         ignoreCase,
                     }
                     const operands: BaseTextScanFieldCondition.ContainsOperands = {
-                        typeId: BaseTextScanFieldCondition.Operands.TypeId.Contains,
+                        typeId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId,
                         contains: containsOperand,
                     }
                     return operands;
@@ -62,9 +65,10 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
     get not() { return ScanFieldCondition.Operator.containsIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: BaseTextScanFieldCondition.ContainsOperands.OperatorId) {
+    override set operatorId(value: ContainsTextHasValueContainsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -101,4 +105,10 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         this._operatorId = ScanFieldCondition.Operator.negateContains(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace ContainsTextHasValueContainsScanFieldConditionEditorFrame {
+    export type OperatorId = TextContainsScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextContains;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextContains;
 }

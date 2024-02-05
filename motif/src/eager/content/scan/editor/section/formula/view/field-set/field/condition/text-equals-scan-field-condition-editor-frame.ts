@@ -11,24 +11,32 @@ import {
     TextEqualsScanFieldCondition
 } from '@motifmarkets/motif-core';
 import {
-    TextEqualsScanFieldConditionOperandsEditorFrame
+    TextValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFrame
     implements
         TextEqualsScanFieldCondition,
-        TextEqualsScanFieldConditionOperandsEditorFrame {
+        TextValueScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.TextEquals;
-
-    private _value: string | undefined;
+    declare readonly typeId: TextEqualsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: TextEqualsScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: TextEqualsScanFieldConditionEditorFrame.OperatorId,
+        private _value: string | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(
+            TextEqualsScanFieldConditionEditorFrame.typeId,
+            TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
+            affirmativeOperatorDisplayLines,
+            removeMeEventer,
+            changedEventer
+        );
     }
 
     get operands() {
@@ -37,7 +45,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
             throw new AssertInternalError('TESFCEFGOV54508');
         } else {
             const operands: BaseTextScanFieldCondition.ValueOperands = {
-                typeId: BaseTextScanFieldCondition.Operands.TypeId.Value,
+                typeId: TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
                 value,
             }
             return operands;
@@ -47,7 +55,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
     get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: BaseTextScanFieldCondition.ValueOperands.OperatorId) {
+    override set operatorId(value: TextEqualsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
             this.processChanged();
@@ -70,4 +78,13 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace TextEqualsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.TextEquals;
+    export const typeId = ScanFieldCondition.TypeId.TextEquals;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export type OperatorId = TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export const supportedOperatorIds = TextEqualsScanFieldCondition.Operands.supportedOperatorIds;
 }

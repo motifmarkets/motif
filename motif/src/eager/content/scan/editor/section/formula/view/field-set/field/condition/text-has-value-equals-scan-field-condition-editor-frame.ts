@@ -15,8 +15,24 @@ export abstract class TextHasValueEqualsScanFieldConditionEditorFrame extends Sc
     implements
         TextHasValueEqualsScanFieldCondition {
 
-    override readonly typeId: ScanFieldCondition.TypeId.TextHasValueEquals;
+    declare readonly typeId: TextHasValueEqualsScanFieldConditionEditorFrame.TypeId;
+
+    constructor(
+        operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        affirmativeOperatorDisplayLines: readonly string[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(TextHasValueEqualsScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+    }
 
     abstract get operands(): BaseTextScanFieldCondition.HasValueOperands | BaseTextScanFieldCondition.ValueOperands;
-    abstract override get operatorId(): TextHasValueEqualsScanFieldCondition.Operands.OperatorId;
+    abstract override get operatorId(): TextHasValueEqualsScanFieldConditionEditorFrame.OperatorId;
+}
+
+export namespace TextHasValueEqualsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
+    export const typeId = ScanFieldCondition.TypeId.TextHasValueEquals;
+    export type OperatorId = TextHasValueEqualsScanFieldCondition.Operands.OperatorId;
+    export const supportedOperatorIds = TextHasValueEqualsScanFieldCondition.Operands.supportedOperatorIds;
 }

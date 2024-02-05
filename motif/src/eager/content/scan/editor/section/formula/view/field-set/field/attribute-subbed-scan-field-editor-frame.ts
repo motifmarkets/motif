@@ -7,8 +7,9 @@
 import { AttributeSubbedScanField, ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame, TextHasValueContainsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
+import { TextHasValueContainsSubbedScanFieldEditorFrame } from './text-has-value-contains-subbed-scan-field-editor-frame';
 
-export class AttributeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implements AttributeSubbedScanField {
+export class AttributeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbedScanFieldEditorFrame implements AttributeSubbedScanField {
     declare readonly typeId: AttributeSubbedScanFieldEditorFrame.TypeId;
     declare readonly fieldId: AttributeSubbedScanFieldEditorFrame.FieldId;
     declare readonly subFieldId: AttributeSubbedScanFieldEditorFrame.SubFieldId;
@@ -32,6 +33,8 @@ export class AttributeSubbedScanFieldEditorFrame extends ScanFieldEditorFrame im
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return TextHasValueContainsScanFieldConditionEditorFrame.supportedOperatorIds; }
 }
 
 export namespace AttributeSubbedScanFieldEditorFrame {

@@ -14,18 +14,34 @@ import {
     MarketOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class MarketOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
         MarketOverlapsScanFieldCondition,
         MarketOverlapsScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.MarketOverlaps;
+    declare readonly typeId: MarketOverlapsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: MarketOverlapsScanFieldConditionEditorFrame.OperandsTypeId;
 
-    private _values: readonly MarketId[];
+    constructor(
+        operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        private _values: readonly MarketId[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(
+            MarketOverlapsScanFieldConditionEditorFrame.typeId,
+            MarketOverlapsScanFieldConditionEditorFrame.operandsTypeId,
+            operatorId,
+            removeMeEventer,
+            changedEventer
+        );
+    }
 
     get operands() {
         const operands: MarketOverlapsScanFieldCondition.Operands = {
+            typeId: MarketOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             values: this._values.slice(),
         }
         return operands;
@@ -38,4 +54,11 @@ export class MarketOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
             this.processChanged();
         }
     }
+}
+
+export namespace MarketOverlapsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.MarketOverlaps;
+    export const typeId = ScanFieldCondition.TypeId.MarketOverlaps;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.MarketEnum;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.MarketEnum;
 }

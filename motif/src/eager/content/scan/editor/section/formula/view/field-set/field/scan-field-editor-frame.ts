@@ -69,8 +69,6 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private _valid: boolean;
     private _conditionsOperationId = ScanField.BooleanOperationId.And;
 
-    private _conditionListChangeSubscriptionId: MultiEvent.SubscriptionId;
-
     constructor(
         readonly typeId: ScanField.TypeId,
         readonly fieldId: ScanFormula.FieldId,
@@ -81,9 +79,6 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         private readonly _removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
         private readonly _changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
-        this._conditionListChangeSubscriptionId = this.conditions.subscribeListChangeEvent(
-            (listChangeTypeId, idx, count) => this.handleConditionListChangeEvent(listChangeTypeId, idx, count)
-        );
     }
 
     get valid() { return this._valid; }
@@ -94,14 +89,20 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             this.notifyChanged();
         }
     }
+    abstract get supportedOperatorIds(): readonly ScanFieldCondition.OperatorId[];
 
     destroy() {
-        this.conditions.unsubscribeListChangeEvent(this._conditionListChangeSubscriptionId);
-        this._conditionListChangeSubscriptionId = undefined;
+        if (this.conditions.count > 0) {
+            this.conditions.clear();
+        }
     }
 
     remove() {
         this._removeMeEventer(this);
+    }
+
+    removeCondition(frame: ScanFieldConditionEditorFrame) {
+        this.conditions.remove(frame);
     }
 
     processConditionChanged(valid: boolean) {
@@ -116,6 +117,13 @@ export abstract class ScanFieldEditorFrame implements ScanField {
                     this.notifyChanged();
                 }
             }
+        }
+    }
+
+    createConditionEditorFrameEventers(): ScanFieldEditorFrame.ConditionEditorFrameEventers {
+        return {
+            removeMeEventer: (conditionEditorFrame) => this.removeCondition(conditionEditorFrame),
+            changedEventer: (valid) => this.processConditionChanged(valid),
         }
     }
 
@@ -166,6 +174,8 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             handler(this, this._valid);
         }
     }
+
+    abstract addCondition(operatorId: ScanFieldCondition.OperatorId): void;
 }
 
 export namespace ScanFieldEditorFrame {
@@ -176,93 +186,103 @@ export namespace ScanFieldEditorFrame {
         readonly name: string;
     }
 
+    export interface ConditionEditorFrameEventers {
+        readonly removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer;
+        readonly changedEventer: ScanFieldConditionEditorFrame.ChangedEventer;
+    }
+
     export const altCodeSubFieldNamePrefix = 'altcode/'
     export const attributeSubFieldNamePrefix = 'attr/'
 
     export class ConditionFactory implements ScanField.ConditionFactory {
         createNumericComparisonWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericComparisonScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer));
         }
-        createNumericComparisonWithValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.ValueOperands.OperatorId, value: number): Result<NumericComparisonScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+        createNumericComparisonWithValue(field: ScanField, operatorId: NumericComparisonScanFieldCondition.ValueOperands.OperatorId, value: number): Result<NumericComparisonScanFieldCondition> {
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, value, removeMeEventer, changedEventer));
         }
         createNumericComparisonWithRange(field: ScanField, operatorId: BaseNumericScanFieldCondition.RangeOperands.OperatorId, min: number | undefined, max: number | undefined): Result<NumericComparisonScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, min, max, removeMeEventer, changedEventer));
         }
         createNumericWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new HasValueNumericScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new HasValueNumericScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer));
         }
         createNumericWithValue(field: ScanField, operatorId: NumericScanFieldCondition.ValueOperands.OperatorId, value: number): Result<NumericScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ValueNumericScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ValueNumericScanFieldConditionEditorFrame(operatorId, value, removeMeEventer, changedEventer));
         }
         createNumericWithRange(field: ScanField, operatorId: BaseNumericScanFieldCondition.RangeOperands.OperatorId, min: number | undefined, max: number | undefined): Result<NumericScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new RangeNumericScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new RangeNumericScanFieldConditionEditorFrame(operatorId, min, max, removeMeEventer, changedEventer));
         }
         createDateWithHasValue(field: ScanField, operatorId: DateScanFieldCondition.HasValueOperands.OperatorId): Result<DateScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new HasValueDateScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new HasValueDateScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer));
         }
         createDateWithEquals(field: ScanField, operatorId: DateScanFieldCondition.ValueOperands.OperatorId, value: SourceTzOffsetDateTime): Result<DateScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ValueDateScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ValueDateScanFieldConditionEditorFrame(operatorId, value, removeMeEventer, changedEventer));
         }
         createDateWithRange(field: ScanField, operatorId: DateScanFieldCondition.RangeOperands.OperatorId, min: SourceTzOffsetDateTime | undefined, max: SourceTzOffsetDateTime | undefined): Result<DateScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new RangeDateScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new RangeDateScanFieldConditionEditorFrame(operatorId, min, max, removeMeEventer, changedEventer));
         }
         createTextEquals(field: ScanField, operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId, value: string): Result<TextEqualsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new TextEqualsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new TextEqualsScanFieldConditionEditorFrame(operatorId, value, removeMeEventer, changedEventer));
         }
         createTextContains(field: ScanField, operatorId: BaseTextScanFieldCondition.ContainsOperands.OperatorId, value: string, asId: ScanFormula.TextContainsAsId, ignoreCase: boolean): Result<TextContainsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new TextContainsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new TextContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase, removeMeEventer, changedEventer));
         }
         createTextHasValueEqualsWithHasValue(field: ScanField, operatorId: BaseTextScanFieldCondition.HasValueOperands.OperatorId): Result<TextHasValueEqualsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer));
         }
         createTextHasValueEqualsWithValue(field: ScanField, operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId, value: string): Result<TextHasValueEqualsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, value, removeMeEventer, changedEventer));
         }
         createTextHasValueContainsWithHasValue(field: ScanField, operatorId: BaseTextScanFieldCondition.HasValueOperands.OperatorId): Result<TextHasValueContainsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer));
         }
         createTextHasValueContainsWithContains(field: ScanField, operatorId: BaseTextScanFieldCondition.ContainsOperands.OperatorId, value: string, asId: ScanFormula.TextContainsAsId, ignoreCase: boolean): Result<TextHasValueContainsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase, removeMeEventer, changedEventer));
         }
         createStringOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly string[]): Result<StringOverlapsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new StringOverlapsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new StringOverlapsScanFieldConditionEditorFrame(operatorId, values, removeMeEventer, changedEventer));
         }
         createCurrencyOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly CurrencyId[]): Result<CurrencyOverlapsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, values, removeMeEventer, changedEventer));
         }
         createExchangeOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly ExchangeId[]): Result<ExchangeOverlapsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, values, removeMeEventer, changedEventer));
         }
         createMarketOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly MarketId[]): Result<MarketOverlapsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new MarketOverlapsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new MarketOverlapsScanFieldConditionEditorFrame(operatorId, values, removeMeEventer, changedEventer));
         }
         createMarketBoardOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly MarketBoardId[]): Result<MarketBoardOverlapsScanFieldCondition> {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, values, removeMeEventer, changedEventer));
         }
         createIs(field: ScanField, operatorId: IsScanFieldCondition.Operands.OperatorId, categoryId: ScanFormula.IsNode.CategoryId): Result<IsScanFieldCondition> {
+            const { removeMeEventer, changedEventer } = this.createFieldEventers(field);
+            return new Ok(new IsScanFieldConditionEditorFrame(operatorId, categoryId, removeMeEventer, changedEventer));
+        }
+
+        private createFieldEventers(field: ScanField) {
             const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return new Ok(new IsScanFieldConditionEditorFrame(operatorId, (valid) => fieldEditorFrame.processConditionChanged(valid)));
+            return fieldEditorFrame.createConditionEditorFrameEventers();
         }
     }
 

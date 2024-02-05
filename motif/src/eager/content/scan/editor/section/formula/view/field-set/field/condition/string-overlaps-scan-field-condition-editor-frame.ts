@@ -13,18 +13,34 @@ import {
     StringOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
         StringOverlapsScanFieldCondition,
         StringOverlapsScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.StringOverlaps;
+    declare readonly typeId: StringOverlapsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: StringOverlapsScanFieldConditionEditorFrame.OperandsTypeId;
 
-    private _values: readonly string[];
+    constructor(
+        operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        private _values: readonly string[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(
+            StringOverlapsScanFieldConditionEditorFrame.typeId,
+            StringOverlapsScanFieldConditionEditorFrame.operandsTypeId,
+            operatorId,
+            removeMeEventer,
+            changedEventer
+        );
+    }
 
     get operands() {
         const operands: StringOverlapsScanFieldCondition.Operands = {
+            typeId: StringOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             values: this._values.slice(),
         }
         return operands;
@@ -37,4 +53,11 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
             this.processChanged();
         }
     }
+}
+
+export namespace StringOverlapsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.StringOverlaps;
+    export const typeId = ScanFieldCondition.TypeId.StringOverlaps;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextEnum;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextEnum;
 }

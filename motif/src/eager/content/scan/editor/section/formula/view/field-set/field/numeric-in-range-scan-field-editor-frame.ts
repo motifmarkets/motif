@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, NumericInRangeScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
-import { NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ChangeSubscribableComparableList, NumericInRangeScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { HasValueNumericComparisonScanFieldConditionEditorFrame, NumericComparisonScanFieldConditionEditorFrame, RangeNumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, ValueNumericComparisonScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -31,6 +31,34 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return NumericComparisonScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: ScanFieldCondition.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId as NumericInRangeScanFieldEditorFrame.OperatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: NumericInRangeScanFieldEditorFrame.OperatorId): NumericComparisonScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.HasValue:
+            case ScanFieldCondition.OperatorId.NotHasValue:
+                return new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+            case ScanFieldCondition.OperatorId.Equals:
+            case ScanFieldCondition.OperatorId.NotEquals:
+            case ScanFieldCondition.OperatorId.GreaterThan:
+            case ScanFieldCondition.OperatorId.GreaterThanOrEqual:
+            case ScanFieldCondition.OperatorId.LessThan:
+            case ScanFieldCondition.OperatorId.LessThanOrEqual:
+                return new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+            case ScanFieldCondition.OperatorId.InRange:
+            case ScanFieldCondition.OperatorId.NotInRange:
+                return new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, undefined, removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('NIRSFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace NumericInRangeScanFieldEditorFrame {
@@ -41,4 +69,5 @@ export namespace NumericInRangeScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
     export const conditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
+    export type OperatorId = NumericComparisonScanFieldConditionEditorFrame.OperatorId;
 }

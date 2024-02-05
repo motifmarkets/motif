@@ -14,18 +14,34 @@ import {
     MarketBoardOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
         MarketBoardOverlapsScanFieldCondition,
         MarketBoardOverlapsScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.MarketBoardOverlaps;
+    declare readonly typeId: MarketBoardOverlapsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: MarketBoardOverlapsScanFieldConditionEditorFrame.OperandsTypeId;
 
-    private _values: readonly MarketBoardId[];
+    constructor(
+        operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        private _values: readonly MarketBoardId[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(
+            MarketBoardOverlapsScanFieldConditionEditorFrame.typeId,
+            MarketBoardOverlapsScanFieldConditionEditorFrame.operandsTypeId,
+            operatorId,
+            removeMeEventer,
+            changedEventer
+        );
+    }
 
     get operands() {
         const operands: MarketBoardOverlapsScanFieldCondition.Operands = {
+            typeId: MarketBoardOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             values: this._values.slice(),
         }
         return operands;
@@ -38,4 +54,11 @@ export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsSc
             this.processChanged();
         }
     }
+}
+
+export namespace MarketBoardOverlapsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.MarketBoardOverlaps;
+    export const typeId = ScanFieldCondition.TypeId.MarketBoardOverlaps;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.MarketBoardEnum;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.MarketBoardEnum;
 }

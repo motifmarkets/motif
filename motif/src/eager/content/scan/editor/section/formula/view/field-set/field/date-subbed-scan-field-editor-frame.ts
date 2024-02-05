@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, DateSubbedScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
-import { DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ChangeSubscribableComparableList, DateSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { DateScanFieldConditionEditorFrame, HasValueDateScanFieldConditionEditorFrame, RangeDateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, ValueDateScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implements DateSubbedScanField {
@@ -32,6 +32,30 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return DateScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: DateSubbedScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: DateSubbedScanFieldEditorFrame.OperatorId): DateScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.HasValue:
+            case ScanFieldCondition.OperatorId.NotHasValue:
+                return new HasValueDateScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+            case ScanFieldCondition.OperatorId.Equals:
+            case ScanFieldCondition.OperatorId.NotEquals:
+                return new ValueDateScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+            case ScanFieldCondition.OperatorId.InRange:
+            case ScanFieldCondition.OperatorId.NotInRange:
+                return new RangeDateScanFieldConditionEditorFrame(operatorId, undefined, undefined, removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('DSSFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace DateSubbedScanFieldEditorFrame {
@@ -44,4 +68,5 @@ export namespace DateSubbedScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Date;
     export const conditionTypeId = ScanFieldCondition.TypeId.Date;
+    export type OperatorId = DateScanFieldConditionEditorFrame.OperatorId;
 }

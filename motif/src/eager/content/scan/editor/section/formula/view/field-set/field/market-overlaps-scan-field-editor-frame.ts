@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, MarketOverlapsScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
-import { MarketOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ChangeSubscribableComparableList, MarketOverlapsScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { MarketOverlapsScanFieldConditionEditorFrame, OverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -31,6 +31,24 @@ export class MarketOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return OverlapsScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: MarketOverlapsScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: MarketOverlapsScanFieldEditorFrame.OperatorId): MarketOverlapsScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.Overlaps:
+            case ScanFieldCondition.OperatorId.NotOverlaps:
+                return new MarketOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('MOSFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace MarketOverlapsScanFieldEditorFrame {
@@ -41,4 +59,5 @@ export namespace MarketOverlapsScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<MarketOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.MarketOverlaps;
     export const conditionTypeId = ScanFieldCondition.TypeId.MarketOverlaps;
+    export type OperatorId = OverlapsScanFieldConditionEditorFrame.OperatorId;
 }

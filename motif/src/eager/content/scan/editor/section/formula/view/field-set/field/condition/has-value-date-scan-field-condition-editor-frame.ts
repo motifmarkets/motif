@@ -12,16 +12,20 @@ import {
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class HasValueDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements HasValueScanFieldConditionOperandsEditorFrame {
+    declare readonly operandsTypeId: HasValueDateScanFieldConditionEditorFrame.OperandsTypeId;
+
     constructor(
         private _operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(HasValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
         const operands: DateScanFieldCondition.HasValueOperands = {
-            typeId: DateScanFieldCondition.Operands.TypeId.HasValue,
+            typeId: HasValueDateScanFieldConditionEditorFrame.operandsTypeId,
         }
         return operands;
     }
@@ -29,9 +33,10 @@ export class HasValueDateScanFieldConditionEditorFrame extends DateScanFieldCond
     get not() { return ScanFieldCondition.Operator.hasValueIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: HasValueScanFieldConditionOperandsEditorFrame.OperatorId) {
+    override set operatorId(value: HasValueDateScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -44,4 +49,10 @@ export class HasValueDateScanFieldConditionEditorFrame extends DateScanFieldCond
         this._operatorId = ScanFieldCondition.Operator.negateHasValue(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace HasValueDateScanFieldConditionEditorFrame {
+    export type OperatorId = HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
 }

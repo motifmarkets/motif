@@ -4,8 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, TextHasValueEqualsScanField } from '@motifmarkets/motif-core';
-import { ScanFieldConditionEditorFrame, TextHasValueEqualsScanFieldConditionEditorFrame } from './condition/internal-api';
+import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, TextHasValueEqualsScanField, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { HasValueTextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, TextHasValueEqualsScanFieldConditionEditorFrame, ValueTextHasValueEqualsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -31,6 +31,27 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return TextHasValueEqualsScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId): TextHasValueEqualsScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.HasValue:
+            case ScanFieldCondition.OperatorId.NotHasValue:
+                return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+            case ScanFieldCondition.OperatorId.Equals:
+            case ScanFieldCondition.OperatorId.NotEquals:
+                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('THVESFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace TextHasValueEqualsScanFieldEditorFrame {
@@ -41,4 +62,5 @@ export namespace TextHasValueEqualsScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
+    export type OperatorId = TextHasValueEqualsScanFieldConditionEditorFrame.OperatorId;
 }

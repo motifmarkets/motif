@@ -7,6 +7,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { EagerControlsNgModule } from 'controls-ng-api';
 import { RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
@@ -68,7 +69,7 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
-    CategoryValueScanFieldConditionEditorNgComponent,
+    CategoryValueScanFieldConditionOperandsEditorNgComponent,
     ConditionSetScanFormulaViewNgComponent,
     CriteriaZenithScanFormulaViewNgComponent,
     FormulaScanEditorSectionNgComponent,
@@ -111,7 +112,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         BrokerageAccountsNgComponent,
         CashHoldingsNgComponent,
-        CategoryValueScanFieldConditionEditorNgComponent,
+        CategoryValueScanFieldConditionOperandsEditorNgComponent,
         ColorControlsNgComponent,
         ColorSchemeGridNgComponent,
         ColorSchemeItemPropertiesNgComponent,
@@ -228,6 +229,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
     ],
     imports: [
         AngularSplitModule,
+        AngularSvgIconModule,
         CommonModule,
         EagerControlsNgModule
     ]

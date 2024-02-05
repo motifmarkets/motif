@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, TextContainsScanField } from '@motifmarkets/motif-core';
+import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, TextContainsScanField, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame, TextContainsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
@@ -31,6 +31,24 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
             changedEventer,
         );
     }
+
+    override get supportedOperatorIds() { return TextContainsScanFieldConditionEditorFrame.supportedOperatorIds; }
+
+    override addCondition(operatorId: TextContainsScanFieldEditorFrame.OperatorId) {
+        const conditionEditorFrame = this.createCondition(operatorId);
+        this.conditions.add(conditionEditorFrame);
+    }
+
+    private createCondition(operatorId: TextContainsScanFieldEditorFrame.OperatorId): TextContainsScanFieldConditionEditorFrame {
+        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        switch (operatorId) {
+            case ScanFieldCondition.OperatorId.Contains:
+            case ScanFieldCondition.OperatorId.NotContains:
+                return new TextContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, removeMeEventer, changedEventer);
+            default:
+                throw new UnreachableCaseError('TCSFEFCC22298', operatorId);
+        }
+    }
 }
 
 export namespace TextContainsScanFieldEditorFrame {
@@ -41,4 +59,5 @@ export namespace TextContainsScanFieldEditorFrame {
     export const conditions = ChangeSubscribableComparableList<TextContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextContains;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextContains;
+    export type OperatorId = TextContainsScanFieldConditionEditorFrame.OperatorId;
 }

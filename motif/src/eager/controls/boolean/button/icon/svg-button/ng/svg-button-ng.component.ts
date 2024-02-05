@@ -20,6 +20,7 @@ import { ControlComponentBaseNgDirective } from '../../../../../ng/control-compo
 import nounArrowDownSvg from './svg/noun-arrow-down-70422.svg';
 import nounClose82107Svg from './svg/noun-close-82107.svg';
 import nounCollapseVerticalSvg from './svg/noun-collapse-vertical-2439339.svg';
+import nounExclamationSvg from './svg/noun-exclamation-1447148-cropped.svg';
 import nounExpandVerticalSvg from './svg/noun-expand-vertical-2439362.svg';
 import nounLoginSvg from './svg/noun-login-4123950.svg';
 import nounLogoutSvg from './svg/noun-logout-4124631.svg';
@@ -495,6 +496,10 @@ export namespace SvgButtonNgComponent {
             Dot: { id: IconButtonUiAction.IconId.Dot,
                 name: 'Dot',
                 svg: nounDotSvg
+            },
+            Exclamation: { id: IconButtonUiAction.IconId.Exclamation,
+                name: 'Exclamation',
+                svg: nounExclamationSvg
             },
         };
 

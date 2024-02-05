@@ -13,21 +13,24 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
     implements
         NumericRangeScanFieldConditionOperandsEditorFrame {
 
-    private _min: number | undefined;
-    private _max: number | undefined;
+    declare readonly operandsTypeId: RangeNumericComparisonScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: BaseNumericScanFieldCondition.RangeOperands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: RangeNumericComparisonScanFieldConditionEditorFrame.OperatorId,
+        private _min: number | undefined,
+        private _max: number | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
         const min = this._min;
         const max = this._max;
         const rangeOperands: BaseNumericScanFieldCondition.RangeOperands = {
-            typeId: BaseNumericScanFieldCondition.Operands.TypeId.Range,
+            typeId: RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId,
             min,
             max,
         }
@@ -37,9 +40,10 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
     get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: BaseNumericScanFieldCondition.RangeOperands.OperatorId) {
+    override set operatorId(value: RangeNumericComparisonScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -68,4 +72,10 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
         this._operatorId = ScanFieldCondition.Operator.negateInRange(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace RangeNumericComparisonScanFieldConditionEditorFrame {
+    export type OperatorId = NumericRangeScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.NumericRange;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.NumericRange;
 }

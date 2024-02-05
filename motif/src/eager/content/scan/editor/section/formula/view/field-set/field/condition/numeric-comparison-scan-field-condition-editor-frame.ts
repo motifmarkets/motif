@@ -11,8 +11,24 @@ export abstract class NumericComparisonScanFieldConditionEditorFrame extends Sca
     implements
         NumericComparisonScanFieldCondition {
 
-    override readonly typeId: ScanFieldCondition.TypeId.NumericComparison;
+    declare readonly typeId: NumericComparisonScanFieldConditionEditorFrame.TypeId;
+
+    constructor(
+        operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        affirmativeOperatorDisplayLines: readonly string[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(NumericComparisonScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+    }
 
     abstract get operands(): BaseNumericScanFieldCondition.Operands;
-    abstract override get operatorId(): NumericComparisonScanFieldCondition.Operands.OperatorId;
+    abstract override get operatorId(): NumericComparisonScanFieldConditionEditorFrame.OperatorId;
+}
+
+export namespace NumericComparisonScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.NumericComparison;
+    export const typeId = ScanFieldCondition.TypeId.NumericComparison;
+    export type OperatorId = NumericComparisonScanFieldCondition.Operands.OperatorId;
+    export const supportedOperatorIds = NumericComparisonScanFieldCondition.Operands.supportedOperatorIds;
 }

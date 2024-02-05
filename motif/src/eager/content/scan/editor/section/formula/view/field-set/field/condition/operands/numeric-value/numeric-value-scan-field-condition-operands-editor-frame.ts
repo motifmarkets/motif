@@ -4,11 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { NumericScanFieldCondition } from '@motifmarkets/motif-core';
+import { NumericScanFieldCondition, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { NegatableOperator } from '../negatableOperator';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
 export interface NumericValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
-    operatorId: NumericScanFieldCondition.ValueOperands.OperatorId;
+    readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.NumericValue,
+    operatorId: NumericValueScanFieldConditionOperandsEditorFrame.OperatorId;
     value: number | undefined;
+}
+
+export namespace NumericValueScanFieldConditionOperandsEditorFrame {
+    export type OperatorId = NumericScanFieldCondition.ValueOperands.OperatorId;
 }

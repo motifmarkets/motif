@@ -10,9 +10,7 @@ import {
     ScanFieldCondition,
     ScanFormula
 } from '@motifmarkets/motif-core';
-import {
-    CategoryValueScanFieldConditionOperandsEditorFrame
-} from './operands/internal-api';
+import { CategoryValueScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFrame
@@ -20,15 +18,23 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
         IsScanFieldCondition,
         CategoryValueScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.Is;
-
-    private _categoryId: ScanFormula.IsNode.CategoryId | undefined;
+    declare readonly typeId: IsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: IsScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
-        private _operatorId: IsScanFieldCondition.Operands.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: IsScanFieldConditionEditorFrame.OperatorId,
+        private _categoryId: ScanFormula.IsNode.CategoryId | undefined,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(
+            IsScanFieldConditionEditorFrame.typeId,
+            IsScanFieldConditionEditorFrame.operandsTypeId,
+            affirmativeOperatorDisplayLines,
+            removeMeEventer,
+            changedEventer
+        );
     }
 
     get operands() {
@@ -37,6 +43,7 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
             throw new AssertInternalError('ISFCEFGOV54508');
         } else {
             const operands: IsScanFieldCondition.Operands = {
+                typeId: IsScanFieldConditionEditorFrame.operandsTypeId,
                 categoryId,
             }
             return operands;
@@ -45,16 +52,17 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
 
     get not() { return ScanFieldCondition.Operator.isIsNot(this._operatorId); }
 
-    override get operatorId() { return this._operatorId; }
-    override set operatorId(value: IsScanFieldCondition.Operands.OperatorId) {
+    override get operatorId(): IsScanFieldConditionEditorFrame.OperatorId { return this._operatorId; }
+    set operatorId(value: IsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
 
-    get value() { return this._categoryId; }
-    set value(value: ScanFormula.IsNode.CategoryId | undefined) {
+    get categoryId() { return this._categoryId; }
+    set categoryId(value: ScanFormula.IsNode.CategoryId | undefined) {
         if (value !== this._categoryId) {
             this._categoryId = value;
             this.processChanged();
@@ -69,4 +77,13 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
         this._operatorId = ScanFieldCondition.Operator.negateIs(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace IsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.Is;
+    export const typeId = ScanFieldCondition.TypeId.Is;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.CategoryValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.CategoryValue;
+    export type OperatorId = CategoryValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export const supportedOperatorIds = IsScanFieldCondition.Operands.supportedOperatorIds;
 }

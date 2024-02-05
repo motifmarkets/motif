@@ -14,18 +14,34 @@ import {
     ExchangeOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ExchangeOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
         ExchangeOverlapsScanFieldCondition,
         ExchangeOverlapsScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.ExchangeOverlaps;
+    declare readonly typeId: ExchangeOverlapsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: ExchangeOverlapsScanFieldConditionEditorFrame.OperandsTypeId;
 
-    private _values: readonly ExchangeId[];
+    constructor(
+        operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        private _values: readonly ExchangeId[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(
+            ExchangeOverlapsScanFieldConditionEditorFrame.typeId,
+            ExchangeOverlapsScanFieldConditionEditorFrame.operandsTypeId,
+            operatorId,
+            removeMeEventer,
+            changedEventer
+        );
+    }
 
     get operands() {
         const operands: ExchangeOverlapsScanFieldCondition.Operands = {
+            typeId: ExchangeOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             values: this._values.slice(),
         }
         return operands;
@@ -38,4 +54,11 @@ export class ExchangeOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
             this.processChanged();
         }
     }
+}
+
+export namespace ExchangeOverlapsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.ExchangeOverlaps;
+    export const typeId = ScanFieldCondition.TypeId.ExchangeOverlaps;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.ExchangeEnum;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.ExchangeEnum;
 }

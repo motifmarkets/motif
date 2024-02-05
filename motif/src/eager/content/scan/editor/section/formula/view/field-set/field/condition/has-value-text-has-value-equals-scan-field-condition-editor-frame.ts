@@ -18,16 +18,20 @@ export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends Tex
     implements
         HasValueScanFieldConditionOperandsEditorFrame {
 
+    declare readonly operandsTypeId: HasValueTextHasValueEqualsScanFieldConditionEditorFrame.OperandsTypeId;
+
     constructor(
-        private _operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: HasValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(HasValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
         const operands: BaseTextScanFieldCondition.HasValueOperands = {
-            typeId: BaseTextScanFieldCondition.Operands.TypeId.HasValue,
+            typeId: HasValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId,
         }
         return operands;
     }
@@ -35,9 +39,10 @@ export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends Tex
     get not() { return ScanFieldCondition.Operator.hasValueIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: HasValueScanFieldConditionOperandsEditorFrame.OperatorId) {
+    override set operatorId(value: HasValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -50,4 +55,10 @@ export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends Tex
         this._operatorId = ScanFieldCondition.Operator.negateHasValue(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace HasValueTextHasValueEqualsScanFieldConditionEditorFrame {
+    export type OperatorId = HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
 }

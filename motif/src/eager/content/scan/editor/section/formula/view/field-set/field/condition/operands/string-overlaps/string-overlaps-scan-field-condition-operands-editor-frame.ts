@@ -6,9 +6,9 @@
 
 import { OverlapsScanFieldCondition } from '@motifmarkets/motif-core';
 import { NegatableOperator } from '../negatableOperator';
-import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
+import { OverlapsScanFieldConditionOperandsEditorFrame } from '../overlaps/internal-api';
 
-export interface StringOverlapsScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
+export interface StringOverlapsScanFieldConditionOperandsEditorFrame extends OverlapsScanFieldConditionOperandsEditorFrame, NegatableOperator {
     operatorId: OverlapsScanFieldCondition.Operands.OperatorId;
     values: readonly string[];
 }

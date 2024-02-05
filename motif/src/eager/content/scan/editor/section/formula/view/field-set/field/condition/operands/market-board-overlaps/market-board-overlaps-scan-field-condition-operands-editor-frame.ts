@@ -4,11 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { MarketBoardId, OverlapsScanFieldCondition } from '@motifmarkets/motif-core';
+import { MarketBoardId } from '@motifmarkets/motif-core';
 import { NegatableOperator } from '../negatableOperator';
-import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
+import { OverlapsScanFieldConditionOperandsEditorFrame } from '../overlaps/internal-api';
 
-export interface MarketBoardOverlapsScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
-    operatorId: OverlapsScanFieldCondition.Operands.OperatorId;
+export interface MarketBoardOverlapsScanFieldConditionOperandsEditorFrame extends OverlapsScanFieldConditionOperandsEditorFrame, NegatableOperator {
     values: readonly MarketBoardId[];
 }

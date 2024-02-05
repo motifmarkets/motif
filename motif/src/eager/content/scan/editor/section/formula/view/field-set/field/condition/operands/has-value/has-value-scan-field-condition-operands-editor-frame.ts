@@ -9,6 +9,7 @@ import { NegatableOperator } from '../negatableOperator';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
 export interface HasValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
+    readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.HasValue,
     operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
 }
 

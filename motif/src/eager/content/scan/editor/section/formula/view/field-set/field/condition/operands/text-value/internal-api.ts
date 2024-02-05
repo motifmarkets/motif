@@ -4,4 +4,4 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './text-equals-scan-field-condition-operands-editor-frame';
+export * from './text-value-scan-field-condition-operands-editor-frame';

@@ -15,16 +15,20 @@ export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFie
     implements
         HasValueScanFieldConditionOperandsEditorFrame {
 
+    declare readonly operandsTypeId: HasValueNumericScanFieldConditionEditorFrame.OperandsTypeId;
+
     constructor(
-        private _operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler,
+        private _operatorId: HasValueNumericScanFieldConditionEditorFrame.OperatorId,
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(changedEventer);
+        const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
+        super(HasValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
     }
 
     override get operands() {
         const operands: BaseNumericScanFieldCondition.HasValueOperands = {
-            typeId: BaseNumericScanFieldCondition.Operands.TypeId.HasValue,
+            typeId: HasValueNumericScanFieldConditionEditorFrame.operandsTypeId,
         }
         return operands;
     }
@@ -32,9 +36,10 @@ export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFie
     get not() { return ScanFieldCondition.Operator.hasValueIsNot(this._operatorId); }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: HasValueScanFieldConditionOperandsEditorFrame.OperatorId) {
+    override set operatorId(value: HasValueNumericScanFieldConditionEditorFrame.OperatorId) {
         if (value !== this._operatorId) {
             this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
             this.processChanged();
         }
     }
@@ -47,4 +52,10 @@ export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFie
         this._operatorId = ScanFieldCondition.Operator.negateHasValue(this._operatorId);
         this.processChanged();
     }
+}
+
+export namespace HasValueNumericScanFieldConditionEditorFrame {
+    export type OperatorId = HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
 }

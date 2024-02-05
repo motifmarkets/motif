@@ -5,25 +5,35 @@
  */
 
 import { MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
+import { ScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 
-export abstract class ScanFieldConditionEditorFrame implements ScanFieldCondition {
-    private readonly _changedMultiEvent = new MultiEvent<ScanFieldConditionEditorFrame.ChangedEventHandler>();
+export abstract class ScanFieldConditionEditorFrame implements ScanFieldCondition, ScanFieldConditionOperandsEditorFrame {
+    private readonly _changedMultiEvent = new MultiEvent<ScanFieldConditionOperandsEditorFrame.ChangedEventHandler>();
+
     private _valid = false;
 
-    abstract readonly typeId: ScanFieldCondition.TypeId;
-
-    constructor(private readonly _changedEventer: ScanFieldConditionEditorFrame.ChangedEventHandler) {
-
+    constructor(
+        readonly typeId: ScanFieldCondition.TypeId,
+        readonly operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        protected _affirmativeOperatorDisplayLines: readonly string[],
+        readonly _removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        private readonly _changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
     }
 
     get valid() { return this._valid; }
+    get affirmativeOperatorDisplayLines() { return this._affirmativeOperatorDisplayLines; }
     abstract get operatorId(): ScanFieldCondition.OperatorId;
 
     updateValid() {
         this._valid = this.calculateValid();
     }
 
-    subscribeChangedEvent(handler: ScanFieldConditionEditorFrame.ChangedEventHandler) {
+    removeMe(operandsEditorFrame: ScanFieldConditionOperandsEditorFrame) {
+        this._removeMeEventer(operandsEditorFrame as ScanFieldConditionEditorFrame);
+    }
+
+    subscribeChangedEvent(handler: ScanFieldConditionOperandsEditorFrame.ChangedEventHandler) {
         return this._changedMultiEvent.subscribe(handler);
     }
 
@@ -41,7 +51,7 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
 
         const handlers = this._changedMultiEvent.copyHandlers();
         for (const handler of handlers) {
-            handler(valid);
+            handler();
         }
     }
 
@@ -49,5 +59,6 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
 }
 
 export namespace ScanFieldConditionEditorFrame {
-    export type ChangedEventHandler = (this: void, valid: boolean) => void;
+    export type RemoveMeEventer = (this: void, frame: ScanFieldConditionEditorFrame) => void;
+    export type ChangedEventer = (this: void, valid: boolean) => void;
 }

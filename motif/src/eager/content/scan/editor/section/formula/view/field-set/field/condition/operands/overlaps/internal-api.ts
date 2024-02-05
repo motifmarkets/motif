@@ -4,5 +4,4 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './scan-field-condition-operands-editor-ng.directive';
-
+export * from './overlaps-scan-field-condition-operands-editor-frame';

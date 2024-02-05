@@ -14,18 +14,34 @@ import {
     CurrencyOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
         CurrencyOverlapsScanFieldCondition,
         CurrencyOverlapsScanFieldConditionOperandsEditorFrame {
 
-    override readonly typeId: ScanFieldCondition.TypeId.CurrencyOverlaps;
+    declare readonly typeId: CurrencyOverlapsScanFieldConditionEditorFrame.TypeId;
+    declare readonly operandsTypeId: CurrencyOverlapsScanFieldConditionEditorFrame.OperandsTypeId;
 
-    private _values: readonly CurrencyId[];
+    constructor(
+        operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
+        private _values: readonly CurrencyId[],
+        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
+    ) {
+        super(
+            CurrencyOverlapsScanFieldConditionEditorFrame.typeId,
+            CurrencyOverlapsScanFieldConditionEditorFrame.operandsTypeId,
+            operatorId,
+            removeMeEventer,
+            changedEventer
+        );
+    }
 
     get operands() {
         const operands: CurrencyOverlapsScanFieldCondition.Operands = {
+            typeId: CurrencyOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             values: this._values.slice(),
         }
         return operands;
@@ -38,4 +54,11 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
             this.processChanged();
         }
     }
+}
+
+export namespace CurrencyOverlapsScanFieldConditionEditorFrame {
+    export type TypeId = ScanFieldCondition.TypeId.CurrencyOverlaps;
+    export const typeId = ScanFieldCondition.TypeId.CurrencyOverlaps;
+    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.CurrencyEnum;
+    export const operandsTypeId = ScanFieldCondition.Operands.TypeId.CurrencyEnum;
 }
