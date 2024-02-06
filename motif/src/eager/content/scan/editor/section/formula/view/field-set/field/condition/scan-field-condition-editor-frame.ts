@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+import { InjectionToken } from '@angular/core';
 import { MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { ScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 
@@ -16,7 +17,7 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
         readonly typeId: ScanFieldCondition.TypeId,
         readonly operandsTypeId: ScanFieldCondition.Operands.TypeId,
         protected _affirmativeOperatorDisplayLines: readonly string[],
-        readonly _removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        readonly _deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         private readonly _changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
     }
@@ -30,7 +31,7 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
     }
 
     removeMe(operandsEditorFrame: ScanFieldConditionOperandsEditorFrame) {
-        this._removeMeEventer(operandsEditorFrame as ScanFieldConditionEditorFrame);
+        this._deleteMeEventer(operandsEditorFrame as ScanFieldConditionEditorFrame);
     }
 
     subscribeChangedEvent(handler: ScanFieldConditionOperandsEditorFrame.ChangedEventHandler) {
@@ -59,6 +60,8 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
 }
 
 export namespace ScanFieldConditionEditorFrame {
-    export type RemoveMeEventer = (this: void, frame: ScanFieldConditionEditorFrame) => void;
+    export type DeleteMeEventer = (this: void, frame: ScanFieldConditionEditorFrame) => void;
     export type ChangedEventer = (this: void, valid: boolean) => void;
+
+    export const injectionToken = new InjectionToken<ScanFieldConditionEditorFrame>('ScanFieldConditionEditorFrame');
 }

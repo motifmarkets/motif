@@ -16,11 +16,11 @@ export class HasValueDateScanFieldConditionEditorFrame extends DateScanFieldCond
 
     constructor(
         private _operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(HasValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(HasValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands() {

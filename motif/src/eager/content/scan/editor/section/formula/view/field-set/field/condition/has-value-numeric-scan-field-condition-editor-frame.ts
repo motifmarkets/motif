@@ -19,11 +19,11 @@ export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFie
 
     constructor(
         private _operatorId: HasValueNumericScanFieldConditionEditorFrame.OperatorId,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(HasValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(HasValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands() {

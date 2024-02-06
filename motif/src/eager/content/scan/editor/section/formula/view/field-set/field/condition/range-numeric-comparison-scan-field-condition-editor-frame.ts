@@ -19,11 +19,11 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
         private _operatorId: RangeNumericComparisonScanFieldConditionEditorFrame.OperatorId,
         private _min: number | undefined,
         private _max: number | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands() {

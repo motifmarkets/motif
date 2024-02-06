@@ -18,11 +18,11 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         private _operatorId: RangeDateScanFieldConditionEditorFrame.OperatorId,
         private _min: SourceTzOffsetDateTime | undefined,
         private _max: SourceTzOffsetDateTime | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(RangeDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(RangeDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands() {

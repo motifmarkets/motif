@@ -19,7 +19,7 @@ export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbe
     constructor(
         subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -29,7 +29,7 @@ export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbe
             name,
             new AltCodeSubbedScanFieldEditorFrame.conditions(),
             AltCodeSubbedScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }

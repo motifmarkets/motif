@@ -13,10 +13,10 @@ export abstract class DateScanFieldConditionEditorFrame extends ScanFieldConditi
     constructor(
         operandsTypeId: ScanFieldCondition.Operands.TypeId,
         affirmativeOperatorDisplayLines: readonly string[],
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(DateScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(DateScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     abstract get operands(): DateScanFieldCondition.Operands;

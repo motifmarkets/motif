@@ -29,7 +29,7 @@ export class TextContainsScanFieldConditionEditorFrame extends ScanFieldConditio
         private _value: string | undefined,
         private _asId: ScanFormula.TextContainsAsId | undefined,
         private _ignoreCase: boolean | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
@@ -37,7 +37,7 @@ export class TextContainsScanFieldConditionEditorFrame extends ScanFieldConditio
             TextContainsScanFieldConditionEditorFrame.typeId,
             TextContainsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer
         );
     }

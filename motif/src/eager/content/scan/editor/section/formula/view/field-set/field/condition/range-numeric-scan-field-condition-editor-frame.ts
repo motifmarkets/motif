@@ -21,11 +21,11 @@ export class RangeNumericScanFieldConditionEditorFrame extends NumericScanFieldC
         private _operatorId: RangeNumericScanFieldConditionEditorFrame.OperatorId,
         private _min: number | undefined,
         private _max: number | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(RangeNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(RangeNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands() {

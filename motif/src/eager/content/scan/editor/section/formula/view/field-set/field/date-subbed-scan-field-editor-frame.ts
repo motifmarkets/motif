@@ -18,7 +18,7 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
     constructor(
         subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -28,7 +28,7 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
             name,
             new DateSubbedScanFieldEditorFrame.conditions(),
             DateSubbedScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -41,17 +41,17 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
     }
 
     private createCondition(operatorId: DateSubbedScanFieldEditorFrame.OperatorId): DateScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueDateScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+                return new HasValueDateScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueDateScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+                return new ValueDateScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.InRange:
             case ScanFieldCondition.OperatorId.NotInRange:
-                return new RangeDateScanFieldConditionEditorFrame(operatorId, undefined, undefined, removeMeEventer, changedEventer);
+                return new RangeDateScanFieldConditionEditorFrame(operatorId, undefined, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('DSSFEFCC22298', operatorId);
         }

@@ -69,6 +69,7 @@ export namespace BuiltinIconButtonUiAction {
         EnlargeToTopLeft = 'EnlargeToTopLeft',
         Dot = 'Dot',
         Exclamation = 'Exclamation',
+        Delete = 'Delete',
     }
 
     export type IconId = keyof typeof IconIdEnum;

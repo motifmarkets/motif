@@ -19,7 +19,7 @@ export class AttributeSubbedScanFieldEditorFrame extends TextHasValueContainsSub
     constructor(
         subFieldId: AttributeSubbedScanFieldEditorFrame.SubFieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -29,7 +29,7 @@ export class AttributeSubbedScanFieldEditorFrame extends TextHasValueContainsSub
             name,
             new AttributeSubbedScanFieldEditorFrame.conditions(),
             AttributeSubbedScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }

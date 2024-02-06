@@ -18,7 +18,7 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
     constructor(
         subFieldId: PriceSubbedScanFieldEditorFrame.SubFieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -28,7 +28,7 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
             name,
             new PriceSubbedScanFieldEditorFrame.conditions(),
             PriceSubbedScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -41,17 +41,17 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
     }
 
     private createCondition(operatorId: PriceSubbedScanFieldEditorFrame.OperatorId): NumericScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueNumericScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+                return new HasValueNumericScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueNumericScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+                return new ValueNumericScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.InRange:
             case ScanFieldCondition.OperatorId.NotInRange:
-                return new RangeNumericScanFieldConditionEditorFrame(operatorId, undefined, undefined, removeMeEventer, changedEventer);
+                return new RangeNumericScanFieldConditionEditorFrame(operatorId, undefined, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('PSSSFEFCC22298', operatorId);
         }

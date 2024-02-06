@@ -18,7 +18,7 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
     constructor(
         fieldId: TextContainsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
             name,
             new TextContainsScanFieldEditorFrame.conditions(),
             TextContainsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
     }
 
     private createCondition(operatorId: TextContainsScanFieldEditorFrame.OperatorId): TextContainsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Contains:
             case ScanFieldCondition.OperatorId.NotContains:
-                return new TextContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, removeMeEventer, changedEventer);
+                return new TextContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('TCSFEFCC22298', operatorId);
         }

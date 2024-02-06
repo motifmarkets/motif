@@ -24,7 +24,7 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
     constructor(
         private _operatorId: IsScanFieldConditionEditorFrame.OperatorId,
         private _categoryId: ScanFormula.IsNode.CategoryId | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
@@ -32,7 +32,7 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
             IsScanFieldConditionEditorFrame.typeId,
             IsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer
         );
     }

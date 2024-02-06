@@ -18,7 +18,7 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
     constructor(
         fieldId: IsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
             name,
             new IsScanFieldEditorFrame.conditions(),
             IsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
     }
 
     private createCondition(operatorId: IsScanFieldEditorFrame.OperatorId): IsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Is:
             case ScanFieldCondition.OperatorId.NotIs:
-                return new IsScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+                return new IsScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('ISFEFCC22298', operatorId);
         }

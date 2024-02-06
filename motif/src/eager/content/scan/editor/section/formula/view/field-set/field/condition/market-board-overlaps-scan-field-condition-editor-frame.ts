@@ -27,14 +27,14 @@ export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsSc
     constructor(
         operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
         private _values: readonly MarketBoardId[],
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         super(
             MarketBoardOverlapsScanFieldConditionEditorFrame.typeId,
             MarketBoardOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer
         );
     }

@@ -15,14 +15,14 @@ export abstract class TextHasValueContainsSubbedScanFieldEditorFrame extends Sca
     }
 
     private createCondition(operatorId: TextHasValueContainsSubbedScanFieldEditorFrame.OperatorId): TextHasValueContainsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+                return new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.Contains:
             case ScanFieldCondition.OperatorId.NotContains:
-                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, removeMeEventer, changedEventer);
+                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('THVCSSFEFCC34340', operatorId);
         }

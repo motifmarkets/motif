@@ -18,7 +18,7 @@ export class CurrencyOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
     constructor(
         fieldId: CurrencyOverlapsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class CurrencyOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
             name,
             new CurrencyOverlapsScanFieldEditorFrame.conditions(),
             CurrencyOverlapsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class CurrencyOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
     }
 
     private createCondition(operatorId: CurrencyOverlapsScanFieldEditorFrame.OperatorId): CurrencyOverlapsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Overlaps:
             case ScanFieldCondition.OperatorId.NotOverlaps:
-                return new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+                return new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, [], deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('COSFEFCC22298', operatorId);
         }

@@ -18,7 +18,7 @@ export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
     constructor(
         fieldId: StringOverlapsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
             name,
             new StringOverlapsScanFieldEditorFrame.conditions(),
             StringOverlapsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
     }
 
     private createCondition(operatorId: StringOverlapsScanFieldEditorFrame.OperatorId): StringOverlapsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Overlaps:
             case ScanFieldCondition.OperatorId.NotOverlaps:
-                return new StringOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+                return new StringOverlapsScanFieldConditionEditorFrame(operatorId, [], deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('SOSFEFCC22298', operatorId);
         }

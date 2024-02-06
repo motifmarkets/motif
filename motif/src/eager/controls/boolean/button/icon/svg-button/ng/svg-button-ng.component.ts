@@ -501,6 +501,10 @@ export namespace SvgButtonNgComponent {
                 name: 'Exclamation',
                 svg: nounExclamationSvg
             },
+            Delete: { id: IconButtonUiAction.IconId.Delete,
+                name: 'Delete',
+                svg: nounExclamationSvg // need to fix
+            },
         };
 
         const infos = Object.values(infosObject);

@@ -26,14 +26,14 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
     constructor(
         operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
         private _values: readonly string[],
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         super(
             StringOverlapsScanFieldConditionEditorFrame.typeId,
             StringOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer
         );
     }

@@ -18,7 +18,7 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
     constructor(
         fieldId: TextHasValueEqualsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
             name,
             new TextHasValueEqualsScanFieldEditorFrame.conditions(),
             TextHasValueEqualsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,14 +40,14 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
     }
 
     private createCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId): TextHasValueEqualsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+                return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('THVESFEFCC22298', operatorId);
         }

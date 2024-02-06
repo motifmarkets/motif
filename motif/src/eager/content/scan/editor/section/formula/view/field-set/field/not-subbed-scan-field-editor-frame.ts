@@ -17,7 +17,7 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
         name: string,
         conditions: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>,
         conditionTypeId: ScanFieldCondition.TypeId,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
             name,
             conditions,
             conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }

@@ -18,7 +18,7 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
     constructor(
         fieldId: NumericInRangeScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
             name,
             new NumericInRangeScanFieldEditorFrame.conditions(),
             NumericInRangeScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,21 +40,21 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
     }
 
     private createCondition(operatorId: NumericInRangeScanFieldEditorFrame.OperatorId): NumericComparisonScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, removeMeEventer, changedEventer);
+                return new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
             case ScanFieldCondition.OperatorId.GreaterThan:
             case ScanFieldCondition.OperatorId.GreaterThanOrEqual:
             case ScanFieldCondition.OperatorId.LessThan:
             case ScanFieldCondition.OperatorId.LessThanOrEqual:
-                return new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, removeMeEventer, changedEventer);
+                return new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
             case ScanFieldCondition.OperatorId.InRange:
             case ScanFieldCondition.OperatorId.NotInRange:
-                return new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, undefined, removeMeEventer, changedEventer);
+                return new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, undefined, undefined, deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('NIRSFEFCC22298', operatorId);
         }

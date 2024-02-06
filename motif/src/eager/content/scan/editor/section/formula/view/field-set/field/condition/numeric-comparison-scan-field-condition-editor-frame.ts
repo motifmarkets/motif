@@ -16,10 +16,10 @@ export abstract class NumericComparisonScanFieldConditionEditorFrame extends Sca
     constructor(
         operandsTypeId: ScanFieldCondition.Operands.TypeId,
         affirmativeOperatorDisplayLines: readonly string[],
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(NumericComparisonScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(NumericComparisonScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     abstract get operands(): BaseNumericScanFieldCondition.Operands;

@@ -8,7 +8,6 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inje
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
-import { ScanFieldConditionOperandsEditorFrame } from '../../scan-field-condition-operands-editor-frame';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
 
 @Component({
@@ -22,7 +21,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     @ViewChild('categoryLabel', { static: true }) private _categoryLabelComponent: CaptionLabelNgComponent;
     @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
 
-    declare readonly _frame: CategoryValueScanFieldConditionOperandsEditorFrame;
+    declare readonly frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
     private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
@@ -30,15 +29,13 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: ScanFieldConditionOperandsEditorFrame,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
     ) {
         super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame);
 
         this._notUiAction = this.createNotUiAction();
         this._categoryUiAction = this.createCategoryUiAction();
-
-        this._categoryUiAction.pushValue(ScanFormula.IsNode.CategoryId.Index);
-        this._notUiAction.pushValue(this._frame.not);
+        this.pushAll();
     }
 
     protected override initialise() {
@@ -52,6 +49,13 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         this._categoryUiAction.finalise();
         this._notUiAction.finalise();
         super.finalise();
+    }
+
+
+    protected override pushAll() {
+        this._categoryUiAction.pushValue(this.frame.categoryId);
+        this._notUiAction.pushValue(this.frame.not);
+        super.pushAll();
     }
 
     private createCategoryUiAction() {
@@ -69,7 +73,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._frame.categoryId = this._categoryUiAction.definedValue;
+            this.frame.categoryId = this._categoryUiAction.definedValue;
         }
 
         return action;
@@ -77,10 +81,10 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
 
     private createNotUiAction() {
         const action = new BooleanUiAction();
-        action.pushCaption(Strings[StringId.Exclude]);
-        action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_Exclude]);
+        action.pushCaption(Strings[StringId.Not]);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
         action.commitEvent = () => {
-            // todo
+            this.frame.negateOperator();
         };
 
         return action;
@@ -90,4 +94,6 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
 export namespace CategoryValueScanFieldConditionOperandsEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
+
+    export type Frame = CategoryValueScanFieldConditionOperandsEditorFrame;
 }

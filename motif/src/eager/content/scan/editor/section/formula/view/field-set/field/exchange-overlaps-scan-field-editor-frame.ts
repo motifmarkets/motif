@@ -18,7 +18,7 @@ export class ExchangeOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
     constructor(
         fieldId: ExchangeOverlapsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class ExchangeOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
             name,
             new ExchangeOverlapsScanFieldEditorFrame.conditions(),
             ExchangeOverlapsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class ExchangeOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEdit
     }
 
     private createCondition(operatorId: ExchangeOverlapsScanFieldEditorFrame.OperatorId): ExchangeOverlapsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Overlaps:
             case ScanFieldCondition.OperatorId.NotOverlaps:
-                return new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+                return new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, [], deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('EOSFEFCC22298', operatorId);
         }

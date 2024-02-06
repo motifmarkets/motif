@@ -95,7 +95,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         this.fields.add(fieldEditorFrame);
     }
 
-    removeField(frame: ScanFieldEditorFrame) {
+    deleteField(frame: ScanFieldEditorFrame) {
         this.fields.remove(frame);
     }
 
@@ -192,13 +192,13 @@ export namespace ScanFieldSetEditorFrame {
     export class FieldFactory implements ScanFieldSet.FieldFactory {
         private readonly _definitionByIdsMap: DefinitionByIdsMap;
         private readonly _definitionByNameMap: DefinitionByNameMap;
-        private readonly _removeFieldEditorFrameClosure: ScanFieldEditorFrame.RemoveMeEventHandler;
+        private readonly _deleteFieldEditorFrameClosure: ScanFieldEditorFrame.DeleteMeEventHandler;
         private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.ChangedEventHandler;
 
         constructor(private readonly _frame: ScanFieldSetEditorFrame) {
             this._definitionByIdsMap = _frame.definitionByIdsMap;
             this._definitionByNameMap = _frame.definitionByNameMap;
-            this._removeFieldEditorFrameClosure = (frame) => this._frame.removeField(frame);
+            this._deleteFieldEditorFrameClosure = (frame) => this._frame.deleteField(frame);
             this._processFieldEditorFrameChangedClosure = (frame, valid) => this._frame.processFieldChanged(frame, valid);
         }
 
@@ -309,49 +309,49 @@ export namespace ScanFieldSetEditorFrame {
         }
 
         private createNumericInRangeScanFieldEditorFrame(fieldId: ScanFormula.NumericRangeFieldId, name: string): NumericInRangeScanFieldEditorFrame {
-            return new NumericInRangeScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new NumericInRangeScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createPriceSubbedScanFieldEditorFrame(subFieldId: ScanFormula.PriceSubFieldId, name: string): PriceSubbedScanFieldEditorFrame {
-            return new PriceSubbedScanFieldEditorFrame(subFieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new PriceSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createDateInRangeScanFieldEditorFrame(fieldId: ScanFormula.DateRangeFieldId, name: string): DateInRangeScanFieldEditorFrame {
-            return new DateInRangeScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new DateInRangeScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createDateSubbedScanFieldEditorFrame(subFieldId: ScanFormula.DateSubFieldId, name: string): DateSubbedScanFieldEditorFrame {
-            return new DateSubbedScanFieldEditorFrame(subFieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new DateSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createTextContainsScanFieldEditorFrame(fieldId: ScanFormula.TextContainsFieldId, name: string): TextContainsScanFieldEditorFrame {
-            return new TextContainsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextContainsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createAltCodeSubbedScanFieldEditorFrame(subFieldId: ScanFormula.AltCodeSubFieldId, name: string): AltCodeSubbedScanFieldEditorFrame {
-            return new AltCodeSubbedScanFieldEditorFrame(subFieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new AltCodeSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createAttributeSubbedScanFieldEditorFrame(subFieldId: ScanFormula.AttributeSubFieldId, name: string): AttributeSubbedScanFieldEditorFrame {
-            return new AttributeSubbedScanFieldEditorFrame(subFieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new AttributeSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createTextEqualsScanFieldEditorFrame(fieldId: ScanFormula.TextEqualsFieldId, name: string): TextEqualsScanFieldEditorFrame {
-            return new TextEqualsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextEqualsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createTextHasValueEqualsScanFieldEditorFrame(fieldId: ScanFormula.TextHasValueEqualsFieldId, name: string): TextHasValueEqualsScanFieldEditorFrame {
-            return new TextHasValueEqualsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextHasValueEqualsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createStringOverlapsScanFieldEditorFrame(fieldId: ScanFormula.StringOverlapsFieldId, name: string): StringOverlapsScanFieldEditorFrame {
-            return new StringOverlapsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new StringOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createMarketBoardOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.MarketBoard, name: string): MarketBoardOverlapsScanFieldEditorFrame {
-            return new MarketBoardOverlapsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new MarketBoardOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createCurrencyOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Currency, name: string): CurrencyOverlapsScanFieldEditorFrame {
-            return new CurrencyOverlapsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new CurrencyOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createExchangeOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Exchange, name: string): ExchangeOverlapsScanFieldEditorFrame {
-            return new ExchangeOverlapsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new ExchangeOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createMarketOverlapsScanFieldEditorFrame(fieldId: ScanFormula.MarketOverlapsFieldId, name: string): MarketOverlapsScanFieldEditorFrame {
-            return new MarketOverlapsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new MarketOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
         private createIsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Is, name: string): IsScanFieldEditorFrame {
-            return new IsScanFieldEditorFrame(fieldId, name, this._removeFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new IsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
         }
     }
 }

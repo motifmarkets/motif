@@ -18,7 +18,7 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
     constructor(
         fieldId: MarketBoardOverlapsScanFieldEditorFrame.FieldId,
         name: string,
-        removeMeEventer: ScanFieldEditorFrame.RemoveMeEventHandler,
+        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
         changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
     ) {
         super(
@@ -27,7 +27,7 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
             name,
             new MarketBoardOverlapsScanFieldEditorFrame.conditions(),
             MarketBoardOverlapsScanFieldEditorFrame.conditionTypeId,
-            removeMeEventer,
+            deleteMeEventer,
             changedEventer,
         );
     }
@@ -40,11 +40,11 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
     }
 
     private createCondition(operatorId: MarketBoardOverlapsScanFieldEditorFrame.OperatorId): MarketBoardOverlapsScanFieldConditionEditorFrame {
-        const { removeMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
+        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Overlaps:
             case ScanFieldCondition.OperatorId.NotOverlaps:
-                return new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, [], removeMeEventer, changedEventer);
+                return new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, [], deleteMeEventer, changedEventer);
             default:
                 throw new UnreachableCaseError('MBOSFEFCC22298', operatorId);
         }

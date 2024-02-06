@@ -13,10 +13,10 @@ export abstract class NumericScanFieldConditionEditorFrame extends ScanFieldCond
     constructor(
         operandsTypeId: ScanFieldCondition.Operands.TypeId,
         affirmativeOperatorDisplayLines: readonly string[],
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(NumericScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(NumericScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     abstract get operands(): BaseNumericScanFieldCondition.Operands;

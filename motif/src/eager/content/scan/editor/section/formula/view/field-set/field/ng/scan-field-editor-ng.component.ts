@@ -4,15 +4,16 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ElementRef, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
 import {
     AssertInternalError,
+    ChangeSubscribableComparableList,
     CommandRegisterService,
-    EnumInfoOutOfOrderError,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     Integer,
+    InternalCommand,
     MultiEvent,
     ScanConditionSet,
     ScanField,
@@ -22,10 +23,13 @@ import {
     UnreachableCaseError,
     UsableListChangeType,
     UsableListChangeTypeId,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
-import { CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
+import { CategoryValueScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
+import { ScanFieldConditionEditorFrame } from '../internal-api';
 import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
 
 @Component({
@@ -35,16 +39,16 @@ import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
+    @ViewChild('requiresLabel', { static: true }) private _requiresLabelComponent: CaptionLabelNgComponent;
     @ViewChild('requiresAllControl', { static: true }) private _requiresAllControlComponent: CaptionedRadioNgComponent;
     @ViewChild('requiresAnyControl', { static: true }) private _requiresAnyControlComponent: CaptionedRadioNgComponent;
     @ViewChild('requiresExactly1Of2Control', { static: true }) private _requiresExactly1Of2ControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('removeMeControl', { static: true }) private _removeMeControlComponent: SvgButtonNgComponent;
+    @ViewChild('deleteMeControl', { static: true }) private _deleteMeControlComponent: SvgButtonNgComponent;
     @ViewChild('addConditionControl', { static: true }) private _addConditionControlComponent: EnumInputNgComponent;
-    @ViewChild('conditionsContainer', { read: ViewContainerRef, static: true }) private _conditionsContainer: ViewContainerRef;
+    @ViewChild('conditionsContainer', { read: ViewContainerRef, static: true }) private _conditionEditorFrameComponentsContainer: ViewContainerRef;
 
-    public fieldNameLabel = Strings[StringId.FieldName];
-    public requiresLabel = Strings[StringId.Requires];
-    public conditionsLabel = Strings[StringId.Conditions];
+    public fieldNameLabel = Strings[StringId.ScanFieldEditor_FieldName];
+    public conditionsLabel = Strings[StringId.ScanFieldEditor_Conditions];
     public requiresRadioName: string;
 
     private _frame: ScanFieldEditorFrame | undefined;
@@ -52,9 +56,11 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     private _frameFieldsListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     private _fieldName = '';
+    private _valid = false;
+    private _errorText = '';
 
     private readonly _requiresUiAction: ExplicitElementsEnumUiAction;
-    private readonly _removeMeUiAction: IconButtonUiAction;
+    private readonly _deleteMeUiAction: IconButtonUiAction;
     private readonly _addConditionUiAction: ExplicitElementsEnumUiAction;
 
     constructor(
@@ -69,15 +75,16 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
         this.requiresRadioName = this.generateInstancedRadioName('requiresRadioName');
         this._requiresUiAction = this.createRequiresUiAction();
-        this._removeMeUiAction = this.createRemoveMeUiAction(commandRegisterService);
+        this._deleteMeUiAction = this.createDeleteMeUiAction(commandRegisterService);
         this._addConditionUiAction = this.createAddConditionUiAction();
 
         // remove these when ScanConditionSet properly used
         this._requiresUiAction.pushValue(ScanConditionSet.BooleanOperationId.And);
-        this._removeMeUiAction.pushValue(false);
     }
 
     public get fieldName() { return this._fieldName }
+    public get valid() { return this._valid }
+    public get errorText() { return this._errorText }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -96,7 +103,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             this.connectToFrame(value);
             this.pushAddConditionElements(value.supportedOperatorIds);
             this.pushProperties(value);
-            this.loadConditions(value.conditions);
+            this.loadConditionEditorFrames(value.conditions);
 
             if (wasPreviouslyUndefined) {
                 this._requiresUiAction.pushValidOrMissing();
@@ -106,10 +113,11 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private initialiseComponents() {
+        this._requiresLabelComponent.initialise(this._requiresUiAction);
         this._requiresAllControlComponent.initialiseEnum(this._requiresUiAction, ScanField.BooleanOperationId.And);
         this._requiresAnyControlComponent.initialiseEnum(this._requiresUiAction, ScanField.BooleanOperationId.Or);
         this._requiresExactly1Of2ControlComponent.initialiseEnum(this._requiresUiAction, ScanField.BooleanOperationId.Xor);
-        this._removeMeControlComponent.initialise(this._removeMeUiAction);
+        this._deleteMeControlComponent.initialise(this._deleteMeUiAction);
         this._addConditionControlComponent.initialise(this._addConditionUiAction);
     }
 
@@ -118,7 +126,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             this.disconnectFromFrame();
         }
         this._requiresUiAction.finalise();
-        this._removeMeUiAction.finalise();
+        this._deleteMeUiAction.finalise();
         this._addConditionUiAction.finalise();
     }
 
@@ -147,8 +155,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         const elementPropertiesArray = supportedOperatorIds.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ScanFieldCondition.Operator.idToCaption(id),
-                    title: ScanFieldCondition.Operator.idToTitle(id),
+                    caption: ScanFieldCondition.Operator.idToDisplay(id),
+                    title: ScanFieldCondition.Operator.idToDescription(id),
                 }
             )
         );
@@ -168,8 +176,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         this.pushAddConditionElements([]);
         this._addConditionUiAction.pushDisabled();
 
-        if (this._conditionsContainer.length > 0) {
-            this._conditionsContainer.clear();
+        if (this._conditionEditorFrameComponentsContainer.length > 0) {
+            this._conditionEditorFrameComponentsContainer.clear();
         }
     }
 
@@ -177,6 +185,19 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         if (this._fieldName !== frame.name) {
             this._fieldName = frame.name;
             this.markForCheck();
+        }
+
+        if (frame.valid !== this._valid) {
+            this._valid = frame.valid;
+            this._errorText = this._valid ? '' : frame.errorText;
+            this.markForCheck();
+        } else {
+            if (!this._valid) {
+                if (frame.errorText !== this._errorText) {
+                    this._errorText = frame.errorText;
+                    this.markForCheck();
+                }
+            }
         }
 
         this._requiresUiAction.pushValue(frame.conditionsOperationId);
@@ -190,15 +211,13 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             case UsableListChangeTypeId.Usable:
                 throw new AssertInternalError('SFENCPCLCU33323');
             case UsableListChangeTypeId.Insert:
-                this.insertConditions(idx, count);
+                this.insertConditionEditorFrameComponents(idx, count);
                 break;
             case UsableListChangeTypeId.BeforeReplace:
                 break;
             case UsableListChangeTypeId.AfterReplace: {
-                for (let i = 0; i < count; i++) {
-                    this._conditionsContainer.remove(idx);
-                }
-                this.insertConditions(idx, count);
+                this.removeConditionEditorFrameComponents(idx, count);
+                this.insertConditionEditorFrameComponents(idx, count);
                 break;
             }
             case UsableListChangeTypeId.BeforeMove:
@@ -208,22 +227,20 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
                 if (moveCount !== 1) {
                     throw new AssertInternalError('SFENCPCLCMC33323', moveCount.toString());
                 } else {
-                    const ref = this._conditionsContainer.get(fromIndex);
+                    const ref = this._conditionEditorFrameComponentsContainer.get(fromIndex);
                     if (ref === null) {
                         throw new AssertInternalError('SFENCPCLCMR33323');
                     } else {
-                        this._conditionsContainer.move(ref, toIndex);
+                        this._conditionEditorFrameComponentsContainer.move(ref, toIndex);
                         break;
                     }
                 }
             }
             case UsableListChangeTypeId.Remove:
-                for (let i = 0; i < count; i++) {
-                    this._conditionsContainer.remove(idx);
-                }
+                this.removeConditionEditorFrameComponents(idx, count);
                 break;
             case UsableListChangeTypeId.Clear:
-                this._conditionsContainer.clear();
+                this._conditionEditorFrameComponentsContainer.clear();
                 break;
             default:
                 throw new UnreachableCaseError('SFENCPCLCD33323', listChangeTypeId);
@@ -232,14 +249,15 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     private createRequiresUiAction() {
         const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.ScanFieldEditor_Requires]);
-        action.pushTitle(Strings[StringId.ScanFieldEditor_SpecifyHowManyConditionsNeedToBeMet]);
-        const ids = ScanField.BooleanOperation.getAllIds();
+        action.pushCaption(Strings[StringId.ScanFieldEditor_RequiresDisplay]);
+        action.pushTitle(Strings[StringId.ScanFieldEditor_RequiresDescription]);
+        const ids = ScanField.BooleanOperation.allIds;
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
-            (id) => ({
+            (id) => (
+                {
                     element: id,
-                    caption: ScanField.BooleanOperation.idToCaption(id),
-                    title: ScanField.BooleanOperation.idToTitle(id),
+                    caption: ScanField.BooleanOperation.idToDisplay(id),
+                    title: ScanField.BooleanOperation.idToDescription(id),
                 }
             )
         );
@@ -256,19 +274,19 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         return action;
     }
 
-    private createRemoveMeUiAction(commandRegisterService: CommandRegisterService) {
-        const commandName = InternalCommand.Id.ScanFieldEditor_RemoveMe;
-        const displayId = StringId.ScanFieldEditor_RemoveMe;
+    private createDeleteMeUiAction(commandRegisterService: CommandRegisterService) {
+        const commandName = InternalCommand.Id.ScanField_DeleteMe;
+        const displayId = StringId.ScanFieldEditor_DeleteMeDisplay;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushTitle(Strings[StringId.DeleteField]);
+        action.pushTitle(Strings[StringId.ScanFieldEditor_DeleteMeDescription]);
         action.pushIcon(IconButtonUiAction.IconId.Delete);
         action.pushUnselected();
         action.signalEvent = () => {
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCRMUA43211');
             } else {
-                this._frame.remove();
+                this._frame.deleteMe();
             }
         };
 
@@ -276,36 +294,88 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private createAddConditionUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.ScanFieldEditor_Add]);
-        action.pushTitle(Strings[StringId.ScanFieldEditor_AddCondition]);
+        const action = new ExplicitElementsEnumUiAction(false);
+        action.pushCaption(Strings[StringId.Add]);
+        action.pushPlaceholder(Strings[StringId.ScanFieldEditor_AddConditionDisplay]);
+        action.pushTitle(Strings[StringId.ScanFieldEditor_AddConditionDescription]);
         action.commitEvent = () => {
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCACUA43211');
             } else {
                 this._frame.addCondition(this._addConditionUiAction.definedValue);
+                delay1Tick(() => this._addConditionUiAction.pushValue(undefined));
             }
         }
 
         return action;
     }
 
-    private insertConditions(index: Integer, count: Integer) {
+    private loadConditionEditorFrames(conditionEditorFrames: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>) {
+        this._conditionEditorFrameComponentsContainer.clear();
+        const conditionCount = conditionEditorFrames.count;
+        for (let i = 0; i < conditionCount; i++) {
+            const frame = conditionEditorFrames.getAt(i);
+            this.insertConditionEditorFrameComponent(frame, i);
+        }
+    }
+
+    private insertConditionEditorFrameComponents(index: Integer, count: Integer) {
         const frame = this._frame;
         if (frame === undefined) {
             throw new AssertInternalError('SFENCIC39872');
         } else {
             const afterRangeIdx = index + count;
             for (let i = index; i < afterRangeIdx; i++) {
-                this.insertCondition(frame, i);
+                const conditionFrame = frame.conditions.getAt(index);
+                this.insertConditionEditorFrameComponent(conditionFrame, i);
             }
         }
     }
 
-    private insertCondition(frame: ScanFieldEditorFrame, index: Integer) {
-        const conditionFrame = frame.conditions.getAt(index);
-        const conditionViewRef = this.createConditionComponent(conditionFrame.operandsTypeId, conditionFrame);
-        this._conditionsContainer.insert(conditionViewRef, index);
+    private insertConditionEditorFrameComponent(frame: ScanFieldConditionEditorFrame, index: Integer) {
+        const conditionFrameProvider: ValueProvider = {
+            provide: ScanFieldConditionEditorFrame.injectionToken,
+            useValue: frame,
+        }
+
+        const injector = Injector.create({
+            providers: [conditionFrameProvider],
+        });
+
+        this.createConditionEditorFrameComponent(frame.operandsTypeId, index, injector);
+    }
+
+    private createConditionEditorFrameComponent(
+        operandsTypeId: ScanFieldCondition.Operands.TypeId,
+        index: Integer,
+        injector: Injector,
+    ): ComponentRef<ScanFieldConditionOperandsEditorNgDirective> {
+        switch (operandsTypeId) {
+            case ScanFieldCondition.Operands.TypeId.HasValue:
+            case ScanFieldCondition.Operands.TypeId.NumericComparisonValue:
+            case ScanFieldCondition.Operands.TypeId.NumericValue:
+            case ScanFieldCondition.Operands.TypeId.DateValue:
+            case ScanFieldCondition.Operands.TypeId.NumericRange:
+            case ScanFieldCondition.Operands.TypeId.DateRange:
+            case ScanFieldCondition.Operands.TypeId.TextValue:
+            case ScanFieldCondition.Operands.TypeId.TextContains:
+            case ScanFieldCondition.Operands.TypeId.TextEnum:
+            case ScanFieldCondition.Operands.TypeId.CurrencyEnum:
+            case ScanFieldCondition.Operands.TypeId.ExchangeEnum:
+            case ScanFieldCondition.Operands.TypeId.MarketEnum:
+            case ScanFieldCondition.Operands.TypeId.MarketBoardEnum:
+                throw new Error('todo');
+            case ScanFieldCondition.Operands.TypeId.CategoryValue:
+                return this._conditionEditorFrameComponentsContainer.createComponent(CategoryValueScanFieldConditionOperandsEditorNgComponent, { index, injector });
+            default:
+                throw new UnreachableCaseError('SFENCCCC66723', operandsTypeId);
+        }
+    }
+
+    private removeConditionEditorFrameComponents(idx: number, count: number) {
+        for (let i = 0; i < count; i++) {
+            this._conditionEditorFrameComponentsContainer.remove(idx);
+        }
     }
 
     private markForCheck() {
@@ -316,164 +386,5 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 export namespace ScanFieldEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
-
-    export namespace SetOperation {
-        export type Id = ScanConditionSet.BooleanOperationId;
-
-        interface Info {
-            readonly id: Id;
-            readonly captionId: StringId;
-            readonly titleId: StringId;
-        }
-
-        type InfosObject = { [id in keyof typeof ScanConditionSet.BooleanOperationId]: Info };
-        const infosObject: InfosObject = {
-            Or: {
-                id: ScanConditionSet.BooleanOperationId.Or,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_Any,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_Any,
-            },
-            And: {
-                id: ScanConditionSet.BooleanOperationId.And,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_All,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_All,
-            },
-        } as const;
-
-        const infos = Object.values(infosObject);
-        export const idCount = infos.length;
-
-        export function initialise() {
-            for (let i = 0; i < idCount; i++) {
-                const info = infos[i];
-                if (info.id !== i as ScanConditionSet.BooleanOperationId) {
-                    throw new EnumInfoOutOfOrderError('ConditionSetScanFormulaViewNgComponent.SetOperationId', i, Strings[info.captionId]);
-                }
-            }
-        }
-
-        export function getAllIds() {
-            return infos.map((info) => info.id);
-        }
-
-        export function idToCaptionId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToCaption(id: Id) {
-            return Strings[idToCaptionId(id)];
-        }
-
-        export function idToTitleId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToTitle(id: Id) {
-            return Strings[idToTitleId(id)];
-        }
-    }
-
-    export const enum ConditionKindId {
-        Compare,
-        InRange,
-        Equals,
-        Includes,
-        Contains,
-        Has,
-        Is,
-        All,
-        None,
-    }
-
-    export namespace ConditionKind {
-        export type Id = ConditionKindId;
-
-        interface Info {
-            readonly id: Id;
-            readonly captionId: StringId;
-            readonly titleId: StringId;
-        }
-
-        type InfosObject = { [id in keyof typeof ConditionKindId]: Info };
-        const infosObject: InfosObject = {
-            Compare: {
-                id: ConditionKindId.Compare,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Compare,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Compare,
-            },
-            InRange: {
-                id: ConditionKindId.InRange,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_InRange,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_InRange,
-            },
-            Equals: {
-                id: ConditionKindId.Equals,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Equals,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Equals,
-            },
-            Includes: {
-                id: ConditionKindId.Includes,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Includes,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Includes,
-            },
-            Contains: {
-                id: ConditionKindId.Contains,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Contains,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Contains,
-            },
-            Has: {
-                id: ConditionKindId.Has,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Has,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Has,
-            },
-            Is: {
-                id: ConditionKindId.Is,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Is,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Is,
-            },
-            All: {
-                id: ConditionKindId.All,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_All,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_All,
-            },
-            None: {
-                id: ConditionKindId.None,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_None,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_None,
-            },
-        } as const;
-
-        const infos = Object.values(infosObject);
-        export const idCount = infos.length;
-
-        export function initialise() {
-            for (let i = 0; i < idCount; i++) {
-                const info = infos[i];
-                if (info.id !== i as ConditionKindId) {
-                    throw new EnumInfoOutOfOrderError('ConditionSetScanFormulaViewNgComponent.ConditionKindId', i, Strings[info.captionId]);
-                }
-            }
-        }
-
-        export function getAllIds() {
-            return infos.map((info) => info.id);
-        }
-
-        export function idToCaptionId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToCaption(id: Id) {
-            return Strings[idToCaptionId(id)];
-        }
-
-        export function idToTitleId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToTitle(id: Id) {
-            return Strings[idToTitleId(id)];
-        }
-    }
 }
 

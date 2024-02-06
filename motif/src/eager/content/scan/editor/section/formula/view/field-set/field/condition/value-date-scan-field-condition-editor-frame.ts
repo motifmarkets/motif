@@ -17,11 +17,11 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     constructor(
         private _operatorId: ValueDateScanFieldConditionEditorFrame.OperatorId,
         private _value: SourceTzOffsetDateTime | undefined,
-        removeMeEventer: ScanFieldConditionEditorFrame.RemoveMeEventer,
+        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
         changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, removeMeEventer, changedEventer);
+        super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
     }
 
     override get operands(): DateScanFieldCondition.Operands {
