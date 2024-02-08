@@ -4,23 +4,23 @@
  * License: motionite.trade/license/motif
  */
 
-import { AltCodeSubbedScanField, ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
+import { AltCodeSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame, TextHasValueContainsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 import { TextHasValueContainsSubbedScanFieldEditorFrame } from './text-has-value-contains-subbed-scan-field-editor-frame';
 
 export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbedScanFieldEditorFrame implements AltCodeSubbedScanField {
-    declare readonly typeId: AltCodeSubbedScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: AltCodeSubbedScanFieldEditorFrame.FieldId;
-    declare readonly subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly typeId: AltCodeSubbedScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: AltCodeSubbedScanFieldEditorFrame.ScanFormulaFieldId;
+    declare readonly subFieldId: AltCodeSubbedScanFieldEditorFrame.ScanFormulaSubFieldId;
     declare readonly conditions: AltCodeSubbedScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: AltCodeSubbedScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        subFieldId: AltCodeSubbedScanFieldEditorFrame.SubFieldId,
+        subFieldId: AltCodeSubbedScanFieldEditorFrame.ScanFormulaSubFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             AltCodeSubbedScanFieldEditorFrame.typeId,
@@ -38,13 +38,13 @@ export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbe
 }
 
 export namespace AltCodeSubbedScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.AltCodeSubbed;
     export const typeId = ScanField.TypeId.AltCodeSubbed;
-    export type FieldId = ScanFormula.FieldId.AltCodeSubbed;
+    export type ScanFieldTypeId = typeof typeId;
     export const fieldId = ScanFormula.FieldId.AltCodeSubbed;
-    export type SubFieldId = ScanFormula.AltCodeSubFieldId;
-    export type Conditions = ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFormulaFieldId = typeof fieldId;
+    export type ScanFormulaSubFieldId = ScanFormula.AltCodeSubFieldId;
+    export type Conditions = UiBadnessComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
 }

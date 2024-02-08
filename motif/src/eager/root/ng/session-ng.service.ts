@@ -18,6 +18,7 @@ import {
     SettingsNgService,
     SignOutNgService,
     SymbolsNgService,
+    TableFieldSourceDefinitionRegistryNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
 import { ExtensionsNgService } from 'extensions-ng-api';
@@ -50,6 +51,7 @@ export class SessionNgService implements OnDestroy {
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
         scansNgService: ScansNgService,
+        tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryNgService,
         sessionInfoNgService: SessionInfoNgService,
         hideUnloadSaveNgService: HideUnloadSaveNgService,
         signOutNgService: SignOutNgService,
@@ -68,6 +70,7 @@ export class SessionNgService implements OnDestroy {
             adiNgService.service,
             symbolsNgService.service,
             scansNgService.service,
+            tableFieldSourceDefinitionRegistryService.service,
             hideUnloadSaveNgService.service,
             signOutNgService.service,
         );

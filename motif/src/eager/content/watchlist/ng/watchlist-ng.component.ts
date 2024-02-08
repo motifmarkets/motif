@@ -13,7 +13,7 @@ import { WatchlistFrame } from '../watchlist-frame';
 export class WatchlistNgComponent extends DelayedBadnessGridSourceNgDirective {
     private static typeInstanceCreateCount = 0;
 
-    declare frame: WatchlistFrame;
+    declare frame: WatchlistNgComponent.Frame;
 
     public gridHostFlexBasis = '';
 
@@ -22,7 +22,7 @@ export class WatchlistNgComponent extends DelayedBadnessGridSourceNgDirective {
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
     ) {
-        const frame = contentNgService.createWatchlistFrame();
+        const frame: WatchlistNgComponent.Frame = contentNgService.createWatchlistFrame();
         super(elRef, ++WatchlistNgComponent.typeInstanceCreateCount, cdr, frame);
     }
 
@@ -36,4 +36,8 @@ export class WatchlistNgComponent extends DelayedBadnessGridSourceNgDirective {
             }
         }
     }
+}
+
+export namespace WatchlistNgComponent {
+    export type Frame = WatchlistFrame;
 }

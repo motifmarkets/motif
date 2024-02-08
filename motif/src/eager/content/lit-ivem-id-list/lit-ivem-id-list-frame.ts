@@ -3,6 +3,7 @@ import {
     AdaptedRevgridGridSettings,
     CellPainterFactoryService,
     GridField,
+    GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
     GridSourceOrReference,
@@ -15,6 +16,7 @@ import {
     ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
+    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextHeaderCellPainter,
@@ -43,7 +45,9 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
+        tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         referenceableGridSourcesService: ReferenceableGridSourcesService,
@@ -52,7 +56,9 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     ) {
         super(
             settingsService,
+            gridFieldCustomHeadingsService,
             referenceableGridLayoutsService,
+            tableFieldSourceDefinitionRegistryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             referenceableGridSourcesService,

@@ -4,22 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, DateSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { DateSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { DateScanFieldConditionEditorFrame, HasValueDateScanFieldConditionEditorFrame, RangeDateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, ValueDateScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implements DateSubbedScanField {
-    declare readonly typeId: DateSubbedScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: DateSubbedScanFieldEditorFrame.FieldId;
-    declare readonly subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly typeId: DateSubbedScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: DateSubbedScanFieldEditorFrame.ScanFormulaFieldId;
+    declare readonly subFieldId: DateSubbedScanFieldEditorFrame.ScanFormulaSubFieldId;
     declare readonly conditions: DateSubbedScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: DateSubbedScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        subFieldId: DateSubbedScanFieldEditorFrame.SubFieldId,
+        subFieldId: DateSubbedScanFieldEditorFrame.ScanFormulaSubFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             DateSubbedScanFieldEditorFrame.typeId,
@@ -59,13 +59,13 @@ export class DateSubbedScanFieldEditorFrame extends ScanFieldEditorFrame impleme
 }
 
 export namespace DateSubbedScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.DateSubbed;
     export const typeId = ScanField.TypeId.DateSubbed;
-    export type FieldId = ScanFormula.FieldId.DateSubbed;
+    export type ScanFieldTypeId = typeof typeId;
     export const fieldId = ScanFormula.FieldId.DateSubbed;
-    export type SubFieldId = ScanFormula.DateSubFieldId;
-    export type Conditions = ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFormulaFieldId = typeof fieldId;
+    export type ScanFormulaSubFieldId = ScanFormula.DateSubFieldId;
+    export type Conditions = UiBadnessComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<DateScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Date;
     export const conditionTypeId = ScanFieldCondition.TypeId.Date;
     export type OperatorId = DateScanFieldConditionEditorFrame.OperatorId;

@@ -4,21 +4,21 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, NotSubbedScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
+import { NotSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implements NotSubbedScanField{
-    declare readonly subFieldId: NotSubbedScanFieldEditorFrame.SubFieldId;
+    declare readonly subFieldId: NotSubbedScanFieldEditorFrame.ScanFormulaSubFieldId;
 
     constructor(
         typeId: ScanField.TypeId,
         fieldId: ScanFormula.FieldId,
         name: string,
-        conditions: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>,
+        conditions: UiBadnessComparableList<ScanFieldConditionEditorFrame>,
         conditionTypeId: ScanFieldCondition.TypeId,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             typeId,
@@ -34,6 +34,6 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
 }
 
 export namespace NotSubbedScanFieldEditorFrame {
-    export type SubFieldId = undefined;
     export const subFieldId = undefined;
+    export type ScanFormulaSubFieldId = typeof subFieldId;
 }

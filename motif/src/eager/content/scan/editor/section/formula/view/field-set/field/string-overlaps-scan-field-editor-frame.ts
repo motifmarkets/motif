@@ -4,22 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, StringOverlapsScanField, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ScanField, ScanFieldCondition, ScanFormula, StringOverlapsScanField, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { OverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, StringOverlapsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements StringOverlapsScanField {
-    declare readonly typeId: StringOverlapsScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: StringOverlapsScanFieldEditorFrame.FieldId;
+    declare readonly typeId: StringOverlapsScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: StringOverlapsScanFieldEditorFrame.ScanFormulaFieldId;
     declare readonly conditions: StringOverlapsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: StringOverlapsScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        fieldId: StringOverlapsScanFieldEditorFrame.FieldId,
+        fieldId: StringOverlapsScanFieldEditorFrame.ScanFormulaFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             StringOverlapsScanFieldEditorFrame.typeId,
@@ -52,11 +52,11 @@ export class StringOverlapsScanFieldEditorFrame extends NotSubbedScanFieldEditor
 }
 
 export namespace StringOverlapsScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.StringOverlaps;
     export const typeId = ScanField.TypeId.StringOverlaps;
-    export type FieldId = ScanFormula.StringOverlapsFieldId;
-    export type Conditions = ChangeSubscribableComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFieldTypeId = typeof typeId;
+    export type ScanFormulaFieldId = ScanFormula.StringOverlapsFieldId;
+    export type Conditions = UiBadnessComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<StringOverlapsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.StringOverlaps;
     export const conditionTypeId = ScanFieldCondition.TypeId.StringOverlaps;
     export type OperatorId = OverlapsScanFieldConditionEditorFrame.OperatorId;

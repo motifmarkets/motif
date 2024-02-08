@@ -15,6 +15,7 @@ import {
     EditableGridLayoutDefinitionColumnList,
     EditableGridLayoutDefinitionColumnTableRecordSource,
     GridField,
+    GridFieldCustomHeadingsService,
     GridSourceDefinition,
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
@@ -25,6 +26,7 @@ import {
     ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
+    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextHeaderCellPainter,
@@ -46,7 +48,9 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
+        tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         namedGridSourcesService: ReferenceableGridSourcesService,
@@ -55,7 +59,9 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     ) {
         super(
             settingsService,
+            gridFieldCustomHeadingsService,
             namedGridLayoutsService,
+            tableFieldSourceDefinitionRegistryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             namedGridSourcesService,

@@ -30,7 +30,7 @@ import {
     SettingsService,
     StringId,
     Strings,
-    SymbolsService, TradingEnvironment,
+    SymbolsService, TableFieldSourceDefinitionRegistryService, TradingEnvironment,
     UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
@@ -44,6 +44,7 @@ import { HideUnloadSaveService, SignOutService } from 'component-services-intern
 import { ExtensionsService } from 'extensions-internal-api';
 import { Version } from 'generated-internal-api';
 import { WorkspaceService } from 'workspace-internal-api';
+import { ScanFieldEditorFrameTableFieldSourceDefinition } from '../content/internal-api';
 import { Config } from './config';
 import { OpenIdService } from './open-id-service';
 import { TelemetryService } from './telemetry-service';
@@ -93,6 +94,7 @@ export class SessionService {
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
         private readonly _scansService: ScansService,
+        private readonly _tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _signoutService: SignOutService,
     ) {
@@ -172,6 +174,7 @@ export class SessionService {
         this._appStorageService.initialise(storageTypeId, this._serviceOperatorId);
 
         await this.processLoadSettings();
+        this.processRegistrations();
         this.processLoadExtensions();
 
         this.finishStartup();
@@ -474,6 +477,11 @@ export class SessionService {
 
             this._settingsService.load(userElement, operatorElement);
         }
+    }
+
+    private processRegistrations() {
+        const tableFieldSourceDefinition = new ScanFieldEditorFrameTableFieldSourceDefinition();
+        this._tableFieldSourceDefinitionRegistryService.register(tableFieldSourceDefinition);
     }
 
     private processLoadExtensions() {

@@ -11,12 +11,14 @@ import {
     CellPainterFactoryService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
+    GridFieldCustomHeadingsService,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourceDefinitionsStoreService,
     ReferenceableGridSourcesService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
+    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
     TextFormatterService
@@ -33,7 +35,7 @@ import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { OrdersFrame } from './orders/internal-api';
-import { ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
+import { ScanFieldEditorFramesGridFrame, ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
 import { SearchSymbolsFrame } from './search-symbols/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TradesFrame } from './trades/internal-api';
@@ -48,7 +50,9 @@ export class ContentService {
         private readonly _symbolsService: SymbolsService,
         private readonly _sessionInfoService: SessionInfoService,
         private readonly _textFormatterService: TextFormatterService,
+        private readonly _gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
+        private readonly _tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
@@ -63,7 +67,9 @@ export class ContentService {
     createFeedsFrame() {
         return new FeedsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -100,7 +106,9 @@ export class ContentService {
     createLitIvemIdListFrame(initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined) {
         return new LitIvemIdListFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -112,7 +120,9 @@ export class ContentService {
     createWatchlistFrame() {
         return new WatchlistFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourceDefinitionsStoreService,
@@ -124,7 +134,9 @@ export class ContentService {
     createScanTestMatchesFrame() {
         return new ScanTestMatchesFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -135,7 +147,9 @@ export class ContentService {
     createBrokerageAccountsFrame() {
         return new BrokerageAccountsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -146,7 +160,9 @@ export class ContentService {
     createOrdersFrame() {
         return new OrdersFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -157,7 +173,9 @@ export class ContentService {
     createOrderAuthoriseFrame() {
         return new OrderAuthoriseFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -168,7 +186,9 @@ export class ContentService {
     createHoldingsFrame() {
         return new HoldingsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -179,7 +199,9 @@ export class ContentService {
     createBalancesFrame() {
         return new BalancesFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -190,7 +212,9 @@ export class ContentService {
     createSearchSymbolsFrame() {
         return new SearchSymbolsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -201,7 +225,9 @@ export class ContentService {
     createScanListFrame() {
         return new ScanListFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -209,10 +235,26 @@ export class ContentService {
         );
     }
 
+    createScanFieldEditorFramesGridFrame() {
+        return new ScanFieldEditorFramesGridFrame(
+            this._settingsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactoryService,
+            this._referenceableGridSourcesService,
+            this._cellPainterFactoryService,
+        );
+    }
+
+
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
@@ -225,7 +267,9 @@ export class ContentService {
     createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorColumnsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceDefinitionFactoryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,

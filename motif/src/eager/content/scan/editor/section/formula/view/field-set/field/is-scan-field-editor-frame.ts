@@ -4,22 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, IsScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { IsScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements IsScanField {
-    declare readonly typeId: IsScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: IsScanFieldEditorFrame.FieldId;
+    declare readonly typeId: IsScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: IsScanFieldEditorFrame.ScanFormulaFieldId;
     declare readonly conditions: IsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: IsScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        fieldId: IsScanFieldEditorFrame.FieldId,
+        fieldId: IsScanFieldEditorFrame.ScanFormulaFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             IsScanFieldEditorFrame.typeId,
@@ -52,11 +52,11 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
 }
 
 export namespace IsScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.Is;
     export const typeId = ScanField.TypeId.Is;
-    export type FieldId = ScanFormula.FieldId.Is;
-    export type Conditions = ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFieldTypeId = typeof typeId;
+    export type ScanFormulaFieldId = ScanFormula.FieldId.Is;
+    export type Conditions = UiBadnessComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<IsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Is;
     export const conditionTypeId = ScanFieldCondition.TypeId.Is;
     export type OperatorId = IsScanFieldConditionEditorFrame.OperatorId;

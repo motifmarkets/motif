@@ -13,6 +13,7 @@ import {
     CellPainterFactoryService,
     ErrorCode,
     GridField,
+    GridFieldCustomHeadingsService,
     GridLayout,
     GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
@@ -30,6 +31,7 @@ import {
     Result,
     SettingsService,
     Table,
+    TableFieldSourceDefinitionRegistryService,
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
@@ -70,7 +72,9 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     constructor(
         protected readonly settingsService: SettingsService,
+        protected readonly gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
+        protected readonly tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
@@ -260,6 +264,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
         const gridSourceOrReference = new GridSourceOrReference(
             this._referenceableGridLayoutsService,
+            this.tableFieldSourceDefinitionRegistryService,
             this._tableRecordSourceFactoryService,
             this._referenceableGridSourcesService,
             definition

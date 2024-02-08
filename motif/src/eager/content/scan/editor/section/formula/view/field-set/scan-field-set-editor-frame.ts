@@ -8,7 +8,7 @@ import {
     AltCodeSubbedScanField,
     AssertInternalError,
     AttributeSubbedScanField,
-    ChangeSubscribableComparableList,
+    BadnessComparableList,
     CurrencyOverlapsScanField,
     DateInRangeScanField,
     DateSubbedScanField,
@@ -31,7 +31,7 @@ import {
     TextEqualsScanField,
     TextHasValueEqualsScanField,
     UnreachableCaseError,
-    UsableListChangeTypeId,
+    UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
 import {
     AltCodeSubbedScanFieldEditorFrame,
@@ -55,13 +55,11 @@ import {
 export class ScanFieldSetEditorFrame implements ScanFieldSet {
     readonly fieldFactory: ScanFieldSetEditorFrame.FieldFactory;
     readonly conditionFactory: ScanFieldEditorFrame.ConditionFactory;
-    readonly fields: ChangeSubscribableComparableList<ScanFieldEditorFrame>;
-    readonly definitionByNameMap: ScanFieldSetEditorFrame.DefinitionByNameMap;
-    readonly definitionByIdsMap: ScanFieldSetEditorFrame.DefinitionByIdsMap;
+    readonly fields: BadnessComparableList<ScanFieldEditorFrame>;
 
     loadError: ScanFieldSetLoadError | undefined;
 
-    private readonly _allDefinitions: readonly ScanFieldEditorFrame.Definition[];
+    private readonly _allFieldDefinitions: readonly ScanFieldEditorFrame.Definition[];
 
     private _valid = false;
     private _fieldListChangeSubscriptionId: MultiEvent.SubscriptionId;
@@ -71,27 +69,22 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
     ) {
         this.fieldFactory = new ScanFieldSetEditorFrame.FieldFactory(this);
         this.conditionFactory = new ScanFieldEditorFrame.ConditionFactory();
-        this.fields = new ChangeSubscribableComparableList<ScanFieldEditorFrame>();
-
-        const allDefinitions = ScanFieldEditorFrame.calculateAllDefinitions();
-        this._allDefinitions = allDefinitions;
-        this.definitionByNameMap = new ScanFieldSetEditorFrame.DefinitionByNameMap(allDefinitions);
-        this.definitionByIdsMap = new ScanFieldSetEditorFrame.DefinitionByIdsMap(allDefinitions);
+        this.fields = new BadnessComparableList<ScanFieldEditorFrame>();
 
         this._fieldListChangeSubscriptionId = this.fields.subscribeListChangeEvent(
             (listChangeTypeId, idx, count) => this.handleFieldListChangeEvent(listChangeTypeId, idx, count)
         );
     }
 
-    get allDefinitions() { return this._allDefinitions; }
+    get allDefinitions() { return this._allFieldDefinitions; }
 
     destroy() {
         this.fields.unsubscribeListChangeEvent(this._fieldListChangeSubscriptionId);
         this._fieldListChangeSubscriptionId = undefined;
     }
 
-    addField(fieldName: string) {
-        const fieldEditorFrame = this.fieldFactory.createFromFieldName(fieldName);
+    addField(definitionId: number) {
+        const fieldEditorFrame = this.fieldFactory.createFromDefinitionId(definitionId);
         this.fields.add(fieldEditorFrame);
     }
 
@@ -149,129 +142,86 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
 export namespace ScanFieldSetEditorFrame {
     export type ValidChangedEventer = (this: void, valid: boolean) => void;
 
-    export class DefinitionByNameMap extends Map<string, ScanFieldEditorFrame.Definition> {
-        constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
-            for (const definition of definitions) {
-                super();
-                this.set(definition.name, definition);
-            }
-        }
-    }
-
-    export class DefinitionByIdsMap extends Map<Integer, ScanFieldEditorFrame.Definition> {
-        constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
-            for (const definition of definitions) {
-                super();
-                this.setById(definition.fieldId, definition.subFieldId, definition);
-            }
-        }
-
-        getName(fieldId: ScanFormula.FieldId, subFieldId: Integer | undefined) {
-            const key = this.calculateKey(fieldId, subFieldId);
-            const definition = this.get(key);
-            if (definition === undefined) {
-                throw new AssertInternalError('SFSEFDBIMGBI33321');
-            } else {
-                return definition.name;
-            }
-        }
-
-        setById(fieldId: ScanFormula.FieldId, subFieldId: Integer | undefined, value: ScanFieldEditorFrame.Definition) {
-            const key = this.calculateKey(fieldId, subFieldId);
-            this.set(key, value)
-        }
-
-        private calculateKey(fieldId: ScanFormula.FieldId, subFieldId: Integer | undefined): Integer {
-            let key = fieldId * ScanFormula.maxSubFieldIdCount;
-            if (subFieldId !== undefined) {
-                key += subFieldId + 1;
-            }
-            return key;
-        }
-    }
     export class FieldFactory implements ScanFieldSet.FieldFactory {
-        private readonly _definitionByIdsMap: DefinitionByIdsMap;
-        private readonly _definitionByNameMap: DefinitionByNameMap;
         private readonly _deleteFieldEditorFrameClosure: ScanFieldEditorFrame.DeleteMeEventHandler;
-        private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.ChangedEventHandler;
+        private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.ValidChangedEventHandler;
 
-        constructor(private readonly _frame: ScanFieldSetEditorFrame) {
-            this._definitionByIdsMap = _frame.definitionByIdsMap;
-            this._definitionByNameMap = _frame.definitionByNameMap;
-            this._deleteFieldEditorFrameClosure = (frame) => this._frame.deleteField(frame);
-            this._processFieldEditorFrameChangedClosure = (frame, valid) => this._frame.processFieldChanged(frame, valid);
+        constructor(private readonly _setFrame: ScanFieldSetEditorFrame) {
+            this._deleteFieldEditorFrameClosure = (frame) => this._setFrame.deleteField(frame);
+            this._processFieldEditorFrameChangedClosure = (frame, valid) => this._setFrame.processFieldChanged(frame, valid);
         }
 
         createNumericInRange(_fieldSet: ScanFieldSet, fieldId: ScanFormula.NumericRangeFieldId): Result<NumericInRangeScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createNumericInRangeScanFieldEditorFrame(fieldId, name));
         }
         createPriceSubbed(_fieldSet: ScanFieldSet, subFieldId: ScanFormula.PriceSubFieldId): Result<PriceSubbedScanField> {
-            const name = this._definitionByIdsMap.getName(ScanFormula.FieldId.PriceSubbed, subFieldId);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(ScanFormula.FieldId.PriceSubbed, subFieldId);
             return new Ok(this.createPriceSubbedScanFieldEditorFrame(subFieldId, name));
         }
         createDateInRange(_fieldSet: ScanFieldSet, fieldId: ScanFormula.DateRangeFieldId): Result<DateInRangeScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createDateInRangeScanFieldEditorFrame(fieldId, name));
         }
         createDateSubbed(_fieldSet: ScanFieldSet, subFieldId: ScanFormula.DateSubFieldId): Result<DateSubbedScanField> {
-            const name = this._definitionByIdsMap.getName(ScanFormula.FieldId.DateSubbed, subFieldId);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(ScanFormula.FieldId.DateSubbed, subFieldId);
             return new Ok(this.createDateSubbedScanFieldEditorFrame(subFieldId, name));
         }
         createTextContains(_fieldSet: ScanFieldSet, fieldId: ScanFormula.TextContainsFieldId): Result<TextContainsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createTextContainsScanFieldEditorFrame(fieldId, name));
         }
         createAltCodeSubbed(_fieldSet: ScanFieldSet, subFieldId: ScanFormula.AltCodeSubFieldId): Result<AltCodeSubbedScanField> {
-            const name = this._definitionByIdsMap.getName(ScanFormula.FieldId.AltCodeSubbed, subFieldId);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(ScanFormula.FieldId.AltCodeSubbed, subFieldId);
             return new Ok(this.createAltCodeSubbedScanFieldEditorFrame(subFieldId, name));
         }
         createAttributeSubbed(_fieldSet: ScanFieldSet, subFieldId: ScanFormula.AttributeSubFieldId): Result<AttributeSubbedScanField> {
-            const name = this._definitionByIdsMap.getName(ScanFormula.FieldId.AttributeSubbed, subFieldId);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(ScanFormula.FieldId.AttributeSubbed, subFieldId);
             return new Ok(this.createAttributeSubbedScanFieldEditorFrame(subFieldId, name));
         }
         createTextEquals(_fieldSet: ScanFieldSet, fieldId: ScanFormula.TextEqualsFieldId): Result<TextEqualsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createTextEqualsScanFieldEditorFrame(fieldId, name));
         }
         createTextHasValueEquals(_fieldSet: ScanFieldSet, fieldId: ScanFormula.TextHasValueEqualsFieldId): Result<TextHasValueEqualsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createTextHasValueEqualsScanFieldEditorFrame(fieldId, name));
         }
         createStringOverlaps(_fieldSet: ScanFieldSet, fieldId: ScanFormula.StringOverlapsFieldId): Result<StringOverlapsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createStringOverlapsScanFieldEditorFrame(fieldId, name));
         }
         createMarketBoardOverlaps(_fieldSet: ScanFieldSet, fieldId: ScanFormula.FieldId.MarketBoard): Result<MarketBoardOverlapsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createMarketBoardOverlapsScanFieldEditorFrame(fieldId, name));
         }
         createCurrencyOverlaps(_fieldSet: ScanFieldSet, fieldId: ScanFormula.FieldId.Currency): Result<CurrencyOverlapsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createCurrencyOverlapsScanFieldEditorFrame(fieldId, name));
         }
         createExchangeOverlaps(_fieldSet: ScanFieldSet, fieldId: ScanFormula.FieldId.Exchange): Result<ExchangeOverlapsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createExchangeOverlapsScanFieldEditorFrame(fieldId, name));
         }
         createMarketOverlaps(_fieldSet: ScanFieldSet, fieldId: ScanFormula.MarketOverlapsFieldId): Result<MarketOverlapsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createMarketOverlapsScanFieldEditorFrame(fieldId, name));
         }
         createIs(_fieldSet: ScanFieldSet, fieldId: ScanFormula.FieldId.Is): Result<IsScanField> {
-            const name = this._definitionByIdsMap.getName(fieldId, undefined);
+            const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createIsScanFieldEditorFrame(fieldId, name));
         }
 
-        createFromFieldName(fieldName: string): ScanFieldEditorFrame {
-            const definition = this._definitionByNameMap.get(fieldName);
+        createFromDefinitionId(definitionId: number): ScanFieldEditorFrame {
+            const definition = ScanFieldEditorFrame.definitionByTypeIdMap.get(definitionId);
             if (definition === undefined) {
-                throw new AssertInternalError('SFSEFCSFEF32200', fieldName);
+                throw new AssertInternalError('SFSEFCSFEF32200', definitionId.toString());
             } else {
-                const typeId = definition.typeId;
-                const fieldId = definition.fieldId;
-                const subFieldId = definition.subFieldId;
-                switch (typeId) {
+                const scanFieldTypeId = definition.scanFieldTypeId;
+                const fieldId = definition.scanFormulaFieldId;
+                const subFieldId = definition.scanFormulaSubFieldId;
+                const fieldName = definition.name;
+                switch (scanFieldTypeId) {
                     case ScanField.TypeId.NumericInRange:
                         return this.createNumericInRangeScanFieldEditorFrame(fieldId as ScanFormula.NumericRangeFieldId, fieldName);
                     case ScanField.TypeId.PriceSubbed:
@@ -303,7 +253,7 @@ export namespace ScanFieldSetEditorFrame {
                     case ScanField.TypeId.Is:
                         return this.createIsScanFieldEditorFrame(fieldId as ScanFormula.FieldId.Is, fieldName);
                     default:
-                        throw new UnreachableCaseError('SFSEFFFCSFEF11224', typeId);
+                        throw new UnreachableCaseError('SFSEFFFCSFEF11224', scanFieldTypeId);
                 }
             }
         }

@@ -10,12 +10,14 @@ import {
     AdiNgService,
     AppStorageNgService,
     CellPainterFactoryNgService,
+    GridFieldCustomHeadingsNgService,
     ReferenceableGridLayoutsNgService,
     ReferenceableGridSourceDefinitionsStoreNgService,
     ReferenceableGridSourcesNgService,
     SessionInfoNgService,
     SettingsNgService,
     SymbolsNgService,
+    TableFieldSourceDefinitionRegistryNgService,
     TableRecordSourceDefinitionFactoryNgService,
     TableRecordSourceFactoryNgService,
     TextFormatterNgService
@@ -41,9 +43,11 @@ export class ContentNgService {
         symbolsNgService: SymbolsNgService,
         sessionInfoNgService: SessionInfoNgService,
         textFormatterNgService: TextFormatterNgService,
+        gridFieldCustomHeadingsNgService: GridFieldCustomHeadingsNgService,
+        referenceableGridLayoutsNgService: ReferenceableGridLayoutsNgService,
+        tableFieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        referenceableGridLayoutsNgService: ReferenceableGridLayoutsNgService,
         referenceableGridSourceDefinitionsStoreNgService: ReferenceableGridSourceDefinitionsStoreNgService,
         referenceableGridSourcesNgService: ReferenceableGridSourcesNgService,
         cellPainterFactoryNgService: CellPainterFactoryNgService,
@@ -55,7 +59,9 @@ export class ContentNgService {
             symbolsNgService.service,
             sessionInfoNgService.service,
             textFormatterNgService.service,
+            gridFieldCustomHeadingsNgService.service,
             referenceableGridLayoutsNgService.service,
+            tableFieldSourceDefinitionRegistryNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
             referenceableGridSourceDefinitionsStoreNgService.service,
@@ -136,6 +142,10 @@ export class ContentNgService {
 
     createScanListFrame() {
         return this._content.createScanListFrame();
+    }
+
+    createScanFieldEditorFramesGridFrame() {
+        return this._content.createScanFieldEditorFramesGridFrame();
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {

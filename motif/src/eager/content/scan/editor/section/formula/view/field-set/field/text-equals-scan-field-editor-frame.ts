@@ -4,22 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, ScanField, ScanFieldCondition, ScanFormula, TextEqualsScanField, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ScanField, ScanFieldCondition, ScanFormula, TextEqualsScanField, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame, TextEqualsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class TextEqualsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements TextEqualsScanField {
-    declare readonly typeId: TextEqualsScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: TextEqualsScanFieldEditorFrame.FieldId;
+    declare readonly typeId: TextEqualsScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: TextEqualsScanFieldEditorFrame.ScanFormulaFieldId;
     declare readonly conditions: TextEqualsScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: TextEqualsScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        fieldId: TextEqualsScanFieldEditorFrame.FieldId,
+        fieldId: TextEqualsScanFieldEditorFrame.ScanFormulaFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             TextEqualsScanFieldEditorFrame.typeId,
@@ -52,11 +52,11 @@ export class TextEqualsScanFieldEditorFrame extends NotSubbedScanFieldEditorFram
 }
 
 export namespace TextEqualsScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.TextEquals;
     export const typeId = ScanField.TypeId.TextEquals;
-    export type FieldId = ScanFormula.TextEqualsFieldId;
-    export type Conditions = ChangeSubscribableComparableList<TextEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<TextEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFieldTypeId = typeof typeId;
+    export type ScanFormulaFieldId = ScanFormula.TextEqualsFieldId;
+    export type Conditions = UiBadnessComparableList<TextEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<TextEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextEquals;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextEquals;
     export type OperatorId = TextEqualsScanFieldConditionEditorFrame.OperatorId;

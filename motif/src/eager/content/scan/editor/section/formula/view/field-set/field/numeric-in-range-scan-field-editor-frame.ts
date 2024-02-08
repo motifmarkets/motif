@@ -4,22 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeSubscribableComparableList, NumericInRangeScanField, ScanField, ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { NumericInRangeScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { HasValueNumericComparisonScanFieldConditionEditorFrame, NumericComparisonScanFieldConditionEditorFrame, RangeNumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, ValueNumericComparisonScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implements NumericInRangeScanField {
-    declare readonly typeId: NumericInRangeScanFieldEditorFrame.TypeId;
-    declare readonly fieldId: NumericInRangeScanFieldEditorFrame.FieldId;
+    declare readonly typeId: NumericInRangeScanFieldEditorFrame.ScanFieldTypeId;
+    declare readonly fieldId: NumericInRangeScanFieldEditorFrame.ScanFormulaFieldId;
     declare readonly conditions: NumericInRangeScanFieldEditorFrame.Conditions;
     declare readonly conditionTypeId: NumericInRangeScanFieldEditorFrame.ConditionTypeId;
 
     constructor(
-        fieldId: NumericInRangeScanFieldEditorFrame.FieldId,
+        fieldId: NumericInRangeScanFieldEditorFrame.ScanFormulaFieldId,
         name: string,
         deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ChangedEventHandler,
+        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             NumericInRangeScanFieldEditorFrame.typeId,
@@ -62,11 +62,11 @@ export class NumericInRangeScanFieldEditorFrame extends NotSubbedScanFieldEditor
 }
 
 export namespace NumericInRangeScanFieldEditorFrame {
-    export type TypeId = ScanField.TypeId.NumericInRange;
     export const typeId = ScanField.TypeId.NumericInRange;
-    export type FieldId = ScanFormula.NumericRangeFieldId;
-    export type Conditions = ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = ChangeSubscribableComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type ScanFieldTypeId = typeof typeId;
+    export type ScanFormulaFieldId = ScanFormula.NumericRangeFieldId;
+    export type Conditions = UiBadnessComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export const conditions = UiBadnessComparableList<NumericComparisonScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
     export const conditionTypeId = ScanFieldCondition.TypeId.NumericComparison;
     export type OperatorId = NumericComparisonScanFieldConditionEditorFrame.OperatorId;

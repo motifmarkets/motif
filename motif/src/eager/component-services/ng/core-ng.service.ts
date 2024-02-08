@@ -12,6 +12,7 @@ import {
     CellPainterFactoryService,
     CommandRegisterService,
     CoreService,
+    GridFieldCustomHeadingsService,
     KeyboardService,
     MotifServicesService,
     ReferenceableGridLayoutsService,
@@ -50,6 +51,7 @@ export class CoreNgService implements OnDestroy {
     get scansService(): ScansService { return this._service.scansService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
+    get gridFieldCustomHeadingsService(): GridFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
     get tableFieldSourceDefinitionRegistryService(): TableFieldSourceDefinitionRegistryService {
         return this._service.tableFieldSourceDefinitionRegistryService;
     }

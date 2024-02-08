@@ -286,7 +286,8 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
         const keepView = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        this._frame.newEmpty(keepView);
+        const promise = this._frame.newEmpty(keepView);
+        AssertInternalError.throwErrorIfPromiseRejected(promise, 'WDNCHNUASE44432');
     }
 
     private handleOpenUiActionSignalEvent() {

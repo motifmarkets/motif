@@ -7,7 +7,6 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ElementRef, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
 import {
     AssertInternalError,
-    ChangeSubscribableComparableList,
     CommandRegisterService,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
@@ -20,6 +19,7 @@ import {
     ScanFieldCondition,
     StringId,
     Strings,
+    UiBadnessComparableList,
     UnreachableCaseError,
     UsableListChangeType,
     UsableListChangeTypeId,
@@ -52,7 +52,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     public requiresRadioName: string;
 
     private _frame: ScanFieldEditorFrame | undefined;
-    private _frameChangedSubscriptionId: MultiEvent.SubscriptionId;
+    private _frameFieldValueChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _frameFieldsListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
     private _fieldName = '';
@@ -102,7 +102,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         } else {
             this.connectToFrame(value);
             this.pushAddConditionElements(value.supportedOperatorIds);
-            this.pushProperties(value);
+            this.pushAllProperties(value);
             this.loadConditionEditorFrames(value.conditions);
 
             if (wasPreviouslyUndefined) {
@@ -132,7 +132,9 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     private connectToFrame(frame: ScanFieldEditorFrame) {
         this._frame = frame;
-        this._frameChangedSubscriptionId = this._frame.subscribeChangedEvent(() => this.pushProperties(frame))
+        this._frameFieldValueChangesSubscriptionId = this._frame.subscribeFieldValuesChangedEvent(
+            (changedFrame, valueChanges) => this.pushChangedProperties(changedFrame, valueChanges)
+        );
         this._frameFieldsListChangeSubscriptionId = this._frame.conditions.subscribeListChangeEvent(
             (listChangeTypeId, idx, count) => this.processConditionsListChange(listChangeTypeId, idx, count)
         );
@@ -142,8 +144,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         if (this._frame === undefined) {
             return true;
         } else {
-            this._frame.unsubscribeChangedEvent(this._frameChangedSubscriptionId);
-            this._frameChangedSubscriptionId = undefined;
+            this._frame.unsubscribeFieldValuesChangedEvent(this._frameFieldValueChangesSubscriptionId);
+            this._frameFieldValueChangesSubscriptionId = undefined;
             this._frame.conditions.unsubscribeListChangeEvent(this._frameFieldsListChangeSubscriptionId);
             this._frameFieldsListChangeSubscriptionId = undefined;
             this._frame = undefined;
@@ -181,25 +183,61 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         }
     }
 
-    private pushProperties(frame: ScanFieldEditorFrame) {
-        if (this._fieldName !== frame.name) {
+    private pushAllProperties(frame: ScanFieldEditorFrame) {
+        this.pushName(frame);
+        this.pushValid(frame);
+        this.pushErrorText(frame);
+        this.pushRequires(frame);
+    }
+
+    private pushChangedProperties(frame: ScanFieldEditorFrame, valueChanges: ScanFieldEditorFrame.Field.ValueChange[]) {
+        const count = valueChanges.length;
+        for (let i = 0; i < count; i++) {
+            const valueChange = valueChanges[i];
+            switch (valueChange.fieldId) {
+                case ScanFieldEditorFrame.FieldId.Name:
+                    this.pushName(frame);
+                    break;
+                case ScanFieldEditorFrame.FieldId.Valid:
+                    this.pushValid(frame);
+                    break;
+                case ScanFieldEditorFrame.FieldId.ErrorText:
+                    this.pushErrorText(frame);
+                    break;
+                case ScanFieldEditorFrame.FieldId.ConditionsOperationId:
+                    this.pushRequires(frame);
+                    break;
+                case ScanFieldEditorFrame.FieldId.ConditionCount:
+                    // not displayed
+                    break;
+                default:
+                    throw new UnreachableCaseError('SFENCPCP44498', valueChange.fieldId);
+            }
+        }
+    }
+
+    private pushName(frame: ScanFieldEditorFrame) {
+        if (frame.name !== this._fieldName) {
             this._fieldName = frame.name;
             this.markForCheck();
         }
+    }
 
+    private pushValid(frame: ScanFieldEditorFrame) {
         if (frame.valid !== this._valid) {
             this._valid = frame.valid;
-            this._errorText = this._valid ? '' : frame.errorText;
             this.markForCheck();
-        } else {
-            if (!this._valid) {
-                if (frame.errorText !== this._errorText) {
-                    this._errorText = frame.errorText;
-                    this.markForCheck();
-                }
-            }
         }
+    }
 
+    private pushErrorText(frame: ScanFieldEditorFrame) {
+        if (frame.errorText !== this._errorText) {
+            this._errorText = frame.errorText;
+            this.markForCheck();
+        }
+    }
+
+    private pushRequires(frame: ScanFieldEditorFrame) {
         this._requiresUiAction.pushValue(frame.conditionsOperationId);
     }
 
@@ -310,7 +348,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         return action;
     }
 
-    private loadConditionEditorFrames(conditionEditorFrames: ChangeSubscribableComparableList<ScanFieldConditionEditorFrame>) {
+    private loadConditionEditorFrames(conditionEditorFrames: UiBadnessComparableList<ScanFieldConditionEditorFrame>) {
         this._conditionEditorFrameComponentsContainer.clear();
         const conditionCount = conditionEditorFrames.count;
         for (let i = 0; i < conditionCount; i++) {

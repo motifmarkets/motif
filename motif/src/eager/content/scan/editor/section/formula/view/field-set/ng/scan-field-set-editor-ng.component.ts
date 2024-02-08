@@ -5,9 +5,15 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
-import { BooleanUiAction, EnumInfoOutOfOrderError, EnumUiAction, ExplicitElementsEnumUiAction, ScanConditionSet, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { AssertInternalError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AngularSplitTypes } from 'controls-internal-api';
+import { CaptionLabelNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
+import { ScanFieldEditorFrame } from '../field/internal-api';
+import { ScanFieldEditorNgComponent } from '../field/ng-api';
+import { ScanFieldEditorFramesGridNgComponent } from '../fields-grid/ng-api';
+import { ScanFieldEditorFramesGridFrame } from '../internal-api';
+import { ScanFieldSetEditorFrame } from '../scan-field-set-editor-frame';
 
 @Component({
     selector: 'app-scan-field-set-editor',
@@ -16,15 +22,26 @@ import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('allControl', { static: true }) private _allControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('anyControl', { static: true }) private _anyControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('excludeControl', { static: true }) private _excludeControlComponent: CaptionedCheckboxNgComponent;
-    @ViewChild('newConditionLabel', { static: true }) private _newConditionLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('newConditionControl', { static: true }) private _newConditionControlComponent: EnumInputNgComponent;
+    @ViewChild('fieldEditorFrameComponent', { static: true }) private _fieldEditorFrameComponent: ScanFieldEditorNgComponent;
+    @ViewChild('fieldsGrid', { static: true }) private _fieldEditorFramesGridComponent: ScanFieldEditorFramesGridNgComponent;
+    @ViewChild('addFieldLabel', { static: true }) private _addFieldLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('addFieldControl', { static: true }) private _addFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('addAttributeFieldLabel', { static: true }) private _addAttributeFieldLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('addAttributeFieldControl', { static: true }) private _addAttributeFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('addAltCodeFieldLabel', { static: true }) private _addAltCodeFieldLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('addAltCodeFieldControl', { static: true }) private _addAltCodeFieldControlComponent: EnumInputNgComponent;
 
-    private readonly _setOperationUiAction: ExplicitElementsEnumUiAction;
-    private readonly _excludeUiAction: BooleanUiAction;
-    private readonly _newConditionUiAction: ExplicitElementsEnumUiAction;
+    public gridSize: AngularSplitTypes.AreaSize.Html;
+    public gridMinSize: AngularSplitTypes.AreaSize.Html;
+    public splitterGutterSize = 3;
+    public fieldsLabel: string;
+
+    private _frame: ScanFieldSetEditorFrame | undefined;
+    private _fieldEditorFramesGridFrame: ScanFieldEditorFramesGridFrame;
+
+    private readonly _addFieldUiAction: ExplicitElementsEnumUiAction;
+    private readonly _addAttributeFieldUiAction: ExplicitElementsEnumUiAction;
+    private readonly _addAltCodeFieldUiAction: ExplicitElementsEnumUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -33,19 +50,13 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     ) {
         super(elRef, ++ScanFieldSetEditorNgComponent.typeInstanceCreateCount);
 
-        this._setOperationUiAction = this.createSetOperationUiAction();
-        this._excludeUiAction = this.createExcludeUiAction();
-        this._newConditionUiAction = this.createNewConditionUiAction();
-
-        // remove these when ScanConditionSet properly used
-        this._setOperationUiAction.pushValue(ScanConditionSet.BooleanOperationId.And);
-        this._excludeUiAction.pushValue(false);
+        this._addFieldUiAction = this.createAddFieldUiAction();
+        this._addAttributeFieldUiAction = this.createAddAttributeFieldUiAction();
+        this._addAltCodeFieldUiAction = this.createAddAltCodeFieldUiAction();
     }
 
-    public get allAnyRadioName() { return this.generateInstancedRadioName('allAnyRadioName'); }
-    public get conditionCount() { return 0; }
     public get nonConditionalReason() { return 'Too Complicated'; }
-    public isCriteriaCompatible() { return true; }
+    public get notCompatibleReason() { return ''; }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -55,244 +66,124 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         this.initialiseComponents();
     }
 
+    public handleSplitterDragEnd() {
+
+    }
+
+    public isCriteriaCompatible() {
+        return true;
+    }
+
+    override setEditor(value: ScanEditor | undefined) {
+        this._scanEditor = value;
+        if (value === undefined) {
+            this._frame = undefined;
+            this._fieldEditorFrameComponent.setFrame(undefined, false);
+            this._fieldEditorFramesGridComponent.setList(undefined);
+        } else {
+            const criteriaAsFieldSet = value.criteriaAsFieldSet;
+            if (criteriaAsFieldSet === undefined) {
+                throw new AssertInternalError('SFSENC99551');
+            } else {
+                const frame = criteriaAsFieldSet as ScanFieldSetEditorFrame;
+                this._frame = frame;
+                this._fieldEditorFramesGridComponent.setList(frame.fields);
+            }
+        }
+    }
+
     private initialiseComponents() {
-        this._allControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.And);
-        this._anyControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.Or);
-        this._excludeControlComponent.initialise(this._excludeUiAction);
-        this._newConditionLabelComponent.initialise(this._newConditionUiAction);
-        this._newConditionControlComponent.initialise(this._newConditionUiAction);
+        this._addFieldLabelComponent.initialise(this._addFieldUiAction);
+        this._addFieldControlComponent.initialise(this._addFieldUiAction);
+        this._addAttributeFieldLabelComponent.initialise(this._addAttributeFieldUiAction);
+        this._addAttributeFieldControlComponent.initialise(this._addAttributeFieldUiAction);
+        this._addAltCodeFieldLabelComponent.initialise(this._addAltCodeFieldUiAction);
+        this._addAltCodeFieldControlComponent.initialise(this._addAltCodeFieldUiAction);
+        this._fieldEditorFramesGridFrame = this._fieldEditorFramesGridComponent.frame;
+        this._fieldEditorFramesGridFrame.recordFocusedEventer = (index) => this.processFieldEditorFrameFocusChange(index);
     }
 
     private finalise() {
-        this._setOperationUiAction.finalise();
-        this._excludeUiAction.finalise();
-        this._newConditionUiAction.finalise();
+        this._fieldEditorFrameComponent.setFrame(undefined, true);
+        this._addFieldUiAction.finalise();
+        this._addAttributeFieldUiAction.finalise();
+        this._addAltCodeFieldUiAction.finalise();
     }
 
-    private createSetOperationUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.ConditionSetScanFormulaViewNgComponentCaption_SetOperation]);
-        action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_SetOperation]);
-        const ids = ScanFieldSetEditorNgComponent.SetOperation.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
-            (id) => ({
-                    element: id,
-                    caption: ScanFieldSetEditorNgComponent.SetOperation.idToCaption(id),
-                    title: ScanFieldSetEditorNgComponent.SetOperation.idToTitle(id),
-                }
-            )
-        );
-        action.pushElements(elementPropertiesArray, undefined);
-        action.commitEvent = () => {
-            // todo
-        }
-
-        return action;
-    }
-
-    private createExcludeUiAction() {
-        const action = new BooleanUiAction();
-        action.pushCaption(Strings[StringId.Exclude]);
-        action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_Exclude]);
-        action.commitEvent = () => {
-            // todo
-        };
-
-        return action;
-    }
-
-    private createNewConditionUiAction() {
+    private createAddFieldUiAction() {
         const action = new ExplicitElementsEnumUiAction(false);
-        action.pushCaption(Strings[StringId.New]);
-        action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_NewCondition]);
-        const ids = ScanFieldSetEditorNgComponent.ConditionKind.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
-            (id) => ({
-                    element: id,
-                    caption: ScanFieldSetEditorNgComponent.ConditionKind.idToCaption(id),
-                    title: ScanFieldSetEditorNgComponent.ConditionKind.idToTitle(id),
+        action.pushCaption(Strings[StringId.AddField]);
+        action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAField]);
+        const fieldDefinitions = ScanFieldEditorFrame.allDefinitions;
+
+        this.pushElementsAndAddCommitHandlerToAddFieldUiAction(action, fieldDefinitions);
+
+        return action;
+    }
+
+    private createAddAttributeFieldUiAction() {
+        const action = new ExplicitElementsEnumUiAction(false);
+        action.pushCaption(Strings[StringId.AddAttributeField]);
+        action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAnAttributeBasedField]);
+        const fieldDefinitions = ScanFieldEditorFrame.allDefinitions.filter(
+            (definition) => definition.scanFormulaFieldId === ScanFormula.FieldId.AttributeSubbed
+        );
+
+        this.pushElementsAndAddCommitHandlerToAddFieldUiAction(action, fieldDefinitions);
+
+        return action;
+    }
+
+    private createAddAltCodeFieldUiAction() {
+        const action = new ExplicitElementsEnumUiAction(false);
+        action.pushCaption(Strings[StringId.AddAltCodeField]);
+        action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAnAltCodeBasedField]);
+        const fieldDefinitions = ScanFieldEditorFrame.allDefinitions.filter(
+            (definition) => definition.scanFormulaFieldId === ScanFormula.FieldId.AltCodeSubbed
+        );
+
+        this.pushElementsAndAddCommitHandlerToAddFieldUiAction(action, fieldDefinitions);
+
+        return action;
+    }
+
+    private pushElementsAndAddCommitHandlerToAddFieldUiAction(
+        action: ExplicitElementsEnumUiAction,
+        fieldDefinitions: readonly ScanFieldEditorFrame.Definition[],
+    ) {
+        const elementPropertiesArray = fieldDefinitions.map<EnumUiAction.ElementProperties>(
+            (definition) => ({
+                    element: definition.typeId,
+                    caption: definition.name,
+                    title: '',
                 }
             )
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            delay1Tick(() => action.pushValue(undefined));
-            // todo
+            const frame = this._frame;
+            if (frame === undefined) {
+                throw new AssertInternalError('SFSENCPEAACHTAFUA44487');
+            } else {
+                frame.addField(action.definedValue);
+                delay1Tick(() => action.pushValue(undefined));
+            }
         }
-
-        return action;
     }
 
-
+    private processFieldEditorFrameFocusChange(index: Integer | undefined) {
+        if (index === undefined) {
+            this._fieldEditorFrameComponent.setFrame(undefined, false);
+        } else {
+            const scanFieldEditorFrame = this._fieldEditorFramesGridFrame.getScanFieldEditorFrameAt(index);
+            this._fieldEditorFrameComponent.setFrame(scanFieldEditorFrame, false);
+        }
+    }
 }
 
 export namespace ScanFieldSetEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
-    export namespace SetOperation {
-        export type Id = ScanConditionSet.BooleanOperationId;
-
-        interface Info {
-            readonly id: Id;
-            readonly captionId: StringId;
-            readonly titleId: StringId;
-        }
-
-        type InfosObject = { [id in keyof typeof ScanConditionSet.BooleanOperationId]: Info };
-        const infosObject: InfosObject = {
-            Or: {
-                id: ScanConditionSet.BooleanOperationId.Or,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_Any,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_Any,
-            },
-            And: {
-                id: ScanConditionSet.BooleanOperationId.And,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_All,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_All,
-            },
-        } as const;
-
-        const infos = Object.values(infosObject);
-        export const idCount = infos.length;
-
-        export function initialise() {
-            for (let i = 0; i < idCount; i++) {
-                const info = infos[i];
-                if (info.id !== i as ScanConditionSet.BooleanOperationId) {
-                    throw new EnumInfoOutOfOrderError('ConditionSetScanFormulaViewNgComponent.SetOperationId', i, Strings[info.captionId]);
-                }
-            }
-        }
-
-        export function getAllIds() {
-            return infos.map((info) => info.id);
-        }
-
-        export function idToCaptionId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToCaption(id: Id) {
-            return Strings[idToCaptionId(id)];
-        }
-
-        export function idToTitleId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToTitle(id: Id) {
-            return Strings[idToTitleId(id)];
-        }
-    }
-
-    export const enum ConditionKindId {
-        Compare,
-        InRange,
-        Equals,
-        Includes,
-        Contains,
-        Has,
-        Is,
-        All,
-        None,
-    }
-
-    export namespace ConditionKind {
-        export type Id = ConditionKindId;
-
-        interface Info {
-            readonly id: Id;
-            readonly captionId: StringId;
-            readonly titleId: StringId;
-        }
-
-        type InfosObject = { [id in keyof typeof ConditionKindId]: Info };
-        const infosObject: InfosObject = {
-            Compare: {
-                id: ConditionKindId.Compare,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Compare,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Compare,
-            },
-            InRange: {
-                id: ConditionKindId.InRange,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_InRange,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_InRange,
-            },
-            Equals: {
-                id: ConditionKindId.Equals,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Equals,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Equals,
-            },
-            Includes: {
-                id: ConditionKindId.Includes,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Includes,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Includes,
-            },
-            Contains: {
-                id: ConditionKindId.Contains,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Contains,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Contains,
-            },
-            Has: {
-                id: ConditionKindId.Has,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Has,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Has,
-            },
-            Is: {
-                id: ConditionKindId.Is,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_Is,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_Is,
-            },
-            All: {
-                id: ConditionKindId.All,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_All,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_All,
-            },
-            None: {
-                id: ConditionKindId.None,
-                captionId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindCaption_None,
-                titleId: StringId.ConditionSetScanFormulaViewNgComponent_ConditionKindTitle_None,
-            },
-        } as const;
-
-        const infos = Object.values(infosObject);
-        export const idCount = infos.length;
-
-        export function initialise() {
-            for (let i = 0; i < idCount; i++) {
-                const info = infos[i];
-                if (info.id !== i as ConditionKindId) {
-                    throw new EnumInfoOutOfOrderError('ConditionSetScanFormulaViewNgComponent.ConditionKindId', i, Strings[info.captionId]);
-                }
-            }
-        }
-
-        export function getAllIds() {
-            return infos.map((info) => info.id);
-        }
-
-        export function idToCaptionId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToCaption(id: Id) {
-            return Strings[idToCaptionId(id)];
-        }
-
-        export function idToTitleId(id: Id) {
-            return infos[id].captionId;
-        }
-
-        export function idToTitle(id: Id) {
-            return Strings[idToTitleId(id)];
-        }
-    }
-}
-
-export namespace FieldSetScanFormulaViewNgComponentModule {
-    export function initialiseStatic() {
-        ScanFieldSetEditorNgComponent.SetOperation.initialise();
-        ScanFieldSetEditorNgComponent.ConditionKind.initialise();
-    }
+    export type Frame = ScanFieldSetEditorFrame;
 }

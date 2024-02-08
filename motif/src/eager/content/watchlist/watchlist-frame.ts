@@ -9,6 +9,7 @@ import {
     AssertInternalError,
     CellPainterFactoryService,
     GridField,
+    GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
@@ -26,6 +27,7 @@ import {
     ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
+    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
     TableRecordSourceFactoryService,
@@ -51,7 +53,9 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
+        tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactoryService: TableRecordSourceFactoryService,
         private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
@@ -60,7 +64,9 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     ) {
         super(
             settingsService,
+            gridFieldCustomHeadingsService,
             namedGridLayoutsService,
+            tableFieldSourceDefinitionRegistryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryService,
             referenceableGridSourcesService,

@@ -7,7 +7,7 @@
 <div id="compatibleDiv" [style.display]="isCriteriaCompatible() ? null : 'none'">
     <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
         <as-split-area id="fieldsArea" [size]="gridSize" [minSize]="gridMinSize">
-            <span id="fieldsSpan">{{fields}}</span>
+            <span id="fieldsSpan">{{fieldsLabel}}</span>
             <div id="addFieldMainDiv">
                 <div id="addFieldDiv">
                     <app-caption-label #addFieldLabel id="addFieldLabel" for="addFieldInput"></app-caption-label>
@@ -16,21 +16,20 @@
             </div>
             <div id="addFieldMoreDiv">
                 <div id="addAttributeFieldDiv">
-                    <app-caption-label #addFieldLabel id="addAttributeFieldLabel" for="addAttributeFieldInput"></app-caption-label>
-                    <app-enum-input #addFieldControl id="addAttributeFieldControl"></app-enum-input>
+                    <app-caption-label #addAttributeFieldLabel id="addAttributeFieldLabel" for="addAttributeFieldInput"></app-caption-label>
+                    <app-enum-input #addAttributeFieldControl id="addAttributeFieldControl"></app-enum-input>
                 </div>
                 <div id="addAltCodeFieldDiv">
-                    <app-caption-label #addFieldLabel id="addAltCodeFieldLabel" for="addAltCodeFieldInput"></app-caption-label>
-                    <app-enum-input #addFieldControl id="addAltCodeFieldControl"></app-enum-input>
+                    <app-caption-label #addAltCodeFieldLabel id="addAltCodeFieldLabel" for="addAltCodeFieldInput"></app-caption-label>
+                    <app-enum-input #addAltCodeFieldControl id="addAltCodeFieldControl"></app-enum-input>
                 </div>
             </div>
-            <app-scan-fields-grid #grid></app-scan-fields-grid>
+            <app-scan-field-editor-frames-grid #fieldsGrid></app-scan-field-editor-frames-grid>
         </as-split-area>
         <as-split-area [size]="null"> <!-- was size="*"-->
-            <app-scan-field-editor #fieldEditorComponent id="fieldEditorComponent"></app-scan-field-editor>
+            <app-scan-field-editor #fieldEditorFrameComponent id="fieldEditorFrameComponent"></app-scan-field-editor>
         </as-split-area>
     </as-split>
-    <ng-container #conditionsContainer id="conditions"></ng-container>
 </div>
 <div id="notCompatibleDiv" [style.display]="!isCriteriaCompatible() ? null : 'none'">
     <span id="notCompatibleReasonSpan">{{notCompatibleReason}}</span>
