@@ -9,7 +9,6 @@ import { NumericScanFieldConditionEditorFrame } from './numeric-scan-field-condi
 import {
     NumericRangeScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class RangeNumericScanFieldConditionEditorFrame extends NumericScanFieldConditionEditorFrame
     implements
@@ -21,11 +20,9 @@ export class RangeNumericScanFieldConditionEditorFrame extends NumericScanFieldC
         private _operatorId: RangeNumericScanFieldConditionEditorFrame.OperatorId,
         private _min: number | undefined,
         private _max: number | undefined,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(RangeNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(RangeNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands() {

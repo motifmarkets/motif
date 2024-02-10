@@ -20,7 +20,7 @@ import {
     Strings,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionRegistryService,
-    UiBadnessComparableList,
+    UiComparableList,
     getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
@@ -46,7 +46,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
     editGridColumnsEventer: LitIvemIdListEditorNgDirective.EditGridColumnsEventer | undefined;
     popoutEventer: LitIvemIdListEditorNgDirective.PopoutEventer | undefined;
 
-    readonly list: UiBadnessComparableList<LitIvemId>;
+    readonly list: UiComparableList<LitIvemId>;
 
     private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService;
 
@@ -69,12 +69,12 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
-        list: UiBadnessComparableList<LitIvemId> | null,
+        list: UiComparableList<LitIvemId> | null,
     ) {
         super(elRef, typeInstanceCreateCount);
 
         if (list === null) {
-            this.list = new UiBadnessComparableList<LitIvemId>();
+            this.list = new UiComparableList<LitIvemId>();
         } else {
             this.list = list;
         }
@@ -350,9 +350,9 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 export namespace LitIvemIdListEditorNgDirective {
     export type AfterListChangedEventHandler = (this: void, ui: boolean) => void;
     export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<GridLayoutOrReferenceDefinition | undefined>;
-    export type PopoutEventer = (this: void, list: UiBadnessComparableList<LitIvemId>) => void;
+    export type PopoutEventer = (this: void, list: UiComparableList<LitIvemId>) => void;
 
-    export const listInjectionToken = new InjectionToken<UiBadnessComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
+    export const listInjectionToken = new InjectionToken<UiComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
 
     export const initialCustomGridSettingsProvider: LitIvemIdListNgComponent.InitialCustomGridSettingsProvider = {
         provide: LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken,

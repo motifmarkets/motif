@@ -10,8 +10,11 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface CategoryValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.CategoryValue,
-    operatorId: CategoryValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    categoryId: ScanFormula.IsNode.CategoryId | undefined;
+
+    readonly operatorId: CategoryValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly categoryId: ScanFormula.IsNode.CategoryId | undefined;
+
+    setCategoryId(value: ScanFormula.IsNode.CategoryId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace CategoryValueScanFieldConditionOperandsEditorFrame {

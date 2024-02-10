@@ -7,7 +7,6 @@
 import { BaseNumericScanFieldCondition, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { NumericComparisonScanFieldConditionEditorFrame } from './numeric-comparison-scan-field-condition-editor-frame';
 import { NumericRangeScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class RangeNumericComparisonScanFieldConditionEditorFrame extends NumericComparisonScanFieldConditionEditorFrame
     implements
@@ -19,11 +18,9 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
         private _operatorId: RangeNumericComparisonScanFieldConditionEditorFrame.OperatorId,
         private _min: number | undefined,
         private _max: number | undefined,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands() {

@@ -4,7 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
+import { RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
+
 export interface NegatableOperator {
-    not: boolean;
-    negateOperator(): void;
+    readonly not: boolean;
+    negateOperator(modifier: RootAndNodeIdentifiableComponentPair): void;
 }

@@ -7,14 +7,15 @@
 import { Directive, InjectionToken } from '@angular/core';
 import { ScanEditor } from '@motifmarkets/motif-core';
 import { ContentComponentBaseNgDirective } from '../../../../../ng/content-component-base-ng.directive';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Directive()
 export abstract class ScanFormulaViewNgDirective extends ContentComponentBaseNgDirective {
-    protected _scanEditor: ScanEditor | undefined;
+    protected _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
 
     get scanEditor() { return this._scanEditor; }
 
-    setEditor(value: ScanEditor | undefined) {
+    setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         this._scanEditor = value;
     }
 }

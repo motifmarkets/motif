@@ -22,6 +22,7 @@ import {
     MarketBoardOverlapsScanFieldCondition,
     MarketId,
     MarketOverlapsScanFieldCondition,
+    ModifierComparableList,
     MultiEvent,
     NumericComparisonScanFieldCondition,
     NumericScanFieldCondition,
@@ -39,10 +40,11 @@ import {
     TextEqualsScanFieldCondition,
     TextHasValueContainsScanFieldCondition,
     TextHasValueEqualsScanFieldCondition,
-    UiBadnessComparableList,
     UnreachableCaseError,
+    UsableListChangeTypeId,
     ValueRecentChangeTypeId
 } from '@motifmarkets/motif-core';
+import { IdentifiableComponent, RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
 import {
     ContainsTextHasValueContainsScanFieldConditionEditorFrame,
     CurrencyOverlapsScanFieldConditionEditorFrame,
@@ -68,7 +70,10 @@ import {
     ValueTextHasValueEqualsScanFieldConditionEditorFrame,
 } from './condition/internal-api';
 
-export abstract class ScanFieldEditorFrame implements ScanField {
+export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComponent> {
+    deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler | undefined;
+    meOrMyConditionsChangedEventer: ScanFieldEditorFrame.MeOrMyConditionsChangedEventer | undefined;
+
     private readonly _fieldValuesChangedMultiEvent = new MultiEvent<ScanFieldEditorFrame.FieldValuesChangedHandler>();
     private _conditionsOperationId = ScanField.BooleanOperationId.And;
 
@@ -78,31 +83,59 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private _valid = false;
     private _errorText = '';
 
-    private _valueChangesBeginCount = 0;
+    private _changesBeginCount = 0;
+    private _changesModifier: ScanFieldEditorFrame.Modifier | undefined;
+    private _conditionChanged = false;
     private readonly _fieldValueChanges = new ComparableList<ScanFieldEditorFrame.Field.ValueChange>();
+
     private _conditionsListChangeSubscriptionId: MultiEvent.SubscriptionId;
+    private _conditionsAfterListChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         readonly typeId: ScanField.TypeId,
         readonly fieldId: ScanFormula.FieldId,
         readonly subFieldId: Integer | undefined,
         readonly name: string,
-        readonly conditions: UiBadnessComparableList<ScanFieldConditionEditorFrame>,
+        readonly conditions: ScanFieldConditionEditorFrame.List<ScanFieldConditionEditorFrame>,
         readonly conditionTypeId: ScanFieldCondition.TypeId,
-        private readonly _deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        private readonly _validChangedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
-        this._conditionsListChangeSubscriptionId = this.conditions.subscribeAfterListChangedEvent(
-            () => this.handleConditionListChangeEvent()
+        this._conditionsListChangeSubscriptionId = this.conditions.subscribeListChangeEvent(
+            (usableListChangeTypeId, idx, count, modifier) => this.handleConditionListChangeEvent(
+                usableListChangeTypeId, idx, count, modifier
+            )
+        );
+        this._conditionsAfterListChangedSubscriptionId = this.conditions.subscribeAfterListChangedEvent(
+            (modifier) => this.handleAfterConditionListChangedEvent(modifier)
         );
     }
 
     get valid() { return this._valid; }
     get errorText() { return this._errorText; }
     get conditionsOperationId() { return this._conditionsOperationId; }
-    set conditionsOperationId(value: ScanField.BooleanOperationId) {
+    abstract get supportedOperatorIds(): readonly ScanFieldCondition.OperatorId[];
+
+    destroy() {
+        this.conditions.unsubscribeListChangeEvent(this._conditionsListChangeSubscriptionId);
+        this._conditionsListChangeSubscriptionId = undefined;
+        this.conditions.unsubscribeAfterListChangedEvent(this._conditionsAfterListChangedSubscriptionId);
+        this._conditionsAfterListChangedSubscriptionId = undefined;
+
+        if (this.conditions.count > 0) {
+            this.conditions.clear();
+        }
+    }
+
+    deleteMe() {
+        if (this.deleteMeEventer === undefined) {
+            throw new AssertInternalError('SFEFDM66873');
+        } else {
+            this.deleteMeEventer(this);
+        }
+    }
+
+    setConditionsOperationId(value: ScanField.BooleanOperationId, modifier: ScanFieldEditorFrame.Modifier) {
         if (value !== this._conditionsOperationId) {
-            this.beginValueChanges();
+            this.beginChanges(modifier);
             if (this._conditionsOperationId === ScanField.BooleanOperationId.Xor) {
                 this._xorValid = true;
                 this.updateValidAndErrorText();
@@ -114,47 +147,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             }
             this._conditionsOperationId = value;
             this.addFieldValueChange(ScanFieldEditorFrame.FieldId.ConditionsOperationId, ValueRecentChangeTypeId.Update);
-            this.endValueChanges();
-        }
-    }
-    abstract get supportedOperatorIds(): readonly ScanFieldCondition.OperatorId[];
-
-    destroy() {
-        this.conditions.unsubscribeListChangeEvent(this._conditionsListChangeSubscriptionId);
-        this._conditionsListChangeSubscriptionId = undefined;
-
-        if (this.conditions.count > 0) {
-            this.conditions.clear();
-        }
-    }
-
-    deleteMe() {
-        this._deleteMeEventer(this);
-    }
-
-    removeCondition(frame: ScanFieldConditionEditorFrame) {
-        this.conditions.remove(frame);
-    }
-
-    processConditionChanged(conditionValid: boolean) {
-        if (conditionValid !== this._allConditionsValid) {
-            if (!conditionValid) {
-                this._allConditionsValid = false;
-                this.updateValidAndErrorText();
-            } else {
-                const allConditionsValid = this.calculateAllConditionsValid();
-                if (allConditionsValid) {
-                    this._allConditionsValid = true;
-                    this.updateValidAndErrorText();
-                }
-            }
-        }
-    }
-
-    createConditionEditorFrameEventers(): ScanFieldEditorFrame.ConditionEditorFrameEventers {
-        return {
-            deleteMeEventer: (conditionEditorFrame) => this.removeCondition(conditionEditorFrame),
-            changedEventer: (valid) => this.processConditionChanged(valid),
+            this.endChanges();
         }
     }
 
@@ -166,23 +159,73 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         this._fieldValuesChangedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    private beginValueChanges() {
-        this._valueChangesBeginCount++;
-    }
-
-    private endValueChanges() {
-        if (--this._valueChangesBeginCount === 0) {
-            if (this._fieldValueChanges.count > 0) {
-                const valueChanges = this._fieldValueChanges.toArray();
-                this._fieldValueChanges.count = 0;
-                this.notifyValueChanges(valueChanges);
+    private beginChanges(modifier: ScanFieldEditorFrame.Modifier | undefined) {
+        if (this._changesBeginCount++ === 0) {
+            this._changesModifier = modifier;
+        } else {
+            if (modifier !== this._changesModifier) {
+                throw new AssertInternalError('SFEFBVC34445');
             }
         }
     }
 
-    private handleConditionListChangeEvent() {
+    private endChanges() {
+        if (--this._changesBeginCount === 0) {
+            if (this._fieldValueChanges.count > 0 || this._conditionChanged) {
+                const valueChanges = this._fieldValueChanges.toArray();
+                this._fieldValueChanges.count = 0;
+                const conditionChanged = this._conditionChanged;
+                this._conditionChanged = false;
+                const changesModifier  = this._changesModifier;
+                this._changesModifier = undefined;
+                this.notifyChanges(valueChanges, conditionChanged, changesModifier);
+            }
+        }
+    }
+
+    private handleConditionListChangeEvent(
+        listChangeTypeId: UsableListChangeTypeId,
+        idx: Integer,
+        _count: Integer,
+        _ignoredModifier: ScanFieldConditionEditorFrame.Modifier | undefined,
+    ) {
+        switch (listChangeTypeId) {
+            case UsableListChangeTypeId.Unusable:
+            case UsableListChangeTypeId.PreUsableAdd:
+            case UsableListChangeTypeId.PreUsableClear:
+            case UsableListChangeTypeId.Usable:
+                throw new AssertInternalError('SFEFHCLCE44553', listChangeTypeId.toString());
+            case UsableListChangeTypeId.Insert: {
+                const conditionEditorFrame = this.conditions.getAt(idx);
+                conditionEditorFrame.deleteMeEventer = (modifier) => this.deleteCondition(conditionEditorFrame, modifier);
+                conditionEditorFrame.changedEventer = (valid, modifier) => this.processConditionChanged(valid, modifier);
+                break;
+            }
+            case UsableListChangeTypeId.BeforeReplace:
+            case UsableListChangeTypeId.AfterReplace:
+            case UsableListChangeTypeId.BeforeMove:
+            case UsableListChangeTypeId.AfterMove:
+                break;
+            case UsableListChangeTypeId.Remove: {
+                const conditionEditorFrame = this.conditions.getAt(idx);
+                conditionEditorFrame.deleteMeEventer = undefined;
+                conditionEditorFrame.changedEventer = undefined;
+                break;
+            }
+            case UsableListChangeTypeId.Clear: {
+                const conditionCount = this.conditions.count;
+                for (let i = 0; i < conditionCount; i++) {
+                    const conditionEditorFrame = this.conditions.getAt(idx);
+                    conditionEditorFrame.deleteMeEventer = undefined;
+                    conditionEditorFrame.changedEventer = undefined;
+                }
+            }
+        }
+    }
+
+    private handleAfterConditionListChangedEvent(modifier: ScanFieldConditionEditorFrame.Modifier | undefined) {
         const newConditionCount = this.conditions.count;
-        this.beginValueChanges();
+        this.beginChanges(modifier);
         if (newConditionCount !== this._conditionCount) {
             if (newConditionCount > this._conditionCount) {
                 this._conditionCount = newConditionCount;
@@ -195,6 +238,29 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             }
             this.checkXorValid(this.conditions.count);
         }
+        this.endChanges();
+    }
+
+    private deleteCondition(frame: ScanFieldConditionEditorFrame, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        this.conditions.remove(frame, modifier);
+    }
+
+    private processConditionChanged(conditionValid: boolean, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        this.beginChanges(modifier);
+        if (conditionValid !== this._allConditionsValid) {
+            if (!conditionValid) {
+                this._allConditionsValid = false;
+                this.updateValidAndErrorText();
+            } else {
+                const allConditionsValid = this.calculateAllConditionsValid();
+                if (allConditionsValid) {
+                    this._allConditionsValid = true;
+                    this.updateValidAndErrorText();
+                }
+            }
+        }
+        this._conditionChanged = true;
+        this.endChanges();
     }
 
     private checkXorValid(conditionCount: Integer) {
@@ -223,14 +289,14 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             if (!newValid) {
                 const errorText = this.calculateErrorText();
                 if (errorText !== this._errorText) {
-                    this.beginValueChanges();
+                    this.beginChanges(undefined);
                     this._errorText = errorText;
                     this.addFieldValueChange(ScanFieldEditorFrame.FieldId.ErrorText, ValueRecentChangeTypeId.Update);
-                    this.endValueChanges();
+                    this.endChanges();
                 }
             }
         } else {
-            this.beginValueChanges();
+            this.beginChanges(undefined);
             this.addFieldValueChange(ScanFieldEditorFrame.FieldId.Valid, ValueRecentChangeTypeId.Update);
             if (!newValid) {
                 const errorText = this.calculateErrorText();
@@ -239,7 +305,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
                     this.addFieldValueChange(ScanFieldEditorFrame.FieldId.ErrorText, ValueRecentChangeTypeId.Update);
                 }
             }
-            this.endValueChanges();
+            this.endChanges();
         }
     }
 
@@ -272,35 +338,44 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         fieldValueChanges.add({fieldId, recentChangeTypeId});
     }
 
-    private notifyValueChanges(valueChanges: ScanFieldEditorFrame.Field.ValueChange[]) {
-        if (this.isValidChanged(valueChanges)) {
-            this._validChangedEventer(this, this._valid);
+    private notifyChanges(
+        valueChanges: ScanFieldEditorFrame.Field.ValueChange[],
+        conditionChanged: boolean,
+        changesModifier: ScanFieldEditorFrame.Modifier | undefined
+    ) {
+        let modifierRoot: IdentifiableComponent | undefined;
+        let modifierNode: IdentifiableComponent | undefined;
+        if (changesModifier === undefined) {
+            modifierRoot = undefined;
+            modifierNode = undefined;
+        } else {
+            modifierRoot = changesModifier.root;
+            modifierNode = changesModifier.node;
+        }
+
+        if (conditionChanged && this.meOrMyConditionsChangedEventer !== undefined) {
+            this.meOrMyConditionsChangedEventer(this, this._valid, modifierRoot);
         }
 
         const handlers = this._fieldValuesChangedMultiEvent.copyHandlers();
         for (const handler of handlers) {
-            handler(this, valueChanges);
+            handler(this, valueChanges, modifierNode);
         }
     }
 
-    private isValidChanged(valueChanges: readonly ScanFieldEditorFrame.Field.ValueChange[]) {
-        const count = valueChanges.length;
-        for (let i = 0; i < count; i++) {
-            const valueChange = valueChanges[i];
-            if (valueChange.fieldId === ScanFieldEditorFrame.FieldId.Name) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    abstract addCondition(operatorId: ScanFieldCondition.OperatorId): void;
+    abstract addCondition(operatorId: ScanFieldCondition.OperatorId, modifier: ScanFieldEditorFrame.Modifier): void;
 }
 
 export namespace ScanFieldEditorFrame {
+    export type Modifier = RootAndNodeIdentifiableComponentPair;
+    export class List<T extends ScanFieldEditorFrame> extends ModifierComparableList<T, Modifier | undefined> {
+        constructor() {
+            super(undefined);
+        }
+    }
     export type DeleteMeEventHandler = (this: void, frame: ScanFieldEditorFrame) => void;
-    export type FieldValuesChangedHandler = (this: void, frame: ScanFieldEditorFrame, valueChanges: Field.ValueChange[]) => void;
-    export type ValidChangedEventHandler = (this: void, frame: ScanFieldEditorFrame, valid: boolean) => void;
+    export type FieldValuesChangedHandler = (this: void, frame: ScanFieldEditorFrame, valueChanges: Field.ValueChange[], modifierNode: IdentifiableComponent | undefined) => void;
+    export type MeOrMyConditionsChangedEventer = (this: void, frame: ScanFieldEditorFrame, valid: boolean, modifierRoot: IdentifiableComponent | undefined) => void;
 
     export interface Definition {
         readonly typeId: number;
@@ -355,103 +430,72 @@ export namespace ScanFieldEditorFrame {
     export const definitionByTypeIdMap = new DefinitionByTypeIdMap(allDefinitions);
     export const definitionByFieldIdsMap = new DefinitionByFieldIdsMap(allDefinitions);
 
-    export interface ConditionEditorFrameEventers {
-        readonly deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer;
-        readonly changedEventer: ScanFieldConditionEditorFrame.ChangedEventer;
-    }
-
     export const altCodeSubFieldNamePrefix = 'altcode/'
     export const attributeSubFieldNamePrefix = 'attr/'
 
-    export class ConditionFactory implements ScanField.ConditionFactory {
+    export class ConditionFactory implements ScanField.ConditionFactory<IdentifiableComponent> {
         createNumericComparisonWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericComparisonScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer));
+            return new Ok(new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId));
         }
         createNumericComparisonWithValue(field: ScanField, operatorId: NumericComparisonScanFieldCondition.ValueOperands.OperatorId, value: number): Result<NumericComparisonScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, value, deleteMeEventer, changedEventer));
+            return new Ok(new ValueNumericComparisonScanFieldConditionEditorFrame(operatorId, value));
         }
         createNumericComparisonWithRange(field: ScanField, operatorId: BaseNumericScanFieldCondition.RangeOperands.OperatorId, min: number | undefined, max: number | undefined): Result<NumericComparisonScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, min, max, deleteMeEventer, changedEventer));
+            return new Ok(new RangeNumericComparisonScanFieldConditionEditorFrame(operatorId, min, max));
         }
         createNumericWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new HasValueNumericScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer));
+            return new Ok(new HasValueNumericScanFieldConditionEditorFrame(operatorId));
         }
         createNumericWithValue(field: ScanField, operatorId: NumericScanFieldCondition.ValueOperands.OperatorId, value: number): Result<NumericScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ValueNumericScanFieldConditionEditorFrame(operatorId, value, deleteMeEventer, changedEventer));
+            return new Ok(new ValueNumericScanFieldConditionEditorFrame(operatorId, value));
         }
         createNumericWithRange(field: ScanField, operatorId: BaseNumericScanFieldCondition.RangeOperands.OperatorId, min: number | undefined, max: number | undefined): Result<NumericScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new RangeNumericScanFieldConditionEditorFrame(operatorId, min, max, deleteMeEventer, changedEventer));
+            return new Ok(new RangeNumericScanFieldConditionEditorFrame(operatorId, min, max));
         }
         createDateWithHasValue(field: ScanField, operatorId: DateScanFieldCondition.HasValueOperands.OperatorId): Result<DateScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new HasValueDateScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer));
+            return new Ok(new HasValueDateScanFieldConditionEditorFrame(operatorId));
         }
         createDateWithEquals(field: ScanField, operatorId: DateScanFieldCondition.ValueOperands.OperatorId, value: SourceTzOffsetDateTime): Result<DateScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ValueDateScanFieldConditionEditorFrame(operatorId, value, deleteMeEventer, changedEventer));
+            return new Ok(new ValueDateScanFieldConditionEditorFrame(operatorId, value));
         }
         createDateWithRange(field: ScanField, operatorId: DateScanFieldCondition.RangeOperands.OperatorId, min: SourceTzOffsetDateTime | undefined, max: SourceTzOffsetDateTime | undefined): Result<DateScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new RangeDateScanFieldConditionEditorFrame(operatorId, min, max, deleteMeEventer, changedEventer));
+            return new Ok(new RangeDateScanFieldConditionEditorFrame(operatorId, min, max));
         }
         createTextEquals(field: ScanField, operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId, value: string): Result<TextEqualsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new TextEqualsScanFieldConditionEditorFrame(operatorId, value, deleteMeEventer, changedEventer));
+            return new Ok(new TextEqualsScanFieldConditionEditorFrame(operatorId, value));
         }
         createTextContains(field: ScanField, operatorId: BaseTextScanFieldCondition.ContainsOperands.OperatorId, value: string, asId: ScanFormula.TextContainsAsId, ignoreCase: boolean): Result<TextContainsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new TextContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase, deleteMeEventer, changedEventer));
+            return new Ok(new TextContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase));
         }
         createTextHasValueEqualsWithHasValue(field: ScanField, operatorId: BaseTextScanFieldCondition.HasValueOperands.OperatorId): Result<TextHasValueEqualsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer));
+            return new Ok(new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId));
         }
         createTextHasValueEqualsWithValue(field: ScanField, operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId, value: string): Result<TextHasValueEqualsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, value, deleteMeEventer, changedEventer));
+            return new Ok(new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, value));
         }
         createTextHasValueContainsWithHasValue(field: ScanField, operatorId: BaseTextScanFieldCondition.HasValueOperands.OperatorId): Result<TextHasValueContainsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer));
+            return new Ok(new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId));
         }
         createTextHasValueContainsWithContains(field: ScanField, operatorId: BaseTextScanFieldCondition.ContainsOperands.OperatorId, value: string, asId: ScanFormula.TextContainsAsId, ignoreCase: boolean): Result<TextHasValueContainsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase, deleteMeEventer, changedEventer));
+            return new Ok(new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, value, asId, ignoreCase));
         }
         createStringOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly string[]): Result<StringOverlapsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new StringOverlapsScanFieldConditionEditorFrame(operatorId, values, deleteMeEventer, changedEventer));
+            return new Ok(new StringOverlapsScanFieldConditionEditorFrame(operatorId, values));
         }
         createCurrencyOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly CurrencyId[]): Result<CurrencyOverlapsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, values, deleteMeEventer, changedEventer));
+            return new Ok(new CurrencyOverlapsScanFieldConditionEditorFrame(operatorId, values));
         }
         createExchangeOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly ExchangeId[]): Result<ExchangeOverlapsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, values, deleteMeEventer, changedEventer));
+            return new Ok(new ExchangeOverlapsScanFieldConditionEditorFrame(operatorId, values));
         }
         createMarketOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly MarketId[]): Result<MarketOverlapsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new MarketOverlapsScanFieldConditionEditorFrame(operatorId, values, deleteMeEventer, changedEventer));
+            return new Ok(new MarketOverlapsScanFieldConditionEditorFrame(operatorId, values));
         }
         createMarketBoardOverlaps(field: ScanField, operatorId: OverlapsScanFieldCondition.Operands.OperatorId, values: readonly MarketBoardId[]): Result<MarketBoardOverlapsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, values, deleteMeEventer, changedEventer));
+            return new Ok(new MarketBoardOverlapsScanFieldConditionEditorFrame(operatorId, values));
         }
         createIs(field: ScanField, operatorId: IsScanFieldCondition.Operands.OperatorId, categoryId: ScanFormula.IsNode.CategoryId): Result<IsScanFieldCondition> {
-            const { deleteMeEventer, changedEventer } = this.createFieldEventers(field);
-            return new Ok(new IsScanFieldConditionEditorFrame(operatorId, categoryId, deleteMeEventer, changedEventer));
-        }
-
-        private createFieldEventers(field: ScanField) {
-            const fieldEditorFrame = field as ScanFieldEditorFrame;
-            return fieldEditorFrame.createConditionEditorFrameEventers();
+            return new Ok(new IsScanFieldConditionEditorFrame(operatorId, categoryId));
         }
     }
 

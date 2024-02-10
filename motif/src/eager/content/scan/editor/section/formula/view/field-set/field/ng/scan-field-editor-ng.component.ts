@@ -19,7 +19,6 @@ import {
     ScanFieldCondition,
     StringId,
     Strings,
-    UiBadnessComparableList,
     UnreachableCaseError,
     UsableListChangeType,
     UsableListChangeTypeId,
@@ -27,6 +26,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { IdentifiableComponent } from '../../../../../../../../../component/identifiable-component';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
 import { CategoryValueScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
@@ -54,6 +54,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     private _frame: ScanFieldEditorFrame | undefined;
     private _frameFieldValueChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _frameFieldsListChangeSubscriptionId: MultiEvent.SubscriptionId;
+    private _modifier: ScanFieldEditorFrame.Modifier;
 
     private _fieldName = '';
     private _valid = false;
@@ -92,6 +93,13 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     ngAfterViewInit(): void {
         this.initialiseComponents();
+    }
+
+    setRootIdentifiableComponent(root: IdentifiableComponent) {
+        this._modifier = {
+            root,
+            node: this,
+        }
     }
 
     setFrame(value: ScanFieldEditorFrame | undefined, finalise: boolean) {
@@ -247,7 +255,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             case UsableListChangeTypeId.PreUsableAdd:
             case UsableListChangeTypeId.PreUsableClear:
             case UsableListChangeTypeId.Usable:
-                throw new AssertInternalError('SFENCPCLCU33323');
+                throw new AssertInternalError('SFENCPCLCU33323', listChangeTypeId.toString());
             case UsableListChangeTypeId.Insert:
                 this.insertConditionEditorFrameComponents(idx, count);
                 break;
@@ -304,7 +312,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCRUA44453');
             } else {
-                this._frame.conditionsOperationId = this._addConditionUiAction.definedValue;
+                this._frame.setConditionsOperationId(this._addConditionUiAction.definedValue, this._modifier);
                 this.markForCheck();
             }
         }
@@ -340,7 +348,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCACUA43211');
             } else {
-                this._frame.addCondition(this._addConditionUiAction.definedValue);
+                this._frame.addCondition(this._addConditionUiAction.definedValue, this._modifier);
                 delay1Tick(() => this._addConditionUiAction.pushValue(undefined));
             }
         }
@@ -348,7 +356,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         return action;
     }
 
-    private loadConditionEditorFrames(conditionEditorFrames: UiBadnessComparableList<ScanFieldConditionEditorFrame>) {
+    private loadConditionEditorFrames(conditionEditorFrames: ScanFieldConditionEditorFrame.List<ScanFieldConditionEditorFrame>) {
         this._conditionEditorFrameComponentsContainer.clear();
         const conditionCount = conditionEditorFrames.count;
         for (let i = 0; i < conditionCount; i++) {

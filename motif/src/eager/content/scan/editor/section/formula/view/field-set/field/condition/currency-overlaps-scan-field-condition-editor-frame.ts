@@ -14,7 +14,6 @@ import {
     CurrencyOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -27,15 +26,11 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
     constructor(
         operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
         private _values: readonly CurrencyId[],
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         super(
             CurrencyOverlapsScanFieldConditionEditorFrame.typeId,
             CurrencyOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
-            deleteMeEventer,
-            changedEventer
         );
     }
 

@@ -33,6 +33,7 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
+import { IdentifiableComponent } from '../../../../../../../component/internal-api';
 import {
     AltCodeSubbedScanFieldEditorFrame,
     AttributeSubbedScanFieldEditorFrame,
@@ -52,21 +53,22 @@ import {
     TextHasValueEqualsScanFieldEditorFrame,
 } from './field/internal-api';
 
-export class ScanFieldSetEditorFrame implements ScanFieldSet {
+export class ScanFieldSetEditorFrame implements ScanFieldSet<IdentifiableComponent> {
     readonly fieldFactory: ScanFieldSetEditorFrame.FieldFactory;
     readonly conditionFactory: ScanFieldEditorFrame.ConditionFactory;
     readonly fields: BadnessComparableList<ScanFieldEditorFrame>;
 
-    loadError: ScanFieldSetLoadError | undefined;
+    private readonly _changedMultiEvent = new MultiEvent<ScanFieldSetEditorFrame.ChangedEventHandler>();
+
+    private _valid = false;
+    private _loadError: ScanFieldSetLoadError | undefined;
+    private _loading = false;
 
     private readonly _allFieldDefinitions: readonly ScanFieldEditorFrame.Definition[];
 
-    private _valid = false;
     private _fieldListChangeSubscriptionId: MultiEvent.SubscriptionId;
 
-    constructor(
-        private readonly _validChangedEventer: ScanFieldSetEditorFrame.ValidChangedEventer,
-    ) {
+    constructor() {
         this.fieldFactory = new ScanFieldSetEditorFrame.FieldFactory(this);
         this.conditionFactory = new ScanFieldEditorFrame.ConditionFactory();
         this.fields = new BadnessComparableList<ScanFieldEditorFrame>();
@@ -76,6 +78,13 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         );
     }
 
+    get valid() { return this._valid; }
+    get loadError() { return this._loadError; }
+    set loadError(value: ScanFieldSetLoadError | undefined) {
+        if (ScanFieldSetLoadError.isUndefinableEqual(value, this._loadError)) {
+            this._loadError = value;
+        }
+    }
     get allDefinitions() { return this._allFieldDefinitions; }
 
     destroy() {
@@ -92,19 +101,60 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         this.fields.remove(frame);
     }
 
-    processFieldChanged(frame: ScanFieldEditorFrame, valid: boolean) {
-        if (valid !== this._valid) {
-            if (!valid) {
-                this._valid = false;
-                this._validChangedEventer(valid);
+    processFieldChanged(_fieldEditorFrame: ScanFieldEditorFrame, valid: boolean, modifierRoot: IdentifiableComponent | undefined) {
+        if (!this._loading) {
+            let framePropertiesChanged: boolean;
+            if (valid === this._valid) {
+                framePropertiesChanged = false;
             } else {
-                valid = this.calculateAllFieldsValid();
-                if (valid) {
-                    this._valid = true;
-                    this._validChangedEventer(valid);
+                if (!valid) {
+                    this._valid = false;
+                    framePropertiesChanged = true;
+                } else {
+                    valid = this.calculateAllFieldsValid();
+                    if (!valid) {
+                        framePropertiesChanged = false;
+                    } else {
+                        this._valid = true;
+                        framePropertiesChanged = true;
+                    }
                 }
             }
+            this.notifyChanged(framePropertiesChanged, modifierRoot);
         }
+    }
+
+    beginLoad() {
+        this._loading = true;
+        this._loadError = undefined;
+    }
+
+    endLoad(loadError: ScanFieldSetLoadError | undefined) {
+        this._loading = false;
+        let framePropertiesChanged = false;
+        if (ScanFieldSetLoadError.isUndefinableEqual(loadError, this._loadError)) {
+            this._loadError = loadError;
+            framePropertiesChanged = true;
+        }
+
+        const valid = loadError === undefined;
+        if (valid !== this._valid) {
+            this._valid = valid;
+            framePropertiesChanged = true;
+        }
+
+        if (framePropertiesChanged) {
+            // We only want to notify if ScanFieldSetEditorFrame properties have changed
+            this.notifyChanged(true, undefined);
+        }
+    }
+
+    subscribeChangedEvent(handler: ScanFieldSetEditorFrame.ChangedEventHandler) {
+        return this._changedMultiEvent.subscribe(handler);
+    }
+
+    unsubscribeChangedEvent(subscriptionId: MultiEvent.SubscriptionId) {
+        this._changedMultiEvent.unsubscribe(subscriptionId);
     }
 
     private handleFieldListChangeEvent(listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer) {
@@ -137,18 +187,26 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         }
         return true;
     }
+
+    private notifyChanged(framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) {
+        const handlers = this._changedMultiEvent.copyHandlers();
+        for (const handler of handlers) {
+            handler(framePropertiesChanged, modifierRoot);
+        }
+    }
 }
 
 export namespace ScanFieldSetEditorFrame {
-    export type ValidChangedEventer = (this: void, valid: boolean) => void;
+    export type ChangedEventHandler = (this: void, framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) => void;
 
-    export class FieldFactory implements ScanFieldSet.FieldFactory {
+    export class FieldFactory implements ScanFieldSet.FieldFactory<IdentifiableComponent> {
         private readonly _deleteFieldEditorFrameClosure: ScanFieldEditorFrame.DeleteMeEventHandler;
-        private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.ValidChangedEventHandler;
+        private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.MeOrMyConditionsChangedEventer;
 
         constructor(private readonly _setFrame: ScanFieldSetEditorFrame) {
             this._deleteFieldEditorFrameClosure = (frame) => this._setFrame.deleteField(frame);
-            this._processFieldEditorFrameChangedClosure = (frame, valid) => this._setFrame.processFieldChanged(frame, valid);
+            this._processFieldEditorFrameChangedClosure =
+                (frame, valid, modifierNode) => this._setFrame.processFieldChanged(frame, valid, modifierNode);
         }
 
         createNumericInRange(_fieldSet: ScanFieldSet, fieldId: ScanFormula.NumericRangeFieldId): Result<NumericInRangeScanField> {
@@ -259,49 +317,49 @@ export namespace ScanFieldSetEditorFrame {
         }
 
         private createNumericInRangeScanFieldEditorFrame(fieldId: ScanFormula.NumericRangeFieldId, name: string): NumericInRangeScanFieldEditorFrame {
-            return new NumericInRangeScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new NumericInRangeScanFieldEditorFrame(fieldId, name);
         }
         private createPriceSubbedScanFieldEditorFrame(subFieldId: ScanFormula.PriceSubFieldId, name: string): PriceSubbedScanFieldEditorFrame {
-            return new PriceSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new PriceSubbedScanFieldEditorFrame(subFieldId, name);
         }
         private createDateInRangeScanFieldEditorFrame(fieldId: ScanFormula.DateRangeFieldId, name: string): DateInRangeScanFieldEditorFrame {
-            return new DateInRangeScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new DateInRangeScanFieldEditorFrame(fieldId, name);
         }
         private createDateSubbedScanFieldEditorFrame(subFieldId: ScanFormula.DateSubFieldId, name: string): DateSubbedScanFieldEditorFrame {
-            return new DateSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new DateSubbedScanFieldEditorFrame(subFieldId, name);
         }
         private createTextContainsScanFieldEditorFrame(fieldId: ScanFormula.TextContainsFieldId, name: string): TextContainsScanFieldEditorFrame {
-            return new TextContainsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextContainsScanFieldEditorFrame(fieldId, name);
         }
         private createAltCodeSubbedScanFieldEditorFrame(subFieldId: ScanFormula.AltCodeSubFieldId, name: string): AltCodeSubbedScanFieldEditorFrame {
-            return new AltCodeSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new AltCodeSubbedScanFieldEditorFrame(subFieldId, name);
         }
         private createAttributeSubbedScanFieldEditorFrame(subFieldId: ScanFormula.AttributeSubFieldId, name: string): AttributeSubbedScanFieldEditorFrame {
-            return new AttributeSubbedScanFieldEditorFrame(subFieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new AttributeSubbedScanFieldEditorFrame(subFieldId, name);
         }
         private createTextEqualsScanFieldEditorFrame(fieldId: ScanFormula.TextEqualsFieldId, name: string): TextEqualsScanFieldEditorFrame {
-            return new TextEqualsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextEqualsScanFieldEditorFrame(fieldId, name);
         }
         private createTextHasValueEqualsScanFieldEditorFrame(fieldId: ScanFormula.TextHasValueEqualsFieldId, name: string): TextHasValueEqualsScanFieldEditorFrame {
-            return new TextHasValueEqualsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new TextHasValueEqualsScanFieldEditorFrame(fieldId, name);
         }
         private createStringOverlapsScanFieldEditorFrame(fieldId: ScanFormula.StringOverlapsFieldId, name: string): StringOverlapsScanFieldEditorFrame {
-            return new StringOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new StringOverlapsScanFieldEditorFrame(fieldId, name);
         }
         private createMarketBoardOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.MarketBoard, name: string): MarketBoardOverlapsScanFieldEditorFrame {
-            return new MarketBoardOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new MarketBoardOverlapsScanFieldEditorFrame(fieldId, name);
         }
         private createCurrencyOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Currency, name: string): CurrencyOverlapsScanFieldEditorFrame {
-            return new CurrencyOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new CurrencyOverlapsScanFieldEditorFrame(fieldId, name);
         }
         private createExchangeOverlapsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Exchange, name: string): ExchangeOverlapsScanFieldEditorFrame {
-            return new ExchangeOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new ExchangeOverlapsScanFieldEditorFrame(fieldId, name);
         }
         private createMarketOverlapsScanFieldEditorFrame(fieldId: ScanFormula.MarketOverlapsFieldId, name: string): MarketOverlapsScanFieldEditorFrame {
-            return new MarketOverlapsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new MarketOverlapsScanFieldEditorFrame(fieldId, name);
         }
         private createIsScanFieldEditorFrame(fieldId: ScanFormula.FieldId.Is, name: string): IsScanFieldEditorFrame {
-            return new IsScanFieldEditorFrame(fieldId, name, this._deleteFieldEditorFrameClosure, this._processFieldEditorFrameChangedClosure);
+            return new IsScanFieldEditorFrame(fieldId, name);
         }
     }
 }

@@ -20,7 +20,7 @@ import {
     ScanTargetTypeId,
     StringId,
     Strings,
-    UiBadnessComparableList,
+    UiComparableList,
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -34,6 +34,7 @@ import {
     GeneralScanEditorSectionNgComponent,
     NotifiersScanEditorSectionNgComponent
 } from '../section/ng-api';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-scan-editor',
@@ -73,7 +74,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private readonly _deleteUiAction: ButtonUiAction;
     private readonly _testUiAction: ButtonUiAction;
 
-    private _scanEditor: ScanEditor | undefined;
+    private _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorModifiedStateChangeSubscriptionId: MultiEvent.SubscriptionId;
@@ -113,7 +114,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this.checkUpdateRankDisplayed();
     }
 
-    setEditor(scanEditor: ScanEditor | undefined) {
+    setEditor(scanEditor: ScanEditor<IdentifiableComponent> | undefined) {
         this._generalSectionComponent.setEditor(scanEditor);
         this._criteriaSectionComponent.setEditor(scanEditor);
         this._rankSectionComponent.setEditor(scanEditor);
@@ -538,7 +539,7 @@ export namespace ScanEditorNgComponent {
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 }

@@ -10,10 +10,16 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface TextContainsScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.TextContains,
-    operatorId: TextContainsScanFieldConditionOperandsEditorFrame.OperatorId;
-    value: string | undefined;
-    asId: ScanFormula.TextContainsAsId | undefined;
-    ignoreCase: boolean | undefined;
+
+    readonly operatorId: TextContainsScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly value: string | undefined;
+    readonly asId: ScanFormula.TextContainsAsId | undefined;
+    readonly ignoreCase: boolean | undefined;
+
+    setOperatorId(value: TextContainsScanFieldConditionOperandsEditorFrame.OperatorId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace TextContainsScanFieldConditionOperandsEditorFrame {

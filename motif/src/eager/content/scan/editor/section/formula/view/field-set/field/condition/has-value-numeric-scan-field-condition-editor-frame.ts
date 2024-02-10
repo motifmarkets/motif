@@ -9,7 +9,6 @@ import { NumericScanFieldConditionEditorFrame } from './numeric-scan-field-condi
 import {
     HasValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFieldConditionEditorFrame
     implements
@@ -19,11 +18,9 @@ export class HasValueNumericScanFieldConditionEditorFrame extends NumericScanFie
 
     constructor(
         private _operatorId: HasValueNumericScanFieldConditionEditorFrame.OperatorId,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(HasValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(HasValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands() {

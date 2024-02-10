@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { NotSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList } from '@motifmarkets/motif-core';
+import { NotSubbedScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -15,10 +15,8 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
         typeId: ScanField.TypeId,
         fieldId: ScanFormula.FieldId,
         name: string,
-        conditions: UiBadnessComparableList<ScanFieldConditionEditorFrame>,
+        conditions: ScanFieldConditionEditorFrame.List<ScanFieldConditionEditorFrame>,
         conditionTypeId: ScanFieldCondition.TypeId,
-        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             typeId,
@@ -27,8 +25,6 @@ export abstract class NotSubbedScanFieldEditorFrame extends ScanFieldEditorFrame
             name,
             conditions,
             conditionTypeId,
-            deleteMeEventer,
-            changedEventer,
         );
     }
 }

@@ -4,7 +4,7 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="compatibleDiv" [style.display]="isCriteriaCompatible() ? null : 'none'">
+<div id="compatibleDiv" [style.display]="criteriaCompatible ? null : 'none'">
     <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
         <as-split-area id="fieldsArea" [size]="gridSize" [minSize]="gridMinSize">
             <span id="fieldsSpan">{{fieldsLabel}}</span>
@@ -31,6 +31,6 @@
         </as-split-area>
     </as-split>
 </div>
-<div id="notCompatibleDiv" [style.display]="!isCriteriaCompatible() ? null : 'none'">
-    <span id="notCompatibleReasonSpan">{{notCompatibleReason}}</span>
+<div id="notCompatibleDiv" [style.display]="!criteriaCompatible ? null : 'none'">
+    <span id="notCompatibleReasonSpan">{{criteriaNotCompatibleReason}}</span>
 </div>

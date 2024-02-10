@@ -11,7 +11,6 @@ import {
 import {
     HasValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 import { TextHasValueEqualsScanFieldConditionEditorFrame } from './text-has-value-equals-scan-field-condition-editor-frame';
 
 export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHasValueEqualsScanFieldConditionEditorFrame
@@ -22,11 +21,9 @@ export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends Tex
 
     constructor(
         private _operatorId: HasValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(HasValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(HasValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands() {

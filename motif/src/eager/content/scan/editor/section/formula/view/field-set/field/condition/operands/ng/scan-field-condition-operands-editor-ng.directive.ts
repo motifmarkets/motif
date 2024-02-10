@@ -6,6 +6,7 @@
 
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Inject, InjectionToken, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { BooleanUiAction, Integer, MultiEvent, StringId, Strings } from '@motifmarkets/motif-core';
+import { IdentifiableComponent } from 'component-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../../../ng/content-component-base-ng.directive';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
@@ -29,7 +30,7 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         super(elRef, typeInstanceCreateId);
 
         this._removeMeUiAction = this.createRemoveMeUiAction();
-        this._frameChangedSubscriptionId = this.frame.subscribeChangedEvent(() => this.pushAll());
+        this._frameChangedSubscriptionId = this.frame.subscribeChangedEvent((modifierNode) => this.pushAll(modifierNode));
     }
 
     public get affirmativeOperatorDisplayLines() { return this.frame.affirmativeOperatorDisplayLines; }
@@ -53,8 +54,10 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         this._removeMeUiAction.finalise();
     }
 
-    protected pushAll() {
-        this.markForCheck();
+    protected pushAll(modifierNode: IdentifiableComponent) {
+        if (modifierNode !== this) {
+            this.markForCheck();
+        }
     }
 
     protected markForCheck() {
@@ -66,7 +69,7 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         action.pushCaption(Strings[StringId.ScanFieldConditionOperandsEditorCaption_RemoveMe]);
         action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditorTitle_RemoveMe]);
         action.commitEvent = () => {
-            this.frame.removeMe(this.frame);
+            this.frame.deleteMe();
         };
 
         return action;

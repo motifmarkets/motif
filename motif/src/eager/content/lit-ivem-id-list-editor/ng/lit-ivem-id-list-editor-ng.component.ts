@@ -1,5 +1,5 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, Optional } from '@angular/core';
-import { LitIvemId, LockOpenListItem, UiBadnessComparableList } from '@motifmarkets/motif-core';
+import { LitIvemId, LockOpenListItem, UiComparableList } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreInjectionTokens, TableFieldSourceDefinitionRegistryNgService } from 'component-services-ng-api';
 import { LitIvemIdListEditorNgDirective } from './lit-ivem-id-list-editor-ng.directive';
 
@@ -20,7 +20,7 @@ export class LitIvemIdListEditorNgComponent extends LitIvemIdListEditorNgDirecti
         commandRegisterNgService: CommandRegisterNgService,
         fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
-        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiBadnessComparableList<LitIvemId> | null,
+        @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiComparableList<LitIvemId> | null,
     ) {
         super(
             elRef,

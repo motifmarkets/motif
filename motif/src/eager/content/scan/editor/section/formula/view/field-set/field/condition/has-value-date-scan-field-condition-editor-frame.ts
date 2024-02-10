@@ -9,18 +9,15 @@ import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-e
 import {
     HasValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class HasValueDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements HasValueScanFieldConditionOperandsEditorFrame {
     declare readonly operandsTypeId: HasValueDateScanFieldConditionEditorFrame.OperandsTypeId;
 
     constructor(
         private _operatorId: HasValueScanFieldConditionOperandsEditorFrame.OperatorId,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(HasValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(HasValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands() {

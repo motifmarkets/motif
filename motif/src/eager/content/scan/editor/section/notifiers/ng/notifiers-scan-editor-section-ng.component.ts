@@ -16,6 +16,7 @@ import {
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-notifiers-scan-editor-section',
@@ -76,7 +77,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         this.initialiseComponents();
     }
 
-    override setEditor(value: ScanEditor | undefined) {
+    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         super.setEditor(value);
         this.pushValues();
     }
@@ -116,7 +117,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         }
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: IdentifiableComponent) {
         const scanEditor = this._scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this) {
         }

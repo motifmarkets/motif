@@ -14,7 +14,6 @@ import {
     MarketBoardOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -27,15 +26,11 @@ export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsSc
     constructor(
         operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
         private _values: readonly MarketBoardId[],
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         super(
             MarketBoardOverlapsScanFieldConditionEditorFrame.typeId,
             MarketBoardOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
-            deleteMeEventer,
-            changedEventer
         );
     }
 

@@ -9,6 +9,7 @@ import { ScanEditor } from '@motifmarkets/motif-core';
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { IdleNgService } from 'component-services-ng-api';
 import { ZenithScanFormulaViewNgDirective } from '../../ng/zenith-scan-formula-view-ng.directive';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-criteria-zenith-scan-formula-view',
@@ -28,15 +29,15 @@ export class CriteriaZenithScanFormulaViewNgComponent extends ZenithScanFormulaV
         super(elRef, cdr, injector, idleNgService, ++CriteriaZenithScanFormulaViewNgComponent.typeInstanceCreateCount);
     }
 
-    protected getFormulaAsZenithText(editor: ScanEditor) {
+    protected getFormulaAsZenithText(editor: ScanEditor<IdentifiableComponent>) {
         return editor.criteriaAsZenithText;
     }
 
-    protected override setFormulaAsZenithText(editor: ScanEditor, text: string, fieldChanger: ScanEditor.Modifier) {
+    protected override setFormulaAsZenithText(editor: ScanEditor<IdentifiableComponent>, text: string, fieldChanger: IdentifiableComponent) {
         return editor.setCriteriaAsZenithText(text, fieldChanger);
     }
 
-    protected getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined {
+    protected getFormulaAsZenithTextIfChanged(editor: ScanEditor<IdentifiableComponent>, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined {
         for (const fieldId of changedFieldIds) {
             if (fieldId === ScanEditor.FieldId.CriteriaAsZenithText || fieldId === ScanEditor.FieldId.Criteria) {
                 return editor.criteriaAsZenithText;

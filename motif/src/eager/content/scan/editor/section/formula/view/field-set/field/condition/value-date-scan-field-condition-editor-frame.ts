@@ -9,7 +9,6 @@ import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-e
 import {
     DateValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements DateValueScanFieldConditionOperandsEditorFrame {
     declare readonly operandsTypeId: ValueDateScanFieldConditionEditorFrame.OperandsTypeId;
@@ -17,11 +16,9 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     constructor(
         private _operatorId: ValueDateScanFieldConditionEditorFrame.OperatorId,
         private _value: SourceTzOffsetDateTime | undefined,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     override get operands(): DateScanFieldCondition.Operands {

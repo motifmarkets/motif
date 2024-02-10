@@ -20,10 +20,8 @@ export abstract class TextHasValueEqualsScanFieldConditionEditorFrame extends Sc
     constructor(
         operandsTypeId: ScanFieldCondition.Operands.TypeId,
         affirmativeOperatorDisplayLines: readonly string[],
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
-        super(TextHasValueEqualsScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(TextHasValueEqualsScanFieldConditionEditorFrame.typeId, operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     abstract get operands(): BaseTextScanFieldCondition.HasValueOperands | BaseTextScanFieldCondition.ValueOperands;

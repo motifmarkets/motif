@@ -26,16 +26,12 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
     constructor(
         private _operatorId: TextEqualsScanFieldConditionEditorFrame.OperatorId,
         private _value: string | undefined,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(
             TextEqualsScanFieldConditionEditorFrame.typeId,
             TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
-            deleteMeEventer,
-            changedEventer
         );
     }
 

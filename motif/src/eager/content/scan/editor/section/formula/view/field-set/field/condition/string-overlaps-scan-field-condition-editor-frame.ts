@@ -13,7 +13,6 @@ import {
     StringOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
-import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -26,15 +25,11 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
     constructor(
         operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
         private _values: readonly string[],
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         super(
             StringOverlapsScanFieldConditionEditorFrame.typeId,
             StringOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
-            deleteMeEventer,
-            changedEventer
         );
     }
 

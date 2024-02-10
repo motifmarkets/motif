@@ -8,7 +8,7 @@ import {
     StringId,
     StringUiAction,
     Strings,
-    UiBadnessComparableList
+    UiComparableList
 } from '@motifmarkets/motif-core';
 import {
     CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CheckboxInputNgComponent, TextInputNgComponent
@@ -16,6 +16,7 @@ import {
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 import { ScanEditorTargetsNgComponent } from '../targets/ng-api';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-general-scan-editor-section',
@@ -85,7 +86,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this.initialiseComponents();
     }
 
-    override setEditor(value: ScanEditor | undefined) {
+    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         super.setEditor(value);
         this.pushValues();
         this.pushDeleteState();
@@ -134,7 +135,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: IdentifiableComponent) {
         const scanEditor = this._scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this) {
             for (const fieldId of fieldIds) {
@@ -386,7 +387,7 @@ export namespace GeneralScanEditorSectionNgComponent {
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
     export type RankDisplayedPossiblyChangedEventer = (this: void) => void;

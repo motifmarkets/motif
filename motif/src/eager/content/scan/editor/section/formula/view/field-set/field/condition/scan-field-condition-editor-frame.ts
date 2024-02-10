@@ -5,10 +5,14 @@
  */
 
 import { InjectionToken } from '@angular/core';
-import { MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
+import { AssertInternalError, ModifierComparableList, MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
+import { RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
 import { ScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 
 export abstract class ScanFieldConditionEditorFrame implements ScanFieldCondition, ScanFieldConditionOperandsEditorFrame {
+    deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer | undefined;
+    changedEventer: ScanFieldConditionEditorFrame.ChangedEventer | undefined;
+
     private readonly _changedMultiEvent = new MultiEvent<ScanFieldConditionOperandsEditorFrame.ChangedEventHandler>();
 
     private _valid = false;
@@ -17,8 +21,6 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
         readonly typeId: ScanFieldCondition.TypeId,
         readonly operandsTypeId: ScanFieldCondition.Operands.TypeId,
         protected _affirmativeOperatorDisplayLines: readonly string[],
-        readonly _deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        private readonly _changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
     }
 
@@ -26,12 +28,12 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
     get affirmativeOperatorDisplayLines() { return this._affirmativeOperatorDisplayLines; }
     abstract get operatorId(): ScanFieldCondition.OperatorId;
 
-    updateValid() {
-        this._valid = this.calculateValid();
-    }
-
-    removeMe(operandsEditorFrame: ScanFieldConditionOperandsEditorFrame) {
-        this._deleteMeEventer(operandsEditorFrame as ScanFieldConditionEditorFrame);
+    deleteMe(modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (this.deleteMeEventer === undefined) {
+            throw new AssertInternalError('SFCEFDM34456');
+        } else {
+            this.deleteMeEventer(modifier);
+        }
     }
 
     subscribeChangedEvent(handler: ScanFieldConditionOperandsEditorFrame.ChangedEventHandler) {
@@ -42,26 +44,40 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
         this._changedMultiEvent.unsubscribe(subscriptionId);
     }
 
-    protected processChanged() {
-        const valid = this.calculateValid();
-        this.notifyChanged(valid);
+    protected processChanged(modifier: ScanFieldConditionEditorFrame.Modifier) {
+        this.updateValid();
+        this.notifyChanged(modifier);
     }
 
-    private notifyChanged(valid: boolean) {
-        this._changedEventer(valid);
+    private notifyChanged(modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (this.changedEventer === undefined) {
+            throw new AssertInternalError('SFCEFNC34456');
+        } else {
+            this.changedEventer(this._valid, modifier);
+        }
 
         const handlers = this._changedMultiEvent.copyHandlers();
         for (const handler of handlers) {
-            handler();
+            handler(modifier.node);
         }
+    }
+
+    private updateValid() {
+        this._valid = this.calculateValid();
     }
 
     protected abstract calculateValid(): boolean;
 }
 
 export namespace ScanFieldConditionEditorFrame {
-    export type DeleteMeEventer = (this: void, frame: ScanFieldConditionEditorFrame) => void;
-    export type ChangedEventer = (this: void, valid: boolean) => void;
+    export type Modifier = RootAndNodeIdentifiableComponentPair;
+    export class List<T extends ScanFieldConditionEditorFrame> extends ModifierComparableList<T, Modifier | undefined, ScanFieldConditionEditorFrame> {
+        constructor() {
+            super(undefined);
+        }
+    }
+    export type DeleteMeEventer = (this: void, modifier: Modifier) => void;
+    export type ChangedEventer = (this: void, valid: boolean, modifier: Modifier) => void;
 
     export const injectionToken = new InjectionToken<ScanFieldConditionEditorFrame>('ScanFieldConditionEditorFrame');
 }

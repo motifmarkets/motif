@@ -5,7 +5,8 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
-import { AssertInternalError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, MultiEvent, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { IdentifiableComponent } from 'component-internal-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { CaptionLabelNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
@@ -35,13 +36,16 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     public gridMinSize: AngularSplitTypes.AreaSize.Html;
     public splitterGutterSize = 3;
     public fieldsLabel: string;
-
-    private _frame: ScanFieldSetEditorFrame | undefined;
-    private _fieldEditorFramesGridFrame: ScanFieldEditorFramesGridFrame;
+    public criteriaCompatible: boolean;
+    public criteriaNotCompatibleReason: string;
 
     private readonly _addFieldUiAction: ExplicitElementsEnumUiAction;
     private readonly _addAttributeFieldUiAction: ExplicitElementsEnumUiAction;
     private readonly _addAltCodeFieldUiAction: ExplicitElementsEnumUiAction;
+
+    private _frame: ScanFieldSetEditorFrame | undefined;
+    private _frameChangedEventSubscriptionId: MultiEvent.SubscriptionId;
+    private _fieldEditorFramesGridFrame: ScanFieldEditorFramesGridFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -54,9 +58,6 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         this._addAttributeFieldUiAction = this.createAddAttributeFieldUiAction();
         this._addAltCodeFieldUiAction = this.createAddAltCodeFieldUiAction();
     }
-
-    public get nonConditionalReason() { return 'Too Complicated'; }
-    public get notCompatibleReason() { return ''; }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -74,12 +75,16 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         return true;
     }
 
-    override setEditor(value: ScanEditor | undefined) {
+    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         this._scanEditor = value;
         if (value === undefined) {
-            this._frame = undefined;
             this._fieldEditorFrameComponent.setFrame(undefined, false);
             this._fieldEditorFramesGridComponent.setList(undefined);
+            if (this._frame !== undefined) {
+                this._frame.unsubscribeChangedEvent(this._frameChangedEventSubscriptionId);
+                this._frameChangedEventSubscriptionId = undefined;
+            }
+            this._frame = undefined;
         } else {
             const criteriaAsFieldSet = value.criteriaAsFieldSet;
             if (criteriaAsFieldSet === undefined) {
@@ -87,12 +92,16 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             } else {
                 const frame = criteriaAsFieldSet as ScanFieldSetEditorFrame;
                 this._frame = frame;
+                this._frameChangedEventSubscriptionId = this._frame.subscribeChangedEvent(
+                    (framePropertiesChanged, modifierRoot) => this.processFrameChanged(framePropertiesChanged, modifierRoot)
+                );
                 this._fieldEditorFramesGridComponent.setList(frame.fields);
             }
         }
     }
 
     private initialiseComponents() {
+        this._fieldEditorFrameComponent.setRootIdentifiableComponent(this);
         this._addFieldLabelComponent.initialise(this._addFieldUiAction);
         this._addFieldControlComponent.initialise(this._addFieldUiAction);
         this._addAttributeFieldLabelComponent.initialise(this._addAttributeFieldUiAction);
@@ -168,6 +177,55 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
                 frame.addField(action.definedValue);
                 delay1Tick(() => action.pushValue(undefined));
             }
+        }
+    }
+
+    private pushAll() {
+        const frame = this._frame;
+        if (frame === undefined) {
+            throw new AssertInternalError('SFSENCPA77743');
+        } else {
+            let changed = false;
+            const loadError = frame.loadError;
+
+            let criteriaCompatible: boolean;
+            if (loadError === undefined) {
+                criteriaCompatible = true;
+            } else {
+                criteriaCompatible = false;
+                let criteriaNotCompatibleReason = loadError.typeId.toString();
+                const extra = loadError.extra;
+                if (extra !== undefined) {
+                    criteriaNotCompatibleReason += `: ${extra}`;
+                }
+                if (criteriaNotCompatibleReason !== this.criteriaNotCompatibleReason) {
+                    this.criteriaNotCompatibleReason = criteriaNotCompatibleReason;
+                    changed = true;
+                }
+            }
+
+            if (criteriaCompatible !== this.criteriaCompatible) {
+                this.criteriaCompatible = criteriaCompatible;
+                changed = true;
+            }
+
+            if (changed) {
+                this._cdr.markForCheck();
+            }
+        }
+    }
+
+    private processFrameChanged(framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) {
+        if (modifierRoot === this) {
+            if (this._scanEditor === undefined) {
+                throw new AssertInternalError('SFSENCPFC77743');
+            } else {
+                this._scanEditor.flagCriteriaAsFieldSetChanged(modifierRoot);
+            }
+        }
+
+        if (framePropertiesChanged) {
+            this.pushAll();
         }
     }
 

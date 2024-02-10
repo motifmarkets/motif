@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ScanField, ScanFieldCondition, ScanFormula, TextHasValueEqualsScanField, UiBadnessComparableList, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ScanField, ScanFieldCondition, ScanFormula, TextHasValueEqualsScanField, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { HasValueTextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame, TextHasValueEqualsScanFieldConditionEditorFrame, ValueTextHasValueEqualsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { NotSubbedScanFieldEditorFrame } from './not-subbed-scan-field-editor-frame';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
@@ -18,8 +18,6 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
     constructor(
         fieldId: TextHasValueEqualsScanFieldEditorFrame.ScanFormulaFieldId,
         name: string,
-        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             TextHasValueEqualsScanFieldEditorFrame.typeId,
@@ -27,27 +25,24 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
             name,
             new TextHasValueEqualsScanFieldEditorFrame.conditions(),
             TextHasValueEqualsScanFieldEditorFrame.conditionTypeId,
-            deleteMeEventer,
-            changedEventer,
         );
     }
 
     override get supportedOperatorIds() { return TextHasValueEqualsScanFieldConditionEditorFrame.supportedOperatorIds; }
 
-    override addCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId) {
+    override addCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId, modifier: ScanFieldEditorFrame.Modifier) {
         const conditionEditorFrame = this.createCondition(operatorId);
-        this.conditions.add(conditionEditorFrame);
+        this.conditions.add(conditionEditorFrame, modifier);
     }
 
     private createCondition(operatorId: TextHasValueEqualsScanFieldEditorFrame.OperatorId): TextHasValueEqualsScanFieldConditionEditorFrame {
-        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
+                return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
+                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined);
             default:
                 throw new UnreachableCaseError('THVESFEFCC22298', operatorId);
         }
@@ -58,8 +53,8 @@ export namespace TextHasValueEqualsScanFieldEditorFrame {
     export const typeId = ScanField.TypeId.TextHasValueEquals;
     export type ScanFieldTypeId = typeof typeId;
     export type ScanFormulaFieldId = ScanFormula.TextHasValueEqualsFieldId;
-    export type Conditions = UiBadnessComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = UiBadnessComparableList<TextHasValueEqualsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type Conditions = ScanFieldConditionEditorFrame.List<TextHasValueEqualsScanFieldConditionEditorFrame>;
+    export const conditions = ScanFieldConditionEditorFrame.List<TextHasValueEqualsScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
     export type OperatorId = TextHasValueEqualsScanFieldConditionEditorFrame.OperatorId;

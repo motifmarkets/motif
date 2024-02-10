@@ -19,9 +19,10 @@ import {
     StringId,
     Strings,
     SymbolsService,
-    UiBadnessComparableList,
+    UiComparableList,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { IdentifiableComponent } from 'component-internal-api';
 import { SymbolsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
@@ -73,8 +74,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
-    private _scanEditor: ScanEditor | undefined;
-    private _multiSymbolList: UiBadnessComparableList<LitIvemId>;
+    private _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
+    private _multiSymbolList: UiComparableList<LitIvemId>;
     // private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
     // private _lastTargetTypeIdWasMulti = false;
 
@@ -159,7 +160,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         }
     }
 
-    setEditor(value: ScanEditor | undefined) {
+    setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
             this._scanEditorFieldChangesSubscriptionId = undefined;
@@ -375,7 +376,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         return action;
     }
 
-    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], modifier: ScanEditor.Modifier | undefined) {
+    private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], modifier: IdentifiableComponent | undefined) {
         if (modifier !== this) {
             let targetTypeIdPushRequired = false;
             for (const fieldId of fieldIds) {
@@ -604,7 +605,7 @@ export namespace ScanEditorTargetsNgComponent {
     export type PopoutMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 

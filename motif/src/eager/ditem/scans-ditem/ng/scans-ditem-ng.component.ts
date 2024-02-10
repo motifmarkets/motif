@@ -26,7 +26,7 @@ import {
     StringUiAction,
     Strings,
     UiAction,
-    UiBadnessComparableList,
+    UiComparableList,
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
@@ -342,7 +342,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         return definitionPromise;
     }
 
-    private openTargetMultiSymbolListEditorDialog(caption: string, list: UiBadnessComparableList<LitIvemId>, columnsEditCaption: string) {
+    private openTargetMultiSymbolListEditorDialog(caption: string, list: UiComparableList<LitIvemId>, columnsEditCaption: string) {
         this.dialogActive = true;
 
         const closePromise = LitIvemIdListEditorDialogNgComponent.open(

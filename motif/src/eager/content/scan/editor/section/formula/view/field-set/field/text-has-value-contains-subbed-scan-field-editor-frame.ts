@@ -9,20 +9,19 @@ import { ContainsTextHasValueContainsScanFieldConditionEditorFrame, HasValueText
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
 export abstract class TextHasValueContainsSubbedScanFieldEditorFrame extends ScanFieldEditorFrame {
-    override addCondition(operatorId: TextHasValueContainsSubbedScanFieldEditorFrame.OperatorId) {
+    override addCondition(operatorId: TextHasValueContainsSubbedScanFieldEditorFrame.OperatorId, modifier: ScanFieldEditorFrame.Modifier) {
         const conditionEditorFrame = this.createCondition(operatorId);
-        this.conditions.add(conditionEditorFrame);
+        this.conditions.add(conditionEditorFrame, modifier);
     }
 
     private createCondition(operatorId: TextHasValueContainsSubbedScanFieldEditorFrame.OperatorId): TextHasValueContainsScanFieldConditionEditorFrame {
-        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
+                return new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId);
             case ScanFieldCondition.OperatorId.Contains:
             case ScanFieldCondition.OperatorId.NotContains:
-                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined, deleteMeEventer, changedEventer);
+                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined);
             default:
                 throw new UnreachableCaseError('THVCSSFEFCC34340', operatorId);
         }

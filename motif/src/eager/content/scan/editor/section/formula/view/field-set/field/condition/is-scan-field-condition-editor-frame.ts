@@ -24,16 +24,12 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
     constructor(
         private _operatorId: IsScanFieldConditionEditorFrame.OperatorId,
         private _categoryId: ScanFormula.IsNode.CategoryId | undefined,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(
             IsScanFieldConditionEditorFrame.typeId,
             IsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
-            deleteMeEventer,
-            changedEventer
         );
     }
 
@@ -50,32 +46,25 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.isIsNot(this._operatorId); }
-
     override get operatorId(): IsScanFieldConditionEditorFrame.OperatorId { return this._operatorId; }
-    set operatorId(value: IsScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
 
+    get not() { return ScanFieldCondition.Operator.isIsNot(this._operatorId); }
     get categoryId() { return this._categoryId; }
-    set categoryId(value: ScanFormula.IsNode.CategoryId | undefined) {
-        if (value !== this._categoryId) {
-            this._categoryId = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return this._categoryId !== undefined;
     }
 
-    negateOperator() {
+    setCategoryId(value: ScanFormula.IsNode.CategoryId | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._categoryId) {
+            this._categoryId = value;
+            this.processChanged(modifier);
+        }
+    }
+
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateIs(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
     }
 }
 

@@ -13,6 +13,7 @@ import { TextInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ZenithScanFormulaViewDecodeProgressNgComponent } from '../decode-progress/ng-api';
 import { ComponentBaseNgDirective } from 'component-ng-api';
+import { IdentifiableComponent } from 'component-internal-api';
 
 @Directive({
     selector: '[appZenithScanFormulaView]',
@@ -103,7 +104,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         delay1Tick(() => this._editorComponent.initialise());
     }
 
-    override setEditor(value: ScanEditor | undefined) {
+    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
         const oldEditor = this.scanEditor;
         if (oldEditor !== undefined) {
             oldEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
@@ -192,7 +193,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         return Promise.resolve(undefined);
     }
 
-    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier | undefined) {
+    private processScanEditorFieldChanges(editor: ScanEditor<IdentifiableComponent>, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: IdentifiableComponent | undefined) {
         const text = this.getFormulaAsZenithTextIfChanged(editor, changedFieldIds);
         if (text !== undefined && fieldChanger !== this) {
             this._editorComponent.text = text;
@@ -234,11 +235,11 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         }
     }
 
-    protected abstract getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined;
-    protected abstract getFormulaAsZenithText(editor: ScanEditor): string | undefined;
+    protected abstract getFormulaAsZenithTextIfChanged(editor: ScanEditor<IdentifiableComponent>, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined;
+    protected abstract getFormulaAsZenithText(editor: ScanEditor<IdentifiableComponent>): string | undefined;
     protected abstract setFormulaAsZenithText(
-        editor: ScanEditor,
-        text: string, fieldChanger: ScanEditor.Modifier
+        editor: ScanEditor<IdentifiableComponent>,
+        text: string, fieldChanger: IdentifiableComponent
     ): ScanEditor.SetAsZenithTextResult | undefined;
 }
 

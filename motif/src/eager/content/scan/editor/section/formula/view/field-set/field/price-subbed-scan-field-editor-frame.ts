@@ -9,7 +9,6 @@ import {
     ScanField,
     ScanFieldCondition,
     ScanFormula,
-    UiBadnessComparableList,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import {
@@ -31,8 +30,6 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
     constructor(
         subFieldId: PriceSubbedScanFieldEditorFrame.ScanFormulaSubFieldId,
         name: string,
-        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             PriceSubbedScanFieldEditorFrame.typeId,
@@ -41,30 +38,27 @@ export class PriceSubbedScanFieldEditorFrame extends ScanFieldEditorFrame implem
             name,
             new PriceSubbedScanFieldEditorFrame.conditions(),
             PriceSubbedScanFieldEditorFrame.conditionTypeId,
-            deleteMeEventer,
-            changedEventer,
         );
     }
 
     override get supportedOperatorIds() { return NumericScanFieldConditionEditorFrame.supportedOperatorIds; }
 
-    override addCondition(operatorId: PriceSubbedScanFieldEditorFrame.OperatorId) {
+    override addCondition(operatorId: PriceSubbedScanFieldEditorFrame.OperatorId, modifier: ScanFieldEditorFrame.Modifier) {
         const conditionEditorFrame = this.createCondition(operatorId);
-        this.conditions.add(conditionEditorFrame);
+        this.conditions.add(conditionEditorFrame, modifier);
     }
 
     private createCondition(operatorId: PriceSubbedScanFieldEditorFrame.OperatorId): NumericScanFieldConditionEditorFrame {
-        const { deleteMeEventer, changedEventer } = this.createConditionEditorFrameEventers();
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.HasValue:
             case ScanFieldCondition.OperatorId.NotHasValue:
-                return new HasValueNumericScanFieldConditionEditorFrame(operatorId, deleteMeEventer, changedEventer);
+                return new HasValueNumericScanFieldConditionEditorFrame(operatorId);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueNumericScanFieldConditionEditorFrame(operatorId, undefined, deleteMeEventer, changedEventer);
+                return new ValueNumericScanFieldConditionEditorFrame(operatorId, undefined);
             case ScanFieldCondition.OperatorId.InRange:
             case ScanFieldCondition.OperatorId.NotInRange:
-                return new RangeNumericScanFieldConditionEditorFrame(operatorId, undefined, undefined, deleteMeEventer, changedEventer);
+                return new RangeNumericScanFieldConditionEditorFrame(operatorId, undefined, undefined);
             default:
                 throw new UnreachableCaseError('PSSSFEFCC22298', operatorId);
         }
@@ -77,8 +71,8 @@ export namespace PriceSubbedScanFieldEditorFrame {
     export const fieldId = ScanFormula.FieldId.PriceSubbed;
     export type ScanFormulaFieldId = typeof fieldId;
     export type ScanFormulaSubFieldId = ScanFormula.PriceSubFieldId;
-    export type Conditions = UiBadnessComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = UiBadnessComparableList<NumericScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type Conditions = ScanFieldConditionEditorFrame.List<NumericScanFieldConditionEditorFrame>;
+    export const conditions = ScanFieldConditionEditorFrame.List<NumericScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.Numeric;
     export const conditionTypeId = ScanFieldCondition.TypeId.Numeric;
     export type OperatorId = NumericScanFieldConditionEditorFrame.OperatorId;

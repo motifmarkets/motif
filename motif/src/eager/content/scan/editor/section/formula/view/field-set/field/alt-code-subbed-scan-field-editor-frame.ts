@@ -4,9 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { AltCodeSubbedScanField, ScanField, ScanFieldCondition, ScanFormula, UiBadnessComparableList } from '@motifmarkets/motif-core';
+import { AltCodeSubbedScanField, ScanField, ScanFieldCondition, ScanFormula } from '@motifmarkets/motif-core';
 import { ScanFieldConditionEditorFrame, TextHasValueContainsScanFieldConditionEditorFrame } from './condition/internal-api';
-import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 import { TextHasValueContainsSubbedScanFieldEditorFrame } from './text-has-value-contains-subbed-scan-field-editor-frame';
 
 export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbedScanFieldEditorFrame implements AltCodeSubbedScanField {
@@ -19,8 +18,6 @@ export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbe
     constructor(
         subFieldId: AltCodeSubbedScanFieldEditorFrame.ScanFormulaSubFieldId,
         name: string,
-        deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler,
-        changedEventer: ScanFieldEditorFrame.ValidChangedEventHandler,
     ) {
         super(
             AltCodeSubbedScanFieldEditorFrame.typeId,
@@ -29,8 +26,6 @@ export class AltCodeSubbedScanFieldEditorFrame extends TextHasValueContainsSubbe
             name,
             new AltCodeSubbedScanFieldEditorFrame.conditions(),
             AltCodeSubbedScanFieldEditorFrame.conditionTypeId,
-            deleteMeEventer,
-            changedEventer,
         );
     }
 
@@ -43,8 +38,8 @@ export namespace AltCodeSubbedScanFieldEditorFrame {
     export const fieldId = ScanFormula.FieldId.AltCodeSubbed;
     export type ScanFormulaFieldId = typeof fieldId;
     export type ScanFormulaSubFieldId = ScanFormula.AltCodeSubFieldId;
-    export type Conditions = UiBadnessComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
-    export const conditions = UiBadnessComparableList<TextHasValueContainsScanFieldConditionEditorFrame, ScanFieldConditionEditorFrame>;
+    export type Conditions = ScanFieldConditionEditorFrame.List<TextHasValueContainsScanFieldConditionEditorFrame>;
+    export const conditions = ScanFieldConditionEditorFrame.List<TextHasValueContainsScanFieldConditionEditorFrame>;
     export type ConditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
     export const conditionTypeId = ScanFieldCondition.TypeId.TextHasValueContains;
 }

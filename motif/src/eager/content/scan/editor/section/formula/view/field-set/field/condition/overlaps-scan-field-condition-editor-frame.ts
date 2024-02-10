@@ -20,11 +20,9 @@ export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldCon
         typeId: ScanFieldCondition.TypeId,
         operandsTypeId: ScanFieldCondition.Operands.TypeId,
         private _operatorId: OverlapsScanFieldConditionEditorFrame.OperatorId,
-        deleteMeEventer: ScanFieldConditionEditorFrame.DeleteMeEventer,
-        changedEventer: ScanFieldConditionEditorFrame.ChangedEventer,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
-        super(typeId, operandsTypeId, affirmativeOperatorDisplayLines, deleteMeEventer, changedEventer);
+        super(typeId, operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
     get not() { return ScanFieldCondition.Operator.overlapsIsNot(this._operatorId); }

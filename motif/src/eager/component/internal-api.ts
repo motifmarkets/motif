@@ -6,4 +6,6 @@
 
 export * from './component';
 export * from './frame';
+export * from './identifiable-component';
+export * from './root-and-node-identifiable-component-pair';
 

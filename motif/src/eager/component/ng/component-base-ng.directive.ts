@@ -6,9 +6,10 @@
 
 import { Directive, ElementRef, InjectionToken } from '@angular/core';
 import { Integer } from '@motifmarkets/motif-core';
+import { IdentifiableComponent } from '../identifiable-component';
 
 @Directive()
-export abstract class ComponentBaseNgDirective {
+export abstract class ComponentBaseNgDirective implements IdentifiableComponent {
     readonly rootHtmlElement: HTMLElement;
     readonly typeName: string;
     readonly typeInstanceId: string;
