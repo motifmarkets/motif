@@ -25,8 +25,8 @@ export abstract class NumericComparisonScanFieldConditionEditorFrame extends Sca
 }
 
 export namespace NumericComparisonScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.NumericComparison;
     export const typeId = ScanFieldCondition.TypeId.NumericComparison;
+    export type TypeId = typeof typeId;
     export type OperatorId = NumericComparisonScanFieldCondition.Operands.OperatorId;
     export const supportedOperatorIds = NumericComparisonScanFieldCondition.Operands.supportedOperatorIds;
 }

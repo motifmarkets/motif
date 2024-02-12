@@ -16,6 +16,7 @@
         <ng-container *ngSwitchCase="'Criteria'">
             <app-criteria-zenith-scan-formula-view #zenithCriteriaView [style.display]="isZenithView() ? null : 'none'"></app-criteria-zenith-scan-formula-view>
             <app-condition-set-scan-formula-view #conditionSetCriteriaView  [style.display]="isConditionSetView() ? null : 'none'"></app-condition-set-scan-formula-view>
+            <app-scan-field-set-editor #scanFieldSetEditor [style.display]="isFieldSetView() ? null : 'none'"></app-scan-field-set-editor>
         </ng-container>
         <app-rank-zenith-scan-formula-view #rankView *ngSwitchCase="'Rank'"></app-rank-zenith-scan-formula-view>
     </ng-container>

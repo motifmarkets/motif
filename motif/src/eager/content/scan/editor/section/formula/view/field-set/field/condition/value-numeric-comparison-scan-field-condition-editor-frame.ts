@@ -9,6 +9,7 @@ import { NumericComparisonScanFieldConditionEditorFrame } from './numeric-compar
 import {
     NumericComparisonValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ValueNumericComparisonScanFieldConditionEditorFrame extends NumericComparisonScanFieldConditionEditorFrame
     implements
@@ -38,29 +39,30 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
     }
 
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: ValueNumericComparisonScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
-
     get value() { return this._value; }
-    set value(value: number | undefined) {
-        if (value !== this._value) {
-            this._value = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return this._value !== undefined;
+    }
+
+    setOperatorId(value: ValueNumericComparisonScanFieldConditionEditorFrame.OperatorId, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._operatorId) {
+            this._operatorId = value;
+            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
+            this.processChanged(modifier);
+        }
+    }
+
+    setValue(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._value) {
+            this._value = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace ValueNumericComparisonScanFieldConditionEditorFrame {
     export type OperatorId = NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.NumericComparisonValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.NumericComparisonValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

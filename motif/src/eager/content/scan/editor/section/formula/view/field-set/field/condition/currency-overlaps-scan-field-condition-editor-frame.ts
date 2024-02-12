@@ -14,6 +14,7 @@ import {
     CurrencyOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -43,17 +44,17 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
     }
 
     get values() { return this._values; }
-    set values(value: readonly CurrencyId[]) {
+    setValues(value: readonly CurrencyId[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {
             this._values = value.slice();
-            this.processChanged();
+            this.processChanged(modifier);
         }
     }
 }
 
 export namespace CurrencyOverlapsScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.CurrencyOverlaps;
     export const typeId = ScanFieldCondition.TypeId.CurrencyOverlaps;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.CurrencyEnum;
+    export type TypeId = typeof typeId;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.CurrencyEnum;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

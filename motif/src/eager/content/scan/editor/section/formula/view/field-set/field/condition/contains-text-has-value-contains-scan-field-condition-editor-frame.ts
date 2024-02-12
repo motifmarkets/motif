@@ -60,9 +60,8 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.containsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
+    get not() { return ScanFieldCondition.Operator.containsIsNot(this._operatorId); }
     get value() { return this._value; }
     get asId() { return this._asId; }
     get ignoreCase() { return this._ignoreCase; }
@@ -71,12 +70,9 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         return this._value !== undefined && this._asId !== undefined && this._ignoreCase !== undefined;
     }
 
-    setOperatorId(value: ContainsTextHasValueContainsScanFieldConditionEditorFrame.OperatorId, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged(modifier);
-        }
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
+        this._operatorId = ScanFieldCondition.Operator.negateContains(this._operatorId);
+        this.processChanged(modifier);
     }
 
     setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
@@ -99,15 +95,10 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
             this.processChanged(modifier);
         }
     }
-
-    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
-        this._operatorId = ScanFieldCondition.Operator.negateContains(this._operatorId);
-        this.processChanged(modifier);
-    }
 }
 
 export namespace ContainsTextHasValueContainsScanFieldConditionEditorFrame {
     export type OperatorId = TextContainsScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextContains;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextContains;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

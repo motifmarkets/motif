@@ -31,11 +31,11 @@ import {
     Result,
     SettingsService,
     Table,
-    TableFieldSourceDefinitionRegistryService,
+    TableFieldSourceDefinitionCachedFactoryService,
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService
+    TableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
 import { ContentFrame } from '../content-frame';
@@ -74,9 +74,9 @@ export abstract class GridSourceFrame extends ContentFrame {
         protected readonly settingsService: SettingsService,
         protected readonly gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        protected readonly tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
+        protected readonly tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
+        private readonly _tableRecordSourceFactory: TableRecordSourceFactory,
         private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
         protected readonly cellPainterFactoryService: CellPainterFactoryService,
     ) {
@@ -264,8 +264,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
         const gridSourceOrReference = new GridSourceOrReference(
             this._referenceableGridLayoutsService,
-            this.tableFieldSourceDefinitionRegistryService,
-            this._tableRecordSourceFactoryService,
+            this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             definition
         );

@@ -9,6 +9,7 @@ import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-e
 import {
     DateRangeScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements DateRangeScanFieldConditionOperandsEditorFrame {
     declare readonly operandsTypeId: RangeDateScanFieldConditionEditorFrame.OperandsTypeId;
@@ -33,44 +34,37 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         return operands;
     }
 
-    get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: RangeDateScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
+    get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
     get min() { return this._min; }
-    set min(value: SourceTzOffsetDateTime | undefined) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._min)) {
-            this._min = value;
-            this.processChanged();
-        }
-    }
-
     get max() { return this._min; }
-    set max(value: SourceTzOffsetDateTime | undefined) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._max)) {
-            this._max = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return true;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateInRange(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._min)) {
+            this._min = value;
+            this.processChanged(modifier);
+        }
+    }
+
+    setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._max)) {
+            this._max = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace RangeDateScanFieldConditionEditorFrame {
     export type OperatorId = DateRangeScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.DateRange;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.DateRange;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

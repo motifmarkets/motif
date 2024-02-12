@@ -5,5 +5,6 @@
  */
 
 export * from './category-value/ng-api';
+export * from './currency-overlaps/ng-api';
 export * from './ng/ng-api';
 

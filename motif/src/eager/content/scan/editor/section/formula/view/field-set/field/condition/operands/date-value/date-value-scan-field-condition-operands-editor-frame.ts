@@ -10,8 +10,11 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface DateValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.DateValue,
-    operatorId: DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    value: SourceTzOffsetDateTime | undefined;
+
+    readonly operatorId: DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly value: SourceTzOffsetDateTime | undefined;
+
+    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace DateValueScanFieldConditionOperandsEditorFrame {

@@ -18,14 +18,13 @@ import {
     ScanList,
     ScansService,
     SettingsService,
-    StandAloneScanConditionSet,
-    StandAloneScanFieldSet,
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { ScanListFrame } from 'content-internal-api';
+import { IdentifiableComponent } from '../../component/internal-api';
+import { ScanFieldSetEditorFrame } from '../../content/scan/editor/section/formula/view/field-set/scan-field-set-editor-frame';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
-import { IdentifiableComponent } from '../../component/internal-api';
 
 export class ScansDitemFrame extends BuiltinDitemFrame {
     private _scanListFrame: ScanListFrame | undefined;
@@ -161,7 +160,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     newScan() {
         this.checkCloseActiveScanEditor();
-        this._scanEditor = this._scansService.openNewScanEditor<IdentifiableComponent>(this._opener, new StandAloneScanFieldSet(), new StandAloneScanConditionSet());
+        this._scanEditor = this._scansService.openNewScanEditor<IdentifiableComponent>(this._opener, new ScanFieldSetEditorFrame(), undefined);
         this._newScanEditor = this._scanEditor;
         this._setEditorEventer(this._scanEditor);
     }
@@ -193,7 +192,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                 const openResultPromise = this._scansService.tryOpenScanEditor<IdentifiableComponent>(
                     scan.id,
                     this._opener,
-                    () => new StandAloneScanFieldSet(),
+                    () => new ScanFieldSetEditorFrame(),
                     undefined,
                 );
                 openResultPromise.then(

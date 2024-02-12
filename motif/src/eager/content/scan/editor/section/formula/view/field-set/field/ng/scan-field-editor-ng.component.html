@@ -4,7 +4,7 @@
     License: motionite.trade/license/motif
 -->
 
-<div header>
+<div id="header">
     <div id="properties">
         <span id="fieldNameLabel">{{fieldNameLabel}}</span>
         <span id="fieldName">{{fieldName}}</span>
@@ -12,7 +12,7 @@
         <div id="requires">
             <app-captioned-radio #requiresAllControl inputId="requiresAllRadio" [name]="requiresRadioName"></app-captioned-radio>
             <app-captioned-radio #requiresAnyControl inputId="requiresAnyRadio" [name]="requiresRadioName"></app-captioned-radio>
-            <app-captioned-radio #requiresExactly1of2Control inputId="requiresExactly1of2Radio" [name]="requiresRadioName"></app-captioned-radio>
+            <app-captioned-radio #requiresExactly1Of2Control inputId="requiresExactly1of2Radio" [name]="requiresRadioName"></app-captioned-radio>
         </div>
     </div>
     <app-svg-button #deleteMeControl id="deleteMeControl"></app-svg-button>

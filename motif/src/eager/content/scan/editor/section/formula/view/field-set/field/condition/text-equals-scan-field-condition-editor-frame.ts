@@ -48,39 +48,32 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: TextEqualsScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this.processChanged();
-        }
-    }
-
+    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
     get value() { return this._value; }
-    set value(value: string | undefined) {
-        if (value !== this._value) {
-            this._value = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return this._value !== undefined;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._value) {
+            this._value = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace TextEqualsScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.TextEquals;
     export const typeId = ScanFieldCondition.TypeId.TextEquals;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export type TypeId = typeof typeId;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export type OperandsTypeId = typeof operandsTypeId;
     export type OperatorId = TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
     export const supportedOperatorIds = TextEqualsScanFieldCondition.Operands.supportedOperatorIds;
 }

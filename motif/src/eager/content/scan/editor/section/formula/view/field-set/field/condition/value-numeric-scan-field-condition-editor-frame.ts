@@ -9,6 +9,7 @@ import { NumericScanFieldConditionEditorFrame } from './numeric-scan-field-condi
 import {
     NumericValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ValueNumericScanFieldConditionEditorFrame extends NumericScanFieldConditionEditorFrame
     implements
@@ -37,37 +38,29 @@ export class ValueNumericScanFieldConditionEditorFrame extends NumericScanFieldC
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: ValueNumericScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
-
+    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
     get value() { return this._value; }
-    set value(value: number | undefined) {
-        if (value !== this._value) {
-            this._value = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return this._value !== undefined;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setValue(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._value) {
+            this._value = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace ValueNumericScanFieldConditionEditorFrame {
     export type OperatorId = NumericValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.NumericValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.NumericValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

@@ -9,6 +9,7 @@ import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-e
 import {
     DateValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditionEditorFrame implements DateValueScanFieldConditionOperandsEditorFrame {
     declare readonly operandsTypeId: ValueDateScanFieldConditionEditorFrame.OperandsTypeId;
@@ -34,36 +35,29 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: ValueDateScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
-
+    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
     get value() { return this._value; }
-    set value(value: SourceTzOffsetDateTime | undefined) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._value)) {
-            this._value = value;
-            this.processChanged();
-        }
-    }
+
     override calculateValid() {
         return this._value !== undefined;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._value)) {
+            this._value = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace ValueDateScanFieldConditionEditorFrame {
     export type OperatorId = DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.DateValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.DateValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

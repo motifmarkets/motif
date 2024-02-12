@@ -9,6 +9,7 @@ import { NumericComparisonScanFieldConditionEditorFrame } from './numeric-compar
 import {
     HasValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class HasValueNumericComparisonScanFieldConditionEditorFrame extends NumericComparisonScanFieldConditionEditorFrame
     implements
@@ -30,29 +31,21 @@ export class HasValueNumericComparisonScanFieldConditionEditorFrame extends Nume
         return operands;
     }
 
-    get not() { return ScanFieldCondition.Operator.hasValueIsNot(this.operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: HasValueNumericComparisonScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
+    get not() { return ScanFieldCondition.Operator.hasValueIsNot(this.operatorId); }
 
     override calculateValid() {
         return true;
     }
 
-    negateOperator() {
-        this.operatorId = ScanFieldCondition.Operator.negateHasValue(this.operatorId);
-        this.processChanged();
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
+        this._operatorId = ScanFieldCondition.Operator.negateHasValue(this.operatorId);
+        this.processChanged(modifier);
     }
 }
 
 export namespace HasValueNumericComparisonScanFieldConditionEditorFrame {
     export type OperatorId = HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

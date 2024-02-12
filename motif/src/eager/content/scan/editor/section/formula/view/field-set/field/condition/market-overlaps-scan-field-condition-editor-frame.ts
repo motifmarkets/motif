@@ -14,6 +14,7 @@ import {
     MarketOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class MarketOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -43,17 +44,17 @@ export class MarketOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
     }
 
     get values() { return this._values; }
-    set values(value: readonly MarketId[]) {
+    setValues(value: readonly MarketId[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {
             this._values = value.slice();
-            this.processChanged();
+            this.processChanged(modifier);
         }
     }
 }
 
 export namespace MarketOverlapsScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.MarketOverlaps;
     export const typeId = ScanFieldCondition.TypeId.MarketOverlaps;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.MarketEnum;
+    export type TypeId = typeof typeId;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.MarketEnum;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

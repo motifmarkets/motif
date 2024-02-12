@@ -10,9 +10,13 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface NumericRangeScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.NumericRange,
-    operatorId: NumericRangeScanFieldConditionOperandsEditorFrame.OperatorId;
-    min: number | undefined;
-    max: number | undefined;
+
+    readonly operatorId: NumericRangeScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly min: number | undefined;
+    readonly max: number | undefined;
+
+    setMin(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setMax(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace NumericRangeScanFieldConditionOperandsEditorFrame {

@@ -1,7 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, Optional } from '@angular/core';
 import { LitIvemId, LockOpenListItem, UiComparableList } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreInjectionTokens, TableFieldSourceDefinitionRegistryNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { LitIvemIdListEditorNgDirective } from './lit-ivem-id-list-editor-ng.directive';
+import { TableFieldSourceDefinitionCachedFactoryNgService } from '../../ng/table-field-source-definition-cached-factory-ng.service';
 
 @Component({
     selector: 'app-lit-ivem-id-list-editor',
@@ -18,7 +19,7 @@ export class LitIvemIdListEditorNgComponent extends LitIvemIdListEditorNgDirecti
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
+        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
         @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiComparableList<LitIvemId> | null,
     ) {
@@ -26,7 +27,7 @@ export class LitIvemIdListEditorNgComponent extends LitIvemIdListEditorNgDirecti
             elRef,
             cdr,
             commandRegisterNgService,
-            fieldSourceDefinitionRegistryNgService,
+            fieldSourceDefinitionCachedFactoryNgService,
             ++LitIvemIdListEditorNgComponent.typeInstanceCreateCount,
             opener,
             list

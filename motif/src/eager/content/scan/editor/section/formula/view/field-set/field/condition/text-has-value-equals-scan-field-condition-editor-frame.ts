@@ -29,8 +29,8 @@ export abstract class TextHasValueEqualsScanFieldConditionEditorFrame extends Sc
 }
 
 export namespace TextHasValueEqualsScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.TextHasValueEquals;
     export const typeId = ScanFieldCondition.TypeId.TextHasValueEquals;
+    export type TypeId = typeof typeId;
     export type OperatorId = TextHasValueEqualsScanFieldCondition.Operands.OperatorId;
     export const supportedOperatorIds = TextHasValueEqualsScanFieldCondition.Operands.supportedOperatorIds;
 }

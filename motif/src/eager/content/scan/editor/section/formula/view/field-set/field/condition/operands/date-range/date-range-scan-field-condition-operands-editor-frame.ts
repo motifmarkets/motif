@@ -10,11 +10,11 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface DateRangeScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.DateRange,
+
     readonly operatorId: DateRangeScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly min: SourceTzOffsetDateTime | undefined;
     readonly max: SourceTzOffsetDateTime | undefined;
 
-    setOperatorId(value: DateRangeScanFieldConditionOperandsEditorFrame.OperatorId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
     setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
     setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }

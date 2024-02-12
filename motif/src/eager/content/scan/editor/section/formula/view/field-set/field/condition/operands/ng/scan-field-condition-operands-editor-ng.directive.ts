@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Inject, InjectionToken, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
 import { BooleanUiAction, Integer, MultiEvent, StringId, Strings } from '@motifmarkets/motif-core';
 import { IdentifiableComponent } from 'component-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -17,6 +17,7 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
     @ViewChild('removeMeTemplate', { read: TemplateRef }) protected _removeMeTemplate: TemplateRef<unknown>;
     @ViewChild('removeMeControl', { static: true }) private _removeMeControlComponent: SvgButtonNgComponent;
 
+    protected readonly _modifier: ScanFieldConditionOperandsEditorFrame.Modifier;
     private readonly _removeMeUiAction: BooleanUiAction;
     private _frameChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -24,17 +25,21 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         elRef: ElementRef<HTMLElement>,
         typeInstanceCreateId: Integer,
         private readonly _cdr: ChangeDetectorRef,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) protected readonly frame: ScanFieldConditionOperandsEditorFrame,
-
+        protected readonly _frame: ScanFieldConditionOperandsEditorFrame,
+        modifierRoot: IdentifiableComponent,
     ) {
         super(elRef, typeInstanceCreateId);
 
+        this._modifier = {
+            root: modifierRoot,
+            node: this,
+        };
         this._removeMeUiAction = this.createRemoveMeUiAction();
-        this._frameChangedSubscriptionId = this.frame.subscribeChangedEvent((modifierNode) => this.pushAll(modifierNode));
+        this._frameChangedSubscriptionId = this._frame.subscribeChangedEvent((modifierNode) => this.handleFrameChangedEvent(modifierNode));
     }
 
-    public get affirmativeOperatorDisplayLines() { return this.frame.affirmativeOperatorDisplayLines; }
-    public get valid() { return this.frame.valid; }
+    public get affirmativeOperatorDisplayLines() { return this._frame.affirmativeOperatorDisplayLines; }
+    public get valid() { return this._frame.valid; }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -49,15 +54,13 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
     }
 
     protected finalise() {
-        this.frame.unsubscribeChangedEvent(this._frameChangedSubscriptionId);
+        this._frame.unsubscribeChangedEvent(this._frameChangedSubscriptionId);
         this._frameChangedSubscriptionId = undefined;
         this._removeMeUiAction.finalise();
     }
 
-    protected pushAll(modifierNode: IdentifiableComponent) {
-        if (modifierNode !== this) {
-            this.markForCheck();
-        }
+    protected pushAll() {
+        this.markForCheck();
     }
 
     protected markForCheck() {
@@ -69,13 +72,20 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         action.pushCaption(Strings[StringId.ScanFieldConditionOperandsEditorCaption_RemoveMe]);
         action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditorTitle_RemoveMe]);
         action.commitEvent = () => {
-            this.frame.deleteMe();
+            this._frame.deleteMe(this._modifier);
         };
 
         return action;
+    }
+
+    private handleFrameChangedEvent(modifierNode: IdentifiableComponent) {
+        if (modifierNode !== this._modifier.node) {
+            this.pushAll();
+        }
     }
 }
 
 export namespace ScanFieldConditionOperandsEditorNgDirective {
     export const frameInjectionToken = new InjectionToken<ScanFieldConditionOperandsEditorFrame>('ScanFieldConditionOperandsEditorNgDirective.FrameInjectionToken');
+    export const modifierRootInjectionToken = new InjectionToken<IdentifiableComponent>('ScanFieldConditionOperandsEditorNgDirective.ModifierRootInjectionToken');
 }

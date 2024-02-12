@@ -4,33 +4,29 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="compatibleDiv" [style.display]="criteriaCompatible ? null : 'none'">
-    <as-split unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
-        <as-split-area id="fieldsArea" [size]="gridSize" [minSize]="gridMinSize">
-            <span id="fieldsSpan">{{fieldsLabel}}</span>
-            <div id="addFieldMainDiv">
-                <div id="addFieldDiv">
-                    <app-caption-label #addFieldLabel id="addFieldLabel" for="addFieldInput"></app-caption-label>
-                    <app-enum-input #addFieldControl id="addFieldControl"></app-enum-input>
-                </div>
+<div id="compatible" [style.display]="criteriaCompatible ? null : 'none'">
+    <div id="fields">
+        <span id="fieldsSpan">{{fieldsLabel}}</span>
+        <div id="addFieldMainDiv">
+            <div id="addFieldDiv">
+                <app-caption-label #addFieldLabel id="addFieldLabel" for="addFieldInput"></app-caption-label>
+                <app-enum-input #addFieldControl id="addFieldControl"></app-enum-input>
             </div>
-            <div id="addFieldMoreDiv">
-                <div id="addAttributeFieldDiv">
-                    <app-caption-label #addAttributeFieldLabel id="addAttributeFieldLabel" for="addAttributeFieldInput"></app-caption-label>
-                    <app-enum-input #addAttributeFieldControl id="addAttributeFieldControl"></app-enum-input>
-                </div>
-                <div id="addAltCodeFieldDiv">
-                    <app-caption-label #addAltCodeFieldLabel id="addAltCodeFieldLabel" for="addAltCodeFieldInput"></app-caption-label>
-                    <app-enum-input #addAltCodeFieldControl id="addAltCodeFieldControl"></app-enum-input>
-                </div>
+        </div>
+        <div id="addFieldMoreDiv">
+            <div id="addAttributeFieldDiv">
+                <app-caption-label #addAttributeFieldLabel id="addAttributeFieldLabel" for="addAttributeFieldInput"></app-caption-label>
+                <app-enum-input #addAttributeFieldControl id="addAttributeFieldControl"></app-enum-input>
             </div>
-            <app-scan-field-editor-frames-grid #fieldsGrid></app-scan-field-editor-frames-grid>
-        </as-split-area>
-        <as-split-area [size]="null"> <!-- was size="*"-->
-            <app-scan-field-editor #fieldEditorFrameComponent id="fieldEditorFrameComponent"></app-scan-field-editor>
-        </as-split-area>
-    </as-split>
+            <div id="addAltCodeFieldDiv">
+                <app-caption-label #addAltCodeFieldLabel id="addAltCodeFieldLabel" for="addAltCodeFieldInput"></app-caption-label>
+                <app-enum-input #addAltCodeFieldControl id="addAltCodeFieldControl"></app-enum-input>
+            </div>
+        </div>
+        <app-scan-field-editor-frames-grid #fieldsGrid></app-scan-field-editor-frames-grid>
+    </div>
+    <app-scan-field-editor #fieldEditorFrameComponent id="fieldEditorFrameComponent"></app-scan-field-editor>
 </div>
-<div id="notCompatibleDiv" [style.display]="!criteriaCompatible ? null : 'none'">
+<div id="notCompatible" [style.display]="!criteriaCompatible ? null : 'none'">
     <span id="notCompatibleReasonSpan">{{criteriaNotCompatibleReason}}</span>
 </div>

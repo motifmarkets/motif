@@ -387,8 +387,8 @@ export namespace ScanFieldEditorFrame {
 
     export class DefinitionByTypeIdMap extends Map<number, ScanFieldEditorFrame.Definition> {
         constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
+            super();
             for (const definition of definitions) {
-                super();
                 this.set(definition.typeId, definition);
             }
         }
@@ -396,8 +396,8 @@ export namespace ScanFieldEditorFrame {
 
     export class DefinitionByFieldIdsMap extends Map<Integer, ScanFieldEditorFrame.Definition> {
         constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
+            super();
             for (const definition of definitions) {
-                super();
                 this.setById(definition.scanFormulaFieldId, definition.scanFormulaSubFieldId, definition);
             }
         }
@@ -425,13 +425,6 @@ export namespace ScanFieldEditorFrame {
             return key;
         }
     }
-
-    export const allDefinitions = calculateAllDefinitions();
-    export const definitionByTypeIdMap = new DefinitionByTypeIdMap(allDefinitions);
-    export const definitionByFieldIdsMap = new DefinitionByFieldIdsMap(allDefinitions);
-
-    export const altCodeSubFieldNamePrefix = 'altcode/'
-    export const attributeSubFieldNamePrefix = 'attr/'
 
     export class ConditionFactory implements ScanField.ConditionFactory<IdentifiableComponent> {
         createNumericComparisonWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericComparisonScanFieldCondition> {
@@ -506,6 +499,13 @@ export namespace ScanFieldEditorFrame {
             return this._id++;
         }
     }
+
+    export const allDefinitions = calculateAllDefinitions();
+    export const definitionByTypeIdMap = new DefinitionByTypeIdMap(allDefinitions);
+    export const definitionByFieldIdsMap = new DefinitionByFieldIdsMap(allDefinitions);
+
+    export const altCodeSubFieldNamePrefix = 'altcode/'
+    export const attributeSubFieldNamePrefix = 'attr/'
 
     function calculateAllDefinitions(): readonly Definition[] {
         const definitionList = new ComparableList<Definition>();
@@ -599,10 +599,18 @@ export namespace ScanFieldEditorFrame {
     function createEqualsDefinition(scanFormulaFieldId: ScanFormula.FieldId, definitionIdGenerator: DefinitionIdGenerator): Definition {
         const name = ScanFormula.Field.idToName(scanFormulaFieldId);
         const dataTypeId = ScanFormula.Field.idToDataTypeId(scanFormulaFieldId);
-        if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
-            throw new AssertInternalError('SFEFCED55598');
-        } else {
-            return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.TextEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+
+        switch (dataTypeId) {
+            case ScanFormula.Field.DataTypeId.Numeric:
+                throw new AssertInternalError('SFEFCEDN35199', dataTypeId.toString());
+            case ScanFormula.Field.DataTypeId.Date:
+                throw new AssertInternalError('SFEFCEDD35199', dataTypeId.toString());
+            case ScanFormula.Field.DataTypeId.Text:
+                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.TextEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+            case ScanFormula.Field.DataTypeId.Boolean:
+                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.Is, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+            default:
+                throw new UnreachableCaseError('SFEFCEDU35199', dataTypeId);
         }
     }
 

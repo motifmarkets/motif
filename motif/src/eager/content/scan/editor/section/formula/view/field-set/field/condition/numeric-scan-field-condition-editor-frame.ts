@@ -22,8 +22,8 @@ export abstract class NumericScanFieldConditionEditorFrame extends ScanFieldCond
 }
 
 export namespace NumericScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.Numeric;
     export const typeId = ScanFieldCondition.TypeId.Numeric;
+    export type TypeId = typeof typeId;
     export type OperatorId = NumericScanFieldCondition.OperatorId;
     export const supportedOperatorIds = NumericScanFieldCondition.Operands.supportedOperatorIds;
 }

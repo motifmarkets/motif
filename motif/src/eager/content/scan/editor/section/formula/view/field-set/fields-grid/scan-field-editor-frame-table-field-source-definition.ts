@@ -19,7 +19,7 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionRegistryService,
+    TableFieldSourceDefinitionCachedFactoryService,
     TableValue,
     ValidTableValue
 } from '@motifmarkets/motif-core';
@@ -180,8 +180,8 @@ export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
     export const typeId = TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
     export type TypeId = typeof typeId;
 
-    export function getRegistered(registryService: TableFieldSourceDefinitionRegistryService): ScanFieldEditorFrameTableFieldSourceDefinition {
-        return registryService.get(typeId) as ScanFieldEditorFrameTableFieldSourceDefinition;
+    export function getRegistered(cachedFactoryService: TableFieldSourceDefinitionCachedFactoryService): ScanFieldEditorFrameTableFieldSourceDefinition {
+        return cachedFactoryService.get(typeId) as ScanFieldEditorFrameTableFieldSourceDefinition;
     }
 }
 

@@ -109,7 +109,7 @@ export class ScanFieldEditorFramesGridFrame extends GridSourceFrame {
     private createListGridSourceOrReferenceDefinition(list: BadnessComparableList<ScanFieldEditorFrame>, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
-            this.tableFieldSourceDefinitionRegistryService,
+            this.tableFieldSourceDefinitionCachedFactoryService,
             list,
         );
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);

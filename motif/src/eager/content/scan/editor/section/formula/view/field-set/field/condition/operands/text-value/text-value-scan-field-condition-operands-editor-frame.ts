@@ -10,8 +10,11 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface TextValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.TextValue,
-    operatorId: TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    value: string | undefined;
+
+    readonly operatorId: TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly value: string | undefined;
+
+    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace TextValueScanFieldConditionOperandsEditorFrame {

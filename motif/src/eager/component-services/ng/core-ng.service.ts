@@ -22,9 +22,8 @@ import {
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
-    TableFieldSourceDefinitionRegistryService,
+    TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 
@@ -52,13 +51,12 @@ export class CoreNgService implements OnDestroy {
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
     get gridFieldCustomHeadingsService(): GridFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
-    get tableFieldSourceDefinitionRegistryService(): TableFieldSourceDefinitionRegistryService {
-        return this._service.tableFieldSourceDefinitionRegistryService;
+    get tableFieldSourceDefinitionCachedFactoryService(): TableFieldSourceDefinitionCachedFactoryService {
+        return this._service.tableFieldSourceDefinitionCachedFactoryService;
     }
     get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
         return this._service.tableRecordSourceDefinitionFactoryService;
     }
-    get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
     get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
     get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }
     get referenceableGridSourcesService(): ReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }

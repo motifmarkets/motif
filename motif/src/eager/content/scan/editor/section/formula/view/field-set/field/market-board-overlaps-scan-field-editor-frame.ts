@@ -30,7 +30,7 @@ export class MarketBoardOverlapsScanFieldEditorFrame extends NotSubbedScanFieldE
 
     override get supportedOperatorIds() { return OverlapsScanFieldConditionEditorFrame.supportedOperatorIds; }
 
-    override addCondition(operatorId: MarketBoardOverlapsScanFieldEditorFrame.OperatorId, modifier: ScanFieldEditorFrame.Modifier {
+    override addCondition(operatorId: MarketBoardOverlapsScanFieldEditorFrame.OperatorId, modifier: ScanFieldEditorFrame.Modifier) {
         const conditionEditorFrame = this.createCondition(operatorId);
         this.conditions.add(conditionEditorFrame, modifier);
     }

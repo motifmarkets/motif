@@ -18,7 +18,7 @@ import {
 import { IdentifiableComponent } from 'component-internal-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
-import { ConditionSetScanFormulaViewNgComponent, CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent } from '../view/ng-api';
+import { ConditionSetScanFormulaViewNgComponent, CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent, ScanFieldSetEditorNgComponent } from '../view/ng-api';
 
 @Component({
     selector: 'app-formula-scan-editor-section',
@@ -34,6 +34,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('zenithCriteriaView') private _zenithCriteriaViewComponent: CriteriaZenithScanFormulaViewNgComponent | undefined;
     @ViewChild('conditionSetCriteriaView') private _conditionSetCriteriaViewComponent: ConditionSetScanFormulaViewNgComponent | undefined;
+    @ViewChild('scanFieldSetEditor') private _scanFieldSetEditorComponent: ScanFieldSetEditorNgComponent | undefined;
     @ViewChild('rankView') private _rankViewComponent: RankZenithScanFormulaViewNgComponent | undefined;
 
     public sectionHeadingText: string;
@@ -69,6 +70,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
     public get formulaField() { return this._formulaField; }
     public isZenithView() { return this._viewId === FormulaScanEditorSectionNgComponent.ViewId.Zenith; }
+    public isFieldSetView() { return this._viewId === FormulaScanEditorSectionNgComponent.ViewId.FieldSet; }
     public isConditionSetView() { return this._viewId === FormulaScanEditorSectionNgComponent.ViewId.ConditionSet; }
 
     ngOnInit() {
@@ -80,7 +82,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     ngAfterViewInit() {
-        this.setViewId(FormulaScanEditorSectionNgComponent.ViewId.ConditionSet); // get this from settings
+        this.setViewId(FormulaScanEditorSectionNgComponent.ViewId.FieldSet); // get this from settings
         this.initialiseComponents();
     }
 
@@ -88,6 +90,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         super.setEditor(value);
         if (this._zenithCriteriaViewComponent !== undefined) {
             this._zenithCriteriaViewComponent.setEditor(value);
+        }
+        if (this._scanFieldSetEditorComponent !== undefined) {
+            this._scanFieldSetEditorComponent.setEditor(value);
         }
         if (this._conditionSetCriteriaViewComponent !== undefined) {
             this._conditionSetCriteriaViewComponent.setEditor(value);
@@ -168,7 +173,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     private pushValues() {
         if (this._scanEditor === undefined) {
-            this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.ConditionSet);
+            this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.FieldSet);
         // } else {
         //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {
         //         this._viewUiAction.pushValue(CriteriaScanPropertiesSectionNgComponent.ViewId.Default);
@@ -194,6 +199,7 @@ export namespace FormulaScanEditorSectionNgComponent {
     export type FormulaField = keyof typeof FormulaFieldEnum;
 
     export const enum ViewId {
+        FieldSet,
         ConditionSet,
         Zenith,
     }
@@ -211,9 +217,15 @@ export namespace FormulaScanEditorSectionNgComponent {
         type InfosObject = { [id in keyof typeof ViewId]: Info };
 
         const infosObject: InfosObject = {
+            FieldSet: {
+                id: ViewId.FieldSet,
+                name: 'FieldSet',
+                displayId: StringId.ScanCriteriaViewDisplay_FieldSet,
+                descriptionId: StringId.ScanCriteriaViewDescription_FieldSet,
+            },
             ConditionSet: {
                 id: ViewId.ConditionSet,
-                name: 'List',
+                name: 'ConditionSet',
                 displayId: StringId.ScanCriteriaViewDisplay_ConditionSet,
                 descriptionId: StringId.ScanCriteriaViewDescription_ConditionSet,
             },
@@ -238,7 +250,7 @@ export namespace FormulaScanEditorSectionNgComponent {
         }
 
         export function getAllIds() {
-            return infos.map(info => info.id);
+            return infos.map(info => info.id).filter((viewId) => viewId !== ViewId.ConditionSet); // ConditionSet not fully implemented
         }
 
         export function idToDisplayId(id: Id): StringId {

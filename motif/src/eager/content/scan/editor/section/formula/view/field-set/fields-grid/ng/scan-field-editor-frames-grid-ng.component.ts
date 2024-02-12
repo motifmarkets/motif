@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef } from '@angular/core';
-import { AssertInternalError, BadnessComparableList } from '@motifmarkets/motif-core';
+import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
+import { AssertInternalError, BadnessComparableList, LockOpenListItem } from '@motifmarkets/motif-core';
+import { CoreInjectionTokens } from 'component-services-ng-api';
 import { GridSourceNgDirective } from '../../../../../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../../../../../ng/content-ng.service';
 import { ScanFieldEditorFrame } from '../../field/internal-api';
@@ -24,6 +25,7 @@ export class ScanFieldEditorFramesGridNgComponent extends GridSourceNgDirective 
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
+        @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         const frame: ScanFieldEditorFramesGridNgComponent.Frame = contentNgService.createScanFieldEditorFramesGridFrame();
         super(elRef, ++ScanFieldEditorFramesGridNgComponent.typeInstanceCreateCount, cdr, frame);
@@ -36,6 +38,11 @@ export class ScanFieldEditorFramesGridNgComponent extends GridSourceNgDirective 
             const promise = this.frame.tryOpenList(value, true);
             AssertInternalError.throwErrorIfPromiseRejected(promise, 'SFEGGNC33133');
         }
+    }
+
+    protected override processAfterViewInit() {
+        super.processAfterViewInit();
+        this.frame.initialiseGrid(this._opener, undefined, false);
     }
 }
 

@@ -13,6 +13,7 @@ import {
     StringOverlapsScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
 import { OverlapsScanFieldConditionEditorFrame } from './overlaps-scan-field-condition-editor-frame';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFieldConditionEditorFrame
     implements
@@ -42,17 +43,17 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
     }
 
     get values() { return this._values; }
-    set values(value: readonly string[]) {
+    setValues(value: readonly string[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {
             this._values = value.slice();
-            this.processChanged();
+            this.processChanged(modifier);
         }
     }
 }
 
 export namespace StringOverlapsScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.StringOverlaps;
     export const typeId = ScanFieldCondition.TypeId.StringOverlaps;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextEnum;
+    export type TypeId = typeof typeId;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextEnum;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

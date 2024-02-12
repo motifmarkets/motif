@@ -34,6 +34,8 @@ export * from './markets/ng-api';
 export * from './nameable-grid-layout-editor-dialog/ng-api';
 export * from './ng/content-component-base-ng.directive';
 export * from './ng/eager-content-ng.module';
+export * from './ng/table-field-source-definition-cached-factory-ng.service';
+export * from './ng/table-record-source-factory-ng.service';
 export * from './open-watchlist/ng-api';
 export * from './order-authorise/ng-api';
 export * from './order-request-step/ng-api';

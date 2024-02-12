@@ -4,10 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { ExchangeId } from '@motifmarkets/motif-core';
+import { ExchangeId, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { NegatableOperator } from '../negatableOperator';
 import { OverlapsScanFieldConditionOperandsEditorFrame } from '../overlaps/internal-api';
+import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
 export interface ExchangeOverlapsScanFieldConditionOperandsEditorFrame extends OverlapsScanFieldConditionOperandsEditorFrame, NegatableOperator {
-    values: readonly ExchangeId[];
+    readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.ExchangeEnum,
+
+    readonly values: readonly ExchangeId[];
+
+    setValues(value: readonly ExchangeId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }

@@ -41,7 +41,7 @@ import {
     SymbolDetailCacheNgService,
     UserAlertNgService
 } from 'component-services-ng-api';
-import { ExtensionsAccessNgService } from 'content-ng-api';
+import { ExtensionsAccessNgService, TableFieldSourceDefinitionCachedFactoryNgService, TableRecordSourceFactoryNgService } from 'content-ng-api';
 import { ButtonInputNgComponent, CommandBarNgComponent, MenuBarNgService, MenuBarRootMenuNgComponent } from 'controls-ng-api';
 import { BuiltinDitemNgComponentBaseNgDirective, DesktopAccessNgService } from 'ditem-ng-api';
 import { ComponentItem } from 'golden-layout';
@@ -95,6 +95,8 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         menuBarNgService: MenuBarNgService,
         commandRegisterNgService: CommandRegisterNgService,
         keyboardNgService: KeyboardNgService,
+        tableFieldSourceDefinitionFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService, // include to make sure factory is created
+        tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService, // include to make sure factory is created
         hideUnloadSaveNgService: HideUnloadSaveNgService,
         @Inject(BrandingNgService.injectionToken) brandingService: BrandingNgService,
     ) {
@@ -138,6 +140,8 @@ export class DesktopNgComponent extends ComponentBaseNgDirective implements Afte
         );
 
         desktopAccessNgService.setService(this._desktopFrame);
+        tableFieldSourceDefinitionFactoryNgService.touch();
+        tableRecordSourceFactoryNgService.touch();
 
         if (this.advertisingEnabled) {
             this._aboutAdvertisingUiAction = this.createAboutAdvertisingUiAction();

@@ -7,20 +7,9 @@
 import { Injectable } from '@angular/core';
 import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
 import {
-    AdiNgService,
-    AppStorageNgService,
     CellPainterFactoryNgService,
-    GridFieldCustomHeadingsNgService,
-    ReferenceableGridLayoutsNgService,
-    ReferenceableGridSourceDefinitionsStoreNgService,
-    ReferenceableGridSourcesNgService,
-    SessionInfoNgService,
-    SettingsNgService,
-    SymbolsNgService,
-    TableFieldSourceDefinitionRegistryNgService,
-    TableRecordSourceDefinitionFactoryNgService,
-    TableRecordSourceFactoryNgService,
-    TextFormatterNgService
+    CoreNgService,
+    SessionInfoNgService
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
@@ -29,6 +18,7 @@ import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderReque
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
+import { TableRecordSourceFactoryNgService } from './table-record-source-factory-ng.service';
 
 @Injectable({
     providedIn: 'root'
@@ -37,35 +27,25 @@ export class ContentNgService {
     private _content: ContentService;
 
     constructor(
-        settingsNgService: SettingsNgService,
-        appStorageNgService: AppStorageNgService,
-        adiNgService: AdiNgService,
-        symbolsNgService: SymbolsNgService,
-        sessionInfoNgService: SessionInfoNgService,
-        textFormatterNgService: TextFormatterNgService,
-        gridFieldCustomHeadingsNgService: GridFieldCustomHeadingsNgService,
-        referenceableGridLayoutsNgService: ReferenceableGridLayoutsNgService,
-        tableFieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
+        coreNgService: CoreNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        referenceableGridSourceDefinitionsStoreNgService: ReferenceableGridSourceDefinitionsStoreNgService,
-        referenceableGridSourcesNgService: ReferenceableGridSourcesNgService,
+        sessionInfoNgService: SessionInfoNgService,
         cellPainterFactoryNgService: CellPainterFactoryNgService,
     ) {
         this._content = new ContentService(
-            settingsNgService.service,
-            appStorageNgService.service,
-            adiNgService.service,
-            symbolsNgService.service,
-            sessionInfoNgService.service,
-            textFormatterNgService.service,
-            gridFieldCustomHeadingsNgService.service,
-            referenceableGridLayoutsNgService.service,
-            tableFieldSourceDefinitionRegistryNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
+            coreNgService.settingsService,
+            coreNgService.appStorageService,
+            coreNgService.adiService,
+            coreNgService.symbolsService,
+            coreNgService.textFormatterService,
+            coreNgService.gridFieldCustomHeadingsService,
+            coreNgService.referenceableGridLayoutsService,
+            coreNgService.tableFieldSourceDefinitionCachedFactoryService,
+            coreNgService.tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactoryNgService.service,
-            referenceableGridSourceDefinitionsStoreNgService.service,
-            referenceableGridSourcesNgService.service,
+            coreNgService.referenceableGridSourceDefinitionsStoreService,
+            coreNgService.referenceableGridSourcesService,
+            sessionInfoNgService.service,
             cellPainterFactoryNgService.service,
         );
     }

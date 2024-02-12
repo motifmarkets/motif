@@ -12,6 +12,7 @@ import {
 import {
     TextValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 import { TextHasValueEqualsScanFieldConditionEditorFrame } from './text-has-value-equals-scan-field-condition-editor-frame';
 
 export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHasValueEqualsScanFieldConditionEditorFrame
@@ -41,37 +42,29 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
         }
     }
 
-    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: ValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
-
+    get not() { return ScanFieldCondition.Operator.equalsIsNot(this._operatorId); }
     get value() { return this._value; }
-    set value(value: string | undefined) {
-        if (value !== this._value) {
-            this._value = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return this._value !== undefined;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._value) {
+            this._value = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace ValueTextHasValueEqualsScanFieldConditionEditorFrame {
     export type OperatorId = TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.TextValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

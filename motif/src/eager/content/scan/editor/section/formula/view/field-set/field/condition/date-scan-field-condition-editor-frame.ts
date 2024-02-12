@@ -22,8 +22,8 @@ export abstract class DateScanFieldConditionEditorFrame extends ScanFieldConditi
 }
 
 export namespace DateScanFieldConditionEditorFrame {
-    export type TypeId = ScanFieldCondition.TypeId.Date;
     export const typeId = ScanFieldCondition.TypeId.Date;
+    export type TypeId = typeof typeId;
     export type OperatorId = DateScanFieldCondition.Operands.OperatorId;
     export const supportedOperatorIds = DateScanFieldCondition.Operands.supportedOperatorIds;
 }

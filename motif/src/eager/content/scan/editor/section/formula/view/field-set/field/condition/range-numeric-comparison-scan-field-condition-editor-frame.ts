@@ -7,6 +7,7 @@
 import { BaseNumericScanFieldCondition, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { NumericComparisonScanFieldConditionEditorFrame } from './numeric-comparison-scan-field-condition-editor-frame';
 import { NumericRangeScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 
 export class RangeNumericComparisonScanFieldConditionEditorFrame extends NumericComparisonScanFieldConditionEditorFrame
     implements
@@ -34,45 +35,37 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
         return rangeOperands;
     }
 
-    get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: RangeNumericComparisonScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
-
+    get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
     get min() { return this._min; }
-    set min(value: number | undefined) {
-        if (value !== this._min) {
-            this._min = value;
-            this.processChanged();
-        }
-    }
-
     get max() { return this._min; }
-    set max(value: number | undefined) {
-        if (value !== this._max) {
-            this._max = value;
-            this.processChanged();
-        }
-    }
 
     override calculateValid() {
         return true;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateInRange(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
+    }
+
+    setMin(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._min) {
+            this._min = value;
+            this.processChanged(modifier);
+        }
+    }
+
+    setMax(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (value !== this._max) {
+            this._max = value;
+            this.processChanged(modifier);
+        }
     }
 }
 
 export namespace RangeNumericComparisonScanFieldConditionEditorFrame {
     export type OperatorId = NumericRangeScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.NumericRange;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.NumericRange;
+    export type OperandsTypeId = typeof operandsTypeId;
 }

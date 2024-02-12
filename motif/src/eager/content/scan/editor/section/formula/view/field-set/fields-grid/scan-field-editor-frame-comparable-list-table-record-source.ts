@@ -42,7 +42,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     override createDefinition(): ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
         return ScanFieldEditorFrameComparableListTableRecordSourceDefinition.create(
             this._gridFieldCustomHeadingsService,
-            this._tableFieldSourceDefinitionRegistryService,
+            this._tableFieldSourceDefinitionCachedFactoryService,
             this.list.clone()
         )
     }

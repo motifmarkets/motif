@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { IdentifiableComponent } from '../../../../../../../../../../../../component/identifiable-component';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
 
@@ -21,7 +22,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     @ViewChild('categoryLabel', { static: true }) private _categoryLabelComponent: CaptionLabelNgComponent;
     @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
 
-    declare readonly frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame;
+    declare readonly _frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
     private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
@@ -30,8 +31,9 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: IdentifiableComponent,
     ) {
-        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame);
+        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._categoryUiAction = this.createCategoryUiAction();
@@ -53,15 +55,15 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
 
 
     protected override pushAll() {
-        this._categoryUiAction.pushValue(this.frame.categoryId);
-        this._notUiAction.pushValue(this.frame.not);
+        this._categoryUiAction.pushValue(this._frame.categoryId);
+        this._notUiAction.pushValue(this._frame.not);
         super.pushAll();
     }
 
     private createCategoryUiAction() {
         const action = new ExplicitElementsEnumUiAction();
-        action.pushCaption(Strings[StringId.ConditionSetScanFormulaViewNgComponentCaption_SetOperation]);
-        action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_SetOperation]);
+        action.pushCaption(Strings[StringId.CategoryValueScanFieldConditionOperandsCaption_Category]);
+        action.pushTitle(Strings[StringId.CategoryValueScanFieldConditionOperandsTitle_Category]);
         const ids = ScanFormula.IsNode.Category.allIds;
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
@@ -73,7 +75,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this.frame.categoryId = this._categoryUiAction.definedValue;
+            this._frame.setCategoryId(this._categoryUiAction.definedValue, this._modifier);
         }
 
         return action;
@@ -84,7 +86,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         action.pushCaption(Strings[StringId.Not]);
         action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
         action.commitEvent = () => {
-            this.frame.negateOperator();
+            this._frame.negateOperator(this._modifier);
         };
 
         return action;

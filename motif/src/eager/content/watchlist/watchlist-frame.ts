@@ -7,9 +7,7 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
-    CellPainterFactoryService,
     GridField,
-    GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
@@ -22,15 +20,8 @@ import {
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListTableRecordSource,
-    ReferenceableGridLayoutsService,
-    ReferenceableGridSourceDefinitionsStoreService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
-    SettingsService,
-    TableFieldSourceDefinitionRegistryService,
     TableRecordSourceDefinition,
-    TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     compareInteger
@@ -50,29 +41,6 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
-
-    constructor(
-        settingsService: SettingsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
-        namedGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService,
-        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
-        referenceableGridSourcesService: ReferenceableGridSourcesService,
-        cellPainterFactoryService: CellPainterFactoryService,
-    ) {
-        super(
-            settingsService,
-            gridFieldCustomHeadingsService,
-            namedGridLayoutsService,
-            tableFieldSourceDefinitionRegistryService,
-            tableRecordSourceDefinitionFactoryService,
-            tableRecordSourceFactoryService,
-            referenceableGridSourcesService,
-            cellPainterFactoryService,
-        );
-    }
 
     get userCanAdd() { return this._litIvemIdList.userCanAdd; }
     get userCanReplace() { return this._litIvemIdList.userCanReplace; }

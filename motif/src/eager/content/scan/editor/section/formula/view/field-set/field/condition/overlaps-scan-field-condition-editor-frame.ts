@@ -25,24 +25,16 @@ export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldCon
         super(typeId, operandsTypeId, affirmativeOperatorDisplayLines);
     }
 
-    get not() { return ScanFieldCondition.Operator.overlapsIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    set operatorId(value: OverlapsScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
+    get not() { return ScanFieldCondition.Operator.overlapsIsNot(this._operatorId); }
 
     override calculateValid() {
         return true;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateOverlaps(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
     }
 }
 

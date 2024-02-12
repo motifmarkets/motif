@@ -7,19 +7,22 @@
 @use './partials/caption-followed-by-input';
 
 :host {
-    height: 100%;
-    #compatible {
-        display: flex;
-        height: 100%;
+    display: flex;
+    align-items: center;
 
-        #fields {
+    #leftAligned {
+        flex: 1 1 auto;
+
+        display: flex;
+        align-items: center;
+
+        #affirmativeOperatorDisplayLines {
             display: flex;
             flex-direction: column;
-            align-items: left;
         }
     }
 
-    #notCompatible {
-        height: 100%;
+    #rightAligned {
+        flex: 0 0 auto;
     }
 }

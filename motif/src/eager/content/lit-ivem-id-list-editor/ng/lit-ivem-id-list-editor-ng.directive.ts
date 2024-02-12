@@ -19,17 +19,17 @@ import {
     StringUiAction,
     Strings,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionRegistryService,
+    TableFieldSourceDefinitionCachedFactoryService,
     UiComparableList,
     getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
     CommandRegisterNgService,
-    TableFieldSourceDefinitionRegistryNgService,
 } from 'component-services-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { LitIvemIdListNgComponent } from '../../lit-ivem-id-list/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { TableFieldSourceDefinitionCachedFactoryNgService } from '../../ng/table-field-source-definition-cached-factory-ng.service';
 
 @Directive()
 export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
@@ -48,7 +48,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     readonly list: UiComparableList<LitIvemId>;
 
-    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService;
+    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachedFactoryService;
 
     private readonly _addLitIvemIdUiAction: LitIvemIdUiAction;
     private readonly _selectAllUiAction: IconButtonUiAction;
@@ -66,7 +66,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         elRef: ElementRef<HTMLElement>,
         protected readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
+        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
         list: UiComparableList<LitIvemId> | null,
@@ -79,7 +79,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
             this.list = list;
         }
 
-        this._fieldSourceDefinitionRegistryService = fieldSourceDefinitionRegistryNgService.service;
+        this._fieldSourceDefinitionRegistryService = fieldSourceDefinitionCachedFactoryNgService.service;
 
         const commandRegisterService = commandRegisterNgService.service;
 

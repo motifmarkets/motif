@@ -9,8 +9,12 @@ import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-o
 
 export interface NumericComparisonValueScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.NumericComparisonValue,
-    operatorId: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    value: number | undefined;
+
+    readonly operatorId: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly value: number | undefined;
+
+    setOperatorId(value: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
 }
 
 export namespace NumericComparisonValueScanFieldConditionOperandsEditorFrame {

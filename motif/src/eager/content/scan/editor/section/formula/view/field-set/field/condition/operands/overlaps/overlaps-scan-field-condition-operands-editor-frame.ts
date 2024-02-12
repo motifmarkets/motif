@@ -9,7 +9,7 @@ import { NegatableOperator } from '../negatableOperator';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
 export interface OverlapsScanFieldConditionOperandsEditorFrame extends ScanFieldConditionOperandsEditorFrame, NegatableOperator {
-    operatorId: OverlapsScanFieldConditionOperandsEditorFrame.OperatorId;
+    readonly operatorId: OverlapsScanFieldConditionOperandsEditorFrame.OperatorId;
 }
 
 export namespace OverlapsScanFieldConditionOperandsEditorFrame {

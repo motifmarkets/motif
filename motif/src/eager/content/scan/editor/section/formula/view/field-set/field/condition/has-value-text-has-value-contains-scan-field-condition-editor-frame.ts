@@ -11,6 +11,7 @@ import {
 import {
     HasValueScanFieldConditionOperandsEditorFrame
 } from './operands/internal-api';
+import { ScanFieldConditionEditorFrame } from './scan-field-condition-editor-frame';
 import { TextHasValueContainsScanFieldConditionEditorFrame } from './text-has-value-contains-scan-field-condition-editor-frame';
 
 export class HasValueTextHasValueContainsScanFieldConditionEditorFrame extends TextHasValueContainsScanFieldConditionEditorFrame
@@ -33,29 +34,21 @@ export class HasValueTextHasValueContainsScanFieldConditionEditorFrame extends T
         return operands;
     }
 
-    get not() { return ScanFieldCondition.Operator.hasValueIsNot(this._operatorId); }
-
     override get operatorId() { return this._operatorId; }
-    override set operatorId(value: HasValueTextHasValueContainsScanFieldConditionEditorFrame.OperatorId) {
-        if (value !== this._operatorId) {
-            this._operatorId = value;
-            this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged();
-        }
-    }
+    get not() { return ScanFieldCondition.Operator.hasValueIsNot(this._operatorId); }
 
     override calculateValid() {
         return true;
     }
 
-    negateOperator() {
+    negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateHasValue(this._operatorId);
-        this.processChanged();
+        this.processChanged(modifier);
     }
 }
 
 export namespace HasValueTextHasValueContainsScanFieldConditionEditorFrame {
     export type OperatorId = HasValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    export type OperandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
     export const operandsTypeId = ScanFieldCondition.Operands.TypeId.HasValue;
+    export type OperandsTypeId = typeof operandsTypeId;
 }
