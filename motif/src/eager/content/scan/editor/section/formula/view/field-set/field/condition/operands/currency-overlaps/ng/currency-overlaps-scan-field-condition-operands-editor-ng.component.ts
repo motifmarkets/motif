@@ -10,6 +10,7 @@ import { IdentifiableComponent } from 'component-internal-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CurrencyOverlapsScanFieldConditionOperandsEditorFrame } from '../currency-overlaps-scan-field-condition-operands-editor-frame';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 
 @Component({
     selector: 'app-currency-overlaps-scan-field-condition-operands-editor',
@@ -30,10 +31,11 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        commandRegisterNgService: CommandRegisterNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: IdentifiableComponent,
     ) {
-        super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
+        super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, commandRegisterNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._valuesUiAction = this.createValuesUiAction();

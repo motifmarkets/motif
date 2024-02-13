@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ComponentRef, ElementRef, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, Type, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
 import {
     AssertInternalError,
     CommandRegisterService,
@@ -28,7 +28,7 @@ import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { IdentifiableComponent } from '../../../../../../../../../component/identifiable-component';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
-import { CategoryValueScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
+import { CategoryValueScanFieldConditionOperandsEditorNgComponent, CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
 import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
 
@@ -332,7 +332,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCRMUA43211');
             } else {
-                this._frame.deleteMe();
+                this._frame.deleteMe(this._modifier);
             }
         };
 
@@ -379,23 +379,11 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private insertConditionEditorFrameComponent(frame: ScanFieldConditionEditorFrame, index: Integer) {
-        const conditionFrameProvider: ValueProvider = {
-            provide: ScanFieldConditionEditorFrame.injectionToken,
-            useValue: frame,
-        }
-
-        const injector = Injector.create({
-            providers: [conditionFrameProvider],
-        });
-
-        this.createConditionEditorFrameComponent(frame.operandsTypeId, index, injector);
+        const componentType = this.getScanFieldConditionOperandsEditorNgDirectiveType(frame.operandsTypeId);
+        this.createAndInsertConditionOperandsEditorNgDirective(componentType, frame, index);
     }
 
-    private createConditionEditorFrameComponent(
-        operandsTypeId: ScanFieldCondition.Operands.TypeId,
-        index: Integer,
-        injector: Injector,
-    ): ComponentRef<ScanFieldConditionOperandsEditorNgDirective> {
+    private getScanFieldConditionOperandsEditorNgDirectiveType(operandsTypeId: ScanFieldCondition.Operands.TypeId): Type<ScanFieldConditionOperandsEditorNgDirective> {
         switch (operandsTypeId) {
             case ScanFieldCondition.Operands.TypeId.HasValue:
             case ScanFieldCondition.Operands.TypeId.NumericComparisonValue:
@@ -406,17 +394,42 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             case ScanFieldCondition.Operands.TypeId.TextValue:
             case ScanFieldCondition.Operands.TypeId.TextContains:
             case ScanFieldCondition.Operands.TypeId.TextEnum:
+                throw new Error('todo');
             case ScanFieldCondition.Operands.TypeId.CurrencyEnum:
+                return CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.ExchangeEnum:
             case ScanFieldCondition.Operands.TypeId.MarketEnum:
             case ScanFieldCondition.Operands.TypeId.MarketBoardEnum:
                 throw new Error('todo');
             case ScanFieldCondition.Operands.TypeId.CategoryValue:
-                return this._conditionEditorFrameComponentsContainer.createComponent(CategoryValueScanFieldConditionOperandsEditorNgComponent, { index, injector });
+                return CategoryValueScanFieldConditionOperandsEditorNgComponent;
             default:
-                throw new UnreachableCaseError('SFENCCCC66723', operandsTypeId);
+                throw new UnreachableCaseError('SFENCGCEFCT66723', operandsTypeId);
         }
     }
+
+    private createAndInsertConditionOperandsEditorNgDirective(
+        componentType: Type<ScanFieldConditionOperandsEditorNgDirective>,
+        frame: ScanFieldConditionEditorFrame,
+        index: Integer,
+    ) {
+        const frameProvider: ValueProvider = {
+            provide: ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken,
+            useValue: frame,
+        };
+
+        const modifierRootProvider: ValueProvider = {
+            provide: ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken,
+            useValue: this._modifier.root,
+        };
+
+        const injector = Injector.create({
+            providers: [frameProvider, modifierRootProvider],
+        });
+
+        return this._conditionEditorFrameComponentsContainer.createComponent(componentType, { index, injector });
+    }
+
 
     private removeConditionEditorFrameComponents(idx: number, count: number) {
         for (let i = 0; i < count; i++) {

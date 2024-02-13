@@ -25,7 +25,7 @@ import { ScanFieldSetEditorFrame } from '../scan-field-set-editor-frame';
 export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective implements OnDestroy, AfterViewInit {
     @ViewChild('fieldEditorFrameComponent', { static: true }) private _fieldEditorFrameComponent: ScanFieldEditorNgComponent;
     @ViewChild('fieldsGrid', { static: true }) private _fieldEditorFramesGridComponent: ScanFieldEditorFramesGridNgComponent;
-    @ViewChild('addFieldLabel', { static: true }) private _addFieldLabelComponent: CaptionLabelNgComponent;
+    // @ViewChild('addFieldLabel', { static: true }) private _addFieldLabelComponent: CaptionLabelNgComponent;
     @ViewChild('addFieldControl', { static: true }) private _addFieldControlComponent: EnumInputNgComponent;
     @ViewChild('addAttributeFieldLabel', { static: true }) private _addAttributeFieldLabelComponent: CaptionLabelNgComponent;
     @ViewChild('addAttributeFieldControl', { static: true }) private _addAttributeFieldControlComponent: EnumInputNgComponent;
@@ -102,7 +102,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
 
     private initialiseComponents() {
         this._fieldEditorFrameComponent.setRootIdentifiableComponent(this);
-        this._addFieldLabelComponent.initialise(this._addFieldUiAction);
+        // this._addFieldLabelComponent.initialise(this._addFieldUiAction);
         this._addFieldControlComponent.initialise(this._addFieldUiAction);
         this._addAttributeFieldLabelComponent.initialise(this._addAttributeFieldUiAction);
         this._addAttributeFieldControlComponent.initialise(this._addAttributeFieldUiAction);
@@ -122,6 +122,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     private createAddFieldUiAction() {
         const action = new ExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.AddField]);
+        action.pushPlaceholder(Strings[StringId.AddField]);
         action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAField]);
         const fieldDefinitions = ScanFieldEditorFrame.allDefinitions;
 

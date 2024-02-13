@@ -4,24 +4,24 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="header">
-    <div id="properties">
-        <span id="fieldNameLabel">{{fieldNameLabel}}</span>
-        <span id="fieldName">{{fieldName}}</span>
-        <app-caption-label #requiresLabel></app-caption-label>
-        <div id="requires">
-            <app-captioned-radio #requiresAllControl inputId="requiresAllRadio" [name]="requiresRadioName"></app-captioned-radio>
-            <app-captioned-radio #requiresAnyControl inputId="requiresAnyRadio" [name]="requiresRadioName"></app-captioned-radio>
-            <app-captioned-radio #requiresExactly1Of2Control inputId="requiresExactly1of2Radio" [name]="requiresRadioName"></app-captioned-radio>
+<div id="headerAndConditions">
+    <div id="header">
+        <div id="properties">
+            <span id="fieldNameLabel">{{fieldNameLabel}}</span>
+            <span id="fieldName">{{fieldName}}</span>
+            <app-caption-label #requiresLabel></app-caption-label>
+            <div id="requires">
+                <app-captioned-radio #requiresAllControl inputId="requiresAllRadio" [name]="requiresRadioName"></app-captioned-radio>
+                <app-captioned-radio #requiresAnyControl inputId="requiresAnyRadio" [name]="requiresRadioName"></app-captioned-radio>
+                <app-captioned-radio #requiresExactly1Of2Control inputId="requiresExactly1of2Radio" [name]="requiresRadioName"></app-captioned-radio>
+            </div>
+            <span id="conditionsLabel">{{conditionsLabel}}</span>
+            <app-enum-input #addConditionControl id="addConditionControl"></app-enum-input>
         </div>
+        <app-svg-button #deleteMeControl id="deleteMeControl"></app-svg-button>
     </div>
-    <app-svg-button #deleteMeControl id="deleteMeControl"></app-svg-button>
+    <div #conditionsContainer id="conditionsContainer"></div>
 </div>
-<div id="conditionsHeaderBar">
-    <span id="conditionsLabel">{{conditionsLabel}}</span>
-    <app-button-input #addConditionControl id="addConditionControl"></app-button-input>
-</div>
-<div #conditionsContainer id="conditionsContainer"></div>
 <div id="errorBar" [style.display]="valid ? 'none' : null">
     <span id="errorText">{{errorText}}</span>
 </div>

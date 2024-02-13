@@ -9,6 +9,7 @@ import {
     BaseNumericScanFieldCondition,
     BaseTextScanFieldCondition,
     ComparableList,
+    ComparisonResult,
     CurrencyId,
     CurrencyOverlapsScanFieldCondition,
     DateScanFieldCondition,
@@ -42,7 +43,8 @@ import {
     TextHasValueEqualsScanFieldCondition,
     UnreachableCaseError,
     UsableListChangeTypeId,
-    ValueRecentChangeTypeId
+    ValueRecentChangeTypeId,
+    compareString
 } from '@motifmarkets/motif-core';
 import { IdentifiableComponent, RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
 import {
@@ -125,7 +127,7 @@ export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComp
         }
     }
 
-    deleteMe() {
+    deleteMe(modifier: ScanFieldEditorFrame.Modifier) {
         if (this.deleteMeEventer === undefined) {
             throw new AssertInternalError('SFEFDM66873');
         } else {
@@ -163,7 +165,7 @@ export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComp
         if (this._changesBeginCount++ === 0) {
             this._changesModifier = modifier;
         } else {
-            if (modifier !== this._changesModifier) {
+            if (modifier !== undefined && modifier !== this._changesModifier) {
                 throw new AssertInternalError('SFEFBVC34445');
             }
         }
@@ -385,6 +387,28 @@ export namespace ScanFieldEditorFrame {
         readonly name: string;
     }
 
+    export namespace Definition {
+        export function compareByName(left: Definition, right: Definition) {
+            if (left.scanFormulaSubFieldId === undefined) {
+                if (right.scanFormulaSubFieldId === undefined) {
+                    return compareString(left.name, right.name);
+                } else {
+                    return ComparisonResult.LeftLessThanRight;
+                }
+            } else {
+                if (right.scanFormulaSubFieldId === undefined) {
+                    return ComparisonResult.LeftGreaterThanRight;
+                } else {
+                    if (left.scanFieldTypeId === right.scanFieldTypeId) {
+                        return compareString(left.name, right.name);
+                    } else {
+                        return left.scanFieldTypeId - right.scanFieldTypeId;
+                    }
+                }
+            }
+        }
+    }
+
     export class DefinitionByTypeIdMap extends Map<number, ScanFieldEditorFrame.Definition> {
         constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
             super();
@@ -500,12 +524,12 @@ export namespace ScanFieldEditorFrame {
         }
     }
 
+    export const altCodeSubFieldNamePrefix = 'altcode/'
+    export const attributeSubFieldNamePrefix = 'attr/'
+
     export const allDefinitions = calculateAllDefinitions();
     export const definitionByTypeIdMap = new DefinitionByTypeIdMap(allDefinitions);
     export const definitionByFieldIdsMap = new DefinitionByFieldIdsMap(allDefinitions);
-
-    export const altCodeSubFieldNamePrefix = 'altcode/'
-    export const attributeSubFieldNamePrefix = 'attr/'
 
     function calculateAllDefinitions(): readonly Definition[] {
         const definitionList = new ComparableList<Definition>();
@@ -517,9 +541,10 @@ export namespace ScanFieldEditorFrame {
             ScanFormula.AttributeSubField.idCount;
         definitionList.capacity = approxDefinitionCount;
 
+        const definitionIdGenerator = new DefinitionIdGenerator();
+
         for (let i = 0; i < ScanFormula.Field.idCount; i++) {
             const fieldId = i as ScanFormula.FieldId;
-            const definitionIdGenerator = new DefinitionIdGenerator();
 
             const subbed = ScanFormula.Field.idIsSubbed(fieldId);
             if (subbed) {
@@ -530,6 +555,8 @@ export namespace ScanFieldEditorFrame {
                 definitionList.add(notSubbedDefinition);
             }
         }
+
+        definitionList.sort((left, right) => Definition.compareByName(left, right));
 
         return definitionList.toArray();
     }

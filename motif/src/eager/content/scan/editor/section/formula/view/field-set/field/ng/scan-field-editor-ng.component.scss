@@ -5,30 +5,47 @@
  */
 
 @use './partials/caption-followed-by-input';
+@use './partials/flex-row-items-centered-mixin';
 
 :host {
     display: flex;
     flex-direction: column;
 
-    #header {
+    #headerAndConditions {
         display: flex;
+        flex-direction: column;
+        flex: 1 1 0;
 
-        #properties {
-            display: grid;
-            grid-template-columns: max-content max-content;
+        #header {
+            display: flex;
 
-            #requires {
-                display: flex;
+            #properties {
+                display: grid;
+                grid-template-columns: max-content max-content;
+                row-gap: .3em;
+                column-gap: 1.5em;
+
+                #requires {
+                    display: flex;
+                    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+                    gap: 1em;
+                }
             }
+        }
+
+        // #conditionsHeaderBar {
+        //     display: flex;
+        //     @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+        //     padding-top: .4em;
+        // }
+
+        #conditionsContainer {
+            display: flex;
+            flex-direction: column;
         }
     }
 
-    #conditionsHeaderBar {
-        display: flex;
-    }
-
-    #conditionsContainer {
-        display: flex;
-        flex-direction: column;
+    #errorBar {
+        flex: 0 0 auto;
     }
 }

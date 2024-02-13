@@ -4,27 +4,28 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy, TemplateRef, ViewChild } from '@angular/core';
-import { BooleanUiAction, Integer, MultiEvent, StringId, Strings } from '@motifmarkets/motif-core';
+import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy, ViewChild } from '@angular/core';
+import { CommandRegisterService, IconButtonUiAction, Integer, InternalCommand, MultiEvent, StringId, Strings } from '@motifmarkets/motif-core';
 import { IdentifiableComponent } from 'component-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../../../ng/content-component-base-ng.directive';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
+import { CommandRegisterNgService } from '../../../../../../../../../../../component-services/ng-api';
 
 @Directive({
 })
 export abstract class ScanFieldConditionOperandsEditorNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
-    @ViewChild('removeMeTemplate', { read: TemplateRef }) protected _removeMeTemplate: TemplateRef<unknown>;
-    @ViewChild('removeMeControl', { static: true }) private _removeMeControlComponent: SvgButtonNgComponent;
+    @ViewChild('deleteMeControl', { static: true }) private _deleteMeControlComponent: SvgButtonNgComponent;
 
     protected readonly _modifier: ScanFieldConditionOperandsEditorFrame.Modifier;
-    private readonly _removeMeUiAction: BooleanUiAction;
+    private readonly _deleteMeUiAction: IconButtonUiAction;
     private _frameChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         typeInstanceCreateId: Integer,
         private readonly _cdr: ChangeDetectorRef,
+        commandRegisterNgService: CommandRegisterNgService,
         protected readonly _frame: ScanFieldConditionOperandsEditorFrame,
         modifierRoot: IdentifiableComponent,
     ) {
@@ -34,7 +35,9 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
             root: modifierRoot,
             node: this,
         };
-        this._removeMeUiAction = this.createRemoveMeUiAction();
+
+        const commandRegisterService = commandRegisterNgService.service;
+        this._deleteMeUiAction = this.createDeleteMeUiAction(commandRegisterService);
         this._frameChangedSubscriptionId = this._frame.subscribeChangedEvent((modifierNode) => this.handleFrameChangedEvent(modifierNode));
     }
 
@@ -50,13 +53,13 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
     }
 
     protected initialise() {
-        this._removeMeControlComponent.initialise(this._removeMeUiAction);
+        this._deleteMeControlComponent.initialise(this._deleteMeUiAction);
     }
 
     protected finalise() {
         this._frame.unsubscribeChangedEvent(this._frameChangedSubscriptionId);
         this._frameChangedSubscriptionId = undefined;
-        this._removeMeUiAction.finalise();
+        this._deleteMeUiAction.finalise();
     }
 
     protected pushAll() {
@@ -67,13 +70,15 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         this._cdr.markForCheck();
     }
 
-    private createRemoveMeUiAction() {
-        const action = new BooleanUiAction();
-        action.pushCaption(Strings[StringId.ScanFieldConditionOperandsEditorCaption_RemoveMe]);
-        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditorTitle_RemoveMe]);
-        action.commitEvent = () => {
-            this._frame.deleteMe(this._modifier);
-        };
+    private createDeleteMeUiAction(commandRegisterService: CommandRegisterService) {
+        const commandName = InternalCommand.Id.ScanFieldCondition_DeleteMe;
+        const displayId = StringId.ScanFieldConditionOperandsEditorCaption_DeleteMe;
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditorTitle_DeleteMe]);
+        action.pushIcon(IconButtonUiAction.IconId.Delete);
+        action.pushUnselected();
+        action.signalEvent = () => this._frame.deleteMe(this._modifier);
 
         return action;
     }

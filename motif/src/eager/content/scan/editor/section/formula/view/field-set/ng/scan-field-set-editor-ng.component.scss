@@ -7,15 +7,27 @@
 @use './partials/caption-followed-by-input';
 
 :host {
-    height: 100%;
+    // height: 100%;
+    display: block;
+    height: 12em; // until we get splitter working
+
     #compatible {
         display: flex;
         height: 100%;
+        gap: 1em;
 
         #fields {
             display: flex;
             flex-direction: column;
             align-items: left;
+
+            #addFieldControl {
+                width: 12em;
+            }
+
+            #addFieldMoreDiv {
+                display: none;
+            }
         }
     }
 

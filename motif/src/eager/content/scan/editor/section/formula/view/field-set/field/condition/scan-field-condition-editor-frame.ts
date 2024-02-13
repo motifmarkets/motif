@@ -4,7 +4,6 @@
  * License: motionite.trade/license/motif
  */
 
-import { InjectionToken } from '@angular/core';
 import { AssertInternalError, ModifierComparableList, MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
 import { RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
 import { ScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
@@ -78,6 +77,4 @@ export namespace ScanFieldConditionEditorFrame {
     }
     export type DeleteMeEventer = (this: void, modifier: Modifier) => void;
     export type ChangedEventer = (this: void, valid: boolean, modifier: Modifier) => void;
-
-    export const injectionToken = new InjectionToken<ScanFieldConditionEditorFrame>('ScanFieldConditionEditorFrame');
 }

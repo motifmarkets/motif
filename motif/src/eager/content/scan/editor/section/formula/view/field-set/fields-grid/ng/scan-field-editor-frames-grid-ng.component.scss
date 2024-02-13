@@ -7,6 +7,8 @@
 @use './partials/revgrid';
 
 :host {
+    height: 100%;
+
     #gridHost {
         @include revgrid.hostAsColumnFlexItem;
     }

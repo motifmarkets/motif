@@ -16,6 +16,7 @@ export const enum ExchangeIdEnum {
     Fnsx = 'Fnsx',
     Fpsx = 'Fpsx',
     Cfx = 'Cfx',
+    Dax = 'Dax',
 }
 
 /** @public */

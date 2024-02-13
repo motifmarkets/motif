@@ -10,6 +10,7 @@ import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgCompo
 import { IdentifiableComponent } from '../../../../../../../../../../../../component/identifiable-component';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 
 @Component({
     selector: 'app-category-value-scan-field-condition-operands-editor',
@@ -30,10 +31,11 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        commandRegisterNgService: CommandRegisterNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: IdentifiableComponent,
     ) {
-        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
+        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, commandRegisterNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._categoryUiAction = this.createCategoryUiAction();
