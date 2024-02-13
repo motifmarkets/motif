@@ -16,11 +16,11 @@ export const enum MarketIdEnum {
     MyxOddLot = 'MyxOddLot',
     MyxBuyIn = 'MyxBuyIn',
     Nzx = 'Nzx',
-    PtxNormal = 'PtxNormal',
-    FnsxNormal = 'FnsxNormal',
-    FpsxNormal = 'FpsxNormal',
-    CfxNormal = 'CfxNormal',
-    DaxNormal = 'DaxNormal',
+    PtxMain = 'PtxMain',
+    FnsxMain = 'FnsxMain',
+    FpsxMain = 'FpsxMain',
+    CfxMain = 'CfxMain',
+    DaxMain = 'DaxMain',
 }
 
 /** @public */
