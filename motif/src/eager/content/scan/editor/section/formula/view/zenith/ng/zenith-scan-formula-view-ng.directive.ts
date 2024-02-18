@@ -7,13 +7,12 @@
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Inject, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
 import { AssertInternalError, IdleService, Integer, MultiEvent, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { IdleNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { TextInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ZenithScanFormulaViewDecodeProgressNgComponent } from '../decode-progress/ng-api';
-import { ComponentBaseNgDirective } from 'component-ng-api';
-import { IdentifiableComponent } from 'component-internal-api';
 
 @Directive({
     selector: '[appZenithScanFormulaView]',
@@ -104,7 +103,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         delay1Tick(() => this._editorComponent.initialise());
     }
 
-    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    override setEditor(value: ScanEditor | undefined) {
         const oldEditor = this.scanEditor;
         if (oldEditor !== undefined) {
             oldEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
@@ -168,7 +167,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         const scanEditor = this.scanEditor;
         if (scanEditor !== undefined) {
             const text = this._editorComponent.text;
-            const setResult = this.setFormulaAsZenithText(scanEditor, text, this);
+            const setResult = this.setFormulaAsZenithText(scanEditor, text, this.instanceId);
             if (setResult !== undefined) {
                 const progress = setResult.progress;
                 const error = setResult.error;
@@ -193,9 +192,9 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         return Promise.resolve(undefined);
     }
 
-    private processScanEditorFieldChanges(editor: ScanEditor<IdentifiableComponent>, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: IdentifiableComponent | undefined) {
+    private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier | undefined) {
         const text = this.getFormulaAsZenithTextIfChanged(editor, changedFieldIds);
-        if (text !== undefined && fieldChanger !== this) {
+        if (text !== undefined && fieldChanger !== this.instanceId) {
             this._editorComponent.text = text;
         }
     }
@@ -235,11 +234,12 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         }
     }
 
-    protected abstract getFormulaAsZenithTextIfChanged(editor: ScanEditor<IdentifiableComponent>, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined;
-    protected abstract getFormulaAsZenithText(editor: ScanEditor<IdentifiableComponent>): string | undefined;
+    protected abstract getFormulaAsZenithTextIfChanged(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[]): string | undefined;
+    protected abstract getFormulaAsZenithText(editor: ScanEditor): string | undefined;
     protected abstract setFormulaAsZenithText(
-        editor: ScanEditor<IdentifiableComponent>,
-        text: string, fieldChanger: IdentifiableComponent
+        editor: ScanEditor,
+        text: string,
+        fieldChanger: ScanEditor.Modifier,
     ): ScanEditor.SetAsZenithTextResult | undefined;
 }
 

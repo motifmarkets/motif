@@ -13,10 +13,10 @@ import {
 import {
     CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CheckboxInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
+import { ComponentBaseNgDirective } from '../../../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 import { ScanEditorTargetsNgComponent } from '../targets/ng-api';
-import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-general-scan-editor-section',
@@ -86,7 +86,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this.initialiseComponents();
     }
 
-    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
         this.pushValues();
         this.pushDeleteState();
@@ -135,9 +135,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: IdentifiableComponent) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
         const scanEditor = this._scanEditor;
-        if (scanEditor !== undefined && fieldChanger !== this) {
+        if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
                     case ScanEditor.FieldId.Id:
@@ -223,7 +223,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setName(this._nameUiAction.definedValue);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
@@ -241,7 +241,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setDescription(this._descriptionUiAction.definedValue);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
@@ -260,7 +260,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             const value = this._symbolListUiAction.definedValue;
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setSymbolListEnabled(value);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit();

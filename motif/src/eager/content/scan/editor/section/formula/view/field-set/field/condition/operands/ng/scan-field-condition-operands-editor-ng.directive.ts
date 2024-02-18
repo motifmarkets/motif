@@ -6,11 +6,11 @@
 
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, InjectionToken, OnDestroy, ViewChild } from '@angular/core';
 import { CommandRegisterService, IconButtonUiAction, Integer, InternalCommand, MultiEvent, StringId, Strings } from '@motifmarkets/motif-core';
-import { IdentifiableComponent } from 'component-internal-api';
+import { ComponentInstanceId } from 'component-internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../../../ng/content-component-base-ng.directive';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
-import { CommandRegisterNgService } from '../../../../../../../../../../../component-services/ng-api';
 
 @Directive({
 })
@@ -27,13 +27,13 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         private readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         protected readonly _frame: ScanFieldConditionOperandsEditorFrame,
-        modifierRoot: IdentifiableComponent,
+        modifierRoot: ComponentInstanceId,
     ) {
         super(elRef, typeInstanceCreateId);
 
         this._modifier = {
             root: modifierRoot,
-            node: this,
+            node: this.instanceId,
         };
 
         const commandRegisterService = commandRegisterNgService.service;
@@ -83,7 +83,7 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
         return action;
     }
 
-    private handleFrameChangedEvent(modifierNode: IdentifiableComponent) {
+    private handleFrameChangedEvent(modifierNode: ComponentInstanceId) {
         if (modifierNode !== this._modifier.node) {
             this.pushAll();
         }
@@ -92,5 +92,5 @@ export abstract class ScanFieldConditionOperandsEditorNgDirective extends Conten
 
 export namespace ScanFieldConditionOperandsEditorNgDirective {
     export const frameInjectionToken = new InjectionToken<ScanFieldConditionOperandsEditorFrame>('ScanFieldConditionOperandsEditorNgDirective.FrameInjectionToken');
-    export const modifierRootInjectionToken = new InjectionToken<IdentifiableComponent>('ScanFieldConditionOperandsEditorNgDirective.ModifierRootInjectionToken');
+    export const modifierRootInjectionToken = new InjectionToken<ComponentInstanceId>('ScanFieldConditionOperandsEditorNgDirective.ModifierRootInjectionToken');
 }

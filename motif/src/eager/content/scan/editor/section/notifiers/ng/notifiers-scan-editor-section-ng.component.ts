@@ -14,9 +14,9 @@ import {
     CaptionedCheckboxNgComponent,
     EnumArrayInputNgComponent, IntegerTextInputNgComponent
 } from 'controls-ng-api';
+import { ComponentBaseNgDirective } from '../../../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
-import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-notifiers-scan-editor-section',
@@ -77,7 +77,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         this.initialiseComponents();
     }
 
-    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
         this.pushValues();
     }
@@ -117,9 +117,9 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
         }
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: IdentifiableComponent) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
         const scanEditor = this._scanEditor;
-        if (scanEditor !== undefined && fieldChanger !== this) {
+        if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
         }
     }
 

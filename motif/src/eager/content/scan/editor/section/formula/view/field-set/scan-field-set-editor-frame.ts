@@ -33,7 +33,7 @@ import {
     UnreachableCaseError,
     UsableListChangeTypeId
 } from '@motifmarkets/motif-core';
-import { IdentifiableComponent } from '../../../../../../../component/internal-api';
+import { ComponentInstanceId } from 'component-internal-api';
 import {
     AltCodeSubbedScanFieldEditorFrame,
     AttributeSubbedScanFieldEditorFrame,
@@ -53,7 +53,7 @@ import {
     TextHasValueEqualsScanFieldEditorFrame,
 } from './field/internal-api';
 
-export class ScanFieldSetEditorFrame implements ScanFieldSet<IdentifiableComponent> {
+export class ScanFieldSetEditorFrame implements ScanFieldSet {
     readonly fieldFactory: ScanFieldSetEditorFrame.FieldFactory;
     readonly conditionFactory: ScanFieldEditorFrame.ConditionFactory;
     readonly fields: BadnessComparableList<ScanFieldEditorFrame>;
@@ -101,7 +101,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet<IdentifiableCompone
         this.fields.remove(frame);
     }
 
-    processFieldChanged(_fieldEditorFrame: ScanFieldEditorFrame, valid: boolean, modifierRoot: IdentifiableComponent | undefined) {
+    processFieldChanged(_fieldEditorFrame: ScanFieldEditorFrame, valid: boolean, modifierRoot: ScanFieldSetEditorFrame.Modifier | undefined) {
         if (!this._loading) {
             let framePropertiesChanged: boolean;
             if (valid === this._valid) {
@@ -188,7 +188,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet<IdentifiableCompone
         return true;
     }
 
-    private notifyChanged(framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) {
+    private notifyChanged(framePropertiesChanged: boolean, modifierRoot: ScanFieldSetEditorFrame.Modifier | undefined) {
         const handlers = this._changedMultiEvent.copyHandlers();
         for (const handler of handlers) {
             handler(framePropertiesChanged, modifierRoot);
@@ -197,9 +197,10 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet<IdentifiableCompone
 }
 
 export namespace ScanFieldSetEditorFrame {
-    export type ChangedEventHandler = (this: void, framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) => void;
+    export type Modifier = ComponentInstanceId;
+    export type ChangedEventHandler = (this: void, framePropertiesChanged: boolean, modifierRoot: Modifier | undefined) => void;
 
-    export class FieldFactory implements ScanFieldSet.FieldFactory<IdentifiableComponent> {
+    export class FieldFactory implements ScanFieldSet.FieldFactory {
         private readonly _deleteFieldEditorFrameClosure: ScanFieldEditorFrame.DeleteMeEventHandler;
         private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.MeOrMyConditionsChangedEventer;
 

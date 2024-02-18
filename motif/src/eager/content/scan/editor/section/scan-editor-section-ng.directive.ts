@@ -6,14 +6,14 @@
 
 import { Directive } from '@angular/core';
 import { MultiEvent, ScanEditor } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from '../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../expandable-collapsible-lined-heading/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
-import { IdentifiableComponent } from 'component-internal-api';
 
 @Directive()
 export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseNgDirective {
     protected _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    protected _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
+    protected _scanEditor: ScanEditor | undefined;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
@@ -29,7 +29,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
         this._sectionHeadingComponent.collapseEventer = () => this.processExpandCollapseRestoreStateChanged();
     }
 
-    setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    setEditor(value: ScanEditor | undefined) {
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
             this._scanEditorFieldChangesSubscriptionId = undefined;
@@ -56,7 +56,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
 
     protected abstract processExpandCollapseRestoreStateChanged(): void;
 
-    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: IdentifiableComponent | undefined): void;
+    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId | undefined): void;
     protected abstract processLifeCycleStateChange(): void;
     protected abstract processModifiedStateChange(): void;
 }

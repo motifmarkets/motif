@@ -26,7 +26,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
-import { IdentifiableComponent } from '../../../../../../../../../component/identifiable-component';
+import { ComponentBaseNgDirective } from '../../../../../../../../../component/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
 import { CategoryValueScanFieldConditionOperandsEditorNgComponent, CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
@@ -95,10 +95,10 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         this.initialiseComponents();
     }
 
-    setRootIdentifiableComponent(root: IdentifiableComponent) {
+    setRootComponentInstanceId(root: ComponentBaseNgDirective.InstanceId) {
         this._modifier = {
             root,
-            node: this,
+            node: this.instanceId,
         }
     }
 

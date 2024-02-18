@@ -46,7 +46,7 @@ import {
     ValueRecentChangeTypeId,
     compareString
 } from '@motifmarkets/motif-core';
-import { IdentifiableComponent, RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
+import { ComponentInstanceId, RootAndNodeComponentInstanceIdPair } from 'component-internal-api';
 import {
     ContainsTextHasValueContainsScanFieldConditionEditorFrame,
     CurrencyOverlapsScanFieldConditionEditorFrame,
@@ -72,7 +72,7 @@ import {
     ValueTextHasValueEqualsScanFieldConditionEditorFrame,
 } from './condition/internal-api';
 
-export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComponent> {
+export abstract class ScanFieldEditorFrame implements ScanField {
     deleteMeEventer: ScanFieldEditorFrame.DeleteMeEventHandler | undefined;
     meOrMyConditionsChangedEventer: ScanFieldEditorFrame.MeOrMyConditionsChangedEventer | undefined;
 
@@ -345,8 +345,8 @@ export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComp
         conditionChanged: boolean,
         changesModifier: ScanFieldEditorFrame.Modifier | undefined
     ) {
-        let modifierRoot: IdentifiableComponent | undefined;
-        let modifierNode: IdentifiableComponent | undefined;
+        let modifierRoot: ComponentInstanceId | undefined;
+        let modifierNode: ComponentInstanceId | undefined;
         if (changesModifier === undefined) {
             modifierRoot = undefined;
             modifierNode = undefined;
@@ -369,15 +369,16 @@ export abstract class ScanFieldEditorFrame implements ScanField<IdentifiableComp
 }
 
 export namespace ScanFieldEditorFrame {
-    export type Modifier = RootAndNodeIdentifiableComponentPair;
+    export type Modifier = RootAndNodeComponentInstanceIdPair
+
     export class List<T extends ScanFieldEditorFrame> extends ModifierComparableList<T, Modifier | undefined> {
         constructor() {
             super(undefined);
         }
     }
     export type DeleteMeEventHandler = (this: void, frame: ScanFieldEditorFrame) => void;
-    export type FieldValuesChangedHandler = (this: void, frame: ScanFieldEditorFrame, valueChanges: Field.ValueChange[], modifierNode: IdentifiableComponent | undefined) => void;
-    export type MeOrMyConditionsChangedEventer = (this: void, frame: ScanFieldEditorFrame, valid: boolean, modifierRoot: IdentifiableComponent | undefined) => void;
+    export type FieldValuesChangedHandler = (this: void, frame: ScanFieldEditorFrame, valueChanges: Field.ValueChange[], modifierNode: ComponentInstanceId | undefined) => void;
+    export type MeOrMyConditionsChangedEventer = (this: void, frame: ScanFieldEditorFrame, valid: boolean, modifierRoot: ComponentInstanceId | undefined) => void;
 
     export interface Definition {
         readonly typeId: number;
@@ -450,7 +451,7 @@ export namespace ScanFieldEditorFrame {
         }
     }
 
-    export class ConditionFactory implements ScanField.ConditionFactory<IdentifiableComponent> {
+    export class ConditionFactory implements ScanField.ConditionFactory {
         createNumericComparisonWithHasValue(field: ScanField, operatorId: BaseNumericScanFieldCondition.HasValueOperands.OperatorId): Result<NumericComparisonScanFieldCondition> {
             return new Ok(new HasValueNumericComparisonScanFieldConditionEditorFrame(operatorId));
         }

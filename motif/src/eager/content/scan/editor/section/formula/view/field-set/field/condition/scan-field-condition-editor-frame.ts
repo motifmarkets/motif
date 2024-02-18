@@ -5,7 +5,7 @@
  */
 
 import { AssertInternalError, ModifierComparableList, MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
-import { RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
+import { RootAndNodeComponentInstanceIdPair } from 'component-internal-api';
 import { ScanFieldConditionOperandsEditorFrame } from './operands/internal-api';
 
 export abstract class ScanFieldConditionEditorFrame implements ScanFieldCondition, ScanFieldConditionOperandsEditorFrame {
@@ -69,7 +69,8 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
 }
 
 export namespace ScanFieldConditionEditorFrame {
-    export type Modifier = RootAndNodeIdentifiableComponentPair;
+    export type Modifier = RootAndNodeComponentInstanceIdPair
+
     export class List<T extends ScanFieldConditionEditorFrame> extends ModifierComparableList<T, Modifier | undefined, ScanFieldConditionEditorFrame> {
         constructor() {
             super(undefined);

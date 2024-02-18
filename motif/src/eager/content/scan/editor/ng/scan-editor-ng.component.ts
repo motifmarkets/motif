@@ -34,7 +34,6 @@ import {
     GeneralScanEditorSectionNgComponent,
     NotifiersScanEditorSectionNgComponent
 } from '../section/ng-api';
-import { IdentifiableComponent } from 'component-internal-api';
 
 @Component({
     selector: 'app-scan-editor',
@@ -74,7 +73,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     private readonly _deleteUiAction: ButtonUiAction;
     private readonly _testUiAction: ButtonUiAction;
 
-    private _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
+    private _scanEditor: ScanEditor | undefined;
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _scanEditorModifiedStateChangeSubscriptionId: MultiEvent.SubscriptionId;
@@ -114,7 +113,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this.checkUpdateRankDisplayed();
     }
 
-    setEditor(scanEditor: ScanEditor<IdentifiableComponent> | undefined) {
+    setEditor(scanEditor: ScanEditor | undefined) {
         this._generalSectionComponent.setEditor(scanEditor);
         this._criteriaSectionComponent.setEditor(scanEditor);
         this._rankSectionComponent.setEditor(scanEditor);

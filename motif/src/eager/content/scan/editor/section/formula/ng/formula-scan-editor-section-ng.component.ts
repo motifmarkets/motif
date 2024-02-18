@@ -15,7 +15,7 @@ import {
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { IdentifiableComponent } from 'component-internal-api';
+import { ComponentBaseNgDirective } from '../../../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 import { ConditionSetScanFormulaViewNgComponent, CriteriaZenithScanFormulaViewNgComponent, RankZenithScanFormulaViewNgComponent, ScanFieldSetEditorNgComponent } from '../view/ng-api';
@@ -86,7 +86,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this.initialiseComponents();
     }
 
-    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    override setEditor(value: ScanEditor | undefined) {
         super.setEditor(value);
         if (this._zenithCriteriaViewComponent !== undefined) {
             this._zenithCriteriaViewComponent.setEditor(value);
@@ -120,9 +120,9 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: IdentifiableComponent) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
         const scanEditor = this._scanEditor;
-        if (scanEditor !== undefined && fieldChanger !== this) {
+        if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;
         // for (const fieldId of changedFieldIds) {

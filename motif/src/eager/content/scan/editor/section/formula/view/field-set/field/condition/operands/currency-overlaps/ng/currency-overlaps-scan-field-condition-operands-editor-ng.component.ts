@@ -6,11 +6,11 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumArrayUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
-import { IdentifiableComponent } from 'component-internal-api';
+import { ComponentInstanceId } from 'component-internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CurrencyOverlapsScanFieldConditionOperandsEditorFrame } from '../currency-overlaps-scan-field-condition-operands-editor-frame';
-import { CommandRegisterNgService } from 'component-services-ng-api';
 
 @Component({
     selector: 'app-currency-overlaps-scan-field-condition-operands-editor',
@@ -33,7 +33,7 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.Frame,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: IdentifiableComponent,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
         super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, commandRegisterNgService, frame, modifierRoot);
 

@@ -5,8 +5,7 @@
  */
 
 import { MultiEvent, ScanFieldCondition } from '@motifmarkets/motif-core';
-import { IdentifiableComponent, RootAndNodeIdentifiableComponentPair } from 'component-internal-api';
-
+import { ComponentInstanceId, RootAndNodeComponentInstanceIdPair } from 'component-internal-api';
 
 export interface ScanFieldConditionOperandsEditorFrame {
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId,
@@ -20,6 +19,7 @@ export interface ScanFieldConditionOperandsEditorFrame {
 }
 
 export namespace ScanFieldConditionOperandsEditorFrame {
-    export type Modifier = RootAndNodeIdentifiableComponentPair;
-    export type ChangedEventHandler = (this: void, modifierNode: IdentifiableComponent) => void;
+    export type Modifier = RootAndNodeComponentInstanceIdPair
+
+    export type ChangedEventHandler = (this: void, modifierNode: ComponentInstanceId) => void;
 }

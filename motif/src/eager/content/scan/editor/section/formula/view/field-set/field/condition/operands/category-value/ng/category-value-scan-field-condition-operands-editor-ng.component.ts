@@ -6,11 +6,11 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
+import { ComponentInstanceId } from 'component-internal-api';
+import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
-import { IdentifiableComponent } from '../../../../../../../../../../../../component/identifiable-component';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
-import { CommandRegisterNgService } from 'component-services-ng-api';
 
 @Component({
     selector: 'app-category-value-scan-field-condition-operands-editor',
@@ -33,7 +33,7 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: IdentifiableComponent,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
         super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, commandRegisterNgService, frame, modifierRoot);
 

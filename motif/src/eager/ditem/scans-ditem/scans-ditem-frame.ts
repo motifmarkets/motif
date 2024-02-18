@@ -21,7 +21,6 @@ import {
     SymbolsService
 } from '@motifmarkets/motif-core';
 import { ScanListFrame } from 'content-internal-api';
-import { IdentifiableComponent } from '../../component/internal-api';
 import { ScanFieldSetEditorFrame } from '../../content/scan/editor/section/formula/view/field-set/scan-field-set-editor-frame';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -29,8 +28,8 @@ import { DitemFrame } from '../ditem-frame';
 export class ScansDitemFrame extends BuiltinDitemFrame {
     private _scanListFrame: ScanListFrame | undefined;
     private _scanList: ScanList | undefined;
-    private _scanEditor: ScanEditor<IdentifiableComponent> | undefined;
-    private _newScanEditor: ScanEditor<IdentifiableComponent> | undefined;
+    private _scanEditor: ScanEditor | undefined;
+    private _newScanEditor: ScanEditor | undefined;
 
     constructor(
         ditemComponentAccess: DitemFrame.ComponentAccess,
@@ -41,7 +40,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _scansService: ScansService,
         private readonly _opener: LockOpenListItem.Opener,
-        private readonly _setEditorEventer: ScansDitemFrame.SetEditorEventer<IdentifiableComponent>,
+        private readonly _setEditorEventer: ScansDitemFrame.SetEditorEventer,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Scans, ditemComponentAccess,
             settingsService, commandRegisterService, desktopInterface, symbolsService, adiService
@@ -160,7 +159,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
     newScan() {
         this.checkCloseActiveScanEditor();
-        this._scanEditor = this._scansService.openNewScanEditor<IdentifiableComponent>(this._opener, new ScanFieldSetEditorFrame(), undefined);
+        this._scanEditor = this._scansService.openNewScanEditor(this._opener, new ScanFieldSetEditorFrame(), undefined);
         this._newScanEditor = this._scanEditor;
         this._setEditorEventer(this._scanEditor);
     }
@@ -189,7 +188,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                 throw new AssertInternalError('SCFHSCFRFESLU50515');
             } else {
                 const scan = scanList.getAt(newRecordIndex);
-                const openResultPromise = this._scansService.tryOpenScanEditor<IdentifiableComponent>(
+                const openResultPromise = this._scansService.tryOpenScanEditor(
                     scan.id,
                     this._opener,
                     () => new ScanFieldSetEditorFrame(),
@@ -218,7 +217,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
     private checkCloseActiveScanEditor() {
         if (this._scanEditor !== undefined) {
             this._setEditorEventer(undefined);
-            this._scansService.closeScanEditor<IdentifiableComponent>(this._scanEditor, this._opener);
+            this._scansService.closeScanEditor(this._scanEditor, this._opener);
             this._scanEditor = undefined;
         }
     }
@@ -231,5 +230,5 @@ export namespace ScansDitemFrame {
     }
 
     export type OpenedEventHandler = (this: void) => void;
-    export type SetEditorEventer<Modifier> = (this: void, editor: ScanEditor<Modifier> | undefined) => void;
+    export type SetEditorEventer = (this: void, editor: ScanEditor | undefined) => void;
 }

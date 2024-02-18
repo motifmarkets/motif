@@ -6,7 +6,6 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
 import { AssertInternalError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, MultiEvent, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
-import { IdentifiableComponent } from 'component-internal-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { CaptionLabelNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
@@ -75,7 +74,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         return true;
     }
 
-    override setEditor(value: ScanEditor<IdentifiableComponent> | undefined) {
+    override setEditor(value: ScanEditor | undefined) {
         this._scanEditor = value;
         if (value === undefined) {
             this._fieldEditorFrameComponent.setFrame(undefined, false);
@@ -101,7 +100,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private initialiseComponents() {
-        this._fieldEditorFrameComponent.setRootIdentifiableComponent(this);
+        this._fieldEditorFrameComponent.setRootComponentInstanceId(this.instanceId);
         // this._addFieldLabelComponent.initialise(this._addFieldUiAction);
         this._addFieldControlComponent.initialise(this._addFieldUiAction);
         this._addAttributeFieldLabelComponent.initialise(this._addAttributeFieldUiAction);
@@ -216,8 +215,8 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         }
     }
 
-    private processFrameChanged(framePropertiesChanged: boolean, modifierRoot: IdentifiableComponent | undefined) {
-        if (modifierRoot === this) {
+    private processFrameChanged(framePropertiesChanged: boolean, modifierRoot: ScanEditor.Modifier | undefined) {
+        if (modifierRoot === this.instanceId) {
             if (this._scanEditor === undefined) {
                 throw new AssertInternalError('SFSENCPFC77743');
             } else {
