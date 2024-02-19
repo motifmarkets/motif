@@ -4,16 +4,10 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="leftAligned">
-    <svg-icon id="exclamationIcon" name="Exclamation"></svg-icon>
-    <app-captioned-checkbox #notControl id="notControl"></app-captioned-checkbox>
-    <div id="affirmativeOperatorDisplayLines" *ngFor="let line of affirmativeOperatorDisplayLines">
-        <span id="affirmativeOperatorDisplayLine">{{line}}</span>
-    </div>
-    <app-caption-label #categoryLabel id="categoryLabel"></app-caption-label>
-    <app-enum-input #categoryControl id="categoryControl"></app-enum-input>
+<svg-icon id="exclamationIcon" name="Exclamation"></svg-icon>
+<app-captioned-checkbox #notControl id="notControl"></app-captioned-checkbox>
+<div id="affirmativeOperatorDisplayLines" *ngFor="let line of affirmativeOperatorDisplayLines">
+    <span id="affirmativeOperatorDisplayLine">{{line}}</span>
 </div>
-
-<div id="rightAligned">
-    <app-svg-button #deleteMeControl id="removeMeControl"></app-svg-button>
-</div>
+<app-caption-label #categoryLabel id="categoryLabel"></app-caption-label>
+<app-enum-input #categoryControl id="categoryControl"></app-enum-input>

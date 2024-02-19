@@ -11,12 +11,14 @@
     display: flex;
     flex-direction: column;
 
-    #headerAndConditions {
+    #fieldAndConditions {
+        flex: 1 1 0;
         display: flex;
         flex-direction: column;
         flex: 1 1 0;
+        overflow-y: auto;
 
-        #header {
+        #field {
             display: flex;
 
             #properties {
@@ -40,8 +42,11 @@
         // }
 
         #conditionsContainer {
-            display: flex;
-            flex-direction: column;
+            display: grid;
+            grid-template-columns: max-content max-content;
+            column-gap: 1.5em;
+            align-content: start;
+            overflow-y: auto;
         }
     }
 

@@ -4,6 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './delete/ng-api';
-export * from './operands/ng-api';
+export * from './ng/delete-scan-field-condition-ng.component';
 

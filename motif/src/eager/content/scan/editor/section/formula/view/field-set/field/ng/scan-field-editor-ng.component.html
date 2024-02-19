@@ -4,8 +4,8 @@
     License: motionite.trade/license/motif
 -->
 
-<div id="headerAndConditions">
-    <div id="header">
+<div id="fieldAndConditions">
+    <div id="field">
         <div id="properties">
             <span id="fieldNameLabel">{{fieldNameLabel}}</span>
             <span id="fieldName">{{fieldName}}</span>
@@ -20,7 +20,9 @@
         </div>
         <app-svg-button #deleteMeControl id="deleteMeControl"></app-svg-button>
     </div>
-    <div #conditionsContainer id="conditionsContainer"></div>
+    <div id="conditionsContainer">
+        <ng-container #conditionsContainer></ng-container>
+    </div>
 </div>
 <div id="errorBar" [style.display]="valid ? 'none' : null">
     <span id="errorText">{{errorText}}</span>

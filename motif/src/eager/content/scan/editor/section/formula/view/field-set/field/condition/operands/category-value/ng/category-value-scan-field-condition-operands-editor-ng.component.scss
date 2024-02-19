@@ -7,22 +7,14 @@
 @use './partials/caption-followed-by-input';
 
 :host {
+    flex: 1 1 auto;
+
     display: flex;
     align-items: center;
+    gap: 1em;
 
-    #leftAligned {
-        flex: 1 1 auto;
-
+    #affirmativeOperatorDisplayLines {
         display: flex;
-        align-items: center;
-
-        #affirmativeOperatorDisplayLines {
-            display: flex;
-            flex-direction: column;
-        }
-    }
-
-    #rightAligned {
-        flex: 0 0 auto;
+        flex-direction: column;
     }
 }

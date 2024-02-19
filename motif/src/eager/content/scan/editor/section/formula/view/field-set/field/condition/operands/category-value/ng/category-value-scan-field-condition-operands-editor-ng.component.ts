@@ -7,7 +7,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
-import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
@@ -31,11 +30,10 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        commandRegisterNgService: CommandRegisterNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, commandRegisterNgService, frame, modifierRoot);
+        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._categoryUiAction = this.createCategoryUiAction();

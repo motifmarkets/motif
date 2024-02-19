@@ -38,5 +38,4 @@ export abstract class ComponentBaseNgDirective implements IdentifiableComponent 
 export namespace ComponentBaseNgDirective {
     export type InstanceId = ComponentInstanceId;
     export const typeInstanceCreateIdInjectionToken = new InjectionToken('typeInstanceCreateIdInjectionToken');
-    // eslint-disable-next-line prefer-const
 }

@@ -8,6 +8,7 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AssertInternalError,
     CommandRegisterService,
+    ComparableList,
     EnumUiAction,
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
@@ -27,8 +28,14 @@ import {
 import { CommandRegisterNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentBaseNgDirective } from '../../../../../../../../../component/ng-api';
+import { RootAndNodeComponentInstanceIdPair } from '../../../../../../../../../component/root-and-node-component-instance-id-pair';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
-import { CategoryValueScanFieldConditionOperandsEditorNgComponent, CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent, ScanFieldConditionOperandsEditorNgDirective } from '../condition/ng-api';
+import {
+    CategoryValueScanFieldConditionOperandsEditorNgComponent,
+    CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent,
+    DeleteScanFieldConditionNgComponent,
+    ScanFieldConditionOperandsEditorNgDirective,
+} from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
 import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
 
@@ -63,6 +70,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     private readonly _requiresUiAction: ExplicitElementsEnumUiAction;
     private readonly _deleteMeUiAction: IconButtonUiAction;
     private readonly _addConditionUiAction: ExplicitElementsEnumUiAction;
+
+    private readonly _deleteComponents = new ComparableList<DeleteScanFieldConditionNgComponent>();
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -413,27 +422,49 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         frame: ScanFieldConditionEditorFrame,
         index: Integer,
     ) {
-        const frameProvider: ValueProvider = {
-            provide: ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken,
-            useValue: frame,
-        };
-
         const modifierRootProvider: ValueProvider = {
             provide: ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken,
             useValue: this._modifier.root,
         };
 
-        const injector = Injector.create({
+        const frameProvider: ValueProvider = {
+            provide: ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken,
+            useValue: frame,
+        };
+
+        const frameAndModifierRootInjector = Injector.create({
             providers: [frameProvider, modifierRootProvider],
         });
 
-        return this._conditionEditorFrameComponentsContainer.createComponent(componentType, { index, injector });
+        const editorFrameComponentRef = this._conditionEditorFrameComponentsContainer.createComponent(
+            componentType,
+            { index: index * 2, injector: frameAndModifierRootInjector }
+        );
+        const editorFrameComponent = editorFrameComponentRef.instance;
+
+        const deleteComponentRef = this._conditionEditorFrameComponentsContainer.createComponent(
+            DeleteScanFieldConditionNgComponent,
+            { index: index * 2 + 1 },
+        );
+        const deleteComponent = deleteComponentRef.instance;
+        deleteComponent.deleteEventer = () => {
+            const deleteModifier: RootAndNodeComponentInstanceIdPair = {
+                root: this._modifier.root,
+                node: editorFrameComponent.instanceId, // specify the editor frame component as the node
+            };
+
+            frame.deleteMe(deleteModifier);
+        }
+        this._deleteComponents.insert(index, deleteComponent);
     }
 
-
     private removeConditionEditorFrameComponents(idx: number, count: number) {
-        for (let i = 0; i < count; i++) {
-            this._conditionEditorFrameComponentsContainer.remove(idx);
+        for (let i = idx + count - 1; i >= idx; i--) {
+            const deleteComponent = this._deleteComponents.getAt(i);
+            deleteComponent.deleteEventer = undefined;
+            this._deleteComponents.removeAtIndex(i);
+            this._conditionEditorFrameComponentsContainer.remove(i * 2 + 1);
+            this._conditionEditorFrameComponentsContainer.remove(i * 2);
         }
     }
 
