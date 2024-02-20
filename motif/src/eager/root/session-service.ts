@@ -21,6 +21,7 @@ import {
     MotifServicesService,
     mSecsPerSec,
     MultiEvent,
+    NotificationChannelsService,
     PublisherSessionTerminatedReasonId,
     ScansService,
     ServiceOperatorId,
@@ -93,6 +94,7 @@ export class SessionService {
         private readonly _workspaceService: WorkspaceService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
+        private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _scansService: ScansService,
         private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _signoutService: SignOutService,
@@ -184,10 +186,15 @@ export class SessionService {
     }
 
     finalise() {
-        this._openIdService.finalise();
-
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
+
+            this._openIdService.finalise();
+            this._adiService.stop();
+            this._symbolsService.finalise();
+            this._notificationChannelsService.finalise();
+            this._scansService.finalise();
+
             this.unsubscribeZenithExtConnection();
 
             this._hideUnloadSaveService.deregisterSaveManagement(this._settingsService);
@@ -501,6 +508,7 @@ export class SessionService {
         this._adiService.start();
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
+        this._notificationChannelsService.initialise();
         this._scansService.initialise();
     }
 

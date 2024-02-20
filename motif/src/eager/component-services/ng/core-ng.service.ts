@@ -15,6 +15,7 @@ import {
     GridFieldCustomHeadingsService,
     KeyboardService,
     MotifServicesService,
+    NotificationChannelsService,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourceDefinitionsStoreService,
     ReferenceableGridSourcesService,
@@ -47,6 +48,7 @@ export class CoreNgService implements OnDestroy {
     get capabilitiesService(): CapabilitiesService { return this._service.capabilitiesService; }
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
+    get notificationChannelsService(): NotificationChannelsService { return this._service.notificationChannelsService; }
     get scansService(): ScansService { return this._service.scansService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
