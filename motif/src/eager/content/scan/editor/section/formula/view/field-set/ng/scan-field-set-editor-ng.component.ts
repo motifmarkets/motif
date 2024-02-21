@@ -44,6 +44,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
 
     private _frame: ScanFieldSetEditorFrame | undefined;
     private _frameChangedEventSubscriptionId: MultiEvent.SubscriptionId;
+    private _frameBeforeFieldsDeleteSubscriptionId: MultiEvent.SubscriptionId;
     private _fieldEditorFramesGridFrame: ScanFieldEditorFramesGridFrame;
 
     constructor(
@@ -82,6 +83,8 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             if (this._frame !== undefined) {
                 this._frame.unsubscribeChangedEvent(this._frameChangedEventSubscriptionId);
                 this._frameChangedEventSubscriptionId = undefined;
+                this._frame.unsubscribeBeforeFieldsDeleteEvent(this._frameBeforeFieldsDeleteSubscriptionId);
+                this._frameBeforeFieldsDeleteSubscriptionId = undefined;
             }
             this._frame = undefined;
         } else {
@@ -92,21 +95,42 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
                 const frame = criteriaAsFieldSet as ScanFieldSetEditorFrame;
                 this._frame = frame;
                 this._frameChangedEventSubscriptionId = this._frame.subscribeChangedEvent(
-                    (framePropertiesChanged, modifierRoot) => this.processFrameChanged(framePropertiesChanged, modifierRoot)
+                    (framePropertiesChanged, fieldCountChanged, modifierRoot) => this.processFrameChanged(
+                        framePropertiesChanged, fieldCountChanged, modifierRoot
+                    )
+                );
+                this._frameBeforeFieldsDeleteSubscriptionId = this._frame.subscribeBeforeFieldsDeleteEvent(
+                    (idx, count) => this.processBeforeFieldsDelete(idx, count)
                 );
                 this._fieldEditorFramesGridComponent.setList(frame.fields);
             }
         }
     }
 
+    // override processScanEditorFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
+    //     if (fieldChanger !== this.instanceId) {
+    //         if (fieldIds.includes(ScanEditor.FieldId.CriteriaAsFieldSet)) {
+    //             const frame = this._frame;
+    //             if (frame === undefined) {
+    //                 throw new AssertInternalError('SFSENCPSEFC87743');
+    //             } else {
+    //                 // I do not think there is anything required to do here as subscriptions to Frame changes should handle this
+    //             }
+    //         }
+    //     }
+    // }
+
     private initialiseComponents() {
         this._fieldEditorFrameComponent.setRootComponentInstanceId(this.instanceId);
         // this._addFieldLabelComponent.initialise(this._addFieldUiAction);
         this._addFieldControlComponent.initialise(this._addFieldUiAction);
+        this._addFieldControlComponent.openEventer = () => this.pushAddFieldFilter();
         this._addAttributeFieldLabelComponent.initialise(this._addAttributeFieldUiAction);
         this._addAttributeFieldControlComponent.initialise(this._addAttributeFieldUiAction);
+        this._addAttributeFieldControlComponent.openEventer = () => this.pushAddAttributeFieldFilter();
         this._addAltCodeFieldLabelComponent.initialise(this._addAltCodeFieldUiAction);
         this._addAltCodeFieldControlComponent.initialise(this._addAltCodeFieldUiAction);
+        this._addAltCodeFieldControlComponent.openEventer = () => this.pushAddAltCodeFieldFilter();
         this._fieldEditorFramesGridFrame = this._fieldEditorFramesGridComponent.frame;
         this._fieldEditorFramesGridFrame.recordFocusedEventer = (index) => this.processFieldEditorFrameFocusChange(index);
     }
@@ -162,7 +186,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     ) {
         const elementPropertiesArray = fieldDefinitions.map<EnumUiAction.ElementProperties>(
             (definition) => ({
-                    element: definition.typeId,
+                    element: definition.id,
                     caption: definition.name,
                     title: '',
                 }
@@ -180,10 +204,104 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         }
     }
 
-    private pushAll() {
+    private pushAddFieldFilter() {
         const frame = this._frame;
         if (frame === undefined) {
-            throw new AssertInternalError('SFSENCPA77743');
+            throw new AssertInternalError('SFSENCPAFF77743');
+        } else {
+            const alreadyAddedFields = frame.fields;
+            const allDefinitions = ScanFieldEditorFrame.allDefinitions;
+            const allDefinitionsCount = allDefinitions.length;
+
+            const filterDefinitionIds = new Array<number>(allDefinitionsCount);
+            let filterDefinitionIdCount = 0;
+            for (let i = 0; i < allDefinitionsCount; i++) {
+                const definition = allDefinitions[i];
+                const name = definition.name;
+                if (!alreadyAddedFields.has((fieldEditorFrame) => fieldEditorFrame.name === name)) {
+                    filterDefinitionIds[filterDefinitionIdCount++] = definition.id;
+                }
+            }
+
+            if (filterDefinitionIdCount === allDefinitionsCount) {
+                this._addFieldUiAction.pushFilter(undefined);
+            } else {
+                filterDefinitionIds.length = filterDefinitionIdCount;
+                this._addFieldUiAction.pushFilter(filterDefinitionIds);
+            }
+        }
+    }
+
+    private pushAddAttributeFieldFilter() {
+        const frame = this._frame;
+        if (frame === undefined) {
+            throw new AssertInternalError('SFSENCPAAFF77743');
+        } else {
+            const alreadyAddedFields = frame.fields;
+            const allDefinitions = ScanFieldEditorFrame.allDefinitions;
+            const allDefinitionsCount = allDefinitions.length;
+
+            const filterDefinitionIds = new Array<number>(allDefinitionsCount);
+            let hasAtLeastOne = false;
+            let filterDefinitionIdCount = 0;
+            for (let i = 0; i < allDefinitionsCount; i++) {
+                const definition = allDefinitions[i];
+                if (definition.scanFormulaFieldId === ScanFormula.FieldId.AttributeSubbed) {
+                    const name = definition.name;
+                    if (alreadyAddedFields.has((fieldEditorFrame) => fieldEditorFrame.name === name)) {
+                        hasAtLeastOne = true;
+                    } else {
+                        filterDefinitionIds[filterDefinitionIdCount++] = definition.id;
+                    }
+                }
+            }
+
+            if (hasAtLeastOne) {
+                filterDefinitionIds.length = filterDefinitionIdCount;
+                this._addFieldUiAction.pushFilter(filterDefinitionIds);
+            } else {
+                this._addFieldUiAction.pushFilter(undefined);
+            }
+        }
+    }
+
+    private pushAddAltCodeFieldFilter() {
+        const frame = this._frame;
+        if (frame === undefined) {
+            throw new AssertInternalError('SFSENCPAACFF77743');
+        } else {
+            const alreadyAddedFields = frame.fields;
+            const allDefinitions = ScanFieldEditorFrame.allDefinitions;
+            const allDefinitionsCount = allDefinitions.length;
+
+            const filterDefinitionIds = new Array<number>(allDefinitionsCount);
+            let hasAtLeastOne = false;
+            let filterDefinitionIdCount = 0;
+            for (let i = 0; i < allDefinitionsCount; i++) {
+                const definition = allDefinitions[i];
+                if (definition.scanFormulaFieldId === ScanFormula.FieldId.AltCodeSubbed) {
+                    const name = definition.name;
+                    if (alreadyAddedFields.has((fieldEditorFrame) => fieldEditorFrame.name === name)) {
+                        hasAtLeastOne = true;
+                    } else {
+                        filterDefinitionIds[filterDefinitionIdCount++] = definition.id;
+                    }
+                }
+            }
+
+            if (hasAtLeastOne) {
+                filterDefinitionIds.length = filterDefinitionIdCount;
+                this._addFieldUiAction.pushFilter(filterDefinitionIds);
+            } else {
+                this._addFieldUiAction.pushFilter(undefined);
+            }
+        }
+    }
+
+    private pushFrameProperties() {
+        const frame = this._frame;
+        if (frame === undefined) {
+            throw new AssertInternalError('SFSENCPFP77743');
         } else {
             let changed = false;
             const loadError = frame.loadError;
@@ -215,7 +333,27 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         }
     }
 
-    private processFrameChanged(framePropertiesChanged: boolean, modifierRoot: ScanEditor.Modifier | undefined) {
+    private processBeforeFieldsDelete(idx: Integer, count: Integer) {
+        const activeFieldEditorFrame = this._fieldEditorFrameComponent.frame;
+        if (activeFieldEditorFrame !== undefined) {
+            const frame = this._frame;
+            if (frame === undefined) {
+                throw new AssertInternalError('SFSENCPBFD56081');
+            } else {
+                const fieldEditorFrames = frame.fields;
+
+                for (let i = idx + count - 1; i >= idx; i--) {
+                    const fieldEditorFrame = fieldEditorFrames.getAt(i);
+                    if (fieldEditorFrame === activeFieldEditorFrame) {
+                        this._fieldEditorFrameComponent.setFrame(undefined, false);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    private processFrameChanged(framePropertiesChanged: boolean, fieldCountChanged: boolean, modifierRoot: ScanEditor.Modifier | undefined) {
         if (modifierRoot === this.instanceId) {
             if (this._scanEditor === undefined) {
                 throw new AssertInternalError('SFSENCPFC77743');
@@ -224,8 +362,12 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             }
         }
 
+        if (fieldCountChanged) {
+            this.pushAddFieldFilter();
+        }
+
         if (framePropertiesChanged) {
-            this.pushAll();
+            this.pushFrameProperties();
         }
     }
 

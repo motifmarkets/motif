@@ -131,7 +131,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         if (this.deleteMeEventer === undefined) {
             throw new AssertInternalError('SFEFDM66873');
         } else {
-            this.deleteMeEventer(this);
+            this.deleteMeEventer(modifier);
         }
     }
 
@@ -188,7 +188,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private handleConditionListChangeEvent(
         listChangeTypeId: UsableListChangeTypeId,
         idx: Integer,
-        _count: Integer,
+        count: Integer,
         _ignoredModifier: ScanFieldConditionEditorFrame.Modifier | undefined,
     ) {
         switch (listChangeTypeId) {
@@ -198,9 +198,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             case UsableListChangeTypeId.Usable:
                 throw new AssertInternalError('SFEFHCLCE44553', listChangeTypeId.toString());
             case UsableListChangeTypeId.Insert: {
-                const conditionEditorFrame = this.conditions.getAt(idx);
-                conditionEditorFrame.deleteMeEventer = (modifier) => this.deleteCondition(conditionEditorFrame, modifier);
-                conditionEditorFrame.changedEventer = (valid, modifier) => this.processConditionChanged(valid, modifier);
+                this.processAfterConditionsInserted(idx, count);
                 break;
             }
             case UsableListChangeTypeId.BeforeReplace:
@@ -209,19 +207,31 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             case UsableListChangeTypeId.AfterMove:
                 break;
             case UsableListChangeTypeId.Remove: {
-                const conditionEditorFrame = this.conditions.getAt(idx);
-                conditionEditorFrame.deleteMeEventer = undefined;
-                conditionEditorFrame.changedEventer = undefined;
+                this.processBeforeConditionsDelete(idx, count);
                 break;
             }
             case UsableListChangeTypeId.Clear: {
-                const conditionCount = this.conditions.count;
-                for (let i = 0; i < conditionCount; i++) {
-                    const conditionEditorFrame = this.conditions.getAt(idx);
-                    conditionEditorFrame.deleteMeEventer = undefined;
-                    conditionEditorFrame.changedEventer = undefined;
-                }
+                this.processBeforeConditionsDelete(0, this.conditions.count);
+                break;
             }
+            default:
+                throw new UnreachableCaseError('SFEFHCLCE60153', listChangeTypeId);
+        }
+    }
+
+    private processAfterConditionsInserted(idx: Integer, count: Integer) {
+        for (let i = idx + count - 1; i >= idx; i--) {
+            const conditionEditorFrame = this.conditions.getAt(i);
+            conditionEditorFrame.deleteMeEventer = (modifier) => this.deleteCondition(conditionEditorFrame, modifier);
+            conditionEditorFrame.changedEventer = (valid, modifier) => this.processConditionChanged(valid, modifier);
+        }
+    }
+
+    private processBeforeConditionsDelete(idx: Integer, count: Integer) {
+        for (let i = idx + count - 1; i >= idx; i--) {
+            const conditionEditorFrame = this.conditions.getAt(i);
+            conditionEditorFrame.deleteMeEventer = undefined;
+            conditionEditorFrame.changedEventer = undefined;
         }
     }
 
@@ -356,7 +366,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         }
 
         if (conditionChanged && this.meOrMyConditionsChangedEventer !== undefined) {
-            this.meOrMyConditionsChangedEventer(this, this._valid, modifierRoot);
+            this.meOrMyConditionsChangedEventer(this._valid, modifierRoot);
         }
 
         const handlers = this._fieldValuesChangedMultiEvent.copyHandlers();
@@ -369,19 +379,19 @@ export abstract class ScanFieldEditorFrame implements ScanField {
 }
 
 export namespace ScanFieldEditorFrame {
-    export type Modifier = RootAndNodeComponentInstanceIdPair
+    export type Modifier = RootAndNodeComponentInstanceIdPair;
 
     export class List<T extends ScanFieldEditorFrame> extends ModifierComparableList<T, Modifier | undefined> {
         constructor() {
             super(undefined);
         }
     }
-    export type DeleteMeEventHandler = (this: void, frame: ScanFieldEditorFrame) => void;
+    export type DeleteMeEventHandler = (this: void, modfier: ScanFieldEditorFrame.Modifier) => void;
+    export type MeOrMyConditionsChangedEventer = (this: void, valid: boolean, modifierRoot: ComponentInstanceId | undefined) => void;
     export type FieldValuesChangedHandler = (this: void, frame: ScanFieldEditorFrame, valueChanges: Field.ValueChange[], modifierNode: ComponentInstanceId | undefined) => void;
-    export type MeOrMyConditionsChangedEventer = (this: void, frame: ScanFieldEditorFrame, valid: boolean, modifierRoot: ComponentInstanceId | undefined) => void;
 
     export interface Definition {
-        readonly typeId: number;
+        readonly id: number;
         readonly scanFieldTypeId: ScanField.TypeId;
         readonly scanFormulaFieldId: ScanFormula.FieldId;
         readonly scanFormulaSubFieldId: Integer | undefined;
@@ -410,11 +420,11 @@ export namespace ScanFieldEditorFrame {
         }
     }
 
-    export class DefinitionByTypeIdMap extends Map<number, ScanFieldEditorFrame.Definition> {
+    export class DefinitionByIdMap extends Map<number, ScanFieldEditorFrame.Definition> {
         constructor(definitions: readonly ScanFieldEditorFrame.Definition[]) {
             super();
             for (const definition of definitions) {
-                this.set(definition.typeId, definition);
+                this.set(definition.id, definition);
             }
         }
     }
@@ -518,10 +528,10 @@ export namespace ScanFieldEditorFrame {
     }
 
     class DefinitionIdGenerator {
-        private _id = 0;
+        private _typeId = 0;
 
-        generateId() {
-            return this._id++;
+        generateTypeId() {
+            return this._typeId++;
         }
     }
 
@@ -529,7 +539,7 @@ export namespace ScanFieldEditorFrame {
     export const attributeSubFieldNamePrefix = 'attr/'
 
     export const allDefinitions = calculateAllDefinitions();
-    export const definitionByTypeIdMap = new DefinitionByTypeIdMap(allDefinitions);
+    export const definitionByIdMap = new DefinitionByIdMap(allDefinitions);
     export const definitionByFieldIdsMap = new DefinitionByFieldIdsMap(allDefinitions);
 
     function calculateAllDefinitions(): readonly Definition[] {
@@ -580,9 +590,9 @@ export namespace ScanFieldEditorFrame {
         const dataTypeId = ScanFormula.Field.idToDataTypeId(scanFormulaFieldId);
         switch (dataTypeId) {
             case ScanFormula.Field.DataTypeId.Numeric:
-                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.NumericInRange, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.NumericInRange, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
             case ScanFormula.Field.DataTypeId.Date:
-                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.DateInRange, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.DateInRange, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
             case ScanFormula.Field.DataTypeId.Text:
             case ScanFormula.Field.DataTypeId.Boolean:
                 throw new AssertInternalError('SFEFCIRDTB35199', dataTypeId.toString());
@@ -600,23 +610,23 @@ export namespace ScanFieldEditorFrame {
             const textFieldId = scanFormulaFieldId as ScanFormula.TextOverlapFieldId;
             switch (textFieldId) {
                 case ScanFormula.FieldId.Category:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.Currency:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.CurrencyOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.CurrencyOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.Exchange:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.ExchangeOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.ExchangeOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.Market:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.MarketOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.MarketOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.MarketBoard:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.MarketBoardOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.MarketBoardOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.QuotationBasis:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.TradingStateName:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.StatusNote:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.StringOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 case ScanFormula.FieldId.TradingMarket:
-                    return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.MarketOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                    return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.MarketOverlaps, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
                 default:
                     throw new UnreachableCaseError('SFEFCOD45456', textFieldId);
             }
@@ -634,9 +644,9 @@ export namespace ScanFieldEditorFrame {
             case ScanFormula.Field.DataTypeId.Date:
                 throw new AssertInternalError('SFEFCEDD35199', dataTypeId.toString());
             case ScanFormula.Field.DataTypeId.Text:
-                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.TextEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.TextEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
             case ScanFormula.Field.DataTypeId.Boolean:
-                return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.Is, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+                return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.Is, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
             default:
                 throw new UnreachableCaseError('SFEFCEDU35199', dataTypeId);
         }
@@ -648,7 +658,7 @@ export namespace ScanFieldEditorFrame {
         if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
             throw new AssertInternalError('SFEFCHVED55598');
         } else {
-            return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.TextHasValueEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+            return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.TextHasValueEquals, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
         }
     }
 
@@ -658,7 +668,7 @@ export namespace ScanFieldEditorFrame {
         if (dataTypeId !== ScanFormula.Field.DataTypeId.Text) {
             throw new AssertInternalError('SFEFCCD55598');
         } else {
-            return { typeId: definitionIdGenerator.generateId(), scanFieldTypeId: ScanField.TypeId.TextContains, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
+            return { id: definitionIdGenerator.generateTypeId(), scanFieldTypeId: ScanField.TypeId.TextContains, scanFormulaFieldId, scanFormulaSubFieldId: undefined, name };
         }
     }
 
@@ -684,7 +694,7 @@ export namespace ScanFieldEditorFrame {
         for (let i = 0; i < count; i++) {
             const scanFormulaSubFieldId = i as ScanFormula.AltCodeSubFieldId;
             const definition: Definition = {
-                typeId: definitionIdGenerator.generateId(),
+                id: definitionIdGenerator.generateTypeId(),
                 scanFieldTypeId: ScanField.TypeId.AltCodeSubbed,
                 scanFormulaFieldId: ScanFormula.FieldId.AltCodeSubbed,
                 scanFormulaSubFieldId,
@@ -701,7 +711,7 @@ export namespace ScanFieldEditorFrame {
         for (let i = 0; i < count; i++) {
             const scanFormulaSubFieldId = i as ScanFormula.AttributeSubFieldId;
             const definition: Definition = {
-                typeId: definitionIdGenerator.generateId(),
+                id: definitionIdGenerator.generateTypeId(),
                 scanFieldTypeId: ScanField.TypeId.AttributeSubbed,
                 scanFormulaFieldId: ScanFormula.FieldId.AttributeSubbed,
                 scanFormulaSubFieldId,
@@ -718,7 +728,7 @@ export namespace ScanFieldEditorFrame {
         for (let i = 0; i < count; i++) {
             const scanFormulaSubFieldId = i as ScanFormula.PriceSubFieldId;
             const definition: Definition = {
-                typeId: definitionIdGenerator.generateId(),
+                id: definitionIdGenerator.generateTypeId(),
                 scanFieldTypeId: ScanField.TypeId.PriceSubbed,
                 scanFormulaFieldId: ScanFormula.FieldId.PriceSubbed,
                 scanFormulaSubFieldId,
@@ -735,7 +745,7 @@ export namespace ScanFieldEditorFrame {
         for (let i = 0; i < count; i++) {
             const scanFormulaSubFieldId = i as ScanFormula.DateSubFieldId;
             const definition: Definition = {
-                typeId: definitionIdGenerator.generateId(),
+                id: definitionIdGenerator.generateTypeId(),
                 scanFieldTypeId: ScanField.TypeId.DateSubbed,
                 scanFormulaFieldId: ScanFormula.FieldId.DateSubbed,
                 scanFormulaSubFieldId,

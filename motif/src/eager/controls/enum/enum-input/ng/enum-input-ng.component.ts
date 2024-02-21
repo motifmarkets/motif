@@ -26,6 +26,8 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
 
+    openEventer: EnumInputNgComponent.OpenEventer | undefined;
+
     public selected: Integer | undefined;
     public entries: Entry[] = [];
 
@@ -73,6 +75,10 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
     }
 
     public handleSelectOpenEvent() {
+        if (this.openEventer !== undefined) {
+            this.openEventer();
+        }
+
         this._ngSelectOverlayNgService.notifyDropDownOpen();
 
         if (this._ngSelectDropDownPanelWidth === undefined) {
@@ -192,3 +198,7 @@ interface SearchEvent {
 }
 
 type ChangeEvent = Entry | undefined | null;
+
+export namespace EnumInputNgComponent {
+    export type OpenEventer = (this: void) => void;
+}

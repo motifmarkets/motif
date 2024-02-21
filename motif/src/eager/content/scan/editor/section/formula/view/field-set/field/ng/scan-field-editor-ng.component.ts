@@ -60,7 +60,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     private _frame: ScanFieldEditorFrame | undefined;
     private _frameFieldValueChangesSubscriptionId: MultiEvent.SubscriptionId;
-    private _frameFieldsListChangeSubscriptionId: MultiEvent.SubscriptionId;
+    private _frameConditionsListChangeSubscriptionId: MultiEvent.SubscriptionId;
     private _modifier: ScanFieldEditorFrame.Modifier;
 
     private _fieldName = '';
@@ -95,6 +95,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     public get fieldName() { return this._fieldName }
     public get valid() { return this._valid }
     public get errorText() { return this._errorText }
+
+    get frame() { return this._frame; }
 
     ngOnDestroy(): void {
         this.finalise();
@@ -152,7 +154,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         this._frameFieldValueChangesSubscriptionId = this._frame.subscribeFieldValuesChangedEvent(
             (changedFrame, valueChanges) => this.pushChangedProperties(changedFrame, valueChanges)
         );
-        this._frameFieldsListChangeSubscriptionId = this._frame.conditions.subscribeListChangeEvent(
+        this._frameConditionsListChangeSubscriptionId = this._frame.conditions.subscribeListChangeEvent(
             (listChangeTypeId, idx, count) => this.processConditionsListChange(listChangeTypeId, idx, count)
         );
     }
@@ -163,8 +165,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         } else {
             this._frame.unsubscribeFieldValuesChangedEvent(this._frameFieldValueChangesSubscriptionId);
             this._frameFieldValueChangesSubscriptionId = undefined;
-            this._frame.conditions.unsubscribeListChangeEvent(this._frameFieldsListChangeSubscriptionId);
-            this._frameFieldsListChangeSubscriptionId = undefined;
+            this._frame.conditions.unsubscribeListChangeEvent(this._frameConditionsListChangeSubscriptionId);
+            this._frameConditionsListChangeSubscriptionId = undefined;
             this._frame = undefined;
             return false;
         }

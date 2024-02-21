@@ -8,7 +8,6 @@ import {
     AltCodeSubbedScanField,
     AssertInternalError,
     AttributeSubbedScanField,
-    BadnessComparableList,
     CurrencyOverlapsScanField,
     DateInRangeScanField,
     DateSubbedScanField,
@@ -56,25 +55,29 @@ import {
 export class ScanFieldSetEditorFrame implements ScanFieldSet {
     readonly fieldFactory: ScanFieldSetEditorFrame.FieldFactory;
     readonly conditionFactory: ScanFieldEditorFrame.ConditionFactory;
-    readonly fields: BadnessComparableList<ScanFieldEditorFrame>;
+    readonly fields: ScanFieldEditorFrame.List<ScanFieldEditorFrame>;
 
     private readonly _changedMultiEvent = new MultiEvent<ScanFieldSetEditorFrame.ChangedEventHandler>();
+    private readonly _beforeFieldsDeleteMultiEvent = new MultiEvent<ScanFieldSetEditorFrame.BeforeFieldsDeleteEventHandler>();
 
     private _valid = false;
     private _loadError: ScanFieldSetLoadError | undefined;
     private _loading = false;
-
-    private readonly _allFieldDefinitions: readonly ScanFieldEditorFrame.Definition[];
+    private _fieldCount = 0;
 
     private _fieldListChangeSubscriptionId: MultiEvent.SubscriptionId;
+    private _fieldsAfterListChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor() {
-        this.fieldFactory = new ScanFieldSetEditorFrame.FieldFactory(this);
+        this.fieldFactory = new ScanFieldSetEditorFrame.FieldFactory();
         this.conditionFactory = new ScanFieldEditorFrame.ConditionFactory();
-        this.fields = new BadnessComparableList<ScanFieldEditorFrame>();
+        this.fields = new ScanFieldEditorFrame.List<ScanFieldEditorFrame>();
 
         this._fieldListChangeSubscriptionId = this.fields.subscribeListChangeEvent(
             (listChangeTypeId, idx, count) => this.handleFieldListChangeEvent(listChangeTypeId, idx, count)
+        );
+        this._fieldsAfterListChangedSubscriptionId = this.fields.subscribeAfterListChangedEvent(
+            (modifier) => this.handleAfterFieldListChangedEvent(modifier)
         );
     }
 
@@ -85,11 +88,13 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
             this._loadError = value;
         }
     }
-    get allDefinitions() { return this._allFieldDefinitions; }
+    get fieldCount() { return this._fieldCount; }
 
     destroy() {
         this.fields.unsubscribeListChangeEvent(this._fieldListChangeSubscriptionId);
         this._fieldListChangeSubscriptionId = undefined;
+        this.fields.unsubscribeAfterListChangedEvent(this._fieldsAfterListChangedSubscriptionId);
+        this._fieldsAfterListChangedSubscriptionId = undefined;
     }
 
     addField(definitionId: number) {
@@ -97,12 +102,12 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         this.fields.add(fieldEditorFrame);
     }
 
-    deleteField(frame: ScanFieldEditorFrame) {
-        this.fields.remove(frame);
+    deleteField(frame: ScanFieldEditorFrame, modifier: ScanFieldEditorFrame.Modifier) {
+        this.fields.remove(frame, modifier);
     }
 
-    processFieldChanged(_fieldEditorFrame: ScanFieldEditorFrame, valid: boolean, modifierRoot: ScanFieldSetEditorFrame.Modifier | undefined) {
-        if (!this._loading) {
+    processFieldChanged(valid: boolean, modifierRoot: ComponentInstanceId | undefined) {
+        if (!this._loading && this._loadError === undefined) {
             let framePropertiesChanged: boolean;
             if (valid === this._valid) {
                 framePropertiesChanged = false;
@@ -120,7 +125,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
                     }
                 }
             }
-            this.notifyChanged(framePropertiesChanged, modifierRoot);
+            this.notifyChanged(framePropertiesChanged, false, modifierRoot);
         }
     }
 
@@ -132,6 +137,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
     endLoad(loadError: ScanFieldSetLoadError | undefined) {
         this._loading = false;
         let framePropertiesChanged = false;
+        let fieldCountChanged = false;
         if (ScanFieldSetLoadError.isUndefinableEqual(loadError, this._loadError)) {
             this._loadError = loadError;
             framePropertiesChanged = true;
@@ -143,9 +149,15 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
             framePropertiesChanged = true;
         }
 
+        if (this.fields.count !== this._fieldCount) {
+            this._fieldCount = this.fields.count;
+            fieldCountChanged = true;
+            framePropertiesChanged = true;
+        }
+
         if (framePropertiesChanged) {
             // We only want to notify if ScanFieldSetEditorFrame properties have changed
-            this.notifyChanged(true, undefined);
+            this.notifyChanged(true, fieldCountChanged, undefined);
         }
     }
 
@@ -157,22 +169,71 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         this._changedMultiEvent.unsubscribe(subscriptionId);
     }
 
+    subscribeBeforeFieldsDeleteEvent(handler: ScanFieldSetEditorFrame.BeforeFieldsDeleteEventHandler) {
+        return this._beforeFieldsDeleteMultiEvent.subscribe(handler);
+    }
+
+    unsubscribeBeforeFieldsDeleteEvent(subscriptionId: MultiEvent.SubscriptionId) {
+        this._beforeFieldsDeleteMultiEvent.unsubscribe(subscriptionId);
+    }
+
     private handleFieldListChangeEvent(listChangeTypeId: UsableListChangeTypeId, idx: Integer, count: Integer) {
         switch (listChangeTypeId) {
             case UsableListChangeTypeId.Unusable:
             case UsableListChangeTypeId.PreUsableAdd:
             case UsableListChangeTypeId.PreUsableClear:
             case UsableListChangeTypeId.Usable:
-            case UsableListChangeTypeId.Insert:
+                throw new AssertInternalError('SFSEFHFLCE44553', listChangeTypeId.toString());
+            case UsableListChangeTypeId.Insert: {
+                this.processAfterFieldsInserted(idx, count);
+                break;
+            }
             case UsableListChangeTypeId.BeforeReplace:
             case UsableListChangeTypeId.AfterReplace:
             case UsableListChangeTypeId.BeforeMove:
             case UsableListChangeTypeId.AfterMove:
-            case UsableListChangeTypeId.Remove:
-            case UsableListChangeTypeId.Clear:
                 break;
+            case UsableListChangeTypeId.Remove: {
+                this.processBeforeFieldsDelete(idx, count);
+                break;
+            }
+            case UsableListChangeTypeId.Clear: {
+                this.processBeforeFieldsDelete(0, this.fields.count);
+                break;
+            }
             default:
                 throw new UnreachableCaseError('SFSEFHFLCE33971', listChangeTypeId);
+        }
+    }
+
+    private processAfterFieldsInserted(idx: Integer, count: Integer) {
+        for (let i = idx + count - 1; i >= idx; i--) {
+            const fieldEditorFrame = this.fields.getAt(i);
+            fieldEditorFrame.deleteMeEventer = (modifier) => this.deleteField(fieldEditorFrame, modifier);
+            fieldEditorFrame.meOrMyConditionsChangedEventer = (valid, modifier) => this.processFieldChanged(valid, modifier);
+        }
+    }
+
+    private processBeforeFieldsDelete(idx: Integer, count: Integer) {
+        for (let i = idx + count - 1; i >= idx; i--) {
+            const fieldEditorFrame = this.fields.getAt(i);
+            fieldEditorFrame.deleteMeEventer = undefined;
+            fieldEditorFrame.meOrMyConditionsChangedEventer = undefined;
+        }
+        this.notifyBeforeFieldsDelete(idx, count);
+    }
+
+    private handleAfterFieldListChangedEvent(modifier: ScanFieldEditorFrame.Modifier | undefined) {
+        const newFieldCount = this.fields.count;
+        if (newFieldCount !== this._fieldCount) {
+            if (this._loadError === undefined) {
+                const newValid = this.calculateAllFieldsValid();
+                if (newValid !== this._valid) {
+                    this._valid = newValid;
+                }
+            }
+            const modifierRoot = modifier === undefined ? undefined : modifier.root;
+            this.notifyChanged(true, true, modifierRoot)
         }
     }
 
@@ -188,28 +249,27 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         return true;
     }
 
-    private notifyChanged(framePropertiesChanged: boolean, modifierRoot: ScanFieldSetEditorFrame.Modifier | undefined) {
+    private notifyBeforeFieldsDelete(idx: Integer, count: Integer) {
+        const handlers = this._beforeFieldsDeleteMultiEvent.copyHandlers();
+        for (const handler of handlers) {
+            handler(idx, count);
+        }
+    }
+
+    private notifyChanged(framePropertiesChanged: boolean, fieldCountChanged: boolean, modifierRoot: ScanFieldSetEditorFrame.Modifier | undefined) {
         const handlers = this._changedMultiEvent.copyHandlers();
         for (const handler of handlers) {
-            handler(framePropertiesChanged, modifierRoot);
+            handler(framePropertiesChanged, fieldCountChanged, modifierRoot);
         }
     }
 }
 
 export namespace ScanFieldSetEditorFrame {
     export type Modifier = ComponentInstanceId;
-    export type ChangedEventHandler = (this: void, framePropertiesChanged: boolean, modifierRoot: Modifier | undefined) => void;
+    export type ChangedEventHandler = (this: void, framePropertiesChanged: boolean, fieldCountChanged: boolean, modifierRoot: Modifier | undefined) => void;
+    export type BeforeFieldsDeleteEventHandler = (this: void, idx: Integer, count: Integer) => void;
 
     export class FieldFactory implements ScanFieldSet.FieldFactory {
-        private readonly _deleteFieldEditorFrameClosure: ScanFieldEditorFrame.DeleteMeEventHandler;
-        private readonly _processFieldEditorFrameChangedClosure: ScanFieldEditorFrame.MeOrMyConditionsChangedEventer;
-
-        constructor(private readonly _setFrame: ScanFieldSetEditorFrame) {
-            this._deleteFieldEditorFrameClosure = (frame) => this._setFrame.deleteField(frame);
-            this._processFieldEditorFrameChangedClosure =
-                (frame, valid, modifierNode) => this._setFrame.processFieldChanged(frame, valid, modifierNode);
-        }
-
         createNumericInRange(_fieldSet: ScanFieldSet, fieldId: ScanFormula.NumericRangeFieldId): Result<NumericInRangeScanField> {
             const name = ScanFieldEditorFrame.definitionByFieldIdsMap.getName(fieldId, undefined);
             return new Ok(this.createNumericInRangeScanFieldEditorFrame(fieldId, name));
@@ -272,7 +332,7 @@ export namespace ScanFieldSetEditorFrame {
         }
 
         createFromDefinitionId(definitionId: number): ScanFieldEditorFrame {
-            const definition = ScanFieldEditorFrame.definitionByTypeIdMap.get(definitionId);
+            const definition = ScanFieldEditorFrame.definitionByIdMap.get(definitionId);
             if (definition === undefined) {
                 throw new AssertInternalError('SFSEFCSFEF32200', definitionId.toString());
             } else {
