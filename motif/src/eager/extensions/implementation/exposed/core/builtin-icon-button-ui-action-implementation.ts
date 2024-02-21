@@ -47,7 +47,7 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.RollDown: return BuiltinIconButtonUiActionApi.IconIdEnum.RollDown;
                 case IconButtonUiAction.IconId.Filter: return BuiltinIconButtonUiActionApi.IconIdEnum.Filter;
                 case IconButtonUiAction.IconId.Save: return BuiltinIconButtonUiActionApi.IconIdEnum.Save;
-                case IconButtonUiAction.IconId.DeleteSymbol: return BuiltinIconButtonUiActionApi.IconIdEnum.DeleteSymbol;
+                case IconButtonUiAction.IconId.DeleteSelectedItem: return BuiltinIconButtonUiActionApi.IconIdEnum.DeleteSelectedItem;
                 case IconButtonUiAction.IconId.NewWatchlist: return BuiltinIconButtonUiActionApi.IconIdEnum.NewWatchlist;
                 case IconButtonUiAction.IconId.OpenWatchlist: return BuiltinIconButtonUiActionApi.IconIdEnum.OpenWatchlist;
                 case IconButtonUiAction.IconId.SaveWatchlist: return BuiltinIconButtonUiActionApi.IconIdEnum.SaveWatchlist;
@@ -84,6 +84,8 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case IconButtonUiAction.IconId.Dot: return BuiltinIconButtonUiActionApi.IconIdEnum.Dot;
                 case IconButtonUiAction.IconId.Exclamation: return BuiltinIconButtonUiActionApi.IconIdEnum.Exclamation;
                 case IconButtonUiAction.IconId.Delete: return BuiltinIconButtonUiActionApi.IconIdEnum.Delete;
+                case IconButtonUiAction.IconId.Detach: return BuiltinIconButtonUiActionApi.IconIdEnum.Detach;
+                case IconButtonUiAction.IconId.Dropdown: return BuiltinIconButtonUiActionApi.IconIdEnum.Dropdown;
 
                 default: throw new UnreachableCaseError('BIBUAITAU09992223', value);
             }
@@ -110,7 +112,7 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case BuiltinIconButtonUiActionApi.IconIdEnum.RollDown: return IconButtonUiAction.IconId.RollDown;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Filter: return IconButtonUiAction.IconId.Filter;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Save: return IconButtonUiAction.IconId.Save;
-                case BuiltinIconButtonUiActionApi.IconIdEnum.DeleteSymbol: return IconButtonUiAction.IconId.DeleteSymbol;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.DeleteSelectedItem: return IconButtonUiAction.IconId.DeleteSelectedItem;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.NewWatchlist: return IconButtonUiAction.IconId.NewWatchlist;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.OpenWatchlist: return IconButtonUiAction.IconId.OpenWatchlist;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.SaveWatchlist: return IconButtonUiAction.IconId.SaveWatchlist;
@@ -147,6 +149,8 @@ export namespace BuiltinIconButtonUiActionImplementation {
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Dot: return IconButtonUiAction.IconId.Dot;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Exclamation: return IconButtonUiAction.IconId.Exclamation;
                 case BuiltinIconButtonUiActionApi.IconIdEnum.Delete: return IconButtonUiAction.IconId.Delete;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.Detach: return IconButtonUiAction.IconId.Detach;
+                case BuiltinIconButtonUiActionApi.IconIdEnum.Dropdown: return IconButtonUiAction.IconId.Dropdown;
 
                 default:
                     throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidBuiltinIconButtonUiActionIconId, enumValue);

@@ -34,7 +34,7 @@ export namespace BuiltinIconButtonUiAction {
         RollDown = 'RollDown',
         Filter = 'Filter',
         Save = 'Save',
-        DeleteSymbol = 'DeleteSymbol',
+        DeleteSelectedItem = 'DeleteSelectedItem',
         NewWatchlist = 'NewWatchlist',
         OpenWatchlist = 'OpenWatchlist',
         SaveWatchlist = 'SaveWatchlist',
@@ -70,6 +70,8 @@ export namespace BuiltinIconButtonUiAction {
         Dot = 'Dot',
         Exclamation = 'Exclamation',
         Delete = 'Delete',
+        Detach = 'Detach',
+        Dropdown = 'Dropdown',
     }
 
     export type IconId = keyof typeof IconIdEnum;

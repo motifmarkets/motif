@@ -365,7 +365,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.Watchlist_DeleteSymbolTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.DeleteSymbol);
+        action.pushIcon(IconButtonUiAction.IconId.DeleteSelectedItem);
         action.signalEvent = () => this.handleDeleteSymbolUiActionEvent();
         return action;
     }
