@@ -78,27 +78,33 @@ export class TextContainsScanFieldConditionEditorFrame extends ScanFieldConditio
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateContains(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._value) {
+        if (value === this._value) {
+            return false;
+        } else {
             this._value = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 
     setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._asId) {
+        if (value === this._asId) {
+            return false;
+        } else {
             this._asId = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 
     setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._ignoreCase) {
+        if (value === this._ignoreCase) {
+            return false;
+        } else {
             this._ignoreCase = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

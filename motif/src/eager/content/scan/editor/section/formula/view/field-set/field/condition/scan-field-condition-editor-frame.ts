@@ -44,8 +44,19 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
     }
 
     protected processChanged(modifier: ScanFieldConditionEditorFrame.Modifier) {
-        this.updateValid();
+        const validChanged = this.updateValid();
         this.notifyChanged(modifier);
+        return validChanged;
+    }
+
+    protected updateValid() {
+        const newValid = this.calculateValid();
+        if (newValid === this._valid) {
+            return false;
+        } else {
+            this._valid = newValid;
+            return true;
+        }
     }
 
     private notifyChanged(modifier: ScanFieldConditionEditorFrame.Modifier) {
@@ -59,10 +70,6 @@ export abstract class ScanFieldConditionEditorFrame implements ScanFieldConditio
         for (const handler of handlers) {
             handler(modifier.node);
         }
-    }
-
-    private updateValid() {
-        this._valid = this.calculateValid();
     }
 
     protected abstract calculateValid(): boolean;

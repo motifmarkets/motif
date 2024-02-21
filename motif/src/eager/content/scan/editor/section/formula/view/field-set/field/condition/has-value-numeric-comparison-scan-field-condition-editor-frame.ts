@@ -40,7 +40,7 @@ export class HasValueNumericComparisonScanFieldConditionEditorFrame extends Nume
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateHasValue(this.operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 }
 

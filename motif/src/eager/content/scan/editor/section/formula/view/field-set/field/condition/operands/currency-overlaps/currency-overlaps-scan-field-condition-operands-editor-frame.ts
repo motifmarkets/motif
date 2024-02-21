@@ -14,5 +14,5 @@ export interface CurrencyOverlapsScanFieldConditionOperandsEditorFrame extends O
 
     readonly values: readonly CurrencyId[];
 
-    setValues(value: readonly CurrencyId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValues(value: readonly CurrencyId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }

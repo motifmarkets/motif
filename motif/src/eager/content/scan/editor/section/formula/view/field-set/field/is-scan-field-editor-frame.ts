@@ -39,7 +39,7 @@ export class IsScanFieldEditorFrame extends NotSubbedScanFieldEditorFrame implem
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Is:
             case ScanFieldCondition.OperatorId.NotIs:
-                return new IsScanFieldConditionEditorFrame(operatorId, undefined);
+                return new IsScanFieldConditionEditorFrame(operatorId, ScanFormula.IsNode.CategoryId.Index);
             default:
                 throw new UnreachableCaseError('ISFEFCC22298', operatorId);
         }

@@ -14,5 +14,5 @@ export interface MarketOverlapsScanFieldConditionOperandsEditorFrame extends Ove
 
     readonly values: readonly MarketId[];
 
-    setValues(value: readonly MarketId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValues(value: readonly MarketId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }

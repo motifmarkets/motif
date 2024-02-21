@@ -8,5 +8,5 @@ import { RootAndNodeComponentInstanceIdPair } from 'component-internal-api';
 
 export interface NegatableOperator {
     readonly not: boolean;
-    negateOperator(modifier: RootAndNodeComponentInstanceIdPair): void;
+    negateOperator(modifier: RootAndNodeComponentInstanceIdPair): boolean;
 }

@@ -45,13 +45,15 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._value)) {
+            return false;
+        } else {
             this._value = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

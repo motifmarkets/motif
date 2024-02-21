@@ -33,6 +33,7 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
             CurrencyOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
         );
+        this.updateValid();
     }
 
     get operands() {
@@ -46,8 +47,10 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
     get values() { return this._values; }
     setValues(value: readonly CurrencyId[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {
+            return false;
+        } else {
             this._values = value.slice();
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

@@ -34,7 +34,7 @@ export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldCon
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateOverlaps(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 }
 

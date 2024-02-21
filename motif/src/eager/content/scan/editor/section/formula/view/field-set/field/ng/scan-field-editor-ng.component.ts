@@ -7,6 +7,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, Type, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
 import {
     AssertInternalError,
+    ColorScheme,
+    ColorSettings,
     CommandRegisterService,
     ComparableList,
     EnumUiAction,
@@ -18,6 +20,7 @@ import {
     ScanConditionSet,
     ScanField,
     ScanFieldCondition,
+    SettingsService,
     StringId,
     Strings,
     UnreachableCaseError,
@@ -25,7 +28,7 @@ import {
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentBaseNgDirective } from '../../../../../../../../../component/ng-api';
 import { RootAndNodeComponentInstanceIdPair } from '../../../../../../../../../component/root-and-node-component-instance-id-pair';
@@ -54,6 +57,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     @ViewChild('addConditionControl', { static: true }) private _addConditionControlComponent: EnumInputNgComponent;
     @ViewChild('conditionsContainer', { read: ViewContainerRef, static: true }) private _conditionEditorFrameComponentsContainer: ViewContainerRef;
 
+    public labelColor: string;
     public fieldNameLabel = Strings[StringId.ScanFieldEditor_FieldName];
     public conditionsLabel = Strings[StringId.ScanFieldEditor_Conditions];
     public requiresRadioName: string;
@@ -67,19 +71,31 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     private _valid = false;
     private _errorText = '';
 
+    private readonly _settingsService: SettingsService;
+    private readonly _colorSettings: ColorSettings;
     private readonly _requiresUiAction: ExplicitElementsEnumUiAction;
     private readonly _deleteMeUiAction: IconButtonUiAction;
     private readonly _addConditionUiAction: ExplicitElementsEnumUiAction;
 
     private readonly _deleteComponents = new ComparableList<DeleteScanFieldConditionNgComponent>();
 
+    private _settingsChangeSubscriptionId: MultiEvent.SubscriptionId;
+
     constructor(
         elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         private readonly _injector: Injector,
+        settingsNgService: SettingsNgService,
         commandRegisterNgService: CommandRegisterNgService,
     ) {
         super(elRef, ++ScanFieldEditorNgComponent.typeInstanceCreateCount);
+
+        this._settingsService = settingsNgService.service;
+        this._colorSettings = this._settingsService.color;
+
+        this._settingsChangeSubscriptionId = this._settingsService.subscribeSettingsChangedEvent(
+            () => this.handleSettingsChangeEvent()
+        );
 
         const commandRegisterService = commandRegisterNgService.service;
 
@@ -92,6 +108,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         this._requiresUiAction.pushValue(ScanConditionSet.BooleanOperationId.And);
     }
 
+    public get frameUndefined() { return this._frame === undefined; }
     public get fieldName() { return this._fieldName }
     public get valid() { return this._valid }
     public get errorText() { return this._errorText }
@@ -104,6 +121,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     ngAfterViewInit(): void {
         this.initialiseComponents();
+        delay1Tick(() => this.pushUndefined());
     }
 
     setRootComponentInstanceId(root: ComponentBaseNgDirective.InstanceId) {
@@ -141,6 +159,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private finalise() {
+        this._settingsService.unsubscribeSettingsChangedEvent(this._settingsChangeSubscriptionId);
+        this._settingsChangeSubscriptionId = undefined;
         if (this._frame !== undefined) {
             this.disconnectFromFrame();
         }
@@ -172,6 +192,10 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         }
     }
 
+    private handleSettingsChangeEvent() {
+        this.updateColor();
+    }
+
     private pushAddConditionElements(supportedOperatorIds: readonly ScanFieldCondition.OperatorId[]) {
         const elementPropertiesArray = supportedOperatorIds.map<EnumUiAction.ElementProperties>(
             (id) => ({
@@ -191,6 +215,8 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             this.markForCheck();
         }
 
+        this.updateColor();
+
         this._requiresUiAction.pushValue(undefined);
         this._requiresUiAction.pushDisabled();
 
@@ -207,6 +233,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         this.pushValid(frame);
         this.pushErrorText(frame);
         this.pushRequires(frame);
+        this.updateColor();
     }
 
     private pushChangedProperties(frame: ScanFieldEditorFrame, valueChanges: ScanFieldEditorFrame.Field.ValueChange[]) {
@@ -467,6 +494,15 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             this._deleteComponents.removeAtIndex(i);
             this._conditionEditorFrameComponentsContainer.remove(i * 2 + 1);
             this._conditionEditorFrameComponentsContainer.remove(i * 2);
+        }
+    }
+
+    private updateColor() {
+        const labelItemId = this._frame === undefined ? ColorScheme.ItemId.Label_Disabled : ColorScheme.ItemId.Label_Valid;
+        const labelColor = this._colorSettings.getFore(labelItemId);
+        if (labelColor !== this.labelColor) {
+            this.labelColor = labelColor;
+            this.markForCheck();
         }
     }
 

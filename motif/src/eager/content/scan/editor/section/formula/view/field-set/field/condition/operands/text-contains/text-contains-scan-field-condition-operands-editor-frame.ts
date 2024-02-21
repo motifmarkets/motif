@@ -16,9 +16,9 @@ export interface TextContainsScanFieldConditionOperandsEditorFrame extends ScanF
     readonly asId: ScanFormula.TextContainsAsId | undefined;
     readonly ignoreCase: boolean | undefined;
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
-    setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
-    setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace TextContainsScanFieldConditionOperandsEditorFrame {

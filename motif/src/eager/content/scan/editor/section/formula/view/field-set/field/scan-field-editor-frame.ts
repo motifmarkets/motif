@@ -174,8 +174,13 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private endChanges() {
         if (--this._changesBeginCount === 0) {
             if (this._fieldValueChanges.count > 0 || this._conditionChanged) {
-                const valueChanges = this._fieldValueChanges.toArray();
-                this._fieldValueChanges.count = 0;
+                let valueChanges: ScanFieldEditorFrame.Field.ValueChange[];
+                if (this._fieldValueChanges.count === 0) {
+                    valueChanges = [];
+                } else {
+                    valueChanges = this._fieldValueChanges.toArray();
+                    this._fieldValueChanges.count = 0;
+                }
                 const conditionChanged = this._conditionChanged;
                 this._conditionChanged = false;
                 const changesModifier  = this._changesModifier;
@@ -248,7 +253,24 @@ export abstract class ScanFieldEditorFrame implements ScanField {
                     this.addFieldValueChange(ScanFieldEditorFrame.FieldId.ConditionCount, ValueRecentChangeTypeId.Decrease);
                 }
             }
-            this.checkXorValid(this.conditions.count);
+
+            let validAndErrorTextNeedUpdating = false;
+            const allConditionsValid = this.calculateAllConditionsValid();
+            if (allConditionsValid !== this._allConditionsValid) {
+                this._allConditionsValid = allConditionsValid;
+                validAndErrorTextNeedUpdating = true;
+            }
+
+            const xorValid = this._conditionsOperationId !== ScanField.BooleanOperationId.Xor || newConditionCount === 2;
+            if (xorValid !== this._xorValid) {
+                this._xorValid = xorValid;
+                validAndErrorTextNeedUpdating = true;
+                this.updateValidAndErrorText();
+            }
+
+            if (validAndErrorTextNeedUpdating) {
+                this.updateValidAndErrorText();
+            }
         }
         this.endChanges();
     }
@@ -273,14 +295,6 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         }
         this._conditionChanged = true;
         this.endChanges();
-    }
-
-    private checkXorValid(conditionCount: Integer) {
-        const xorValid = this._conditionsOperationId !== ScanField.BooleanOperationId.Xor || conditionCount === 2;
-        if (xorValid !== this._xorValid) {
-            this._xorValid = xorValid;
-            this.updateValidAndErrorText();
-        }
     }
 
     private calculateAllConditionsValid() {
@@ -309,6 +323,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             }
         } else {
             this.beginChanges(undefined);
+            this._valid = newValid;
             this.addFieldValueChange(ScanFieldEditorFrame.FieldId.Valid, ValueRecentChangeTypeId.Update);
             if (!newValid) {
                 const errorText = this.calculateErrorText();
@@ -365,13 +380,17 @@ export abstract class ScanFieldEditorFrame implements ScanField {
             modifierNode = changesModifier.node;
         }
 
-        if (conditionChanged && this.meOrMyConditionsChangedEventer !== undefined) {
+        const gotValueChanges = valueChanges.length > 0;
+
+        if ((gotValueChanges || conditionChanged) && this.meOrMyConditionsChangedEventer !== undefined) {
             this.meOrMyConditionsChangedEventer(this._valid, modifierRoot);
         }
 
-        const handlers = this._fieldValuesChangedMultiEvent.copyHandlers();
-        for (const handler of handlers) {
-            handler(this, valueChanges, modifierNode);
+        if (gotValueChanges) {
+            const handlers = this._fieldValuesChangedMultiEvent.copyHandlers();
+            for (const handler of handlers) {
+                handler(this, valueChanges, modifierNode);
+            }
         }
     }
 

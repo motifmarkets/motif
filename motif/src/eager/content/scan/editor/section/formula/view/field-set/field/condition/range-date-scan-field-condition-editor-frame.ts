@@ -45,20 +45,24 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateInRange(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._min)) {
+            return false;
+        } else {
             this._min = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 
     setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._max)) {
+            return false;
+        } else {
             this._max = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

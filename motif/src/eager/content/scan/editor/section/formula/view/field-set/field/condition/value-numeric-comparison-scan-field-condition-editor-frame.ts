@@ -46,17 +46,21 @@ export class ValueNumericComparisonScanFieldConditionEditorFrame extends Numeric
     }
 
     setOperatorId(value: ValueNumericComparisonScanFieldConditionEditorFrame.OperatorId, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._operatorId) {
+        if (value === this._operatorId) {
+            return false;
+        } else {
             this._operatorId = value;
             this._affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(value);
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 
     setValue(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._value) {
+        if (value === this._value) {
+            return false;
+        } else {
             this._value = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

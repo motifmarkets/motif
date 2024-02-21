@@ -14,7 +14,7 @@ export interface NumericValueScanFieldConditionOperandsEditorFrame extends ScanF
     readonly operatorId: NumericValueScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly value: number | undefined;
 
-    setValue(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace NumericValueScanFieldConditionOperandsEditorFrame {

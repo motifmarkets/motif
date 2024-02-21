@@ -99,7 +99,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
 
     addField(definitionId: number) {
         const fieldEditorFrame = this.fieldFactory.createFromDefinitionId(definitionId);
-        this.fields.add(fieldEditorFrame);
+        return this.fields.add(fieldEditorFrame);
     }
 
     deleteField(frame: ScanFieldEditorFrame, modifier: ScanFieldEditorFrame.Modifier) {

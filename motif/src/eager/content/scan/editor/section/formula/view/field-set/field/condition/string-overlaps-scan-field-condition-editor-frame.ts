@@ -45,8 +45,10 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
     get values() { return this._values; }
     setValues(value: readonly string[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {
+            return false;
+        } else {
             this._values = value.slice();
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

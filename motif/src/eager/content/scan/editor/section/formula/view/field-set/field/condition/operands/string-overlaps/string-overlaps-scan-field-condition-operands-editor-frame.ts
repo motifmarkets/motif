@@ -14,5 +14,5 @@ export interface StringOverlapsScanFieldConditionOperandsEditorFrame extends Ove
 
     readonly values: readonly string[];
 
-    setValues(value: readonly string[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValues(value: readonly string[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }

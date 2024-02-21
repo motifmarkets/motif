@@ -198,7 +198,8 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             if (frame === undefined) {
                 throw new AssertInternalError('SFSENCPEAACHTAFUA44487');
             } else {
-                frame.addField(action.definedValue);
+                const idx = frame.addField(action.definedValue);
+                this._fieldEditorFramesGridFrame.focusItem(idx);
                 delay1Tick(() => action.pushValue(undefined));
             }
         }

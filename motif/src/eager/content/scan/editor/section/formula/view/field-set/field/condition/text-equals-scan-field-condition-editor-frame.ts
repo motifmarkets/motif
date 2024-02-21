@@ -58,13 +58,15 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateEquals(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._value) {
+        if (value === this._value) {
+            return false;
+        } else {
             this._value = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

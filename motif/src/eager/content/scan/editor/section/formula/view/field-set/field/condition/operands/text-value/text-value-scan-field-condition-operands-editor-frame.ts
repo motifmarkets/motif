@@ -14,7 +14,7 @@ export interface TextValueScanFieldConditionOperandsEditorFrame extends ScanFiel
     readonly operatorId: TextValueScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly value: string | undefined;
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace TextValueScanFieldConditionOperandsEditorFrame {

@@ -15,8 +15,8 @@ export interface DateRangeScanFieldConditionOperandsEditorFrame extends ScanFiel
     readonly min: SourceTzOffsetDateTime | undefined;
     readonly max: SourceTzOffsetDateTime | undefined;
 
-    setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
-    setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace DateRangeScanFieldConditionOperandsEditorFrame {

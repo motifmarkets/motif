@@ -14,7 +14,7 @@ export interface DateValueScanFieldConditionOperandsEditorFrame extends ScanFiel
     readonly operatorId: DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly value: SourceTzOffsetDateTime | undefined;
 
-    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace DateValueScanFieldConditionOperandsEditorFrame {

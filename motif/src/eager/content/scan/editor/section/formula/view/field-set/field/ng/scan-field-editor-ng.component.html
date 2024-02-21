@@ -7,7 +7,7 @@
 <div id="fieldAndConditions">
     <div id="field">
         <div id="properties">
-            <span id="fieldNameLabel">{{fieldNameLabel}}</span>
+            <span id="fieldNameLabel" [style.color]="labelColor">{{fieldNameLabel}}</span>
             <span id="fieldName">{{fieldName}}</span>
             <app-caption-label #requiresLabel></app-caption-label>
             <div id="requires">
@@ -15,15 +15,15 @@
                 <app-captioned-radio #requiresAnyControl inputId="requiresAnyRadio" [name]="requiresRadioName"></app-captioned-radio>
                 <app-captioned-radio #requiresExactly1Of2Control inputId="requiresExactly1of2Radio" [name]="requiresRadioName"></app-captioned-radio>
             </div>
-            <span id="conditionsLabel">{{conditionsLabel}}</span>
+            <span id="conditionsLabel" [style.color]="labelColor">{{conditionsLabel}}</span>
             <app-enum-input #addConditionControl id="addConditionControl"></app-enum-input>
         </div>
-        <app-svg-button #deleteMeControl id="deleteMeControl" [style.display]="fieldName === '' ? 'none' : null"></app-svg-button>
+        <app-svg-button #deleteMeControl id="deleteMeControl" [style.display]="frameUndefined ? 'none' : null"></app-svg-button>
     </div>
     <div id="conditionsContainer">
         <ng-container #conditionsContainer></ng-container>
     </div>
 </div>
-<div id="errorBar" [style.display]="valid ? 'none' : null">
+<div id="errorBar" [style.display]="valid || frameUndefined ? 'none' : null">
     <span id="errorText">{{errorText}}</span>
 </div>

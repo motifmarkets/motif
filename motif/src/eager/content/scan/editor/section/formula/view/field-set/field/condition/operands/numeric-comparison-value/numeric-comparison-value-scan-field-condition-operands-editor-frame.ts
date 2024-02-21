@@ -13,8 +13,8 @@ export interface NumericComparisonValueScanFieldConditionOperandsEditorFrame ext
     readonly operatorId: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly value: number | undefined;
 
-    setOperatorId(value: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
-    setValue(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setOperatorId(value: NumericComparisonValueScanFieldConditionOperandsEditorFrame.OperatorId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setValue(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace NumericComparisonValueScanFieldConditionOperandsEditorFrame {

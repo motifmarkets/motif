@@ -15,8 +15,8 @@ export interface NumericRangeScanFieldConditionOperandsEditorFrame extends ScanF
     readonly min: number | undefined;
     readonly max: number | undefined;
 
-    setMin(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
-    setMax(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setMin(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setMax(value: number | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace NumericRangeScanFieldConditionOperandsEditorFrame {

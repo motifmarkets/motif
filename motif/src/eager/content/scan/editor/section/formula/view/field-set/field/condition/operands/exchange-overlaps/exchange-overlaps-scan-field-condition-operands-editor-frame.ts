@@ -14,5 +14,5 @@ export interface ExchangeOverlapsScanFieldConditionOperandsEditorFrame extends O
 
     readonly values: readonly ExchangeId[];
 
-    setValues(value: readonly ExchangeId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValues(value: readonly ExchangeId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }

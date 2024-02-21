@@ -4,10 +4,10 @@
     License: motionite.trade/license/motif
 -->
 
-<svg-icon id="exclamationIcon" name="Exclamation"></svg-icon>
+<svg-icon id="exclamationIcon" name="Exclamation" [svgStyle]="{ 'fill': exclamationColor }" [style.visibility]="valid ? 'hidden' : 'visible'"></svg-icon>
 <app-captioned-checkbox #notControl id="notControl"></app-captioned-checkbox>
 <div id="affirmativeOperatorDisplayLines" *ngFor="let line of affirmativeOperatorDisplayLines">
     <span id="affirmativeOperatorDisplayLine">{{line}}</span>
 </div>
 <app-caption-label #currencyLabel id="currencyLabel"></app-caption-label>
-<app-enum-input #currencyControl id="currencyControl"></app-enum-input>
+<app-enum-array-input #currencyControl id="currencyControl"></app-enum-array-input>

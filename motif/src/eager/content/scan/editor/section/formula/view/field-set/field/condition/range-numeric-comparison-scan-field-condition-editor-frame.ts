@@ -46,20 +46,24 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateInRange(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setMin(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._min) {
+        if (value === this._min) {
+            return false;
+        } else {
             this._min = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 
     setMax(value: number | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._max) {
+        if (value === this._max) {
+            return false;
+        } else {
             this._max = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }

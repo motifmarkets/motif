@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
 import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
@@ -30,10 +31,11 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
+        super(elRef, ++CategoryValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._categoryUiAction = this.createCategoryUiAction();
@@ -75,7 +77,9 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._frame.setCategoryId(this._categoryUiAction.definedValue, this._modifier);
+            if (this._frame.setCategoryId(this._categoryUiAction.definedValue, this._modifier)) {
+                this.markForCheck();
+            }
         }
 
         return action;
@@ -86,7 +90,9 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
         action.pushCaption(Strings[StringId.Not]);
         action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
         action.commitEvent = () => {
-            this._frame.negateOperator(this._modifier);
+            if (this._frame.negateOperator(this._modifier)) {
+                this.markForCheck();
+            }
         };
 
         return action;

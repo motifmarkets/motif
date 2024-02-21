@@ -14,5 +14,5 @@ export interface MarketBoardOverlapsScanFieldConditionOperandsEditorFrame extend
 
     readonly values: readonly MarketBoardId[];
 
-    setValues(value: readonly MarketBoardId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setValues(value: readonly MarketBoardId[], modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }

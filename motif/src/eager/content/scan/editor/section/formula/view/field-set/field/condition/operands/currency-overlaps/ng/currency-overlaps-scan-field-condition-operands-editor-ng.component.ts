@@ -5,8 +5,9 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumArrayUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, Currency, EnumUiAction, ExplicitElementsEnumArrayUiAction, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
+import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CurrencyOverlapsScanFieldConditionOperandsEditorFrame } from '../currency-overlaps-scan-field-condition-operands-editor-frame';
@@ -30,10 +31,11 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        settingsNgService: SettingsNgService,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, frame, modifierRoot);
+        super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._valuesUiAction = this.createValuesUiAction();
@@ -64,18 +66,20 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
         const action = new ExplicitElementsEnumArrayUiAction();
         action.pushCaption(Strings[StringId.CurrencyEnumScanFieldConditionOperandsCaption_Values]);
         action.pushTitle(Strings[StringId.CurrencyEnumScanFieldConditionOperandsTitle_Values]);
-        const ids = ScanFormula.IsNode.Category.allIds;
+        const ids = Currency.allIds;
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: ScanFormula.IsNode.Category.idToCaption(id),
-                    title: ScanFormula.IsNode.Category.idToTitle(id),
+                    caption: Currency.idToCode(id),
+                    title: '',
                 }
             )
         );
         action.pushElements(elementPropertiesArray, undefined);
         action.commitEvent = () => {
-            this._frame.setValues(this._valuesUiAction.definedValue, this._modifier);
+            if (this._frame.setValues(this._valuesUiAction.definedValue, this._modifier)) {
+                this.markForCheck();
+            }
         }
 
         return action;
@@ -86,7 +90,9 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
         action.pushCaption(Strings[StringId.Not]);
         action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
         action.commitEvent = () => {
-            this._frame.negateOperator(this._modifier);
+            if (this._frame.negateOperator(this._modifier)) {
+                this.markForCheck();
+            }
         };
 
         return action;

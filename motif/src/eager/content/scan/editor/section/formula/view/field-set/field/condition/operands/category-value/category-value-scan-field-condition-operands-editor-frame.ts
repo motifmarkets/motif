@@ -14,7 +14,7 @@ export interface CategoryValueScanFieldConditionOperandsEditorFrame extends Scan
     readonly operatorId: CategoryValueScanFieldConditionOperandsEditorFrame.OperatorId;
     readonly categoryId: ScanFormula.IsNode.CategoryId | undefined;
 
-    setCategoryId(value: ScanFormula.IsNode.CategoryId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): void;
+    setCategoryId(value: ScanFormula.IsNode.CategoryId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace CategoryValueScanFieldConditionOperandsEditorFrame {

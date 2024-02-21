@@ -31,6 +31,7 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
             IsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
         );
+        this.updateValid();
     }
 
     get operands() {
@@ -56,13 +57,15 @@ export class IsScanFieldConditionEditorFrame extends ScanFieldConditionEditorFra
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
         this._operatorId = ScanFieldCondition.Operator.negateIs(this._operatorId);
-        this.processChanged(modifier);
+        return this.processChanged(modifier);
     }
 
     setCategoryId(value: ScanFormula.IsNode.CategoryId | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (value !== this._categoryId) {
+        if (value === this._categoryId) {
+            return false;
+        } else {
             this._categoryId = value;
-            this.processChanged(modifier);
+            return this.processChanged(modifier);
         }
     }
 }
