@@ -4,6 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
+
 :host {
     height: 100%;
     flex: 1 1 0;
@@ -31,6 +33,7 @@
 
     > #mainToolbarSection {
         @include mainToolbarCssMixin;
+        @include svg-icon-button-size.toolbarDescendantMixin;
         flex: 0 0 auto;
 
         > #symbolInput {

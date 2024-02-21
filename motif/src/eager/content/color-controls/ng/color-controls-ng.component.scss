@@ -5,6 +5,7 @@
  */
 
 @use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import './partials/caption-followed-by-input';
 @import './partials/horizontal-radio-separator';
 
@@ -39,6 +40,7 @@
 
 #buttonsSection {
     display: flex;
+    @include svg-icon-button-size.toolbarChildMixin;
 }
 
 #hsvControlsSection {

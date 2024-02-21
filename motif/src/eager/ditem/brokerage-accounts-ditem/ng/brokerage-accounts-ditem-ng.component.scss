@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @import './partials/main-toolbar-css-mixin';
 
 :host {
@@ -21,6 +22,7 @@
 
 #mainToolbarDiv {
     @include mainToolbarCssMixin;
+    @include svg-icon-button-size.toolbarChildMixin;
 }
 
 #brokerage-accounts {

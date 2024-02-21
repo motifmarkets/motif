@@ -5,6 +5,7 @@
  */
 
 @use './partials/centered-toolbar-group-mixin';
+@use './partials/svg-icon-button-size';
 
 :host {
     display: flex;
@@ -13,6 +14,7 @@
 
     #toolbar {
         @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+        @include svg-icon-button-size.toolbarChildMixin;
 
         #cancelButton {
             height: 1em;

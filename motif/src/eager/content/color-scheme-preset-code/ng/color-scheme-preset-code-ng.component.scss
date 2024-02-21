@@ -4,6 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
+
 #rootDiv {
     display: flex;
     flex-direction: column;
@@ -12,7 +14,7 @@
 
 #toolBarDiv {
     display: flex;
-    flex-direction: row;
+    @include svg-icon-button-size.toolbarChildMixin;
 }
 
 #presetCodeTextArea {

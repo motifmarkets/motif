@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @import './partials/main-toolbar-css-mixin';
 @import './partials/centered-toolbar-group-mixin';
 
@@ -27,11 +28,13 @@
 
             > #columnButtonsDiv {
                 @include centeredToolbarGroupMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
                 margin-left: $toolbar-button-group-separation;
             }
 
             > #linkButtonsDiv {
                 @include centeredToolbarGroupMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
                 margin-left: $toolbar-button-group-separation;
             }
         }

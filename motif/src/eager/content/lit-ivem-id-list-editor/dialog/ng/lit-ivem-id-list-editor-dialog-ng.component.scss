@@ -8,6 +8,8 @@
 @use './partials/revgrid';
 @use './partials/centered-toolbar-group-mixin';
 @use './partials/main-toolbar-css-mixin';
+@use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 
 :host {
     display: flex;
@@ -16,7 +18,11 @@
     height: 100%;
 
     #okGridToolbar {
-        @include main-toolbar-css-mixin.mainToolbarCssMixin;
+        @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+
+        #okCancelReturnButtons {
+            @include svg-icon-button-size.okCancelReturnMixin;
+        }
 
         #cancelButton {
             display: none;
@@ -44,11 +50,13 @@
 
                 #removeControls {
                     @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                    @include svg-icon-button-size.toolbarChildMixin;
                     margin-left: variables.$toolbar-button-group-separation;
                 }
 
                 #gridControls {
                     @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                    @include svg-icon-button-size.toolbarChildMixin;
                     margin-left: variables.$toolbar-button-group-separation;
                     #filterControl {
                         width: 6em;

@@ -5,6 +5,7 @@
  */
 
 @use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import 'partials/variables';
 @import './partials/main-toolbar-css-mixin';
 @import './partials/centered-toolbar-group-mixin';
@@ -43,6 +44,7 @@
 
         > #columnButtonsSection {
             @include centeredToolbarGroupMixin;
+            @include svg-icon-button-size.toolbarDescendantMixin;
             margin-left: $toolbar-button-group-separation;
         }
     }

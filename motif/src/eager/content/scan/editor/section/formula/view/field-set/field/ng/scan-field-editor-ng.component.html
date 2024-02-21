@@ -18,7 +18,7 @@
             <span id="conditionsLabel">{{conditionsLabel}}</span>
             <app-enum-input #addConditionControl id="addConditionControl"></app-enum-input>
         </div>
-        <app-svg-button #deleteMeControl id="deleteMeControl"></app-svg-button>
+        <app-svg-button #deleteMeControl id="deleteMeControl" [style.display]="fieldName === '' ? 'none' : null"></app-svg-button>
     </div>
     <div id="conditionsContainer">
         <ng-container #conditionsContainer></ng-container>

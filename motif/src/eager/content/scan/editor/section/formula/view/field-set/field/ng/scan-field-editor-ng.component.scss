@@ -6,6 +6,7 @@
 
 @use './partials/caption-followed-by-input';
 @use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 
 :host {
     display: flex;
@@ -33,6 +34,15 @@
                     @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
                     gap: 1em;
                 }
+
+                #conditionsLabel {
+                    align-self: end;
+                    font-size: larger;
+                }
+            }
+
+            #deleteMeControl {
+                height: svg-icon-button-size.$larger-text-inline-height;
             }
         }
 

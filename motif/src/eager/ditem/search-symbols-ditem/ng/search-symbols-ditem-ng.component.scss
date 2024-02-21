@@ -5,6 +5,7 @@
  */
 
 @use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import './partials/horizontal-children-separator';
 @import './partials/horizontal-radio-separator';
 @import './partials/control-followed-by-icon';
@@ -26,6 +27,7 @@
         flex: 0 0 auto;
 
         @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+        @include svg-icon-button-size.toolbarDescendantMixin;
 
         #firstIconSet {
             @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
@@ -76,6 +78,7 @@
 
             #searchTextSection {
                 @include controlFollowedByIconMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
             }
 
             #pageSizeSection {
