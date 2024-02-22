@@ -44,6 +44,8 @@ export class CurrencyOverlapsScanFieldConditionEditorFrame extends OverlapsScanF
         return operands;
     }
 
+    override get valueCount() { return this._values.length; }
+
     get values() { return this._values; }
     setValues(value: readonly CurrencyId[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {

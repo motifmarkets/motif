@@ -43,6 +43,8 @@ export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsSc
         return operands;
     }
 
+    override get valueCount() { return this._values.length; }
+
     get values() { return this._values; }
     setValues(value: readonly MarketBoardId[], modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (isArrayEqual(value, this._values)) {

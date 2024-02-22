@@ -350,7 +350,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             if (this._frame === undefined) {
                 throw new AssertInternalError('SFENCCRUA44453');
             } else {
-                this._frame.setConditionsOperationId(this._addConditionUiAction.definedValue, this._modifier);
+                this._frame.setConditionsOperationId(this._requiresUiAction.definedValue, this._modifier);
                 this.markForCheck();
             }
         }
@@ -410,7 +410,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
         } else {
             const afterRangeIdx = index + count;
             for (let i = index; i < afterRangeIdx; i++) {
-                const conditionFrame = frame.conditions.getAt(index);
+                const conditionFrame = frame.conditions.getAt(i);
                 this.insertConditionEditorFrameComponent(conditionFrame, i);
             }
         }
@@ -485,6 +485,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             frame.deleteMe(deleteModifier);
         }
         this._deleteComponents.insert(index, deleteComponent);
+        this.markForCheck();
     }
 
     private removeConditionEditorFrameComponents(idx: number, count: number) {

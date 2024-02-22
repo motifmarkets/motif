@@ -104,7 +104,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             this._nameControlComponent.uiAction.isValueOk() &&
             this._descriptionControlComponent.uiAction.isValueOk() &&
             this._symbolListControlComponent.uiAction.isValueOk() &&
-            this._showRankControlComponent.uiAction.isValueOk() &&
+            this._showRankControlComponent.uiAction.isValueOkOrDisabled() &&
             this._targetsComponent.areAllControlValuesOk()
         );
     }
@@ -207,7 +207,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                // this._scan.enabled = this._enabledUiAction.definedValue;
+                editor.beginFieldChanges(this.instanceId);
+                editor.setEnabled(this._enabledUiAction.definedValue);
+                editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
             }
         };

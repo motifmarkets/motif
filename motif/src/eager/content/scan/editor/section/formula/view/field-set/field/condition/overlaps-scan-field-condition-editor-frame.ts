@@ -5,6 +5,7 @@
  */
 
 import {
+    Integer,
     OverlapsScanFieldCondition,
     ScanFieldCondition
 } from '@motifmarkets/motif-core';
@@ -28,8 +29,10 @@ export abstract class OverlapsScanFieldConditionEditorFrame extends ScanFieldCon
     override get operatorId() { return this._operatorId; }
     get not() { return ScanFieldCondition.Operator.overlapsIsNot(this._operatorId); }
 
+    abstract get valueCount(): Integer;
+
     override calculateValid() {
-        return true;
+        return this.valueCount > 0;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {

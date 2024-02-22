@@ -71,10 +71,6 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
 
     }
 
-    public isCriteriaCompatible() {
-        return true;
-    }
-
     override setEditor(value: ScanEditor | undefined) {
         this._scanEditor = value;
         if (value === undefined) {
@@ -103,6 +99,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
                     (idx, count) => this.processBeforeFieldsDelete(idx, count)
                 );
                 this._fieldEditorFramesGridComponent.setList(frame.fields);
+                this.pushFrameProperties();
             }
         }
     }
