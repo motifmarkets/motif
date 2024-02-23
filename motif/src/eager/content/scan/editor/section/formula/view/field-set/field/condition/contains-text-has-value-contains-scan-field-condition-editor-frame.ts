@@ -30,6 +30,7 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {

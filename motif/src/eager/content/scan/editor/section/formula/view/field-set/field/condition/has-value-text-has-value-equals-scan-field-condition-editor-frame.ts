@@ -25,6 +25,7 @@ export class HasValueTextHasValueEqualsScanFieldConditionEditorFrame extends Tex
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(HasValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {

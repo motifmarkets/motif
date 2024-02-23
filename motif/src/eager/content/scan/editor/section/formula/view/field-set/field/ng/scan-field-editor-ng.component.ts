@@ -37,7 +37,13 @@ import {
     CategoryValueScanFieldConditionOperandsEditorNgComponent,
     CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent,
     DeleteScanFieldConditionNgComponent,
+    ExchangeOverlapsScanFieldConditionOperandsEditorNgComponent,
+    HasValueScanFieldConditionOperandsEditorNgComponent,
+    MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent,
+    MarketOverlapsScanFieldConditionOperandsEditorNgComponent,
+    NumericValueScanFieldConditionOperandsEditorNgComponent,
     ScanFieldConditionOperandsEditorNgDirective,
+    StringOverlapsScanFieldConditionOperandsEditorNgComponent,
 } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
 import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
@@ -424,21 +430,27 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     private getScanFieldConditionOperandsEditorNgDirectiveType(operandsTypeId: ScanFieldCondition.Operands.TypeId): Type<ScanFieldConditionOperandsEditorNgDirective> {
         switch (operandsTypeId) {
             case ScanFieldCondition.Operands.TypeId.HasValue:
+                return HasValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.NumericComparisonValue:
+                throw new Error('todo');
             case ScanFieldCondition.Operands.TypeId.NumericValue:
+                return NumericValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.DateValue:
             case ScanFieldCondition.Operands.TypeId.NumericRange:
             case ScanFieldCondition.Operands.TypeId.DateRange:
             case ScanFieldCondition.Operands.TypeId.TextValue:
             case ScanFieldCondition.Operands.TypeId.TextContains:
-            case ScanFieldCondition.Operands.TypeId.TextEnum:
                 throw new Error('todo');
+            case ScanFieldCondition.Operands.TypeId.TextEnum:
+                return StringOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.CurrencyEnum:
                 return CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.ExchangeEnum:
+                return ExchangeOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.MarketEnum:
+                return MarketOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.MarketBoardEnum:
-                throw new Error('todo');
+                return MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.CategoryValue:
                 return CategoryValueScanFieldConditionOperandsEditorNgComponent;
             default:

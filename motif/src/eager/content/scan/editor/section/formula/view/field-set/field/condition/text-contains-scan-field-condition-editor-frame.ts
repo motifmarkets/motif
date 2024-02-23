@@ -36,6 +36,7 @@ export class TextContainsScanFieldConditionEditorFrame extends ScanFieldConditio
             TextContainsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
         );
+        this.updateValid();
     }
 
     get operands() {

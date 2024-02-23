@@ -23,6 +23,7 @@ export class ValueNumericScanFieldConditionEditorFrame extends NumericScanFieldC
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ValueNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {

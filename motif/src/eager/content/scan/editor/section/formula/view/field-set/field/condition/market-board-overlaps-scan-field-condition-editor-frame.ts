@@ -33,6 +33,7 @@ export class MarketBoardOverlapsScanFieldConditionEditorFrame extends OverlapsSc
             MarketBoardOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
         );
+        this.updateValid();
     }
 
     get operands() {

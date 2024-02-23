@@ -32,6 +32,7 @@ export class StringOverlapsScanFieldConditionEditorFrame extends OverlapsScanFie
             StringOverlapsScanFieldConditionEditorFrame.operandsTypeId,
             operatorId,
         );
+        this.updateValid();
     }
 
     get operands() {

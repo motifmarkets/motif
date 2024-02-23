@@ -33,6 +33,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
             TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
             affirmativeOperatorDisplayLines,
         );
+        this.updateValid();
     }
 
     get operands() {

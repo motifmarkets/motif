@@ -24,6 +24,7 @@ export class RangeNumericScanFieldConditionEditorFrame extends NumericScanFieldC
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(RangeNumericScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {
@@ -43,7 +44,7 @@ export class RangeNumericScanFieldConditionEditorFrame extends NumericScanFieldC
     get max() { return this._min; }
 
     override calculateValid() {
-        return true;
+        return this._min !== undefined && this._max !== undefined;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {

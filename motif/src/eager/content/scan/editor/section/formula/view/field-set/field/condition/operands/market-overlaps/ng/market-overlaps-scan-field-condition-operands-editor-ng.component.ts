@@ -5,25 +5,25 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, Currency, EnumMappedExplicitElementsArrayUiAction, EnumUiAction, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, EnumMappedExplicitElementsArrayUiAction, EnumUiAction, MarketInfo, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
-import { CurrencyOverlapsScanFieldConditionOperandsEditorFrame } from '../currency-overlaps-scan-field-condition-operands-editor-frame';
+import { MarketOverlapsScanFieldConditionOperandsEditorFrame } from '../market-overlaps-scan-field-condition-operands-editor-frame';
 
 @Component({
-    selector: 'app-currency-overlaps-scan-field-condition-operands-editor',
-    templateUrl: './currency-overlaps-scan-field-condition-operands-editor-ng.component.html',
-    styleUrls: ['./currency-overlaps-scan-field-condition-operands-editor-ng.component.scss'],
+    selector: 'app-market-overlaps-scan-field-condition-operands-editor',
+    templateUrl: './market-overlaps-scan-field-condition-operands-editor-ng.component.html',
+    styleUrls: ['./market-overlaps-scan-field-condition-operands-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
+export class MarketOverlapsScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
     @ViewChild('notControl', { static: true }) private _notControlComponent: CaptionedCheckboxNgComponent;
-    @ViewChild('currencyLabel', { static: true }) private _currencyLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('currencyControl', { static: true }) private _currencyControlComponent: EnumArrayInputNgComponent;
+    @ViewChild('marketLabel', { static: true }) private _marketLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('marketControl', { static: true }) private _marketControlComponent: EnumArrayInputNgComponent;
 
-    declare readonly _frame: CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.Frame;
+    declare readonly _frame: MarketOverlapsScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
     private readonly _valuesUiAction: EnumMappedExplicitElementsArrayUiAction;
@@ -32,10 +32,10 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.Frame,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: MarketOverlapsScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
+        super(elRef, ++MarketOverlapsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._valuesUiAction = this.createValuesUiAction();
@@ -45,8 +45,8 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
     protected override initialise() {
         super.initialise();
         this._notControlComponent.initialise(this._notUiAction);
-        this._currencyLabelComponent.initialise(this._valuesUiAction);
-        this._currencyControlComponent.initialise(this._valuesUiAction);
+        this._marketLabelComponent.initialise(this._valuesUiAction);
+        this._marketControlComponent.initialise(this._valuesUiAction);
     }
 
     protected override finalise() {
@@ -64,13 +64,13 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
 
     private createValuesUiAction() {
         const action = new EnumMappedExplicitElementsArrayUiAction();
-        action.pushCaption(Strings[StringId.CurrencyOverlapsScanFieldConditionOperandsCaption_Values]);
-        action.pushTitle(Strings[StringId.CurrencyOverlapsScanFieldConditionOperandsTitle_Values]);
-        const ids = Currency.allIds;
+        action.pushCaption(Strings[StringId.MarketOverlapsScanFieldConditionOperandsCaption_Values]);
+        action.pushTitle(Strings[StringId.MarketOverlapsScanFieldConditionOperandsTitle_Values]);
+        const ids = MarketInfo.allIds;
         const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
-                    caption: Currency.idToCode(id),
+                    caption: MarketInfo.idToDisplay(id),
                     title: '',
                 }
             )
@@ -99,9 +99,9 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
     }
 }
 
-export namespace CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent {
+export namespace MarketOverlapsScanFieldConditionOperandsEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
-    export type Frame = CurrencyOverlapsScanFieldConditionOperandsEditorFrame;
+    export type Frame = MarketOverlapsScanFieldConditionOperandsEditorFrame;
 }

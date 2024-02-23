@@ -20,6 +20,7 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands(): DateScanFieldCondition.Operands {

@@ -21,6 +21,7 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(RangeDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {
@@ -40,7 +41,7 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     get max() { return this._min; }
 
     override calculateValid() {
-        return true;
+        return this._min !== undefined && this._max !== undefined;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {

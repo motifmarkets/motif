@@ -22,6 +22,7 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(RangeNumericComparisonScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
+        this.updateValid();
     }
 
     override get operands() {
@@ -41,7 +42,7 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
     get max() { return this._min; }
 
     override calculateValid() {
-        return true;
+        return this._min !== undefined && this._max !== undefined;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {

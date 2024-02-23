@@ -1,0 +1,24 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/caption-followed-by-input';
+@use './partials/scan-field-condition-operands-exclamation-icon';
+
+:host {
+    flex: 1 1 auto;
+
+    display: flex;
+    align-items: center;
+    gap: 1em;
+
+    #exclamationIcon {
+        @include scan-field-condition-operands-exclamation-icon.size;
+    }
+    #affirmativeOperatorDisplayLines {
+        display: flex;
+        flex-direction: column;
+    }
+}
