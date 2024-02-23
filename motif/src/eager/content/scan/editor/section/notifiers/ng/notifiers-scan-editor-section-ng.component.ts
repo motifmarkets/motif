@@ -1,7 +1,7 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     BooleanUiAction,
-    ExplicitElementsEnumArrayUiAction,
+    EnumMappedExplicitElementsArrayUiAction,
     HtmlTypes,
     IntegerUiAction,
     ScanEditor,
@@ -49,7 +49,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
     private readonly _smsNotifierUiAction: BooleanUiAction;
     private readonly _emailNotifierUiAction: BooleanUiAction;
     private readonly _motifNotifierUiAction: BooleanUiAction;
-    private readonly _allNotifiersUiAction: ExplicitElementsEnumArrayUiAction;
+    private readonly _allNotifiersUiAction: EnumMappedExplicitElementsArrayUiAction;
     private readonly _minimumStableTimeUiAction: IntegerUiAction;
     private readonly _minimumElapsedTimeUiAction: IntegerUiAction;
 
@@ -187,7 +187,7 @@ export class NotifiersScanEditorSectionNgComponent extends ScanEditorSectionNgDi
     }
 
     private createAllNotifiersUiAction() {
-        const action = new ExplicitElementsEnumArrayUiAction(false);
+        const action = new EnumMappedExplicitElementsArrayUiAction(false);
         action.pushCaption(Strings[StringId.ScanPropertiesCaption_AllNotifiers]);
         action.pushTitle(Strings[StringId.ScanPropertiesDescription_AllNotifiers]);
 

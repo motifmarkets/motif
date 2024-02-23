@@ -1,8 +1,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
     AllowedFieldsGridLayoutDefinition,
-    AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
+    AllowedMarketsExplicitElementsArrayUiAction,
     AssertInternalError,
     EnumInfoOutOfOrderError,
     EnumUiAction,
@@ -70,7 +70,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     private readonly _targetSubTypeUiAction: ExplicitElementsEnumUiAction;
     private readonly _singleSymbolUiAction: LitIvemIdUiAction;
     private readonly _singleMarketUiAction: AllowedMarketsEnumUiAction;
-    private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _multiMarketUiAction: AllowedMarketsExplicitElementsArrayUiAction;
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
     private _scanEditor: ScanEditor | undefined;
@@ -338,7 +338,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createMultiMarketUiAction() {
-        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
+        const action = new AllowedMarketsExplicitElementsArrayUiAction(this._symbolsService);
         action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MultiMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MultiMarket]);

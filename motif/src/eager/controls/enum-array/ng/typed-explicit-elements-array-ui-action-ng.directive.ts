@@ -5,18 +5,18 @@
  */
 
 import { Directive, Input } from '@angular/core';
-import { ArrayUiAction, MultiEvent, UiAction, isUndefinableArrayEqualUniquely } from '@motifmarkets/motif-core';
+import { MultiEvent, TypedExplicitElementsArrayUiAction, UiAction, isUndefinableArrayEqualUniquely } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()
-export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentBaseNgDirective {
+export abstract class TypedExplicitElementsArrayUiActionNgDirective<T> extends ControlComponentBaseNgDirective {
     @Input() inputId: string;
 
     private _pushEnumEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     private _filter: readonly T[] | undefined;
 
-    override get uiAction() { return super.uiAction as ArrayUiAction<T>; }
+    override get uiAction() { return super.uiAction as TypedExplicitElementsArrayUiAction<T>; }
 
     protected applyValue(_value: readonly T[] | undefined, _edited: boolean) {
         this.markForCheck();
@@ -50,10 +50,10 @@ export abstract class ArrayComponentBaseNgDirective<T> extends ControlComponentB
         }
     }
 
-    protected override setUiAction(action: ArrayUiAction<T>) {
+    protected override setUiAction(action: TypedExplicitElementsArrayUiAction<T>) {
         super.setUiAction(action);
 
-        const pushEventHandlersInterface: ArrayUiAction.PushEventHandlersInterface<T> = {
+        const pushEventHandlersInterface: TypedExplicitElementsArrayUiAction.PushEventHandlersInterface<T> = {
             value: (value, edited) => this.handleValuePushEvent(value, edited),
             filter: (filter) => this.handleFilterPushEvent(filter),
             element: (element, caption, title) => this.handleElementPushEvent(element, caption, title),

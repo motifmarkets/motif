@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { Integer, UiAction, concatenateElementToArrayUniquely, subtractElementFromArrayUniquely } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
-import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-element-component-base-ng.directive';
+import { EnumExplicitElementsArrayElementUiActionNgDirective } from '../../ng/enum-explicit-elements-array-ui-action-element-ng.directive';
 
 @Component({
     selector: 'app-enum-array-checkbox',
@@ -17,7 +17,7 @@ import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-el
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EnumArrayCheckboxNgComponent extends EnumArrayElementComponentBaseNgDirective implements OnDestroy {
+export class EnumArrayCheckboxNgComponent extends EnumExplicitElementsArrayElementUiActionNgDirective implements OnDestroy {
     private static typeInstanceCreateCount = 0;
 
     @Input() checked = false;

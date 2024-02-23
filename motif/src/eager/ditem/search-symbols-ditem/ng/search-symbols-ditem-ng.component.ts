@@ -17,13 +17,12 @@ import {
 } from '@angular/core';
 import {
     AllowedExchangesEnumUiAction,
-    AllowedMarketsEnumArrayUiAction,
-    ArrayUiAction,
+    AllowedMarketsExplicitElementsArrayUiAction,
     BooleanUiAction,
+    EnumMappedExplicitElementsArrayUiAction,
     EnumUiAction,
     ExchangeId,
     ExchangeInfo,
-    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     Integer,
@@ -38,6 +37,7 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsService,
+    TypedExplicitElementsArrayUiAction,
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
@@ -143,9 +143,9 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     // Query
     private readonly _sourceUiAction: StringUiAction;
     private readonly _exchangeUiAction: AllowedExchangesEnumUiAction;
-    private readonly _marketsUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _marketsUiAction: AllowedMarketsExplicitElementsArrayUiAction;
     private readonly _cfiUiAction: StringUiAction;
-    private readonly _fieldsUiAction: ExplicitElementsEnumArrayUiAction;
+    private readonly _fieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
     private readonly _optionsUiAction: StringUiAction;
     private readonly _indicesInclusionUiAction: EnumUiAction;
     private readonly _partialUiAction: BooleanUiAction;
@@ -503,7 +503,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createMarketsUiAction() {
-        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
+        const action = new AllowedMarketsExplicitElementsArrayUiAction(this._symbolsService);
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Markets]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Markets]);
         action.commitEvent = () => this.handleMarketsCommitEvent();
@@ -519,12 +519,12 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createFieldsUiAction() {
-        const action = new ExplicitElementsEnumArrayUiAction();
+        const action = new EnumMappedExplicitElementsArrayUiAction();
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Fields]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Fields]);
 
         const entryCount = SymbolField.idCount;
-        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
+        const elementPropertiesArray = new Array<TypedExplicitElementsArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

@@ -5,19 +5,19 @@
  */
 
 import { Directive } from '@angular/core';
-import { EnumArrayUiAction, Integer } from '@motifmarkets/motif-core';
-import { EnumArrayComponentBaseNgDirective } from './enum-array-component-base-ng.directive';
+import { EnumExplicitElementsArrayUiAction, Integer } from '@motifmarkets/motif-core';
+import { EnumExplicitElementsArrayUiActionNgDirective } from './enum-explicit-elements-array-ui-action-ng.directive';
 
 @Directive()
-export abstract class EnumArrayElementComponentBaseNgDirective extends EnumArrayComponentBaseNgDirective {
+export abstract class EnumExplicitElementsArrayElementUiActionNgDirective extends EnumExplicitElementsArrayUiActionNgDirective {
     public elementCaption = '';
     public elementTitle = '';
 
-    private _element: Integer = EnumArrayElementComponentBaseNgDirective.undefinedElement;
+    private _element: Integer = EnumExplicitElementsArrayElementUiActionNgDirective.undefinedElement;
 
     protected get element() { return this._element; }
 
-    initialiseEnum(action: EnumArrayUiAction, element: Integer) {
+    initialiseEnum(action: EnumExplicitElementsArrayUiAction, element: Integer) {
         this._element = element;
         this.initialise(action);
         this.applyElements();
@@ -54,6 +54,6 @@ export abstract class EnumArrayElementComponentBaseNgDirective extends EnumArray
     }
 }
 
-export namespace EnumArrayElementComponentBaseNgDirective {
+export namespace EnumExplicitElementsArrayElementUiActionNgDirective {
     export const undefinedElement = -1;
 }

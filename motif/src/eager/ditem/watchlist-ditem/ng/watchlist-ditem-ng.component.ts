@@ -17,7 +17,6 @@ import {
 } from '@angular/core';
 import {
     AssertInternalError,
-    ExplicitElementsArrayUiAction,
     GridLayout,
     IconButtonUiAction,
     Integer,
@@ -32,6 +31,7 @@ import {
     ReferenceableGridLayoutDefinition,
     StringId,
     Strings,
+    TypedMappedExplicitElementsArrayUiAction,
     UiAction,
     UnreachableCaseError,
     assert,
@@ -93,7 +93,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _newUiAction: IconButtonUiAction;
     private _openUiAction: IconButtonUiAction;
     private _saveUiAction: IconButtonUiAction;
-    private _favouriteLayoutsUiAction: ExplicitElementsArrayUiAction<ReferenceableGridLayoutDefinition>;
+    private _favouriteLayoutsUiAction: TypedMappedExplicitElementsArrayUiAction<ReferenceableGridLayoutDefinition>;
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;

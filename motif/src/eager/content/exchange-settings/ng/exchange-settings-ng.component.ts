@@ -1,9 +1,9 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
-    ArrayUiAction,
+    EnumMappedExplicitElementsArrayUiAction,
     EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
-    ExplicitElementsEnumArrayUiAction,
     ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId,
+    TypedExplicitElementsArrayUiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
@@ -34,7 +34,7 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     private _exchange: ExchangeSettings;
 
     private _symbolNameFieldUiAction: ExplicitElementsEnumUiAction;
-    private _symbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
+    private _symbolSearchFieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
         super(elRef, ++ExchangeSettingsNgComponent.typeInstanceCreateCount);
@@ -88,13 +88,13 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createSymbolSearchFieldsUiAction() {
-        const action = new ExplicitElementsEnumArrayUiAction();
+        const action = new EnumMappedExplicitElementsArrayUiAction();
         action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolSearchFields]);
         action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolSearchFields]);
 
         const allowableSymbolSearchFieldIds = ExchangeInfo.idToAllowableSymbolSearchFieldIds(this.exchangeId);
         const entryCount = allowableSymbolSearchFieldIds.length;
-        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
+        const elementPropertiesArray = new Array<TypedExplicitElementsArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let i = 0; i < entryCount; i++) {
             const id = allowableSymbolSearchFieldIds[i];
             elementPropertiesArray[i] = {

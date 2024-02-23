@@ -7,7 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy } from '@angular/core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
-import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-element-component-base-ng.directive';
+import { EnumExplicitElementsArrayElementUiActionNgDirective } from '../../ng/enum-explicit-elements-array-ui-action-element-ng.directive';
 
 @Component({
     selector: 'app-enum-array-element-caption',
@@ -16,7 +16,7 @@ import { EnumArrayElementComponentBaseNgDirective } from '../../ng/enum-array-el
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class EnumArrayElementCaptionNgComponent extends EnumArrayElementComponentBaseNgDirective implements OnDestroy {
+export class EnumArrayElementCaptionNgComponent extends EnumExplicitElementsArrayElementUiActionNgDirective implements OnDestroy {
     private static typeInstanceCreateCount = 0;
 
     @Input() for: string;
