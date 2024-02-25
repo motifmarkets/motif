@@ -5,37 +5,37 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, NumberUiAction, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, DateUiAction, SourceTzOffsetDate, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, NumberInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, DateInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
-import { NumericValueScanFieldConditionOperandsEditorFrame } from '../numeric-value-scan-field-condition-operands-editor-frame';
+import { DateValueScanFieldConditionOperandsEditorFrame } from '../date-value-scan-field-condition-operands-editor-frame';
 
 @Component({
-    selector: 'app-numeric-value-scan-field-condition-operands-editor',
-    templateUrl: './numeric-value-scan-field-condition-operands-editor-ng.component.html',
-    styleUrls: ['./numeric-value-scan-field-condition-operands-editor-ng.component.scss'],
+    selector: 'app-date-value-scan-field-condition-operands-editor',
+    templateUrl: './date-value-scan-field-condition-operands-editor-ng.component.html',
+    styleUrls: ['./date-value-scan-field-condition-operands-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NumericValueScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
+export class DateValueScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
     @ViewChild('notControl', { static: true }) private _notControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('valueLabel', { static: true }) private _valueLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('valueControl', { static: true }) private _valueControlComponent: NumberInputNgComponent;
+    @ViewChild('valueControl', { static: true }) private _valueControlComponent: DateInputNgComponent;
 
-    declare readonly _frame: NumericValueScanFieldConditionOperandsEditorNgComponent.Frame;
+    declare readonly _frame: DateValueScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
-    private readonly _valueUiAction: NumberUiAction;
+    private readonly _valueUiAction: DateUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: NumericValueScanFieldConditionOperandsEditorNgComponent.Frame,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: DateValueScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++NumericValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
+        super(elRef, ++DateValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._valueUiAction = this.createValueUiAction();
@@ -57,17 +57,25 @@ export class NumericValueScanFieldConditionOperandsEditorNgComponent extends Sca
 
 
     protected override pushAll() {
-        this._valueUiAction.pushValue(this._frame.value);
+        const value = this._frame.value;
+        if (value === undefined) {
+            this._valueUiAction.pushValue(undefined);
+        } else {
+            const date = SourceTzOffsetDate.getUtcTimezonedDate(value);
+            this._valueUiAction.pushValue(date);
+        }
         this._notUiAction.pushValue(this._frame.not);
         super.pushAll();
     }
 
     private createValueUiAction() {
-        const action = new NumberUiAction();
+        const action = new DateUiAction();
         action.pushCaption(Strings[StringId.ValueScanFieldConditionOperandsCaption_Value]);
-        action.pushTitle(Strings[StringId.NumericValueScanFieldConditionOperandsTitle_Value]);
+        action.pushTitle(Strings[StringId.DateValueScanFieldConditionOperandsTitle_Value]);
         action.commitEvent = () => {
-            if (this._frame.setValue(this._valueUiAction.value, this._modifier)) {
+            const value = this._valueUiAction.value;
+            const sourceTzOffsetDate = value === undefined ? undefined : SourceTzOffsetDate.createFromLocalDate(value);
+            if (this._frame.setValue(sourceTzOffsetDate, this._modifier)) {
                 this.markForCheck();
             }
         }
@@ -89,9 +97,9 @@ export class NumericValueScanFieldConditionOperandsEditorNgComponent extends Sca
     }
 }
 
-export namespace NumericValueScanFieldConditionOperandsEditorNgComponent {
+export namespace DateValueScanFieldConditionOperandsEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
-    export type Frame = NumericValueScanFieldConditionOperandsEditorFrame;
+    export type Frame = DateValueScanFieldConditionOperandsEditorFrame;
 }

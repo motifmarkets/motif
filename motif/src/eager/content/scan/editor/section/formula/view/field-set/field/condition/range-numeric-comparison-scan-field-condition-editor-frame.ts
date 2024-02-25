@@ -42,7 +42,7 @@ export class RangeNumericComparisonScanFieldConditionEditorFrame extends Numeric
     get max() { return this._min; }
 
     override calculateValid() {
-        return this._min !== undefined && this._max !== undefined;
+        return this._min !== undefined || this._max !== undefined; // both undefined means condition has no effect so make it invalid
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {

@@ -33,7 +33,7 @@ import {
     ScanField,
     ScanFieldCondition,
     ScanFormula,
-    SourceTzOffsetDateTime,
+    SourceTzOffsetDate,
     StringId,
     StringOverlapsScanFieldCondition,
     Strings,
@@ -502,10 +502,10 @@ export namespace ScanFieldEditorFrame {
         createDateWithHasValue(field: ScanField, operatorId: DateScanFieldCondition.HasValueOperands.OperatorId): Result<DateScanFieldCondition> {
             return new Ok(new HasValueDateScanFieldConditionEditorFrame(operatorId));
         }
-        createDateWithEquals(field: ScanField, operatorId: DateScanFieldCondition.ValueOperands.OperatorId, value: SourceTzOffsetDateTime): Result<DateScanFieldCondition> {
+        createDateWithEquals(field: ScanField, operatorId: DateScanFieldCondition.ValueOperands.OperatorId, value: SourceTzOffsetDate): Result<DateScanFieldCondition> {
             return new Ok(new ValueDateScanFieldConditionEditorFrame(operatorId, value));
         }
-        createDateWithRange(field: ScanField, operatorId: DateScanFieldCondition.RangeOperands.OperatorId, min: SourceTzOffsetDateTime | undefined, max: SourceTzOffsetDateTime | undefined): Result<DateScanFieldCondition> {
+        createDateWithRange(field: ScanField, operatorId: DateScanFieldCondition.RangeOperands.OperatorId, min: SourceTzOffsetDate | undefined, max: SourceTzOffsetDate | undefined): Result<DateScanFieldCondition> {
             return new Ok(new RangeDateScanFieldConditionEditorFrame(operatorId, min, max));
         }
         createTextEquals(field: ScanField, operatorId: BaseTextScanFieldCondition.ValueOperands.OperatorId, value: string): Result<TextEqualsScanFieldCondition> {

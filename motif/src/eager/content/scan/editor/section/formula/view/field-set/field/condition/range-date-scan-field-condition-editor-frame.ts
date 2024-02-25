@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDateTime } from '@motifmarkets/motif-core';
+import { DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDate } from '@motifmarkets/motif-core';
 import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-editor-frame';
 import {
     DateRangeScanFieldConditionOperandsEditorFrame
@@ -16,8 +16,8 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
 
     constructor(
         private _operatorId: RangeDateScanFieldConditionEditorFrame.OperatorId,
-        private _min: SourceTzOffsetDateTime | undefined,
-        private _max: SourceTzOffsetDateTime | undefined,
+        private _min: SourceTzOffsetDate | undefined,
+        private _max: SourceTzOffsetDate | undefined,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(RangeDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
@@ -49,8 +49,8 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         return this.processChanged(modifier);
     }
 
-    setMin(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._min)) {
+    setMin(value: SourceTzOffsetDate | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDate.isUndefinableEqual(value, this._min)) {
             return false;
         } else {
             this._min = value;
@@ -58,8 +58,8 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         }
     }
 
-    setMax(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._max)) {
+    setMax(value: SourceTzOffsetDate | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDate.isUndefinableEqual(value, this._max)) {
             return false;
         } else {
             this._max = value;

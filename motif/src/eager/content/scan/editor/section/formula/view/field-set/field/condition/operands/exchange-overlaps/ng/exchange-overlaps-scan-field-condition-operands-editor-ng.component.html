@@ -6,8 +6,10 @@
 
 <svg-icon id="exclamationIcon" name="Exclamation" [svgStyle]="{ 'fill': exclamationColor }" [style.visibility]="valid ? 'hidden' : 'visible'"></svg-icon>
 <app-captioned-checkbox #notControl id="notControl"></app-captioned-checkbox>
-<div id="affirmativeOperatorDisplayLines" *ngFor="let line of affirmativeOperatorDisplayLines">
-    <span id="affirmativeOperatorDisplayLine">{{line}}</span>
+<div id="affirmativeOperatorDisplayLines">
+    <ng-container *ngFor="let line of affirmativeOperatorDisplayLines">
+        <span id="affirmativeOperatorDisplayLine">{{line}}</span>
+    </ng-container>
 </div>
 <app-caption-label #exchangeLabel id="exchangeLabel"></app-caption-label>
 <app-enum-array-input #exchangeControl id="exchangeControl" inputSize="3em"></app-enum-array-input>

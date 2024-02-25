@@ -36,14 +36,19 @@ import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/cont
 import {
     CategoryValueScanFieldConditionOperandsEditorNgComponent,
     CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent,
+    DateRangeScanFieldConditionOperandsEditorNgComponent,
+    DateValueScanFieldConditionOperandsEditorNgComponent,
     DeleteScanFieldConditionNgComponent,
     ExchangeOverlapsScanFieldConditionOperandsEditorNgComponent,
     HasValueScanFieldConditionOperandsEditorNgComponent,
     MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent,
     MarketOverlapsScanFieldConditionOperandsEditorNgComponent,
+    NumericComparisonValueScanFieldConditionOperandsEditorNgComponent,
+    NumericRangeScanFieldConditionOperandsEditorNgComponent,
     NumericValueScanFieldConditionOperandsEditorNgComponent,
     ScanFieldConditionOperandsEditorNgDirective,
     StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+    TextValueScanFieldConditionOperandsEditorNgComponent,
 } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
 import { ScanFieldEditorFrame } from '../scan-field-editor-frame';
@@ -432,13 +437,17 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             case ScanFieldCondition.Operands.TypeId.HasValue:
                 return HasValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.NumericComparisonValue:
-                throw new Error('todo');
+                return NumericComparisonValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.NumericValue:
                 return NumericValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.DateValue:
+                return DateValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.NumericRange:
+                return NumericRangeScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.DateRange:
+                return DateRangeScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.TextValue:
+                return TextValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.TextContains:
                 throw new Error('todo');
             case ScanFieldCondition.Operands.TypeId.TextEnum:

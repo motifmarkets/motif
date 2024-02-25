@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { AssertInternalError, DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDateTime } from '@motifmarkets/motif-core';
+import { AssertInternalError, DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDate } from '@motifmarkets/motif-core';
 import { DateScanFieldConditionEditorFrame } from './date-scan-field-condition-editor-frame';
 import {
     DateValueScanFieldConditionOperandsEditorFrame
@@ -16,7 +16,7 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
 
     constructor(
         private _operatorId: ValueDateScanFieldConditionEditorFrame.OperatorId,
-        private _value: SourceTzOffsetDateTime | undefined,
+        private _value: SourceTzOffsetDate | undefined,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ValueDateScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
@@ -49,8 +49,8 @@ export class ValueDateScanFieldConditionEditorFrame extends DateScanFieldConditi
         return this.processChanged(modifier);
     }
 
-    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
-        if (SourceTzOffsetDateTime.isUndefinableEqual(value, this._value)) {
+    setValue(value: SourceTzOffsetDate | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        if (SourceTzOffsetDate.isUndefinableEqual(value, this._value)) {
             return false;
         } else {
             this._value = value;

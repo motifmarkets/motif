@@ -5,37 +5,37 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, NumberUiAction, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, StringId, StringUiAction, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, NumberInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
-import { NumericValueScanFieldConditionOperandsEditorFrame } from '../numeric-value-scan-field-condition-operands-editor-frame';
+import { TextContainsScanFieldConditionOperandsEditorFrame } from '../text-contains-scan-field-condition-operands-editor-frame';
 
 @Component({
-    selector: 'app-numeric-value-scan-field-condition-operands-editor',
-    templateUrl: './numeric-value-scan-field-condition-operands-editor-ng.component.html',
-    styleUrls: ['./numeric-value-scan-field-condition-operands-editor-ng.component.scss'],
+    selector: 'app-text-value-scan-field-condition-operands-editor',
+    templateUrl: './text-contains-scan-field-condition-operands-editor-ng.component.html',
+    styleUrls: ['./text-contains-scan-field-condition-operands-editor-ng.component.scss'],
     changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class NumericValueScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
+export class TextContainsScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
     @ViewChild('notControl', { static: true }) private _notControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('valueLabel', { static: true }) private _valueLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('valueControl', { static: true }) private _valueControlComponent: NumberInputNgComponent;
+    @ViewChild('valueControl', { static: true }) private _valueControlComponent: TextInputNgComponent;
 
-    declare readonly _frame: NumericValueScanFieldConditionOperandsEditorNgComponent.Frame;
+    declare readonly _frame: TextContainsScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
-    private readonly _valueUiAction: NumberUiAction;
+    private readonly _valueUiAction: StringUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         settingsNgService: SettingsNgService,
-        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: NumericValueScanFieldConditionOperandsEditorNgComponent.Frame,
+        @Inject(ScanFieldConditionOperandsEditorNgDirective.frameInjectionToken) frame: TextContainsScanFieldConditionOperandsEditorNgComponent.Frame,
         @Inject(ScanFieldConditionOperandsEditorNgDirective.modifierRootInjectionToken) modifierRoot: ComponentInstanceId,
     ) {
-        super(elRef, ++NumericValueScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
+        super(elRef, ++TextContainsScanFieldConditionOperandsEditorNgComponent.typeInstanceCreateCount, cdr, settingsNgService, frame, modifierRoot);
 
         this._notUiAction = this.createNotUiAction();
         this._valueUiAction = this.createValueUiAction();
@@ -63,9 +63,9 @@ export class NumericValueScanFieldConditionOperandsEditorNgComponent extends Sca
     }
 
     private createValueUiAction() {
-        const action = new NumberUiAction();
+        const action = new StringUiAction(false);
         action.pushCaption(Strings[StringId.ValueScanFieldConditionOperandsCaption_Value]);
-        action.pushTitle(Strings[StringId.NumericValueScanFieldConditionOperandsTitle_Value]);
+        action.pushTitle(Strings[StringId.TextContainsScanFieldConditionOperandsTitle_Value]);
         action.commitEvent = () => {
             if (this._frame.setValue(this._valueUiAction.value, this._modifier)) {
                 this.markForCheck();
@@ -89,9 +89,9 @@ export class NumericValueScanFieldConditionOperandsEditorNgComponent extends Sca
     }
 }
 
-export namespace NumericValueScanFieldConditionOperandsEditorNgComponent {
+export namespace TextContainsScanFieldConditionOperandsEditorNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
 
-    export type Frame = NumericValueScanFieldConditionOperandsEditorFrame;
+    export type Frame = TextContainsScanFieldConditionOperandsEditorFrame;
 }

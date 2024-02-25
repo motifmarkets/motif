@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDateTime } from '@motifmarkets/motif-core';
+import { DateScanFieldCondition, ScanFieldCondition, SourceTzOffsetDate } from '@motifmarkets/motif-core';
 import { NegatableOperator } from '../negatableOperator';
 import { ScanFieldConditionOperandsEditorFrame } from '../scan-field-condition-operands-editor-frame';
 
@@ -12,9 +12,9 @@ export interface DateValueScanFieldConditionOperandsEditorFrame extends ScanFiel
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.DateValue,
 
     readonly operatorId: DateValueScanFieldConditionOperandsEditorFrame.OperatorId;
-    readonly value: SourceTzOffsetDateTime | undefined;
+    readonly value: SourceTzOffsetDate | undefined;
 
-    setValue(value: SourceTzOffsetDateTime | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setValue(value: SourceTzOffsetDate | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace DateValueScanFieldConditionOperandsEditorFrame {
