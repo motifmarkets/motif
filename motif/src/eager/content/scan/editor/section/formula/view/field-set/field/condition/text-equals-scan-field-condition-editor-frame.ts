@@ -5,7 +5,6 @@
  */
 
 import {
-    AssertInternalError,
     BaseTextScanFieldCondition,
     ScanFieldCondition,
     TextEqualsScanFieldCondition
@@ -25,7 +24,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
 
     constructor(
         private _operatorId: TextEqualsScanFieldConditionEditorFrame.OperatorId,
-        private _value: string | undefined,
+        private _value: string,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(
@@ -37,16 +36,11 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
     }
 
     get operands() {
-        const value = this._value;
-        if (value === undefined) {
-            throw new AssertInternalError('TESFCEFGOV54508');
-        } else {
-            const operands: BaseTextScanFieldCondition.ValueOperands = {
-                typeId: TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
-                value,
-            }
-            return operands;
+        const operands: BaseTextScanFieldCondition.ValueOperands = {
+            typeId: TextEqualsScanFieldConditionEditorFrame.operandsTypeId,
+            value: this._value,
         }
+        return operands;
     }
 
     override get operatorId() { return this._operatorId; }
@@ -54,7 +48,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
     get value() { return this._value; }
 
     override calculateValid() {
-        return this._value !== undefined;
+        return true;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
@@ -62,7 +56,7 @@ export class TextEqualsScanFieldConditionEditorFrame extends ScanFieldConditionE
         return this.processChanged(modifier);
     }
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+    setValue(value: string, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (value === this._value) {
             return false;
         } else {

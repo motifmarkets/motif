@@ -19,14 +19,14 @@
         #fields {
             display: flex;
             flex-direction: column;
-            align-items: left;
-
-            #addFieldControl {
-                width: 12em;
-            }
+            align-items: flex-start;
 
             #addFieldMoreDiv {
                 display: none;
+            }
+
+            #fieldsGrid {
+                width: 12em;
             }
         }
     }

@@ -39,7 +39,7 @@ export class TextEqualsScanFieldEditorFrame extends NotSubbedScanFieldEditorFram
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new TextEqualsScanFieldConditionEditorFrame(operatorId, undefined);
+                return new TextEqualsScanFieldConditionEditorFrame(operatorId, '');
             default:
                 throw new UnreachableCaseError('TESFEFCC22298', operatorId);
         }

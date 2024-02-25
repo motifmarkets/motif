@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { ScanFieldCondition, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { ScanFieldCondition, ScanFormula, UnreachableCaseError } from '@motifmarkets/motif-core';
 import { ContainsTextHasValueContainsScanFieldConditionEditorFrame, HasValueTextHasValueContainsScanFieldConditionEditorFrame, TextHasValueContainsScanFieldConditionEditorFrame } from './condition/internal-api';
 import { ScanFieldEditorFrame } from './scan-field-editor-frame';
 
@@ -21,7 +21,7 @@ export abstract class TextHasValueContainsSubbedScanFieldEditorFrame extends Sca
                 return new HasValueTextHasValueContainsScanFieldConditionEditorFrame(operatorId);
             case ScanFieldCondition.OperatorId.Contains:
             case ScanFieldCondition.OperatorId.NotContains:
-                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined);
+                return new ContainsTextHasValueContainsScanFieldConditionEditorFrame(operatorId, '', ScanFormula.TextContainsAsId.None, true);
             default:
                 throw new UnreachableCaseError('THVCSSFEFCC34340', operatorId);
         }

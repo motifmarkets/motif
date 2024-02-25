@@ -78,7 +78,7 @@ export class StringOverlapsScanFieldConditionOperandsEditorNgComponent extends S
     private createNotUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.Not]);
-        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotOverlaps]);
         action.commitEvent = () => {
             if (this._frame.negateOperator(this._modifier)) {
                 this.markForCheck();

@@ -99,6 +99,7 @@ import {
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
     StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+    TextContainsScanFieldConditionOperandsEditorNgComponent,
     TextValueScanFieldConditionOperandsEditorNgComponent,
     ZenithScanFormulaViewDecodeProgressNgComponent,
 } from '../scan/ng-api';
@@ -211,6 +212,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SearchSymbolsNgComponent,
         StatusSummaryNgComponent,
         StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+        TextContainsScanFieldConditionOperandsEditorNgComponent,
         TextValueScanFieldConditionOperandsEditorNgComponent,
         TradesNgComponent,
         WatchlistNgComponent,

@@ -48,6 +48,7 @@ import {
     NumericValueScanFieldConditionOperandsEditorNgComponent,
     ScanFieldConditionOperandsEditorNgDirective,
     StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+    TextContainsScanFieldConditionOperandsEditorNgComponent,
     TextValueScanFieldConditionOperandsEditorNgComponent,
 } from '../condition/ng-api';
 import { ScanFieldConditionEditorFrame } from '../internal-api';
@@ -449,7 +450,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
             case ScanFieldCondition.Operands.TypeId.TextValue:
                 return TextValueScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.TextContains:
-                throw new Error('todo');
+                return TextContainsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.TextEnum:
                 return StringOverlapsScanFieldConditionOperandsEditorNgComponent;
             case ScanFieldCondition.Operands.TypeId.CurrencyEnum:

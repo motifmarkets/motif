@@ -11,5 +11,18 @@
         <span id="affirmativeOperatorDisplayLine">{{line}}</span>
     </ng-container>
 </div>
-<app-caption-label #valueLabel id="valueLabel"></app-caption-label>
-<app-text-input #valueControl id="valueControl"></app-text-input>
+<div id="value">
+    <div id="fromStart">
+        <!-- <app-caption-label #fromStartLabel id="fromStartLabel"></app-caption-label> -->
+        <app-checkbox-input #fromStartControl id="fromStartControl"></app-checkbox-input>
+    </div>
+    <app-text-input #valueControl id="valueControl"></app-text-input>
+    <div id="fromEnd">
+        <!-- <app-caption-label #fromEndLabel id="fromEndLabel"></app-caption-label> -->
+        <app-checkbox-input #fromEndControl id="fromEndControl"></app-checkbox-input>
+    </div>
+</div>
+<div id="exactAndIgnoreCase">
+    <app-captioned-checkbox #exactControl id="exactControl"></app-captioned-checkbox>
+    <app-captioned-checkbox #ignoreCaseControl id="ignoreCaseControl"></app-captioned-checkbox>
+</div>

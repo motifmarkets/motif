@@ -22,4 +22,14 @@
         display: flex;
         flex-direction: column;
     }
+
+    #value {
+        display: flex;
+        align-items: center;
+    }
+
+    #exactAndIgnoreCase {
+        display: flex;
+        flex-direction: column;
+    }
 }

@@ -17,5 +17,6 @@ export * from './numeric-comparison-value/ng-api';
 export * from './numeric-range/ng-api';
 export * from './numeric-value/ng-api';
 export * from './string-overlaps/ng-api';
+export * from './text-contains/ng-api';
 export * from './text-value/ng-api';
 

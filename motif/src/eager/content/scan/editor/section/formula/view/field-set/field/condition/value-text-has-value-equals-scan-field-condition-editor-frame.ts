@@ -5,7 +5,6 @@
  */
 
 import {
-    AssertInternalError,
     BaseTextScanFieldCondition,
     ScanFieldCondition
 } from '@motifmarkets/motif-core';
@@ -23,7 +22,7 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
 
     constructor(
         private _operatorId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.OperatorId,
-        private _value: string | undefined,
+        private _value: string,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
@@ -31,16 +30,11 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
     }
 
     override get operands() {
-        const value = this._value;
-        if (value === undefined) {
-            throw new AssertInternalError('VTHVESFCEFGOV54508');
-        } else {
-            const operands: BaseTextScanFieldCondition.ValueOperands = {
-                typeId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId,
-                value,
-            }
-            return operands;
+        const operands: BaseTextScanFieldCondition.ValueOperands = {
+            typeId: ValueTextHasValueEqualsScanFieldConditionEditorFrame.operandsTypeId,
+            value: this._value,
         }
+        return operands;
     }
 
     override get operatorId() { return this._operatorId; }
@@ -48,7 +42,7 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
     get value() { return this._value; }
 
     override calculateValid() {
-        return this._value !== undefined;
+        return true;
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
@@ -56,7 +50,7 @@ export class ValueTextHasValueEqualsScanFieldConditionEditorFrame extends TextHa
         return this.processChanged(modifier);
     }
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+    setValue(value: string, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (value === this._value) {
             return false;
         } else {

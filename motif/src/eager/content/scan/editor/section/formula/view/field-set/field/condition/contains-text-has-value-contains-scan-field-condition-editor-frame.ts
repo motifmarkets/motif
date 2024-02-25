@@ -5,7 +5,6 @@
  */
 
 import {
-    AssertInternalError,
     BaseTextScanFieldCondition,
     ScanFieldCondition,
     ScanFormula
@@ -24,9 +23,9 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
 
     constructor(
         private _operatorId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.OperatorId,
-        private _value: string | undefined,
-        private _asId: ScanFormula.TextContainsAsId | undefined,
-        private _ignoreCase: boolean | undefined,
+        private _value: string,
+        private _asId: ScanFormula.TextContainsAsId,
+        private _ignoreCase: boolean,
     ) {
         const affirmativeOperatorDisplayLines = ScanFieldCondition.Operator.idToAffirmativeMultiLineDisplay(_operatorId);
         super(ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId, affirmativeOperatorDisplayLines);
@@ -34,41 +33,29 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
     }
 
     override get operands() {
-        const value = this._value;
-        if (value === undefined) {
-            throw new AssertInternalError('CTHVCSFCEFGOCV14223');
-        } else {
-            const asId = this._asId;
-            if (asId === undefined) {
-                throw new AssertInternalError('CTHVCSFCEFGOCA14223');
-            } else {
-                const ignoreCase = this._ignoreCase;
-                if (ignoreCase === undefined) {
-                    throw new AssertInternalError('CTHVCSFCEFGOCI14223');
-                } else {
-                    const containsOperand: BaseTextScanFieldCondition.ContainsOperand = {
-                        value,
-                        asId,
-                        ignoreCase,
-                    }
-                    const operands: BaseTextScanFieldCondition.ContainsOperands = {
-                        typeId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId,
-                        contains: containsOperand,
-                    }
-                    return operands;
-                }
-            }
+        const containsOperand: BaseTextScanFieldCondition.ContainsOperand = {
+            value: this._value,
+            asId: this._asId,
+            ignoreCase: this._ignoreCase,
         }
+        const operands: BaseTextScanFieldCondition.ContainsOperands = {
+            typeId: ContainsTextHasValueContainsScanFieldConditionEditorFrame.operandsTypeId,
+            contains: containsOperand,
+        }
+        return operands;
     }
 
     override get operatorId() { return this._operatorId; }
     get not() { return ScanFieldCondition.Operator.containsIsNot(this._operatorId); }
     get value() { return this._value; }
     get asId() { return this._asId; }
+    get fromStart() { return ScanFormula.TextContainsAs.getFromStart(this._asId); }
+    get fromEnd() { return ScanFormula.TextContainsAs.getFromEnd(this._asId); }
+    get exact() { return ScanFormula.TextContainsAs.getExact(this._asId); }
     get ignoreCase() { return this._ignoreCase; }
 
     override calculateValid() {
-        return this._value !== undefined && this._asId !== undefined && this._ignoreCase !== undefined;
+        return this._value !== '';
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
@@ -76,7 +63,7 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         return this.processChanged(modifier);
     }
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+    setValue(value: string, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (value === this._value) {
             return false;
         } else {
@@ -86,7 +73,7 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         }
     }
 
-    setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+    setAsId(value: ScanFormula.TextContainsAsId, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (value === this._asId) {
             return false;
         } else {
@@ -95,7 +82,37 @@ export class ContainsTextHasValueContainsScanFieldConditionEditorFrame extends T
         }
     }
 
-    setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionEditorFrame.Modifier) {
+    setFromStart(value: boolean, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        const newAsId = ScanFormula.TextContainsAs.setFromStart(this._asId, value);
+        if (newAsId === this._asId) {
+            return false;
+        } else {
+            this._asId = newAsId;
+            return this.processChanged(modifier);
+        }
+    }
+
+    setFromEnd(value: boolean, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        const newAsId = ScanFormula.TextContainsAs.setFromEnd(this._asId, value);
+        if (newAsId === this._asId) {
+            return false;
+        } else {
+            this._asId = newAsId;
+            return this.processChanged(modifier);
+        }
+    }
+
+    setExact(value: boolean, modifier: ScanFieldConditionEditorFrame.Modifier) {
+        const newAsId = ScanFormula.TextContainsAs.setExact(this._asId, value);
+        if (newAsId === this._asId) {
+            return false;
+        } else {
+            this._asId = newAsId;
+            return this.processChanged(modifier);
+        }
+    }
+
+    setIgnoreCase(value: boolean, modifier: ScanFieldConditionEditorFrame.Modifier) {
         if (value === this._ignoreCase) {
             return false;
         } else {

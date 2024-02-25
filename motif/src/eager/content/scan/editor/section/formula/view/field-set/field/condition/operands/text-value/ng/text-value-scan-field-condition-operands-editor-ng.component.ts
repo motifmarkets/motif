@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, StringId, StringUiAction, Strings } from '@motifmarkets/motif-core';
+import { AssertInternalError, BooleanUiAction, StringId, StringUiAction, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, TextInputNgComponent } from 'controls-ng-api';
@@ -64,11 +64,17 @@ export class TextValueScanFieldConditionOperandsEditorNgComponent extends ScanFi
 
     private createValueUiAction() {
         const action = new StringUiAction(false);
+        action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ValueScanFieldConditionOperandsCaption_Value]);
         action.pushTitle(Strings[StringId.TextValueScanFieldConditionOperandsTitle_Value]);
         action.commitEvent = () => {
-            if (this._frame.setValue(this._valueUiAction.value, this._modifier)) {
-                this.markForCheck();
+            const value = this._valueUiAction.value;
+            if (value === undefined) {
+                throw new AssertInternalError('TVSFCOENCCVUA55598');
+            } else {
+                if (this._frame.setValue(value, this._modifier)) {
+                    this.markForCheck();
+                }
             }
         }
 
@@ -78,7 +84,7 @@ export class TextValueScanFieldConditionOperandsEditorNgComponent extends ScanFi
     private createNotUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.Not]);
-        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotEqualsValue]);
         action.commitEvent = () => {
             if (this._frame.negateOperator(this._modifier)) {
                 this.markForCheck();

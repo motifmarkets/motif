@@ -42,7 +42,7 @@ export class TextHasValueEqualsScanFieldEditorFrame extends NotSubbedScanFieldEd
                 return new HasValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId);
             case ScanFieldCondition.OperatorId.Equals:
             case ScanFieldCondition.OperatorId.NotEquals:
-                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, undefined);
+                return new ValueTextHasValueEqualsScanFieldConditionEditorFrame(operatorId, '');
             default:
                 throw new UnreachableCaseError('THVESFEFCC22298', operatorId);
         }

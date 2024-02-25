@@ -39,7 +39,7 @@ export class TextContainsScanFieldEditorFrame extends NotSubbedScanFieldEditorFr
         switch (operatorId) {
             case ScanFieldCondition.OperatorId.Contains:
             case ScanFieldCondition.OperatorId.NotContains:
-                return new TextContainsScanFieldConditionEditorFrame(operatorId, undefined, undefined, undefined);
+                return new TextContainsScanFieldConditionEditorFrame(operatorId, '', ScanFormula.TextContainsAsId.None, true);
             default:
                 throw new UnreachableCaseError('TCSFEFCC22298', operatorId);
         }

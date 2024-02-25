@@ -12,13 +12,19 @@ export interface TextContainsScanFieldConditionOperandsEditorFrame extends ScanF
     readonly operandsTypeId: ScanFieldCondition.Operands.TypeId.TextContains,
 
     readonly operatorId: TextContainsScanFieldConditionOperandsEditorFrame.OperatorId;
-    readonly value: string | undefined;
-    readonly asId: ScanFormula.TextContainsAsId | undefined;
-    readonly ignoreCase: boolean | undefined;
+    readonly value: string;
+    readonly asId: ScanFormula.TextContainsAsId;
+    readonly fromStart: boolean;
+    readonly fromEnd: boolean;
+    readonly exact: boolean;
+    readonly ignoreCase: boolean;
 
-    setValue(value: string | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
-    setAsId(value: ScanFormula.TextContainsAsId | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
-    setIgnoreCase(value: boolean | undefined, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setValue(value: string, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setAsId(value: ScanFormula.TextContainsAsId, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setFromStart(value: boolean, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setFromEnd(value: boolean, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setExact(value: boolean, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
+    setIgnoreCase(value: boolean, modifier: ScanFieldConditionOperandsEditorFrame.Modifier): boolean;
 }
 
 export namespace TextContainsScanFieldConditionOperandsEditorFrame {

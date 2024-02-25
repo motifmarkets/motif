@@ -115,7 +115,7 @@ export class DateRangeScanFieldConditionOperandsEditorNgComponent extends ScanFi
     private createNotUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.Not]);
-        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotInRange]);
         action.commitEvent = () => {
             if (this._frame.negateOperator(this._modifier)) {
                 this.markForCheck();

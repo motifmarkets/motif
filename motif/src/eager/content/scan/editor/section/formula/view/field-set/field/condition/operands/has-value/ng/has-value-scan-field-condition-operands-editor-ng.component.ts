@@ -56,7 +56,7 @@ export class HasValueScanFieldConditionOperandsEditorNgComponent extends ScanFie
     private createNotUiAction() {
         const action = new BooleanUiAction();
         action.pushCaption(Strings[StringId.Not]);
-        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotIsCategory]);
+        action.pushTitle(Strings[StringId.ScanFieldConditionOperandsEditor_NotHasValue]);
         action.commitEvent = () => {
             if (this._frame.negateOperator(this._modifier)) {
                 this.markForCheck();
