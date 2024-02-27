@@ -29,7 +29,7 @@ import {
     TopShareholderTableFieldSourceDefinition,
     UnreachableCaseError,
 } from '@motifmarkets/motif-core';
-import { ScanFieldEditorFrameTableFieldSourceDefinition } from './internal-api';
+import { LockerScanAttachedNotificationChannelTableFieldSourceDefinition, ScanFieldEditorFrameTableFieldSourceDefinition } from './scan/internal-api';
 
 export class TableFieldSourceDefinitionFactoryService implements TableFieldSourceDefinitionFactory {
     create(typeId: TableFieldSourceDefinition.TypeId): TableFieldSourceDefinition {
@@ -76,6 +76,8 @@ export class TableFieldSourceDefinitionFactoryService implements TableFieldSourc
                 return new GridFieldTableFieldSourceDefinition();
             case TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame:
                 return new ScanFieldEditorFrameTableFieldSourceDefinition();
+            case TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel:
+                return new LockerScanAttachedNotificationChannelTableFieldSourceDefinition();
 
             default:
                 throw new UnreachableCaseError('TFSDFSC25051', typeId);

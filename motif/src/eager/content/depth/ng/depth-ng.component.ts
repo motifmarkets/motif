@@ -36,7 +36,7 @@ export class DepthNgComponent extends ContentComponentBaseNgDirective implements
 
     private readonly _frame: DepthFrame;
 
-    constructor(elRef: ElementRef<HTMLElement>, private _cdr: ChangeDetectorRef, contentService: ContentNgService) {
+    constructor(elRef: ElementRef<HTMLElement>, private readonly _cdr: ChangeDetectorRef, contentService: ContentNgService) {
         super(elRef, ++DepthNgComponent.typeInstanceCreateCount);
 
         this._frame = contentService.createDepthFrame(this);

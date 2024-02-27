@@ -94,7 +94,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     isDeleted() {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         return scanEditor !== undefined && scanEditor.lifeCycleStateId === ScanEditor.LifeCycleStateId.Deleted;
     }
 
@@ -136,7 +136,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
@@ -205,7 +205,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this.instanceId);
                 editor.setEnabled(this._enabledUiAction.definedValue);
@@ -223,7 +223,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this.instanceId);
                 editor.setName(this._nameUiAction.definedValue);
@@ -241,7 +241,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this.instanceId);
                 editor.setDescription(this._descriptionUiAction.definedValue);
@@ -260,7 +260,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
             const value = this._symbolListUiAction.definedValue;
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
                 editor.beginFieldChanges(this.instanceId);
                 editor.setSymbolListEnabled(value);
@@ -288,7 +288,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     private pushValues() {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor === undefined) {
             this.deletingOrDeleted = false;
 
@@ -314,7 +314,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         let newDeleteStateText: string | undefined;
         let deletingOrDeleted: boolean;
 
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor === undefined) {
             newDeleteStateText = undefined;
             deletingOrDeleted = false;

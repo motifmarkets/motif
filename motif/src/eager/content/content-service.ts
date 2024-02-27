@@ -12,6 +12,8 @@ import {
     EditableGridLayoutDefinitionColumnList,
     GridField,
     GridFieldCustomHeadingsService,
+    LockOpenListItem,
+    NotificationChannelsService,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourceDefinitionsStoreService,
     ReferenceableGridSourcesService,
@@ -35,7 +37,7 @@ import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { OrdersFrame } from './orders/internal-api';
-import { ScanFieldEditorFramesGridFrame, ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
+import { ScanEditorAttachedNotificationChannelsGridFrame, ScanFieldEditorFramesGridFrame, ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
 import { SearchSymbolsFrame } from './search-symbols/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
 import { TradesFrame } from './trades/internal-api';
@@ -48,6 +50,7 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
+        private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
@@ -247,6 +250,20 @@ export class ContentService {
         );
     }
 
+    createScanEditorAttachedNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return new ScanEditorAttachedNotificationChannelsGridFrame(
+            this._settingsService,
+            this._notificationChannelsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachedFactoryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactory,
+            this._referenceableGridSourcesService,
+            this._cellPainterFactoryService,
+            opener,
+        );
+    }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(

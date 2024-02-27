@@ -10,9 +10,8 @@ import {
     ColorScheme,
     ColorSettings,
     EnumInfoOutOfOrderError,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     NumberUiAction,
     StringId,
     Strings,
@@ -50,7 +49,7 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
 
     private _colorSettings: ColorSettings;
     private _readabilityUiAction: NumberUiAction;
-    private _pickerTypeUiAction: ExplicitElementsEnumUiAction;
+    private _pickerTypeUiAction: IntegerExplicitElementsEnumUiAction;
 
     private _itemId: ColorScheme.ItemId | undefined;
     private _width: Integer;
@@ -168,12 +167,12 @@ export class ColorSchemeItemPropertiesNgComponent extends ContentComponentBaseNg
     }
 
     private createPickerTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ColorSchemeItemProperties_PickerTypeCaption]);
         action.pushTitle(Strings[StringId.ColorSchemeItemProperties_PickerTypeTitle]);
 
         const entryCount = ColorSchemeItemPropertiesComponent.PickerType.idCount;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

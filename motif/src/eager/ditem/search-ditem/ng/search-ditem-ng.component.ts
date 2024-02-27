@@ -11,9 +11,8 @@ import {
 } from '@angular/core';
 import {
     ButtonUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     IconButtonUiAction,
+    IntegerExplicitElementsEnumUiAction,
     InternalCommand,
     JsonElement,
     RowDataArrayGrid,
@@ -27,7 +26,7 @@ import { RowDataArrayGridNgComponent } from 'content-ng-api';
 import {
     ButtonInputNgComponent,
     CaptionLabelNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumInputNgComponent,
     SvgButtonNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
@@ -45,13 +44,13 @@ import { SearchDitemFrame } from '../search-ditem-frame';
 export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
+    @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('searchButtonControl', { static: true }) private _searchButtonControlComponent: ButtonInputNgComponent;
     @ViewChild('detailsButtonControl', { static: true }) private _detailsButtonControlComponent: ButtonInputNgComponent;
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
-    @ViewChild('locationControl', { static: true }) private _locationControlComponent: EnumInputNgComponent;
-    @ViewChild('priceRangeControl', { static: true }) private _priceRangeControlComponent: EnumInputNgComponent;
+    @ViewChild('locationControl', { static: true }) private _locationControlComponent: IntegerEnumInputNgComponent;
+    @ViewChild('priceRangeControl', { static: true }) private _priceRangeControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('keywordsControl') private _keywordsControlComponent: TextInputNgComponent;
     @ViewChild('searchDescriptionLabel', { static: true }) private _searchDescriptionLabelComponent: CaptionLabelNgComponent;
     @ViewChild('alertButtonControl', { static: true }) private _alertButtonControlComponent: ButtonInputNgComponent;
@@ -64,13 +63,13 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     private _grid: RowDataArrayGrid;
     private _frame: SearchDitemFrame;
 
-    private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
+    private readonly _categoryUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _searchUiAction: ButtonUiAction;
     private readonly _detailsUiAction: ButtonUiAction;
     private readonly _columnsUiAction: IconButtonUiAction;
     private readonly _autoSizeColumnWidthsUiAction: IconButtonUiAction;
-    private readonly _locationUiAction: ExplicitElementsEnumUiAction;
-    private readonly _priceRangeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _locationUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _priceRangeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _keywordsUiAction: StringUiAction;
     private readonly _searchDescriptionUiAction: StringUiAction;
     private readonly _alertUiAction: ButtonUiAction;
@@ -156,10 +155,10 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createCategoryUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SearchDitem_CategoryCaption]);
         action.pushTitle(Strings[StringId.SearchDitem_CategoryTitle]);
-        const elementPropertiesArray: EnumUiAction.ElementProperties[] = [
+        const elementPropertiesArray: IntegerExplicitElementsEnumUiAction.ElementProperties[] = [
             {
                 element: 0,
                 caption: Strings[StringId.SearchDitem_Category_HolidayCaption],
@@ -218,11 +217,11 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createLocationUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.valueRequired = false;
         action.pushCaption(Strings[StringId.SearchDitem_LocationCaption]);
         action.pushTitle(Strings[StringId.SearchDitem_LocationTitle]);
-        const elementPropertiesArray: EnumUiAction.ElementProperties[] = [
+        const elementPropertiesArray: IntegerExplicitElementsEnumUiAction.ElementProperties[] = [
             {
                 element: 0,
                 caption: Strings[StringId.SearchDitem_Location_UsArizonaCaption],
@@ -235,11 +234,11 @@ export class SearchDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
     }
 
     private createPriceRangeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.valueRequired = false;
         action.pushCaption(Strings[StringId.SearchDitem_PriceRangeCaption]);
         action.pushTitle(Strings[StringId.SearchDitem_PriceRangeTitle]);
-        const elementPropertiesArray: EnumUiAction.ElementProperties[] = [
+        const elementPropertiesArray: IntegerExplicitElementsEnumUiAction.ElementProperties[] = [
             {
                 element: 0,
                 caption: Strings[StringId.SearchDitem_PriceRange_10000To20000Caption],

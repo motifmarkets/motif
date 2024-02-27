@@ -1,0 +1,17 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<app-expandable-collapsible-lined-heading-ng #sectionHeading [headingText]="sectionHeadingText"></app-expandable-collapsible-lined-heading-ng>
+
+<div id="content">
+    <div id="channels">
+        <div id="channelsToolbar">
+            <app-integer-enum-input #addChannelControl id="addChannelControl"></app-integer-enum-input>
+        </div>
+        <app-scan-editor-attached-notification-channels-grid #channelsGrid id="channelsGrid"></app-scan-editor-attached-notification-channels-grid>
+    </div>
+    <app-scan-editor-attached-notification-channel-properties #channelProperties></app-scan-editor-attached-notification-channel-properties>
+</div>

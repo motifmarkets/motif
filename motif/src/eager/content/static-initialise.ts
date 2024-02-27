@@ -6,7 +6,10 @@
 
 import { ColorControlsComponentModule } from './color-controls/ng-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
-import { ScanFieldEditorFrameTableFieldSourceDefinitionModule } from './scan/internal-api';
+import {
+    LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule,
+    ScanFieldEditorFrameTableFieldSourceDefinitionModule,
+} from './scan/internal-api';
 import {
     ConditionSetScanFormulaViewNgComponentModule,
     FormulaScanPropertiesSectionNgComponentModule,
@@ -21,5 +24,6 @@ export namespace StaticInitialise {
         ScanTargetsNgComponentModule.initialiseStatic();
         ConditionSetScanFormulaViewNgComponentModule.initialiseStatic();
         ScanFieldEditorFrameTableFieldSourceDefinitionModule.initialiseStatic();
+        LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule.initialiseStatic();
     }
 }

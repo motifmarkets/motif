@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, LockOpenListItem, SessionInfoService } from '@motifmarkets/motif-core';
 import {
     CellPainterFactoryNgService,
     CoreNgService,
@@ -37,6 +37,7 @@ export class ContentNgService {
             coreNgService.appStorageService,
             coreNgService.adiService,
             coreNgService.symbolsService,
+            coreNgService.notificationChannelsService,
             coreNgService.textFormatterService,
             coreNgService.gridFieldCustomHeadingsService,
             coreNgService.referenceableGridLayoutsService,
@@ -126,6 +127,10 @@ export class ContentNgService {
 
     createScanFieldEditorFramesGridFrame() {
         return this._content.createScanFieldEditorFramesGridFrame();
+    }
+
+    createScanEditorAttachedNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return this._content.createScanEditorAttachedNotificationChannelsGridFrame(opener);
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {

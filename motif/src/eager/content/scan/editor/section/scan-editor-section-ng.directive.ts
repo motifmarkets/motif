@@ -13,7 +13,8 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
 @Directive()
 export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseNgDirective {
     protected _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    protected _scanEditor: ScanEditor | undefined;
+
+    private _scanEditor: ScanEditor | undefined;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
@@ -22,6 +23,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
     public abstract sectionHeadingText: string;
 
     get expandCollapseRestoreStateId() { return this._sectionHeadingComponent.stateId; }
+    get scanEditor() { return this._scanEditor; }
 
     initialiseSectionHeadingComponent() {
         this._sectionHeadingComponent.expandEventer = () => this.processExpandCollapseRestoreStateChanged();

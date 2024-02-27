@@ -14,9 +14,8 @@ import {
     ColorScheme,
     DateUiAction,
     DecimalUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     Movement,
     MovementId,
@@ -55,8 +54,8 @@ import {
     CaptionedRadioNgComponent,
     DateInputNgComponent,
     DecimalInputNgComponent,
-    EnumCaptionNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumCaptionNgComponent,
+    IntegerEnumInputNgComponent,
     IntegerLabelNgComponent,
     IntegerTextInputNgComponent,
     OrderRouteInputNgComponent,
@@ -89,7 +88,7 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     @ViewChild('sideLabel', { static: true }) private _sideLabelComponent: CaptionLabelNgComponent;
     @ViewChild('buySideRadio', { static: true }) private _buySideRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('sellSideRadio', { static: true }) private _sellSideRadioComponent: CaptionedRadioNgComponent;
-    @ViewChild('sideInput', { static: true }) private _sideInputComponent: EnumInputNgComponent;
+    @ViewChild('sideInput', { static: true }) private _sideInputComponent: IntegerEnumInputNgComponent;
     @ViewChild('symbolLabel', { static: true }) private _symbolLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolInput', { static: true }) private _symbolInputComponent: RoutedIvemIdSelectNgComponent;
     @ViewChild('symbolNameLabel', { static: true }) private _symbolNameLabelComponent: SymbolNameLabelNgComponent;
@@ -99,10 +98,10 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     @ViewChild('orderTypeLabel', { static: true }) private _orderTypeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('limitOrderTypeRadio', { static: true }) private _limitOrderTypeRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('marketOrderTypeRadio', { static: true }) private _marketOrderTypeRadioComponent: CaptionedRadioNgComponent;
-    @ViewChild('orderTypeInput', { static: true }) private _orderTypeInputComponent: EnumInputNgComponent;
+    @ViewChild('orderTypeInput', { static: true }) private _orderTypeInputComponent: IntegerEnumInputNgComponent;
     @ViewChild('priceLabel', { static: true }) private _priceLabelComponent: CaptionLabelNgComponent;
     @ViewChild('priceInput', { static: true }) private _limitValueInputComponent: DecimalInputNgComponent;
-    @ViewChild('priceUnitLabel', { static: true }) private _limitUnitLabelComponent: EnumCaptionNgComponent;
+    @ViewChild('priceUnitLabel', { static: true }) private _limitUnitLabelComponent: IntegerEnumCaptionNgComponent;
     @ViewChild('timeInForceLabel', { static: true }) private _timeInForceLabelComponent: CaptionLabelNgComponent;
     @ViewChild('untilCancelRadio', { static: true }) private _untilCancelRadioComponent: CaptionedRadioNgComponent;
     @ViewChild('fillAndKillRadio', { static: true }) private _fillAndKillRadioComponent: CaptionedRadioNgComponent;
@@ -151,18 +150,18 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     private readonly _settingsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
     private readonly _accountGroupUiAction: BrokerageAccountGroupUiAction;
-    private readonly _sideUiAction: ExplicitElementsEnumUiAction;
+    private readonly _sideUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _symbolUiAction: RoutedIvemIdUiAction;
     private readonly _routeUiAction: OrderRouteUiAction;
     private readonly _totalQuantityUiAction: IntegerUiAction;
-    private readonly _orderTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _orderTypeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _limitValueUiAction: DecimalUiAction;
-    private readonly _limitUnitUiAction: ExplicitElementsEnumUiAction;
-    private readonly _triggerTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _limitUnitUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _triggerTypeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _triggerValueUiAction: DecimalUiAction;
-    private readonly _triggerFieldUiAction: ExplicitElementsEnumUiAction;
-    private readonly _triggerMovementUiAction: ExplicitElementsEnumUiAction;
-    private readonly _timeInForceUiAction: ExplicitElementsEnumUiAction;
+    private readonly _triggerFieldUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _triggerMovementUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _timeInForceUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _expiryDateUiAction: DateUiAction;
     private readonly _existingOrderIdUiAction: StringUiAction;
     private readonly _destinationAccountGroupUiAction: BrokerageAccountGroupUiAction;
@@ -647,12 +646,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createSideUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadSideTitle]);
         action.pushCaption(Strings[StringId.OrderPadSideCaption]);
         const sideIds = OrderExtendedSide.all;
-        const elementPropertiesArray = sideIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = sideIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (sideId) => {
                 const titleStringId = this.getSideTitleStringId(sideId);
                 return {
@@ -708,12 +707,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createOrderTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadOrderTypeTitle]);
         action.pushCaption(Strings[StringId.OrderPadOrderTypeCaption]);
         const orderTypeIds: OrderTypeId[] = [OrderTypeId.Market, OrderTypeId.MarketToLimit, OrderTypeId.Limit, OrderTypeId.MarketAtBest];
-        const elementPropertiesArray = orderTypeIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = orderTypeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (orderTypeId) => {
                 const titleStringId = this.getOrderTypeTitleStringId(orderTypeId);
                 return {
@@ -740,11 +739,11 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createLimitUnitUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadLimitUnitTitle]);
         const priceUnitIds: OrderPad.PriceUnitId[] = OrderPad.PriceUnit.all;
-        const elementPropertiesArray = priceUnitIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = priceUnitIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (priceUnitId) => (
                 {
                     element: priceUnitId,
@@ -769,12 +768,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createTriggerTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadTriggerTitle]);
         action.pushCaption(Strings[StringId.OrderPadTriggerCaption]);
         const triggerTypeIds = OrderTriggerType.all;
-        const elementPropertiesArray = triggerTypeIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = triggerTypeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (triggerTypeId) => {
                 const titleStringId = this.getTriggerTypeTitleStringId(triggerTypeId);
                 return {
@@ -810,12 +809,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createTriggerFieldUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadTriggerFieldTitle]);
         action.pushCaption(Strings[StringId.OrderPadTriggerFieldCaption]);
         const triggerFieldIds = PriceOrderTrigger.Field.all;
-        const elementPropertiesArray = triggerFieldIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = triggerFieldIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (triggerFieldId) => {
                 const titleStringId = this.getTriggerFieldTitleStringId(triggerFieldId);
                 return {
@@ -841,12 +840,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createTriggerMovementUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadTriggerMovementTitle]);
         action.pushCaption(Strings[StringId.OrderPadTriggerMovementCaption]);
         const movementIds = Movement.all;
-        const elementPropertiesArray = movementIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = movementIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (movementId) => {
                 const titleStringId = this.getTriggerMovementTitleStringId(movementId);
                 return {
@@ -878,12 +877,12 @@ export class PadOrderRequestStepNgComponent extends OrderRequestStepComponentNgD
     }
 
     private createTimeInForceUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         this.setCommonActionProperties(action);
         action.pushTitle(Strings[StringId.OrderPadTimeInForceTitle]);
         action.pushCaption(Strings[StringId.OrderPadTimeInForceCaption]);
         const timeInForceIds = TimeInForce.all;
-        const elementPropertiesArray = timeInForceIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = timeInForceIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (timeInForceId) => {
                 const titleStringId = this.getTimeInForceTitleStringId(timeInForceId);
                 return {

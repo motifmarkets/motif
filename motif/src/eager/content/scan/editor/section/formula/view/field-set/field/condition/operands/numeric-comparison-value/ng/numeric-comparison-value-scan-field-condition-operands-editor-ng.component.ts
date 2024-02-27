@@ -5,10 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { EnumUiAction, ExplicitElementsEnumUiAction, NumberUiAction, NumericComparisonScanFieldCondition, ScanFieldCondition, StringId, Strings } from '@motifmarkets/motif-core';
+import { IntegerExplicitElementsEnumUiAction, NumberUiAction, NumericComparisonScanFieldCondition, ScanFieldCondition, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, EnumInputNgComponent, NumberInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, IntegerEnumInputNgComponent, NumberInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { NumericComparisonValueScanFieldConditionOperandsEditorFrame } from '../numeric-comparison-value-scan-field-condition-operands-editor-frame';
 
@@ -20,13 +20,13 @@ import { NumericComparisonValueScanFieldConditionOperandsEditorFrame } from '../
 })
 export class NumericComparisonValueScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
     // @ViewChild('operatorLabel', { static: true }) private _operatorLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('operatorControl', { static: true }) private _operatorControlComponent: EnumInputNgComponent;
+    @ViewChild('operatorControl', { static: true }) private _operatorControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('valueLabel', { static: true }) private _valueLabelComponent: CaptionLabelNgComponent;
     @ViewChild('valueControl', { static: true }) private _valueControlComponent: NumberInputNgComponent;
 
     declare readonly _frame: NumericComparisonValueScanFieldConditionOperandsEditorNgComponent.Frame;
 
-    private readonly _operatorUiAction: ExplicitElementsEnumUiAction;
+    private readonly _operatorUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _valueUiAction: NumberUiAction;
 
     constructor(
@@ -80,11 +80,11 @@ export class NumericComparisonValueScanFieldConditionOperandsEditorNgComponent e
     }
 
     private createOperatorUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.NumericComparisonValueScanFieldConditionOperandsCaption_Operator]);
         action.pushTitle(Strings[StringId.NumericComparisonValueScanFieldConditionOperandsTitle_Operator]);
         const ids = NumericComparisonScanFieldCondition.ValueOperands.supportedOperatorIds;
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ScanFieldCondition.Operator.idToCode(id),

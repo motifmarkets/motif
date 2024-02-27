@@ -4,32 +4,22 @@
  * License: motionite.trade/license/motif
  */
 
-import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, ViewChild, ViewEncapsulation } from '@angular/core';
-import { Account, Integer, MultiEvent, UiAction } from '@motifmarkets/motif-core';
+import { ChangeDetectorRef, Directive, ElementRef, ViewChild } from '@angular/core';
+import { Account, AssertInternalError, Integer, MultiEvent, SettingsService, UiAction } from '@motifmarkets/motif-core';
 import { NgSelectComponent } from '@ng-select/ng-select';
-import { SettingsNgService } from 'component-services-ng-api';
-import { NgSelectUtils } from '../../../ng-select-utils';
-import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
-import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';
-import { EnumComponentBaseNgDirective } from '../../ng/enum-component-base-ng.directive';
+import { NgSelectUtils } from '../../ng-select-utils';
+import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
+import { NgSelectOverlayNgService } from '../../ng/ng-select-overlay-ng.service';
+import { EnumComponentBaseNgDirective } from './enum-component-base-ng.directive';
 
-@Component({
-    selector: 'app-enum-input', // should be xxx-enum-select
-    templateUrl: './enum-input-ng.component.html',
-    styleUrls: ['./enum-input-ng.component.scss'],
-
-    changeDetection: ChangeDetectionStrategy.OnPush,
-    encapsulation: ViewEncapsulation.None,
-})
-export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
-    private static typeInstanceCreateCount = 0;
-
+@Directive()
+export abstract class EnumInputNgDirective<T> extends EnumComponentBaseNgDirective<T> {
     @ViewChild('ngSelect', { static: true }) private _ngSelectComponent: NgSelectComponent;
 
     openEventer: EnumInputNgComponent.OpenEventer | undefined;
 
-    public selected: Integer | undefined;
-    public entries: Entry[] = [];
+    public selected: T | undefined;
+    public entries: Entry<T>[] = [];
 
     private _measureCanvasContextsEventSubscriptionId: MultiEvent.SubscriptionId;
     private _measureCanvasContext: CanvasRenderingContext2D;
@@ -37,16 +27,19 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     constructor(
         elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
         private _ngSelectOverlayNgService: NgSelectOverlayNgService,
         cdr: ChangeDetectorRef,
-        settingsNgService: SettingsNgService
+        settingsService: SettingsService,
+        undefinedValue: T,
     ) {
         super(
             elRef,
-            ++EnumInputNgComponent.typeInstanceCreateCount,
+            typeInstanceCreateId,
             cdr,
-            settingsNgService.service,
-            ControlComponentBaseNgDirective.textControlStateColorItemIdArray
+            settingsService,
+            ControlComponentBaseNgDirective.textControlStateColorItemIdArray,
+            undefinedValue,
         );
         this.inputId = 'EnumInput' + this.typeInstanceId;
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
@@ -55,13 +48,13 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         );
     }
 
-    public customSearchFtn(term: string, item: Entry) {
+    public customSearchFtn(term: string, item: Entry<T>) {
         term = term.toUpperCase();
         return item.upperCaption.includes(term);
     }
 
     public handleSelectChangeEvent(event: unknown) {
-        const changeEvent = event as ChangeEvent;
+        const changeEvent = event as ChangeEvent<T>;
 
         if (changeEvent === undefined || changeEvent === null) {
             this.commitValue(undefined);
@@ -76,15 +69,16 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
     public handleSelectOpenEvent() {
         if (this.openEventer !== undefined) {
-            this.openEventer();
+            const promise = this.openEventer();
+            promise.then(
+                () => {
+                    this.setDropDownPanelClientWidth();
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'EINCHSOE31313'); }
+            );
+        } else {
+            this.setDropDownPanelClientWidth();
         }
-
-        this._ngSelectOverlayNgService.notifyDropDownOpen();
-
-        if (this._ngSelectDropDownPanelWidth === undefined) {
-            this._ngSelectDropDownPanelWidth = this.calculateNgSelectDropDownPanelWidth();
-        }
-        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(this._ngSelectDropDownPanelWidth, false);
     }
 
     protected override setStateColors(stateId: UiAction.StateId) {
@@ -93,7 +87,7 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         NgSelectUtils.ApplyColors(this._ngSelectComponent.element, this.foreColor, this.bkgdColor);
     }
 
-    protected override applyValue(value: Integer | undefined, edited: boolean) {
+    protected override applyValue(value: T | undefined, edited: boolean) {
         if (!edited) {
             this._ngSelectComponent.searchTerm = '';
             this.selected = value;
@@ -107,12 +101,12 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
         }
     }
 
-    protected override applyFilter(filter: Integer[] | undefined) {
+    protected override applyFilter(filter: T[] | undefined) {
         super.applyFilter(filter);
         this.updateEntries();
     }
 
-    protected override applyElementCaption(element: Integer, caption: string) {
+    protected override applyElementCaption(element: T, caption: string) {
         super.applyElementCaption(element, caption);
         this.updateEntries();
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
@@ -132,6 +126,15 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
     private handleMeasureCanvasContextsEvent() {
         this._measureCanvasContext = this._ngSelectOverlayNgService.measureCanvasContext;
         this._ngSelectDropDownPanelWidth = undefined; // force recalculation
+    }
+
+    private setDropDownPanelClientWidth() {
+        this._ngSelectOverlayNgService.notifyDropDownOpen();
+
+        if (this._ngSelectDropDownPanelWidth === undefined) {
+            this._ngSelectDropDownPanelWidth = this.calculateNgSelectDropDownPanelWidth();
+        }
+        this._ngSelectOverlayNgService.setDropDownPanelClientWidth(this._ngSelectDropDownPanelWidth, false);
     }
 
     private calculateNgSelectDropDownPanelWidth() {
@@ -162,14 +165,14 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
 
         const elementPropertiesArray = this.uiAction.getElementPropertiesArray();
         const maxCount = elementPropertiesArray.length;
-        const entries = new Array<Entry>(maxCount);
+        const entries = new Array<Entry<T>>(maxCount);
         let count = 0;
         for (const properties of elementPropertiesArray) {
             const element = properties.element;
             if (filter === undefined || filter.includes(element)) {
                 const caption = properties.caption;
                 const title = properties.title;
-                const entry: Entry = {
+                const entry: Entry<T> = {
                     element,
                     caption,
                     upperCaption: caption.toUpperCase(),
@@ -185,8 +188,8 @@ export class EnumInputNgComponent extends EnumComponentBaseNgDirective {
     }
 }
 
-interface Entry {
-    element: Integer;
+interface Entry<T> {
+    element: T;
     caption: string;
     upperCaption: string;
     title: string;
@@ -197,8 +200,8 @@ interface SearchEvent {
     items: Account[];
 }
 
-type ChangeEvent = Entry | undefined | null;
+type ChangeEvent<T> = Entry<T> | undefined | null;
 
 export namespace EnumInputNgComponent {
-    export type OpenEventer = (this: void) => void;
+    export type OpenEventer = (this: void) => Promise<void>;
 }

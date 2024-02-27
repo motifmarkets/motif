@@ -11,7 +11,7 @@
     <app-caption-label #fontSizeLabel for="fontSizeInput"></app-caption-label>
     <app-text-input #fontSizeControl id="fontSizeControl" inputId="fontSizeInput" spellCheck="false"></app-text-input>
     <app-caption-label #defaultExchangeLabel for="defaultExchangeInput"></app-caption-label>
-    <app-enum-input #defaultExchangeControl id="defaultExchangeControl" inputId="defaultExchangeInput"></app-enum-input>
+    <app-integer-enum-input #defaultExchangeControl id="defaultExchangeControl" inputId="defaultExchangeInput"></app-integer-enum-input>
     <app-caption-label #dropDownEditableSearchTermLabel for="dropDownEditableSearchTermCheckbox"></app-caption-label>
     <app-checkbox-input #dropDownEditableSearchTermControl id="dropDownEditableSearchTermControl" inputId="dropDownEditableSearchTermCheckbox"></app-checkbox-input>
     <app-caption-label #numberGroupingActiveLabel for="numberGroupingActiveCheckbox"></app-caption-label>
@@ -29,7 +29,7 @@
     </div>
     <app-caption-label #settingsProfileLabel for="settingsProfileSelect"></app-caption-label>
     <div id="settingsProfileDiv">
-        <app-enum-input #settingsProfileControl id="settingsProfileControl" inputId="settingsProfileSelect"></app-enum-input>
+        <app-integer-enum-input #settingsProfileControl id="settingsProfileControl" inputId="settingsProfileSelect"></app-integer-enum-input>
         <div >
             {{restartRequiredText}}
         </div>
@@ -38,7 +38,7 @@
 <fieldset id="symbols" class="fieldsetGrid">
     <legend class="fieldSetLegend">Symbols</legend>
     <app-caption-label #exchangeHideModeLabel for="exchangeHideModeSelect"></app-caption-label>
-    <app-enum-input #exchangeHideModeControl id="exchangeHideModeControl" inputId="exchangeHideModeSelect"></app-enum-input>
+    <app-integer-enum-input #exchangeHideModeControl id="exchangeHideModeControl" inputId="exchangeHideModeSelect"></app-integer-enum-input>
     <app-caption-label #defaultMarketHiddenLabel for="defaultMarketHiddenCheckbox"></app-caption-label>
     <app-checkbox-input #defaultMarketHiddenControl id="defaultMarketHiddenControl" inputId="defaultMarketHiddenCheckbox"></app-checkbox-input>
     <app-caption-label #marketCodeAsLocalWheneverPossibleLabel for="marketCodeAsLocalWheneverPossibleCheckbox"></app-caption-label>

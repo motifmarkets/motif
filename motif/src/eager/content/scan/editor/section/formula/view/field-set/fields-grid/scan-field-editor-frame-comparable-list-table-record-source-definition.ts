@@ -123,6 +123,6 @@ export namespace ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
     }
 
     export function is(definition: TableRecordSourceDefinition): definition is ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
-        return definition.typeId === TableRecordSourceDefinition.TypeId.LitIvemIdComparableList;
+        return definition.typeId === TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame;
     }
 }

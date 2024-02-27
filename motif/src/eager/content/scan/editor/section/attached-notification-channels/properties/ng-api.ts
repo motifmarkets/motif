@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/enum-caption-ng.component';
+export * from './ng/scan-editor-attached-notification-channel-properties-ng.component';
 

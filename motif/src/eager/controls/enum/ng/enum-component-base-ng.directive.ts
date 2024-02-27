@@ -4,21 +4,32 @@
  * License: motionite.trade/license/motif
  */
 
-import { Directive, Input } from '@angular/core';
-import { EnumUiAction, Integer, MultiEvent, UiAction, isUndefinableArrayEqualUniquely } from '@motifmarkets/motif-core';
+import { ChangeDetectorRef, Directive, ElementRef, Input } from '@angular/core';
+import { EnumUiAction, Integer, MultiEvent, SettingsService, UiAction, isUndefinableArrayEqualUniquely } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()
-export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseNgDirective {
+export abstract class EnumComponentBaseNgDirective<T> extends ControlComponentBaseNgDirective {
     @Input() inputId: string;
 
     private _pushEnumEventsSubscriptionId: MultiEvent.SubscriptionId;
 
-    private _filter: readonly Integer[] | undefined;
+    private _filter: readonly T[] | undefined;
 
-    override get uiAction() { return super.uiAction as EnumUiAction; }
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        cdr: ChangeDetectorRef,
+        settingsService: SettingsService,
+        stateColorItemIdArray: ControlComponentBaseNgDirective.ReadonlyStateColorItemIdArray,
+        private readonly _undefinedValue: T,
+    ) {
+        super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray);
+    }
 
-    protected applyFilter(filter: readonly Integer[] | undefined) {
+    override get uiAction() { return super.uiAction as EnumUiAction<T>; }
+
+    protected applyFilter(filter: readonly T[] | undefined) {
         if (filter === undefined) {
             this._filter = undefined;
         } else {
@@ -26,18 +37,18 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         }
     }
 
-    protected applyElementTitle(enumValue: Integer, title: string) {
+    protected applyElementTitle(enumValue: T, title: string) {
         // for descendants
     }
-    protected applyElementCaption(enumValue: Integer, caption: string) {
+    protected applyElementCaption(enumValue: T, caption: string) {
         // for descendants
     }
     protected applyElements() {
         // for descendants
     }
 
-    protected commitValue(value: Integer | undefined) {
-        if (value !== undefined && value !== EnumUiAction.undefinedElement) {
+    protected commitValue(value: T | undefined) {
+        if (value !== undefined && value !== this._undefinedValue) {
             this.uiAction.commitValue(value, UiAction.CommitTypeId.Explicit);
         } else {
             if (!this.uiAction.valueRequired) {
@@ -46,10 +57,10 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         }
     }
 
-    protected override setUiAction(action: EnumUiAction) {
+    protected override setUiAction(action: EnumUiAction<T>) {
         super.setUiAction(action);
 
-        const pushEventHandlersInterface: EnumUiAction.PushEventHandlersInterface = {
+        const pushEventHandlersInterface: EnumUiAction.PushEventHandlersInterface<T> = {
             value: (value, edited) => this.handleValuePushEvent(value, edited),
             filter: (filter) => this.handleFilterPushEvent(filter),
             element: (element, caption, title) => this.handleElementPushEvent(element, caption, title),
@@ -66,17 +77,17 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         super.finalise();
     }
 
-    private handleValuePushEvent(value: Integer | undefined, edited: boolean) {
+    private handleValuePushEvent(value: T | undefined, edited: boolean) {
         this.applyValue(value, edited);
     }
 
-    private handleFilterPushEvent(filter: readonly Integer[] | undefined) {
+    private handleFilterPushEvent(filter: readonly T[] | undefined) {
         if (!isUndefinableArrayEqualUniquely(filter, this._filter)) {
             this.applyFilter(filter);
         }
     }
 
-    private handleElementPushEvent(element: Integer, caption: string, title: string) {
+    private handleElementPushEvent(element: T, caption: string, title: string) {
         this.applyElementTitle(element, title);
         this.applyElementCaption(element, caption);
     }
@@ -85,5 +96,5 @@ export abstract class EnumComponentBaseNgDirective extends ControlComponentBaseN
         this.applyElements();
     }
 
-    protected abstract applyValue(value: Integer | undefined, edited: boolean): void;
+    protected abstract applyValue(value: T | undefined, edited: boolean): void;
 }

@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/enum-input-ng.component';
+export * from './ng/integer-enum-caption-ng.component';
 

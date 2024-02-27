@@ -48,7 +48,7 @@ import {
     UnreachableCaseError,
     WatchmakerService,
 } from '@motifmarkets/motif-core';
-import { ScanFieldEditorFrameComparableListTableRecordSource, ScanFieldEditorFrameComparableListTableRecordSourceDefinition } from './internal-api';
+import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource, ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition, ScanFieldEditorFrameComparableListTableRecordSource, ScanFieldEditorFrameComparableListTableRecordSourceDefinition } from './scan/internal-api';
 
 /** @public */
 export class TableRecordSourceFactoryService implements TableRecordSourceFactory {
@@ -90,6 +90,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             case TableRecordSourceDefinition.TypeId.GridField: return this.createGridField(definition);
             case TableRecordSourceDefinition.TypeId.ScanTest: return this.createScanTest(definition);
             case TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: return this.createScanFieldEditorFrameComparableList(definition)
+            case TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: return this.createScanEditorAttachedNotificationChannel(definition)
             default: throw new UnreachableCaseError('TDLFCFTID17742', definition.typeId);
         }
     }
@@ -300,6 +301,18 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             );
         } else {
             throw new AssertInternalError('TRSFSCSFEFCL21099');
+        }
+    }
+
+    private createScanEditorAttachedNotificationChannel(definition: TableRecordSourceDefinition) {
+        if (definition instanceof ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition) {
+            return new ScanEditorAttachedNotificationChannelComparableListTableRecordSource(
+                this._textFormatterService,
+                this._tableRecordSourceDefinitionFactoryService,
+                definition,
+            );
+        } else {
+            throw new AssertInternalError('TRSFSCSEANC21099');
         }
     }
 }

@@ -4,26 +4,40 @@
  * License: motionite.trade/license/motif
  */
 
-import { Directive } from '@angular/core';
-import { EnumUiAction, Integer } from '@motifmarkets/motif-core';
+import { ChangeDetectorRef, Directive, ElementRef } from '@angular/core';
+import { EnumUiAction, Integer, SettingsService } from '@motifmarkets/motif-core';
+import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 import { EnumComponentBaseNgDirective } from './enum-component-base-ng.directive';
 
 @Directive()
-export abstract class EnumElementComponentBaseNgDirective extends EnumComponentBaseNgDirective {
+export abstract class EnumElementComponentBaseNgDirective<T> extends EnumComponentBaseNgDirective<T> {
     public elementCaption = '';
     public elementTitle = '';
 
-    private _element: Integer = EnumUiAction.undefinedElement;
+    private _element: T;
+
+    constructor(
+        elRef: ElementRef<HTMLElement>,
+        typeInstanceCreateId: Integer,
+        cdr: ChangeDetectorRef,
+        settingsService: SettingsService,
+        stateColorItemIdArray: ControlComponentBaseNgDirective.ReadonlyStateColorItemIdArray,
+        undefinedValue: T,
+    ) {
+        super(elRef, typeInstanceCreateId, cdr, settingsService, stateColorItemIdArray, undefinedValue);
+        this._element = undefinedValue;
+    }
+
 
     protected get element() { return this._element; }
 
-    initialiseEnum(action: EnumUiAction, element: Integer) {
+    initialiseEnum(action: EnumUiAction<T>, element: T) {
         this._element = element;
         this.initialise(action);
         this.applyElements();
     }
 
-    protected override applyElementTitle(element: Integer, title: string) {
+    protected override applyElementTitle(element: T, title: string) {
         super.applyElementTitle(element, title);
         if (element === this.element && title !== this.elementTitle) {
             this.elementTitle = title;
@@ -31,7 +45,7 @@ export abstract class EnumElementComponentBaseNgDirective extends EnumComponentB
         }
     }
 
-    protected override applyElementCaption(element: Integer, caption: string) {
+    protected override applyElementCaption(element: T, caption: string) {
         super.applyElementCaption(element, caption);
         if (element === this.element && caption !== this.elementCaption) {
             this.elementCaption = caption;

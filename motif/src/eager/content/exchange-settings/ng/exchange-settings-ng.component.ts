@@ -1,13 +1,13 @@
 import { ChangeDetectionStrategy, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     EnumMappedExplicitElementsArrayUiAction,
-    EnumUiAction, ExchangeId, ExchangeInfo, ExchangeSettings,
-    ExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId,
+    ExchangeId, ExchangeInfo, ExchangeSettings,
+    IntegerExplicitElementsEnumUiAction, MultiEvent, SettingsService, StringId, Strings, SymbolField, SymbolFieldId,
     TypedExplicitElementsArrayUiAction,
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, EnumArrayInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, EnumArrayInputNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -22,7 +22,7 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     @Input() exchangeId: ExchangeId;
 
     @ViewChild('symbolNameFieldLabel', { static: true }) private _symbolNameFieldLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('symbolNameFieldControl', { static: true }) private _symbolNameFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('symbolNameFieldControl', { static: true }) private _symbolNameFieldControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('symbolSearchFieldsLabel', { static: true }) private _symbolSearchFieldsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('symbolSearchFieldsControl', { static: true }) private _symbolSearchFieldsControlComponent: EnumArrayInputNgComponent;
 
@@ -33,7 +33,7 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     private _settingsChangedSubsciptionId: MultiEvent.SubscriptionId;
     private _exchange: ExchangeSettings;
 
-    private _symbolNameFieldUiAction: ExplicitElementsEnumUiAction;
+    private _symbolNameFieldUiAction: IntegerExplicitElementsEnumUiAction;
     private _symbolSearchFieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>, settingsNgService: SettingsNgService) {
@@ -67,11 +67,11 @@ export class ExchangeSettingsNgComponent extends ContentComponentBaseNgDirective
     }
 
     private createSymbolNameFieldUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Exchange_SymbolNameField]);
         action.pushTitle(Strings[StringId.SettingTitle_Exchange_SymbolNameField]);
         const fieldIds = ExchangeInfo.idToAllowableSymbolNameFieldIds(this.exchangeId);
-        const elementPropertiesArray = fieldIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = fieldIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (fieldId) => (
                 {
                     element: fieldId,

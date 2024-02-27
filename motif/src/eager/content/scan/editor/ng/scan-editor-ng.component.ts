@@ -32,7 +32,7 @@ import { ScanTestNgComponent } from '../../test/ng-api';
 import {
     FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
-    NotifiersScanEditorSectionNgComponent
+    ScanEditorAttachedNotificationChannelsNgComponent
 } from '../section/ng-api';
 
 @Component({
@@ -50,7 +50,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('generalSection', { static: true }) private _generalSectionComponent: GeneralScanEditorSectionNgComponent;
     @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: FormulaScanEditorSectionNgComponent;
     @ViewChild('rankSection', { static: true }) private _rankSectionComponent: FormulaScanEditorSectionNgComponent;
-    @ViewChild('notifiersSection', { static: true }) private _notifiersSectionComponent: NotifiersScanEditorSectionNgComponent;
+    @ViewChild('notificationChannelsSection', { static: true }) private _notificationChannelsSectionComponent: ScanEditorAttachedNotificationChannelsNgComponent;
     @ViewChild('test', { static: true }) private _testComponent: ScanTestNgComponent;
     @ViewChild('applyButton', { static: true }) private _applyButtonComponent: ButtonInputNgComponent;
     @ViewChild('revertButton', { static: false }) private _revertButtonComponent: ButtonInputNgComponent;
@@ -117,7 +117,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._generalSectionComponent.setEditor(scanEditor);
         this._criteriaSectionComponent.setEditor(scanEditor);
         this._rankSectionComponent.setEditor(scanEditor);
-        this._notifiersSectionComponent.setEditor(scanEditor);
+        this._notificationChannelsSectionComponent.setEditor(scanEditor);
 
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
@@ -517,7 +517,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             this._generalSectionComponent.areAllControlValuesOk() &&
             this._criteriaSectionComponent.areAllControlValuesOk() &&
             this._rankSectionComponent.areAllControlValuesOk() &&
-            this._notifiersSectionComponent.areAllControlValuesOk()
+            this._notificationChannelsSectionComponent.areAllControlValuesOk()
         );
     }
 
@@ -525,7 +525,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._generalSectionComponent.cancelAllControlsEdited();
         this._criteriaSectionComponent.cancelAllControlsEdited();
         this._rankSectionComponent.cancelAllControlsEdited();
-        this._notifiersSectionComponent.cancelAllControlsEdited();
+        this._notificationChannelsSectionComponent.cancelAllControlsEdited();
     }
 }
 

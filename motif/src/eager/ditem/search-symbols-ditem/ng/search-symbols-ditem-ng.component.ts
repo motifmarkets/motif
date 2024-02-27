@@ -20,12 +20,11 @@ import {
     AllowedMarketsExplicitElementsArrayUiAction,
     BooleanUiAction,
     EnumMappedExplicitElementsArrayUiAction,
-    EnumUiAction,
     ExchangeId,
     ExchangeInfo,
-    ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     InternalCommand,
     JsonElement,
@@ -56,7 +55,7 @@ import {
     CaptionedEnumArrayCheckboxNgComponent,
     CaptionedRadioNgComponent,
     EnumArrayInputNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumInputNgComponent,
     IntegerLabelNgComponent,
     IntegerTextInputNgComponent,
     SvgButtonNgComponent,
@@ -86,7 +85,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     // Parameters
     @ViewChild('exchangeLabel', { static: true }) private _exchangeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultExchangeControl', { static: true }) private _defaultExchangeControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('exchangeControl', { static: true }) private _exchangeControlComponent: EnumInputNgComponent;
+    @ViewChild('exchangeControl', { static: true }) private _exchangeControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('marketsLabel', { static: true }) private _marketsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultMarketControl', { static: true }) private _defaultMarketControlComponent: CaptionedEnumArrayCheckboxNgComponent;
     @ViewChild('marketsControl', { static: true }) private _marketsControlComponent: EnumArrayInputNgComponent;
@@ -147,7 +146,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     private readonly _cfiUiAction: StringUiAction;
     private readonly _fieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
     private readonly _optionsUiAction: StringUiAction;
-    private readonly _indicesInclusionUiAction: EnumUiAction;
+    private readonly _indicesInclusionUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _partialUiAction: BooleanUiAction;
     private readonly _preferExactUiAction: BooleanUiAction;
     private readonly _showFullUiAction: BooleanUiAction;
@@ -546,12 +545,12 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createIndicesInclusionUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Indices]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Indices]);
 
         const entryCount = SearchSymbolsDitemFrame.IndicesInclusion.idCount;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

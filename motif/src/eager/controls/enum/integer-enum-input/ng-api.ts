@@ -4,5 +4,5 @@
  * License: motionite.trade/license/motif
  */
 
-export * from './ng/notifiers-scan-editor-section-ng.component';
+export * from './ng/integer-enum-input-ng.component';
 

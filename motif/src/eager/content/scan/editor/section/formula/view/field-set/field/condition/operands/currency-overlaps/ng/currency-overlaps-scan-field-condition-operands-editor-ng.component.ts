@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, Currency, EnumMappedExplicitElementsArrayUiAction, EnumUiAction, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, Currency, EnumMappedExplicitElementsArrayUiAction, IntegerExplicitElementsEnumUiAction, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
@@ -67,7 +67,7 @@ export class CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent extends
         action.pushCaption(Strings[StringId.CurrencyOverlapsScanFieldConditionOperandsCaption_Values]);
         action.pushTitle(Strings[StringId.CurrencyOverlapsScanFieldConditionOperandsTitle_Values]);
         const ids = Currency.allIds;
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: Currency.idToCode(id),

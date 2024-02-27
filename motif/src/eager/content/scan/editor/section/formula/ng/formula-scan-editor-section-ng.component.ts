@@ -7,9 +7,8 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnDestroy, OnInit, ViewChild } from '@angular/core';
 import {
     EnumInfoOutOfOrderError,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     ScanEditor,
     StringId,
     Strings,
@@ -41,7 +40,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     public genericSelectorCaption: string;
     public genericSelectorWidth: string;
 
-    private readonly _viewUiAction: ExplicitElementsEnumUiAction;
+    private readonly _viewUiAction: IntegerExplicitElementsEnumUiAction;
 
     private _formulaField: FormulaScanEditorSectionNgComponent.FormulaField;
     private _viewId: FormulaScanEditorSectionNgComponent.ViewId;
@@ -121,7 +120,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
         // let criteriaChanged = false;
         // let criteriaChanged = false;
@@ -155,11 +154,11 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     private createViewUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanCriteriaCaption_View]);
         action.pushTitle(Strings[StringId.ScanCriteriaDescription_View]);
         const ids = FormulaScanEditorSectionNgComponent.View.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: FormulaScanEditorSectionNgComponent.View.idToDisplay(id),
@@ -172,7 +171,7 @@ export class FormulaScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     private pushValues() {
-        if (this._scanEditor === undefined) {
+        if (this.scanEditor === undefined) {
             this._viewUiAction.pushValue(FormulaScanEditorSectionNgComponent.ViewId.FieldSet);
         // } else {
         //     if (this._scan.targetTypeId === Scan.TargetTypeId.Custom) {

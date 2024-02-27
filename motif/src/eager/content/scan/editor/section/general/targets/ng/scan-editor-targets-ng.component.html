@@ -18,7 +18,7 @@
         <app-lit-ivem-id-list-editor #multiSymbolEditor id="multiSymbolEditor"></app-lit-ivem-id-list-editor>
     </div>
     <div class="marketSubTargetType" [style.display]="isSingleMarketSubTargetType() ? null : 'none'">
-        <app-enum-input #singleMarketControl id="singleMarketControl"></app-enum-input>
+        <app-integer-enum-input #singleMarketControl id="singleMarketControl"></app-integer-enum-input>
         <div class="captionedControl">
             <app-caption-label #singleMarketMaxMatchCountLabel for="singleMarketMaxMatchCountInput" class="maxMatchCountLabel"></app-caption-label>
             <app-integer-text-input #singleMarketMaxMatchCountControl class="maxMatchCountControl" inputId="singleMarketMaxMatchCountInput"></app-integer-text-input>

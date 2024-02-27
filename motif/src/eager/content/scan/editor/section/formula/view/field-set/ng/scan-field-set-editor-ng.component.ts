@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
-import { AssertInternalError, EnumUiAction, ExplicitElementsEnumUiAction, Integer, MultiEvent, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
+import { AssertInternalError, Integer, IntegerExplicitElementsEnumUiAction, MultiEvent, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { AngularSplitTypes } from 'controls-internal-api';
-import { CaptionLabelNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ScanFieldEditorFrame } from '../field/internal-api';
 import { ScanFieldEditorNgComponent } from '../field/ng-api';
@@ -25,11 +25,11 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     @ViewChild('fieldEditorFrameComponent', { static: true }) private _fieldEditorFrameComponent: ScanFieldEditorNgComponent;
     @ViewChild('fieldsGrid', { static: true }) private _fieldEditorFramesGridComponent: ScanFieldEditorFramesGridNgComponent;
     // @ViewChild('addFieldLabel', { static: true }) private _addFieldLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('addFieldControl', { static: true }) private _addFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('addFieldControl', { static: true }) private _addFieldControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('addAttributeFieldLabel', { static: true }) private _addAttributeFieldLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('addAttributeFieldControl', { static: true }) private _addAttributeFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('addAttributeFieldControl', { static: true }) private _addAttributeFieldControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('addAltCodeFieldLabel', { static: true }) private _addAltCodeFieldLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('addAltCodeFieldControl', { static: true }) private _addAltCodeFieldControlComponent: EnumInputNgComponent;
+    @ViewChild('addAltCodeFieldControl', { static: true }) private _addAltCodeFieldControlComponent: IntegerEnumInputNgComponent;
 
     public gridSize: AngularSplitTypes.AreaSize.Html;
     public gridMinSize: AngularSplitTypes.AreaSize.Html;
@@ -38,9 +38,9 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     public criteriaCompatible: boolean;
     public criteriaNotCompatibleReason: string;
 
-    private readonly _addFieldUiAction: ExplicitElementsEnumUiAction;
-    private readonly _addAttributeFieldUiAction: ExplicitElementsEnumUiAction;
-    private readonly _addAltCodeFieldUiAction: ExplicitElementsEnumUiAction;
+    private readonly _addFieldUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _addAttributeFieldUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _addAltCodeFieldUiAction: IntegerExplicitElementsEnumUiAction;
 
     private _frame: ScanFieldSetEditorFrame | undefined;
     private _frameChangedEventSubscriptionId: MultiEvent.SubscriptionId;
@@ -50,7 +50,6 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     constructor(
         elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
-        private readonly _injector: Injector,
     ) {
         super(elRef, ++ScanFieldSetEditorNgComponent.typeInstanceCreateCount);
 
@@ -68,11 +67,11 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     public handleSplitterDragEnd() {
-
+        //
     }
 
     override setEditor(value: ScanEditor | undefined) {
-        this._scanEditor = value;
+        super.setEditor(value);
         if (value === undefined) {
             this._fieldEditorFrameComponent.setFrame(undefined, false);
             this._fieldEditorFramesGridComponent.setList(undefined);
@@ -140,7 +139,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private createAddFieldUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.AddField]);
         action.pushPlaceholder(Strings[StringId.AddField]);
         action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAField]);
@@ -152,7 +151,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private createAddAttributeFieldUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.AddAttributeField]);
         action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAnAttributeBasedField]);
         const fieldDefinitions = ScanFieldEditorFrame.allDefinitions.filter(
@@ -165,7 +164,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private createAddAltCodeFieldUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.AddAltCodeField]);
         action.pushTitle(Strings[StringId.ScanFieldSetEditor_AddAnAltCodeBasedField]);
         const fieldDefinitions = ScanFieldEditorFrame.allDefinitions.filter(
@@ -178,10 +177,10 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     }
 
     private pushElementsAndAddCommitHandlerToAddFieldUiAction(
-        action: ExplicitElementsEnumUiAction,
+        action: IntegerExplicitElementsEnumUiAction,
         fieldDefinitions: readonly ScanFieldEditorFrame.Definition[],
     ) {
-        const elementPropertiesArray = fieldDefinitions.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = fieldDefinitions.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (definition) => ({
                     element: definition.id,
                     caption: definition.name,
@@ -202,7 +201,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         }
     }
 
-    private pushAddFieldFilter() {
+    private pushAddFieldFilter(): Promise<void> {
         const frame = this._frame;
         if (frame === undefined) {
             throw new AssertInternalError('SFSENCPAFF77743');
@@ -227,10 +226,11 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
                 filterDefinitionIds.length = filterDefinitionIdCount;
                 this._addFieldUiAction.pushFilter(filterDefinitionIds);
             }
+            return Promise.resolve(undefined);
         }
     }
 
-    private pushAddAttributeFieldFilter() {
+    private pushAddAttributeFieldFilter(): Promise<void> {
         const frame = this._frame;
         if (frame === undefined) {
             throw new AssertInternalError('SFSENCPAAFF77743');
@@ -260,10 +260,11 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             } else {
                 this._addFieldUiAction.pushFilter(undefined);
             }
+            return Promise.resolve(undefined);
         }
     }
 
-    private pushAddAltCodeFieldFilter() {
+    private pushAddAltCodeFieldFilter(): Promise<void> {
         const frame = this._frame;
         if (frame === undefined) {
             throw new AssertInternalError('SFSENCPAACFF77743');
@@ -293,6 +294,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
             } else {
                 this._addFieldUiAction.pushFilter(undefined);
             }
+            return Promise.resolve(undefined);
         }
     }
 
@@ -361,7 +363,8 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
         }
 
         if (fieldCountChanged) {
-            this.pushAddFieldFilter();
+            const promise = this.pushAddFieldFilter();
+            AssertInternalError.throwErrorIfPromiseRejected(promise, 'SFSENCPFC66876');
         }
 
         if (framePropertiesChanged) {

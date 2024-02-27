@@ -28,9 +28,9 @@ import {
 } from '../enum-array/ng-api';
 import {
     CaptionedRadioNgComponent,
-    EnumCaptionNgComponent,
     EnumElementCaptionNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumCaptionNgComponent,
+    IntegerEnumInputNgComponent,
     RadioInputNgComponent
 } from '../enum/ng-api';
 import { IvemIdInputNgComponent } from '../ivem-id/ng-api';
@@ -75,9 +75,9 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         EnumArrayCheckboxNgComponent,
         EnumArrayElementCaptionNgComponent,
         EnumArrayInputNgComponent,
-        EnumCaptionNgComponent,
+        IntegerEnumCaptionNgComponent,
         EnumElementCaptionNgComponent,
-        EnumInputNgComponent,
+        IntegerEnumInputNgComponent,
         IntegerLabelNgComponent,
         IntegerTextInputNgComponent,
         IvemIdInputNgComponent,
@@ -125,9 +125,9 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         EnumArrayCheckboxNgComponent,
         EnumArrayElementCaptionNgComponent,
         EnumArrayInputNgComponent,
-        EnumCaptionNgComponent,
+        IntegerEnumCaptionNgComponent,
         EnumElementCaptionNgComponent,
-        EnumInputNgComponent,
+        IntegerEnumInputNgComponent,
         IntegerLabelNgComponent,
         IntegerTextInputNgComponent,
         IvemIdInputNgComponent,

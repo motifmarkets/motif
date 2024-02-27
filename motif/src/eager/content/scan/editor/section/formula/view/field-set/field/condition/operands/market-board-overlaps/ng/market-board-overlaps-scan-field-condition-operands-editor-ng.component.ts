@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, EnumMappedExplicitElementsArrayUiAction, EnumUiAction, MarketBoard, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, EnumMappedExplicitElementsArrayUiAction, IntegerExplicitElementsEnumUiAction, MarketBoard, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
 import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumArrayInputNgComponent } from 'controls-ng-api';
@@ -67,7 +67,7 @@ export class MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent exte
         action.pushCaption(Strings[StringId.MarketBoardOverlapsScanFieldConditionOperandsCaption_Values]);
         action.pushTitle(Strings[StringId.MarketBoardOverlapsScanFieldConditionOperandsTitle_Values]);
         const ids = MarketBoard.allIds;
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: MarketBoard.idToDisplay(id),

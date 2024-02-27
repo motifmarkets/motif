@@ -5,10 +5,10 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, ViewChild } from '@angular/core';
-import { BooleanUiAction, EnumUiAction, ExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
+import { BooleanUiAction, IntegerExplicitElementsEnumUiAction, ScanFormula, StringId, Strings } from '@motifmarkets/motif-core';
 import { ComponentInstanceId } from 'component-internal-api';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { ScanFieldConditionOperandsEditorNgDirective } from '../../ng/ng-api';
 import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-value-scan-field-condition-operands-editor-frame';
 
@@ -21,12 +21,12 @@ import { CategoryValueScanFieldConditionOperandsEditorFrame } from '../category-
 export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends ScanFieldConditionOperandsEditorNgDirective {
     @ViewChild('notControl', { static: true }) private _notControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('categoryLabel', { static: true }) private _categoryLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: EnumInputNgComponent;
+    @ViewChild('categoryControl', { static: true }) private _categoryControlComponent: IntegerEnumInputNgComponent;
 
     declare readonly _frame: CategoryValueScanFieldConditionOperandsEditorNgComponent.Frame;
 
     private readonly _notUiAction: BooleanUiAction;
-    private readonly _categoryUiAction: ExplicitElementsEnumUiAction;
+    private readonly _categoryUiAction: IntegerExplicitElementsEnumUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -63,11 +63,11 @@ export class CategoryValueScanFieldConditionOperandsEditorNgComponent extends Sc
     }
 
     private createCategoryUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.CategoryValueScanFieldConditionOperandsCaption_Category]);
         action.pushTitle(Strings[StringId.CategoryValueScanFieldConditionOperandsTitle_Category]);
         const ids = ScanFormula.IsNode.Category.allIds;
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ScanFormula.IsNode.Category.idToCaption(id),

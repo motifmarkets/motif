@@ -5,10 +5,9 @@ import {
     AllowedMarketsExplicitElementsArrayUiAction,
     AssertInternalError,
     EnumInfoOutOfOrderError,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     GridLayoutOrReferenceDefinition,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     LitIvemId,
     LitIvemIdUiAction,
@@ -27,7 +26,7 @@ import {
     CaptionLabelNgComponent,
     CaptionedRadioNgComponent,
     EnumArrayInputNgComponent,
-    EnumInputNgComponent, IntegerTextInputNgComponent,
+    IntegerEnumInputNgComponent, IntegerTextInputNgComponent,
     LitIvemIdSelectNgComponent
 } from 'controls-ng-api';
 import { LitIvemIdListEditorNgComponent } from '../../../../../../lit-ivem-id-list-editor/ng-api';
@@ -51,7 +50,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     @ViewChild('multiSymbolEditor', { static: true }) private _multiSymbolEditorComponent: LitIvemIdListEditorNgComponent;
 
-    @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: EnumInputNgComponent;
+    @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('singleMarketMaxMatchCountLabel', { static: true }) private _singleMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
     @ViewChild('singleMarketMaxMatchCountControl', { static: true }) private _singleMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
 
@@ -67,7 +66,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
     private readonly _symbolsService: SymbolsService;
 
-    private readonly _targetSubTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _targetSubTypeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _singleSymbolUiAction: LitIvemIdUiAction;
     private readonly _singleMarketUiAction: AllowedMarketsEnumUiAction;
     private readonly _multiMarketUiAction: AllowedMarketsExplicitElementsArrayUiAction;
@@ -277,12 +276,12 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createTargetSubTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_TargetType]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_TargetType]);
         const ids = ScanEditorTargetsNgComponent.TargetSubType.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ScanEditorTargetsNgComponent.TargetSubType.idToDisplay(id),

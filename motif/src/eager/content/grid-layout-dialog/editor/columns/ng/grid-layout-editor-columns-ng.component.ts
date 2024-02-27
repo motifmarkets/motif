@@ -105,7 +105,7 @@ export namespace GridLayoutEditorColumnsNgComponent {
     // }
 
     // export namespace ColumnFilter {
-    //     export function getEnumUiActionElementProperties(id: ColumnFilterId): EnumUiAction.ElementProperties {
+    //     export function getEnumUiActionElementProperties(id: ColumnFilterId): IntegerExplicitElementsEnumUiAction.ElementProperties {
     //         switch (id) {
     //             case ColumnFilterId.ShowAll:
     //                 return {

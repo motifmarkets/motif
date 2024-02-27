@@ -13,7 +13,7 @@
 <div id="sideDiv" class="horizontalChildrenSeparator">
     <app-captioned-radio #buySideRadio inputId="buySideRadio" [name]="sideRadioName"></app-captioned-radio>
     <app-captioned-radio #sellSideRadio inputId="sellSideRadio" [name]="sideRadioName"></app-captioned-radio>
-    <app-enum-input #sideInput id="sideControl" inputId="sideInput"></app-enum-input>
+    <app-integer-enum-input #sideInput id="sideControl" inputId="sideInput"></app-integer-enum-input>
 </div>
 <app-caption-label #symbolLabel for="symbolInput"></app-caption-label>
 <div id="symbolDiv">
@@ -35,12 +35,12 @@
         <app-captioned-radio #limitOrderTypeRadio inputId="limitOrderTypeRadio" [name]="orderTypeRadioName"></app-captioned-radio>
         <app-captioned-radio #marketOrderTypeRadio inputId="marketOrderTypeRadio" [name]="orderTypeRadioName"></app-captioned-radio>
     </div>
-    <app-enum-input #orderTypeInput id="orderTypeControl" inputId="orderTypeInput"></app-enum-input>
+    <app-integer-enum-input #orderTypeInput id="orderTypeControl" inputId="orderTypeInput"></app-integer-enum-input>
 </div>
 <app-caption-label #priceLabel for="priceInput"></app-caption-label>
 <div id="priceDiv">
     <app-decimal-input #priceInput id="priceControl" inputId="priceInput"></app-decimal-input>
-    <app-caption-label #priceUnitLabel></app-caption-label>
+    <app-integer-enum-caption #priceUnitLabel></app-integer-enum-caption>
 </div>
 <app-caption-label #timeInForceLabel></app-caption-label>
 <div id="timeInForceDiv">
@@ -64,14 +64,14 @@
             <app-captioned-radio #immediateTriggerTypeRadio inputId="immediateTriggerTypeRadio" [name]="triggerTypeRadioName"></app-captioned-radio>
             <app-captioned-radio #priceTriggerTypeRadio inputId="priceTriggerTypeRadio" [name]="triggerTypeRadioName"></app-captioned-radio>
         </div>
-        <!-- <app-enum-input #triggerTypeInput id="triggerTypeControl" inputId="triggerTypeInput"></app-enum-input> -->
+        <!-- <app-integer-enum-input #triggerTypeInput id="triggerTypeControl" inputId="triggerTypeInput"></app-integer-enum-input> -->
     </div>
     <div id="priceTriggerTypeDiv" [style.display]="priceTriggerTypeVisible ? null : 'none'">
         <div id="priceTriggerValueDiv">
             <app-caption-label #triggerValueLabel for="triggerValueInput"></app-caption-label>
             <app-decimal-input #triggerValueInput id="triggerValueControl" inputId="triggerValueInput"></app-decimal-input>
         </div>
-        <!-- <app-enum-input #triggerFieldSelect id="triggerFieldControl" inputId="triggerFieldSelect"></app-enum-input> -->
+        <!-- <app-integer-enum-input #triggerFieldSelect id="triggerFieldControl" inputId="triggerFieldSelect"></app-integer-enum-input> -->
         <div id="triggerFieldMovementDiv">
             <app-captioned-radio #lastTriggerFieldRadio inputId="lastTriggerFieldRadio" [name]="triggerFieldRadioName"></app-captioned-radio>
             <app-captioned-radio #bestBidTriggerFieldRadio inputId="bestBidTriggerFieldRadio" [name]="triggerFieldRadioName"></app-captioned-radio>

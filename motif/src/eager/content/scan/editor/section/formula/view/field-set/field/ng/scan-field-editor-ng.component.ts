@@ -11,10 +11,9 @@ import {
     ColorSettings,
     CommandRegisterService,
     ComparableList,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     InternalCommand,
     MultiEvent,
     ScanConditionSet,
@@ -29,7 +28,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CaptionedRadioNgComponent, IntegerEnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentBaseNgDirective } from '../../../../../../../../../component/ng-api';
 import { RootAndNodeComponentInstanceIdPair } from '../../../../../../../../../component/root-and-node-component-instance-id-pair';
 import { ContentComponentBaseNgDirective } from '../../../../../../../../ng/content-component-base-ng.directive';
@@ -66,7 +65,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     @ViewChild('requiresAnyControl', { static: true }) private _requiresAnyControlComponent: CaptionedRadioNgComponent;
     @ViewChild('requiresExactly1Of2Control', { static: true }) private _requiresExactly1Of2ControlComponent: CaptionedRadioNgComponent;
     @ViewChild('deleteMeControl', { static: true }) private _deleteMeControlComponent: SvgButtonNgComponent;
-    @ViewChild('addConditionControl', { static: true }) private _addConditionControlComponent: EnumInputNgComponent;
+    @ViewChild('addConditionControl', { static: true }) private _addConditionControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('conditionsContainer', { read: ViewContainerRef, static: true }) private _conditionEditorFrameComponentsContainer: ViewContainerRef;
 
     public labelColor: string;
@@ -85,9 +84,9 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
 
     private readonly _settingsService: SettingsService;
     private readonly _colorSettings: ColorSettings;
-    private readonly _requiresUiAction: ExplicitElementsEnumUiAction;
+    private readonly _requiresUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _deleteMeUiAction: IconButtonUiAction;
-    private readonly _addConditionUiAction: ExplicitElementsEnumUiAction;
+    private readonly _addConditionUiAction: IntegerExplicitElementsEnumUiAction;
 
     private readonly _deleteComponents = new ComparableList<DeleteScanFieldConditionNgComponent>();
 
@@ -209,7 +208,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private pushAddConditionElements(supportedOperatorIds: readonly ScanFieldCondition.OperatorId[]) {
-        const elementPropertiesArray = supportedOperatorIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = supportedOperatorIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ScanFieldCondition.Operator.idToDisplay(id),
@@ -344,11 +343,11 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private createRequiresUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ScanFieldEditor_RequiresDisplay]);
         action.pushTitle(Strings[StringId.ScanFieldEditor_RequiresDescription]);
         const ids = ScanField.BooleanOperation.allIds;
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => (
                 {
                     element: id,
@@ -390,7 +389,7 @@ export class ScanFieldEditorNgComponent extends ContentComponentBaseNgDirective 
     }
 
     private createAddConditionUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.Add]);
         action.pushPlaceholder(Strings[StringId.ScanFieldEditor_AddConditionDisplay]);
         action.pushTitle(Strings[StringId.ScanFieldEditor_AddConditionDescription]);

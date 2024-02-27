@@ -21,8 +21,9 @@ import {
     ColorScheme,
     ColorSettings,
     CommandRegisterService,
-    EnumInfoOutOfOrderError, EnumUiAction,
-    ExplicitElementsEnumUiAction, HtmlTypes, IconButtonUiAction,
+    EnumInfoOutOfOrderError,
+    HtmlTypes, IconButtonUiAction,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     InternalCommand, ModifierKey, ModifierKeyId, MultiEvent, NumberUiAction, RGB, SettingsService, StringId,
     StringUiAction,
@@ -92,7 +93,7 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     private _commandRegisterService: CommandRegisterService;
 
     private _hideInPickerUiAction: BooleanUiAction;
-    private _itemColorTypeUiAction: EnumUiAction;
+    private _itemColorTypeUiAction: IntegerExplicitElementsEnumUiAction;
     private _lightenUiAction: IconButtonUiAction;
     private _darkenUiAction: IconButtonUiAction;
     private _brightenUiAction: IconButtonUiAction;
@@ -633,12 +634,12 @@ export class ColorControlsNgComponent extends ContentComponentBaseNgDirective im
     }
 
     private createItemColorTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ColorSelector_ItemColorTypeCaption]);
         action.pushTitle(Strings[StringId.ColorSelector_ItemColorTypeTitle]);
 
         const entryCount = ColorControlsNgComponent.ItemColorType.idCount;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

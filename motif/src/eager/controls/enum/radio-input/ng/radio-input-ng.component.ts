@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { Integer, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
-import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-component-base-ng.directive';
+import { IntegerEnumElementComponentBaseNgDirective } from '../../ng/ng-api';
 
 @Component({
     selector: 'app-radio-input', // should be xxx-radio
@@ -17,7 +17,7 @@ import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-compo
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class RadioInputNgComponent extends EnumElementComponentBaseNgDirective {
+export class RadioInputNgComponent extends IntegerEnumElementComponentBaseNgDirective {
     private static typeInstanceCreateCount = 0;
 
     @Input() name = '';
