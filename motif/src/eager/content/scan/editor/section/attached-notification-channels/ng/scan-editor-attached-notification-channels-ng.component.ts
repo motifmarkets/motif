@@ -178,9 +178,6 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
                 attachPromise.then(
                     () => {
                         const idx = list.indexOfChannelId(channelId);
-                        // test
-                        const promise = this._notificationChannelsService.tryLockChannel(channelId, { lockerName: ''}, true);
-                        AssertInternalError.throwErrorIfPromiseRejected(promise, '');
                         if (idx >= 0) {
                             this._channelsGridFrame.focusItem(idx);
                         }
