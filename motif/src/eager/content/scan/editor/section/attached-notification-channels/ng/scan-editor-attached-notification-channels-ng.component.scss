@@ -6,6 +6,8 @@
 
 @use './partials/main-toolbar-css-mixin';
 @use './partials/section-content-left-margin-mixin';
+@use './partials/centered-toolbar-group-mixin';
+@use './partials/svg-icon-button-size';
 
 :host {
     display: flex;
@@ -25,6 +27,10 @@
 
             #channelsToolbar {
                 @include main-toolbar-css-mixin.mainToolbarCssMixin;
+                #buttons {
+                    @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                    @include svg-icon-button-size.toolbarChildMixin;
+                }
             }
 
             #channelsGrid {

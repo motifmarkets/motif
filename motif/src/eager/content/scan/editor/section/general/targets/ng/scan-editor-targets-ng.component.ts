@@ -61,7 +61,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     public readonly targetSubTypeRadioName: string;
 
     controlInputOrCommitEventer: ScanEditorTargetsNgComponent.ControlInputOrCommitEventer | undefined;
-    editMultiSymbolGridColumnsEventer: ScanEditorTargetsNgComponent.EditMultiSymbolGridColumnsEventer | undefined;
+    editGridColumnsEventer: ScanEditorTargetsNgComponent.EditGridColumnsEventer | undefined;
     popoutMultiSymbolListEditorEventer: ScanEditorTargetsNgComponent.PopoutMultiSymbolListEditorEventer | undefined;
 
     private readonly _symbolsService: SymbolsService;
@@ -255,8 +255,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         )
 
         this._multiSymbolEditorComponent.editGridColumnsEventer = (allowedFieldsAndLayoutDefinition) => {
-            if (this.editMultiSymbolGridColumnsEventer !== undefined) {
-                return this.editMultiSymbolGridColumnsEventer(
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(
                     Strings[StringId.ScanEditorTargetsComponent_EditMultiSymbolGridColumns],
                     allowedFieldsAndLayoutDefinition
                 );
@@ -595,7 +595,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
 export namespace ScanEditorTargetsNgComponent {
     export type ControlInputOrCommitEventer = (this: void) => void;
-    export type EditMultiSymbolGridColumnsEventer = (
+    export type EditGridColumnsEventer = (
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition

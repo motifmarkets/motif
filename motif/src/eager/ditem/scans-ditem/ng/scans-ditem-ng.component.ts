@@ -157,7 +157,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     protected override finalise() {
-        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._editorComponent.editGridColumnsEventer = undefined;
         this._editorComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
 
         this._newUiAction.finalise();
@@ -284,7 +284,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._autoSizeColumnWidthsButtonComponent.initialise(this._autoSizeColumnWidthsUiAction);
         this._columnsButtonComponent.initialise(this._columnsUiAction);
 
-        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = (
+        this._editorComponent.editGridColumnsEventer = (
             caption,
             allowedFieldsAndLayoutDefinition
         ) => this.openGridColumnsEditorDialog(caption, allowedFieldsAndLayoutDefinition);

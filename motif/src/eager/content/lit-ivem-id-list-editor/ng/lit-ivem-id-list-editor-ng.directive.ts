@@ -190,7 +190,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     protected editGridColumns(allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
         if (this.editGridColumnsEventer === undefined) {
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
             return this.editGridColumnsEventer(allowedFieldsAndLayoutDefinition);
         }
@@ -293,18 +293,16 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
     private handleColumnsSignalEvent() {
         const allowedFieldsAndLayoutDefinition = this._litIvemIdListComponent.createAllowedFieldsGridLayoutDefinition();
         const promise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
-        if (promise !== undefined) {
-            promise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._litIvemIdListComponent.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
-                    }
-                },
-                (reason) => {
-                    throw new AssertInternalError('LIIENCHLGCUASEE56668', getErrorMessage(reason));
+        promise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._litIvemIdListComponent.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
                 }
-            );
-        }
+            },
+            (reason) => {
+                throw new AssertInternalError('LIIENCHLGCUASEE56668', getErrorMessage(reason));
+            }
+        );
     }
 
     private updateCounts() {

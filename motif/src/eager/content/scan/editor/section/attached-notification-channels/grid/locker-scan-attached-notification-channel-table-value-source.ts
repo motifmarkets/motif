@@ -11,10 +11,12 @@ import {
     MultiEvent,
     NotificationChannelSourceSettingsUrgencyTableValue,
     NumberTableValue,
+    RenderValue,
     StringTableValue,
     TableValue,
     TableValueSource,
     UnreachableCaseError,
+    ValidTableValue,
     ValueRecentChangeTypeId
 } from '@motifmarkets/motif-core';
 import { LockerScanAttachedNotificationChannelTableFieldSourceDefinition } from './locker-scan-attached-notification-channel-table-field-source-definition';
@@ -63,9 +65,13 @@ export class LockerScanAttachedNotificationChannelTableValueSource extends Table
     private handleFieldsChangedEvent(changedFieldIds: readonly LockerScanAttachedNotificationChannel.FieldId[]) {
         const changeCount = changedFieldIds.length;
         const valueChanges = new Array<TableValueSource.ValueChange>(changeCount);
+        let validChanged = false;
         let foundCount = 0;
-        for (let i = 0; i < changedFieldIds.length; i++) {
+        for (let i = 0; i < changeCount; i++) {
             const fieldId = changedFieldIds[i];
+            if (fieldId === LockerScanAttachedNotificationChannel.FieldId.Valid) {
+                validChanged = true;
+            }
             const fieldIndex = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.Field.indexOfId(fieldId);
             if (fieldIndex >= 0) {
                 const newValue = this.createTableValue(fieldIndex);
@@ -73,8 +79,22 @@ export class LockerScanAttachedNotificationChannelTableValueSource extends Table
                 valueChanges[foundCount++] = { fieldIndex, newValue, recentChangeTypeId: ValueRecentChangeTypeId.Update };
             }
         }
-        if (foundCount < changeCount) {
-            valueChanges.length = foundCount;
+
+        if (validChanged) {
+            valueChanges.length = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.Field.count;
+            let elementCount = foundCount;
+            for (let fieldIndex = 0; fieldIndex < LockerScanAttachedNotificationChannelTableFieldSourceDefinition.Field.count; fieldIndex++) {
+                if (!TableValueSource.ValueChange.arrayIncludesFieldIndex(valueChanges, fieldIndex, foundCount)) {
+                    const newValue = this.createTableValue(fieldIndex);
+                    const fieldId = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.Field.getId(fieldIndex);
+                    this.loadValue(fieldId, newValue);
+                    valueChanges[elementCount++] = { fieldIndex, newValue, recentChangeTypeId: ValueRecentChangeTypeId.Update };
+                }
+            }
+        } else {
+            if (foundCount < changeCount) {
+                valueChanges.length = foundCount;
+            }
         }
         this.notifyValueChangesEvent(valueChanges);
     }
@@ -85,9 +105,16 @@ export class LockerScanAttachedNotificationChannelTableValueSource extends Table
     }
 
     private loadValue(id: LockerScanAttachedNotificationChannel.FieldId, value: TableValue) {
+        if (!this._channel.valid) {
+            value.addRenderAttribute(RenderValue.DataCorrectnessAttribute.error);
+        }
         switch (id) {
             case LockerScanAttachedNotificationChannel.FieldId.ChannelId: {
                 (value as StringTableValue).data = this._channel.channelId;
+                break;
+            }
+            case LockerScanAttachedNotificationChannel.FieldId.Valid: {
+                (value as ValidTableValue).data = this._channel.valid;
                 break;
             }
             case LockerScanAttachedNotificationChannel.FieldId.Name: {

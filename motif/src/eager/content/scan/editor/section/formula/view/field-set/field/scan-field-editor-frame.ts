@@ -80,9 +80,9 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     private _conditionsOperationId = ScanField.BooleanOperationId.And;
 
     private _conditionCount = 0;
-    private _allConditionsValid = false;
-    private _xorValid = false;
-    private _valid = false;
+    private _allConditionsValid = true;
+    private _xorValid = true;
+    private _valid = true;
     private _errorText = '';
 
     private _changesBeginCount = 0;

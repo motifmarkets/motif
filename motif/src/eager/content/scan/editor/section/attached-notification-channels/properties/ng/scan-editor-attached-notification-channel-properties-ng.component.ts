@@ -15,6 +15,7 @@ import {
     IntegerEnumInputNgComponent,
     IntegerTextInputNgComponent
 } from 'controls-ng-api';
+import { ComponentBaseNgDirective } from '../../../../../../../component/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../../../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -39,7 +40,7 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
     public channelName = '';
     public channelId = '';
 
-    private readonly _modifier: LockerScanAttachedNotificationChannel.Modifier;
+    private _modifier: LockerScanAttachedNotificationChannel.Modifier;
 
     private readonly _minimumStableUiAction: NumberUiAction;
     private readonly _minimumElapsedUiAction: NumberUiAction;
@@ -55,7 +56,6 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
     ) {
         super(elRef, ++ScanEditorAttachedNotificationChannelPropertiesNgComponent.typeInstanceCreateCount);
 
-        this._modifier = this.instanceId;
         this.channelNameLabel = Strings[StringId.LockerScanAttachedNotificationChannelHeader_Name];
 
         this._minimumStableUiAction = this.createMinimumStableUiAction();
@@ -66,12 +66,21 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
         this.pushChannelUndefined();
     }
 
+    get channel() { return this._channel; }
+
     ngOnDestroy() {
         this.finalise();
     }
 
     ngAfterViewInit() {
         this.initialiseComponents();
+    }
+
+    setRootComponentInstanceId(root: ComponentBaseNgDirective.InstanceId) {
+        this._modifier = {
+            root,
+            node: this.instanceId,
+        }
     }
 
     setAttachedNotificationChannel(value: LockerScanAttachedNotificationChannel | undefined, finalise: boolean) {
@@ -94,12 +103,16 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
     }
 
     areAllControlValuesOk() {
-        return (
-            this._minimumStableUiAction.isValueOk() &&
-            this._minimumElapsedUiAction.isValueOk() &&
-            this._ttlUiAction.isValueOk() &&
-            this._urgencyUiAction.isValueOk()
-        );
+        if (this._channel === undefined) {
+            return true;
+        } else {
+            return (
+                this._minimumStableUiAction.isValueOk() &&
+                this._minimumElapsedUiAction.isValueOk() &&
+                this._ttlUiAction.isValueOk() &&
+                this._urgencyUiAction.isValueOk()
+            );
+        }
     }
 
     cancelAllControlsEdited() {
@@ -137,7 +150,7 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
                 throw new AssertInternalError('SEANCPNCCMSUAC45098');
             } else {
                 const value = this._minimumStableUiAction.value;
-                channel.setMinimumStable(value)
+                channel.setMinimumStable(value, this._modifier);
             }
         };
         return action;
@@ -153,7 +166,7 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
                 throw new AssertInternalError('SEANCPNCCMEUAC45098');
             } else {
                 const value = this._minimumElapsedUiAction.value;
-                channel.setMinimumStable(value)
+                channel.setMinimumElapsed(value, this._modifier);
             }
         };
         return action;
@@ -169,10 +182,9 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
                 throw new AssertInternalError('SEANCPNCCTUACC45098');
             } else {
                 const value = this._ttlUiAction.value;
-                if (value === undefined) {
-                    throw new AssertInternalError('SEANCPNCCTUACV45098');
-                } else {
-                    channel.setTtl(value)
+                const changed = channel.setTtl(value, this._modifier);
+                if (changed) {
+                    this._ttlUiAction.valueRequired = channel.ttlRequired;
                 }
             }
         };
@@ -200,7 +212,10 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
                 throw new AssertInternalError('SEANCPNCCUUAC45098');
             } else {
                 const value = this._urgencyUiAction.value;
-                channel.setUrgency(value);
+                const changed = channel.setUrgency(value, this._modifier);
+                if (changed) {
+                    this._ttlUiAction.valueRequired = channel.ttlRequired;
+                }
             }
         };
         return action;
@@ -229,6 +244,7 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
         this._minimumElapsedUiAction.pushValidOrMissing();
         this._ttlUiAction.pushValue(channel.ttl);
         this._ttlUiAction.pushValidOrMissing();
+        this._ttlUiAction.valueRequired = channel.ttlRequired;
         this._urgencyUiAction.pushValue(channel.urgencyId);
         this._urgencyUiAction.pushValidOrMissing();
         this._cdr.markForCheck();
@@ -238,7 +254,7 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
         fieldIds: readonly LockerScanAttachedNotificationChannel.FieldId[],
         modifier: LockerScanAttachedNotificationChannel.Modifier | undefined
     ) {
-        if (modifier !== this._modifier) {
+        if (modifier === undefined || modifier.node !== this._modifier.node) {
             const channel = this._channel;
             if (channel === undefined) {
                 throw new AssertInternalError('SEANCPNCPCF44452')
@@ -256,6 +272,8 @@ export class ScanEditorAttachedNotificationChannelPropertiesNgComponent extends 
         switch (fieldId) {
             case LockerScanAttachedNotificationChannel.FieldId.ChannelId:
                 throw new AssertInternalError('SEANCPNCPFII44452', channel.channelId);
+            case LockerScanAttachedNotificationChannel.FieldId.Valid:
+                break;
             case LockerScanAttachedNotificationChannel.FieldId.Name:
                 this.channelName = channel.name;
                 this._cdr.markForCheck();

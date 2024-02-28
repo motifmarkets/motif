@@ -57,7 +57,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: ButtonInputNgComponent;
     @ViewChild('testButton', { static: true }) private _testButtonComponent: ButtonInputNgComponent;
 
-    editTargetsMultiSymbolGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
+    editGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
     popoutTargetsMultiSymbolListEditorEventer: ScanEditorNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
 
     public criteriaFieldId = ScanEditor.FieldId.Criteria;
@@ -166,7 +166,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     protected finalise() {
         this._generalSectionComponent.controlInputOrCommitEventer = undefined;
-        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._generalSectionComponent.editGridColumnsEventer = undefined;
         this._generalSectionComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
         this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = undefined;
 
@@ -251,9 +251,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     private initialiseComponents() {
         this._generalSectionComponent.controlInputOrCommitEventer = () => { this.handleControlInputOrCommitEvent(); }
-        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
-            if (this.editTargetsMultiSymbolGridColumnsEventer !== undefined) {
-                return this.editTargetsMultiSymbolGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+        this._generalSectionComponent.editGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
             } else {
                 return Promise.resolve(undefined);
             }
@@ -264,6 +264,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             }
         }
         this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = () => { this.checkUpdateRankDisplayed(); }
+
+        this._notificationChannelsSectionComponent.editGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+            } else {
+                return Promise.resolve(undefined);
+            }
+        };
 
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
@@ -514,10 +522,10 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     private areAllControlValuesOk() {
         return (
-            this._generalSectionComponent.areAllControlValuesOk() &&
-            this._criteriaSectionComponent.areAllControlValuesOk() &&
-            this._rankSectionComponent.areAllControlValuesOk() &&
-            this._notificationChannelsSectionComponent.areAllControlValuesOk()
+            this._generalSectionComponent.areAllControlValuesOk()
+            // this._criteriaSectionComponent.areAllControlValuesOk() &&
+            // this._rankSectionComponent.areAllControlValuesOk() &&
+            // this._notificationChannelsSectionComponent.areAllControlValuesOk()
         );
     }
 

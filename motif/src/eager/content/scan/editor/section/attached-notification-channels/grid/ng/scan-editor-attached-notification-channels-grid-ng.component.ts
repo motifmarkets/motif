@@ -39,6 +39,14 @@ export class ScanEditorAttachedNotificationChannelsGridNgComponent extends GridS
         }
     }
 
+    selectAllRows() {
+        this.frame.selectAllRows();
+    }
+
+    getSelectedRecordIndices() {
+        return this.frame.getSelectedRecordIndices();
+    }
+
     protected override processAfterViewInit() {
         super.processAfterViewInit();
         this.frame.initialiseGrid(this._opener, undefined, false);

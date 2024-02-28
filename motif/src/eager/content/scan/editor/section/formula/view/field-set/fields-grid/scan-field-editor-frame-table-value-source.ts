@@ -8,12 +8,14 @@ import {
     Integer,
     IntegerTableValue,
     MultiEvent,
+    RenderValue,
     ScanFieldBooleanOperationIdTableValue,
     StringTableValue,
     TableValue,
     TableValueSource,
     UnreachableCaseError,
-    ValidTableValue
+    ValidTableValue,
+    ValueRecentChangeTypeId
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
 import { ScanFieldEditorFrameTableFieldSourceDefinition } from './scan-field-editor-frame-table-field-source-definition';
@@ -62,9 +64,13 @@ export class ScanFieldEditorFrameTableValueSource extends TableValueSource {
     private handleValuesChangedEvent(scanValueChanges: ScanFieldEditorFrame.Field.ValueChange[]) {
         const changeCount = scanValueChanges.length;
         const valueChanges = new Array<TableValueSource.ValueChange>(changeCount);
+        let validChanged = false;
         let foundCount = 0;
-        for (let i = 0; i < scanValueChanges.length; i++) {
+        for (let i = 0; i < changeCount; i++) {
             const { fieldId, recentChangeTypeId } = scanValueChanges[i];
+            if (fieldId === ScanFieldEditorFrame.FieldId.Valid) {
+                validChanged = true;
+            }
             const fieldIndex = ScanFieldEditorFrameTableFieldSourceDefinition.Field.indexOfId(fieldId);
             if (fieldIndex >= 0) {
                 const newValue = this.createTableValue(fieldIndex);
@@ -72,8 +78,22 @@ export class ScanFieldEditorFrameTableValueSource extends TableValueSource {
                 valueChanges[foundCount++] = { fieldIndex, newValue, recentChangeTypeId };
             }
         }
-        if (foundCount < changeCount) {
-            valueChanges.length = foundCount;
+
+        if (validChanged) {
+            valueChanges.length = ScanFieldEditorFrameTableFieldSourceDefinition.Field.count;
+            let elementCount = foundCount;
+            for (let fieldIndex = 0; fieldIndex < ScanFieldEditorFrameTableFieldSourceDefinition.Field.count; fieldIndex++) {
+                if (!TableValueSource.ValueChange.arrayIncludesFieldIndex(valueChanges, fieldIndex, foundCount)) {
+                    const newValue = this.createTableValue(fieldIndex);
+                    const fieldId = ScanFieldEditorFrameTableFieldSourceDefinition.Field.getId(fieldIndex);
+                    this.loadValue(fieldId, newValue);
+                    valueChanges[elementCount++] = { fieldIndex, newValue, recentChangeTypeId: ValueRecentChangeTypeId.Update };
+                }
+            }
+        } else {
+            if (foundCount < changeCount) {
+                valueChanges.length = foundCount;
+            }
         }
         this.notifyValueChangesEvent(valueChanges);
     }
@@ -84,6 +104,9 @@ export class ScanFieldEditorFrameTableValueSource extends TableValueSource {
     }
 
     private loadValue(id: ScanFieldEditorFrame.FieldId, value: TableValue) {
+        if (!this._frame.valid) {
+            value.addRenderAttribute(RenderValue.DataCorrectnessAttribute.error);
+        }
         switch (id) {
             case ScanFieldEditorFrame.FieldId.Name: {
                 (value as StringTableValue).data = this._frame.name;

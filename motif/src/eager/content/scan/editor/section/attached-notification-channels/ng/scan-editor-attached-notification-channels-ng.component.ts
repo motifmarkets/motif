@@ -1,9 +1,15 @@
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
+    AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
+    CommandRegisterService,
+    GridLayoutOrReferenceDefinition,
     HtmlTypes,
+    IconButtonUiAction,
     Integer,
+    InternalCommand,
     LockerScanAttachedNotificationChannelList,
+    MultiEvent,
     NotificationChannelsService,
     ScanEditor,
     StringExplicitElementsEnumUiAction,
@@ -12,9 +18,9 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { NotificationChannelsNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, NotificationChannelsNgService } from 'component-services-ng-api';
 import {
-    IntegerEnumInputNgComponent
+    IntegerEnumInputNgComponent, SvgButtonNgComponent
 } from 'controls-ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
@@ -33,26 +39,41 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
 
     @ViewChild('sectionHeading', { static: true }) override _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
     @ViewChild('content', { static: true }) private _contentSection: HTMLElement;
-    @ViewChild('addChannelControl', { static: true }) private _addChannelControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('channelsGrid', { static: true }) private _channelsGridComponent: ScanEditorAttachedNotificationChannelsGridNgComponent;
     @ViewChild('channelProperties', { static: true }) private _channelPropertiesComponent: ScanEditorAttachedNotificationChannelPropertiesNgComponent;
+    @ViewChild('addChannelControl', { static: true }) private _addChannelControlComponent: IntegerEnumInputNgComponent;
+    @ViewChild('selectAllControl') private _selectAllControlComponent: SvgButtonNgComponent;
+    @ViewChild('removeSelectedControl') private _removeSelectedControlComponent: SvgButtonNgComponent;
+    @ViewChild('columnsControl') private _columnsControlComponent: SvgButtonNgComponent;
 
-    public sectionHeadingText = Strings[StringId.Notifiers];
+    editGridColumnsEventer: ScanEditorAttachedNotificationChannelsNgComponent.EditGridColumnsEventer | undefined;
+
+    public sectionHeadingText = Strings[StringId.Notifications];
 
     private readonly _notificationChannelsService: NotificationChannelsService;
     private readonly _addChannelUiAction: StringExplicitElementsEnumUiAction;
+    private readonly _selectAllUiAction: IconButtonUiAction;
+    private readonly _removeSelectedUiAction: IconButtonUiAction;
+    private readonly _columnsUiAction: IconButtonUiAction;
 
     private _list: LockerScanAttachedNotificationChannelList | undefined;
+    private _listBeforeChannelsDetachSubscriptionId: MultiEvent.SubscriptionId;
     private _channelsGridFrame: ScanEditorAttachedNotificationChannelsGridFrame;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
+        commandRegisterNgService: CommandRegisterNgService,
         notificationChannelsNgService: NotificationChannelsNgService,
     ) {
         super(elRef, ++ScanEditorAttachedNotificationChannelsNgComponent.typeInstanceCreateCount);
 
         this._notificationChannelsService = notificationChannelsNgService.service;
+
+        const commandRegisterService = commandRegisterNgService.service;
         this._addChannelUiAction = this.createAddChannelUiAction();
+        this._selectAllUiAction = this.createSelectAllUiAction(commandRegisterService);
+        this._removeSelectedUiAction = this.createRemoveSelectedUiAction(commandRegisterService);
+        this._columnsUiAction = this.createColumnsUiAction(commandRegisterService);
     }
 
     ngOnDestroy() {
@@ -65,6 +86,10 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
 
     override setEditor(value: ScanEditor | undefined) {
         if (value !== this.scanEditor) {
+            if (this._list !== undefined) {
+                this._list.unsubscribeBeforeChannelsDetachEvent(this._listBeforeChannelsDetachSubscriptionId);
+                this._listBeforeChannelsDetachSubscriptionId = undefined;
+            }
             super.setEditor(value);
             this._channelPropertiesComponent.setAttachedNotificationChannel(undefined, false);
             if (value === undefined) {
@@ -74,6 +99,9 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
                 const list = value.attachedNotificationChannelsList;
                 this._list = list;
                 this._channelsGridComponent.setList(list);
+                this._listBeforeChannelsDetachSubscriptionId = list.subscribeBeforeChannelsDetachEvent(
+                    (idx, count) => this.processBeforeChannelsDetach(idx, count)
+                );
             }
         }
     }
@@ -117,14 +145,21 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
     private initialiseComponents() {
         super.initialiseSectionHeadingComponent();
 
-        this._addChannelControlComponent.initialise(this._addChannelUiAction);
-        this._addChannelControlComponent.openEventer = () => this.pushAddChannelElements();
         this._channelsGridFrame = this._channelsGridComponent.frame;
         this._channelsGridFrame.recordFocusedEventer = (index) => this.processChannelsGridFrameFocusChange(index);
+        this._channelPropertiesComponent.setRootComponentInstanceId(this.instanceId);
+        this._addChannelControlComponent.initialise(this._addChannelUiAction);
+        this._addChannelControlComponent.openEventer = () => this.pushAddChannelElements();
+        this._selectAllControlComponent.initialise(this._selectAllUiAction);
+        this._removeSelectedControlComponent.initialise(this._removeSelectedUiAction);
+        this._columnsControlComponent.initialise(this._columnsUiAction);
     }
 
     private finalise() {
         this._addChannelUiAction.finalise();
+        this._selectAllUiAction.finalise();
+        this._removeSelectedUiAction.finalise();
+        this._columnsUiAction.finalise();
     }
 
     private createAddChannelUiAction() {
@@ -143,6 +178,9 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
                 attachPromise.then(
                     () => {
                         const idx = list.indexOfChannelId(channelId);
+                        // test
+                        const promise = this._notificationChannelsService.tryLockChannel(channelId, { lockerName: ''}, true);
+                        AssertInternalError.throwErrorIfPromiseRejected(promise, '');
                         if (idx >= 0) {
                             this._channelsGridFrame.focusItem(idx);
                         }
@@ -155,24 +193,99 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
         return action;
     }
 
+    private createSelectAllUiAction(commandRegisterService: CommandRegisterService) {
+        const commandName = InternalCommand.Id.Grid_SelectAll;
+        const displayId = StringId.Grid_SelectAllCaption;
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.Grid_SelectAllTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.MarkAll);
+        action.pushUnselected();
+        action.signalEvent = () => {
+            this._channelsGridComponent.selectAllRows();
+        };
+        return action;
+    }
+
+    private createRemoveSelectedUiAction(commandRegisterService: CommandRegisterService) {
+        const commandName = InternalCommand.Id.Grid_RemoveSelected;
+        const displayId = StringId.ScanEditorAttachNotificationChannels_DetachSelectedChannelsCaption;
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.ScanEditorAttachNotificationChannels_DetachSelectedChannelsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.RemoveSelectedFromList);
+        action.pushUnselected();
+        action.signalEvent = () => {
+            const list = this._list;
+            if (list === undefined) {
+                throw new AssertInternalError('SEANCNCCRSUAU22098');
+            } else {
+                const selectedIndices = this._channelsGridComponent.getSelectedRecordIndices();
+                list.detachChannelsAtIndices(selectedIndices);
+            }
+        };
+        return action;
+    }
+
+    private createColumnsUiAction(commandRegisterService: CommandRegisterService) {
+        const commandName = InternalCommand.Id.SelectGridColumns;
+        const displayId = StringId.SelectColumnsCaption;
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const action = new IconButtonUiAction(command);
+        action.pushTitle(Strings[StringId.SelectColumnsTitle]);
+        action.pushIcon(IconButtonUiAction.IconId.SelectColumns);
+        action.pushUnselected();
+        action.signalEvent = () => { this.handleColumnsSignalEvent(); };
+        return action;
+    }
+
     private async pushAddChannelElements(): Promise<void> {
         const channelList = await this._notificationChannelsService.getChannelList(false);
         if (channelList === undefined) {
             this._addChannelUiAction.pushElements([], undefined);
         } else {
-            const count = channelList.count;
-            const elementPropertiesArray = new Array<StringExplicitElementsEnumUiAction.ElementProperties>(count);
-            for (let i = 0; i < count; i++) {
-                const channel = channelList.getAt(i);
-                const description = channel.channelDescription;
-                const elementProperties: StringExplicitElementsEnumUiAction.ElementProperties = {
-                    element: channel.channelId,
-                    caption: channel.channelName,
-                    title: description === undefined ? '' : description,
-                };
-                elementPropertiesArray[i] = elementProperties;
+            const lockerList = this._list;
+            if (lockerList === undefined) {
+                throw new AssertInternalError('SEANCNCPACE11334');
+            } else {
+                const maxCount = channelList.count;
+                const elementPropertiesArray = new Array<StringExplicitElementsEnumUiAction.ElementProperties>(maxCount);
+                let count = 0;
+                for (let i = 0; i < maxCount; i++) {
+                    const channel = channelList.getAt(i);
+                    const channelId = channel.channelId;
+                    if (lockerList.indexOfChannelId(channelId) < 0) {
+                        // only include channels not yet attached
+                        const description = channel.channelDescription;
+                        const elementProperties: StringExplicitElementsEnumUiAction.ElementProperties = {
+                            element: channel.channelId,
+                            caption: channel.channelName,
+                            title: description === undefined ? '' : description,
+                        };
+                        elementPropertiesArray[count++] = elementProperties;
+                    }
+                }
+                elementPropertiesArray.length = count;
+                this._addChannelUiAction.pushElements(elementPropertiesArray, undefined);
             }
-            this._addChannelUiAction.pushElements(elementPropertiesArray, undefined);
+        }
+    }
+
+    private processBeforeChannelsDetach(idx: Integer, count: Integer) {
+        const activeChannel = this._channelPropertiesComponent.channel;
+        if (activeChannel !== undefined) {
+            const list = this._list;
+            if (list === undefined) {
+                throw new AssertInternalError('SEANCNCPBCD56081');
+            } else {
+                for (let i = idx + count - 1; i >= idx; i--) {
+                    const channel = list.getAt(i);
+                    if (channel === activeChannel) {
+                        this._channelPropertiesComponent.setAttachedNotificationChannel(undefined, false);
+                        break;
+                    }
+                }
+            }
         }
     }
 
@@ -184,9 +297,37 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
             this._channelPropertiesComponent.setAttachedNotificationChannel(channel, false);
         }
     }
+
+    private handleColumnsSignalEvent() {
+        const allowedFieldsAndLayoutDefinition = this._channelsGridFrame.createAllowedFieldsGridLayoutDefinition();
+        const promise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
+        promise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    this._channelsGridFrame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SEANCNCHCSE45698'); }
+        );
+    }
+
+    private editGridColumns(allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
+        if (this.editGridColumnsEventer === undefined) {
+            return Promise.resolve(undefined);
+        } else {
+            return this.editGridColumnsEventer(Strings[StringId.ScanEditorAttachNotificationChannels_EditGridColumns], allowedFieldsAndLayoutDefinition);
+        }
+    }
+
 }
 
 export namespace ScanEditorAttachedNotificationChannelsNgComponent {
     // eslint-disable-next-line prefer-const
     export let typeInstanceCreateCount = 0;
+
+    export type EditGridColumnsEventer = (
+        this: void,
+        caption: string,
+        allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
+    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
 }

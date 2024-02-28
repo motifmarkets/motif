@@ -6,6 +6,7 @@
 
 import {
     AssertInternalError,
+    BooleanTableField,
     CommaText,
     EnumTableField,
     FieldDataType,
@@ -20,7 +21,8 @@ import {
     TableField,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachedFactoryService,
-    TableValue
+    TableValue,
+    ValidTableValue
 } from '@motifmarkets/motif-core';
 
 export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition extends TableFieldSourceDefinition {
@@ -96,6 +98,10 @@ export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition
             {
                 id: LockerScanAttachedNotificationChannel.FieldId.ChannelId,
                 tableFieldValueConstructors: [StringTableField, StringTableValue],
+            },
+            {
+                id: LockerScanAttachedNotificationChannel.FieldId.Valid,
+                tableFieldValueConstructors: [BooleanTableField, ValidTableValue],
             },
             {
                 id: LockerScanAttachedNotificationChannel.FieldId.Name,
