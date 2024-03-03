@@ -24,6 +24,7 @@ import {
     UiComparableList
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 
 export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
@@ -52,6 +53,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         tableRecordSourceFactory: TableRecordSourceFactory,
         referenceableGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
+        toastService: ToastService,
         initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined,
     ) {
         super(
@@ -63,6 +65,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
             tableRecordSourceFactory,
             referenceableGridSourcesService,
             cellPainterFactoryService,
+            toastService,
         );
 
         if (initialCustomGridSettings === undefined) {

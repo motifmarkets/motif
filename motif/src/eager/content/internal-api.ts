@@ -20,6 +20,7 @@ export * from './orders/internal-api';
 export * from './delayed-badness-grid-source/internal-api';
 export * from './grid-source/internal-api';
 export * from './lit-ivem-id-list/internal-api';
+export * from './lock-open-notification-channels/internal-api';
 export * from './markets/internal-api';
 export * from './order-request-step/internal-api';
 export * from './scan/internal-api';

@@ -66,7 +66,7 @@ export class TradesFrame extends ContentFrame {
         if (tradesFrameElement === undefined) {
             this._gridLayout = this.createDefaultGridLayout();
         } else {
-            const tryGetElementResult = tradesFrameElement.tryGetElement(TradesFrame.JsonName.layout);
+            const tryGetElementResult = tradesFrameElement.tryGetDefinedElement(TradesFrame.JsonName.layout);
             if (tryGetElementResult.isErr()) {
                 this._gridLayout = this.createDefaultGridLayout();
             } else {

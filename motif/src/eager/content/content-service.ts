@@ -25,6 +25,7 @@ import {
     TableRecordSourceFactory,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame } from './balances/internal-api';
 import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
@@ -33,6 +34,7 @@ import { FeedsFrame } from './feeds/internal-api';
 import { GridLayoutEditorAllowedFieldsFrame, GridLayoutEditorColumnsFrame } from './grid-layout-dialog/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { LitIvemIdListFrame } from './lit-ivem-id-list/lit-ivem-id-list-frame';
+import { LockOpenNotificationChannelsGridFrame } from './lock-open-notification-channels/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
@@ -61,6 +63,7 @@ export class ContentService {
         private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
         private readonly _sessionInfoService: SessionInfoService,
         private readonly _cellPainterFactoryService: CellPainterFactoryService,
+        private readonly _toastService: ToastService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -77,6 +80,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -116,6 +120,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             initialCustomGridSettings,
         );
     }
@@ -130,6 +135,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -143,6 +149,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -156,6 +163,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -169,6 +177,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -182,6 +191,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -195,6 +205,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -208,6 +219,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -221,6 +233,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -234,6 +247,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -247,6 +261,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -261,6 +276,23 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
+            opener,
+        );
+    }
+
+    createLockOpenNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return new LockOpenNotificationChannelsGridFrame(
+            this._settingsService,
+            this._notificationChannelsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachedFactoryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactory,
+            this._referenceableGridSourcesService,
+            this._cellPainterFactoryService,
+            this._toastService,
             opener,
         );
     }
@@ -275,6 +307,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             allowedFields,
             columnList,
         );
@@ -290,6 +323,7 @@ export class ContentService {
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             columnList,
         );
     }

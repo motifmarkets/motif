@@ -12,11 +12,11 @@ import {
     UiComparableList,
     getErrorMessage,
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
+import { CommandRegisterNgService, CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent } from '../../../nameable-grid-layout-editor-dialog/ng-api';
-import { LitIvemIdListEditorNgDirective } from '../../ng/lit-ivem-id-list-editor-ng.directive';
 import { TableFieldSourceDefinitionCachedFactoryNgService } from '../../../ng/table-field-source-definition-cached-factory-ng.service';
+import { LitIvemIdListEditorNgDirective } from '../../ng/lit-ivem-id-list-editor-ng.directive';
 
 @Component({
     selector: 'app-lit-ivem-id-list-editor-dialog',
@@ -44,6 +44,7 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
+        toastNgService: ToastNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
         @Inject(LitIvemIdListEditorDialogNgComponent.captionInjectionToken) public readonly caption: string,
         @Optional() @Inject(LitIvemIdListEditorNgDirective.listInjectionToken) list: UiComparableList<LitIvemId> | null,
@@ -53,6 +54,7 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
             cdr,
             commandRegisterNgService,
             fieldSourceDefinitionCachedFactoryNgService,
+            toastNgService,
             ++LitIvemIdListEditorDialogNgComponent.typeInstanceCreateCount,
             opener,
             list

@@ -33,6 +33,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell, RevRecord } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
@@ -54,6 +55,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         tableRecordSourceFactory: TableRecordSourceFactory,
         namedGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
+        toastService: ToastService,
         private readonly _allowedFields: readonly GridField[],
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
@@ -66,6 +68,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
             tableRecordSourceFactory,
             namedGridSourcesService,
             cellPainterFactoryService,
+            toastService,
         );
 
         this._columnListChangeSubscriptionId = this._columnList.subscribeListChangeEvent(
@@ -119,12 +122,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
         return grid;
     }
-
-    tryOpenDefault(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView);
-    }
-
 
     applyColumnListFilter() {
         this.grid.applyFilter((record) => this.filterInuseFields(record));

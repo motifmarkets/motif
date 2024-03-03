@@ -22,6 +22,7 @@ export class TableRecordSourceFactoryNgService {
             coreService.symbolDetailCacheService,
             coreService.rankedLitIvemIdListFactoryService,
             coreService.watchmakerService,
+            coreService.notificationChannelsService,
             coreService.scansService,
             coreService.textFormatterService,
             coreService.tableRecordSourceDefinitionFactoryService,

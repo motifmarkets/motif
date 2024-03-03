@@ -11,17 +11,19 @@ import {
     FavouriteReferenceableGridLayoutDefinitionsStoreService,
     GridLayout,
     GridLayoutOrReferenceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemId,
     RankedLitIvemIdList,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import {
     GridSourceFrame,
     WatchlistFrame
@@ -47,6 +49,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         private readonly _textFormatterService: TextFormatterService,
         private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteReferenceableGridLayoutDefinitionsStoreService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: WatchlistDitemFrame.RecordFocusedEventer,
         private readonly _gridLayoutSetEventer: WatchlistDitemFrame.GridLayoutSetEventer,
@@ -72,37 +75,62 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
         watchlistFrame.initialiseGrid(this.opener, undefined, false);
 
-        let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
+        let watchlistFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
-            if (watchlistFrameElementResult.isOk()) {
-                const watchlistFrameElement = watchlistFrameElementResult.value;
-                const definitionCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);
-                if (definitionCreateResult.isErr()) {
-                    // toast in future
-                } else {
-                    gridSourceOrReferenceDefinition = definitionCreateResult.value;
-                }
+            const getElementResult = ditemFrameElement.tryGetDefinedElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+            if (getElementResult.isOk()) {
+                watchlistFrameElement = getElementResult.value;
             }
         }
 
-        let openPromise: Promise<GridSourceOrReference | undefined>;
-        if (gridSourceOrReferenceDefinition === undefined) {
-            openPromise = watchlistFrame.tryOpenLitIvemIdArray(this.defaultLitIvemIds ?? [], false);
-        } else {
-            openPromise = watchlistFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false)
-        }
-
+        const openPromise = watchlistFrame.tryOpenJsonOrDefault(watchlistFrameElement, true)
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('WDFIPU50134');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Watchlist]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }
             },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFIPR50134') }
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
         );
+
+        // let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
+        // if (ditemFrameElement !== undefined) {
+        //     const watchlistFrameElementResult = ditemFrameElement.tryGetDefinedElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+        //     if (watchlistFrameElementResult.isOk()) {
+        //         const watchlistFrameElement = watchlistFrameElementResult.value;
+        //         const definitionCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);
+        //         if (definitionCreateResult.isErr()) {
+        //             this._toastNgService.popup(`${Strings[StringId.ErrorOpeningSaved]} ${Strings[StringId.Watchlist]}: ${definitionCreateResult.error}`);
+        //         } else {
+        //             gridSourceOrReferenceDefinition = definitionCreateResult.value;
+        //         }
+        //     }
+        // }
+
+        // let openPromise: Promise<Result<GridSourceOrReference | undefined>>;
+        // if (gridSourceOrReferenceDefinition === undefined) {
+        //     openPromise = watchlistFrame.tryOpenLitIvemIdArray(this.defaultLitIvemIds ?? [], false);
+        // } else {
+        //     openPromise = watchlistFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false)
+        // }
+
+        // openPromise.then(
+        //     (openResult) => {
+        //         if (openResult.isErr()) {
+        //             this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Watchlist]}: ${openResult.error}`);
+        //         } else {
+        //             const gridSourceOrReference = openResult.value;
+        //             if (gridSourceOrReference === undefined) {
+        //                 throw new AssertInternalError('WDFIPU50134');
+        //             } else {
+        //                 this.applyLinked();
+        //             }
+        //         }
+        //     },
+        //     (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFIPR50134') }
+        // );
     }
 
     override finalise() {
@@ -127,8 +155,15 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFTOGS10174');
         } else {
-            const gridSourceOrReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
-            AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'WDFTOGS33391', `${this.opener.lockerName}: ${definition.referenceId ?? ''}`);
+            const openPromise = this._watchlistFrame.tryOpenGridSource(definition, keepView);
+            openPromise.then(
+                (openResult) => {
+                    if (openResult.isErr()) {
+                        this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Watchlist]}: ${openResult.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDFTOGS33391', definition.referenceId ?? '') }
+            );
         }
     }
 

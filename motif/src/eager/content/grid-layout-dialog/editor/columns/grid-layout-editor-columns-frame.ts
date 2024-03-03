@@ -33,6 +33,7 @@ import {
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
 
 export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
@@ -55,6 +56,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         tableRecordSourceFactory: TableRecordSourceFactory,
         namedGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
+        toastService: ToastService,
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
@@ -66,6 +68,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
             tableRecordSourceFactory,
             namedGridSourcesService,
             cellPainterFactoryService,
+            toastService,
         );
     }
 
@@ -115,11 +118,6 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
 
         return grid;
-    }
-
-    tryOpenDefault(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView)
     }
 
     setWidthEditor(value: CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField>) {

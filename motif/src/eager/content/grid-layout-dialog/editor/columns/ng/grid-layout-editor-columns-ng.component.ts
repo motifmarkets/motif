@@ -14,7 +14,7 @@ import {
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from 'component-services-ng-api';
+import { CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { IntegerTextInputNgComponent } from 'controls-ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../ng/content-ng.service';
@@ -45,6 +45,7 @@ export class GridLayoutEditorColumnsNgComponent extends GridSourceNgDirective {
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
+        private readonly _toastNgService: ToastNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
         @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
     ) {
@@ -62,11 +63,11 @@ export class GridLayoutEditorColumnsNgComponent extends GridSourceNgDirective {
         this.frame.setupGrid(this._gridHost.nativeElement);
         this._widthEditorComponent.dataServer = this.frame.grid.mainDataServer;
         this.frame.initialiseGrid(this._opener, undefined, false);
-        const initialisePromise = this.frame.tryOpenDefault(false);
-        initialisePromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('GLECNCPU50137');
+        const openPromise = this.frame.tryOpenDefault(false);
+        openPromise.then(
+            (result) => {
+                if (result.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.GridLayoutEditorColumns]}: ${result.error}`);
                 }
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'GLECNCPR50137') }

@@ -17,6 +17,8 @@ import {
     RankedLitIvemIdList,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
+    StringId,
+    Strings,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
@@ -61,8 +63,15 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
 
         const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(name, description, category, dataDefinition);
 
-        const gridSourceOrReferencePromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
+        const openPromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+        openPromise.then(
+            (result) => {
+                if (result.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.ScanTestMatches]}: ${result.error}`);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSFER13971') }
+        );
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {

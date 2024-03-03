@@ -18,8 +18,11 @@ import {
     ScanList,
     ScansService,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import { ScanListFrame } from 'content-internal-api';
 import { ScanFieldSetEditorFrame } from '../../content/scan/editor/section/formula/view/field-set/scan-field-set-editor-frame';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
@@ -39,6 +42,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _scansService: ScansService,
+        private readonly _toastService: ToastService,
         private readonly _opener: LockOpenListItem.Opener,
         private readonly _setEditorEventer: ScansDitemFrame.SetEditorEventer,
     ) {
@@ -78,7 +82,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
         let scanListFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const scanListFrameElementResult = ditemFrameElement.tryGetElement(ScansDitemFrame.JsonName.scanListFrame);
+            const scanListFrameElementResult = ditemFrameElement.tryGetDefinedElement(ScansDitemFrame.JsonName.scanListFrame);
             if (scanListFrameElementResult.isOk()) {
                 scanListFrameElement = scanListFrameElementResult.value;
             }
@@ -86,11 +90,11 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
         scanListFrame.initialiseGrid(this.opener, undefined, true);
 
-        const openPromise = scanListFrame.openJsonOrDefault(scanListFrameElement, true)
+        const openPromise = scanListFrame.tryOpenJsonOrDefault(scanListFrameElement, true)
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('SDFIPU50135');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Scans]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }

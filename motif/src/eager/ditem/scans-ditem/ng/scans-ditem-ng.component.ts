@@ -30,7 +30,7 @@ import {
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService, ToastNgService } from 'component-services-ng-api';
 import { LitIvemIdListEditorDialogNgComponent, NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -85,6 +85,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         scansNgService: ScansNgService,
+        toastNgService: ToastNgService,
         @Self() @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         super(
@@ -108,6 +109,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             symbolsNgService.service,
             adiNgService.service,
             scansNgService.service,
+            toastNgService.service,
             this._opener,
             (editor) => this._editorComponent.setEditor(editor),
         );

@@ -5,8 +5,8 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
-import { AssertInternalError, LockOpenListItem, LockerScanAttachedNotificationChannelList } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from 'component-services-ng-api';
+import { AssertInternalError, LockOpenListItem, LockerScanAttachedNotificationChannelList, StringId, Strings } from '@motifmarkets/motif-core';
+import { CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { GridSourceNgDirective } from '../../../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../../../ng/content-ng.service';
 import { ScanEditorAttachedNotificationChannelsGridFrame } from '../scan-editor-attached-notification-channels-grid-frame';
@@ -23,6 +23,7 @@ export class ScanEditorAttachedNotificationChannelsGridNgComponent extends GridS
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        private readonly _toastNgService: ToastNgService,
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
@@ -34,8 +35,15 @@ export class ScanEditorAttachedNotificationChannelsGridNgComponent extends GridS
         if (value === undefined) {
             this.frame.closeGridSource(true);
         } else {
-            const promise = this.frame.tryOpenList(value, true);
-            AssertInternalError.throwErrorIfPromiseRejected(promise, 'SFEGGNC33133');
+            const openPromise = this.frame.tryOpenList(value, true);
+            openPromise.then(
+                (result) => {
+                    if (result.isErr()) {
+                        this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.ScanEditorAttachedNotificationChannels]}: ${result.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'FNCPR50139') }
+            );
         }
     }
 

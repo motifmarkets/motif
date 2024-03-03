@@ -30,7 +30,8 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, OrderAuthoriseNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -87,6 +88,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -107,6 +109,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
             adiNgService.service,
             symbolDetailCacheNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
+            toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );

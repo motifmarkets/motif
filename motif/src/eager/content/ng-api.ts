@@ -30,6 +30,7 @@ export * from './holdings/ng-api';
 export * from './ivem-holdings/ng-api';
 export * from './lit-ivem-id-list-editor/ng-api';
 export * from './lit-ivem-id-list/ng-api';
+export * from './lock-open-notification-channels/ng-api';
 export * from './markets/ng-api';
 export * from './nameable-grid-layout-editor-dialog/ng-api';
 export * from './ng/content-component-base-ng.directive';

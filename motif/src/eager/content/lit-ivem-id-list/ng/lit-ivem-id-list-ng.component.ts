@@ -59,10 +59,6 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         this.frame.initialiseGrid(opener, layoutDefinition, keepPreviousLayoutIfPossible);
     }
 
-    tryOpenJson(frameElement: JsonElement | undefined, keepView: boolean) {
-        return this.frame.tryOpenJson(frameElement, keepView)
-    }
-
     tryOpenList(list: UiComparableList<LitIvemId>, keepView: boolean) {
         this._list = list;
         return this.frame.tryOpenList(list, keepView);

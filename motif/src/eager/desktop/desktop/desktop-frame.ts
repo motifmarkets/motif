@@ -106,6 +106,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     private _newNewsHeadlinesDitemUiAction: CommandUiAction;
     private _newNewsBodyDitemUiAction: CommandUiAction;
     private _newScansDitemUiAction: CommandUiAction;
+    private _newNotificationChannelsDitemUiAction: CommandUiAction;
     private _newAlertsDitemUiAction: CommandUiAction;
     private _newSearchDitemUiAction: CommandUiAction;
     private _newAdvertWebPageDitemUiAction: CommandUiAction;
@@ -136,6 +137,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     private _newDepthDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newNewsHeadlinesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newScansDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newNotificationChannelsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAlertsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSearchDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAdvertWebPageDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -708,6 +710,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         this._newNewsHeadlinesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsHeadlines);
         this._newNewsBodyDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsBody);
         this._newScansDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Scans);
+        this._newNotificationChannelsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NotificationChannels);
         this._newAlertsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Alerts);
         this._newSearchDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Search);
         this._newAdvertWebPageDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.AdvertWebPage);
@@ -776,6 +779,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         this._newNewsHeadlinesDitemUiAction.finalise();
         this._newNewsBodyDitemUiAction.finalise();
         this._newScansDitemUiAction.finalise();
+        this._newNotificationChannelsDitemUiAction.finalise();
         this._newAlertsDitemUiAction.finalise();
         this._newSearchDitemUiAction.finalise();
         this._newAdvertWebPageDitemUiAction.finalise();
@@ -833,6 +837,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             this._newExtensionsDitemMenuItem = this._menuBarService.connectMenuItem(this._newExtensionsDitemUiAction);
             this._newSymbolsDitemMenuItem = this._menuBarService.connectMenuItem(this._newSymbolsDitemUiAction);
             this._newScansDitemMenuItem = this._menuBarService.connectMenuItem(this._newScansDitemUiAction);
+            this._newNotificationChannelsDitemMenuItem = this._menuBarService.connectMenuItem(this._newNotificationChannelsDitemUiAction);
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
@@ -870,6 +875,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             this._menuBarService.disconnectMenuItem(this._newExtensionsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newSymbolsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newScansDitemMenuItem);
+            this._menuBarService.disconnectMenuItem(this._newNotificationChannelsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);

@@ -43,7 +43,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
 
         let tradesFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
+            const tradesFrameElementResult = ditemFrameElement.tryGetDefinedElement(TradesDitemFrame.JsonName.tradesFrame);
             if (tradesFrameElementResult.isOk()) {
                 tradesFrameElement = tradesFrameElementResult.value;
             }

@@ -42,7 +42,7 @@ export namespace DitemComponent {
         };
 
         export function tryCreateFromJson(value: JsonElement): Result<Definition> {
-            const getExtensionIdElementResult = value.tryGetElement(JsonName.extensionId);
+            const getExtensionIdElementResult = value.tryGetDefinedElement(JsonName.extensionId);
             if (getExtensionIdElementResult.isErr()) {
                 return getExtensionIdElementResult.createOuter(ErrorCode.DitemComponent_ExtensionIdIsNotSpecified);
             } else {

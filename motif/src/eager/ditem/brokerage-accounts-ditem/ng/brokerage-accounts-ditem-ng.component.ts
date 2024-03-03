@@ -28,7 +28,8 @@ import {
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService,
-    TextFormatterNgService
+    TextFormatterNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { BrokerageAccountsNgComponent } from 'content-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -63,6 +64,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(
@@ -82,6 +84,7 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            toastNgService.service,
         );
 
         this._toggleAccountLinkingUiAction = this.createToggleAccountLinkingUiAction();

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Err, JsonElement } from '@motifmarkets/motif-core';
+import { Err, ErrorCode, JsonElement } from '@motifmarkets/motif-core';
 import {
     Decimal as DecimalApi,
     Guid as GuidApi,
@@ -46,13 +46,28 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.parse(jsonText);
     }
 
-    tryGetElement(name: string): ResultApi<JsonElementApi> {
-        const result = this._actual.tryGetElement(name);
+    tryGetDefinedElement(name: string): ResultApi<JsonElementApi> {
+        const result = this._actual.tryGetDefinedElement(name);
         if (result.isErr()) {
             return new Err(result.error);
         } else {
             const jsonElement = new JsonElementImplementation(result.value);
             return new OkApi(jsonElement);
+        }
+    }
+
+    tryGetElement(name: string): ResultApi<JsonElementApi | undefined> {
+        const result = this._actual.tryGetElement(name);
+        if (result.isErr()) {
+            return new Err(result.error);
+        } else {
+            const element = result.value;
+            if (element === undefined) {
+                return new OkApi(undefined);
+            } else {
+                const jsonElement = new JsonElementImplementation(element);
+                return new OkApi(jsonElement);
+            }
         }
     }
 
@@ -75,7 +90,12 @@ export class JsonElementImplementation implements JsonElementApi {
         if (result.isErr()) {
             return new Err(result.error);
         } else {
-            return new OkApi(result.value);
+            const json = result.value;
+            if (json === undefined) {
+                return new Err(ErrorCode.JsonElement_ElementNotDefined);
+            } else {
+                return new OkApi(json);
+            }
         }
     }
 

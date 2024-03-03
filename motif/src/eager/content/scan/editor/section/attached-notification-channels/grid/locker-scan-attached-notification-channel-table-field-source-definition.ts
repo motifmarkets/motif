@@ -13,7 +13,7 @@ import {
     FieldDataTypeId,
     Integer,
     LockerScanAttachedNotificationChannel,
-    NotificationChannelSourceSettingsUrgencyTableValue,
+    NotificationChannelSourceSettingsUrgencyIdTableValue,
     NumberTableField,
     NumberTableValue,
     StringTableField,
@@ -125,7 +125,7 @@ export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition
             },
             {
                 id: LockerScanAttachedNotificationChannel.FieldId.Urgency,
-                tableFieldValueConstructors: [EnumTableField, NotificationChannelSourceSettingsUrgencyTableValue],
+                tableFieldValueConstructors: [EnumTableField, NotificationChannelSourceSettingsUrgencyIdTableValue],
             },
         ];
 

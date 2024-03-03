@@ -19,7 +19,8 @@ export interface JsonElement {
     stringify(): string;
     parse(jsonText: string): Result<void>;
 
-    tryGetElement(name: string): Result<JsonElement>;
+    tryGetDefinedElement(name: string): Result<JsonElement>;
+    tryGetElement(name: string): Result<JsonElement | undefined>;
     tryGetJsonValue(name: string): JsonValue | undefined;
     // eslint-disable-next-line @typescript-eslint/ban-types
     tryGetNativeObject(name: string): Result<object>;

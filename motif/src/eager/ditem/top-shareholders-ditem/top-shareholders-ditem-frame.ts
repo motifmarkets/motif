@@ -14,11 +14,14 @@ import {
     JsonElement,
     LitIvemId,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
     TopShareholder,
     TopShareholderTableRecordSource
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -40,6 +43,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _toastService: ToastService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.TopShareholders, _componentAccess,
             settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -55,10 +59,10 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         this._gridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (frameElement !== undefined) {
-            const contentElementResult = frameElement.tryGetElement(TopShareholdersDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetDefinedElement(TopShareholdersDitemFrame.JsonName.content);
             if (contentElementResult.isOk()) {
                 const contentElement = contentElementResult.value;
-                const keptLayoutElementResult = contentElement.tryGetElement(TopShareholdersDitemFrame.JsonName.keptLayout);
+                const keptLayoutElementResult = contentElement.tryGetDefinedElement(TopShareholdersDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
                     const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
@@ -103,10 +107,12 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
             );
             const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
             const gridSourceOrReferenceDefinition = new GridSourceOrReferenceDefinition(gridSourceDefinition);
-            const gridSourceOrReferencePromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-            gridSourceOrReferencePromise.then(
-                (gridSourceOrReference) => {
-                    if (gridSourceOrReference !== undefined) {
+            const openPromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+            openPromise.then(
+                (openResult) => {
+                    if (openResult.isErr()) {
+                        this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.TopShareholders]}: ${openResult.error}`);
+                    } else {
                         const table = this._gridSourceFrame.openedTable;
                         this._recordSource = table.recordSource as TopShareholderTableRecordSource;
                         this._recordList = this._recordSource.recordList;

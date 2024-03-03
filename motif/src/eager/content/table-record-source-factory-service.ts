@@ -26,6 +26,7 @@ import {
     LitIvemIdComparableListTableRecordSource,
     LitIvemIdComparableListTableRecordSourceDefinition,
     NotImplementedError,
+    NotificationChannelsService,
     OrderTableRecordSource,
     OrderTableRecordSourceDefinition,
     RankedLitIvemIdListDirectoryItemTableRecordSource,
@@ -48,6 +49,7 @@ import {
     UnreachableCaseError,
     WatchmakerService,
 } from '@motifmarkets/motif-core';
+import { LockOpenNotificationChannelListTableRecordSource, LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channels/internal-api';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource, ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition, ScanFieldEditorFrameComparableListTableRecordSource, ScanFieldEditorFrameComparableListTableRecordSourceDefinition } from './scan/internal-api';
 
 /** @public */
@@ -57,6 +59,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _rankedLitIvemIdListFactoryService: RankedLitIvemIdListFactoryService,
         private readonly _watchmakerService: WatchmakerService,
+        private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _scansService: ScansService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
@@ -91,6 +94,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             case TableRecordSourceDefinition.TypeId.ScanTest: return this.createScanTest(definition);
             case TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: return this.createScanFieldEditorFrameComparableList(definition)
             case TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: return this.createScanEditorAttachedNotificationChannel(definition)
+            case TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: return this.createLockOpenNotificationChannel(definition)
             default: throw new UnreachableCaseError('TDLFCFTID17742', definition.typeId);
         }
     }
@@ -313,6 +317,19 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             );
         } else {
             throw new AssertInternalError('TRSFSCSEANC21099');
+        }
+    }
+
+    private createLockOpenNotificationChannel(definition: TableRecordSourceDefinition) {
+        if (definition instanceof LockOpenNotificationChannelListTableRecordSourceDefinition) {
+            return new LockOpenNotificationChannelListTableRecordSource(
+                this._notificationChannelsService,
+                this._textFormatterService,
+                this._tableRecordSourceDefinitionFactoryService,
+                definition,
+            );
+        } else {
+            throw new AssertInternalError('TRSFSCLONC21099');
         }
     }
 }

@@ -24,7 +24,7 @@ import {
     getErrorMessage
 } from '@motifmarkets/motif-core';
 import {
-    CommandRegisterNgService,
+    CommandRegisterNgService, ToastNgService,
 } from 'component-services-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { LitIvemIdListNgComponent } from '../../lit-ivem-id-list/ng-api';
@@ -67,6 +67,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         protected readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
         fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
         list: UiComparableList<LitIvemId> | null,
@@ -161,9 +162,9 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
         const openPromise = this._litIvemIdListComponent.tryOpenList(this.list, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('LIILENCICU56569');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.LitIvemIdListEditor]}: ${openResult.error}`);
                 } else {
                     this._litIvemIdListComponent.frame.grid.dataServersRowListChangedEventer = () => this.updateCounts();
                     this.updateControlsEnabled();

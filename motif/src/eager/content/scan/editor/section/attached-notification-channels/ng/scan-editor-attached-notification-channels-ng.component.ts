@@ -18,7 +18,7 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, NotificationChannelsNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, NotificationChannelsNgService, ToastNgService } from 'component-services-ng-api';
 import {
     IntegerEnumInputNgComponent, SvgButtonNgComponent
 } from 'controls-ng-api';
@@ -64,6 +64,7 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
         elRef: ElementRef<HTMLElement>,
         commandRegisterNgService: CommandRegisterNgService,
         notificationChannelsNgService: NotificationChannelsNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(elRef, ++ScanEditorAttachedNotificationChannelsNgComponent.typeInstanceCreateCount);
 
@@ -237,33 +238,36 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
     }
 
     private async pushAddChannelElements(): Promise<void> {
-        const channelList = await this._notificationChannelsService.getChannelList(false);
-        if (channelList === undefined) {
-            this._addChannelUiAction.pushElements([], undefined);
+        const getResult = await this._notificationChannelsService.getLoadedList(false);
+        if (getResult.isErr()) {
+            this._toastNgService.popup(`${Strings[StringId.ErrorGetting]} ${Strings[StringId.NotificationChannels]}: ${getResult.error}`);
         } else {
-            const lockerList = this._list;
-            if (lockerList === undefined) {
-                throw new AssertInternalError('SEANCNCPACE11334');
-            } else {
-                const maxCount = channelList.count;
-                const elementPropertiesArray = new Array<StringExplicitElementsEnumUiAction.ElementProperties>(maxCount);
-                let count = 0;
-                for (let i = 0; i < maxCount; i++) {
-                    const channel = channelList.getAt(i);
-                    const channelId = channel.channelId;
-                    if (lockerList.indexOfChannelId(channelId) < 0) {
-                        // only include channels not yet attached
-                        const description = channel.channelDescription;
-                        const elementProperties: StringExplicitElementsEnumUiAction.ElementProperties = {
-                            element: channel.channelId,
-                            caption: channel.channelName,
-                            title: description === undefined ? '' : description,
-                        };
-                        elementPropertiesArray[count++] = elementProperties;
+            const channelList = getResult.value;
+            if (channelList !== undefined) {
+                const lockerList = this._list;
+                if (lockerList === undefined) {
+                    throw new AssertInternalError('SEANCNCPACE11334');
+                } else {
+                    const maxCount = channelList.count;
+                    const elementPropertiesArray = new Array<StringExplicitElementsEnumUiAction.ElementProperties>(maxCount);
+                    let count = 0;
+                    for (let i = 0; i < maxCount; i++) {
+                        const channel = channelList.getAt(i);
+                        const channelId = channel.id;
+                        if (lockerList.indexOfChannelId(channelId) < 0) {
+                            // only include channels not yet attached
+                            const description = channel.description;
+                            const elementProperties: StringExplicitElementsEnumUiAction.ElementProperties = {
+                                element: channel.id,
+                                caption: channel.name,
+                                title: description === undefined ? '' : description,
+                            };
+                            elementPropertiesArray[count++] = elementProperties;
+                        }
                     }
+                    elementPropertiesArray.length = count;
+                    this._addChannelUiAction.pushElements(elementPropertiesArray, undefined);
                 }
-                elementPropertiesArray.length = count;
-                this._addChannelUiAction.pushElements(elementPropertiesArray, undefined);
             }
         }
     }

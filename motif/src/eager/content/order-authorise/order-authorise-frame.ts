@@ -76,7 +76,7 @@ export class OrderAuthoriseFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
+    tryOpenBrokerageAccountGroup(group: BrokerageAccountGroup, keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(group);
         return this.tryOpenGridSource(definition, keepView);
     }

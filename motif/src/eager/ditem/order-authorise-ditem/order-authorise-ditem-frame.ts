@@ -18,10 +18,13 @@ import {
     OrderTableRecordSourceDefinition,
     ScalarSettings,
     SettingsService,
+    StringId,
+    Strings,
     SymbolDetailCacheService,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import { OrderAuthoriseFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -42,6 +45,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: OrderAuthoriseDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: OrderAuthoriseDitemFrame.RecordFocusedEventer,
     ) {
@@ -64,7 +68,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
 
         let orderAuthoriseFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const orderAuthoriseFrameElementResult = ditemFrameElement.tryGetElement(OrderAuthoriseDitemFrame.JsonName.orderAuthoriseFrame);
+            const orderAuthoriseFrameElementResult = ditemFrameElement.tryGetDefinedElement(OrderAuthoriseDitemFrame.JsonName.orderAuthoriseFrame);
             if (orderAuthoriseFrameElementResult.isOk()) {
                 orderAuthoriseFrameElement = orderAuthoriseFrameElementResult.value;
             }
@@ -72,11 +76,11 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
 
         orderAuthoriseFrame.initialiseGrid(this.opener, undefined, true);
 
-        const openPromise = orderAuthoriseFrame.openJsonOrDefault(orderAuthoriseFrameElement, true);
+        const openPromise = orderAuthoriseFrame.tryOpenJsonOrDefault(orderAuthoriseFrameElement, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('OADFIPU50137');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.OrderAuthorise]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }
@@ -282,9 +286,15 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         try {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
-                // TODO add support for clearTable
-                const gridSourceOrReferencePromise = orderAuthoriseFrame.tryOpenWithDefaultLayout(group, keepView);
-                AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'OADFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
+                const openPromise = orderAuthoriseFrame.tryOpenBrokerageAccountGroup(group, keepView);
+                openPromise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.OrderAuthorise]}: ${openResult.error}`);
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'OADFABAGWO68100', `${this.opener.lockerName}: ${group.id}`); }
+                );
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

@@ -72,6 +72,7 @@ export namespace BuiltinDitemFrame {
         NewsHeadlines,
         NewsBody,
         Scans,
+        NotificationChannels,
         Alerts,
         Search,
         AdvertWebPage,
@@ -119,7 +120,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_Extensions,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 70000,
+                    rank: 80000,
                 }
             },
             Symbols: {
@@ -189,6 +190,16 @@ export namespace BuiltinDitemFrame {
                     rank: 40000,
                 },
             },
+            NotificationChannels: {
+                id: BuiltinTypeId.NotificationChannels,
+                name: 'NotificationChannels',
+                newInternalCommandId: InternalCommand.Id.NewNotificationChannelsDitem,
+                menuDisplayId: StringId.DitemMenuDisplay_NotificationChannels,
+                menuBarItemPosition: {
+                    menuPath: [MenuBarService.Menu.Name.Root.tools],
+                    rank: 50000,
+                },
+            },
             Alerts: {
                 id: BuiltinTypeId.Alerts,
                 name: 'Alerts',
@@ -196,7 +207,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_Alerts,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 50000,
+                    rank: 60000,
                 },
             },
             Search: {
@@ -206,7 +217,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_Search,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 10000,
+                    rank: 11000,
                 },
             },
             AdvertWebPage: {
@@ -216,7 +227,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_AdvertWebPage,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 60000,
+                    rank: 70000,
                 },
             },
             TopShareholders: {
@@ -310,7 +321,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_Settings,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 90000,
+                    rank: 100000,
                 },
             },
             Diagnostics: {
@@ -320,7 +331,7 @@ export namespace BuiltinDitemFrame {
                 menuDisplayId: StringId.DitemMenuDisplay_Diagnostics,
                 menuBarItemPosition: {
                     menuPath: [MenuBarService.Menu.Name.Root.tools],
-                    rank: 80000,
+                    rank: 90000,
                 },
             },
             EtoPriceQuotation: {

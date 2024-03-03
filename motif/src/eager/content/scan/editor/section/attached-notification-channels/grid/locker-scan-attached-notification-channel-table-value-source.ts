@@ -9,7 +9,7 @@ import {
     Integer,
     LockerScanAttachedNotificationChannel,
     MultiEvent,
-    NotificationChannelSourceSettingsUrgencyTableValue,
+    NotificationChannelSourceSettingsUrgencyIdTableValue,
     NumberTableValue,
     RenderValue,
     StringTableValue,
@@ -138,7 +138,7 @@ export class LockerScanAttachedNotificationChannelTableValueSource extends Table
                 break;
             }
             case LockerScanAttachedNotificationChannel.FieldId.Urgency: {
-                (value as NotificationChannelSourceSettingsUrgencyTableValue).data = this._channel.urgencyId;
+                (value as NotificationChannelSourceSettingsUrgencyIdTableValue).data = this._channel.urgencyId;
                 break;
             }
             case LockerScanAttachedNotificationChannel.FieldId.Topic: {

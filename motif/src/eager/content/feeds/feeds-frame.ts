@@ -45,11 +45,6 @@ export class FeedsFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenWithDefaultLayout(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView);
-    }
-
     createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createFeed();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);

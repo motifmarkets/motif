@@ -147,7 +147,7 @@ export abstract class DitemFrame extends Frame {
                 }
             }
 
-            const litIvemIdElementResult = element.tryGetElement(DitemFrame.jsonTag_FrameLitIvemId);
+            const litIvemIdElementResult = element.tryGetDefinedElement(DitemFrame.jsonTag_FrameLitIvemId);
             if (litIvemIdElementResult.isErr()) {
                 this._litIvemId = undefined;
             } else {
@@ -159,7 +159,7 @@ export abstract class DitemFrame extends Frame {
                 }
             }
 
-            const groupElementResult = element.tryGetElement(DitemFrame.jsonTag_BrokerageAccountGroup);
+            const groupElementResult = element.tryGetDefinedElement(DitemFrame.jsonTag_BrokerageAccountGroup);
             if (groupElementResult.isErr()) {
                 this._brokerageAccountGroup = undefined;
             } else {

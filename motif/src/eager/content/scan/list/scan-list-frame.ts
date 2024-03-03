@@ -68,11 +68,6 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenDefault(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView);
-    }
-
     protected override getDefaultGridSourceOrReferenceDefinition() {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }

@@ -30,6 +30,8 @@ import {
     ReferenceableGridSourcesService,
     Result,
     SettingsService,
+    StringId,
+    Strings,
     Table,
     TableFieldSourceDefinitionCachedFactoryService,
     TableGridRecordStore,
@@ -38,6 +40,7 @@ import {
     TableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
+import { ToastService } from '../../component-services/toast-service';
 import { ContentFrame } from '../content-frame';
 
 export abstract class GridSourceFrame extends ContentFrame {
@@ -79,6 +82,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         private readonly _tableRecordSourceFactory: TableRecordSourceFactory,
         private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
         protected readonly cellPainterFactoryService: CellPainterFactoryService,
+        protected readonly _toastService: ToastService,
     ) {
         super();
     }
@@ -147,23 +151,24 @@ export abstract class GridSourceFrame extends ContentFrame {
         return this._grid.calculateHeaderPlusFixedRowsHeight();
     }
 
-    tryCreateDefinitionFromJson(frameElement: JsonElement | undefined): Result<GridSourceOrReferenceDefinition | undefined> {
-        if (frameElement === undefined) {
-            return new Ok(undefined); // missing
+    tryCreateDefinitionFromJson(frameElement: JsonElement): Result<GridSourceOrReferenceDefinition | undefined> {
+        const getElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
+        if (getElementResult.isErr()) {
+            return getElementResult.createType(); // missing
         } else {
-            const definitionElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
-            if (definitionElementResult.isErr()) {
-                return new Ok(undefined); // missing
+            const jsonElement = getElementResult.value;
+            if (jsonElement === undefined) {
+                return new Ok(undefined); // The was no definition saved
             } else {
-                const definitionResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
+                const createResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
                     this.tableRecordSourceDefinitionFactoryService,
-                    definitionElementResult.value,
+                    jsonElement,
                 );
 
-                if (definitionResult.isOk()) {
-                    return definitionResult;
+                if (createResult.isErr()) {
+                    return createResult.createOuter(ErrorCode.GridSourceFrame_JsonDefinitionIsInvalid)
                 } else {
-                    return definitionResult.createOuter(ErrorCode.GridSourceFrame_JsonDefinitionIsInvalid)
+                    return createResult;
                 }
             }
         }
@@ -173,7 +178,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (frameElement === undefined) {
             return new Ok(undefined); // missing
         } else {
-            const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
+            const layoutElementResult = frameElement.tryGetDefinedElement(GridSourceFrame.JsonName.layout);
             if (layoutElementResult.isErr()) {
                 return new Ok(undefined); // missing
             } else {
@@ -202,58 +207,32 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid.areColumnsSelected(includeAllAuto);
     }
 
-    openJsonOrDefault(frameElement: JsonElement | undefined, keepView: boolean): Promise<GridSourceOrReference | undefined> {
-        let openResolveFtn: (this: void, gridSourceOrReference: GridSourceOrReference | undefined) => void;
-        const openPromise = new Promise<GridSourceOrReference | undefined>(
-            (resolve) => { openResolveFtn = resolve; }
-        )
-        const jsonOpenPromise = this.tryOpenJson(frameElement, keepView);
-        jsonOpenPromise.then(
-            (jsonGridSourceOrReference) => {
-                if (jsonGridSourceOrReference !== undefined) {
-                    openResolveFtn(jsonGridSourceOrReference);
-                } else {
-                    const definition = this.getDefaultGridSourceOrReferenceDefinition();
-                    const defaultOpenPromise = this.tryOpenGridSource(definition, keepView);
-                    defaultOpenPromise.then(
-                        (defaultGridSourceOrReference) => {
-                            if (defaultGridSourceOrReference !== undefined) {
-                                openResolveFtn(defaultGridSourceOrReference);
-                            } else {
-                                throw new AssertInternalError('HFTOJU33345');
-                            }
-                        },
-                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'HFTOJD33345'); }
-                    );
-                }
-            },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'HFTOJODJ33345'); }
-        );
-
-        return openPromise;
-    }
-
-    tryOpenJson(frameElement: JsonElement | undefined, keepView: boolean) {
+    async tryOpenJsonOrDefault(frameElement: JsonElement | undefined, keepView: boolean): Promise<Result<GridSourceOrReference>> {
         if (frameElement === undefined) {
-            return Promise.resolve(undefined);
+            return this.tryOpenDefault(keepView);
         } else {
-            let definition: GridSourceOrReferenceDefinition | undefined;
-            const definitionResult = this.tryCreateDefinitionFromJson(frameElement);
-            if (definitionResult.isErr()) {
-                // toast in future
-                return Promise.resolve(undefined);
+            const tryOpenJsonResult = await this.tryOpenJson(frameElement, keepView);
+            if (tryOpenJsonResult.isErr()) {
+                this._toastService.popup(`${Strings[StringId.ErrorOpeningSaved]}: ${tryOpenJsonResult.error}`);
+                return this.tryOpenDefault(keepView);
             } else {
-                definition = definitionResult.value;
-                if (definition === undefined) {
-                    return Promise.resolve(undefined);
+                const gridSourceOrReference = tryOpenJsonResult.value;
+                if (gridSourceOrReference === undefined) {
+                    // no definition was saved
+                    return this.tryOpenDefault(keepView);
                 } else {
-                    return this.tryOpenGridSource(definition, keepView);
+                    return new Ok(gridSourceOrReference);
                 }
             }
         }
     }
 
-    async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<GridSourceOrReference | undefined> {
+    tryOpenDefault(keepView: boolean): Promise<Result<GridSourceOrReference>> {
+        const definition = this.getDefaultGridSourceOrReferenceDefinition();
+        return this.tryOpenGridSource(definition, keepView);
+    }
+
+    async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<Result<GridSourceOrReference>> {
         this.closeGridSource(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrReference() &&
@@ -276,7 +255,7 @@ export abstract class GridSourceFrame extends ContentFrame {
                 reasonExtra: lockResult.error,
             };
             this.setBadness(badness);
-            return undefined;
+            return lockResult.createType();
         } else {
             const gridSource = gridSourceOrReference.lockedGridSource;
             if (gridSource === undefined) {
@@ -324,7 +303,7 @@ export abstract class GridSourceFrame extends ContentFrame {
 
                         this.notifyGridLayoutSet(layout);
 
-                        return gridSourceOrReference;
+                        return new Ok(gridSourceOrReference);
                     }
                 }
             }
@@ -1113,6 +1092,21 @@ export abstract class GridSourceFrame extends ContentFrame {
     private notifyGridLayoutSet(layout: GridLayout) {
         if (this.gridLayoutSetEventer !== undefined) {
             this.gridLayoutSetEventer(layout);
+        }
+    }
+
+    private tryOpenJson(frameElement: JsonElement, keepView: boolean): Promise<Result<GridSourceOrReference | undefined>> {
+        let definition: GridSourceOrReferenceDefinition | undefined;
+        const definitionResult = this.tryCreateDefinitionFromJson(frameElement);
+        if (definitionResult.isErr()) {
+            return Promise.resolve(definitionResult.createType());
+        } else {
+            definition = definitionResult.value;
+            if (definition === undefined) {
+                return Promise.resolve(new Ok(undefined)); // no definition saved
+            } else {
+                return this.tryOpenGridSource(definition, keepView);
+            }
         }
     }
 

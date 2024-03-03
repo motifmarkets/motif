@@ -1,0 +1,33 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<div id="inputDiv" [style.display]="dialogActive ? 'none' : null">
+    <div id="mainToolbarDiv">
+        <app-integer-enum-input #addControl id="addControl"></app-integer-enum-input>
+        <div id="toolButtonsDiv">
+            <div id="deleteSelectButtonsDiv">
+                <app-svg-button #deleteSelectedControl></app-svg-button>
+                <app-svg-button #selectAllControl></app-svg-button>
+            </div>
+            <div id="columnButtonsDiv">
+                <app-svg-button #autoSizeColumnWidthsButton></app-svg-button>
+                <app-svg-button #columnsButton></app-svg-button>
+            </div>
+        </div>
+    </div>
+    <as-split id="listAndPropertiesAreas" unit="pixel" direction="horizontal" [gutterSize]="splitterGutterSize" (dragEnd)="handleSplitterDragEnd()">
+        <as-split-area id="listArea" [size]="listAreaWidth" [minSize]="listAreaMinWidth">
+            <app-lock-open-notification-channels-grid #grid id="grid"></app-lock-open-notification-channels-grid>
+            <app-button-input #refreshListControl id="refreshListControl"></app-button-input>
+        </as-split-area>
+        <as-split-area id="propertiesArea" [size]="null"> <!-- was size="*"-->
+            <app-lock-open-notification-channel-properties #properties id="properties"></app-lock-open-notification-channel-properties>
+        </as-split-area>
+    </as-split>
+</div>
+<div id="dialogDiv" [style.display]="dialogActive ? null : 'none'">
+    <ng-container #dialogContainer></ng-container>
+</div>

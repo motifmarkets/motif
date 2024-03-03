@@ -9,7 +9,8 @@ import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, Gri
 import {
     CellPainterFactoryNgService,
     CoreNgService,
-    SessionInfoNgService
+    SessionInfoNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
@@ -31,6 +32,7 @@ export class ContentNgService {
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
         sessionInfoNgService: SessionInfoNgService,
         cellPainterFactoryNgService: CellPainterFactoryNgService,
+        toastNgService: ToastNgService,
     ) {
         this._content = new ContentService(
             coreNgService.settingsService,
@@ -48,6 +50,7 @@ export class ContentNgService {
             coreNgService.referenceableGridSourcesService,
             sessionInfoNgService.service,
             cellPainterFactoryNgService.service,
+            toastNgService.service,
         );
     }
 
@@ -131,6 +134,10 @@ export class ContentNgService {
 
     createScanEditorAttachedNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
         return this._content.createScanEditorAttachedNotificationChannelsGridFrame(opener);
+    }
+
+    createLockOpenNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return this._content.createLockOpenNotificationChannelsGridFrame(opener);
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {

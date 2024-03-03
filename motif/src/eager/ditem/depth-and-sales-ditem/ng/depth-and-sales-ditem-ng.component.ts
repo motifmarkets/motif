@@ -42,7 +42,8 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TextFormatterNgService
+    TextFormatterNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { DepthAndSalesGridLayoutsDialogNgComponent, DepthNgComponent, TradesNgComponent, WatchlistNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -121,6 +122,7 @@ export class DepthAndSalesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
+        toastNgService: ToastNgService,
     ) {
         super(elRef, ++DepthAndSalesDitemNgComponent.typeInstanceCreateCount, cdr, container, settingsNgService.service, commandRegisterNgService.service);
 
@@ -132,6 +134,7 @@ export class DepthAndSalesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             symbolsNgService.service,
             adiNgService.service,
             textFormatterNgService.service,
+            toastNgService.service,
         );
 
         this._symbolEditUiAction = this.createSymbolEditUiAction();

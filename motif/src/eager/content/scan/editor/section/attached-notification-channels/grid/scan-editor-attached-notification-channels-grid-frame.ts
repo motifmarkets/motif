@@ -32,6 +32,7 @@ import {
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../../../grid-source/internal-api';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource } from './scan-editor-attached-notification-channel-comparable-list-table-record-source';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition } from './scan-editor-attached-notification-channel-comparable-list-table-record-source-definition';
@@ -58,6 +59,7 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
         tableRecordSourceFactory: TableRecordSourceFactory,
         referenceableGridSourcesService: ReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
+        toastService: ToastService,
         frameOpener: LockOpenListItem.Opener,
     ) {
         super(
@@ -69,6 +71,7 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
             tableRecordSourceFactory,
             referenceableGridSourcesService,
             cellPainterFactoryService,
+            toastService,
         );
 
         this._emptyList = new LockerScanAttachedNotificationChannelList(notificationChannelsService, frameOpener);

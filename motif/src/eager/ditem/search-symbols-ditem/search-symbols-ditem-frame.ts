@@ -163,7 +163,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
 
         let layoutDefinition: GridLayoutOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
-            const searchSymbolsFrameElementResult = ditemFrameElement.tryGetElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
+            const searchSymbolsFrameElementResult = ditemFrameElement.tryGetDefinedElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
             if (searchSymbolsFrameElementResult.isOk()) {
                 const searchSymbolsFrameElement = searchSymbolsFrameElementResult.value;
                 const layoutDefinitionResult = searchSymbolsFrame.tryCreateLayoutDefinitionFromJson(searchSymbolsFrameElement);

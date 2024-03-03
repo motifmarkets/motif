@@ -109,7 +109,7 @@ export abstract class BuiltinDitemNgComponentBaseNgDirective extends ComponentBa
         if (element === undefined) {
             return undefined;
         } else {
-            const frameResult = element.tryGetElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
+            const frameResult = element.tryGetDefinedElement(BuiltinDitemNgComponentBaseNgDirective.DitemJsonName.frame);
             if (frameResult.isErr()) {
                 return undefined;
             } else {

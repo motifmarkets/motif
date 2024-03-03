@@ -105,13 +105,13 @@ export class DepthFrame extends ContentFrame {
                 this.activateBidAskFilter();
             }
 
-            const bidElementResult = element.tryGetElement(DepthFrame.JsonName.bid);
+            const bidElementResult = element.tryGetDefinedElement(DepthFrame.JsonName.bid);
             if (bidElementResult.isErr()) {
                 this._bidDepthSideFrame.initialise(OrderSideId.Bid, undefined);
             } else {
                 this._bidDepthSideFrame.initialise(OrderSideId.Bid, bidElementResult.value);
             }
-            const askElementResult = element.tryGetElement(DepthFrame.JsonName.ask);
+            const askElementResult = element.tryGetDefinedElement(DepthFrame.JsonName.ask);
             if (askElementResult.isErr()) {
                 this._askDepthSideFrame.initialise(OrderSideId.Ask, undefined);
             } else {

@@ -35,7 +35,8 @@ import {
     AdiNgService,
     CommandRegisterNgService,
     SettingsNgService,
-    SymbolsNgService
+    SymbolsNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { BalancesNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -78,6 +79,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
+        toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(
@@ -97,6 +99,7 @@ export class BalancesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
+            toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );

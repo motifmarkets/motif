@@ -45,7 +45,8 @@ import {
     SettingsNgService,
     SymbolsNgService,
     TableRecordSourceDefinitionFactoryNgService,
-    TextFormatterNgService
+    TextFormatterNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import {
     NameableGridLayoutEditorDialogNgComponent,
@@ -113,6 +114,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         textFormatterNgService: TextFormatterNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(
@@ -135,6 +137,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             textFormatterNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
+            this._toastNgService.service,
             (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
                 rankedLitIvemIdList,
                 rankedLitIvemIdListName
@@ -286,8 +289,15 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
         const keepView = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        const promise = this._frame.newEmpty(keepView);
-        AssertInternalError.throwErrorIfPromiseRejected(promise, 'WDNCHNUASE44432');
+        const openPromise = this._frame.newEmpty(keepView);
+        openPromise.then(
+            (result) => {
+                if (result.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorCreatingNew]} ${Strings[StringId.Watchlist]}: ${result.error}`);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCHNUASE44432') }
+        );
     }
 
     private handleOpenUiActionSignalEvent() {

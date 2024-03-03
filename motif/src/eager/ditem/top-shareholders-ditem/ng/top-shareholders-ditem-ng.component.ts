@@ -41,7 +41,8 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { GridSourceNgDirective } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -111,6 +112,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         private readonly _symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -130,6 +132,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             this._symbolsNgService.service,
             adiNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
+            toastNgService.service,
         );
 
         this._toggleSymbolLinkingButtonUiAction = this.createToggleSymbolLinkingButtonUiAction();

@@ -51,6 +51,7 @@ import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { LitIvemIdListEditorDialogNgComponent, LitIvemIdListEditorNgComponent } from '../lit-ivem-id-list-editor/ng-api';
 import { LitIvemIdListNgComponent } from '../lit-ivem-id-list/ng-api';
+import { LockOpenNotificationChannelPropertiesNgComponent, LockOpenNotificationChannelsGridNgComponent } from '../lock-open-notification-channels/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
@@ -175,6 +176,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         LitIvemIdListEditorDialogNgComponent,
         LitIvemIdListEditorNgComponent,
         LitIvemIdListNgComponent,
+        LockOpenNotificationChannelPropertiesNgComponent,
+        LockOpenNotificationChannelsGridNgComponent,
         MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent,
         MarketOverlapsScanFieldConditionOperandsEditorNgComponent,
         MarketsNgComponent,
@@ -243,6 +246,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridSettingsNgComponent,
         HoldingsGridLayoutsDialogNgComponent,
         HoldingsNgComponent,
+        LockOpenNotificationChannelPropertiesNgComponent,
+        LockOpenNotificationChannelsGridNgComponent,
         MarketsNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         OpenWatchlistDialogNgComponent,
