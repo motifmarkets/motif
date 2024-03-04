@@ -175,7 +175,7 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
             } else {
                 const channelId = action.definedValue;
                 delay1Tick(() => action.pushValue(undefined));
-                const attachPromise = list.attachChannel(channelId);
+                const attachPromise = list.attachChannel(channelId, this.instanceId);
                 attachPromise.then(
                     () => {
                         const idx = list.indexOfChannelId(channelId);
@@ -219,7 +219,7 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
                 throw new AssertInternalError('SEANCNCCRSUAU22098');
             } else {
                 const selectedIndices = this._channelsGridComponent.getSelectedRecordIndices();
-                list.detachChannelsAtIndices(selectedIndices);
+                list.detachChannelsAtIndices(selectedIndices, this.instanceId);
             }
         };
         return action;
@@ -240,7 +240,7 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
     private async pushAddChannelElements(): Promise<void> {
         const getResult = await this._notificationChannelsService.getLoadedList(false);
         if (getResult.isErr()) {
-            this._toastNgService.popup(`${Strings[StringId.ErrorGetting]} ${Strings[StringId.NotificationChannels]}: ${getResult.error}`);
+            this._toastNgService.popup(`${Strings[StringId.ErrorGetting]} ${Strings[StringId.ScanEditorAttachedNotificationChannels]}: ${getResult.error}`);
         } else {
             const channelList = getResult.value;
             if (channelList !== undefined) {
@@ -301,11 +301,19 @@ export class ScanEditorAttachedNotificationChannelsNgComponent extends ScanEdito
 
     private handleColumnsSignalEvent() {
         const allowedFieldsAndLayoutDefinition = this._channelsGridFrame.createAllowedFieldsGridLayoutDefinition();
-        const promise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
-        promise.then(
+        const editFinishPromise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
+        editFinishPromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._channelsGridFrame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._channelsGridFrame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.ScanEditorAttachedNotificationChannels]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEOP56668'); }
+                    );
                 }
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'SEANCNCHCSE45698'); }

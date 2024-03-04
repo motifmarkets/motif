@@ -42,15 +42,15 @@ export class LockOpenNotificationChannelListTableRecordSourceDefinition extends 
 /** @public */
 export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
     export type FieldSourceDefinitionTypeId = PickEnum<TableFieldSourceDefinition.TypeId,
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     >;
 
     export const allowedFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export const defaultFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export type FieldId = LockOpenNotificationChannelTableFieldSourceDefinition.FieldId;

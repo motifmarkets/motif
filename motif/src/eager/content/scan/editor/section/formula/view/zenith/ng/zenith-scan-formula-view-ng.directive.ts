@@ -150,15 +150,17 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     }
 
     private processDocChanged() {
-        if (this._decodePromise !== undefined) {
-            this._idleService.cancelRequest(this._decodePromise);
-        }
-        if (!this._editorClearing) {
-            this._decodePromise = this._idleService.addRequest(
-                () => this.decodeDoc(),
-                ZenithScanFormulaViewNgDirective.docChangedIdleWaitTime,
-                ZenithScanFormulaViewNgDirective.docChangedDebounceInterval,
-            );
+        if (!this._editorComponent.textSetting) {
+            if (this._decodePromise !== undefined) {
+                this._idleService.cancelRequest(this._decodePromise);
+            }
+            if (!this._editorClearing) {
+                this._decodePromise = this._idleService.addRequest(
+                    () => this.decodeDoc(),
+                    ZenithScanFormulaViewNgDirective.docChangedIdleWaitTime,
+                    ZenithScanFormulaViewNgDirective.docChangedDebounceInterval,
+                );
+            }
         }
     }
 

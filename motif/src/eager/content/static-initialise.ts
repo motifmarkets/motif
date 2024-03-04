@@ -5,6 +5,7 @@
  */
 
 import { ColorControlsComponentModule } from './color-controls/ng-api';
+import { LockOpenNotificationChannelTableFieldSourceDefinitionModule } from './lock-open-notification-channels/internal-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
 import {
     LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule,
@@ -25,5 +26,6 @@ export namespace StaticInitialise {
         ConditionSetScanFormulaViewNgComponentModule.initialiseStatic();
         ScanFieldEditorFrameTableFieldSourceDefinitionModule.initialiseStatic();
         LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule.initialiseStatic();
+        LockOpenNotificationChannelTableFieldSourceDefinitionModule.initialiseStatic();
     }
 }

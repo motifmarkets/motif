@@ -138,7 +138,7 @@ export class ScanFieldSetEditorFrame implements ScanFieldSet {
         this._loading = false;
         let framePropertiesChanged = false;
         let fieldCountChanged = false;
-        if (ScanFieldSetLoadError.isUndefinableEqual(loadError, this._loadError)) {
+        if (!ScanFieldSetLoadError.isUndefinableEqual(loadError, this._loadError)) {
             this._loadError = loadError;
             framePropertiesChanged = true;
         }

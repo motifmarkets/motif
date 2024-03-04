@@ -5,7 +5,7 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
-import { AssertInternalError, Integer, IntegerExplicitElementsEnumUiAction, MultiEvent, ScanEditor, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { AssertInternalError, Integer, IntegerExplicitElementsEnumUiAction, MultiEvent, ScanEditor, ScanFieldSetLoadErrorType, ScanFormula, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { CaptionLabelNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
@@ -36,6 +36,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
     public splitterGutterSize = 3;
     public fieldsLabel: string;
     public criteriaCompatible: boolean;
+    public criteriaNotCompatibleHeading = `${Strings[StringId.Incompatible]}: `;
     public criteriaNotCompatibleReason: string;
 
     private readonly _addFieldUiAction: IntegerExplicitElementsEnumUiAction;
@@ -311,7 +312,7 @@ export class ScanFieldSetEditorNgComponent extends ScanFormulaViewNgDirective im
                 criteriaCompatible = true;
             } else {
                 criteriaCompatible = false;
-                let criteriaNotCompatibleReason = loadError.typeId.toString();
+                let criteriaNotCompatibleReason = ScanFieldSetLoadErrorType.idToDisplay(loadError.typeId);
                 const extra = loadError.extra;
                 if (extra !== undefined) {
                     criteriaNotCompatibleReason += `: ${extra}`;

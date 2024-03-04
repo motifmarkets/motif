@@ -176,11 +176,11 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._scanListFrame === undefined) {
             throw new AssertInternalError('SLFOGLONRD04418');
         } else {
-            this._scanListFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return this._scanListFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 

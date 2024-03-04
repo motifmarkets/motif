@@ -39,7 +39,7 @@ export class LockOpenNotificationChannelPropertiesNgComponent extends ContentCom
     editGridColumnsEventer: LockOpenNotificationChannelPropertiesNgComponent.EditGridColumnsEventer | undefined;
 
     public readonly typeLabel: string;
-    public readonly statusLabel: string;
+    public readonly statusLabel = Strings[StringId.Status];
     public type = '';
     public status = '';
 
@@ -174,7 +174,7 @@ export class LockOpenNotificationChannelPropertiesNgComponent extends ContentCom
     }
 
     private createDescriptionUiAction() {
-        const action = new StringUiAction(true);
+        const action = new StringUiAction(false);
         action.pushCaption(Strings[StringId.LockOpenNotificationChannelHeader_Description]);
         action.pushTitle(Strings[StringId.LockOpenNotificationChannelDescription_Description]);
         action.commitEvent = () => {
@@ -245,7 +245,7 @@ export class LockOpenNotificationChannelPropertiesNgComponent extends ContentCom
                 this._nameUiAction.pushValue(channel.name);
                 break;
             case LockOpenNotificationChannel.FieldId.Description:
-                this._descriptionUiAction.pushValue(channel.name);
+                this._descriptionUiAction.pushValue(channel.description);
                 break;
             case LockOpenNotificationChannel.FieldId.Favourite:
                 // may use in future

@@ -27,5 +27,6 @@
     <app-scan-field-editor #fieldEditorFrameComponent id="fieldEditorFrameComponent"></app-scan-field-editor>
 </div>
 <div id="notCompatible" [style.display]="!criteriaCompatible ? null : 'none'">
+    <span id="notCompatibleHeadingSpan">{{criteriaNotCompatibleHeading}}</span>
     <span id="notCompatibleReasonSpan">{{criteriaNotCompatibleReason}}</span>
 </div>

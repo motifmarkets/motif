@@ -8,12 +8,15 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService,
+    CreateNotificationChannelDataDefinition,
     GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LockOpenListItem,
     LockOpenNotificationChannel,
+    LockOpenNotificationChannelList,
     NotificationChannelsService,
+    NotificationDistributionMethod,
     NotificationDistributionMethodId,
     SettingsService,
     StringId,
@@ -26,7 +29,9 @@ import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
 export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
-    private _gridFrame:LockOpenNotificationChannelsGridFrame | undefined;
+    gridSelectionChangedEventer: NotificationChannelsDitemFrame.GridSelectionChangedEventer | undefined;
+
+    private _gridFrame: LockOpenNotificationChannelsGridFrame | undefined;
 
     private _openedChannel: LockOpenNotificationChannel | undefined;
 
@@ -49,11 +54,20 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
 
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     get initialised() { return this._gridFrame !== undefined; }
+    get gridSelectedCount() {
+        const gridFrame = this._gridFrame;
+        return gridFrame === undefined ? 0 : gridFrame.selectedCount;
+    }
 
     initialise(ditemFrameElement: JsonElement | undefined, gridFrame: LockOpenNotificationChannelsGridFrame): void {
         this._gridFrame = gridFrame;
 
         gridFrame.recordFocusedEventer = (newRecordIndex) => { this.handleGridFrameRecordFocusedEvent(newRecordIndex); }
+        gridFrame.selectionChangedEventer = () => {
+            if (this.gridSelectionChangedEventer !== undefined) {
+                this.gridSelectionChangedEventer();
+            }
+        }
 
         let gridFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
@@ -74,7 +88,7 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
                     this.applyLinked();
                 }
             },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFI45509') }
         );
     }
 
@@ -82,6 +96,7 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
         const gridFrame = this._gridFrame;
         if (gridFrame !== undefined) {
             gridFrame.recordFocusedEventer = undefined;
+            gridFrame.selectionChangedEventer = undefined;
             gridFrame.finalise();
             this._gridFrame = undefined;
         }
@@ -126,11 +141,83 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._gridFrame === undefined) {
             throw new AssertInternalError('SLFOGLONRD04418');
         } else {
-            this._gridFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return this._gridFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+        }
+    }
+
+    refreshList() {
+        const getPromise = this._notificationChannelsService.getLoadedList(true);
+        getPromise.then(
+            (getResult) => {
+                if (getResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorGetting]} ${Strings[StringId.NotificationChannels]}: ${getResult.error}`);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFRL33346'); }
+        );
+    }
+
+    add(methodId: NotificationDistributionMethodId) {
+        const getPromise = this._notificationChannelsService.getLoadedList(false);
+        getPromise.then(
+            (getResult) => {
+                if (getResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorGetting]} ${Strings[StringId.NotificationChannels]}: ${getResult.error}`);
+                } else {
+                    const list = getResult.value;
+                    if (list !== undefined) { // ignore if undefined as shutting down
+                        const channelName = this.createUniqueNewChannelName(list, methodId);
+                        const definition = new CreateNotificationChannelDataDefinition();
+                        definition.enabled = false;
+                        definition.notificationChannelName = channelName;
+                        definition.distributionMethodId = methodId;
+
+                        const createPromise = this._notificationChannelsService.tryCreateChannel(definition);
+                        createPromise.then(
+                            (createResult) => {
+                                if (createResult.isErr()) {
+                                    this._toastService.popup(`${Strings[StringId.ErrorCreatingNew]} ${Strings[StringId.NotificationChannel]}: ${createResult.error}`);
+                                }
+                            },
+                            (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFAC33346'); }
+                        );
+                    }
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFAG33346'); }
+        );
+    }
+
+    selectAllInGrid() {
+        const gridFrame = this._gridFrame;
+        if (gridFrame === undefined) {
+            throw new AssertInternalError('NCDFSAIG56071');
+        } else {
+            gridFrame.selectAllRows();
+        }
+    }
+
+    deleteGridSelected() {
+        const gridFrame = this._gridFrame;
+        if (gridFrame === undefined) {
+            throw new AssertInternalError('NCDFDGS56071');
+        } else {
+            const selectedChannelIds = gridFrame.getSelectedChannelIds();
+            if (selectedChannelIds.length > 0) {
+                const deletePromise = this._notificationChannelsService.tryDeleteChannels(selectedChannelIds);
+                deletePromise.then(
+                    (deleteResult) => {
+                        if (deleteResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorDeleting]} ${Strings[StringId.NotificationChannels]}: ${deleteResult.error}`);
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFDGS33346'); }
+                );
+            }
         }
     }
 
@@ -158,9 +245,23 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
                         }
                     }
                 },
-                (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFHSLFRFEPR50515'); }
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'NCDFHGFRFE53322'); }
             );
         }
+    }
+
+    private createUniqueNewChannelName(list: LockOpenNotificationChannelList, methodId: NotificationDistributionMethodId) {
+        const base = `${Strings[StringId.New]} ${NotificationDistributionMethod.idToDisplay(methodId)}`;
+        let suffixAsInteger = 0;
+        let name: string;
+        let index: Integer;
+        do {
+            suffixAsInteger++;
+            name = suffixAsInteger === 1 ? base : `${base} ${suffixAsInteger}`;
+            index = list.indexOfChannelByName(name);
+        } while (index >= 0);
+
+        return name;
     }
 }
 
@@ -171,4 +272,5 @@ export namespace NotificationChannelsDitemFrame {
     }
 
     export type NotificationChannelFocusedEventer = (this: void, channel: LockOpenNotificationChannel | undefined) => void;
+    export type GridSelectionChangedEventer = (this: void) => void;
 }

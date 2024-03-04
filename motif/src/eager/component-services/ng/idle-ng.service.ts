@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Injectable } from '@angular/core';
+import { Injectable, NgZone } from '@angular/core';
 import { IdleService } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -13,8 +13,11 @@ import { IdleService } from '@motifmarkets/motif-core';
 export class IdleNgService {
     private _service: IdleService;
 
-    constructor() {
+    constructor(ngZone: NgZone) {
         this._service = new IdleService();
+        this._service.callbackExecuteEventer = (idleCallbackClosure) => {
+            ngZone.runGuarded(idleCallbackClosure);
+        }
     }
 
     get service() { return this._service; }

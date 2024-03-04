@@ -204,12 +204,12 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
             throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
         } else {
-            gridSourceFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return gridSourceFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 

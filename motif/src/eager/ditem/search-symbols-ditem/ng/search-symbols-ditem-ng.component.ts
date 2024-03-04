@@ -18,6 +18,7 @@ import {
 import {
     AllowedExchangesEnumUiAction,
     AllowedMarketsExplicitElementsArrayUiAction,
+    AssertInternalError,
     BooleanUiAction,
     EnumMappedExplicitElementsArrayUiAction,
     ExchangeId,
@@ -45,7 +46,8 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    TableRecordSourceDefinitionFactoryNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, SearchSymbolsNgComponent } from 'content-ng-api';
 import {
@@ -179,6 +181,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -444,7 +447,15 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.SearchSymbols]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSDNCSLECPOP68823'); }
+                    );
                 }
                 this.closeLayoutEditor();
             },

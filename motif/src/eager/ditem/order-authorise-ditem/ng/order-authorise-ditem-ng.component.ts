@@ -8,6 +8,7 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     IconButtonUiAction,
@@ -88,7 +89,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        toastNgService: ToastNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -109,7 +110,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
             adiNgService.service,
             symbolDetailCacheNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
-            toastNgService.service,
+            this._toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
@@ -280,7 +281,15 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.OrderAuthorise]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'OADNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },

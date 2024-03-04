@@ -76,8 +76,8 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         return this.frame.createAllowedFieldsGridLayoutDefinition();
     }
 
-    openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
-        this.frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
+    tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+        return this.frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
     }
 
     areRowsSelected(includeAllAuto: boolean) {

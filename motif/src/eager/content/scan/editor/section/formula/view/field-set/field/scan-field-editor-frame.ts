@@ -114,6 +114,9 @@ export abstract class ScanFieldEditorFrame implements ScanField {
     get valid() { return this._valid; }
     get errorText() { return this._errorText; }
     get conditionsOperationId() { return this._conditionsOperationId; }
+    set conditionsOperationId(value: ScanField.BooleanOperationId) { // only use when loading
+        this.setConditionsOperationId(value, undefined);
+    }
     abstract get supportedOperatorIds(): readonly ScanFieldCondition.OperatorId[];
 
     destroy() {
@@ -135,7 +138,7 @@ export abstract class ScanFieldEditorFrame implements ScanField {
         }
     }
 
-    setConditionsOperationId(value: ScanField.BooleanOperationId, modifier: ScanFieldEditorFrame.Modifier) {
+    setConditionsOperationId(value: ScanField.BooleanOperationId, modifier: ScanFieldEditorFrame.Modifier | undefined) {
         if (value !== this._conditionsOperationId) {
             this.beginChanges(modifier);
             if (this._conditionsOperationId === ScanField.BooleanOperationId.Xor) {

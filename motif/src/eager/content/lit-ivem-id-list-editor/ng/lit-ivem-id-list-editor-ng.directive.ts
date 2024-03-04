@@ -20,8 +20,7 @@ import {
     Strings,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachedFactoryService,
-    UiComparableList,
-    getErrorMessage
+    UiComparableList
 } from '@motifmarkets/motif-core';
 import {
     CommandRegisterNgService, ToastNgService,
@@ -293,16 +292,22 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private handleColumnsSignalEvent() {
         const allowedFieldsAndLayoutDefinition = this._litIvemIdListComponent.createAllowedFieldsGridLayoutDefinition();
-        const promise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
-        promise.then(
+        const editFinishPromise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
+        editFinishPromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._litIvemIdListComponent.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._litIvemIdListComponent.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.LitIvemIdListEditor]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEOP56668'); }
+                    );
                 }
             },
-            (reason) => {
-                throw new AssertInternalError('LIIENCHLGCUASEE56668', getErrorMessage(reason));
-            }
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEEFP56668'); }
         );
     }
 

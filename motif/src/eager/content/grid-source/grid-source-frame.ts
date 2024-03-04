@@ -379,12 +379,11 @@ export abstract class GridSourceFrame extends ContentFrame {
         return this._grid.getRowOrderDefinition();
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFOGLONRD22209');
         } else {
-            const promise = this._openedGridSource.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition, this._opener);
-            AssertInternalError.throwErrorIfPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
+            return this._openedGridSource.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition, this._opener);
         }
     }
 
@@ -392,7 +391,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFAGLD22209');
         } else {
-            const promise = this._openedGridSource.openGridLayoutOrReferenceDefinition(definition, this._opener);
+            const promise = this._openedGridSource.tryOpenGridLayoutOrReferenceDefinition(definition, this._opener);
             AssertInternalError.throwErrorIfPromiseRejected(promise, 'GSFIG81190', this._opener.lockerName);
         }
     }

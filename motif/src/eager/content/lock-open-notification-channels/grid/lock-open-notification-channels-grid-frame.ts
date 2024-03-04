@@ -39,6 +39,7 @@ import { LockOpenNotificationChannelListTableRecordSourceDefinition } from './lo
 
 export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     recordFocusedEventer: LockOpenNotificationChannelsGridFrame.RecordFocusedEventer | undefined
+    selectionChangedEventer: LockOpenNotificationChannelsGridFrame.SelectionChangedEventer | undefined;
 
     private _list: LockOpenNotificationChannelList;
 
@@ -75,6 +76,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     }
 
     get list() { return this._list; }
+    get selectedCount() { return this.grid.getSelectedRowCount(true); }
 
     override createGridAndCellPainters(gridHostElement: HTMLElement) {
         const grid = this.createGrid(
@@ -102,12 +104,32 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
             viewCell
         ) => this.getCellEditor(field, subgridRowIndex, subgrid, readonly, viewCell);
 
+        grid.selectionChangedEventer = () => {
+            if (this.selectionChangedEventer !== undefined) {
+                this.selectionChangedEventer();
+            }
+        }
 
         return grid;
     }
 
     getLockerScanAttachedNotificationChannelAt(index: Integer) {
         return this._list.getAt(index);
+    }
+
+    getSelectedChannelIds() {
+        const grid = this.grid;
+        const rowIndices = grid.selection.getRowIndices(true);
+        const count = rowIndices.length;
+        const channelIds = new Array<string>(count);
+        for (let i = 0; i < count; i++) {
+            const rowIndex = rowIndices[i];
+            const recordIndex = grid.rowToRecordIndex(rowIndex);
+            const channel = this._list.getAt(recordIndex);
+            channelIds[i] = channel.id;
+        }
+
+        return channelIds;
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
@@ -117,7 +139,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as LockOpenNotificationChannelListTableRecordSource;
-        this._list = recordSource.list;
+        this._list = recordSource.recordList;
     }
 
     protected override setBadness(value: Badness) {
@@ -184,4 +206,5 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
 
 export namespace LockOpenNotificationChannelsGridFrame {
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
+    export type SelectionChangedEventer = (this: void) => void;
 }

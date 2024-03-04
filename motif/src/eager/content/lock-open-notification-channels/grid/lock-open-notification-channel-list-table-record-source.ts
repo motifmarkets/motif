@@ -26,7 +26,6 @@ import { LockOpenNotificationChannelTableValueSource } from './lock-open-notific
 
 export class LockOpenNotificationChannelListTableRecordSource extends LockOpenListTableRecordSource<LockOpenNotificationChannel, LockOpenNotificationChannelList> {
     declare readonly definition: LockOpenNotificationChannelListTableRecordSourceDefinition;
-    declare readonly list: LockOpenNotificationChannelList;
 
     constructor(
         private readonly _notificationChannelsService: NotificationChannelsService,
@@ -42,8 +41,6 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
         );
     }
 
-    override get recordList() { return super.recordList; }
-
     override createDefinition(): LockOpenNotificationChannelListTableRecordSourceDefinition {
         return LockOpenNotificationChannelListTableRecordSourceDefinition.create(
             this._gridFieldCustomHeadingsService,
@@ -52,7 +49,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
     }
 
     override createRecordDefinition(idx: Integer): LockOpenNotificationChannelTableRecordDefinition {
-        const lockOpenNotificationChannel = this.list.getAt(idx);
+        const lockOpenNotificationChannel = this.recordList.getAt(idx);
         return {
             typeId: TableRecordDefinition.TypeId.LockOpenNotificationChannel,
             mapKey: LockOpenNotificationChannel.name,
@@ -62,7 +59,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
 
     override createTableRecord(recordIndex: Integer, eventHandlers: TableRecord.EventHandlers): TableRecord {
         const result = new TableRecord(recordIndex, eventHandlers);
-        const lockerScanAttachedNotificationChannel = this.list.getAt(recordIndex);
+        const lockerScanAttachedNotificationChannel = this.recordList.getAt(recordIndex);
 
         const fieldSources = this.activeFieldSources;
         const sourceCount = fieldSources.length;
@@ -72,7 +69,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as LockOpenNotificationChannelListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel: {
+                    case TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel: {
                         const valueSource = new LockOpenNotificationChannelTableValueSource(result.fieldCount, lockerScanAttachedNotificationChannel);
                         result.addSource(valueSource);
                         break;
@@ -101,7 +98,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
         return LockOpenNotificationChannelListTableRecordSourceDefinition.defaultFieldSourceDefinitionTypeIds;
     }
 
-    protected override subscribeList(opener: LockOpenListItem.Opener): LockOpenNotificationChannelList {
+    protected override subscribeList(_opener: LockOpenListItem.Opener): LockOpenNotificationChannelList {
         return this._notificationChannelsService.list;
     }
 

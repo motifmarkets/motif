@@ -85,7 +85,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         scansNgService: ScansNgService,
-        toastNgService: ToastNgService,
+        private readonly _toastNgService: ToastNgService,
         @Self() @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         super(
@@ -109,7 +109,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             symbolsNgService.service,
             adiNgService.service,
             scansNgService.service,
-            toastNgService.service,
+            this._toastNgService.service,
             this._opener,
             (editor) => this._editorComponent.setEditor(editor),
         );
@@ -208,7 +208,15 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Scans]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },

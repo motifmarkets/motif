@@ -6,8 +6,7 @@
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject } from '@angular/core';
 import { AssertInternalError, LockOpenListItem, StringId, Strings } from '@motifmarkets/motif-core';
-import { ToastService } from 'component-services-internal-api';
-import { CoreInjectionTokens } from 'component-services-ng-api';
+import { CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { GridSourceNgDirective } from '../../../grid-source/ng-api';
 import { ContentNgService } from '../../../ng/content-ng.service';
 import { LockOpenNotificationChannelsGridFrame } from '../lock-open-notification-channels-grid-frame';
@@ -24,7 +23,7 @@ export class LockOpenNotificationChannelsGridNgComponent extends GridSourceNgDir
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
-        private readonly _toastService: ToastService,
+        private readonly _toastNgService: ToastNgService,
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
@@ -47,7 +46,7 @@ export class LockOpenNotificationChannelsGridNgComponent extends GridSourceNgDir
         openPromise.then(
             (openResult) => {
                 if (openResult.isErr()) {
-                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.NotificationChannelsGrid]}: ${openResult.error}`);
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.NotificationChannelsGrid]}: ${openResult.error}`);
                 }
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'LONCGNCPAVI44332'); }

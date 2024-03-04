@@ -53,7 +53,7 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
     @ViewChild('columnsButton', { static: true }) private _columnsButtonComponent: SvgButtonNgComponent;
     @ViewChild('autoSizeColumnWidthsButton', { static: true }) private _autoSizeColumnWidthsButtonComponent: SvgButtonNgComponent;
     @ViewChild('grid', { static: true }) private _gridComponent: LockOpenNotificationChannelsGridNgComponent;
-    @ViewChild('refreshListButton', { static: true }) private _refreshListControlComponent: ButtonInputNgComponent;
+    @ViewChild('refreshListControl', { static: true }) private _refreshListControlComponent: ButtonInputNgComponent;
     @ViewChild('properties', { static: true }) private _propertiesComponent: LockOpenNotificationChannelPropertiesNgComponent;
     @ViewChild('dialogContainer', { read: ViewContainerRef, static: true }) private _dialogContainer: ViewContainerRef;
 
@@ -86,7 +86,7 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         notificationChannelsNgService: NotificationChannelsNgService,
-        toastNgService: ToastNgService,
+        private readonly _toastNgService: ToastNgService,
         @Self() @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         super(
@@ -110,7 +110,7 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
             symbolsNgService.service,
             adiNgService.service,
             notificationChannelsNgService.service,
-            toastNgService.service,
+            this._toastNgService.service,
             this._opener,
             (channel) => this._propertiesComponent.setLockOpenNotificationChannel(channel, false),
         );
@@ -123,7 +123,6 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
         this._columnsUiAction = this.createColumnsUiAction();
 
         this.constructLoad(this.getInitialComponentStateJsonElement());
-        this.pushDeleteSelectedState();
     }
 
     get ditemFrame() { return this._frame; }
@@ -196,7 +195,15 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.NotificationChannels]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEOP56668'); }
+                    );
                 }
                 this.closeDialog();
             },
@@ -210,24 +217,28 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
     }
 
     private createRefreshListUiAction(): ButtonUiAction {
-        const commandName = InternalCommand.Id.RefreshAllNotificationChannels;
+        const commandName = InternalCommand.Id.NotificationChannels_RefreshAll;
         const displayId = StringId.NotificationChannels_RefreshAllCaption;
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new ButtonUiAction(command);
         action.pushTitle(Strings[StringId.NotificationChannels_RefreshAllDescription]);
         action.pushUnselected();
-        action.signalEvent = () => this.handleNewUiActionSignalEvent();
+        action.signalEvent = () => {
+            this._frame.refreshList();
+        };
         return action;
     }
 
     private createAddUiAction() {
         const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.NotificationChannels_AddCaption]);
+        action.pushPlaceholder(Strings[StringId.NotificationChannels_AddCaption]);
         action.pushTitle(Strings[StringId.NotificationChannels_AddDescription]);
         this.pushAddElements();
         action.commitEvent = () => {
             const methodId = this._addUiAction.definedValue;
             this._frame.add(methodId);
+            delay1Tick(() => this._addUiAction.pushValue(undefined));
         };
         return action;
     }
@@ -259,17 +270,9 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.NotificationChannels_RemoveSelectedDescription]);
-        action.pushIcon(IconButtonUiAction.IconId.SymbolLink);
+        action.pushIcon(IconButtonUiAction.IconId.Delete);
         action.signalEvent = () => {
-            const rowIndices = this._gridComponent.selection.getRowIndices(true);
-            const count = rowIndices.length;
-            const recordIndices = new Array<Integer>(count);
-            for (let i = 0; i < count; i++) {
-                const rowIndex = rowIndices[i];
-                recordIndices[i] = this.grid.rowToRecordIndex(rowIndex);
-            }
-            this.list.removeAtIndices(recordIndices);
-            const promise = this._frame.delete
+            this._frame.deleteGridSelected();
         }
         return action;
     }
@@ -280,9 +283,9 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.NotificationChannels_SelectAllDescription]);
-        action.pushIcon(IconButtonUiAction.IconId.SymbolLink);
+        action.pushIcon(IconButtonUiAction.IconId.MarkAll);
         action.signalEvent = () => {
-            this._frame.sele(methodId);
+            this._frame.selectAllInGrid();
         }
         return action;
     }
@@ -324,15 +327,16 @@ export class NotificationChannelsDitemNgComponent extends BuiltinDitemNgComponen
             allowedFieldsAndLayoutDefinition
         ) => this.openGridColumnsEditorDialog(caption, allowedFieldsAndLayoutDefinition);
 
-        // this._frame.open();
+        this._frame.gridSelectionChangedEventer = () => { this.pushDeleteSelectedEnabledDisabled(); }
+        this.pushDeleteSelectedEnabledDisabled();
     }
 
-    private pushDeleteSelectedState() {
-        if (this._frame.litIvemIdLinked) {
-            this._deleteSelectedUiAction.pushSelected();
+    private pushDeleteSelectedEnabledDisabled() {
+        if (this._frame.gridSelectedCount > 0) {
+            this._deleteSelectedUiAction.pushValidOrMissing();
         } else {
-            this._deleteSelectedUiAction.pushUnselected();
-        }
+            this._deleteSelectedUiAction.pushDisabled();
+    }
     }
 
     private openGridColumnsEditorDialog(caption: string, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
