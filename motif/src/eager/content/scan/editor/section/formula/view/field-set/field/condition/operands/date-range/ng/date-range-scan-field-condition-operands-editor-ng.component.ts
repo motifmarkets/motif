@@ -68,15 +68,13 @@ export class DateRangeScanFieldConditionOperandsEditorNgComponent extends ScanFi
         if (min === undefined) {
             this._minUiAction.pushValue(undefined);
         } else {
-            const date = SourceTzOffsetDate.getUtcTimezonedDate(min);
-            this._minUiAction.pushValue(date);
+            this._minUiAction.pushValue(min.utcMidnight);
         }
         const max = this._frame.max;
         if (max === undefined) {
             this._maxUiAction.pushValue(undefined);
         } else {
-            const date = SourceTzOffsetDate.getUtcTimezonedDate(max);
-            this._maxUiAction.pushValue(date);
+            this._maxUiAction.pushValue(max.utcMidnight);
         }
         this._notUiAction.pushValue(this._frame.not);
         super.pushAll();
@@ -88,7 +86,7 @@ export class DateRangeScanFieldConditionOperandsEditorNgComponent extends ScanFi
         action.pushTitle(Strings[StringId.DateRangeValueScanFieldConditionOperandsTitle_Min]);
         action.commitEvent = () => {
             const min = this._minUiAction.value;
-            const sourceTzOffsetDate = min === undefined ? undefined : SourceTzOffsetDate.createFromLocalDate(min);
+            const sourceTzOffsetDate = min === undefined ? undefined : SourceTzOffsetDate.createFromUtcDate(min);
             if (this._frame.setMin(sourceTzOffsetDate, this._modifier)) {
                 this.markForCheck();
             }
@@ -103,7 +101,7 @@ export class DateRangeScanFieldConditionOperandsEditorNgComponent extends ScanFi
         action.pushTitle(Strings[StringId.DateRangeValueScanFieldConditionOperandsTitle_Max]);
         action.commitEvent = () => {
             const max = this._maxUiAction.value;
-            const sourceTzOffsetDate = max === undefined ? undefined : SourceTzOffsetDate.createFromLocalDate(max);
+            const sourceTzOffsetDate = max === undefined ? undefined : SourceTzOffsetDate.createFromUtcDate(max);
             if (this._frame.setMax(sourceTzOffsetDate, this._modifier)) {
                 this.markForCheck();
             }

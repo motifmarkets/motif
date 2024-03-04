@@ -18,7 +18,6 @@ import {
     MarketsDataItem,
     MultiEvent,
     ScalarSettings,
-    SourceTzOffsetDate,
     SourceTzOffsetDateTime,
     TextFormatterService,
     TradingMarketBoard,
@@ -286,8 +285,7 @@ export class MarketsFrame extends ContentFrame {
         if (tradingDate === undefined) {
             tradingDateStr = '';
         } else {
-            const utcTimezonedTradingDate = SourceTzOffsetDate.getUtcTimezonedDate(tradingDate);
-            tradingDateStr = this._textFormatterService.formatDate(utcTimezonedTradingDate); // utcTimezonedTradingDate.toLocaleString();
+            tradingDateStr = this._textFormatterService.formatSourceTzOffsetDate(tradingDate); // utcTimezonedTradingDate.toLocaleString();
         }
 
         let marketTimeStr: string;

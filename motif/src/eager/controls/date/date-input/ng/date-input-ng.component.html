@@ -15,6 +15,7 @@
     [value]="dateAsStr"
     [placeholder]="placeholderText"
     (input)="onInput(dateInput.value)"
+    (change)="onChange(dateInput.value)"
     (keydown.enter)="onEnterKeyDown(dateInput.value)"
     (blur)="onBlur(dateInput.value)"
 >

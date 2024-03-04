@@ -61,8 +61,7 @@ export class DateValueScanFieldConditionOperandsEditorNgComponent extends ScanFi
         if (value === undefined) {
             this._valueUiAction.pushValue(undefined);
         } else {
-            const date = SourceTzOffsetDate.getUtcTimezonedDate(value);
-            this._valueUiAction.pushValue(date);
+            this._valueUiAction.pushValue(value.utcMidnight);
         }
         this._notUiAction.pushValue(this._frame.not);
         super.pushAll();
@@ -74,7 +73,7 @@ export class DateValueScanFieldConditionOperandsEditorNgComponent extends ScanFi
         action.pushTitle(Strings[StringId.DateValueScanFieldConditionOperandsTitle_Value]);
         action.commitEvent = () => {
             const value = this._valueUiAction.value;
-            const sourceTzOffsetDate = value === undefined ? undefined : SourceTzOffsetDate.createFromLocalDate(value);
+            const sourceTzOffsetDate = value === undefined ? undefined : SourceTzOffsetDate.createFromUtcDate(value);
             if (this._frame.setValue(sourceTzOffsetDate, this._modifier)) {
                 this.markForCheck();
             }

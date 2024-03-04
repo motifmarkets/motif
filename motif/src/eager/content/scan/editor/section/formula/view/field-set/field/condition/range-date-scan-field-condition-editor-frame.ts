@@ -38,10 +38,10 @@ export class RangeDateScanFieldConditionEditorFrame extends DateScanFieldConditi
     override get operatorId() { return this._operatorId; }
     get not() { return ScanFieldCondition.Operator.inRangeIsNot(this._operatorId); }
     get min() { return this._min; }
-    get max() { return this._min; }
+    get max() { return this._max; }
 
     override calculateValid() {
-        return this._min !== undefined && this._max !== undefined;
+        return this._min !== undefined || this._max !== undefined; // both undefined means condition has no effect so make it invalid
     }
 
     negateOperator(modifier: ScanFieldConditionEditorFrame.Modifier) {
