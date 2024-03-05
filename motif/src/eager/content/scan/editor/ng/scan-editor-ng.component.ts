@@ -24,7 +24,7 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, ToastNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
@@ -85,6 +85,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(elRef, ++ScanEditorNgComponent.typeInstanceCreateCount);
 
@@ -284,7 +285,33 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (editor === undefined) {
             throw new AssertInternalError('SENCHAUASE20241');
         } else {
-            editor.apply();
+            const lifeCycleStateId = editor.lifeCycleStateId;
+            const promise = editor.apply();
+            promise.then(
+                (result) => {
+                    if (result.isErr()) {
+                        let applyTypeErrorStringId: StringId;
+                        switch (lifeCycleStateId) {
+                            case ScanEditor.LifeCycleStateId.NotYetCreated:
+                                applyTypeErrorStringId = StringId.ErrorCreating;
+                                break;
+                            case ScanEditor.LifeCycleStateId.ExistsDetailLoaded:
+                                applyTypeErrorStringId = StringId.ErrorUpdating;
+                                break;
+                            case ScanEditor.LifeCycleStateId.Creating:
+                            case ScanEditor.LifeCycleStateId.ExistsInitialDetailLoading:
+                            case ScanEditor.LifeCycleStateId.Updating:
+                            case ScanEditor.LifeCycleStateId.Deleted:
+                            case ScanEditor.LifeCycleStateId.Deleting:
+                                throw new AssertInternalError('SENCHAIASEE55716', lifeCycleStateId.toString());
+                            default:
+                                throw new UnreachableCaseError('SENCHAIASEU55716', lifeCycleStateId);
+                        }
+                        this._toastNgService.popup(`${Strings[applyTypeErrorStringId]} ${Strings[StringId.Scan]}: ${result.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'SENCHAIASER55716'); }
+            );
         }
     }
 
@@ -303,7 +330,15 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (editor === undefined) {
             throw new AssertInternalError('SENCHDUASE20241');
         } else {
-            editor.deleteScan();
+            const promise = editor.deleteScan();
+            promise.then(
+                (result) => {
+                    if (result.isErr()) {
+                        this._toastNgService.popup(`${Strings[StringId.ErrorDeleting]} ${Strings[StringId.Scan]}: ${result.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'SENCHDIASER55716'); }
+            );
         }
     }
 
