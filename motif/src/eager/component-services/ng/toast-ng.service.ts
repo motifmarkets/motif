@@ -4,24 +4,23 @@
  * License: motionite.trade/license/motif
  */
 
-import { Injectable, OnDestroy } from '@angular/core';
+import { Injectable } from '@angular/core';
 import { ToastService } from '../toast-service';
+import { SettingsNgService } from './settings-ng.service';
 
 @Injectable({
     providedIn: 'root'
 })
-export class ToastNgService implements OnDestroy {
+export class ToastNgService {
     private readonly _service: ToastService;
 
-    constructor() {
-        this._service = new ToastService();
+    constructor(
+        settingsNgService: SettingsNgService,
+    ) {
+        this._service = new ToastService(settingsNgService.service);
     }
 
     get service() { return this._service; }
-
-    ngOnDestroy() {
-        this._service.finalise();
-    }
 
     popup(text: string) {
         this._service.popup(text);

@@ -61,6 +61,7 @@
     "@jaames/iro": "^5.5.1",
     "@motifmarkets/motif-core": "^0.0.44",
     "@ng-select/ng-select": "^11.1.1",
+    "@types/toastify-js": "^1.12.3",
     "@xilytix/revgrid": "^0.8.0",
     "angular-split": "^16.1.1",
     "angular-svg-icon": "^16.1.0",
@@ -72,6 +73,7 @@
     "oidc-client-ts": "^2.2.5",
     "rollbar": "^2.26.2",
     "rxjs": "^7.8.1",
+    "toastify-js": "^1.12.0",
     "zone.js": "^0.13.1"
   },
   "devDependencies": {
