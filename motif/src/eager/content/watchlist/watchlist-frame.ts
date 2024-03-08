@@ -21,7 +21,7 @@ import {
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
-    TableRecordSourceDefinition,
+    ScanIdRankedLitIvemIdListDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     compareInteger
@@ -78,13 +78,17 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         return this.tryOpenGridSource(definition, keepView);
     }
 
+    tryOpenScan(scanId: string, keepView: boolean) {
+        const definition = this.createGridSourceOrReferenceDefinitionFromScanId(scanId);
+        return this.tryOpenGridSource(definition, keepView);
+    }
+
     createGridSourceOrReferenceDefinitionFromList(
         listDefinition: RankedLitIvemIdListDefinition,
         gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined,
         rowOrderDefinition: GridRowOrderDefinition | undefined,
     ) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
-            TableRecordSourceDefinition.TypeId.Watchlist,
             listDefinition
         );
         const gridSourceDefinition = new GridSourceDefinition(
@@ -255,8 +259,13 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     }
 
     private createGridSourceOrReferenceDefinitionFromLitIvemIds(litIvemIds: readonly LitIvemId[]) {
-        const litIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
-        return this.createGridSourceOrReferenceDefinitionFromList(litIvemIdListDefinition, undefined, undefined);
+        const rankedLitIvemIdListDefinition = new LitIvemIdArrayRankedLitIvemIdListDefinition('', '', '', litIvemIds);
+        return this.createGridSourceOrReferenceDefinitionFromList(rankedLitIvemIdListDefinition, undefined, undefined);
+    }
+
+    private createGridSourceOrReferenceDefinitionFromScanId(scanId: string) {
+        const rankedLitIvemIdListDefinition = new ScanIdRankedLitIvemIdListDefinition(scanId);
+        return this.createGridSourceOrReferenceDefinitionFromList(rankedLitIvemIdListDefinition, undefined, undefined);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

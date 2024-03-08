@@ -202,6 +202,14 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
+    newScan(scanId: string, keepView: boolean) {
+        if (this._watchlistFrame === undefined) {
+            throw new AssertInternalError('WDFNS10174');
+        } else {
+            return this._watchlistFrame.tryOpenScan(scanId, keepView);
+        }
+    }
+
     // saveAsPrivate() {
     //     const oldLitIvemIdList = this._litIvemIdList;
     //     const count = oldLitIvemIdList.count;

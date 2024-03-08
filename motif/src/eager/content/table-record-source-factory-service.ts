@@ -70,7 +70,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             case TableRecordSourceDefinition.TypeId.Null: throw new NotImplementedError('TRSFCFDN29984');
             case TableRecordSourceDefinition.TypeId.LitIvemIdComparableList: return this.createLitIvemIdComparableList(definition);
             case TableRecordSourceDefinition.TypeId.LitIvemDetailsFromSearchSymbols: return this.createLitIvemDetailFromSearchSymbols(definition);
-            case TableRecordSourceDefinition.TypeId.Watchlist: return this.createWatchlist(definition);
+            case TableRecordSourceDefinition.TypeId.RankedLitIvemIdList: return this.createWatchlist(definition);
             case TableRecordSourceDefinition.TypeId.MarketMovers: throw new NotImplementedError('TRSFCFDMM3820');
             case TableRecordSourceDefinition.TypeId.Gics: throw new NotImplementedError('TRSFCFDG78783');
             case TableRecordSourceDefinition.TypeId.ProfitIvemHolding: throw new NotImplementedError('TRSFCFDP18885');
@@ -91,7 +91,6 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             case TableRecordSourceDefinition.TypeId.Scan: return this.createScan(definition);
             case TableRecordSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem: return this.createRankedLitIvemIdListDirectoryItem(definition);
             case TableRecordSourceDefinition.TypeId.GridField: return this.createGridField(definition);
-            case TableRecordSourceDefinition.TypeId.ScanTest: return this.createScanTest(definition);
             case TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: return this.createScanFieldEditorFrameComparableList(definition)
             case TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: return this.createScanEditorAttachedNotificationChannel(definition)
             case TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: return this.createLockOpenNotificationChannel(definition)

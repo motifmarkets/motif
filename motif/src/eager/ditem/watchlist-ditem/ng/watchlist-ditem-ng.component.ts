@@ -460,8 +460,24 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             Strings[StringId.Watchlist_OpenDialogCaption],
         );
         closePromise.then(
-            () => { this.closeDialog(); },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSOD32223', this._frame.opener.lockerName); }
+            (closeResult) => {
+                this.closeDialog();
+                if (closeResult.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Scan]}: ${closeResult.error}`);
+                } else {
+                    const scanId = closeResult.value;
+                    const newPromise = this._frame.newScan(scanId, true);
+                    newPromise.then(
+                        (newResult) => {
+                            if (newResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorCreatingNew]} ${Strings[StringId.Scan]}: ${newResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSODN32223', this._frame.opener.lockerName); }
+                    );
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSODO32223', this._frame.opener.lockerName); }
         );
 
         this.markForCheck();

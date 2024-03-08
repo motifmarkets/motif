@@ -70,7 +70,8 @@
             "allowedCommonJsDependencies": [
               "crypto-js",
               "decimal.js-light",
-              "rollbar"
+              "rollbar",
+              "toastify-js"
             ]
           },
           "configurations": {
