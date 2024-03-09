@@ -148,7 +148,7 @@ export class TradesDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         const ditemFrameElement = this.tryGetChildFrameJsonElement(componentStateElement);
         let tradesFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const tradesFrameElementResult = ditemFrameElement.tryGetDefinedElement(TradesDitemFrame.JsonName.tradesFrame);
+            const tradesFrameElementResult = ditemFrameElement.tryGetElement(TradesDitemFrame.JsonName.tradesFrame);
             if (tradesFrameElementResult.isOk()) {
                 tradesFrameElement = tradesFrameElementResult.value;
             }

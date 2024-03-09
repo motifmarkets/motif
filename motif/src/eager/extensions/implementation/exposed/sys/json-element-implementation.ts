@@ -4,18 +4,20 @@
  * License: motionite.trade/license/motif
  */
 
-import { Err, ErrorCode, JsonElement } from '@motifmarkets/motif-core';
+import { JsonElement } from '@motifmarkets/motif-core';
 import {
     Decimal as DecimalApi,
     Guid as GuidApi,
     Integer as IntegerApi,
     Json as JsonApi,
     JsonElement as JsonElementApi,
+    JsonElementResult as JsonElementResultApi,
     JsonValue as JsonValueApi,
-    JsonValueArray as JsonValueArrayApi,
-    Ok as OkApi,
-    Result as ResultApi
+    JsonValueArray as JsonValueArrayApi
 } from '../../../api/extension-api';
+import { DecimalImplementation } from './decimal-implementation';
+import { JsonElementErrImplementation } from './json-element-result-api-implementation';
+import { OkImplementation } from './result-api-implementation';
 
 export class JsonElementImplementation implements JsonElementApi {
     constructor(private readonly _actual: JsonElement) { }
@@ -42,32 +44,22 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.stringify();
     }
 
-    parse(jsonText: string): ResultApi<void> {
-        return this._actual.parse(jsonText);
-    }
-
-    tryGetDefinedElement(name: string): ResultApi<JsonElementApi> {
-        const result = this._actual.tryGetDefinedElement(name);
+    parse(jsonText: string): JsonElementResultApi<void> {
+        const result = this._actual.parse(jsonText);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            const jsonElement = new JsonElementImplementation(result.value);
-            return new OkApi(jsonElement);
+            return new OkImplementation(undefined);
         }
     }
 
-    tryGetElement(name: string): ResultApi<JsonElementApi | undefined> {
+    tryGetElement(name: string): JsonElementResultApi<JsonElementApi> {
         const result = this._actual.tryGetElement(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            const element = result.value;
-            if (element === undefined) {
-                return new OkApi(undefined);
-            } else {
-                const jsonElement = new JsonElementImplementation(element);
-                return new OkApi(jsonElement);
-            }
+            const jsonElement = new JsonElementImplementation(result.value);
+            return new OkImplementation(jsonElement);
         }
     }
 
@@ -76,35 +68,30 @@ export class JsonElementImplementation implements JsonElementApi {
     }
 
     // eslint-disable-next-line @typescript-eslint/ban-types
-    tryGetNativeObject(name: string): ResultApi<object> {
+    tryGetNativeObject(name: string): JsonElementResultApi<object> {
         const result = this._actual.tryGetNativeObject(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
-    tryGetJsonObject(name: string): ResultApi<JsonApi> {
+    tryGetJsonObject(name: string): JsonElementResultApi<JsonApi> {
         const result = this._actual.tryGetJsonObject(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            const json = result.value;
-            if (json === undefined) {
-                return new Err(ErrorCode.JsonElement_ElementNotDefined);
-            } else {
-                return new OkApi(json);
-            }
+            return new OkImplementation(result.value);
         }
     }
 
-    tryGetString(name: string): ResultApi<string> {
+    tryGetString(name: string): JsonElementResultApi<string> {
         const result = this._actual.tryGetString(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -112,12 +99,12 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getString(name, defaultValue);
     }
 
-    tryGetNumber(name: string): ResultApi<number> {
+    tryGetNumber(name: string): JsonElementResultApi<number> {
         const result = this._actual.tryGetNumber(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -125,12 +112,12 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getNumber(name, defaultValue);
     }
 
-    tryGetBoolean(name: string, context?: string): ResultApi<boolean> {
+    tryGetBoolean(name: string, context?: string): JsonElementResultApi<boolean> {
         const result = this._actual.tryGetBoolean(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -138,42 +125,67 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getBoolean(name, defaultValue);
     }
 
-    tryGetElementArray(name: string): ResultApi<JsonElementApi[], IntegerApi> {
+    tryGetElementArray(name: string): JsonElementResultApi<JsonElementApi[]> {
         const result = this._actual.tryGetElementArray(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
             const value = JsonElementImplementation.arrayToApi(result.value);
-            return new OkApi(value);
+            return new OkImplementation(value);
         }
     }
 
-    tryGetJsonObjectArray(name: string): ResultApi<JsonApi[], number> {
-        return this._actual.tryGetJsonObjectArray(name);
+    tryGetJsonObjectArray(name: string): JsonElementResultApi<JsonApi[]> {
+        const result = this._actual.tryGetJsonObjectArray(name);
+        if (result.isErr()) {
+            return new JsonElementErrImplementation(result.error);
+        } else {
+            return new OkImplementation(result.value);
+        }
     }
 
-    tryGetStringArray(name: string): ResultApi<string[], number> {
-        return this._actual.tryGetStringArray(name);
+    tryGetStringArray(name: string): JsonElementResultApi<string[]> {
+        const result = this._actual.tryGetStringArray(name);
+        if (result.isErr()) {
+            return new JsonElementErrImplementation(result.error);
+        } else {
+            return new OkImplementation(result.value);
+        }
     }
 
-    tryGetNumberArray(name: string): ResultApi<number[], number> {
-        return this._actual.tryGetNumberArray(name);
+    tryGetNumberArray(name: string): JsonElementResultApi<number[]> {
+        const result = this._actual.tryGetNumberArray(name);
+        if (result.isErr()) {
+            return new JsonElementErrImplementation(result.error);
+        } else {
+            return new OkImplementation(result.value);
+        }
     }
 
-    tryGetBooleanArray(name: string): ResultApi<boolean[], number> {
-        return this._actual.tryGetBooleanArray(name);
+    tryGetBooleanArray(name: string): JsonElementResultApi<boolean[]> {
+        const result = this._actual.tryGetBooleanArray(name);
+        if (result.isErr()) {
+            return new JsonElementErrImplementation(result.error);
+        } else {
+            return new OkImplementation(result.value);
+        }
     }
 
-    tryGetAnyJsonValueTypeArray(name: string): ResultApi<JsonValueArrayApi, number> {
-        return this._actual.tryGetAnyJsonValueArray(name);
+    tryGetAnyJsonValueTypeArray(name: string): JsonElementResultApi<JsonValueArrayApi> {
+        const result = this._actual.tryGetAnyJsonValueArray(name);
+        if (result.isErr()) {
+            return new JsonElementErrImplementation(result.error);
+        } else {
+            return new OkImplementation(result.value);
+        }
     }
 
-    tryGetInteger(name: string): ResultApi<IntegerApi> {
+    tryGetInteger(name: string): JsonElementResultApi<IntegerApi> {
         const result = this._actual.tryGetInteger(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -181,12 +193,12 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getInteger(name, defaultValue);
     }
 
-    tryGetDate(name: string): ResultApi<Date> {
+    tryGetDate(name: string): JsonElementResultApi<Date> {
         const result = this._actual.tryGetDate(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -194,12 +206,12 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getDate(name, defaultValue);
     }
 
-    tryGetDateTime(name: string): ResultApi<Date> {
+    tryGetDateTime(name: string): JsonElementResultApi<Date> {
         const result = this._actual.tryGetDateTime(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -207,12 +219,12 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getDateTime(name, defaultValue);
     }
 
-    tryGetGuid(name: string): ResultApi<GuidApi> {
+    tryGetGuid(name: string): JsonElementResultApi<GuidApi> {
         const result = this._actual.tryGetGuid(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            return new OkImplementation(result.value);
         }
     }
 
@@ -220,12 +232,13 @@ export class JsonElementImplementation implements JsonElementApi {
         return this._actual.getGuid(name, defaultValue);
     }
 
-    tryGetDecimal(name: string): ResultApi<DecimalApi> {
+    tryGetDecimal(name: string): JsonElementResultApi<DecimalApi> {
         const result = this._actual.tryGetDecimal(name);
         if (result.isErr()) {
-            return new Err(result.error);
+            return new JsonElementErrImplementation(result.error);
         } else {
-            return new OkApi(result.value);
+            const decimalApi = new DecimalImplementation(result.value);
+            return new OkImplementation(decimalApi);
         }
     }
 

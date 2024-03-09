@@ -22,6 +22,7 @@ import {
     GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
+    JsonElementErr,
     LockOpenListItem,
     MultiEvent,
     Ok,
@@ -154,22 +155,23 @@ export abstract class GridSourceFrame extends ContentFrame {
     tryCreateDefinitionFromJson(frameElement: JsonElement): Result<GridSourceOrReferenceDefinition | undefined> {
         const getElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
         if (getElementResult.isErr()) {
-            return getElementResult.createType(); // missing
-        } else {
-            const jsonElement = getElementResult.value;
-            if (jsonElement === undefined) {
+            const errorId = getElementResult.error;
+            if (errorId === JsonElement.ErrorId.ElementIsNotDefined) {
                 return new Ok(undefined); // The was no definition saved
             } else {
-                const createResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
-                    this.tableRecordSourceDefinitionFactoryService,
-                    jsonElement,
-                );
+                return JsonElementErr.create(getElementResult.error);
+            }
+        } else {
+            const jsonElement = getElementResult.value;
+            const createResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
+                this.tableRecordSourceDefinitionFactoryService,
+                jsonElement,
+            );
 
-                if (createResult.isErr()) {
-                    return createResult.createOuter(ErrorCode.GridSourceFrame_JsonDefinitionIsInvalid)
-                } else {
-                    return createResult;
-                }
+            if (createResult.isErr()) {
+                return createResult.createOuter(ErrorCode.GridSourceFrame_JsonDefinitionIsInvalid)
+            } else {
+                return createResult;
             }
         }
     }
@@ -178,7 +180,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (frameElement === undefined) {
             return new Ok(undefined); // missing
         } else {
-            const layoutElementResult = frameElement.tryGetDefinedElement(GridSourceFrame.JsonName.layout);
+            const layoutElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.layout);
             if (layoutElementResult.isErr()) {
                 return new Ok(undefined); // missing
             } else {

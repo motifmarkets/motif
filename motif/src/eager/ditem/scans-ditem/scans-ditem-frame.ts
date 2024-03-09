@@ -82,7 +82,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
 
         let scanListFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const scanListFrameElementResult = ditemFrameElement.tryGetDefinedElement(ScansDitemFrame.JsonName.scanListFrame);
+            const scanListFrameElementResult = ditemFrameElement.tryGetElement(ScansDitemFrame.JsonName.scanListFrame);
             if (scanListFrameElementResult.isOk()) {
                 scanListFrameElement = scanListFrameElementResult.value;
             }

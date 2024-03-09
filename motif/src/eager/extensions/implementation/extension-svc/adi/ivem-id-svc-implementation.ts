@@ -7,18 +7,18 @@
 import { IvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
-    Err as ErrApi,
     ExchangeId as ExchangeIdApi,
     IvemId as IvemIdApi,
     IvemIdSvc, JsonElement as JsonElementApi,
-    Ok as OkApi,
     Result as ResultApi
 } from '../../../api/extension-api';
 import {
     ComparisonResultImplementation,
+    ErrImplementation,
     ExchangeIdImplementation,
     IvemIdImplementation,
-    JsonElementImplementation
+    JsonElementImplementation,
+    OkImplementation
 } from '../../exposed/internal-api';
 
 export class IvemIdSvcImplementation implements IvemIdSvc {
@@ -51,10 +51,10 @@ export class IvemIdSvcImplementation implements IvemIdSvc {
         const element = JsonElementImplementation.fromApi(elementApi);
         const result = IvemId.tryCreateFromJson(element);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const ivemIdApi = IvemIdImplementation.toApi(result.value);
-            return new OkApi(ivemIdApi);
+            return new OkImplementation(ivemIdApi);
         }
     }
 
@@ -62,10 +62,10 @@ export class IvemIdSvcImplementation implements IvemIdSvc {
         const elements = JsonElementImplementation.arrayFromApi(elementsApi);
         const result = IvemId.tryCreateArrayFromJsonElementArray(elements);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const ivemIdArrayApi = IvemIdImplementation.arrayToApi(result.value);
-            return new OkApi(ivemIdArrayApi);
+            return new OkImplementation(ivemIdArrayApi);
         }
     }
 }

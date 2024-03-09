@@ -68,7 +68,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
 
         let orderAuthoriseFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const orderAuthoriseFrameElementResult = ditemFrameElement.tryGetDefinedElement(OrderAuthoriseDitemFrame.JsonName.orderAuthoriseFrame);
+            const orderAuthoriseFrameElementResult = ditemFrameElement.tryGetElement(OrderAuthoriseDitemFrame.JsonName.orderAuthoriseFrame);
             if (orderAuthoriseFrameElementResult.isOk()) {
                 orderAuthoriseFrameElement = orderAuthoriseFrameElementResult.value;
             }

@@ -63,7 +63,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
 
         let balancesFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const balancesFrameElementResult = ditemFrameElement.tryGetDefinedElement(BalancesDitemFrame.JsonName.balancesFrame);
+            const balancesFrameElementResult = ditemFrameElement.tryGetElement(BalancesDitemFrame.JsonName.balancesFrame);
             if (balancesFrameElementResult.isOk()) {
                 balancesFrameElement = balancesFrameElementResult.value;
             }

@@ -52,7 +52,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
         let brokerageAccountsFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const brokerageAccountsFrameElementResult = ditemFrameElement.tryGetDefinedElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
+            const brokerageAccountsFrameElementResult = ditemFrameElement.tryGetElement(BrokerageAccountsDitemFrame.JsonName.brokerageAccountsFrame);
             if (brokerageAccountsFrameElementResult.isOk()) {
                 brokerageAccountsFrameElement = brokerageAccountsFrameElementResult.value;
             }

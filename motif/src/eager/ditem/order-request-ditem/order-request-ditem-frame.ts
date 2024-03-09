@@ -79,21 +79,21 @@ export class OrderRequestDitemFrame extends BuiltinDitemFrame {
 
     initialise(frameElement: JsonElement | undefined) {
         if (frameElement !== undefined) {
-            const padConfigJsonElementResult = frameElement.tryGetDefinedElement(OrderRequestDitemFrame.JsonName.pad);
+            const padConfigJsonElementResult = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.pad);
             if (padConfigJsonElementResult.isErr()) {
                 this._padConfigJsonElement = undefined;
             } else {
                 this._padConfigJsonElement = padConfigJsonElementResult.value;
             }
 
-            const reviewConfigJsonElementResult = frameElement.tryGetDefinedElement(OrderRequestDitemFrame.JsonName.review);
+            const reviewConfigJsonElementResult = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.review);
             if (reviewConfigJsonElementResult.isErr()) {
                 this._reviewConfigJsonElement = undefined;
             } else {
                 this._reviewConfigJsonElement = reviewConfigJsonElementResult.value;
             }
 
-            const resultConfigJsonElementResult = frameElement.tryGetDefinedElement(OrderRequestDitemFrame.JsonName.result);
+            const resultConfigJsonElementResult = frameElement.tryGetElement(OrderRequestDitemFrame.JsonName.result);
             if (resultConfigJsonElementResult.isErr()) {
                 this._resultConfigJsonElement = undefined;
             } else {

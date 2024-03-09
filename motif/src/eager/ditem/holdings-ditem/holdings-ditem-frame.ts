@@ -84,12 +84,12 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         let holdingsFrameElement: JsonElement | undefined;
         let balancesFrameElement: JsonElement | undefined;
         if (frameElement !== undefined) {
-            const holdingsElementResult = frameElement.tryGetDefinedElement(HoldingsDitemFrame.JsonName.holdings);
+            const holdingsElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.holdings);
             if (holdingsElementResult.isOk()) {
                 holdingsFrameElement = holdingsElementResult.value;
             }
 
-            const balancesElementResult = frameElement.tryGetDefinedElement(HoldingsDitemFrame.JsonName.balances);
+            const balancesElementResult = frameElement.tryGetElement(HoldingsDitemFrame.JsonName.balances);
             if (balancesElementResult.isOk()) {
                 balancesFrameElement = balancesElementResult.value;
             }

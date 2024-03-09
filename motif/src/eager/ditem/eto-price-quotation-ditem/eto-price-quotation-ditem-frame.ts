@@ -45,14 +45,14 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
             this.initialiseWatch(undefined);
             this.initialiseCallPut(undefined);
         } else {
-            const watchElementResult = frameElement.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.watch);
+            const watchElementResult = frameElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.watch);
             if (watchElementResult.isErr()) {
                 this.initialiseWatch(undefined);
             } else {
                 this.initialiseWatch(watchElementResult.value);
             }
 
-            const callPutElementResult = frameElement.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
+            const callPutElementResult = frameElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
             if (callPutElementResult.isErr()) {
                 this.initialiseCallPut(undefined);
             } else {
@@ -97,10 +97,10 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
         this._watchGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (element !== undefined) {
-            const elementResult = element.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.watch);
+            const elementResult = element.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.watch);
             if (elementResult.isOk()) {
                 const watchElement = elementResult.value;
-                const keptLayoutElementResult = watchElement.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
+                const keptLayoutElementResult = watchElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
                     const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
@@ -117,10 +117,10 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
         this._callPutGridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (element !== undefined) {
-            const elementResult = element.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
+            const elementResult = element.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.callPut);
             if (elementResult.isOk()) {
                 const callPutElement = elementResult.value;
-                const keptLayoutElementResult = callPutElement.tryGetDefinedElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
+                const keptLayoutElementResult = callPutElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
                     const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);

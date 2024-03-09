@@ -59,10 +59,10 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
         this._gridSourceFrame.keepPreviousLayoutIfPossible = true;
 
         if (frameElement !== undefined) {
-            const contentElementResult = frameElement.tryGetDefinedElement(TopShareholdersDitemFrame.JsonName.content);
+            const contentElementResult = frameElement.tryGetElement(TopShareholdersDitemFrame.JsonName.content);
             if (contentElementResult.isOk()) {
                 const contentElement = contentElementResult.value;
-                const keptLayoutElementResult = contentElement.tryGetDefinedElement(TopShareholdersDitemFrame.JsonName.keptLayout);
+                const keptLayoutElementResult = contentElement.tryGetElement(TopShareholdersDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
                     const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);

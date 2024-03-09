@@ -504,7 +504,7 @@ export namespace ConfigNgService {
                 if (installResult.isErr()) {
                     Logger.logConfigError('CNSPJI13300911', serviceName);
                 } else {
-                    const infoElementResult = json.tryGetDefinedElement(JsonName.info);
+                    const infoElementResult = json.tryGetElement(JsonName.info);
                     if (infoElementResult.isErr()) {
                         Logger.logConfigError('CNSBEPBEJNL20558', serviceName);
                     } else {

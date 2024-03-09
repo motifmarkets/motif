@@ -18,6 +18,7 @@ export namespace ApiError {
         DestroyChildMenuItemNotExist = 'DestroyChildMenuItemNotExist',
         InvalidCorrectness = 'InvalidCorrectness',
         InvalidBadness = 'InvalidBadness',
+        InvalidJsonELementErrorCode = 'InvalidJsonELementErrorCode',
         InvalidFeedClass = 'InvalidFeedClass',
         InvalidFeedId = 'InvalidFeedId',
         InvalidMarketId = 'InvalidMarketId',

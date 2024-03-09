@@ -71,7 +71,7 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
 
         let gridFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const scanListFrameElementResult = ditemFrameElement.tryGetDefinedElement(NotificationChannelsDitemFrame.JsonName.scanListFrame);
+            const scanListFrameElementResult = ditemFrameElement.tryGetElement(NotificationChannelsDitemFrame.JsonName.scanListFrame);
             if (scanListFrameElementResult.isOk()) {
                 gridFrameElement = scanListFrameElementResult.value;
             }

@@ -86,7 +86,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
         } else {
-            const watchlistElementResult = frameElement.tryGetDefinedElement(DepthAndSalesDitemFrame.JsonName.watchlist);
+            const watchlistElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.watchlist);
             if (watchlistElementResult.isOk()) {
                 const watchlistElement = watchlistElementResult.value;
                 const layoutDefinitionResult = this._watchlistFrame.tryCreateLayoutDefinitionFromJson(watchlistElement);
@@ -97,14 +97,14 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
                 }
             }
 
-            const tradesElementResult = frameElement.tryGetDefinedElement(DepthAndSalesDitemFrame.JsonName.trades);
+            const tradesElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.trades);
             if (tradesElementResult.isErr()) {
                 this._tradesFrame.initialise(undefined);
             } else {
                 this._tradesFrame.initialise(tradesElementResult.value);
             }
 
-            const depthElementResult = frameElement.tryGetDefinedElement(DepthAndSalesDitemFrame.JsonName.depth);
+            const depthElementResult = frameElement.tryGetElement(DepthAndSalesDitemFrame.JsonName.depth);
             if (depthElementResult.isErr()) {
                 this._depthFrame.initialise(undefined);
             } else {

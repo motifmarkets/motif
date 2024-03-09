@@ -68,7 +68,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
         let ordersFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const ordersFrameElementResult = ditemFrameElement.tryGetDefinedElement(OrdersDitemFrame.JsonName.ordersFrame);
+            const ordersFrameElementResult = ditemFrameElement.tryGetElement(OrdersDitemFrame.JsonName.ordersFrame);
             if (ordersFrameElementResult.isOk()) {
                 ordersFrameElement = ordersFrameElementResult.value;
             }

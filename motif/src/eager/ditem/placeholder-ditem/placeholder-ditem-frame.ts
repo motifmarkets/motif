@@ -132,7 +132,7 @@ export namespace PlaceholderDitemFrame {
         }
 
         export function createFromJson(value: JsonElement): Result<Placeheld> {
-            const ditemComponentDefinitionElementResult = value.tryGetDefinedElement(JsonName.definition);
+            const ditemComponentDefinitionElementResult = value.tryGetElement(JsonName.definition);
             if (ditemComponentDefinitionElementResult.isErr()) {
                 const errorCode = ErrorCode.PlaceholderDitemFrameDefinition_DitemComponentIsNotSpecified;
                 return ditemComponentDefinitionElementResult.createOuter(errorCode);

@@ -75,7 +75,7 @@ export class DepthSideFrame extends ContentFrame {
 
         const initialGridLayoutDefinitions = new Array<GridLayoutDefinition | undefined>(DepthStyle.idCount);
         if (element !== undefined) {
-            const tryGetFullResult = element.tryGetDefinedElement(DepthSideFrame.JsonName.fullLayout);
+            const tryGetFullResult = element.tryGetElement(DepthSideFrame.JsonName.fullLayout);
             if (tryGetFullResult.isOk()) {
                 const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetFullResult.value);
                 if (layoutDefinitionResult.isOk()) {
@@ -86,7 +86,7 @@ export class DepthSideFrame extends ContentFrame {
                 }
             }
 
-            const tryGetShortResult = element.tryGetDefinedElement(DepthSideFrame.JsonName.shortLayout);
+            const tryGetShortResult = element.tryGetElement(DepthSideFrame.JsonName.shortLayout);
             if (tryGetShortResult.isOk()) {
                 const layoutDefinitionResult = GridLayoutDefinition.tryCreateFromJson(tryGetShortResult.value);
                 if (layoutDefinitionResult.isOk()) {

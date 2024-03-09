@@ -79,7 +79,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
         let watchlistFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const getElementResult = ditemFrameElement.tryGetDefinedElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+            const getElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (getElementResult.isOk()) {
                 watchlistFrameElement = getElementResult.value;
             }
@@ -99,7 +99,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
 
         let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
-            const watchlistFrameElementResult = ditemFrameElement.tryGetDefinedElement(WatchlistDitemFrame.JsonName.watchlistFrame);
+            const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (watchlistFrameElementResult.isOk()) {
                 watchlistFrameElement = watchlistFrameElementResult.value;
                 const definitionCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);

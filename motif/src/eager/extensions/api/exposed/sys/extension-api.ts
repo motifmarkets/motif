@@ -10,6 +10,7 @@ export * from './comparable-list-api';
 export * from './correctness-api';
 export * from './decimal-api';
 export * from './json-element-api';
+export * from './json-element-result-api';
 export * from './modifier-key-api';
 export * from './multi-event-api';
 export * from './result-api';

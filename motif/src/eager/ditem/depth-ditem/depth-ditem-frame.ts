@@ -46,7 +46,7 @@ export class DepthDitemFrame extends BuiltinDitemFrame {
 
         let depthFrameElement: JsonElement | undefined;
         if (ditemFrameElement !== undefined) {
-            const depthFrameElementResult = ditemFrameElement.tryGetDefinedElement(DepthDitemFrame.JsonName.depthFrame);
+            const depthFrameElementResult = ditemFrameElement.tryGetElement(DepthDitemFrame.JsonName.depthFrame);
             if (depthFrameElementResult.isOk()) {
                 depthFrameElement = depthFrameElementResult.value;
             }
