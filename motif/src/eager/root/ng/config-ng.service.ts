@@ -11,6 +11,7 @@ import {
     DataEnvironment,
     DataEnvironmentId,
     ErrorCode,
+    ErrorCodeLogger,
     ExchangeInfo,
     ExtensionInfo,
     Json,
@@ -18,8 +19,7 @@ import {
     LitIvemId,
     ServiceOperator,
     ZenithPublisherSubscriptionManager,
-    createRandomUrlSearch,
-    logger
+    createRandomUrlSearch
 } from '@motifmarkets/motif-core';
 import { Config } from '../config';
 
@@ -70,7 +70,7 @@ export class ConfigNgService {
         try {
             configJson = JSON.parse(jsonText) as ConfigNgService.ConfigJson;
         } catch (e) {
-            ConfigNgService.logConfigError('CSLTP988871038839', jsonText);
+            ErrorCodeLogger.logConfigError('CSLTP988871038839', jsonText, 500);
             throw (e);
         }
 
@@ -275,7 +275,7 @@ export namespace ConfigNgService {
                         let options: Config.Exchange.Option[] | undefined;
                         if (optionsJson !== undefined) {
                             if (!Array.isArray(optionsJson)) {
-                                logger.logConfigError('CNSEPJA24988', serviceName);
+                                ErrorCodeLogger.logConfigError('CNSEPJA24988', serviceName);
                             } else {
                                 const count = optionsJson.length;
                                 options = new Array<Config.Exchange.Option>(count);
@@ -470,7 +470,7 @@ export namespace ConfigNgService {
         export function parseJson(json: Json | undefined, serviceName: string): Config.BundledExtensions {
             if (json !== undefined) {
                 if (!Array.isArray(json)) {
-                    logger.logConfigError('CNSDEPJA23300911', serviceName);
+                    ErrorCodeLogger.logConfigError('CNSDEPJA23300911', serviceName);
                 } else {
                     const maxCount = json.length;
                     const result = new Array<BundledExtension>(maxCount);
@@ -479,7 +479,7 @@ export namespace ConfigNgService {
                         const bundledExtensionJson = json[i] as Json;
                         const bundledExtensionJsonType = typeof bundledExtensionJson;
                         if (bundledExtensionJsonType !== 'object') {
-                            logger.logConfigError('CNSDEPJBE23300', `${serviceName}: ${bundledExtensionJsonType}`);
+                            ErrorCodeLogger.logConfigError('CNSDEPJBE23300', `${serviceName}: ${bundledExtensionJsonType}`);
                         } else {
                             const bundledExtensionJsonElement = new JsonElement(bundledExtensionJson);
                             const bundledExtension = parseBundledExtensionJson(bundledExtensionJsonElement, serviceName);
@@ -498,19 +498,19 @@ export namespace ConfigNgService {
 
         export function parseBundledExtensionJson(json: JsonElement | undefined, serviceName: string) {
             if (json === undefined) {
-                logger.logConfigError('CNSPJU13300911', serviceName);
+                ErrorCodeLogger.logConfigError('CNSPJU13300911', serviceName);
             } else {
                 const installResult = json.tryGetBoolean(JsonName.install);
                 if (installResult.isErr()) {
-                    logger.logConfigError('CNSPJI13300911', serviceName);
+                    ErrorCodeLogger.logConfigError('CNSPJI13300911', serviceName);
                 } else {
                     const infoElementResult = json.tryGetElement(JsonName.info);
                     if (infoElementResult.isErr()) {
-                        logger.logConfigError('CNSBEPBEJNL20558', serviceName);
+                        ErrorCodeLogger.logConfigError('CNSBEPBEJNL20558', serviceName);
                     } else {
                         const createResult = ExtensionInfo.tryCreateFromJson(infoElementResult.value);
                         if (createResult.isErr()) {
-                            logger.logConfigError('CNSPJU13300911', `"${serviceName}": ${createResult.error}`);
+                            ErrorCodeLogger.logConfigError('CNSPJU13300911', `"${serviceName}": ${createResult.error}`);
                         } else {
                             const result: BundledExtension = {
                                 info: createResult.value,
@@ -607,24 +607,24 @@ export namespace ConfigNgService {
             export function parseItemIgnoresJson(json: Config.Diagnostics.Telemetry.ItemIgnore[] | undefined, serviceName: string) {
                 if (json !== undefined) {
                     if (!Array.isArray(json)) {
-                        logger.logConfigError('CNSDTPIIJA13300911', serviceName);
+                        ErrorCodeLogger.logConfigError('CNSDTPIIJA13300911', serviceName);
                     } else {
                         let invalid = false;
                         for (const itemIgnore of json) {
                             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
                             if (typeof itemIgnore !== 'object' || itemIgnore === null) {
-                                logger.logConfigError('CNSDTPIIJO13300911', serviceName);
+                                ErrorCodeLogger.logConfigError('CNSDTPIIJO13300911', serviceName);
                                 invalid = true;
                                 break;
                             } else {
                                 const typeId = itemIgnore.typeId;
                                 if (typeof typeId !== 'string') {
-                                    logger.logConfigError('CNSDTPIIJS13300911', serviceName);
+                                    ErrorCodeLogger.logConfigError('CNSDTPIIJS13300911', serviceName);
                                     invalid = true;
                                     break;
                                 } else {
                                     if (!Config.Diagnostics.Telemetry.ItemIgnore.Type.isValidId(typeId)) {
-                                        logger.logConfigError('CNSDTPIIJTU13300911', `${serviceName}: ${typeId}`);
+                                        ErrorCodeLogger.logConfigError('CNSDTPIIJTU13300911', `${serviceName}: ${typeId}`);
                                         invalid = true;
                                         break;
                                     }
@@ -752,9 +752,5 @@ export namespace ConfigNgService {
                 };
             }
         }
-    }
-
-    export function logConfigError(code: string, jsonText: string) {
-        logger.logConfigError(code, jsonText, 500);
     }
 }

@@ -12,6 +12,7 @@ import {
     ComparisonResult,
     Err,
     ErrorCode,
+    ErrorCodeLogger,
     ExtensionError,
     ExtensionHandle,
     ExtensionId,
@@ -19,7 +20,6 @@ import {
     ExtStringId,
     ExtStrings,
     Integer,
-    invalidHandle,
     ListChangeTypeId,
     logger,
     mSecsPerMin,
@@ -453,15 +453,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             loadCallback: ExtensionsService.nullLoadCallback,
         };
 
-        const registration = this.registerExtension(extensionRequest, ExtensionsService.invalidExtensionInfo);
-
-        if (registration === undefined) {
-            throw new AssertInternalError('ESCVU877333');
-        } else {
-            if (registration.handle !== invalidHandle) {
-                throw new AssertInternalError('IESCVH877333');
-            }
-        }
+        return this.registerExtension(extensionRequest, ExtensionsService.invalidExtensionInfo);
     }
 
     private registerInternalExtension() {
@@ -474,13 +466,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             loadCallback: ExtensionsService.nullLoadCallback,
         };
 
-        const registration = this.registerExtension(extensionRequest, ExtensionsService.internalExtensionInfo);
-
-        if (registration === undefined) {
-            throw new AssertInternalError('IESCIU877333');
-        } else {
-            return registration;
-        }
+        return this.registerExtension(extensionRequest, ExtensionsService.internalExtensionInfo);
     }
 
     private processRegistrationRequest(request: ExtensionRegistrarApi.Request) {
@@ -488,12 +474,12 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (publisherType === undefined) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
+            ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
         } else {
             const publisherTypeId = PublisherTypeImplementation.tryFromApi(publisherType);
             if (publisherTypeId === undefined) {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
+                ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
             } else {
                 const publisherId: PublisherId = {
                     typeId: publisherTypeId,
@@ -519,14 +505,14 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 } else {
                     const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
                     if (matchingExtension !== undefined) {
-                        logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
+                        ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
                             `${this.generateExtensionKeyText(requestExtensionInfo)}`
                         );
                     } else {
                         const requestedInfo = activeDownload.info;
                         const matchResult = this.matchRequestWithInfo(request, requestedInfo);
                         if (matchResult.isErr()) {
-                            logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
+                            ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
                                 `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchResult.error}`
                             );
                         } else {

@@ -6,13 +6,13 @@
 
 import {
     AssertInternalError,
+    ErrorCodeLogger,
     ExtensionHandle,
     Integer,
     JsonElement,
     LitIvemId,
     SessionInfoService,
-    UnreachableCaseError,
-    logger
+    UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
 import {
@@ -277,7 +277,7 @@ export class GoldenLayoutHostFrame {
             const jsonElement = new JsonElement(linkedSymbolJson);
             const tryCreateResult = LitIvemId.tryCreateFromJson(jsonElement);
             if (tryCreateResult.isErr()) {
-                logger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
+                ErrorCodeLogger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
             } else {
                 this._desktopAccessService.initialiseLitIvemId(tryCreateResult.value);
             }
@@ -299,7 +299,7 @@ export class GoldenLayoutHostFrame {
                     const jsonElements = watchlistJson.map((json) => new JsonElement(json));
                     const tryCreateResult = LitIvemId.tryCreateArrayFromJsonElementArray(jsonElements);
                     if (tryCreateResult.isErr()) {
-                        logger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
+                        ErrorCodeLogger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
                     } else {
                         frame.defaultLitIvemIds = tryCreateResult.value;
                     }
