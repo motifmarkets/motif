@@ -7,6 +7,7 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
 import {
     AssertInternalError,
+    Decimal,
     DecimalUiAction,
     Integer,
     IntlNumberFormatCharParts,
@@ -21,7 +22,6 @@ import {
     newDecimal
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { Decimal } from 'decimal.js-light';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { DecimalComponentBaseNgDirective } from '../../ng/decimal-component-base-ng.directive';
 
@@ -47,7 +47,7 @@ export class DecimalInputNgComponent extends DecimalComponentBaseNgDirective imp
     private _numberGroupCharRemoveRegex: RegExp | undefined;
 
     private _decimalInputElement: HTMLInputElement;
-    private _oldText: string;
+    private _oldText: string | undefined;
     private _oldSelectionStart: Integer | null;
     private _oldSelectionEnd: Integer | null;
 

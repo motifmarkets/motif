@@ -8,6 +8,7 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
+    Decimal,
     EnumInfoOutOfOrderError,
     Integer,
     MultiEvent,
@@ -25,7 +26,6 @@ import {
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {

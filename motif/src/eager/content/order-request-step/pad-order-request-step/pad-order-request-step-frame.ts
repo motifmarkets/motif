@@ -8,6 +8,7 @@ import {
     Account,
     BrokerageAccountGroup,
     BrokerageAccountId,
+    Decimal,
     Integer,
     LitIvemId,
     MovementId,
@@ -28,7 +29,6 @@ import {
     UiAction,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class PadOrderRequestStepFrame extends OrderRequestStepFrame {

@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { Decimal } from 'decimal.js-light';
+import { Decimal } from '@motifmarkets/motif-core';
 import { Decimal as DecimalApi } from '../../../api/extension-api';
 
 export class DecimalImplementation implements DecimalApi {

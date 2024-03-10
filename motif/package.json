@@ -67,7 +67,6 @@
     "angular-split": "^16.1.1",
     "angular-svg-icon": "^16.1.0",
     "codemirror": "^6.0.1",
-    "decimal.js-light": "^2.5.1",
     "file-saver": "^2.0.5",
     "golden-layout": "^2.6.0",
     "nanoid": "^4.0.2",
