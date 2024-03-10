@@ -13,14 +13,14 @@ import {
     Integer,
     JsonElement,
     LockOpenListItem,
-    Logger,
     ScanEditor,
     ScanList,
     ScansService,
     SettingsService,
     StringId,
     Strings,
-    SymbolsService
+    SymbolsService,
+    logger
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import { ScanListFrame } from 'content-internal-api';
@@ -201,7 +201,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
                 openResultPromise.then(
                     (openResult) => {
                         if (openResult.isErr()) {
-                            Logger.logWarning(ErrorCode.ScanEditorFrame_RecordFocusedTryOpenEditor, scan.id);
+                            logger.logWarning(ErrorCode.ScanEditorFrame_RecordFocusedTryOpenEditor, scan.id);
                         } else {
                             const scanEditor = openResult.value;
                             if (scanEditor === undefined) {

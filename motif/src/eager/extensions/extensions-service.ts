@@ -21,7 +21,7 @@ import {
     Integer,
     invalidHandle,
     ListChangeTypeId,
-    Logger,
+    logger,
     mSecsPerMin,
     MultiEvent,
     Ok,
@@ -488,12 +488,12 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (publisherType === undefined) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            Logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
+            logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
         } else {
             const publisherTypeId = PublisherTypeImplementation.tryFromApi(publisherType);
             if (publisherTypeId === undefined) {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                Logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
+                logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
             } else {
                 const publisherId: PublisherId = {
                     typeId: publisherTypeId,
@@ -513,20 +513,20 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 const activeDownload = this.extractActiveDownload(requestExtensionInfo);
                 if (activeDownload === undefined) {
                     // must have timed out
-                    Logger.logWarning('Extension active download not found:',
+                    logger.logWarning('Extension active download not found:',
                         `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
                     );
                 } else {
                     const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
                     if (matchingExtension !== undefined) {
-                        Logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
+                        logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
                             `${this.generateExtensionKeyText(requestExtensionInfo)}`
                         );
                     } else {
                         const requestedInfo = activeDownload.info;
                         const matchResult = this.matchRequestWithInfo(request, requestedInfo);
                         if (matchResult.isErr()) {
-                            Logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
+                            logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
                                 `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchResult.error}`
                             );
                         } else {

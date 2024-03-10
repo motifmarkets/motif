@@ -22,7 +22,6 @@ import {
     JsonElement,
     LitIvemId,
     LitIvemIdUiAction,
-    Logger,
     ModifierKey,
     ModifierKeyId,
     StringId,
@@ -30,7 +29,8 @@ import {
     Strings,
     UiAction,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import { AdiNgService, CommandRegisterNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
 import { DepthGridLayoutsDialogNgComponent, DepthNgComponent } from 'content-ng-api';
@@ -415,7 +415,7 @@ export class DepthDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`DepthInput Layout Editor error: ${errorText}`);
+                logger.logError(`DepthInput Layout Editor error: ${errorText}`);
                 this.closeLayoutEditor();
             }
         );

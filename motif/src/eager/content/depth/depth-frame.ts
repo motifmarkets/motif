@@ -20,16 +20,16 @@ import {
     Integer,
     JsonElement,
     LitIvemId,
-    Logger,
     MultiEvent,
     OrderSideId,
     PublisherSubscriptionDataTypeId,
     SecurityDataDefinition,
     SecurityDataItem,
     UnreachableCaseError,
-    uniqueElementArraysOverlap,
+    uniqueElementArraysOverlap
 } from '@motifmarkets/motif-core';
 import { ServerNotificationId } from '@xilytix/revgrid';
+import { logger } from '@xilytix/sysutils';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 
@@ -95,7 +95,7 @@ export class DepthFrame extends ContentFrame {
                 if (commaTextResult.isErr()) {
                     this._filterActive = false;
                     this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${commaTextResult.error})`);
+                    logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${commaTextResult.error})`);
                 } else {
                     this._filterXrefs = commaTextResult.value;
                 }
@@ -445,7 +445,7 @@ export class DepthFrame extends ContentFrame {
         const subscriptionDataTypeIds = this._securityDataItem.subscriptionDataTypeIds;
         let resolvedDepthStyleId: DepthStyleId;
         if (subscriptionDataTypeIds === undefined) {
-            Logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
+            logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
             resolvedDepthStyleId = this._preferredDepthStyleId; // try this
         } else {
             switch (this._preferredDepthStyleId) {
@@ -459,7 +459,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthShort)) {
                                 resolvedDepthStyleId = DepthStyleId.Short;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
+                                logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Full; // try this - probably wont work
                             }
                         }
@@ -476,7 +476,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthFull)) {
                                 resolvedDepthStyleId = DepthStyleId.Full;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
+                                logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Short; // try this - probably wont work
                             }
                         }

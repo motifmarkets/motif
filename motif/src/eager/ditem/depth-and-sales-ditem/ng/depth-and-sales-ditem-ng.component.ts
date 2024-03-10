@@ -24,7 +24,6 @@ import {
     JsonElement,
     LitIvemId,
     LitIvemIdUiAction,
-    Logger,
     ModifierKey,
     ModifierKeyId,
     StringId,
@@ -34,7 +33,8 @@ import {
     UnreachableCaseError,
     defined,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import { IOutputData, SplitComponent } from 'angular-split';
 import {
@@ -572,7 +572,7 @@ export class DepthAndSalesDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`Depth and Sales Grid Layout error: ${errorText}`);
+                logger.logError(`Depth and Sales Grid Layout error: ${errorText}`);
                 this.closeDialog();
             }
         );

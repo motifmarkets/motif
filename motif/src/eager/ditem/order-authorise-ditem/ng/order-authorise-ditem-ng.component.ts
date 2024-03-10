@@ -15,7 +15,6 @@ import {
     Integer,
     InternalCommand,
     JsonElement,
-    Logger,
     StringId,
     Strings,
     UiAction,
@@ -23,7 +22,8 @@ import {
     assert,
     assigned,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -295,7 +295,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`Orders Authorise Ditem Layout Dialog error: ${errorText}`);
+                logger.logError(`Orders Authorise Ditem Layout Dialog error: ${errorText}`);
                 this.closeDialog();
             }
         );

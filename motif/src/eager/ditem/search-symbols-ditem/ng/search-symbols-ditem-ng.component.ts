@@ -29,7 +29,6 @@ import {
     IntegerUiAction,
     InternalCommand,
     JsonElement,
-    Logger,
     MarketId,
     StringId,
     StringUiAction,
@@ -39,7 +38,8 @@ import {
     SymbolsService,
     TypedExplicitElementsArrayUiAction,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -461,7 +461,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`Symbols Layout Editor error: ${errorText}`);
+                logger.logError(`Symbols Layout Editor error: ${errorText}`);
                 this.closeLayoutEditor();
             }
         );

@@ -16,6 +16,7 @@ import {
     Integer,
     JsonElement,
     KeyValueStore,
+    logger,
     Logger,
     MotifServicesError,
     MotifServicesService,
@@ -360,7 +361,7 @@ export class SessionService {
     }
 
     private log(logLevelId: Logger.LevelId, text: string) {
-        Logger.log(logLevelId, text);
+        logger.log(logLevelId, text);
         this.notifyConsolidatedLog(new Date(), logLevelId, text);
     }
 

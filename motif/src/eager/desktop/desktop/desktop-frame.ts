@@ -26,6 +26,7 @@ import {
     KeyboardService,
     KeyValueStore,
     LitIvemId,
+    logger,
     Logger,
     MarketOrderId,
     mSecsPerSec,
@@ -255,7 +256,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
+                logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
                 this._goldenLayoutHostFrame.resetLayout();
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
@@ -462,7 +463,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         // this._goldenLayoutHostFrame.resetLayout();
         const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName, true);
         if (result.isErr()) {
-            Logger.logError(`DesktopService save layout error: ${result.error}`);
+            logger.logError(`DesktopService save layout error: ${result.error}`);
         } else {
             this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
         }
@@ -572,12 +573,12 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     processSaveResult(result: Result<void>, initiateReasonId: SaveManagement.InitiateReasonId) {
         if (result.isOk()) {
             if (this._lastLayoutSaveFailed) {
-                // Logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
+                // logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
                 this._lastLayoutSaveFailed = false;
             }
         } else {
             if (!this._lastLayoutSaveFailed) {
-                Logger.log(Logger.LevelId.Warning, `${SaveManagement.InitiateReason.idToName(initiateReasonId)} save layout error: ${getErrorMessage(result.error)}`);
+                logger.log(Logger.LevelId.Warning, `${SaveManagement.InitiateReason.idToName(initiateReasonId)} save layout error: ${getErrorMessage(result.error)}`);
                 this._lastLayoutSaveFailed = true;
             }
         }
@@ -1020,7 +1021,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             result = new Ok(undefined);
         } catch (e) {
             const errorText = `${Strings[StringId.Layout_InvalidJson]}: "${getErrorMessage(e)}": ${layoutAsStr}`;
-            Logger.logError(errorText, 1000);
+            logger.logError(errorText, 1000);
             result = new Err(errorText);
             layoutJson = undefined;
         }
@@ -1031,17 +1032,17 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             const name = this._activeLayoutName;
             const schemaVersionResult = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
             if (schemaVersionResult.isErr()) {
-                Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
+                logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
             } else {
                 if (schemaVersionResult.value !== DesktopFrame.layoutStateSchemaVersion) {
-                    Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
+                    logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
                         `${schemaVersionResult.value}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
                     const goldenResult = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
                     if (goldenResult.isErr()) {
-                        Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
+                        logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();
                     } else {
                         this._goldenLayoutHostFrame.loadLayout(goldenResult.value as LayoutConfig);

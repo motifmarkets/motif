@@ -11,7 +11,7 @@ import { TelemetryService } from '../telemetry-service';
     providedIn: 'root'
 })
 export class TelemetryNgService {
-    private _telemetry = new TelemetryService();
+    private _service = new TelemetryService();
 
-    get telemetry() { return this._telemetry; }
+    get service() { return this._service; }
 }

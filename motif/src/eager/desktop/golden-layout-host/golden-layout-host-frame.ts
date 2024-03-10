@@ -10,22 +10,22 @@ import {
     Integer,
     JsonElement,
     LitIvemId,
-    Logger,
     SessionInfoService,
-    UnreachableCaseError
+    UnreachableCaseError,
+    logger
 } from '@motifmarkets/motif-core';
 import { ExtensionsAccessService } from 'content-internal-api';
 import {
     BalancesDitemFrame,
     BrokerageAccountsDitemFrame,
     BuiltinDitemFrame,
+    DepthAndSalesDitemFrame,
     DitemComponent,
     DitemFrame,
     ExtensionDitemComponent,
     ExtensionDitemFrame,
     HoldingsDitemFrame,
     OrdersDitemFrame,
-    DepthAndSalesDitemFrame,
     PlaceholderDitemFrame,
     WatchlistDitemFrame
 } from 'ditem-internal-api';
@@ -277,7 +277,7 @@ export class GoldenLayoutHostFrame {
             const jsonElement = new JsonElement(linkedSymbolJson);
             const tryCreateResult = LitIvemId.tryCreateFromJson(jsonElement);
             if (tryCreateResult.isErr()) {
-                Logger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
+                logger.logConfigError('GLHFPDLLS38220', `"${tryCreateResult.error}: ${JSON.stringify(linkedSymbolJson)}`, 200);
             } else {
                 this._desktopAccessService.initialiseLitIvemId(tryCreateResult.value);
             }
@@ -299,7 +299,7 @@ export class GoldenLayoutHostFrame {
                     const jsonElements = watchlistJson.map((json) => new JsonElement(json));
                     const tryCreateResult = LitIvemId.tryCreateArrayFromJsonElementArray(jsonElements);
                     if (tryCreateResult.isErr()) {
-                        Logger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
+                        logger.logConfigError('GLHFPDLW1444813', `${tryCreateResult.error}: ${JSON.stringify(watchlistJson)}`, 400);
                     } else {
                         frame.defaultLitIvemIds = tryCreateResult.value;
                     }

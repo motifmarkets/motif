@@ -25,7 +25,6 @@ import {
     IvemIdUiAction,
     JsonElement,
     LitIvemId,
-    Logger,
     MarketId,
     StringId,
     Strings,
@@ -34,7 +33,8 @@ import {
     UnreachableCaseError,
     assert,
     assigned,
-    delay1Tick
+    delay1Tick,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -475,14 +475,14 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         switch (this._modeId) {
             case TopShareholdersDitemNgComponent.ModeId.Historical:
                 if (!this.isHistoryValid()) {
-                    Logger.logWarning('TopShareholders history clicked when not all history controls valid');
+                    logger.logWarning('TopShareholders history clicked when not all history controls valid');
                 } else {
                     this.tryOpenGridSource();
                 }
                 break;
             case TopShareholdersDitemNgComponent.ModeId.Compare:
                 if (!this.isCompareValid()) {
-                    Logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
+                    logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
                 } else {
                     this.tryOpenGridSource();
                 }
