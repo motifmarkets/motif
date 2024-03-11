@@ -19,6 +19,7 @@ export namespace ApiError {
         InvalidCorrectness = 'InvalidCorrectness',
         InvalidBadness = 'InvalidBadness',
         InvalidJsonELementErrorCode = 'InvalidJsonELementErrorCode',
+        InvalidCommaTextErrorCode = 'InvalidCommaTextErrorCode',
         InvalidFeedClass = 'InvalidFeedClass',
         InvalidFeedId = 'InvalidFeedId',
         InvalidMarketId = 'InvalidMarketId',

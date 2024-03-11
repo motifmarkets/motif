@@ -6,6 +6,7 @@
 
 export * from './api-error-api';
 export * from './badness-api';
+export * from './comma-text-result-api';
 export * from './comparable-list-api';
 export * from './correctness-api';
 export * from './decimal-api';

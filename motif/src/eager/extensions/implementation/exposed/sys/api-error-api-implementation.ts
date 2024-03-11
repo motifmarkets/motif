@@ -68,6 +68,10 @@ export namespace ApiErrorImplementation {
                 id: ApiErrorApi.CodeEnum.InvalidJsonELementErrorCode,
                 code: 'InvalidJsonELementErrorCode',
             },
+            InvalidCommaTextErrorCode: {
+                id: ApiErrorApi.CodeEnum.InvalidCommaTextErrorCode,
+                code: 'InvalidCommaTextErrorCode',
+            },
             InvalidFeedClass: {
                 id: ApiErrorApi.CodeEnum.InvalidFeedClass,
                 code: 'InvalidFeedClass',
