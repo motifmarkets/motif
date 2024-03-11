@@ -6,6 +6,7 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     EnumInfoOutOfOrderError,
     ExchangeId,
@@ -25,7 +26,6 @@ import {
     SymbolFieldId,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
-    UnexpectedUndefinedError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SearchSymbolsFrame } from 'content-internal-api';
@@ -197,7 +197,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     executeRequest() {
         const searchSymbolsFrame = this._searchSymbolsFrame;
         if (searchSymbolsFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFER13133');
+            throw new AssertInternalError('SSDFER13133');
         } else {
             const dataDefinition = this._uiDataDefinition.createCopy();
             searchSymbolsFrame.executeRequest(dataDefinition);
@@ -207,7 +207,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
+            throw new AssertInternalError('SSDFOGLONRD13133');
         } else {
             return gridSourceFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
@@ -216,7 +216,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     createAllowedFieldsAndLayoutDefinition() {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFCAFALD13133');
+            throw new AssertInternalError('SSDFCAFALD13133');
         } else {
             return gridSourceFrame.createAllowedFieldsGridLayoutDefinition();
         }
@@ -231,7 +231,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         if (newRecordIndex !== undefined) {
             const searchSymbolsFrame = this._searchSymbolsFrame;
             if (searchSymbolsFrame === undefined) {
-                throw new UnexpectedUndefinedError('SSDHGSOE13133');
+                throw new AssertInternalError('SSDHGSOE13133');
             } else {
                 const record = searchSymbolsFrame.recordList[newRecordIndex];
                 this.processRecordFocusChange(record);
