@@ -24,6 +24,7 @@ import {
     MasterSettings,
     MultiEvent,
     SourceTzOffsetDateTime,
+    SourceTzOffsetDateTimeTimezoneMode,
     StringId,
     StringUiAction,
     Strings,
@@ -312,13 +313,13 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
         const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Format_DateTimeTimezoneModeId]);
         action.pushTitle(Strings[StringId.SettingTitle_Format_DateTimeTimezoneModeId]);
-        const modeIds = SourceTzOffsetDateTime.TimezoneMode.allIds;
+        const modeIds = SourceTzOffsetDateTimeTimezoneMode.allIds;
         const elementPropertiesArray = modeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (modeId) => (
                 {
                     element: modeId,
-                    caption: SourceTzOffsetDateTime.TimezoneMode.idToDisplay(modeId),
-                    title: SourceTzOffsetDateTime.TimezoneMode.idToDescription(modeId),
+                    caption: SourceTzOffsetDateTimeTimezoneMode.idToDisplay(modeId),
+                    title: SourceTzOffsetDateTimeTimezoneMode.idToDescription(modeId),
                 }
             )
         );
