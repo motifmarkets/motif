@@ -53,13 +53,13 @@ export class TableFieldSourceDefinitionFactoryService implements TableFieldSourc
                 return new EditableGridLayoutDefinitionColumnTableFieldSourceDefinition();
             case TableFieldSourceDefinition.TypeId.SecurityDataItem:
                 return new SecurityDataItemTableFieldSourceDefinition();
-            case TableFieldSourceDefinition.TypeId.BrokerageAccounts:
+            case TableFieldSourceDefinition.TypeId.BrokerageAccount:
                 return new BrokerageAccountTableFieldSourceDefinition();
-            case TableFieldSourceDefinition.TypeId.OrdersDataItem:
+            case TableFieldSourceDefinition.TypeId.Order:
                 return new OrderTableFieldSourceDefinition();
-            case TableFieldSourceDefinition.TypeId.HoldingsDataItem:
+            case TableFieldSourceDefinition.TypeId.Holding:
                 return new HoldingTableFieldSourceDefinition();
-            case TableFieldSourceDefinition.TypeId.BalancesDataItem:
+            case TableFieldSourceDefinition.TypeId.Balances:
                 return new BalancesTableFieldSourceDefinition();
             case TableFieldSourceDefinition.TypeId.CallPut:
                 return new CallPutTableFieldSourceDefinition();
@@ -67,7 +67,7 @@ export class TableFieldSourceDefinitionFactoryService implements TableFieldSourc
                 return new CallPutSecurityDataItemTableFieldSourceDefinition(CallOrPutId.Call);
             case TableFieldSourceDefinition.TypeId.PutSecurityDataItem:
                 return new CallPutSecurityDataItemTableFieldSourceDefinition(CallOrPutId.Put);
-            case TableFieldSourceDefinition.TypeId.TopShareholdersDataItem:
+            case TableFieldSourceDefinition.TypeId.TopShareholder:
                 return new TopShareholderTableFieldSourceDefinition();
             case TableFieldSourceDefinition.TypeId.Scan:
                 return new ScanTableFieldSourceDefinition();

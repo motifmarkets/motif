@@ -50,7 +50,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     override createRecordDefinition(idx: Integer): ScanFieldEditorFrameTableRecordDefinition {
         const scanFieldEditorFrame = this.list.getAt(idx);
         return {
-            typeId: TableRecordDefinition.TypeId.ScanFieldEditorFrame,
+            typeId: TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame,
             mapKey: scanFieldEditorFrame.name,
             record: scanFieldEditorFrame,
         };

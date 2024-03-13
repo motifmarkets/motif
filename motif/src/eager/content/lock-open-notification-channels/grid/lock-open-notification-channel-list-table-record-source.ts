@@ -51,7 +51,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
     override createRecordDefinition(idx: Integer): LockOpenNotificationChannelTableRecordDefinition {
         const lockOpenNotificationChannel = this.recordList.getAt(idx);
         return {
-            typeId: TableRecordDefinition.TypeId.LockOpenNotificationChannel,
+            typeId: TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel,
             mapKey: LockOpenNotificationChannel.name,
             record: lockOpenNotificationChannel,
         };

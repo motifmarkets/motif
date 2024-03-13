@@ -14,6 +14,7 @@ import {
     EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     EditableGridLayoutDefinitionColumnTableRecordSource,
+    EditableGridLayoutDefinitionColumnTableRecordSourceDefinition,
     GridField,
     GridFieldCustomHeadingsService,
     GridSourceDefinition,
@@ -225,7 +226,11 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
     }
 
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
-        const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createEditableGridLayoutDefinitionColumn(this._columnList);
+        const tableRecordSourceDefinition = new EditableGridLayoutDefinitionColumnTableRecordSourceDefinition(
+            this.gridFieldCustomHeadingsService,
+            this.tableFieldSourceDefinitionCachedFactoryService,
+            this._columnList,
+        )
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
         return new GridSourceOrReferenceDefinition(gridSourceDefinition);
     }

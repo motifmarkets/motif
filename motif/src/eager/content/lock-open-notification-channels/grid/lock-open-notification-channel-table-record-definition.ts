@@ -4,14 +4,14 @@
  * License: motionite.trade/license/motif
  */
 
-import { LockOpenNotificationChannel, PayloadTableRecordDefinition, TableRecordDefinition } from '@motifmarkets/motif-core';
+import { LockOpenNotificationChannel, PayloadTableRecordDefinition, TableFieldSourceDefinition, TableRecordDefinition } from '@motifmarkets/motif-core';
 
 export interface LockOpenNotificationChannelTableRecordDefinition extends PayloadTableRecordDefinition<LockOpenNotificationChannel> {
-    readonly typeId: TableRecordDefinition.TypeId.LockOpenNotificationChannel;
+    readonly typeId: TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel;
 }
 
 export namespace LockerScanAttachedNotificationChannelTableRecordDefinition {
     export function is(definition: TableRecordDefinition): definition is LockOpenNotificationChannelTableRecordDefinition {
-        return definition.typeId === TableRecordDefinition.TypeId.LockOpenNotificationChannel;
+        return definition.typeId === TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel;
     }
 }

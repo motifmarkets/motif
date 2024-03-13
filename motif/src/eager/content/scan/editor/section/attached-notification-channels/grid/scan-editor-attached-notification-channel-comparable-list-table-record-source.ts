@@ -11,7 +11,6 @@ import {
     LockerScanAttachedNotificationChannelList,
     TableFieldSourceDefinition,
     TableRecord,
-    TableRecordDefinition,
     TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
     UnreachableCaseError
@@ -50,7 +49,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
     override createRecordDefinition(idx: Integer): LockerScanAttachedNotificationChannelTableRecordDefinition {
         const lockerScanAttachedNotificationChannel = this.list.getAt(idx);
         return {
-            typeId: TableRecordDefinition.TypeId.LockerScanAttachedNotificationChannel,
+            typeId: TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel,
             mapKey: lockerScanAttachedNotificationChannel.name,
             record: lockerScanAttachedNotificationChannel,
         };
