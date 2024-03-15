@@ -17,7 +17,6 @@ import {
     LitIvemId,
     MultiEvent,
     ScanEditor,
-    ScanTargetTypeId,
     StringId,
     Strings,
     UiComparableList,
@@ -352,7 +351,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 throw new AssertInternalError('SENCHTUASETT20241');
             } else {
                 const maxMatchCount = editor.maxMatchCount;
-                if (targetTypeId === ScanTargetTypeId.Markets && maxMatchCount === undefined) {
+                if (maxMatchCount === undefined) {
                     throw new AssertInternalError('SENCHTUASESM20241');
                 } else {
                     const targets = editor.targets;

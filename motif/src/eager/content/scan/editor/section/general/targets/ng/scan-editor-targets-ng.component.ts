@@ -19,7 +19,8 @@ import {
     Strings,
     SymbolsService,
     UiComparableList,
-    UnreachableCaseError
+    UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
 import { SymbolsNgService } from 'component-services-ng-api';
 import {
@@ -47,16 +48,12 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     @ViewChild('multiMarketTargetSubTypeControl', { static: true }) private _multiMarketTargetSubTypeControlComponent: CaptionedRadioNgComponent;
 
     @ViewChild('singleSymbolControl', { static: true }) private _singleSymbolControlComponent: LitIvemIdSelectNgComponent;
-
     @ViewChild('multiSymbolEditor', { static: true }) private _multiSymbolEditorComponent: LitIvemIdListEditorNgComponent;
-
     @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: IntegerEnumInputNgComponent;
-    @ViewChild('singleMarketMaxMatchCountLabel', { static: true }) private _singleMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('singleMarketMaxMatchCountControl', { static: true }) private _singleMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
-
     @ViewChild('multiMarketControl', { static: true }) private _multiMarketControlComponent: EnumArrayInputNgComponent;
-    @ViewChild('multiMarketMaxMatchCountLabel', { static: true }) private _multiMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('multiMarketMaxMatchCountControl', { static: true }) private _multiMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
+
+    @ViewChild('maxMatchCountLabel', { static: true }) private _maxMatchCountLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('maxMatchCountControl', { static: true }) private _maxMatchCountControlComponent: IntegerTextInputNgComponent;
 
     public readonly targetSubTypeRadioName: string;
 
@@ -180,17 +177,21 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         if (targetSubTypeId === undefined) {
             return false;
         } else {
-            switch (targetSubTypeId) {
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
-                    return this._singleSymbolControlComponent.uiAction.isValueOk();
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
-                    return true;
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
-                    return this._singleMarketControlComponent.uiAction.isValueOk() && this._singleMarketMaxMatchCountControlComponent.uiAction.isValueOk();
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
-                    return this._multiMarketControlComponent.uiAction.isValueOk() && this._multiMarketMaxMatchCountControlComponent.uiAction.isValueOk();
-                default:
-                    throw new UnreachableCaseError('SETNCAACED65134', targetSubTypeId);
+            if (!this._maxMatchCountControlComponent.uiAction.isValueOk()) {
+                return false;
+            } else {
+                switch (targetSubTypeId) {
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
+                        return this._singleSymbolControlComponent.uiAction.isValueOk();
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
+                        return true;
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
+                        return this._singleMarketControlComponent.uiAction.isValueOk();
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
+                        return this._multiMarketControlComponent.uiAction.isValueOk();
+                    default:
+                        throw new UnreachableCaseError('SETNCAACED65134', targetSubTypeId);
+                }
             }
         }
     }
@@ -198,9 +199,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     cancelAllControlsEdited() {
         this._singleSymbolControlComponent.uiAction.cancelEdit();
         this._singleMarketControlComponent.uiAction.cancelEdit();
-        this._singleMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
+        this._maxMatchCountControlComponent.uiAction.cancelEdit();
         this._multiMarketControlComponent.uiAction.cancelEdit();
-        this._multiMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
         this._multiSymbolEditorComponent.cancelAllControlsEdited();
     }
 
@@ -232,11 +232,9 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         );
         this._singleSymbolControlComponent.initialise(this._singleSymbolUiAction);
         this._singleMarketControlComponent.initialise(this._singleMarketUiAction);
-        this._singleMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
-        this._singleMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
+        this._maxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
+        this._maxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
         this._multiMarketControlComponent.initialise(this._multiMarketUiAction);
-        this._multiMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
-        this._multiMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
 
         this._multiSymbolList = this._multiSymbolEditorComponent.list;
         this._multiSymbolEditorComponentAfterListChangedSubscriptionId = this._multiSymbolEditorComponent.subscribeAfterListChangedEvent(
@@ -368,6 +366,10 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 const maxMatchCount = this._maxMatchCountUiAction.definedValue;
                 editor.setMaxMatchCount(maxMatchCount);
                 editor.endFieldChanges();
+                const editorMaxMatchCount = editor.maxMatchCount;
+                if (editorMaxMatchCount !== maxMatchCount) {
+                    delay1Tick(() => this._maxMatchCountUiAction.pushValue(editorMaxMatchCount));
+                }
                 this.notifyControlInputOrCommit();
             }
         };

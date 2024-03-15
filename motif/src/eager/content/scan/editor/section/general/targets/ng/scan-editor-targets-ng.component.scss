@@ -9,68 +9,74 @@
 
 :host {
     display: flex;
-    gap: 2em;
-    align-items: center;
-    width: 100%;
-
-    #targetSubTypeSelector {
-        display: flex;
-        flex-direction: column;
-        white-space: nowrap;
-        flex: 0 0 auto;
-    }
+    flex-direction: column;
+    gap: 0.4em;
 
     #targetSubTypes {
-        flex: 1 1 0;
+        display: flex;
+        gap: 2em;
+        align-items: center;
+        width: 100%;
 
-        #singleSymbolSubTargetType {
-            display: flex;
-            #singleSymbolControl {
-                width: 12em;
-            }
-        }
-
-        #multiSymbolSubTargetType {
-            display: flex;
-            width: 100%;
-
-            #multiSymbolControls {
-                display: flex;
-                flex-direction: column;
-
-                #multiSymbolAddSelect {
-                    width: 100%;
-                }
-
-                #multiSymbolToolbar {
-                    @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
-                    #multiSymbolFilterInput {
-                        width: 6em;
-                        visibility: hidden;
-                    }
-                }
-            }
-
-            #multiSymbolListGrid {
-                @include revgrid.hostAsRowFlexItem;
-                flex: 1 1 0;
-            }
-        }
-
-        .marketSubTargetType {
+        #targetSubTypeSelector {
             display: flex;
             flex-direction: column;
-            gap: 1em;
-            align-items: left;
+            white-space: nowrap;
+            flex: 0 0 auto;
         }
 
-        .captionedControl {
-            display: flex;
-            gap: 2em;
+        #targetSubTypeControls {
+            flex: 1 1 0;
 
-            .maxMatchCountControl {
-                width: 4em;
+            #singleSymbolSubTargetType {
+                display: flex;
+                #singleSymbolControl {
+                    width: 12em;
+                }
             }
+
+            #multiSymbolSubTargetType {
+                display: flex;
+                width: 100%;
+
+                #multiSymbolControls {
+                    display: flex;
+                    flex-direction: column;
+
+                    #multiSymbolAddSelect {
+                        width: 100%;
+                    }
+
+                    #multiSymbolToolbar {
+                        @include centered-toolbar-group-mixin.centeredToolbarGroupMixin;
+                        #multiSymbolFilterInput {
+                            width: 6em;
+                            visibility: hidden;
+                        }
+                    }
+                }
+
+                #multiSymbolListGrid {
+                    @include revgrid.hostAsRowFlexItem;
+                    flex: 1 1 0;
+                }
+            }
+
+            .marketSubTargetType {
+                display: flex;
+                flex-direction: column;
+                gap: 1em;
+                align-items: left;
+            }
+        }
+    }
+
+    #maxMatchCount {
+        display: flex;
+        gap: 1em;
+
+        #maxMatchCountControl {
+            width: 2em;
         }
     }
 }

@@ -3,32 +3,29 @@
     (c) 2021 Paritech Wealth Technology
     License: motionite.trade/license/motif
 -->
-
-<section id="targetSubTypeSelector">
-    <app-captioned-radio #singleSymbolTargetSubTypeControl id="singleSymbolTargetSubTypeControl" inputId="singleSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
-    <app-captioned-radio #multiSymbolTargetSubTypeControl id="multiSymbolTargetSubTypeControl" inputId="multiSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
-    <app-captioned-radio #singleMarketTargetSubTypeControl id="singleMarketTargetSubTypeControl" inputId="singleMarketTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
-    <app-captioned-radio #multiMarketTargetSubTypeControl id="multiMarketTargetSubTypeControl" inputId="multiMarketTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
-</section>
-<section id="targetSubTypes">
-    <div id="singleSymbolSubTargetType" [style.display]="isSingleSymbolSubTargetType() ? null : 'none'">
-        <app-lit-ivem-id-select #singleSymbolControl id="singleSymbolControl"></app-lit-ivem-id-select>
+<div id="targetSubTypes">
+    <div id="targetSubTypeSelector">
+        <app-captioned-radio #singleSymbolTargetSubTypeControl id="singleSymbolTargetSubTypeControl" inputId="singleSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
+        <app-captioned-radio #multiSymbolTargetSubTypeControl id="multiSymbolTargetSubTypeControl" inputId="multiSymbolTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
+        <app-captioned-radio #singleMarketTargetSubTypeControl id="singleMarketTargetSubTypeControl" inputId="singleMarketTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
+        <app-captioned-radio #multiMarketTargetSubTypeControl id="multiMarketTargetSubTypeControl" inputId="multiMarketTargetSubTypeRadio" [name]="targetSubTypeRadioName"></app-captioned-radio>
     </div>
-    <div id="multiSymbolSubTargetType" [style.display]="isMultiSymbolSubTargetType() ? null : 'none'">
-        <app-lit-ivem-id-list-editor #multiSymbolEditor id="multiSymbolEditor"></app-lit-ivem-id-list-editor>
-    </div>
-    <div class="marketSubTargetType" [style.display]="isSingleMarketSubTargetType() ? null : 'none'">
-        <app-integer-enum-input #singleMarketControl id="singleMarketControl"></app-integer-enum-input>
-        <div class="captionedControl">
-            <app-caption-label #singleMarketMaxMatchCountLabel for="singleMarketMaxMatchCountInput" class="maxMatchCountLabel"></app-caption-label>
-            <app-integer-text-input #singleMarketMaxMatchCountControl class="maxMatchCountControl" inputId="singleMarketMaxMatchCountInput"></app-integer-text-input>
+    <div id="targetSubTypeControls">
+        <div id="singleSymbolSubTargetType" [style.display]="isSingleSymbolSubTargetType() ? null : 'none'">
+            <app-lit-ivem-id-select #singleSymbolControl id="singleSymbolControl"></app-lit-ivem-id-select>
+        </div>
+        <div id="multiSymbolSubTargetType" [style.display]="isMultiSymbolSubTargetType() ? null : 'none'">
+            <app-lit-ivem-id-list-editor #multiSymbolEditor id="multiSymbolEditor"></app-lit-ivem-id-list-editor>
+        </div>
+        <div class="marketSubTargetType" [style.display]="isSingleMarketSubTargetType() ? null : 'none'">
+            <app-integer-enum-input #singleMarketControl id="singleMarketControl"></app-integer-enum-input>
+        </div>
+        <div class="marketSubTargetType" [style.display]="isMultiMarketSubTargetType() ? null : 'none'">
+            <app-enum-array-input #multiMarketControl id="multiMarketControl"></app-enum-array-input>
         </div>
     </div>
-    <div class="marketSubTargetType" [style.display]="isMultiMarketSubTargetType() ? null : 'none'">
-        <app-enum-array-input #multiMarketControl id="multiMarketControl"></app-enum-array-input>
-        <div class="captionedControl">
-            <app-caption-label #multiMarketMaxMatchCountLabel for="multiMarketMaxMatchCountInput" class="maxMatchCountLabel"></app-caption-label>
-            <app-integer-text-input #multiMarketMaxMatchCountControl class="maxMatchCountControl" inputId="multiMarketMaxMatchCountInput"></app-integer-text-input>
-        </div>
-    </div>
-</section>
+</div>
+<div id="maxMatchCount">
+    <app-caption-label #maxMatchCountLabel for="maxMatchCountInput"></app-caption-label>
+    <app-integer-text-input #maxMatchCountControl inputId="maxMatchCountInput"></app-integer-text-input>
+</div>
