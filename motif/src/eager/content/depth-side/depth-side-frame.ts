@@ -10,6 +10,7 @@ import {
     AssertInternalError,
     CellPainterFactoryService,
     DataItem,
+    Decimal,
     DepthDataItem,
     DepthLevelsDataItem,
     DepthRecord,
@@ -178,7 +179,7 @@ export class DepthSideFrame extends ContentFrame {
     //     return this._grid.getRenderedActiveWidth();
     // }
 
-    setAuctionQuantity(value: Integer | undefined) {
+    setAuctionQuantity(value: Decimal | undefined) {
         if (this._activeStore !== undefined) {
             this._activeStore.setAuctionQuantity(value);
         }
