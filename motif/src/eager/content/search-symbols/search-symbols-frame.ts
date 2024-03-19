@@ -9,7 +9,6 @@ import {
     AssertInternalError,
     GridField,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     LitIvemBaseDetail,
@@ -19,7 +18,8 @@ import {
     StringId,
     Strings,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    TypedGridSourceOrReference
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -74,7 +74,7 @@ export class SearchSymbolsFrame extends DelayedBadnessGridSourceFrame {
         return new GridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as LitIvemDetailFromSearchSymbolsTableRecordSource;
         this._recordList = recordSource.recordList;

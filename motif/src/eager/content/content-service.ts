@@ -16,14 +16,14 @@ import {
     NotificationChannelsService,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourceDefinitionsStoreService,
-    ReferenceableGridSourcesService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
-    TextFormatterService
+    TextFormatterService,
+    TypedReferenceableGridSourcesService,
+    TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame } from './balances/internal-api';
@@ -58,9 +58,9 @@ export class ContentService {
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         private readonly _tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly _tableRecordSourceFactory: TableRecordSourceFactory,
+        private readonly _tableRecordSourceFactory: TypedTableRecordSourceFactory,
         private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
-        private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
+        private readonly _referenceableGridSourcesService: TypedReferenceableGridSourcesService,
         private readonly _sessionInfoService: SessionInfoService,
         private readonly _cellPainterFactoryService: CellPainterFactoryService,
         private readonly _toastService: ToastService,

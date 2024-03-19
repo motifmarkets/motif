@@ -18,14 +18,14 @@ import {
     NotificationChannelsService,
     ReferenceableGridLayoutsService,
     ReferenceableGridSourceDefinitionsStoreService,
-    ReferenceableGridSourcesService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TextFormatterService
+    TextFormatterService,
+    TypedReferenceableGridSourcesService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -61,7 +61,7 @@ export class CoreNgService implements OnDestroy {
     }
     get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
     get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }
-    get referenceableGridSourcesService(): ReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }
+    get referenceableGridSourcesService(): TypedReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }
     get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }

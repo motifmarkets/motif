@@ -13,6 +13,7 @@ import {
     BrokerageAccountTableRecordSourceDefinition,
     CallPutFromUnderlyingTableRecordSource,
     CallPutFromUnderlyingTableRecordSourceDefinition,
+    CorrectnessBadness,
     EditableGridLayoutDefinitionColumnTableRecordSource,
     EditableGridLayoutDefinitionColumnTableRecordSourceDefinition,
     FeedTableRecordSource,
@@ -39,21 +40,21 @@ import {
     ScanTestTableRecordSourceDefinition,
     ScansService,
     SymbolDetailCacheService,
-    TableRecordSource,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
     TextFormatterService,
     TopShareholderTableRecordSource,
     TopShareholderTableRecordSourceDefinition,
+    TypedTableRecordSource,
+    TypedTableRecordSourceFactory,
     UnreachableCaseError,
-    WatchmakerService,
+    WatchmakerService
 } from '@motifmarkets/motif-core';
 import { LockOpenNotificationChannelListTableRecordSource, LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channels/internal-api';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource, ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition, ScanFieldEditorFrameComparableListTableRecordSource, ScanFieldEditorFrameComparableListTableRecordSourceDefinition } from './scan/internal-api';
 
 /** @public */
-export class TableRecordSourceFactoryService implements TableRecordSourceFactory {
+export class TableRecordSourceFactoryService implements TypedTableRecordSourceFactory {
     constructor(
         private readonly _adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
@@ -65,7 +66,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) { }
 
-    create(definition: TableRecordSourceDefinition): TableRecordSource {
+    create(definition: TableRecordSourceDefinition): TypedTableRecordSource {
         switch (definition.typeId) {
             case TableRecordSourceDefinition.TypeId.Null: throw new NotImplementedError('TRSFCFDN29984');
             case TableRecordSourceDefinition.TypeId.LitIvemIdComparableList: return this.createLitIvemIdComparableList(definition);
@@ -98,6 +99,10 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
         }
     }
 
+    createCorrectnessState() {
+        return new CorrectnessBadness();
+    }
+
     private createLitIvemIdComparableList(definition: TableRecordSourceDefinition) {
         if (definition instanceof LitIvemIdComparableListTableRecordSourceDefinition) {
             return new LitIvemIdComparableListTableRecordSource(
@@ -105,6 +110,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._symbolDetailCacheService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -118,6 +124,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -133,6 +140,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._rankedLitIvemIdListFactoryService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition,
             );
         } else {
@@ -146,6 +154,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -159,6 +168,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -172,6 +182,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -185,6 +196,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -198,6 +210,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -211,6 +224,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -224,6 +238,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._adiService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -236,6 +251,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             return new EditableGridLayoutDefinitionColumnTableRecordSource(
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -249,6 +265,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._scansService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -261,6 +278,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             return new RankedLitIvemIdListDirectoryItemTableRecordSource(
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -273,6 +291,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             return new GridFieldTableRecordSource(
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition
             );
         } else {
@@ -288,6 +307,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._rankedLitIvemIdListFactoryService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition,
             );
         } else {
@@ -300,6 +320,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             return new ScanFieldEditorFrameComparableListTableRecordSource(
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition,
             );
         } else {
@@ -312,6 +333,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
             return new ScanEditorAttachedNotificationChannelComparableListTableRecordSource(
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition,
             );
         } else {
@@ -325,6 +347,7 @@ export class TableRecordSourceFactoryService implements TableRecordSourceFactory
                 this._notificationChannelsService,
                 this._textFormatterService,
                 this._tableRecordSourceDefinitionFactoryService,
+                this.createCorrectnessState(),
                 definition,
             );
         } else {

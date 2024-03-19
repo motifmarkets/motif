@@ -11,7 +11,6 @@ import {
     FavouriteReferenceableGridLayoutDefinitionsStoreService,
     GridLayout,
     GridLayoutOrReferenceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
@@ -23,7 +22,8 @@ import {
     Strings,
     SymbolsService,
     TableRecordSourceDefinitionFactoryService,
-    TextFormatterService
+    TextFormatterService,
+    TypedGridSourceOrReference
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import {
@@ -111,7 +111,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
             }
         }
 
-        let openPromise: Promise<Result<GridSourceOrReference | undefined>>;
+        let openPromise: Promise<Result<TypedGridSourceOrReference | undefined>>;
         if (gridSourceOrReferenceDefinition === undefined) {
             openPromise = watchlistFrame.tryOpenLitIvemIdArray(this.defaultLitIvemIds ?? [], false);
         } else {

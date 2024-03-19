@@ -65,7 +65,7 @@ export class MarketsFrame extends ContentFrame {
         this._marketsListChangeSubscriptionId = this._marketsDataItem.subscribeListChangeEvent(
             (listChangeTypeId, index, count) => this.handleMarketsListChangeEvent(listChangeTypeId, index, count)
         );
-        this._marketsBadnessChangeSubscriptionId = this._marketsDataItem.subscribeBadnessChangeEvent(
+        this._marketsBadnessChangeSubscriptionId = this._marketsDataItem.subscribeBadnessChangedEvent(
             () => this.handleMarketsBadnessChangeEvent()
         );
 
@@ -90,7 +90,7 @@ export class MarketsFrame extends ContentFrame {
             this.clearMarkets();
             this._marketsDataItem.unsubscribeListChangeEvent(this._marketsListChangeSubscriptionId);
             this._marketsListChangeSubscriptionId = undefined;
-            this._marketsDataItem.unsubscribeBadnessChangeEvent(this._marketsBadnessChangeSubscriptionId);
+            this._marketsDataItem.unsubscribeBadnessChangedEvent(this._marketsBadnessChangeSubscriptionId);
             this._marketsBadnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._marketsDataItem);
             this._markets = undefined as unknown as Market[];

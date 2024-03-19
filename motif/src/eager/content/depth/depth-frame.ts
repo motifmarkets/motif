@@ -11,6 +11,7 @@ import {
     BidAskAllowedFieldsGridLayoutDefinitions,
     BidAskGridLayoutDefinitions,
     CommaText,
+    CommaTextErr,
     Correctness,
     DepthDataDefinition,
     DepthDataItem,
@@ -95,7 +96,7 @@ export class DepthFrame extends ContentFrame {
                 if (commaTextResult.isErr()) {
                     this._filterActive = false;
                     this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-                    logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${commaTextResult.error})`);
+                    logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${CommaTextErr.errorIdPlusExtraToCodePlusExtra(commaTextResult.error)})`);
                 } else {
                     this._filterXrefs = commaTextResult.value;
                 }
@@ -197,7 +198,7 @@ export class DepthFrame extends ContentFrame {
         if (this._depthDataItem !== undefined) {
             // this._depthDataItem.unsubscribeCorrectnessChangedEvent(this._depthDataCorrectnessChangeSubscritionId);
             // this._depthDataCorrectnessChangeSubscritionId = undefined;
-            this._depthDataItem.unsubscribeBadnessChangeEvent(this._depthBadnessChangeSubscritionId);
+            this._depthDataItem.unsubscribeBadnessChangedEvent(this._depthBadnessChangeSubscritionId);
             this._depthBadnessChangeSubscritionId = undefined;
             this._adi.unsubscribe(this._depthDataItem);
             this._depthDataItem = undefined;
@@ -205,7 +206,7 @@ export class DepthFrame extends ContentFrame {
         if (this._levelDataItem !== undefined) {
             // this._levelDataItem.unsubscribeCorrectnessChangedEvent(this._levelDataCorrectnessChangeSubscritionId);
             // this._levelDataCorrectnessChangeSubscritionId = undefined;
-            this._levelDataItem.unsubscribeBadnessChangeEvent(this._levelBadnessChangeSubscritionId);
+            this._levelDataItem.unsubscribeBadnessChangedEvent(this._levelBadnessChangeSubscritionId);
             this._levelBadnessChangeSubscritionId = undefined;
             this._adi.unsubscribe(this._levelDataItem);
             this._levelDataItem = undefined;
@@ -406,7 +407,7 @@ export class DepthFrame extends ContentFrame {
                 // this._depthDataCorrectnessChangeSubscritionId =
                 //     this._depthDataItem.subscribeCorrectnessChangedEvent(() => this.handleDepthDataCorrectnessChangeEvent());
                 this._depthBadnessChangeSubscritionId =
-                    this._depthDataItem.subscribeBadnessChangeEvent(() => this.handleDepthBadnessChangeEvent());
+                    this._depthDataItem.subscribeBadnessChangedEvent(() => this.handleDepthBadnessChangeEvent());
                 this.openFull();
                 break;
             }
@@ -417,7 +418,7 @@ export class DepthFrame extends ContentFrame {
                 // this._levelDataCorrectnessChangeSubscritionId =
                 //     this._levelDataItem.subscribeCorrectnessChangedEvent(() => this.handleLevelDataCorrectnessChangeEvent());
                 this._levelBadnessChangeSubscritionId =
-                    this._levelDataItem.subscribeBadnessChangeEvent(() => this.handleLevelBadnessChangeEvent());
+                    this._levelDataItem.subscribeBadnessChangedEvent(() => this.handleLevelBadnessChangeEvent());
                 this.openShort();
                 break;
             }

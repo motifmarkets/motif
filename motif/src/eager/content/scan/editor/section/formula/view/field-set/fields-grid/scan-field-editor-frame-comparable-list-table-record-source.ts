@@ -7,10 +7,10 @@
 import {
     BadnessComparableList,
     BadnessListTableRecordSource,
+    CorrectnessBadness,
     Integer,
     TableFieldSourceDefinition,
     TableRecord,
-    TableRecordDefinition,
     TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
     UnreachableCaseError
@@ -27,11 +27,13 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     constructor(
         textFormatterService: TextFormatterService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        correctnessBadness: CorrectnessBadness,
         definition: ScanFieldEditorFrameComparableListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
             tableRecordSourceDefinitionFactoryService,
+            correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
         );

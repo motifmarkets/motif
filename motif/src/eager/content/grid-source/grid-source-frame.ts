@@ -17,7 +17,6 @@ import {
     GridLayout,
     GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
-    GridSource,
     GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
@@ -28,17 +27,19 @@ import {
     Ok,
     RecordGrid,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     Result,
     SettingsService,
     StringId,
     Strings,
-    Table,
     TableFieldSourceDefinitionCachedFactoryService,
     TableGridRecordStore,
     TableRecordSourceDefinition,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory
+    TypedGridSource,
+    TypedGridSourceOrReference,
+    TypedReferenceableGridSourcesService,
+    TypedTable,
+    TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
 import { ToastService } from '../../component-services/toast-service';
@@ -57,9 +58,9 @@ export abstract class GridSourceFrame extends ContentFrame {
 
     private _opener: LockOpenListItem.Opener;
 
-    private _lockedGridSourceOrReference: GridSourceOrReference | undefined;
-    private _openedGridSource: GridSource | undefined;
-    private _openedTable: Table | undefined;
+    private _lockedGridSourceOrReference: TypedGridSourceOrReference | undefined;
+    private _openedGridSource: TypedGridSource | undefined;
+    private _openedTable: TypedTable | undefined;
 
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
     private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
@@ -80,8 +81,8 @@ export abstract class GridSourceFrame extends ContentFrame {
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         protected readonly tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly _tableRecordSourceFactory: TableRecordSourceFactory,
-        private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
+        private readonly _tableRecordSourceFactory: TypedTableRecordSourceFactory,
+        private readonly _referenceableGridSourcesService: TypedReferenceableGridSourcesService,
         protected readonly cellPainterFactoryService: CellPainterFactoryService,
         protected readonly _toastService: ToastService,
     ) {
@@ -209,7 +210,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         this.grid.areColumnsSelected(includeAllAuto);
     }
 
-    async tryOpenJsonOrDefault(frameElement: JsonElement | undefined, keepView: boolean): Promise<Result<GridSourceOrReference>> {
+    async tryOpenJsonOrDefault(frameElement: JsonElement | undefined, keepView: boolean): Promise<Result<TypedGridSourceOrReference>> {
         if (frameElement === undefined) {
             return this.tryOpenDefault(keepView);
         } else {
@@ -229,12 +230,12 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    tryOpenDefault(keepView: boolean): Promise<Result<GridSourceOrReference>> {
+    tryOpenDefault(keepView: boolean): Promise<Result<TypedGridSourceOrReference>> {
         const definition = this.getDefaultGridSourceOrReferenceDefinition();
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<Result<GridSourceOrReference>> {
+    async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<Result<TypedGridSourceOrReference>> {
         this.closeGridSource(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrReference() &&
@@ -298,7 +299,7 @@ export abstract class GridSourceFrame extends ContentFrame {
                             });
                         }
 
-                        this._openedTableBadnessChangeSubscriptionId = this._openedTable.subscribeBadnessChangeEvent(
+                        this._openedTableBadnessChangeSubscriptionId = this._openedTable.subscribeBadnessChangedEvent(
                             () => this.handleOpenedTableBadnessChangeEvent()
                         );
                         this.hideBadnessWithVisibleDelay(Badness.notBad);
@@ -319,7 +320,7 @@ export abstract class GridSourceFrame extends ContentFrame {
                 throw new AssertInternalError('GSF22209');
             } else {
                 if (this._openedTableBadnessChangeSubscriptionId !== undefined) {
-                    openedTable.unsubscribeBadnessChangeEvent(this._openedTableBadnessChangeSubscriptionId);
+                    openedTable.unsubscribeBadnessChangedEvent(this._openedTableBadnessChangeSubscriptionId);
                     this._openedTableBadnessChangeSubscriptionId = undefined;
                 }
                 openedTable.unsubscribeFieldsChangedEvent(this._tableFieldsChangedSubscriptionId);
@@ -1045,7 +1046,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         return grid;
     }
 
-    protected processGridSourceOpenedEvent(gridSourceOrReference: GridSourceOrReference) {
+    protected processGridSourceOpenedEvent(gridSourceOrReference: TypedGridSourceOrReference) {
         // can be overridden by descendants
     }
 
@@ -1096,7 +1097,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    private tryOpenJson(frameElement: JsonElement, keepView: boolean): Promise<Result<GridSourceOrReference | undefined>> {
+    private tryOpenJson(frameElement: JsonElement, keepView: boolean): Promise<Result<TypedGridSourceOrReference | undefined>> {
         let definition: GridSourceOrReferenceDefinition | undefined;
         const definitionResult = this.tryCreateDefinitionFromJson(frameElement);
         if (definitionResult.isErr()) {

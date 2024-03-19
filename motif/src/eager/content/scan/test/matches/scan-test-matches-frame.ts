@@ -9,7 +9,6 @@ import {
     AssertInternalError,
     GridField,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     LitIvemIdExecuteScanDataDefinition,
@@ -20,7 +19,8 @@ import {
     StringId,
     Strings,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    TypedGridSourceOrReference
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../../delayed-badness-grid-source/internal-api';
@@ -79,7 +79,7 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
         return new GridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         this._rankedLitIvemIdList = recordSource.recordList;

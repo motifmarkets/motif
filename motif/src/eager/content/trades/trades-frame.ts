@@ -120,7 +120,7 @@ export class TradesFrame extends ContentFrame {
         );
         this._dataItemDataCorrectnessId = this._dataItem.correctnessId;
 
-        this._dataItemBadnessChangeEventSubscriptionId = this._dataItem.subscribeBadnessChangeEvent(
+        this._dataItemBadnessChangeEventSubscriptionId = this._dataItem.subscribeBadnessChangedEvent(
             () => this.handleDataItemBadnessChangeEvent()
         );
         this._componentAccess.hideBadnessWithVisibleDelay(this._dataItem.badness);
@@ -226,7 +226,7 @@ export class TradesFrame extends ContentFrame {
     private checkClose() {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
-            this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
+            this._dataItem.unsubscribeBadnessChangedEvent(this._dataItemBadnessChangeEventSubscriptionId);
             this._recordStore.clearDataItem();
             this.adiService.unsubscribe(this._dataItem);
             this._dataItem = undefined;

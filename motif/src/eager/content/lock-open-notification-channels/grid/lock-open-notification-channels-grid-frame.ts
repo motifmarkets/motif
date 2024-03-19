@@ -15,21 +15,21 @@ import {
     GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     LockOpenListItem,
     LockOpenNotificationChannelList,
     NotificationChannelsService,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    TypedGridSourceOrReference,
+    TypedReferenceableGridSourcesService,
+    TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
@@ -56,8 +56,8 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TableRecordSourceFactory,
-        referenceableGridSourcesService: ReferenceableGridSourcesService,
+        tableRecordSourceFactory: TypedTableRecordSourceFactory,
+        referenceableGridSourcesService: TypedReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         frameOpener: LockOpenListItem.Opener,
@@ -136,7 +136,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as LockOpenNotificationChannelListTableRecordSource;
         this._list = recordSource.recordList;

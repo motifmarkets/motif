@@ -5,6 +5,7 @@
  */
 
 import {
+    CorrectnessBadness,
     Integer,
     LockOpenListItem,
     LockOpenListTableRecordSource,
@@ -15,7 +16,6 @@ import {
     Result,
     TableFieldSourceDefinition,
     TableRecord,
-    TableRecordDefinition,
     TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
     UnreachableCaseError
@@ -31,11 +31,13 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
         private readonly _notificationChannelsService: NotificationChannelsService,
         textFormatterService: TextFormatterService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        correctnessBadness: CorrectnessBadness,
         definition: LockOpenNotificationChannelListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
             tableRecordSourceDefinitionFactoryService,
+            correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
         );

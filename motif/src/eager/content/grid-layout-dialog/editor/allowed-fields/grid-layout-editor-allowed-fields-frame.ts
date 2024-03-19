@@ -14,21 +14,21 @@ import {
     GridFieldCustomHeadingsService,
     GridFieldTableRecordSource,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
     MultiEvent,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
+    TypedGridSourceOrReference,
+    TypedReferenceableGridSourcesService,
+    TypedTableRecordSourceFactory,
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -52,8 +52,8 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         namedGridLayoutsService: ReferenceableGridLayoutsService,
         tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TableRecordSourceFactory,
-        namedGridSourcesService: ReferenceableGridSourcesService,
+        tableRecordSourceFactory: TypedTableRecordSourceFactory,
+        namedGridSourcesService: TypedReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         private readonly _allowedFields: readonly GridField[],
@@ -161,7 +161,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as GridFieldTableRecordSource;
         this._records = recordSource.records;

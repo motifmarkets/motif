@@ -11,7 +11,6 @@ import {
     GridLayoutOrReferenceDefinition,
     GridRowOrderDefinition,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     LitIvemId,
@@ -24,6 +23,7 @@ import {
     ScanIdRankedLitIvemIdListDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
+    TypedGridSourceOrReference,
     compareInteger
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
@@ -236,7 +236,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         return this.createGridSourceOrReferenceDefinitionFromLitIvemIds([]);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         const litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;

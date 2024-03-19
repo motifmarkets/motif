@@ -6,21 +6,21 @@ import {
     GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     LitIvemId,
     LitIvemIdComparableListTableRecordSource,
     MarketInfo,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
+    TypedGridSourceOrReference,
+    TypedReferenceableGridSourcesService,
+    TypedTableRecordSourceFactory,
     UiComparableList
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
@@ -50,8 +50,8 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
         tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TableRecordSourceFactory,
-        referenceableGridSourcesService: ReferenceableGridSourcesService,
+        tableRecordSourceFactory: TypedTableRecordSourceFactory,
+        referenceableGridSourcesService: TypedReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined,
@@ -153,7 +153,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as LitIvemIdComparableListTableRecordSource;
         this._list = this._recordSource.list;

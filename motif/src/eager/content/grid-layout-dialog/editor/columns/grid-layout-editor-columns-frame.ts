@@ -18,20 +18,20 @@ import {
     GridField,
     GridFieldCustomHeadingsService,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
     TableFieldSourceDefinitionCachedFactoryService,
     TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactory,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    TypedGridSourceOrReference,
+    TypedReferenceableGridSourcesService,
+    TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
@@ -54,8 +54,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         namedGridLayoutsService: ReferenceableGridLayoutsService,
         tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TableRecordSourceFactory,
-        namedGridSourcesService: ReferenceableGridSourcesService,
+        tableRecordSourceFactory: TypedTableRecordSourceFactory,
+        namedGridSourcesService: TypedReferenceableGridSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
@@ -209,7 +209,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as EditableGridLayoutDefinitionColumnTableRecordSource;
         this._recordList = recordSource.list;

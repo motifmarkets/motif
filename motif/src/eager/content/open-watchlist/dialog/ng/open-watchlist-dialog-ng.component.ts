@@ -75,7 +75,7 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
         let found = false;
         for (let i = 0; i < count; i++) {
             const scan = list.getAt(i);
-            if (scan.symbolListEnabled) {
+            if (scan.id === '1OYjBz') {
                 found = true;
                 this._closeResolve(new Ok(scan.id));
                 break;

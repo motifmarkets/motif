@@ -14,12 +14,12 @@ import {
     GridField,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReference,
     GridSourceOrReferenceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter
+    TextRenderValueCellPainter,
+    TypedGridSourceOrReference
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../../../../../grid-source/internal-api';
@@ -84,7 +84,7 @@ export class ScanFieldEditorFramesGridFrame extends GridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as ScanFieldEditorFrameComparableListTableRecordSource;
         this._list = recordSource.list;

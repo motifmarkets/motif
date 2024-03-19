@@ -5,14 +5,14 @@
  */
 
 import { Injectable } from '@angular/core';
-import { ReferenceableGridSourcesService } from '@motifmarkets/motif-core';
+import { TypedReferenceableGridSourcesService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
     providedIn: 'root',
 })
 export class ReferenceableGridSourcesNgService {
-    private _service: ReferenceableGridSourcesService;
+    private _service: TypedReferenceableGridSourcesService;
 
     constructor(coreNgService: CoreNgService) {
         this._service = coreNgService.referenceableGridSourcesService;

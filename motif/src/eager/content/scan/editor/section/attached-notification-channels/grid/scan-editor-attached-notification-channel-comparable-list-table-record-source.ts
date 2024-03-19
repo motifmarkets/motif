@@ -6,6 +6,7 @@
 
 import {
     BadnessListTableRecordSource,
+    CorrectnessBadness,
     Integer,
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
@@ -26,11 +27,13 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
     constructor(
         textFormatterService: TextFormatterService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        correctnessBadness: CorrectnessBadness,
         definition: ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
             tableRecordSourceDefinitionFactoryService,
+            correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
         );
