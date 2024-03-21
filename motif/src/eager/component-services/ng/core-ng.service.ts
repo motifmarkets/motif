@@ -22,10 +22,9 @@ import {
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
-    TypedReferenceableGridSourcesService
+    TypedReferenceableGridSourcesService,
+    TypedTableFieldSourceDefinitionCachingFactoryService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -53,11 +52,8 @@ export class CoreNgService implements OnDestroy {
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
     get gridFieldCustomHeadingsService(): GridFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
-    get tableFieldSourceDefinitionCachedFactoryService(): TableFieldSourceDefinitionCachedFactoryService {
-        return this._service.tableFieldSourceDefinitionCachedFactoryService;
-    }
-    get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
-        return this._service.tableRecordSourceDefinitionFactoryService;
+    get tableFieldSourceDefinitionCachingFactoryService(): TypedTableFieldSourceDefinitionCachingFactoryService {
+        return this._service.tableFieldSourceDefinitionCachingFactoryService;
     }
     get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
     get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }

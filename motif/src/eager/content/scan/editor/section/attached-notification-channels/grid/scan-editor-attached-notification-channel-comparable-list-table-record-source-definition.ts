@@ -11,9 +11,9 @@ import {
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
     PickEnum,
-    TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinition
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
+    TypedTableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
 import { LockerScanAttachedNotificationChannelTableFieldSourceDefinition } from './locker-scan-attached-notification-channel-table-field-source-definition';
 
@@ -22,20 +22,20 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
 
     constructor(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         list: LockerScanAttachedNotificationChannelList,
     ) {
         super(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
-            TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel,
+            tableFieldSourceDefinitionCachingFactoryService,
+            TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel,
             ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition.allowedFieldSourceDefinitionTypeIds,
             list,
         );
     }
 
     override createDefaultLayoutDefinition(): GridLayoutDefinition {
-        const notificationChannelTableFieldSourceDefinition = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.getRegistered(this.tableFieldSourceDefinitionCachedFactoryService);
+        const notificationChannelTableFieldSourceDefinition = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.get(this.tableFieldSourceDefinitionCachingFactoryService);
 
         const fieldNames = new Array<string>();
 
@@ -47,16 +47,16 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
 
 /** @public */
 export namespace ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition {
-    export type FieldSourceDefinitionTypeId = PickEnum<TableFieldSourceDefinition.TypeId,
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+    export type FieldSourceDefinitionTypeId = PickEnum<TypedTableFieldSourceDefinition.TypeId,
+        TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
     >;
 
     export const allowedFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+        TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
     ];
 
     export const defaultFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
+        TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel
     ];
 
     export type FieldId = LockerScanAttachedNotificationChannelTableFieldSourceDefinition.FieldId;
@@ -89,7 +89,7 @@ export namespace ScanEditorAttachedNotificationChannelComparableListTableRecordS
 
     // export function tryCreateDefinition(
     //     customHeadingsService: GridFieldCustomHeadingsService,
-    //     tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+    //     tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     //     element: JsonElement,
     // ): Result<ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition> {
     //     const listCreateResult = tryCreateListFromElement(element);
@@ -98,31 +98,31 @@ export namespace ScanEditorAttachedNotificationChannelComparableListTableRecordS
     //         return listCreateResult.createOuter(errorCode);
     //     } else {
     //         const list = listCreateResult.value;
-    //         const definition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachedFactoryService, list);
+    //         const definition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachingFactoryService, list);
     //         return new Ok(definition);
     //     }
     // }
 
     export function create(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         list: LockerScanAttachedNotificationChannelList,
     ) {
         return new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
     }
 
     export function createLayoutDefinition(
-        fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachedFactoryService,
+        fieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         fieldIds: FieldId[],
     ): GridLayoutDefinition {
-        return fieldSourceDefinitionRegistryService.createLayoutDefinition(fieldIds);
+        return fieldSourceDefinitionCachingFactoryService.createLayoutDefinition(fieldIds);
     }
 
-    export function is(definition: TableRecordSourceDefinition): definition is ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition {
-        return definition.typeId === TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
+    export function is(definition: TypedTableRecordSourceDefinition): definition is ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition {
+        return definition.typeId === TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
     }
 }

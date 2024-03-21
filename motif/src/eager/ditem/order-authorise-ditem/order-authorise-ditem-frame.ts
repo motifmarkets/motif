@@ -22,7 +22,6 @@ import {
     Strings,
     SymbolDetailCacheService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import { OrderAuthoriseFrame } from 'content-internal-api';
@@ -44,7 +43,6 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: OrderAuthoriseDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: OrderAuthoriseDitemFrame.RecordFocusedEventer,

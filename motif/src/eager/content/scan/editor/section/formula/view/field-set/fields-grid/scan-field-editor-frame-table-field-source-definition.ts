@@ -19,13 +19,14 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
     TableValue,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     ValidTableValue
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
 
-export class ScanFieldEditorFrameTableFieldSourceDefinition extends TableFieldSourceDefinition {
+export class ScanFieldEditorFrameTableFieldSourceDefinition extends TypedTableFieldSourceDefinition {
     declare readonly typeId: ScanFieldEditorFrameTableFieldSourceDefinition.TypeId;
 
     override readonly fieldDefinitions: TableField.Definition[];
@@ -80,6 +81,9 @@ export class ScanFieldEditorFrameTableFieldSourceDefinition extends TableFieldSo
 }
 
 export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
+    export const typeId = TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
+    export type TypeId = typeof typeId;
+
     export namespace Field {
         const unsupportedIds: ScanFieldEditorFrame.FieldId[] = [];
         export const count = ScanFieldEditorFrame.Field.idCount - unsupportedIds.length;
@@ -170,18 +174,13 @@ export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
         }
     }
 
-    export interface FieldId extends TableFieldSourceDefinition.FieldId {
-        sourceTypeId: TableFieldSourceDefinition.TypeId.Scan;
+    export interface FieldId extends TypedTableFieldSourceDefinition.FieldId {
+        sourceTypeId: ScanFieldEditorFrameTableFieldSourceDefinition.TypeId;
         id: ScanFieldEditorFrame.FieldId;
     }
-}
 
-export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
-    export const typeId = TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
-    export type TypeId = typeof typeId;
-
-    export function getRegistered(cachedFactoryService: TableFieldSourceDefinitionCachedFactoryService): ScanFieldEditorFrameTableFieldSourceDefinition {
-        return cachedFactoryService.get(typeId) as ScanFieldEditorFrameTableFieldSourceDefinition;
+    export function get(cachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService): ScanFieldEditorFrameTableFieldSourceDefinition {
+        return cachingFactoryService.get(typeId) as ScanFieldEditorFrameTableFieldSourceDefinition;
     }
 }
 

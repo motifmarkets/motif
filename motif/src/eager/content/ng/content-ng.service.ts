@@ -20,6 +20,7 @@ import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
 import { TableRecordSourceFactoryNgService } from './table-record-source-factory-ng.service';
+import { TableRecordSourceDefinitionFactoryNgService } from './table-record-source-definition-factory-ng.service';
 
 @Injectable({
     providedIn: 'root'
@@ -29,6 +30,7 @@ export class ContentNgService {
 
     constructor(
         coreNgService: CoreNgService,
+        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
         sessionInfoNgService: SessionInfoNgService,
         cellPainterFactoryNgService: CellPainterFactoryNgService,
@@ -43,8 +45,8 @@ export class ContentNgService {
             coreNgService.textFormatterService,
             coreNgService.gridFieldCustomHeadingsService,
             coreNgService.referenceableGridLayoutsService,
-            coreNgService.tableFieldSourceDefinitionCachedFactoryService,
-            coreNgService.tableRecordSourceDefinitionFactoryService,
+            coreNgService.tableFieldSourceDefinitionCachingFactoryService,
+            tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
             coreNgService.referenceableGridSourceDefinitionsStoreService,
             coreNgService.referenceableGridSourcesService,

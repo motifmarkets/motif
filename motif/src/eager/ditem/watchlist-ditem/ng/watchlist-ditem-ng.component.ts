@@ -44,7 +44,6 @@ import {
     FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
     TextFormatterNgService,
     ToastNgService
 } from 'component-services-ng-api';
@@ -113,7 +112,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         private readonly _toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
@@ -136,7 +134,6 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             adiNgService.service,
             textFormatterNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
             this._toastNgService.service,
             (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
                 rankedLitIvemIdList,

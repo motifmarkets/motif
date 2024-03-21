@@ -25,7 +25,6 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { SearchSymbolsFrame } from 'content-internal-api';
@@ -46,7 +45,6 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adiService: AdiService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
             settingsService, commandRegisterService, desktopAccessService, symbolsMgr, adiService

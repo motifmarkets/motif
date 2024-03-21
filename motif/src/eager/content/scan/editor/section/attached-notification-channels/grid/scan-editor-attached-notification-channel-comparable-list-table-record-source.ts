@@ -7,13 +7,14 @@
 import {
     BadnessListTableRecordSource,
     CorrectnessBadness,
+    GridFieldCustomHeadingsService,
     Integer,
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
-    TableFieldSourceDefinition,
     TableRecord,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { LockerScanAttachedNotificationChannelTableRecordDefinition } from './locker-scan-attached-notification-channel-table-record-definition';
@@ -26,13 +27,15 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
 
     constructor(
         textFormatterService: TextFormatterService,
-        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         correctnessBadness: CorrectnessBadness,
         definition: ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
-            tableRecordSourceDefinitionFactoryService,
+            gridFieldCustomHeadingsService,
+            tableFieldSourceDefinitionCachingFactoryService,
             correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
@@ -44,7 +47,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
     override createDefinition(): ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition {
         return ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition.create(
             this._gridFieldCustomHeadingsService,
-            this._tableFieldSourceDefinitionCachedFactoryService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this.list.clone()
         )
     }
@@ -52,7 +55,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
     override createRecordDefinition(idx: Integer): LockerScanAttachedNotificationChannelTableRecordDefinition {
         const lockerScanAttachedNotificationChannel = this.list.getAt(idx);
         return {
-            typeId: TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel,
+            typeId: TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel,
             mapKey: lockerScanAttachedNotificationChannel.name,
             record: lockerScanAttachedNotificationChannel,
         };
@@ -70,7 +73,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel: {
+                    case TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel: {
                         const valueSource = new LockerScanAttachedNotificationChannelTableValueSource(result.fieldCount, lockerScanAttachedNotificationChannel);
                         result.addSource(valueSource);
                         break;

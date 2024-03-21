@@ -27,7 +27,6 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
     TextFormatterNgService,
     ToastNgService
 } from 'component-services-ng-api';
@@ -63,7 +62,6 @@ export class BrokerageAccountsDitemNgComponent extends BuiltinDitemNgComponentBa
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {

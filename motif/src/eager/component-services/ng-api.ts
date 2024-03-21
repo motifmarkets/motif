@@ -29,7 +29,6 @@ export * from './ng/settings-ng.service';
 export * from './ng/sign-out-ng.service';
 export * from './ng/symbol-detail-cache-ng.service';
 export * from './ng/symbols-ng.service';
-export * from './ng/table-record-source-definition-factory-ng.service';
 export * from './ng/text-formatter-ng.service';
 export * from './ng/toast-ng.service';
 export * from './ng/user-alert-ng.service';

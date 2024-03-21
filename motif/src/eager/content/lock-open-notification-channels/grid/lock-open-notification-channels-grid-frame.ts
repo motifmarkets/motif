@@ -15,7 +15,6 @@ import {
     GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     LockOpenListItem,
     LockOpenNotificationChannelList,
@@ -23,17 +22,18 @@ import {
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
     SettingsService,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinitionFactoryService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition,
     TypedReferenceableGridSourcesService,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../grid-source/internal-api';
+import { TableRecordSourceDefinitionFactoryService } from '../../table-record-source-definition-factory-service';
 import { LockOpenNotificationChannelListTableRecordSource } from './lock-open-notification-channel-list-table-record-source';
 import { LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channel-list-table-record-source-definition';
 
@@ -54,7 +54,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
         notificationChannelsService: NotificationChannelsService,
         gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactory: TypedTableRecordSourceFactory,
         referenceableGridSourcesService: TypedReferenceableGridSourcesService,
@@ -66,7 +66,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
             settingsService,
             gridFieldCustomHeadingsService,
             referenceableGridLayoutsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactory,
             referenceableGridSourcesService,
@@ -161,10 +161,10 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     private createListGridSourceOrReferenceDefinition(layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new LockOpenNotificationChannelListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
-            this.tableFieldSourceDefinitionCachedFactoryService,
+            this.tableFieldSourceDefinitionCachingFactoryService,
         );
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

@@ -9,7 +9,6 @@ import {
     AssertInternalError,
     GridField,
     GridLayoutOrReferenceDefinition,
-    GridRowOrderDefinition,
     GridSourceDefinition,
     GridSourceOrReferenceDefinition,
     Integer,
@@ -23,7 +22,9 @@ import {
     ScanIdRankedLitIvemIdListDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
+    TypedGridRowOrderDefinition,
     TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition,
     compareInteger
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
@@ -86,7 +87,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     createGridSourceOrReferenceDefinitionFromList(
         listDefinition: RankedLitIvemIdListDefinition,
         gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined,
-        rowOrderDefinition: GridRowOrderDefinition | undefined,
+        rowOrderDefinition: TypedGridRowOrderDefinition | undefined,
     ) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
             listDefinition
@@ -96,7 +97,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
             gridLayoutOrReferenceDefinition,
             rowOrderDefinition,
         );
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     async saveGridSourceAs(as: GridSourceOrReferenceDefinition.SaveAsDefinition): Promise<void> {
@@ -111,7 +112,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         const newLitIvemIds = rankedLitIvemIds.map((rankedLitIvemId) => rankedLitIvemId.litIvemId);
 
         let gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined;
-        let rowOrderDefinition: GridRowOrderDefinition | undefined;
+        let rowOrderDefinition: TypedGridRowOrderDefinition | undefined;
         if (as.tableRecordSourceOnly) {
             gridLayoutOrReferenceDefinition = undefined;
             rowOrderDefinition = undefined;

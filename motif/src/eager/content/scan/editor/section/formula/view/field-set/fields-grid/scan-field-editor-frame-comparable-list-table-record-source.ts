@@ -8,11 +8,12 @@ import {
     BadnessComparableList,
     BadnessListTableRecordSource,
     CorrectnessBadness,
+    GridFieldCustomHeadingsService,
     Integer,
-    TableFieldSourceDefinition,
     TableRecord,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
@@ -26,13 +27,15 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
 
     constructor(
         textFormatterService: TextFormatterService,
-        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         correctnessBadness: CorrectnessBadness,
         definition: ScanFieldEditorFrameComparableListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
-            tableRecordSourceDefinitionFactoryService,
+            gridFieldCustomHeadingsService,
+            tableFieldSourceDefinitionCachingFactoryService,
             correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
@@ -44,7 +47,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     override createDefinition(): ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
         return ScanFieldEditorFrameComparableListTableRecordSourceDefinition.create(
             this._gridFieldCustomHeadingsService,
-            this._tableFieldSourceDefinitionCachedFactoryService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this.list.clone()
         )
     }
@@ -52,7 +55,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     override createRecordDefinition(idx: Integer): ScanFieldEditorFrameTableRecordDefinition {
         const scanFieldEditorFrame = this.list.getAt(idx);
         return {
-            typeId: TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame,
+            typeId: TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame,
             mapKey: scanFieldEditorFrame.name,
             record: scanFieldEditorFrame,
         };
@@ -70,7 +73,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as ScanFieldEditorFrameComparableListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame: {
+                    case TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame: {
                         const valueSource = new ScanFieldEditorFrameTableValueSource(result.fieldCount, scanFieldEditorFrame);
                         result.addSource(valueSource);
                         break;

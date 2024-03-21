@@ -15,7 +15,6 @@ import {
     GridFieldCustomHeadingsService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     LockOpenListItem,
     LockerScanAttachedNotificationChannelList,
@@ -23,12 +22,12 @@ import {
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
     SettingsService,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinitionFactoryService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition,
     TypedReferenceableGridSourcesService,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
@@ -36,6 +35,7 @@ import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../../../grid-source/internal-api';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource } from './scan-editor-attached-notification-channel-comparable-list-table-record-source';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition } from './scan-editor-attached-notification-channel-comparable-list-table-record-source-definition';
+import { TableRecordSourceDefinitionFactoryService } from '../../../../../table-record-source-definition-factory-service';
 
 export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceFrame {
     recordFocusedEventer: ScanEditorAttachedNotificationChannelsGridFrame.RecordFocusedEventer | undefined
@@ -54,7 +54,7 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
         notificationChannelsService: NotificationChannelsService,
         gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactory: TypedTableRecordSourceFactory,
         referenceableGridSourcesService: TypedReferenceableGridSourcesService,
@@ -66,7 +66,7 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
             settingsService,
             gridFieldCustomHeadingsService,
             referenceableGridLayoutsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactory,
             referenceableGridSourcesService,
@@ -148,11 +148,11 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
     private createListGridSourceOrReferenceDefinition(list: LockerScanAttachedNotificationChannelList, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
-            this.tableFieldSourceDefinitionCachedFactoryService,
+            this.tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

@@ -14,12 +14,12 @@ import {
     GridField,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference
+    TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../../../../../grid-source/internal-api';
@@ -109,11 +109,11 @@ export class ScanFieldEditorFramesGridFrame extends GridSourceFrame {
     private createListGridSourceOrReferenceDefinition(list: BadnessComparableList<ScanFieldEditorFrame>, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
-            this.tableFieldSourceDefinitionCachedFactoryService,
+            this.tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

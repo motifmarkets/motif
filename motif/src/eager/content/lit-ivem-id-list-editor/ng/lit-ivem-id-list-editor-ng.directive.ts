@@ -18,8 +18,8 @@ import {
     StringId,
     StringUiAction,
     Strings,
-    TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     UiComparableList
 } from '@motifmarkets/motif-core';
 import {
@@ -28,7 +28,7 @@ import {
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { LitIvemIdListNgComponent } from '../../lit-ivem-id-list/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
-import { TableFieldSourceDefinitionCachedFactoryNgService } from '../../ng/table-field-source-definition-cached-factory-ng.service';
+import { TableFieldSourceDefinitionCachingFactoryNgService } from '../../ng/table-field-source-definition-caching-factory-ng.service';
 
 @Directive()
 export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
@@ -47,7 +47,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     readonly list: UiComparableList<LitIvemId>;
 
-    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachedFactoryService;
+    private readonly _fieldSourceDefinitionRegistryService: TypedTableFieldSourceDefinitionCachingFactoryService;
 
     private readonly _addLitIvemIdUiAction: LitIvemIdUiAction;
     private readonly _selectAllUiAction: IconButtonUiAction;
@@ -65,7 +65,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         elRef: ElementRef<HTMLElement>,
         protected readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
+        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachingFactoryNgService,
         private readonly _toastNgService: ToastNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
@@ -276,11 +276,11 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private createDefaultLayoutDefinition() {
         const litIvemIdFieldId: LitIvemIdTableFieldSourceDefinition.FieldId = {
-            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemId,
+            sourceTypeId: TypedTableFieldSourceDefinition.TypeId.LitIvemId,
             id: LitIvemId.FieldId.LitIvemId,
         };
         const nameFieldId: LitIvemBaseDetailTableFieldSourceDefinition.FieldId = {
-            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemBaseDetail,
+            sourceTypeId: TypedTableFieldSourceDefinition.TypeId.LitIvemBaseDetail,
             id: LitIvemBaseDetail.Field.Id.Name,
         };
 

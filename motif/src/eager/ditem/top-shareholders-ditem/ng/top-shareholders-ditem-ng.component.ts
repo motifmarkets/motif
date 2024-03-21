@@ -41,10 +41,9 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
     ToastNgService
 } from 'component-services-ng-api';
-import { GridSourceNgDirective } from 'content-ng-api';
+import { GridSourceNgDirective, TableRecordSourceDefinitionFactoryNgService } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';

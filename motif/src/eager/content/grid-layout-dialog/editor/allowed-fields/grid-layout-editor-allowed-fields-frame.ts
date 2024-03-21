@@ -14,7 +14,6 @@ import {
     GridFieldCustomHeadingsService,
     GridFieldTableRecordSource,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
@@ -22,12 +21,12 @@ import {
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
     SettingsService,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinitionFactoryService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition,
     TypedReferenceableGridSourcesService,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     TypedTableRecordSourceFactory,
     UsableListChangeTypeId,
     delay1Tick
@@ -35,6 +34,7 @@ import {
 import { DatalessViewCell, RevRecord } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
+import { TableRecordSourceDefinitionFactoryService } from '../../../table-record-source-definition-factory-service';
 
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer | undefined;
@@ -50,7 +50,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         settingsService: SettingsService,
         gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         tableRecordSourceFactory: TypedTableRecordSourceFactory,
         namedGridSourcesService: TypedReferenceableGridSourcesService,
@@ -63,7 +63,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
             settingsService,
             gridFieldCustomHeadingsService,
             namedGridLayoutsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryService,
             tableRecordSourceFactory,
             namedGridSourcesService,
@@ -180,7 +180,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

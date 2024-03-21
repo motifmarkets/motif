@@ -26,7 +26,6 @@ import {
     Strings,
     SymbolDetailCacheService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
@@ -53,7 +52,6 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: HoldingsDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: HoldingsDitemFrame.RecordFocusedEventer,

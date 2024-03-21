@@ -10,19 +10,18 @@ import {
     CommandRegisterService,
     GridLayoutOrReferenceDefinition,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     JsonElement,
     LitIvemId,
     SettingsService,
     StringId,
     Strings,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
     TopShareholder,
-    TopShareholderTableRecordSource
+    TopShareholderTableRecordSource,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
-import { GridSourceFrame } from 'content-internal-api';
+import { GridSourceFrame, TableRecordSourceDefinitionFactoryService } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
 
@@ -106,7 +105,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 this._compareDate
             );
             const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-            const gridSourceOrReferenceDefinition = new GridSourceOrReferenceDefinition(gridSourceDefinition);
+            const gridSourceOrReferenceDefinition = new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
             const openPromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
             openPromise.then(
                 (openResult) => {

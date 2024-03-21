@@ -4,15 +4,15 @@
  * License: motionite.trade/license/motif
  */
 
-import { PayloadTableRecordDefinition, TableFieldSourceDefinition, TableRecordDefinition } from '@motifmarkets/motif-core';
+import { PayloadTableRecordDefinition, TypedTableFieldSourceDefinition, TypedTableRecordDefinition } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/internal-api';
 
 export interface ScanFieldEditorFrameTableRecordDefinition extends PayloadTableRecordDefinition<ScanFieldEditorFrame> {
-    readonly typeId: TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
+    readonly typeId: TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
 }
 
 export namespace ScanFieldEditorFrameTableRecordDefinition {
-    export function is(definition: TableRecordDefinition): definition is ScanFieldEditorFrameTableRecordDefinition {
-        return definition.typeId === TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
+    export function is(definition: TypedTableRecordDefinition): definition is ScanFieldEditorFrameTableRecordDefinition {
+        return definition.typeId === TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
     }
 }

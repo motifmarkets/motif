@@ -9,7 +9,6 @@ import {
     BrokerageAccountGroup,
     GridField,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Holding,
     HoldingTableRecordSource,
     Integer,
@@ -17,7 +16,8 @@ import {
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference
+    TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -89,7 +89,7 @@ export class HoldingsFrame extends DelayedBadnessGridSourceFrame {
     private createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createHolding(brokerageAccountGroup);
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 }
 

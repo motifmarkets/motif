@@ -10,13 +10,13 @@ import {
     BrokerageAccountTableRecordSource,
     GridField,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference
+    TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -66,7 +66,7 @@ export class BrokerageAccountsFrame extends DelayedBadnessGridSourceFrame {
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createBrokerageAccount();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

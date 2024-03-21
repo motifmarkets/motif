@@ -21,9 +21,9 @@ import {
     StringId,
     Strings,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
-    TypedGridSourceOrReference
+    TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import {
@@ -50,7 +50,6 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteReferenceableGridLayoutDefinitionsStoreService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: WatchlistDitemFrame.RecordFocusedEventer,
@@ -97,7 +96,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         //     (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
         // );
 
-        let gridSourceOrReferenceDefinition: GridSourceOrReferenceDefinition | undefined;
+        let gridSourceOrReferenceDefinition: TypedGridSourceOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (watchlistFrameElementResult.isOk()) {
@@ -153,7 +152,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean) {
+    tryOpenGridSource(definition: TypedGridSourceOrReferenceDefinition, keepView: boolean) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFTOGS10174');
         } else {

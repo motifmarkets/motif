@@ -9,27 +9,27 @@ import {
     GridLayoutDefinition,
     LockOpenNotificationChannel,
     PickEnum,
-    TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinition
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
+    TypedTableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
 import { LockOpenNotificationChannelTableFieldSourceDefinition } from './lock-open-notification-channel-table-field-source-definition';
 
-export class LockOpenNotificationChannelListTableRecordSourceDefinition extends TableRecordSourceDefinition {
+export class LockOpenNotificationChannelListTableRecordSourceDefinition extends TypedTableRecordSourceDefinition {
     constructor(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
     ) {
         super(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
-            TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList,
+            tableFieldSourceDefinitionCachingFactoryService,
+            TypedTableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList,
             LockOpenNotificationChannelListTableRecordSourceDefinition.allowedFieldSourceDefinitionTypeIds,
         );
     }
 
     override createDefaultLayoutDefinition(): GridLayoutDefinition {
-        const notificationChannelTableFieldSourceDefinition = LockOpenNotificationChannelTableFieldSourceDefinition.getRegistered(this.tableFieldSourceDefinitionCachedFactoryService);
+        const notificationChannelTableFieldSourceDefinition = LockOpenNotificationChannelTableFieldSourceDefinition.get(this.tableFieldSourceDefinitionCachingFactoryService);
 
         const fieldNames = new Array<string>();
 
@@ -41,16 +41,16 @@ export class LockOpenNotificationChannelListTableRecordSourceDefinition extends 
 
 /** @public */
 export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
-    export type FieldSourceDefinitionTypeId = PickEnum<TableFieldSourceDefinition.TypeId,
-        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+    export type FieldSourceDefinitionTypeId = PickEnum<TypedTableFieldSourceDefinition.TypeId,
+        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     >;
 
     export const allowedFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export const defaultFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export type FieldId = LockOpenNotificationChannelTableFieldSourceDefinition.FieldId;
@@ -83,7 +83,7 @@ export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
 
     // export function tryCreateDefinition(
     //     customHeadingsService: GridFieldCustomHeadingsService,
-    //     tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+    //     tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     //     element: JsonElement,
     // ): Result<ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition> {
     //     const listCreateResult = tryCreateListFromElement(element);
@@ -92,29 +92,29 @@ export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
     //         return listCreateResult.createOuter(errorCode);
     //     } else {
     //         const list = listCreateResult.value;
-    //         const definition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachedFactoryService, list);
+    //         const definition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachingFactoryService, list);
     //         return new Ok(definition);
     //     }
     // }
 
     export function create(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
     ) {
         return new LockOpenNotificationChannelListTableRecordSourceDefinition(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
         );
     }
 
     export function createLayoutDefinition(
-        fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachedFactoryService,
+        fieldSourceDefinitionRegistryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         fieldIds: FieldId[],
     ): GridLayoutDefinition {
         return fieldSourceDefinitionRegistryService.createLayoutDefinition(fieldIds);
     }
 
-    export function is(definition: TableRecordSourceDefinition): definition is LockOpenNotificationChannelListTableRecordSourceDefinition {
-        return definition.typeId === TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
+    export function is(definition: TypedTableRecordSourceDefinition): definition is LockOpenNotificationChannelListTableRecordSourceDefinition {
+        return definition.typeId === TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
     }
 }

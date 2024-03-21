@@ -2,7 +2,6 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     GridField,
     GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
     Scan,
@@ -10,7 +9,8 @@ import {
     ScanTableRecordSource,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference
+    TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../delayed-badness-grid-source/internal-api';
@@ -102,7 +102,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
         const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private filterItems(scan: Scan) {

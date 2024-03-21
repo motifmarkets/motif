@@ -46,7 +46,6 @@ import {
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
     ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, SearchSymbolsNgComponent } from 'content-ng-api';
@@ -180,7 +179,6 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
         private readonly _toastNgService: ToastNgService,
     ) {
         super(
@@ -205,7 +203,6 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
         );
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();

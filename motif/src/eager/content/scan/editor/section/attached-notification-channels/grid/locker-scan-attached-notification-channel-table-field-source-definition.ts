@@ -20,12 +20,13 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
     TableValue,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     ValidTableValue
 } from '@motifmarkets/motif-core';
 
-export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition extends TableFieldSourceDefinition {
+export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition extends TypedTableFieldSourceDefinition {
     declare readonly typeId: LockerScanAttachedNotificationChannelTableFieldSourceDefinition.TypeId;
 
     override readonly fieldDefinitions: TableField.Definition[];
@@ -80,7 +81,7 @@ export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition ext
 }
 
 export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
-    export const typeId = TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel;
+    export const typeId = TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel;
     export type TypeId = typeof typeId;
 
     export namespace Field {
@@ -187,13 +188,13 @@ export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition
         }
     }
 
-    export interface FieldId extends TableFieldSourceDefinition.FieldId {
-        sourceTypeId: TableFieldSourceDefinition.TypeId.Scan;
+    export interface FieldId extends TypedTableFieldSourceDefinition.FieldId {
+        sourceTypeId: LockerScanAttachedNotificationChannelTableFieldSourceDefinition.TypeId;
         id: LockerScanAttachedNotificationChannel.FieldId;
     }
 
-    export function getRegistered(cachedFactoryService: TableFieldSourceDefinitionCachedFactoryService): LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
-        return cachedFactoryService.get(typeId) as LockerScanAttachedNotificationChannelTableFieldSourceDefinition;
+    export function get(cachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService): LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
+        return cachingFactoryService.get(typeId) as LockerScanAttachedNotificationChannelTableFieldSourceDefinition;
     }
 }
 

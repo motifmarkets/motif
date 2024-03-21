@@ -10,9 +10,9 @@ import {
     GridFieldCustomHeadingsService,
     GridLayoutDefinition,
     PickEnum,
-    TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
-    TableRecordSourceDefinition,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
+    TypedTableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/internal-api';
 import { ScanFieldEditorFrameTableFieldSourceDefinition } from './scan-field-editor-frame-table-field-source-definition';
@@ -22,20 +22,20 @@ export class ScanFieldEditorFrameComparableListTableRecordSourceDefinition exten
 
     constructor(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         list: BadnessComparableList<ScanFieldEditorFrame>,
     ) {
         super(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
-            TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame,
+            tableFieldSourceDefinitionCachingFactoryService,
+            TypedTableRecordSourceDefinition.TypeId.ScanFieldEditorFrame,
             ScanFieldEditorFrameComparableListTableRecordSourceDefinition.allowedFieldSourceDefinitionTypeIds,
             list,
         );
     }
 
     override createDefaultLayoutDefinition(): GridLayoutDefinition {
-        const scanFieldEditorFrameFieldSourceDefinition = ScanFieldEditorFrameTableFieldSourceDefinition.getRegistered(this.tableFieldSourceDefinitionCachedFactoryService);
+        const scanFieldEditorFrameFieldSourceDefinition = ScanFieldEditorFrameTableFieldSourceDefinition.get(this.tableFieldSourceDefinitionCachingFactoryService);
 
         const fieldNames = new Array<string>();
 
@@ -47,16 +47,16 @@ export class ScanFieldEditorFrameComparableListTableRecordSourceDefinition exten
 
 /** @public */
 export namespace ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
-    export type FieldSourceDefinitionTypeId = PickEnum<TableFieldSourceDefinition.TypeId,
-        TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
+    export type FieldSourceDefinitionTypeId = PickEnum<TypedTableFieldSourceDefinition.TypeId,
+        TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
     >;
 
     export const allowedFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
+        TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
     ];
 
     export const defaultFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
+        TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame
     ];
 
     export type FieldId = ScanFieldEditorFrameTableFieldSourceDefinition.FieldId;
@@ -89,7 +89,7 @@ export namespace ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
 
     // export function tryCreateDefinition(
     //     customHeadingsService: GridFieldCustomHeadingsService,
-    //     tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+    //     tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     //     element: JsonElement,
     // ): Result<ScanFieldEditorFrameComparableListTableRecordSourceDefinition> {
     //     const listCreateResult = tryCreateListFromElement(element);
@@ -98,31 +98,31 @@ export namespace ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
     //         return listCreateResult.createOuter(errorCode);
     //     } else {
     //         const list = listCreateResult.value;
-    //         const definition = new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachedFactoryService, list);
+    //         const definition = new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(customHeadingsService, tableFieldSourceDefinitionCachingFactoryService, list);
     //         return new Ok(definition);
     //     }
     // }
 
     export function create(
         customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         list: BadnessComparableList<ScanFieldEditorFrame>,
     ) {
         return new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(
             customHeadingsService,
-            tableFieldSourceDefinitionCachedFactoryService,
+            tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
     }
 
     export function createLayoutDefinition(
-        fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachedFactoryService,
+        fieldSourceDefinitionRegistryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         fieldIds: FieldId[],
     ): GridLayoutDefinition {
         return fieldSourceDefinitionRegistryService.createLayoutDefinition(fieldIds);
     }
 
-    export function is(definition: TableRecordSourceDefinition): definition is ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
-        return definition.typeId === TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame;
+    export function is(definition: TypedTableRecordSourceDefinition): definition is ScanFieldEditorFrameComparableListTableRecordSourceDefinition {
+        return definition.typeId === TypedTableRecordSourceDefinition.TypeId.ScanFieldEditorFrame;
     }
 }

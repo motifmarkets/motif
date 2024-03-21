@@ -15,7 +15,7 @@ import {
 import { CommandRegisterNgService, CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent } from '../../../nameable-grid-layout-editor-dialog/ng-api';
-import { TableFieldSourceDefinitionCachedFactoryNgService } from '../../../ng/table-field-source-definition-cached-factory-ng.service';
+import { TableFieldSourceDefinitionCachingFactoryNgService } from '../../../ng/table-field-source-definition-caching-factory-ng.service';
 import { LitIvemIdListEditorNgDirective } from '../../ng/lit-ivem-id-list-editor-ng.directive';
 
 @Component({
@@ -43,7 +43,7 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachedFactoryNgService,
+        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachingFactoryNgService,
         toastNgService: ToastNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) opener: LockOpenListItem.Opener,
         @Inject(LitIvemIdListEditorDialogNgComponent.captionInjectionToken) public readonly caption: string,

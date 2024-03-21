@@ -6,6 +6,7 @@
 
 import {
     CorrectnessBadness,
+    GridFieldCustomHeadingsService,
     Integer,
     LockOpenListItem,
     LockOpenListTableRecordSource,
@@ -14,10 +15,10 @@ import {
     NotificationChannelsService,
     Ok,
     Result,
-    TableFieldSourceDefinition,
     TableRecord,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channel-list-table-record-source-definition';
@@ -30,13 +31,15 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
     constructor(
         private readonly _notificationChannelsService: NotificationChannelsService,
         textFormatterService: TextFormatterService,
-        tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         correctnessBadness: CorrectnessBadness,
         definition: LockOpenNotificationChannelListTableRecordSourceDefinition,
     ) {
         super(
             textFormatterService,
-            tableRecordSourceDefinitionFactoryService,
+            gridFieldCustomHeadingsService,
+            tableFieldSourceDefinitionCachingFactoryService,
             correctnessBadness,
             definition,
             definition.allowedFieldSourceDefinitionTypeIds,
@@ -46,14 +49,14 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
     override createDefinition(): LockOpenNotificationChannelListTableRecordSourceDefinition {
         return LockOpenNotificationChannelListTableRecordSourceDefinition.create(
             this._gridFieldCustomHeadingsService,
-            this._tableFieldSourceDefinitionCachedFactoryService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
         )
     }
 
     override createRecordDefinition(idx: Integer): LockOpenNotificationChannelTableRecordDefinition {
         const lockOpenNotificationChannel = this.recordList.getAt(idx);
         return {
-            typeId: TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel,
+            typeId: TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel,
             mapKey: LockOpenNotificationChannel.name,
             record: lockOpenNotificationChannel,
         };
@@ -71,7 +74,7 @@ export class LockOpenNotificationChannelListTableRecordSource extends LockOpenLi
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as LockOpenNotificationChannelListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel: {
+                    case TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel: {
                         const valueSource = new LockOpenNotificationChannelTableValueSource(result.fieldCount, lockerScanAttachedNotificationChannel);
                         result.addSource(valueSource);
                         break;

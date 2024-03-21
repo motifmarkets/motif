@@ -21,12 +21,13 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionCachedFactoryService,
     TableValue,
+    TypedTableFieldSourceDefinition,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
     ValidTableValue
 } from '@motifmarkets/motif-core';
 
-export class LockOpenNotificationChannelTableFieldSourceDefinition extends TableFieldSourceDefinition {
+export class LockOpenNotificationChannelTableFieldSourceDefinition extends TypedTableFieldSourceDefinition {
     declare readonly typeId: LockOpenNotificationChannelTableFieldSourceDefinition.TypeId;
 
     override readonly fieldDefinitions: TableField.Definition[];
@@ -81,7 +82,7 @@ export class LockOpenNotificationChannelTableFieldSourceDefinition extends Table
 }
 
 export namespace LockOpenNotificationChannelTableFieldSourceDefinition {
-    export const typeId = TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel;
+    export const typeId = TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel;
     export type TypeId = typeof typeId;
 
     export namespace Field {
@@ -189,13 +190,13 @@ export namespace LockOpenNotificationChannelTableFieldSourceDefinition {
         }
     }
 
-    export interface FieldId extends TableFieldSourceDefinition.FieldId {
-        sourceTypeId: TableFieldSourceDefinition.TypeId.Scan;
+    export interface FieldId extends TypedTableFieldSourceDefinition.FieldId {
+        sourceTypeId: LockOpenNotificationChannelTableFieldSourceDefinition.TypeId;
         id: LockOpenNotificationChannel.FieldId;
     }
 
-    export function getRegistered(cachedFactoryService: TableFieldSourceDefinitionCachedFactoryService): LockOpenNotificationChannelTableFieldSourceDefinition {
-        return cachedFactoryService.get(typeId) as LockOpenNotificationChannelTableFieldSourceDefinition;
+    export function get(cachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService): LockOpenNotificationChannelTableFieldSourceDefinition {
+        return cachingFactoryService.get(typeId) as LockOpenNotificationChannelTableFieldSourceDefinition;
     }
 }
 

@@ -22,7 +22,6 @@ import {
     AllowedGridField,
     AssertInternalError,
     BidAskAllowedFieldsGridLayoutDefinitions,
-    BidAskAllowedGridFields,
     BidAskGridLayoutDefinitions,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
@@ -39,7 +38,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
-import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, bidAskAllowedFieldsInjectionToken, definitionColumnListInjectionToken, oldBidAskLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
+import { BidAskAllowedGridFields, GridLayoutEditorNgComponent, allowedFieldsInjectionToken, bidAskAllowedFieldsInjectionToken, definitionColumnListInjectionToken, oldBidAskLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({

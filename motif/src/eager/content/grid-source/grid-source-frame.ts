@@ -16,9 +16,6 @@ import {
     GridFieldCustomHeadingsService,
     GridLayout,
     GridLayoutOrReferenceDefinition,
-    GridRowOrderDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Integer,
     JsonElement,
     JsonElementErr,
@@ -31,19 +28,21 @@ import {
     SettingsService,
     StringId,
     Strings,
-    TableFieldSourceDefinitionCachedFactoryService,
     TableGridRecordStore,
-    TableRecordSourceDefinition,
-    TableRecordSourceDefinitionFactoryService,
+    TypedGridRowOrderDefinition,
     TypedGridSource,
     TypedGridSourceOrReference,
+    TypedGridSourceOrReferenceDefinition,
     TypedReferenceableGridSourcesService,
     TypedTable,
+    TypedTableFieldSourceDefinitionCachingFactoryService,
+    TypedTableRecordSourceDefinition,
     TypedTableRecordSourceFactory
 } from '@motifmarkets/motif-core';
 import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
 import { ToastService } from '../../component-services/toast-service';
 import { ContentFrame } from '../content-frame';
+import { TableRecordSourceDefinitionFactoryService } from '../table-record-source-definition-factory-service';
 
 export abstract class GridSourceFrame extends ContentFrame {
     dragDropAllowed: boolean;
@@ -63,7 +62,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     private _openedTable: TypedTable | undefined;
 
     private _privateNameSuffixId: GridSourceFrame.PrivateNameSuffixId | undefined;
-    private _keptRowOrderDefinition: GridRowOrderDefinition | undefined;
+    private _keptRowOrderDefinition: TypedGridRowOrderDefinition | undefined;
     private _keptGridRowAnchor: RecordGrid.ViewAnchor | undefined;
 
     private _autoSizeAllColumnWidthsOnFirstUsable: boolean;
@@ -79,7 +78,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         protected readonly settingsService: SettingsService,
         protected readonly gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        protected readonly tableFieldSourceDefinitionCachedFactoryService: TableFieldSourceDefinitionCachedFactoryService,
+        protected readonly tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
         protected readonly tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
         private readonly _tableRecordSourceFactory: TypedTableRecordSourceFactory,
         private readonly _referenceableGridSourcesService: TypedReferenceableGridSourcesService,
@@ -153,7 +152,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         return this._grid.calculateHeaderPlusFixedRowsHeight();
     }
 
-    tryCreateDefinitionFromJson(frameElement: JsonElement): Result<GridSourceOrReferenceDefinition | undefined> {
+    tryCreateDefinitionFromJson(frameElement: JsonElement): Result<TypedGridSourceOrReferenceDefinition | undefined> {
         const getElementResult = frameElement.tryGetElement(GridSourceFrame.JsonName.definition);
         if (getElementResult.isErr()) {
             const errorId = getElementResult.error;
@@ -164,7 +163,7 @@ export abstract class GridSourceFrame extends ContentFrame {
             }
         } else {
             const jsonElement = getElementResult.value;
-            const createResult = GridSourceOrReferenceDefinition.tryCreateFromJson(
+            const createResult = TypedGridSourceOrReferenceDefinition.tryCreateFromJson(
                 this.tableRecordSourceDefinitionFactoryService,
                 jsonElement,
             );
@@ -235,7 +234,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         return this.tryOpenGridSource(definition, keepView);
     }
 
-    async tryOpenGridSource(definition: GridSourceOrReferenceDefinition, keepView: boolean): Promise<Result<TypedGridSourceOrReference>> {
+    async tryOpenGridSource(definition: TypedGridSourceOrReferenceDefinition, keepView: boolean): Promise<Result<TypedGridSourceOrReference>> {
         this.closeGridSource(keepView);
 
         if (definition.canUpdateGridLayoutDefinitionOrReference() &&
@@ -244,8 +243,9 @@ export abstract class GridSourceFrame extends ContentFrame {
         ) {
             definition.updateGridLayoutDefinitionOrReference(this.keptGridLayoutOrReferenceDefinition);
         }
-        const gridSourceOrReference = new GridSourceOrReference(
+        const gridSourceOrReference = new TypedGridSourceOrReference(
             this._referenceableGridLayoutsService,
+            this.tableFieldSourceDefinitionCachingFactoryService.definitionFactory,
             this._tableRecordSourceFactory,
             this._referenceableGridSourcesService,
             definition
@@ -353,7 +353,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    createGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition {
+    createGridSourceOrReferenceDefinition(): TypedGridSourceOrReferenceDefinition {
         if (this._lockedGridSourceOrReference === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
@@ -370,7 +370,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         }
     }
 
-    createTableRecordSourceDefinition(): TableRecordSourceDefinition {
+    createTableRecordSourceDefinition(): TypedTableRecordSourceDefinition {
         if (this._openedGridSource === undefined) {
             throw new AssertInternalError('GSFCGSONRD22209');
         } else {
@@ -1098,7 +1098,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     }
 
     private tryOpenJson(frameElement: JsonElement, keepView: boolean): Promise<Result<TypedGridSourceOrReference | undefined>> {
-        let definition: GridSourceOrReferenceDefinition | undefined;
+        let definition: TypedGridSourceOrReferenceDefinition | undefined;
         const definitionResult = this.tryCreateDefinitionFromJson(frameElement);
         if (definitionResult.isErr()) {
             return Promise.resolve(definitionResult.createType());
@@ -1341,7 +1341,7 @@ export abstract class GridSourceFrame extends ContentFrame {
     // }
 
     protected abstract createGridAndCellPainters(gridHost: HTMLElement): RecordGrid;
-    protected abstract getDefaultGridSourceOrReferenceDefinition(): GridSourceOrReferenceDefinition;
+    protected abstract getDefaultGridSourceOrReferenceDefinition(): TypedGridSourceOrReferenceDefinition;
 
     protected abstract setBadness(value: Badness): void;
     protected abstract hideBadnessWithVisibleDelay(badness: Badness): void;
@@ -1349,7 +1349,7 @@ export abstract class GridSourceFrame extends ContentFrame {
 
 export namespace GridSourceFrame {
     export type SettingsApplyEventer = (this: void) => void;
-    export type GetDefaultGridSourceOrReferenceDefinitionEventer = (this: void) => GridSourceOrReferenceDefinition;
+    export type GetDefaultGridSourceOrReferenceDefinitionEventer = (this: void) => TypedGridSourceOrReferenceDefinition;
     export type GridLayoutSetEventer = (this: void, layout: GridLayout) => void;
     // export type RequireDefaultTableDefinitionEvent = (this: void) => TableDefinition | undefined;
     // export type TableOpenEvent = (this: void, recordDefinitionList: TableRecordDefinitionList) => void;
