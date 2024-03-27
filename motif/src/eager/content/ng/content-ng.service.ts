@@ -19,8 +19,8 @@ import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderReque
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
-import { TableRecordSourceFactoryNgService } from './table-record-source-factory-ng.service';
 import { TableRecordSourceDefinitionFactoryNgService } from './table-record-source-definition-factory-ng.service';
+import { TableRecordSourceFactoryNgService } from './table-record-source-factory-ng.service';
 
 @Injectable({
     providedIn: 'root'
@@ -43,13 +43,13 @@ export class ContentNgService {
             coreNgService.symbolsService,
             coreNgService.notificationChannelsService,
             coreNgService.textFormatterService,
-            coreNgService.gridFieldCustomHeadingsService,
+            coreNgService.revFieldCustomHeadingsService,
             coreNgService.referenceableGridLayoutsService,
             coreNgService.tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
-            coreNgService.referenceableGridSourceDefinitionsStoreService,
-            coreNgService.referenceableGridSourcesService,
+            coreNgService.referenceableDataSourceDefinitionsStoreService,
+            coreNgService.referenceableDataSourcesService,
             sessionInfoNgService.service,
             cellPainterFactoryNgService.service,
             toastNgService.service,

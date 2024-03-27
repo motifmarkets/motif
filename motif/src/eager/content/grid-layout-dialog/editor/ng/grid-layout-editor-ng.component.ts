@@ -18,8 +18,8 @@ import {
 import {
     AssertInternalError,
     EditableGridLayoutDefinitionColumnList,
-    GridLayoutDefinition,
-    Integer
+    Integer,
+    RevGridLayoutDefinition
 } from '@motifmarkets/motif-core';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
@@ -64,7 +64,7 @@ export class GridLayoutEditorNgComponent extends ContentComponentBaseNgDirective
         this._splitterDragged = true;
     }
 
-    getGridLayoutDefinition(): GridLayoutDefinition {
+    getGridLayoutDefinition(): RevGridLayoutDefinition {
         return this._columnList.createGridLayoutDefinition();
     }
 

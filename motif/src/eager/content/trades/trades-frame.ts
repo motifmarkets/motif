@@ -16,13 +16,14 @@ import {
     DayTradesDataItem,
     DayTradesGridField,
     DayTradesGridRecordStore,
-    GridLayout,
     GridLayoutDefinition,
     JsonElement,
     LitIvemId,
     MultiEvent,
     RecordGrid,
     RenderValueRecordGridCellPainter,
+    RevGridLayout,
+    RevGridLayoutDefinition,
     SettingsService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
@@ -41,7 +42,7 @@ export class TradesFrame extends ContentFrame {
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
-    private _gridLayout: GridLayout;
+    private _gridLayout: RevGridLayout;
 
     constructor(
         private readonly _settingsService: SettingsService,
@@ -74,7 +75,7 @@ export class TradesFrame extends ContentFrame {
                 if (definitionResult.isErr()) {
                     this._gridLayout = this.createDefaultGridLayout();
                 } else {
-                    this._gridLayout = new GridLayout(definitionResult.value);
+                    this._gridLayout = new RevGridLayout(definitionResult.value);
                 }
             }
         }
@@ -139,7 +140,7 @@ export class TradesFrame extends ContentFrame {
         return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
     }
 
-    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition) {
+    applyGridLayoutDefinition(layoutDefinition: RevGridLayoutDefinition) {
         this._grid.applyGridLayoutDefinition(layoutDefinition);
     }
 
@@ -220,7 +221,7 @@ export class TradesFrame extends ContentFrame {
 
     private createDefaultGridLayout() {
         const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
-        return new GridLayout(definition);
+        return new RevGridLayout(definition);
     }
 
     private checkClose() {

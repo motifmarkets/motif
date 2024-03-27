@@ -24,10 +24,10 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
+    RevGridLayoutDefinition,
     StringId,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -59,7 +59,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
 
     private _editor: GridLayoutEditorNgComponent;
 
-    private _closeResolve: (value: GridLayoutDefinition | undefined) => void;
+    private _closeResolve: (value: RevGridLayoutDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
     constructor(
@@ -91,7 +91,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     }
 
     waitClose(): GridLayoutDialogNgComponent.ClosePromise {
-        return new Promise<GridLayoutDefinition | undefined>((resolve, reject) => {
+        return new Promise<RevGridLayoutDefinition | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
             this._closeReject = reject;
         });
@@ -146,7 +146,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace GridLayoutDialogNgComponent {
-    export type ClosePromise = Promise<GridLayoutDefinition | undefined>;
+    export type ClosePromise = Promise<RevGridLayoutDefinition | undefined>;
     export const captionInjectionToken = new InjectionToken<string>('GridLayoutDialogNgComponent.Caption');
 
     export function create(

@@ -12,19 +12,19 @@ import {
     CellPainterFactoryService,
     CommandRegisterService,
     CoreService,
-    GridFieldCustomHeadingsService,
     KeyboardService,
     MotifServicesService,
     NotificationChannelsService,
+    ReferenceableDataSourceDefinitionsStoreService,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourceDefinitionsStoreService,
+    RevFieldCustomHeadingsService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
-    TextFormatterService,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService
+    TableFieldSourceDefinitionCachingFactoryService,
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 
 @Injectable({
@@ -51,13 +51,13 @@ export class CoreNgService implements OnDestroy {
     get scansService(): ScansService { return this._service.scansService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
-    get gridFieldCustomHeadingsService(): GridFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
-    get tableFieldSourceDefinitionCachingFactoryService(): TypedTableFieldSourceDefinitionCachingFactoryService {
+    get revFieldCustomHeadingsService(): RevFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
+    get tableFieldSourceDefinitionCachingFactoryService(): TableFieldSourceDefinitionCachingFactoryService {
         return this._service.tableFieldSourceDefinitionCachingFactoryService;
     }
     get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
-    get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }
-    get referenceableGridSourcesService(): TypedReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }
+    get referenceableDataSourceDefinitionsStoreService(): ReferenceableDataSourceDefinitionsStoreService { return this._service.referenceableDataSourceDefinitionsStoreService; }
+    get referenceableDataSourcesService(): ReferenceableDataSourcesService { return this._service.referenceableDataSourcesService; }
     get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }

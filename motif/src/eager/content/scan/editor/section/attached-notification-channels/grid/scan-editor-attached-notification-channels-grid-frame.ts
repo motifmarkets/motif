@@ -11,31 +11,31 @@ import {
     CellPainterFactoryService,
     CheckboxRenderValueRecordGridCellEditor,
     CheckboxRenderValueRecordGridCellPainter,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridFieldCustomHeadingsService,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
     Integer,
     LockOpenListItem,
     LockerScanAttachedNotificationChannelList,
     NotificationChannelsService,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
+    RevFieldCustomHeadingsService,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceFactory
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../../../grid-source/internal-api';
+import { TableRecordSourceDefinitionFactoryService } from '../../../../../table-record-source-definition-factory-service';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSource } from './scan-editor-attached-notification-channel-comparable-list-table-record-source';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition } from './scan-editor-attached-notification-channel-comparable-list-table-record-source-definition';
-import { TableRecordSourceDefinitionFactoryService } from '../../../../../table-record-source-definition-factory-service';
 
 export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceFrame {
     recordFocusedEventer: ScanEditorAttachedNotificationChannelsGridFrame.RecordFocusedEventer | undefined
@@ -52,12 +52,12 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
     constructor(
         settingsService: SettingsService,
         notificationChannelsService: NotificationChannelsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TypedTableRecordSourceFactory,
-        referenceableGridSourcesService: TypedReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        referenceableGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         frameOpener: LockOpenListItem.Opener,
@@ -123,7 +123,7 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
         return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as ScanEditorAttachedNotificationChannelComparableListTableRecordSource;
         this._list = recordSource.list;
@@ -145,14 +145,14 @@ export class ScanEditorAttachedNotificationChannelsGridFrame extends GridSourceF
         }
     }
 
-    private createListGridSourceOrReferenceDefinition(list: LockerScanAttachedNotificationChannelList, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
+    private createListGridSourceOrReferenceDefinition(list: LockerScanAttachedNotificationChannelList, layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
             this.tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

@@ -36,7 +36,6 @@ export namespace CommaTextErrImplementation {
             switch (value) {
                 case CommaText.ErrorId.UnexpectedCharAfterQuotedElement: return CommaTextErrApi.CodeEnum.UnexpectedCharAfterQuotedElement;
                 case CommaText.ErrorId.QuotesNotClosedInLastElement: return CommaTextErrApi.CodeEnum.QuotesNotClosedInLastElement;
-                case CommaText.ErrorId.IntegerParseStringArray: return CommaTextErrApi.CodeEnum.IntegerParseStringArray;
                 case CommaText.ErrorId.InvalidIntegerString: return CommaTextErrApi.CodeEnum.InvalidIntegerString;
                 default:
                     throw new UnreachableCaseError('CTRAIEITA55598', value);
@@ -48,7 +47,6 @@ export namespace CommaTextErrImplementation {
             switch (enumValue) {
                 case CommaTextErrApi.CodeEnum.UnexpectedCharAfterQuotedElement: return CommaText.ErrorId.UnexpectedCharAfterQuotedElement;
                 case CommaTextErrApi.CodeEnum.QuotesNotClosedInLastElement: return CommaText.ErrorId.QuotesNotClosedInLastElement;
-                case CommaTextErrApi.CodeEnum.IntegerParseStringArray: return CommaText.ErrorId.IntegerParseStringArray;
                 case CommaTextErrApi.CodeEnum.InvalidIntegerString: return CommaText.ErrorId.InvalidIntegerString;
                 default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidCommaTextErrorCode, enumValue);
             }

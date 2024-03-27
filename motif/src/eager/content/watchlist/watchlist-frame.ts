@@ -7,10 +7,11 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
-    GridSourceOrReferenceDefinition,
+    GridRowOrderDefinition,
     Integer,
     LitIvemId,
     LitIvemIdArrayRankedLitIvemIdListDefinition,
@@ -19,12 +20,11 @@ import {
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
+    RevDataSourceOrReferenceDefinition,
+    RevGridLayoutOrReferenceDefinition,
     ScanIdRankedLitIvemIdListDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridRowOrderDefinition,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
     compareInteger
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
@@ -86,21 +86,21 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
 
     createGridSourceOrReferenceDefinitionFromList(
         listDefinition: RankedLitIvemIdListDefinition,
-        gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined,
-        rowOrderDefinition: TypedGridRowOrderDefinition | undefined,
+        gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition | undefined,
+        rowOrderDefinition: GridRowOrderDefinition | undefined,
     ) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createRankedLitIvemIdList(
             listDefinition
         );
-        const gridSourceDefinition = new GridSourceDefinition(
+        const gridSourceDefinition = new DataSourceDefinition(
             tableRecordSourceDefinition,
             gridLayoutOrReferenceDefinition,
             rowOrderDefinition,
         );
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
-    async saveGridSourceAs(as: GridSourceOrReferenceDefinition.SaveAsDefinition): Promise<void> {
+    async saveGridSourceAs(as: RevDataSourceOrReferenceDefinition.SaveAsDefinition): Promise<void> {
         const oldLitIvemIdList = this._litIvemIdList;
         const count = oldLitIvemIdList.count;
         const rankedLitIvemIds = new Array<RankedLitIvemId>(count);
@@ -111,8 +111,8 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         rankedLitIvemIds.sort((left, right) => compareInteger(left.rank, right.rank));
         const newLitIvemIds = rankedLitIvemIds.map((rankedLitIvemId) => rankedLitIvemId.litIvemId);
 
-        let gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition | undefined;
-        let rowOrderDefinition: TypedGridRowOrderDefinition | undefined;
+        let gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition | undefined;
+        let rowOrderDefinition: GridRowOrderDefinition | undefined;
         if (as.tableRecordSourceOnly) {
             gridLayoutOrReferenceDefinition = undefined;
             rowOrderDefinition = undefined;
@@ -237,7 +237,7 @@ export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
         return this.createGridSourceOrReferenceDefinitionFromLitIvemIds([]);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         const litIvemIdList = this._recordSource.lockedRankedLitIvemIdList;

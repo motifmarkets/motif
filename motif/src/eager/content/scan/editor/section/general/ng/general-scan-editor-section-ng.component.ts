@@ -2,8 +2,8 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedFieldsGridLayoutDefinition,
     BooleanUiAction,
-    GridLayoutOrReferenceDefinition,
     LitIvemId,
+    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringId,
     StringUiAction,
@@ -385,7 +385,7 @@ export namespace GeneralScanEditorSectionNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition,
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,

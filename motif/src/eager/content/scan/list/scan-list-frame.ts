@@ -1,16 +1,16 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
     Scan,
     ScanList,
     ScanTableRecordSource,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../delayed-badness-grid-source/internal-api';
@@ -72,7 +72,7 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as ScanTableRecordSource;
         this._scanList = this._recordSource.recordList;
@@ -101,8 +101,8 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
 
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private filterItems(scan: Scan) {

@@ -2,24 +2,24 @@ import {
     AdaptedRevgridBehavioredColumnSettings,
     AdaptedRevgridGridSettings,
     CellPainterFactoryService,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridFieldCustomHeadingsService,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
     Integer,
     LitIvemId,
     LitIvemIdComparableListTableRecordSource,
     MarketInfo,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
+    RevFieldCustomHeadingsService,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceFactory,
     UiComparableList
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
@@ -46,12 +46,12 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TypedTableRecordSourceFactory,
-        referenceableGridSourcesService: TypedReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        referenceableGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined,
@@ -153,7 +153,7 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as LitIvemIdComparableListTableRecordSource;
         this._list = this._recordSource.list;
@@ -180,10 +180,10 @@ export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
         return this._gridMainCellPainter;
     }
 
-    private createListGridSourceOrReferenceDefinition(list: UiComparableList<LitIvemId>, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
+    private createListGridSourceOrReferenceDefinition(list: UiComparableList<LitIvemId>, layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createLitIvemIdComparableList(list);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private filterItems(litIvemId: LitIvemId) {

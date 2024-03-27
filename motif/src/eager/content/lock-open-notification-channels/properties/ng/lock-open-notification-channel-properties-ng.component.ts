@@ -4,10 +4,10 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     BooleanUiAction,
-    GridLayoutOrReferenceDefinition,
     LockOpenNotificationChannel,
     MultiEvent,
     NotificationDistributionMethod,
+    RevGridLayoutOrReferenceDefinition,
     StringId,
     StringUiAction,
     Strings,
@@ -280,5 +280,5 @@ export namespace LockOpenNotificationChannelPropertiesNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
 }

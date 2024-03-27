@@ -9,9 +9,9 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
+    RevGridLayoutDefinition,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
@@ -111,7 +111,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
+    applyGridLayoutDefinition(layoutDefinition: RevGridLayoutDefinition): void {
         if (this._tradesFrame === undefined) {
             throw new Error('Condition not handled [ID:5326171853]');
         } else {

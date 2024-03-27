@@ -8,12 +8,12 @@ import {
     BadnessComparableList,
     BadnessListTableRecordSource,
     CorrectnessBadness,
-    GridFieldCustomHeadingsService,
     Integer,
+    RevFieldCustomHeadingsService,
+    TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
     TableRecord,
     TextFormatterService,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
@@ -27,8 +27,8 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
 
     constructor(
         textFormatterService: TextFormatterService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         correctnessBadness: CorrectnessBadness,
         definition: ScanFieldEditorFrameComparableListTableRecordSourceDefinition,
     ) {
@@ -55,7 +55,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
     override createRecordDefinition(idx: Integer): ScanFieldEditorFrameTableRecordDefinition {
         const scanFieldEditorFrame = this.list.getAt(idx);
         return {
-            typeId: TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame,
+            typeId: TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame,
             mapKey: scanFieldEditorFrame.name,
             record: scanFieldEditorFrame,
         };
@@ -73,7 +73,7 @@ export class ScanFieldEditorFrameComparableListTableRecordSource extends Badness
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as ScanFieldEditorFrameComparableListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame: {
+                    case TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame: {
                         const valueSource = new ScanFieldEditorFrameTableValueSource(result.fieldCount, scanFieldEditorFrame);
                         result.addSource(valueSource);
                         break;

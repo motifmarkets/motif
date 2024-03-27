@@ -141,10 +141,10 @@ export namespace GridLayoutEditorColumnsNgComponent {
 // // eslint-disable-next-line @typescript-eslint/ban-types
 // function showVisibleFilter(record: object): boolean {
 //     return true;
-//     // return (record as GridLayout.Column).visible;
+//     // return (record as RevGridLayout.Column).visible;
 // }
 
 // // eslint-disable-next-line @typescript-eslint/ban-types
 // function showHiddenFilter(record: object): boolean {
-//     return !(record as GridLayout.Column).visible;
+//     return !(record as RevGridLayout.Column).visible;
 // }

@@ -5,52 +5,52 @@
  */
 
 import {
-    GridFieldCustomHeadingsService,
-    GridLayoutDefinition,
     LockOpenNotificationChannel,
     PickEnum,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceDefinition
+    RevFieldCustomHeadingsService,
+    RevGridLayoutDefinition,
+    TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
 import { LockOpenNotificationChannelTableFieldSourceDefinition } from './lock-open-notification-channel-table-field-source-definition';
 
-export class LockOpenNotificationChannelListTableRecordSourceDefinition extends TypedTableRecordSourceDefinition {
+export class LockOpenNotificationChannelListTableRecordSourceDefinition extends TableRecordSourceDefinition {
     constructor(
-        customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        customHeadingsService: RevFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     ) {
         super(
             customHeadingsService,
             tableFieldSourceDefinitionCachingFactoryService,
-            TypedTableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList,
+            TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList,
             LockOpenNotificationChannelListTableRecordSourceDefinition.allowedFieldSourceDefinitionTypeIds,
         );
     }
 
-    override createDefaultLayoutDefinition(): GridLayoutDefinition {
+    override createDefaultLayoutDefinition(): RevGridLayoutDefinition {
         const notificationChannelTableFieldSourceDefinition = LockOpenNotificationChannelTableFieldSourceDefinition.get(this.tableFieldSourceDefinitionCachingFactoryService);
 
         const fieldNames = new Array<string>();
 
         fieldNames.push(notificationChannelTableFieldSourceDefinition.getFieldNameById(LockOpenNotificationChannel.FieldId.Name));
 
-        return GridLayoutDefinition.createFromFieldNames(fieldNames);
+        return RevGridLayoutDefinition.createFromFieldNames(fieldNames);
     }
 }
 
 /** @public */
 export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
-    export type FieldSourceDefinitionTypeId = PickEnum<TypedTableFieldSourceDefinition.TypeId,
-        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+    export type FieldSourceDefinitionTypeId = PickEnum<TableFieldSourceDefinition.TypeId,
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     >;
 
     export const allowedFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export const defaultFieldSourceDefinitionTypeIds: FieldSourceDefinitionTypeId[] = [
-        TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
+        TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel
     ];
 
     export type FieldId = LockOpenNotificationChannelTableFieldSourceDefinition.FieldId;
@@ -82,7 +82,7 @@ export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
     // }
 
     // export function tryCreateDefinition(
-    //     customHeadingsService: GridFieldCustomHeadingsService,
+    //     customHeadingsService: RevFieldCustomHeadingsService,
     //     tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     //     element: JsonElement,
     // ): Result<ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition> {
@@ -98,8 +98,8 @@ export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
     // }
 
     export function create(
-        customHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        customHeadingsService: RevFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     ) {
         return new LockOpenNotificationChannelListTableRecordSourceDefinition(
             customHeadingsService,
@@ -108,13 +108,13 @@ export namespace LockOpenNotificationChannelListTableRecordSourceDefinition {
     }
 
     export function createLayoutDefinition(
-        fieldSourceDefinitionRegistryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachingFactoryService,
         fieldIds: FieldId[],
-    ): GridLayoutDefinition {
+    ): RevGridLayoutDefinition {
         return fieldSourceDefinitionRegistryService.createLayoutDefinition(fieldIds);
     }
 
-    export function is(definition: TypedTableRecordSourceDefinition): definition is LockOpenNotificationChannelListTableRecordSourceDefinition {
-        return definition.typeId === TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
+    export function is(definition: TableRecordSourceDefinition): definition is LockOpenNotificationChannelListTableRecordSourceDefinition {
+        return definition.typeId === TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel;
     }
 }

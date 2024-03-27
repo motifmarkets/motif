@@ -12,13 +12,13 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutDefinition,
-    GridLayoutOrReferenceDefinition,
     Holding,
     HoldingTableRecordSourceDefinition,
     Integer,
     JsonElement,
     OrderPad,
+    RevGridLayoutDefinition,
+    RevGridLayoutOrReferenceDefinition,
     ScalarSettings,
     SettingsService,
     SingleBrokerageAccountGroup,
@@ -178,13 +178,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         if (this._holdingsFrame === undefined) {
             throw new AssertInternalError('HDFAGLDH22298');
         } else {
-            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.holdings);
+            const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layouts.holdings);
             this._holdingsFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('HDFAGLDB22298');
         } else {
-            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.balances);
+            const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layouts.balances);
             this._balancesFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
     }
@@ -352,8 +352,8 @@ export namespace HoldingsDitemFrame {
     }
 
     export interface GridLayoutDefinitions {
-        holdings: GridLayoutDefinition;
-        balances: GridLayoutDefinition;
+        holdings: RevGridLayoutDefinition;
+        balances: RevGridLayoutDefinition;
     }
 
     export interface AllowedFieldsAndLayoutDefinitions {

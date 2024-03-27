@@ -10,12 +10,12 @@ import {
     AssertInternalError,
     ButtonUiAction,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     HtmlTypes,
     Integer,
     InternalCommand,
     LitIvemId,
     MultiEvent,
+    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringId,
     Strings,
@@ -576,7 +576,7 @@ export namespace ScanEditorNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,

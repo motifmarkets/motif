@@ -11,15 +11,15 @@ import {
     BadnessComparableList,
     CheckboxRenderValueRecordGridCellEditor,
     CheckboxRenderValueRecordGridCellPainter,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
+    RevGridLayoutOrReferenceDefinition,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../../../../../grid-source/internal-api';
@@ -84,7 +84,7 @@ export class ScanFieldEditorFramesGridFrame extends GridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(list, undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as ScanFieldEditorFrameComparableListTableRecordSource;
         this._list = recordSource.list;
@@ -106,14 +106,14 @@ export class ScanFieldEditorFramesGridFrame extends GridSourceFrame {
         }
     }
 
-    private createListGridSourceOrReferenceDefinition(list: BadnessComparableList<ScanFieldEditorFrame>, layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
+    private createListGridSourceOrReferenceDefinition(list: BadnessComparableList<ScanFieldEditorFrame>, layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new ScanFieldEditorFrameComparableListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
             this.tableFieldSourceDefinitionCachingFactoryService,
             list,
         );
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

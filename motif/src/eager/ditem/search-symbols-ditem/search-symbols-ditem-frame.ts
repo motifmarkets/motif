@@ -11,13 +11,13 @@ import {
     EnumInfoOutOfOrderError,
     ExchangeId,
     ExchangeInfo,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemBaseDetail,
     LitIvemDetailFromSearchSymbolsTableRecordSource,
     MarketId,
     MarketInfo,
+    RevGridLayoutOrReferenceDefinition,
     SearchSymbolsDataDefinition,
     SettingsService,
     StringId,
@@ -159,7 +159,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         searchSymbolsFrame.gridSourceOpenedEventer = (dataDefinition) => this.handleGridSourceOpenedEvent(dataDefinition);
         searchSymbolsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
 
-        let layoutDefinition: GridLayoutOrReferenceDefinition | undefined;
+        let layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const searchSymbolsFrameElementResult = ditemFrameElement.tryGetElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
             if (searchSymbolsFrameElementResult.isOk()) {
@@ -202,7 +202,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
             throw new AssertInternalError('SSDFOGLONRD13133');

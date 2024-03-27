@@ -9,10 +9,10 @@ import {
     AssertInternalError,
     CommandRegisterService,
     ErrorCode,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LockOpenListItem,
+    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     ScanList,
     ScansService,
@@ -176,7 +176,7 @@ export class ScansDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._scanListFrame === undefined) {
             throw new AssertInternalError('SLFOGLONRD04418');
         } else {

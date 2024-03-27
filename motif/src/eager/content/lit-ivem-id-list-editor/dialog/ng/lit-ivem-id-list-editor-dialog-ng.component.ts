@@ -3,11 +3,11 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
     LitIvemId,
     LockOpenListItem,
+    RevGridLayoutOrReferenceDefinition,
     StringId,
     UiComparableList,
     getErrorMessage,
@@ -86,9 +86,9 @@ export class LitIvemIdListEditorDialogNgComponent extends LitIvemIdListEditorNgD
 
         // We cannot just return the promise from the dialog as we need to close the dialog as well.
         // So return a separate promise which is resolved when dialog is closed.
-        let definitonResolveFtn: (this: void, definition: GridLayoutOrReferenceDefinition | undefined) => void;
+        let definitonResolveFtn: (this: void, definition: RevGridLayoutOrReferenceDefinition | undefined) => void;
 
-        const definitionPromise = new Promise<GridLayoutOrReferenceDefinition | undefined>(
+        const definitionPromise = new Promise<RevGridLayoutOrReferenceDefinition | undefined>(
             (resolve) => {
                 definitonResolveFtn = resolve;
             }

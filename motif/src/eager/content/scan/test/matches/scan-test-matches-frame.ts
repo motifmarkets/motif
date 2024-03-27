@@ -7,8 +7,10 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
     Integer,
     LitIvemIdExecuteScanDataDefinition,
     LitIvemIdExecuteScanRankedLitIvemIdListDefinition,
@@ -18,9 +20,7 @@ import {
     StringId,
     Strings,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../../../delayed-badness-grid-source/internal-api';
@@ -76,10 +76,10 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
         throw new AssertInternalError('SCMFGDGSORD44218');
-        return new TypedGridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
+        return new DataSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         this._rankedLitIvemIdList = recordSource.recordList;
@@ -107,8 +107,8 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
             dataDefinition
         )
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScanTest(listDefinition);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

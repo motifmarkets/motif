@@ -11,24 +11,24 @@ import {
     CellPainterFactoryService,
     CheckboxRenderValueRecordGridCellEditor,
     CheckboxRenderValueRecordGridCellPainter,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridFieldCustomHeadingsService,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
     Integer,
     LockOpenListItem,
     LockOpenNotificationChannelList,
     NotificationChannelsService,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
+    RevFieldCustomHeadingsService,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceFactory
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
@@ -52,12 +52,12 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     constructor(
         settingsService: SettingsService,
         notificationChannelsService: NotificationChannelsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         referenceableGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TypedTableRecordSourceFactory,
-        referenceableGridSourcesService: TypedReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        referenceableGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         frameOpener: LockOpenListItem.Opener,
@@ -136,7 +136,7 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
         return this.createListGridSourceOrReferenceDefinition(undefined);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as LockOpenNotificationChannelListTableRecordSource;
         this._list = recordSource.recordList;
@@ -158,13 +158,13 @@ export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
         }
     }
 
-    private createListGridSourceOrReferenceDefinition(layoutDefinition: GridLayoutOrReferenceDefinition | undefined) {
+    private createListGridSourceOrReferenceDefinition(layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined) {
         const tableRecordSourceDefinition = new LockOpenNotificationChannelListTableRecordSourceDefinition(
             this.gridFieldCustomHeadingsService,
             this.tableFieldSourceDefinitionCachingFactoryService,
         );
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, layoutDefinition, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

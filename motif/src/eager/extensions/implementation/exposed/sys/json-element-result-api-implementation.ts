@@ -36,7 +36,6 @@ export namespace JsonElementErrImplementation {
             switch (value) {
                 case JsonElement.ErrorId.InvalidJsonText: return JsonElementErrApi.CodeEnum.InvalidJsonText;
                 case JsonElement.ErrorId.ElementIsNotDefined: return JsonElementErrApi.CodeEnum.ElementIsNotDefined;
-                case JsonElement.ErrorId.ElementIsNotAJsonObject: return JsonElementErrApi.CodeEnum.ElementIsNotAJsonObject;
                 case JsonElement.ErrorId.JsonValueIsNotDefined: return JsonElementErrApi.CodeEnum.JsonValueIsNotDefined;
                 case JsonElement.ErrorId.JsonValueIsNotOfTypeObject: return JsonElementErrApi.CodeEnum.JsonValueIsNotOfTypeObject;
                 case JsonElement.ErrorId.JsonValueIsNotOfTypeString: return JsonElementErrApi.CodeEnum.JsonValueIsNotOfTypeString;
@@ -60,7 +59,6 @@ export namespace JsonElementErrImplementation {
             switch (enumValue) {
                 case JsonElementErrApi.CodeEnum.InvalidJsonText: return JsonElement.ErrorId.InvalidJsonText;
                 case JsonElementErrApi.CodeEnum.ElementIsNotDefined: return JsonElement.ErrorId.ElementIsNotDefined;
-                case JsonElementErrApi.CodeEnum.ElementIsNotAJsonObject: return JsonElement.ErrorId.ElementIsNotAJsonObject;
                 case JsonElementErrApi.CodeEnum.JsonValueIsNotDefined: return JsonElement.ErrorId.JsonValueIsNotDefined;
                 case JsonElementErrApi.CodeEnum.JsonValueIsNotOfTypeObject: return JsonElement.ErrorId.JsonValueIsNotOfTypeObject;
                 case JsonElementErrApi.CodeEnum.JsonValueIsNotOfTypeString: return JsonElement.ErrorId.JsonValueIsNotOfTypeString;

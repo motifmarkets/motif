@@ -20,13 +20,12 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
     TableValue,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
     ValidTableValue
 } from '@motifmarkets/motif-core';
 
-export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition extends TypedTableFieldSourceDefinition {
+export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition extends TableFieldSourceDefinition {
     declare readonly typeId: LockerScanAttachedNotificationChannelTableFieldSourceDefinition.TypeId;
 
     override readonly fieldDefinitions: TableField.Definition[];
@@ -81,7 +80,7 @@ export class LockerScanAttachedNotificationChannelTableFieldSourceDefinition ext
 }
 
 export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
-    export const typeId = TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel;
+    export const typeId = TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel;
     export type TypeId = typeof typeId;
 
     export namespace Field {
@@ -188,12 +187,12 @@ export namespace LockerScanAttachedNotificationChannelTableFieldSourceDefinition
         }
     }
 
-    export interface FieldId extends TypedTableFieldSourceDefinition.FieldId {
+    export interface FieldId extends TableFieldSourceDefinition.FieldId {
         sourceTypeId: LockerScanAttachedNotificationChannelTableFieldSourceDefinition.TypeId;
         id: LockerScanAttachedNotificationChannel.FieldId;
     }
 
-    export function get(cachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService): LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
+    export function get(cachingFactoryService: TableFieldSourceDefinitionCachingFactoryService): LockerScanAttachedNotificationChannelTableFieldSourceDefinition {
         return cachingFactoryService.get(typeId) as LockerScanAttachedNotificationChannelTableFieldSourceDefinition;
     }
 }

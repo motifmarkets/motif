@@ -11,10 +11,10 @@ import {
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
-    GridLayout,
     Integer,
     RecordGrid,
     RenderValueRecordGridCellPainter,
+    RevGridLayout,
     SettingsService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
@@ -70,7 +70,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this._recordStore.recordsInserted(0, this._recordStore.recordCount);
 
         const gridLayoutDefinition = ColorSchemeGridField.createDefaultGridLayoutDefinition();
-        const gridLayout = new GridLayout(gridLayoutDefinition);
+        const gridLayout = new RevGridLayout(gridLayoutDefinition);
         grid.applyFirstUsable(undefined, undefined, gridLayout);
 
         this.applyFilter();

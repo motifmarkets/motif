@@ -15,7 +15,6 @@ import {
     ErrorCode,
     FeedTableRecordSourceDefinition,
     GridField,
-    GridFieldCustomHeadingsService,
     GridFieldTableRecordSourceDefinition,
     HoldingTableRecordSourceDefinition,
     IvemId,
@@ -35,6 +34,7 @@ import {
     RankedLitIvemIdListDirectoryItemTableRecordSourceDefinition,
     RankedLitIvemIdListTableRecordSourceDefinition,
     Result,
+    RevFieldCustomHeadingsService,
     ScanIdRankedLitIvemIdListDefinition,
     ScanTableRecordSourceDefinition,
     ScanTestTableRecordSourceDefinition,
@@ -42,21 +42,19 @@ import {
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceDefinition,
     TopShareholderTableRecordSourceDefinition,
-    TypedTableFieldSourceDefinition,
-    TypedTableRecordSourceDefinition,
-    TypedTableRecordSourceDefinitionFromJsonFactory,
+    TableRecordSourceDefinitionFromJsonFactory,
     UiComparableList,
     UnreachableCaseError,
     WatchlistTableRecordSourceDefinition,
 } from '@motifmarkets/motif-core';
 
 /** @public */
-export class TableRecordSourceDefinitionFactoryService implements TypedTableRecordSourceDefinitionFromJsonFactory {
+export class TableRecordSourceDefinitionFactoryService implements TableRecordSourceDefinitionFromJsonFactory {
 
     constructor(
         private readonly _litIvemIdListDefinitionFactoryService: RankedLitIvemIdListDefinitionFactoryService,
-        readonly gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
-        readonly tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService<TypedTableFieldSourceDefinition.TypeId>,
+        readonly gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
+        readonly tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     ) {
     }
 
@@ -201,13 +199,13 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
     //     );
     // }
 
-    tryCreateFromJson(element: JsonElement): Result<TypedTableRecordSourceDefinition> {
+    tryCreateFromJson(element: JsonElement): Result<TableRecordSourceDefinition> {
         const typeIdNameResult = TableRecordSourceDefinition.tryGetTypeIdNameFromJson(element);
         if (typeIdNameResult.isErr()) {
             return typeIdNameResult.createOuter(ErrorCode.TableRecordSourceDefinitionFactoryService_TryGetTypeIdFromJson);
         } else {
             const typeIdName = typeIdNameResult.value;
-            const typeId = TypedTableRecordSourceDefinition.Type.tryJsonToId(typeIdName);
+            const typeId = TableRecordSourceDefinition.Type.tryJsonToId(typeIdName);
             if (typeId === undefined) {
                 return new Err(`${ErrorCode.TableRecordSourceDefinitionFactoryService_TypeIdNameIsInvalid}: ${typeIdName}`);
             } else {
@@ -222,11 +220,11 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
         }
     }
 
-    private tryCreateFromJsonAndTypeId(element: JsonElement, typeId: TypedTableRecordSourceDefinition.TypeId): Result<TypedTableRecordSourceDefinition> {
+    private tryCreateFromJsonAndTypeId(element: JsonElement, typeId: TableRecordSourceDefinition.TypeId): Result<TableRecordSourceDefinition> {
         switch (typeId) {
-            case TypedTableRecordSourceDefinition.TypeId.Null:
+            case TableRecordSourceDefinition.TypeId.Null:
                 throw new NotImplementedError('TRSDFTCTFJN29984');
-            case TypedTableRecordSourceDefinition.TypeId.LitIvemDetailsFromSearchSymbols: {
+            case TableRecordSourceDefinition.TypeId.LitIvemDetailsFromSearchSymbols: {
                 const definitionResult = LitIvemDetailFromSearchSymbolsTableRecordSourceDefinition.tryCreateDataDefinitionFromJson(element);
                 if (definitionResult.isErr()) {
                     return definitionResult.createOuter(ErrorCode.TableRecordSourceDefinitionFactoryService_LitIvemDetailsFromSearchSymbols_DataDefinitionCreateError);
@@ -235,7 +233,7 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                     return new Ok(definition);
                 }
             }
-            case TypedTableRecordSourceDefinition.TypeId.LitIvemIdComparableList: {
+            case TableRecordSourceDefinition.TypeId.LitIvemIdComparableList: {
                 const definitionResult = LitIvemIdComparableListTableRecordSourceDefinition.tryCreateListFromElement(element);
                 if (definitionResult.isErr()) {
                     return definitionResult.createOuter(ErrorCode.TableRecordSourceDefinitionFactoryService_LitIvemIdComparableList_CreateListError);
@@ -244,7 +242,7 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                     return new Ok(definition);
                 }
             }
-            case TypedTableRecordSourceDefinition.TypeId.RankedLitIvemIdList: {
+            case TableRecordSourceDefinition.TypeId.RankedLitIvemIdList: {
                 const rankedLitIvemIdListDefinitionResult = RankedLitIvemIdListTableRecordSourceDefinition.tryCreateDefinition(
                     this._litIvemIdListDefinitionFactoryService,
                     element
@@ -277,23 +275,23 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                     }
                 }
             }
-            case TypedTableRecordSourceDefinition.TypeId.MarketMovers:
+            case TableRecordSourceDefinition.TypeId.MarketMovers:
                 throw new NotImplementedError('TRSDFTCTFJMM3820');
-            case TypedTableRecordSourceDefinition.TypeId.Gics:
+            case TableRecordSourceDefinition.TypeId.Gics:
                 throw new NotImplementedError('TRSDFTCTFJG78783');
-            case TypedTableRecordSourceDefinition.TypeId.ProfitIvemHolding:
+            case TableRecordSourceDefinition.TypeId.ProfitIvemHolding:
                 throw new NotImplementedError('TRSDFTCTFJP18885');
-            case TypedTableRecordSourceDefinition.TypeId.CashItemHolding:
+            case TableRecordSourceDefinition.TypeId.CashItemHolding:
                 throw new NotImplementedError('TRSDFTCTFJC20098');
-            case TypedTableRecordSourceDefinition.TypeId.IntradayProfitLossSymbolRec:
+            case TableRecordSourceDefinition.TypeId.IntradayProfitLossSymbolRec:
                 throw new NotImplementedError('TRSDFTCTFJI11198');
-            case TypedTableRecordSourceDefinition.TypeId.TmcDefinitionLegs:
+            case TableRecordSourceDefinition.TypeId.TmcDefinitionLegs:
                 throw new NotImplementedError('TRSDFTCTFJT99873');
-            case TypedTableRecordSourceDefinition.TypeId.TmcLeg:
+            case TableRecordSourceDefinition.TypeId.TmcLeg:
                 throw new NotImplementedError('TRSDFTCTFJT22852');
-            case TypedTableRecordSourceDefinition.TypeId.TmcWithLegMatchingUnderlying:
+            case TableRecordSourceDefinition.TypeId.TmcWithLegMatchingUnderlying:
                 throw new NotImplementedError('TRSDFTCTFJT75557');
-            case TypedTableRecordSourceDefinition.TypeId.CallPutFromUnderlying: {
+            case TableRecordSourceDefinition.TypeId.CallPutFromUnderlying: {
                 const underlyingIvemIdResult = CallPutFromUnderlyingTableRecordSourceDefinition.tryGetUnderlyingIvemIdFromJson(element);
                 if (underlyingIvemIdResult.isErr()) {
                     return underlyingIvemIdResult.createOuter(ErrorCode.TableRecordSourceDefinitionFactoryService_CallPutFromUnderlying_UnderlyingIvemIdIsInvalid);
@@ -302,32 +300,32 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                     return new Ok(definition);
                 }
             }
-            case TypedTableRecordSourceDefinition.TypeId.HoldingAccountPortfolio:
+            case TableRecordSourceDefinition.TypeId.HoldingAccountPortfolio:
                 throw new NotImplementedError('TRSDFTCTFJH22321');
-            case TypedTableRecordSourceDefinition.TypeId.Feed: {
+            case TableRecordSourceDefinition.TypeId.Feed: {
                 const definition = this.createFeed();
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.BrokerageAccount: {
+            case TableRecordSourceDefinition.TypeId.BrokerageAccount: {
                 const definition = this.createBrokerageAccount();
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.Order: {
+            case TableRecordSourceDefinition.TypeId.Order: {
                 const group = BrokerageAccountGroupTableRecordSourceDefinition.getBrokerageAccountGroupFromJson(element);
                 const definition = this.createOrder(group);
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.Holding: {
+            case TableRecordSourceDefinition.TypeId.Holding: {
                 const group = BrokerageAccountGroupTableRecordSourceDefinition.getBrokerageAccountGroupFromJson(element);
                 const definition = this.createHolding(group);
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.Balances: {
+            case TableRecordSourceDefinition.TypeId.Balances: {
                 const group = BrokerageAccountGroupTableRecordSourceDefinition.getBrokerageAccountGroupFromJson(element);
                 const definition = this.createBalances(group);
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.TopShareholder: {
+            case TableRecordSourceDefinition.TypeId.TopShareholder: {
                 const createParametersResult = TopShareholderTableRecordSourceDefinition.tryGetCreateParametersFromJson(element);
                 if (createParametersResult.isErr()) {
                     return createParametersResult.createOuter(ErrorCode.TableRecordSourceDefinitionFactoryService_TopShareholder_CreateParametersError);
@@ -337,14 +335,14 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                     return new Ok(definition);
                 }
             }
-            case TypedTableRecordSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn: {
+            case TableRecordSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn: {
                 throw new AssertInternalError('TRSDFSTCTFJEGLDC45550', 'outside');
             }
-            case TypedTableRecordSourceDefinition.TypeId.Scan: {
+            case TableRecordSourceDefinition.TypeId.Scan: {
                 const definition = this.createScan();
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem: {
+            case TableRecordSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem: {
                 // currently not supported
                 const locker: LockOpenListItem.Locker = {
                     lockerName: 'Unsupport JSON TableRecordSourceDefinition'
@@ -353,17 +351,17 @@ export class TableRecordSourceDefinitionFactoryService implements TypedTableReco
                 const definition = this.createRankedLitIvemIdListDirectoryItem(emptyRankedLitItemListDirectory);
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.GridField: {
+            case TableRecordSourceDefinition.TypeId.GridField: {
                 const definition = this.createGridField([]); // persistence not implemented
                 return new Ok(definition);
             }
-            case TypedTableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: {
+            case TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: {
                 throw new AssertInternalError('TRSDFSTCTFJSFEF45550', 'outside');
             }
-            case TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: {
+            case TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: {
                 throw new AssertInternalError('TRSDFSTCTFJSEANC45550', 'outside');
             }
-            case TypedTableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: {
+            case TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: {
                 throw new AssertInternalError('TRSDFSTCTFLONCL45550', 'outside');
             }
             default:

@@ -8,22 +8,22 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService,
-    FavouriteReferenceableGridLayoutDefinitionsStoreService,
-    GridLayout,
-    GridLayoutOrReferenceDefinition,
-    GridSourceOrReferenceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemId,
     RankedLitIvemIdList,
     Result,
+    RevDataSourceOrReferenceDefinition,
+    RevFavouriteReferenceableGridLayoutDefinitionsStoreService,
+    RevGridLayout,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
     SymbolsService,
-    TextFormatterService,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition
+    TextFormatterService
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import {
@@ -49,7 +49,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _favouriteNamedGridLayoutDefinitionReferencesService: FavouriteReferenceableGridLayoutDefinitionsStoreService,
+        private readonly _favouriteNamedGridLayoutDefinitionReferencesService: RevFavouriteReferenceableGridLayoutDefinitionsStoreService,
         private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: WatchlistDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: WatchlistDitemFrame.RecordFocusedEventer,
@@ -96,25 +96,32 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         //     (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDFIPR50135') }
         // );
 
-        let gridSourceOrReferenceDefinition: TypedGridSourceOrReferenceDefinition | undefined;
+        let dataSourceOrReferenceDefinition: DataSourceOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const watchlistFrameElementResult = ditemFrameElement.tryGetElement(WatchlistDitemFrame.JsonName.watchlistFrame);
             if (watchlistFrameElementResult.isOk()) {
                 watchlistFrameElement = watchlistFrameElementResult.value;
-                const definitionCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);
-                if (definitionCreateResult.isErr()) {
-                    this._toastService.popup(`${Strings[StringId.ErrorOpeningSaved]} ${Strings[StringId.Watchlist]}: ${definitionCreateResult.error}`);
+                const definitionWithLayoutErrornCreateResult = watchlistFrame.tryCreateDefinitionFromJson(watchlistFrameElement);
+                if (definitionWithLayoutErrornCreateResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpeningSaved]} ${Strings[StringId.Watchlist]}: ${definitionWithLayoutErrornCreateResult.error}`);
                 } else {
-                    gridSourceOrReferenceDefinition = definitionCreateResult.value;
+                    const definitionWithLayoutError = definitionWithLayoutErrornCreateResult.value;
+                    if (definitionWithLayoutError !== undefined) {
+                        const layoutErrorCode = definitionWithLayoutError.layoutErrorCode;
+                        if (layoutErrorCode !== undefined) {
+                            this._toastService.popup(`${Strings[StringId.ErrorLoadingGridLayout]} ${Strings[StringId.Watchlist]}: ${layoutErrorCode}`);
+                        }
+                        dataSourceOrReferenceDefinition = definitionWithLayoutError.definition;
+                    }
                 }
             }
         }
 
-        let openPromise: Promise<Result<TypedGridSourceOrReference | undefined>>;
-        if (gridSourceOrReferenceDefinition === undefined) {
+        let openPromise: Promise<Result<DataSourceOrReference | undefined>>;
+        if (dataSourceOrReferenceDefinition === undefined) {
             openPromise = watchlistFrame.tryOpenLitIvemIdArray(this.defaultLitIvemIds ?? [], false);
         } else {
-            openPromise = watchlistFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false)
+            openPromise = watchlistFrame.tryOpenGridSource(dataSourceOrReferenceDefinition, false)
         }
 
         openPromise.then(
@@ -152,7 +159,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridSource(definition: TypedGridSourceOrReferenceDefinition, keepView: boolean) {
+    tryOpenGridSource(definition: DataSourceOrReferenceDefinition, keepView: boolean) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFTOGS10174');
         } else {
@@ -168,7 +175,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    saveGridSourceAs(as: GridSourceOrReferenceDefinition.SaveAsDefinition) {
+    saveGridSourceAs(as: RevDataSourceOrReferenceDefinition.SaveAsDefinition) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFSGSAU10174');
         } else {
@@ -177,7 +184,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._watchlistFrame === undefined) {
             throw new AssertInternalError('WDFOGLONRD10174');
         } else {
@@ -235,7 +242,7 @@ export class WatchlistDitemFrame extends BuiltinDitemFrame {
     //     this._gridSourceFrame.saveAsRecordSourceDefinition(recordSourceDefinition);
     // }
 
-    // saveAsGridSource(definition: GridSourceDefinition) {
+    // saveAsGridSource(definition: DataSourceDefinition) {
     //     this._gridSourceFrame.saveAsGridSource(definition);
     // }
 
@@ -385,6 +392,6 @@ export namespace WatchlistDitemFrame {
         rankedLitIvemIdListName: string | undefined
     ) => void;
     export type LitIvemIdAcceptedEventer = (this: void, litIvemId: LitIvemId) => void;
-    export type GridLayoutSetEventer = (this: void, layout: GridLayout) => void;
+    export type GridLayoutSetEventer = (this: void, layout: RevGridLayout) => void;
     export type RecordFocusedEventer = (this: void, newRecordIndex: Integer | undefined) => void;
 }

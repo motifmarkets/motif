@@ -3,7 +3,6 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -15,11 +14,12 @@ import {
     LitIvemIdUiAction,
     LockOpenListItem,
     MultiEvent,
+    RevGridLayoutOrReferenceDefinition,
     StringId,
     StringUiAction,
     Strings,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
+    TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
     UiComparableList
 } from '@motifmarkets/motif-core';
 import {
@@ -47,7 +47,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     readonly list: UiComparableList<LitIvemId>;
 
-    private readonly _fieldSourceDefinitionRegistryService: TypedTableFieldSourceDefinitionCachingFactoryService;
+    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachingFactoryService;
 
     private readonly _addLitIvemIdUiAction: LitIvemIdUiAction;
     private readonly _selectAllUiAction: IconButtonUiAction;
@@ -155,7 +155,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         }
 
         const layoutDefinition = this.createDefaultLayoutDefinition();
-        const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layoutDefinition);
+        const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layoutDefinition);
 
         this._litIvemIdListComponent.initialise(this.opener, gridLayoutOrReferenceDefinition, undefined, true);
 
@@ -276,11 +276,11 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private createDefaultLayoutDefinition() {
         const litIvemIdFieldId: LitIvemIdTableFieldSourceDefinition.FieldId = {
-            sourceTypeId: TypedTableFieldSourceDefinition.TypeId.LitIvemId,
+            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemId,
             id: LitIvemId.FieldId.LitIvemId,
         };
         const nameFieldId: LitIvemBaseDetailTableFieldSourceDefinition.FieldId = {
-            sourceTypeId: TypedTableFieldSourceDefinition.TypeId.LitIvemBaseDetail,
+            sourceTypeId: TableFieldSourceDefinition.TypeId.LitIvemBaseDetail,
             id: LitIvemBaseDetail.Field.Id.Name,
         };
 
@@ -353,7 +353,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
 export namespace LitIvemIdListEditorNgDirective {
     export type AfterListChangedEventHandler = (this: void, ui: boolean) => void;
-    export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutEventer = (this: void, list: UiComparableList<LitIvemId>) => void;
 
     export const listInjectionToken = new InjectionToken<UiComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');

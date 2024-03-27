@@ -9,7 +9,6 @@ import {
     AssertInternalError,
     CommandRegisterService,
     CreateNotificationChannelDataDefinition,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LockOpenListItem,
@@ -18,6 +17,7 @@ import {
     NotificationChannelsService,
     NotificationDistributionMethod,
     NotificationDistributionMethodId,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
@@ -141,7 +141,7 @@ export class NotificationChannelsDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._gridFrame === undefined) {
             throw new AssertInternalError('SLFOGLONRD04418');
         } else {

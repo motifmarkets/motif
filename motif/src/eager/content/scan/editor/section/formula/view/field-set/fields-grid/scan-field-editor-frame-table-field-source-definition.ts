@@ -19,14 +19,13 @@ import {
     StringTableValue,
     TableField,
     TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
     TableValue,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
     ValidTableValue
 } from '@motifmarkets/motif-core';
 import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
 
-export class ScanFieldEditorFrameTableFieldSourceDefinition extends TypedTableFieldSourceDefinition {
+export class ScanFieldEditorFrameTableFieldSourceDefinition extends TableFieldSourceDefinition {
     declare readonly typeId: ScanFieldEditorFrameTableFieldSourceDefinition.TypeId;
 
     override readonly fieldDefinitions: TableField.Definition[];
@@ -81,7 +80,7 @@ export class ScanFieldEditorFrameTableFieldSourceDefinition extends TypedTableFi
 }
 
 export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
-    export const typeId = TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
+    export const typeId = TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame;
     export type TypeId = typeof typeId;
 
     export namespace Field {
@@ -174,12 +173,12 @@ export namespace ScanFieldEditorFrameTableFieldSourceDefinition {
         }
     }
 
-    export interface FieldId extends TypedTableFieldSourceDefinition.FieldId {
+    export interface FieldId extends TableFieldSourceDefinition.FieldId {
         sourceTypeId: ScanFieldEditorFrameTableFieldSourceDefinition.TypeId;
         id: ScanFieldEditorFrame.FieldId;
     }
 
-    export function get(cachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService): ScanFieldEditorFrameTableFieldSourceDefinition {
+    export function get(cachingFactoryService: TableFieldSourceDefinitionCachingFactoryService): ScanFieldEditorFrameTableFieldSourceDefinition {
         return cachingFactoryService.get(typeId) as ScanFieldEditorFrameTableFieldSourceDefinition;
     }
 }

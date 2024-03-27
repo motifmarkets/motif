@@ -1,5 +1,5 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Optional, ValueProvider } from '@angular/core';
-import { AdaptedRevgridGridSettings, GridLayoutOrReferenceDefinition, JsonElement, LitIvemId, LockOpenListItem, UiComparableList } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, JsonElement, LitIvemId, LockOpenListItem, RevGridLayoutOrReferenceDefinition, UiComparableList } from '@motifmarkets/motif-core';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { LitIvemIdListFrame } from '../lit-ivem-id-list-frame';
@@ -43,7 +43,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     initialise(
         opener: LockOpenListItem.Opener,
-        layoutDefinition: GridLayoutOrReferenceDefinition | undefined,
+        layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined,
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
     ) {
@@ -76,7 +76,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         return this.frame.createAllowedFieldsGridLayoutDefinition();
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         return this.frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
     }
 

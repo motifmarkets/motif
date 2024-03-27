@@ -11,26 +11,26 @@ import {
     CellPainterFactoryService,
     CheckboxRenderValueRecordGridCellEditor,
     CheckboxRenderValueRecordGridCellPainter,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     EditableGridLayoutDefinitionColumn,
     EditableGridLayoutDefinitionColumnList,
     EditableGridLayoutDefinitionColumnTableRecordSource,
     EditableGridLayoutDefinitionColumnTableRecordSourceDefinition,
     GridField,
-    GridFieldCustomHeadingsService,
-    GridSourceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
+    RevFieldCustomHeadingsService,
     SettingsService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceFactory
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
@@ -50,12 +50,12 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TypedTableRecordSourceFactory,
-        namedGridSourcesService: TypedReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        namedGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
@@ -209,7 +209,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as EditableGridLayoutDefinitionColumnTableRecordSource;
         this._recordList = recordSource.list;
@@ -231,8 +231,8 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
             this.tableFieldSourceDefinitionCachingFactoryService,
             this._columnList,
         )
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

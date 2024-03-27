@@ -18,7 +18,6 @@ import {
     EditableGridLayoutDefinitionColumnTableRecordSourceDefinition,
     FeedTableRecordSource,
     FeedTableRecordSourceDefinition,
-    GridFieldCustomHeadingsService,
     GridFieldTableRecordSource,
     GridFieldTableRecordSourceDefinition,
     HoldingTableRecordSource,
@@ -36,18 +35,19 @@ import {
     RankedLitIvemIdListFactoryService,
     RankedLitIvemIdListTableRecordSource,
     RankedLitIvemIdListTableRecordSourceDefinition,
+    RevFieldCustomHeadingsService,
     ScanTableRecordSource,
     ScanTableRecordSourceDefinition,
     ScanTestTableRecordSourceDefinition,
     ScansService,
     SymbolDetailCacheService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSource,
+    TableRecordSourceDefinition,
+    TableRecordSourceFactory,
     TextFormatterService,
     TopShareholderTableRecordSource,
     TopShareholderTableRecordSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSource,
-    TypedTableRecordSourceDefinition,
-    TypedTableRecordSourceFactory,
     UnreachableCaseError,
     WatchmakerService
 } from '@motifmarkets/motif-core';
@@ -60,7 +60,7 @@ import {
 } from './scan/internal-api';
 
 /** @public */
-export class TableRecordSourceFactoryService implements TypedTableRecordSourceFactory {
+export class TableRecordSourceFactoryService implements TableRecordSourceFactory {
     constructor(
         private readonly _adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
@@ -69,39 +69,39 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _scansService: ScansService,
         private readonly _textFormatterService: TextFormatterService,
-        private readonly _gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
-        private readonly _tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        private readonly _gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
+        private readonly _tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
     ) { }
 
-    create(definition: TypedTableRecordSourceDefinition): TypedTableRecordSource {
+    create(definition: TableRecordSourceDefinition): TableRecordSource {
         switch (definition.typeId) {
-            case TypedTableRecordSourceDefinition.TypeId.Null: throw new NotImplementedError('TRSFCFDN29984');
-            case TypedTableRecordSourceDefinition.TypeId.LitIvemIdComparableList: return this.createLitIvemIdComparableList(definition);
-            case TypedTableRecordSourceDefinition.TypeId.LitIvemDetailsFromSearchSymbols: return this.createLitIvemDetailFromSearchSymbols(definition);
-            case TypedTableRecordSourceDefinition.TypeId.RankedLitIvemIdList: return this.createWatchlist(definition);
-            case TypedTableRecordSourceDefinition.TypeId.MarketMovers: throw new NotImplementedError('TRSFCFDMM3820');
-            case TypedTableRecordSourceDefinition.TypeId.Gics: throw new NotImplementedError('TRSFCFDG78783');
-            case TypedTableRecordSourceDefinition.TypeId.ProfitIvemHolding: throw new NotImplementedError('TRSFCFDP18885');
-            case TypedTableRecordSourceDefinition.TypeId.CashItemHolding: throw new NotImplementedError('TRSFCFDC20098');
-            case TypedTableRecordSourceDefinition.TypeId.IntradayProfitLossSymbolRec: throw new NotImplementedError('TRSFCFDI11198');
-            case TypedTableRecordSourceDefinition.TypeId.TmcDefinitionLegs: throw new NotImplementedError('TRSFCFDT99873');
-            case TypedTableRecordSourceDefinition.TypeId.TmcLeg: throw new NotImplementedError('TRSFCFDT22852');
-            case TypedTableRecordSourceDefinition.TypeId.TmcWithLegMatchingUnderlying: throw new NotImplementedError('TRSFCFDT75557');
-            case TypedTableRecordSourceDefinition.TypeId.CallPutFromUnderlying: return this.createCallPutFromUnderlying(definition);
-            case TypedTableRecordSourceDefinition.TypeId.HoldingAccountPortfolio: throw new NotImplementedError('TRSFCFDH22321');
-            case TypedTableRecordSourceDefinition.TypeId.Feed: return this.createFeed(definition);
-            case TypedTableRecordSourceDefinition.TypeId.BrokerageAccount: return this.createBrokerageAccount(definition);
-            case TypedTableRecordSourceDefinition.TypeId.Order: return this.createOrder(definition);
-            case TypedTableRecordSourceDefinition.TypeId.Holding: return this.createHolding(definition);
-            case TypedTableRecordSourceDefinition.TypeId.Balances: return this.createBalances(definition);
-            case TypedTableRecordSourceDefinition.TypeId.TopShareholder: return this.createTopShareholder(definition);
-            case TypedTableRecordSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn: return this.createGridLayoutDefinitionColumnEditRecord(definition);
-            case TypedTableRecordSourceDefinition.TypeId.Scan: return this.createScan(definition);
-            case TypedTableRecordSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem: return this.createRankedLitIvemIdListDirectoryItem(definition);
-            case TypedTableRecordSourceDefinition.TypeId.GridField: return this.createGridField(definition);
-            case TypedTableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: return this.createScanFieldEditorFrameComparableList(definition)
-            case TypedTableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: return this.createScanEditorAttachedNotificationChannel(definition)
-            case TypedTableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: return this.createLockOpenNotificationChannel(definition)
+            case TableRecordSourceDefinition.TypeId.Null: throw new NotImplementedError('TRSFCFDN29984');
+            case TableRecordSourceDefinition.TypeId.LitIvemIdComparableList: return this.createLitIvemIdComparableList(definition);
+            case TableRecordSourceDefinition.TypeId.LitIvemDetailsFromSearchSymbols: return this.createLitIvemDetailFromSearchSymbols(definition);
+            case TableRecordSourceDefinition.TypeId.RankedLitIvemIdList: return this.createWatchlist(definition);
+            case TableRecordSourceDefinition.TypeId.MarketMovers: throw new NotImplementedError('TRSFCFDMM3820');
+            case TableRecordSourceDefinition.TypeId.Gics: throw new NotImplementedError('TRSFCFDG78783');
+            case TableRecordSourceDefinition.TypeId.ProfitIvemHolding: throw new NotImplementedError('TRSFCFDP18885');
+            case TableRecordSourceDefinition.TypeId.CashItemHolding: throw new NotImplementedError('TRSFCFDC20098');
+            case TableRecordSourceDefinition.TypeId.IntradayProfitLossSymbolRec: throw new NotImplementedError('TRSFCFDI11198');
+            case TableRecordSourceDefinition.TypeId.TmcDefinitionLegs: throw new NotImplementedError('TRSFCFDT99873');
+            case TableRecordSourceDefinition.TypeId.TmcLeg: throw new NotImplementedError('TRSFCFDT22852');
+            case TableRecordSourceDefinition.TypeId.TmcWithLegMatchingUnderlying: throw new NotImplementedError('TRSFCFDT75557');
+            case TableRecordSourceDefinition.TypeId.CallPutFromUnderlying: return this.createCallPutFromUnderlying(definition);
+            case TableRecordSourceDefinition.TypeId.HoldingAccountPortfolio: throw new NotImplementedError('TRSFCFDH22321');
+            case TableRecordSourceDefinition.TypeId.Feed: return this.createFeed(definition);
+            case TableRecordSourceDefinition.TypeId.BrokerageAccount: return this.createBrokerageAccount(definition);
+            case TableRecordSourceDefinition.TypeId.Order: return this.createOrder(definition);
+            case TableRecordSourceDefinition.TypeId.Holding: return this.createHolding(definition);
+            case TableRecordSourceDefinition.TypeId.Balances: return this.createBalances(definition);
+            case TableRecordSourceDefinition.TypeId.TopShareholder: return this.createTopShareholder(definition);
+            case TableRecordSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn: return this.createGridLayoutDefinitionColumnEditRecord(definition);
+            case TableRecordSourceDefinition.TypeId.Scan: return this.createScan(definition);
+            case TableRecordSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem: return this.createRankedLitIvemIdListDirectoryItem(definition);
+            case TableRecordSourceDefinition.TypeId.GridField: return this.createGridField(definition);
+            case TableRecordSourceDefinition.TypeId.ScanFieldEditorFrame: return this.createScanFieldEditorFrameComparableList(definition)
+            case TableRecordSourceDefinition.TypeId.ScanEditorAttachedNotificationChannel: return this.createScanEditorAttachedNotificationChannel(definition)
+            case TableRecordSourceDefinition.TypeId.LockOpenNotificationChannelList: return this.createLockOpenNotificationChannel(definition)
             default: throw new UnreachableCaseError('TDLFCFTID17742', definition.typeId);
         }
     }
@@ -110,7 +110,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         return new CorrectnessBadness();
     }
 
-    private createLitIvemIdComparableList(definition: TypedTableRecordSourceDefinition) {
+    private createLitIvemIdComparableList(definition: TableRecordSourceDefinition) {
         if (definition instanceof LitIvemIdComparableListTableRecordSourceDefinition) {
             return new LitIvemIdComparableListTableRecordSource(
                 this._adiService,
@@ -126,7 +126,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createLitIvemDetailFromSearchSymbols(definition: TypedTableRecordSourceDefinition) {
+    private createLitIvemDetailFromSearchSymbols(definition: TableRecordSourceDefinition) {
         if (definition instanceof LitIvemDetailFromSearchSymbolsTableRecordSourceDefinition) {
             return new LitIvemDetailFromSearchSymbolsTableRecordSource(
                 this._adiService,
@@ -141,7 +141,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createWatchlist(definition: TypedTableRecordSourceDefinition) {
+    private createWatchlist(definition: TableRecordSourceDefinition) {
         if (definition instanceof RankedLitIvemIdListTableRecordSourceDefinition) {
             return new RankedLitIvemIdListTableRecordSource(
                 this._adiService,
@@ -158,7 +158,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createFeed(definition: TypedTableRecordSourceDefinition) {
+    private createFeed(definition: TableRecordSourceDefinition) {
         if (definition instanceof FeedTableRecordSourceDefinition) {
             return new FeedTableRecordSource(
                 this._adiService,
@@ -173,7 +173,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createBrokerageAccount(definition: TypedTableRecordSourceDefinition) {
+    private createBrokerageAccount(definition: TableRecordSourceDefinition) {
         if (definition instanceof BrokerageAccountTableRecordSourceDefinition) {
             return new BrokerageAccountTableRecordSource(
                 this._adiService,
@@ -188,7 +188,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createOrder(definition: TypedTableRecordSourceDefinition) {
+    private createOrder(definition: TableRecordSourceDefinition) {
         if (definition instanceof OrderTableRecordSourceDefinition) {
             return new OrderTableRecordSource(
                 this._adiService,
@@ -203,7 +203,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createHolding(definition: TypedTableRecordSourceDefinition) {
+    private createHolding(definition: TableRecordSourceDefinition) {
         if (definition instanceof HoldingTableRecordSourceDefinition) {
             return new HoldingTableRecordSource(
                 this._adiService,
@@ -218,7 +218,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createBalances(definition: TypedTableRecordSourceDefinition) {
+    private createBalances(definition: TableRecordSourceDefinition) {
         if (definition instanceof BalancesTableRecordSourceDefinition) {
             return new BalancesTableRecordSource(
                 this._adiService,
@@ -233,7 +233,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createCallPutFromUnderlying(definition: TypedTableRecordSourceDefinition) {
+    private createCallPutFromUnderlying(definition: TableRecordSourceDefinition) {
         if (definition instanceof CallPutFromUnderlyingTableRecordSourceDefinition) {
             return new CallPutFromUnderlyingTableRecordSource(
                 this._adiService,
@@ -248,7 +248,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createTopShareholder(definition: TypedTableRecordSourceDefinition) {
+    private createTopShareholder(definition: TableRecordSourceDefinition) {
         if (definition instanceof TopShareholderTableRecordSourceDefinition) {
             return new TopShareholderTableRecordSource(
                 this._adiService,
@@ -263,7 +263,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createGridLayoutDefinitionColumnEditRecord(definition: TypedTableRecordSourceDefinition) {
+    private createGridLayoutDefinitionColumnEditRecord(definition: TableRecordSourceDefinition) {
         if (definition instanceof EditableGridLayoutDefinitionColumnTableRecordSourceDefinition) {
             return new EditableGridLayoutDefinitionColumnTableRecordSource(
                 this._textFormatterService,
@@ -277,7 +277,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createScan(definition: TypedTableRecordSourceDefinition) {
+    private createScan(definition: TableRecordSourceDefinition) {
         if (definition instanceof ScanTableRecordSourceDefinition) {
             return new ScanTableRecordSource(
                 this._scansService,
@@ -292,7 +292,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createRankedLitIvemIdListDirectoryItem(definition: TypedTableRecordSourceDefinition) {
+    private createRankedLitIvemIdListDirectoryItem(definition: TableRecordSourceDefinition) {
         if (definition instanceof RankedLitIvemIdListDirectoryItemTableRecordSourceDefinition) {
             return new RankedLitIvemIdListDirectoryItemTableRecordSource(
                 this._textFormatterService,
@@ -306,7 +306,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createGridField(definition: TypedTableRecordSourceDefinition) {
+    private createGridField(definition: TableRecordSourceDefinition) {
         if (definition instanceof GridFieldTableRecordSourceDefinition) {
             return new GridFieldTableRecordSource(
                 this._textFormatterService,
@@ -320,7 +320,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createScanTest(definition: TypedTableRecordSourceDefinition) {
+    private createScanTest(definition: TableRecordSourceDefinition) {
         if (definition instanceof ScanTestTableRecordSourceDefinition) {
             return new RankedLitIvemIdListTableRecordSource(
                 this._adiService,
@@ -337,7 +337,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createScanFieldEditorFrameComparableList(definition: TypedTableRecordSourceDefinition) {
+    private createScanFieldEditorFrameComparableList(definition: TableRecordSourceDefinition) {
         if (definition instanceof ScanFieldEditorFrameComparableListTableRecordSourceDefinition) {
             return new ScanFieldEditorFrameComparableListTableRecordSource(
                 this._textFormatterService,
@@ -351,7 +351,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createScanEditorAttachedNotificationChannel(definition: TypedTableRecordSourceDefinition) {
+    private createScanEditorAttachedNotificationChannel(definition: TableRecordSourceDefinition) {
         if (definition instanceof ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition) {
             return new ScanEditorAttachedNotificationChannelComparableListTableRecordSource(
                 this._textFormatterService,
@@ -365,7 +365,7 @@ export class TableRecordSourceFactoryService implements TypedTableRecordSourceFa
         }
     }
 
-    private createLockOpenNotificationChannel(definition: TypedTableRecordSourceDefinition) {
+    private createLockOpenNotificationChannel(definition: TableRecordSourceDefinition) {
         if (definition instanceof LockOpenNotificationChannelListTableRecordSourceDefinition) {
             return new LockOpenNotificationChannelListTableRecordSource(
                 this._notificationChannelsService,

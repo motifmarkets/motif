@@ -18,7 +18,6 @@ export namespace CommaTextErr {
     export const enum CodeEnum {
         UnexpectedCharAfterQuotedElement = 'UnexpectedCharAfterQuotedElement',
         QuotesNotClosedInLastElement = 'QuotesNotClosedInLastElement',
-        IntegerParseStringArray = 'IntegerParseStringArray',
         InvalidIntegerString = 'InvalidIntegerString',
     }
 

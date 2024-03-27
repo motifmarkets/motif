@@ -9,25 +9,25 @@ import {
     AssertInternalError,
     Badness,
     CellPainterFactoryService,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridFieldCustomHeadingsService,
     GridFieldTableRecordSource,
-    GridSourceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
     MultiEvent,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
+    RevFieldCustomHeadingsService,
     SettingsService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
-    TypedGridSourceOrReference,
-    TypedGridSourceOrReferenceDefinition,
-    TypedReferenceableGridSourcesService,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
-    TypedTableRecordSourceFactory,
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -48,12 +48,12 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactory: TypedTableRecordSourceFactory,
-        namedGridSourcesService: TypedReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        namedGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
         toastService: ToastService,
         private readonly _allowedFields: readonly GridField[],
@@ -161,7 +161,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: TypedGridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as GridFieldTableRecordSource;
         this._records = recordSource.records;
@@ -179,8 +179,8 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

@@ -3,7 +3,6 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     HtmlTypes,
     IconButtonUiAction,
     Integer,
@@ -11,6 +10,7 @@ import {
     LockerScanAttachedNotificationChannelList,
     MultiEvent,
     NotificationChannelsService,
+    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringExplicitElementsEnumUiAction,
     StringId,
@@ -338,5 +338,5 @@ export namespace ScanEditorAttachedNotificationChannelsNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
 }

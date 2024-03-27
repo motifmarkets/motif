@@ -5,17 +5,17 @@
  */
 
 import { Injectable } from '@angular/core';
-import { GridFieldCustomHeadingsService } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@motifmarkets/motif-core';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({
     providedIn: 'root'
 })
 export class GridFieldCustomHeadingsNgService {
-    private _service: GridFieldCustomHeadingsService;
+    private _service: RevFieldCustomHeadingsService;
 
     constructor(coreNgService: CoreNgService) {
-        this._service = coreNgService.gridFieldCustomHeadingsService;
+        this._service = coreNgService.revFieldCustomHeadingsService;
     }
 
     get service() { return this._service; }

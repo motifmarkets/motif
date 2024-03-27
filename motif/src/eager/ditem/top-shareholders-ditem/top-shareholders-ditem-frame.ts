@@ -8,17 +8,17 @@ import {
     AdiService,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
-    GridSourceDefinition,
+    DataSourceDefinition,
+    DataSourceOrReferenceDefinition,
     JsonElement,
     LitIvemId,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
     SymbolsService,
     TopShareholder,
-    TopShareholderTableRecordSource,
-    TypedGridSourceOrReferenceDefinition
+    TopShareholderTableRecordSource
 } from '@motifmarkets/motif-core';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame, TableRecordSourceDefinitionFactoryService } from 'content-internal-api';
@@ -64,7 +64,7 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = contentElement.tryGetElement(TopShareholdersDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = RevGridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
                         this._gridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }
@@ -104,8 +104,8 @@ export class TopShareholdersDitemFrame extends BuiltinDitemFrame {
                 this._historicalDate,
                 this._compareDate
             );
-            const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-            const gridSourceOrReferenceDefinition = new TypedGridSourceOrReferenceDefinition(gridSourceDefinition);
+            const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+            const gridSourceOrReferenceDefinition = new DataSourceOrReferenceDefinition(gridSourceDefinition);
             const openPromise = this._gridSourceFrame.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
             openPromise.then(
                 (openResult) => {

@@ -7,14 +7,14 @@
 import {
     BadnessListTableRecordSource,
     CorrectnessBadness,
-    GridFieldCustomHeadingsService,
     Integer,
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
+    RevFieldCustomHeadingsService,
+    TableFieldSourceDefinition,
+    TableFieldSourceDefinitionCachingFactoryService,
     TableRecord,
     TextFormatterService,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionCachingFactoryService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { LockerScanAttachedNotificationChannelTableRecordDefinition } from './locker-scan-attached-notification-channel-table-record-definition';
@@ -27,8 +27,8 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
 
     constructor(
         textFormatterService: TextFormatterService,
-        gridFieldCustomHeadingsService: GridFieldCustomHeadingsService,
-        tableFieldSourceDefinitionCachingFactoryService: TypedTableFieldSourceDefinitionCachingFactoryService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         correctnessBadness: CorrectnessBadness,
         definition: ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition,
     ) {
@@ -55,7 +55,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
     override createRecordDefinition(idx: Integer): LockerScanAttachedNotificationChannelTableRecordDefinition {
         const lockerScanAttachedNotificationChannel = this.list.getAt(idx);
         return {
-            typeId: TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel,
+            typeId: TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel,
             mapKey: lockerScanAttachedNotificationChannel.name,
             record: lockerScanAttachedNotificationChannel,
         };
@@ -73,7 +73,7 @@ export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourc
             const fieldSourceDefinitionTypeId = fieldSourceDefinition.typeId as ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition.FieldSourceDefinitionTypeId;
             if (this.allowedFieldSourceDefinitionTypeIds.includes(fieldSourceDefinitionTypeId)) {
                 switch (fieldSourceDefinitionTypeId) {
-                    case TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel: {
+                    case TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel: {
                         const valueSource = new LockerScanAttachedNotificationChannelTableValueSource(result.fieldCount, lockerScanAttachedNotificationChannel);
                         result.addSource(valueSource);
                         break;

@@ -18,7 +18,6 @@ export namespace JsonElementErr {
     export const enum CodeEnum {
         InvalidJsonText = 'InvalidJsonText',
         ElementIsNotDefined = 'ElementIsNotDefined',
-        ElementIsNotAJsonObject = 'ElementIsNotAJsonObject',
         JsonValueIsNotDefined = 'JsonValueIsNotDefined',
         JsonValueIsNotOfTypeObject = 'JsonValueIsNotOfTypeObject',
         JsonValueIsNotOfTypeString = 'JsonValueIsNotOfTypeString',

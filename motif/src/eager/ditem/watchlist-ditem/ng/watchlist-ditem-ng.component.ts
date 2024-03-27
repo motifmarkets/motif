@@ -17,7 +17,6 @@ import {
 } from '@angular/core';
 import {
     AssertInternalError,
-    GridLayout,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -28,7 +27,8 @@ import {
     ModifierKeyId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
-    ReferenceableGridLayoutDefinition,
+    RevGridLayout,
+    RevReferenceableGridLayoutDefinition,
     StringId,
     Strings,
     TypedMappedExplicitElementsArrayUiAction,
@@ -93,7 +93,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _newUiAction: IconButtonUiAction;
     private _openUiAction: IconButtonUiAction;
     private _saveUiAction: IconButtonUiAction;
-    private _favouriteLayoutsUiAction: TypedMappedExplicitElementsArrayUiAction<ReferenceableGridLayoutDefinition>;
+    private _favouriteLayoutsUiAction: TypedMappedExplicitElementsArrayUiAction<RevReferenceableGridLayoutDefinition>;
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
@@ -341,7 +341,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._symbolApplyUiAction.pushDisabled();
     }
 
-    private handleGridLayoutSetEvent(layout: GridLayout) {
+    private handleGridLayoutSetEvent(layout: RevGridLayout) {
         // not implemented
     }
 

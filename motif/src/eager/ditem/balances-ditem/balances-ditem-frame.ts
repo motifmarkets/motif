@@ -12,9 +12,9 @@ import {
     BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
+    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
@@ -111,7 +111,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('BDFOGLONRD04418');
         } else {

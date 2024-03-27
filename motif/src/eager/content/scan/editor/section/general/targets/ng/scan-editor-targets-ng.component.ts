@@ -5,7 +5,6 @@ import {
     AllowedMarketsExplicitElementsArrayUiAction,
     AssertInternalError,
     EnumInfoOutOfOrderError,
-    GridLayoutOrReferenceDefinition,
     Integer,
     IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
@@ -13,6 +12,7 @@ import {
     LitIvemIdUiAction,
     MarketId,
     MultiEvent,
+    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     ScanTargetTypeId,
     StringId,
@@ -601,7 +601,7 @@ export namespace ScanEditorTargetsNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutMultiSymbolListEditorEventer = (
         this: void,
         caption: string,

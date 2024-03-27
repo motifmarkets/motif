@@ -24,62 +24,62 @@ import {
     RankedLitIvemIdTableFieldSourceDefinition,
     ScanTableFieldSourceDefinition,
     SecurityDataItemTableFieldSourceDefinition,
+    TableFieldSourceDefinition,
     TopShareholderTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinition,
-    TypedTableFieldSourceDefinitionFactory,
+    TableFieldSourceDefinitionFactory,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
 import { LockOpenNotificationChannelTableFieldSourceDefinition } from './internal-api';
 import { LockerScanAttachedNotificationChannelTableFieldSourceDefinition, ScanFieldEditorFrameTableFieldSourceDefinition } from './scan/internal-api';
 
-export class TableFieldSourceDefinitionFactoryService implements TypedTableFieldSourceDefinitionFactory {
-    create(typeId: TypedTableFieldSourceDefinition.TypeId): TypedTableFieldSourceDefinition {
+export class TableFieldSourceDefinitionFactoryService implements TableFieldSourceDefinitionFactory {
+    create(typeId: TableFieldSourceDefinition.TypeId): TableFieldSourceDefinition {
         switch (typeId) {
-            case TypedTableFieldSourceDefinition.TypeId.Feed:
+            case TableFieldSourceDefinition.TypeId.Feed:
                 return new FeedTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LitIvemId:
+            case TableFieldSourceDefinition.TypeId.LitIvemId:
                 return new LitIvemIdTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.RankedLitIvemId:
+            case TableFieldSourceDefinition.TypeId.RankedLitIvemId:
                 return new RankedLitIvemIdTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LitIvemBaseDetail:
+            case TableFieldSourceDefinition.TypeId.LitIvemBaseDetail:
                 return new LitIvemBaseDetailTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LitIvemExtendedDetail:
+            case TableFieldSourceDefinition.TypeId.LitIvemExtendedDetail:
                 return new LitIvemExtendedDetailTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LitIvemAlternateCodes:
+            case TableFieldSourceDefinition.TypeId.LitIvemAlternateCodes:
                 return new LitIvemAlternateCodesTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.MyxLitIvemAttributes:
+            case TableFieldSourceDefinition.TypeId.MyxLitIvemAttributes:
                 return new MyxLitIvemAttributesTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn:
+            case TableFieldSourceDefinition.TypeId.EditableGridLayoutDefinitionColumn:
                 return new EditableGridLayoutDefinitionColumnTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.SecurityDataItem:
+            case TableFieldSourceDefinition.TypeId.SecurityDataItem:
                 return new SecurityDataItemTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.BrokerageAccount:
+            case TableFieldSourceDefinition.TypeId.BrokerageAccount:
                 return new BrokerageAccountTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.Order:
+            case TableFieldSourceDefinition.TypeId.Order:
                 return new OrderTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.Holding:
+            case TableFieldSourceDefinition.TypeId.Holding:
                 return new HoldingTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.Balances:
+            case TableFieldSourceDefinition.TypeId.Balances:
                 return new BalancesTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.CallPut:
+            case TableFieldSourceDefinition.TypeId.CallPut:
                 return new CallPutTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.CallSecurityDataItem:
+            case TableFieldSourceDefinition.TypeId.CallSecurityDataItem:
                 return new CallPutSecurityDataItemTableFieldSourceDefinition(CallOrPutId.Call);
-            case TypedTableFieldSourceDefinition.TypeId.PutSecurityDataItem:
+            case TableFieldSourceDefinition.TypeId.PutSecurityDataItem:
                 return new CallPutSecurityDataItemTableFieldSourceDefinition(CallOrPutId.Put);
-            case TypedTableFieldSourceDefinition.TypeId.TopShareholder:
+            case TableFieldSourceDefinition.TypeId.TopShareholder:
                 return new TopShareholderTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.Scan:
+            case TableFieldSourceDefinition.TypeId.Scan:
                 return new ScanTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem:
+            case TableFieldSourceDefinition.TypeId.RankedLitIvemIdListDirectoryItem:
                 return new RankedLitIvemIdListDirectoryItemTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.GridField:
+            case TableFieldSourceDefinition.TypeId.GridField:
                 return new GridFieldTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.ScanFieldEditorFrame:
+            case TableFieldSourceDefinition.TypeId.ScanFieldEditorFrame:
                 return new ScanFieldEditorFrameTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel:
+            case TableFieldSourceDefinition.TypeId.LockerScanAttachedNotificationChannel:
                 return new LockerScanAttachedNotificationChannelTableFieldSourceDefinition();
-            case TypedTableFieldSourceDefinition.TypeId.LockOpenNotificationChannel:
+            case TableFieldSourceDefinition.TypeId.LockOpenNotificationChannel:
                 return new LockOpenNotificationChannelTableFieldSourceDefinition();
 
             default:
@@ -87,7 +87,7 @@ export class TableFieldSourceDefinitionFactoryService implements TypedTableField
         }
     }
 
-    tryNameToId(name: string): TypedTableFieldSourceDefinition.TypeId | undefined {
-        return TypedTableFieldSourceDefinition.Type.tryNameToId(name);
+    tryNameToId(name: string): TableFieldSourceDefinition.TypeId | undefined {
+        return TableFieldSourceDefinition.Type.tryNameToId(name);
     }
 }

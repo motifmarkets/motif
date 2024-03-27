@@ -25,11 +25,11 @@ import {
     BidAskGridLayoutDefinitions,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
     OrderSideId,
+    RevGridLayoutDefinition,
     StringId,
     Strings,
     UnreachableCaseError,
@@ -64,8 +64,8 @@ export class DepthGridLayoutsDialogNgComponent extends ContentComponentBaseNgDir
     private _closeResolve: (value: BidAskGridLayoutDefinitions | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
-    private _bidLayoutDefinition: GridLayoutDefinition;
-    private _askLayoutDefinition: GridLayoutDefinition;
+    private _bidLayoutDefinition: RevGridLayoutDefinition;
+    private _askLayoutDefinition: RevGridLayoutDefinition;
     private _sideId: OrderSideId | undefined;
     private _editorComponent: GridLayoutEditorNgComponent | undefined;
 
@@ -184,7 +184,7 @@ export class DepthGridLayoutsDialogNgComponent extends ContentComponentBaseNgDir
         }
     }
 
-    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: GridLayoutDefinition) {
+    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: RevGridLayoutDefinition) {
         this.checkLoadLayoutFromEditor();
 
         if (this._editorComponent !== undefined) {

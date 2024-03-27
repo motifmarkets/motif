@@ -10,12 +10,12 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     Order,
     OrderPad,
     OrderTableRecordSourceDefinition,
+    RevGridLayoutOrReferenceDefinition,
     ScalarSettings,
     SettingsService,
     StringId,
@@ -115,7 +115,7 @@ export class OrderAuthoriseDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._orderAuthoriseFrame === undefined) {
             throw new AssertInternalError('OADFOGLONRD04418');
         } else {
