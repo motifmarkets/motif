@@ -15,6 +15,7 @@
   ],
   "typings": "lib/public-api.d.ts",
   "scripts": {
+    "link-core": "npm link @xilytix/sysutils @xilytix/revgrid @xilytix/rev-data-source @motifmarkets/motif-core",
     "postinstall": "generate-build-info.bat",
     "ng": "ng",
     "clean:cache": "npx del-cli .angular/cache",
@@ -59,7 +60,7 @@
     "@codemirror/theme-one-dark": "^6.1.2",
     "@ctrl/tinycolor": "^3.5.0",
     "@jaames/iro": "^5.5.1",
-    "@motifmarkets/motif-core": "^0.0.44",
+    "@motifmarkets/motif-core": "^0.0.46",
     "@ng-select/ng-select": "^11.1.1",
     "@types/toastify-js": "^1.12.3",
     "@xilytix/rev-data-source": "^0.0.1",
