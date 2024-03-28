@@ -34,7 +34,6 @@ import {
     RankedLitIvemIdListDirectoryItemTableRecordSourceDefinition,
     RankedLitIvemIdListTableRecordSourceDefinition,
     Result,
-    RevFieldCustomHeadingsService,
     ScanIdRankedLitIvemIdListDefinition,
     ScanTableRecordSourceDefinition,
     ScanTestTableRecordSourceDefinition,
@@ -47,6 +46,7 @@ import {
     UnreachableCaseError,
     WatchlistTableRecordSourceDefinition,
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 /** @public */
 export class TableRecordSourceDefinitionFactoryService implements TableRecordSourceDefinitionFromJsonFactory {

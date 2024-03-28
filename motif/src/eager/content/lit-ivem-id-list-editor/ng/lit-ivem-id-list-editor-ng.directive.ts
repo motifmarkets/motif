@@ -14,7 +14,6 @@ import {
     LitIvemIdUiAction,
     LockOpenListItem,
     MultiEvent,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     StringUiAction,
     Strings,
@@ -22,6 +21,7 @@ import {
     TableFieldSourceDefinitionCachingFactoryService,
     UiComparableList
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import {
     CommandRegisterNgService, ToastNgService,
 } from 'component-services-ng-api';

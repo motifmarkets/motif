@@ -28,13 +28,13 @@ import {
     InternalCommand,
     LockOpenListItem,
     ModifierKey,
-    RevGridLayoutDefinition,
     StringId,
     Strings,
     UiAction,
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { HoldingsDitemFrame } from 'ditem-internal-api';

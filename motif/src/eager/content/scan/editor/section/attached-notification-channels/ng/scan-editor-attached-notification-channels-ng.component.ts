@@ -10,7 +10,6 @@ import {
     LockerScanAttachedNotificationChannelList,
     MultiEvent,
     NotificationChannelsService,
-    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringExplicitElementsEnumUiAction,
     StringId,
@@ -18,6 +17,7 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, NotificationChannelsNgService, ToastNgService } from 'component-services-ng-api';
 import {
     IntegerEnumInputNgComponent, SvgButtonNgComponent

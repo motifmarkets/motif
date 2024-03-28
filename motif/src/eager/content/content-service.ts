@@ -16,7 +16,6 @@ import {
     ReferenceableDataSourceDefinitionsStoreService,
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    RevFieldCustomHeadingsService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
@@ -24,6 +23,7 @@ import {
     TableRecordSourceFactory,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame } from './balances/internal-api';
 import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';

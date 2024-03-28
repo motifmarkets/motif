@@ -12,7 +12,6 @@ import {
     LitIvemIdUiAction,
     MarketId,
     MultiEvent,
-    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     ScanTargetTypeId,
     StringId,
@@ -22,6 +21,7 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { SymbolsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,

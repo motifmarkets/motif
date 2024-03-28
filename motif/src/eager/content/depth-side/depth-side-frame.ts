@@ -26,8 +26,6 @@ import {
     OrderSideId,
     RecordGrid,
     RenderValueRecordGridCellPainter,
-    RevGridLayout,
-    RevGridLayoutDefinition,
     SessionInfoService,
     SettingsService,
     ShortDepthSideGridField,
@@ -36,6 +34,7 @@ import {
     TextRenderValueCellPainter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { RevGridLayout, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { RevRecordStore } from '@xilytix/revgrid';
 import { ContentFrame } from '../content-frame';
 

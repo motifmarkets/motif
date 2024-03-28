@@ -17,12 +17,12 @@ import {
     NotificationChannelsService,
     NotificationDistributionMethod,
     NotificationDistributionMethodId,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { LockOpenNotificationChannelsGridFrame } from 'content-internal-api';
 import { ToastService } from '../../component-services/toast-service';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

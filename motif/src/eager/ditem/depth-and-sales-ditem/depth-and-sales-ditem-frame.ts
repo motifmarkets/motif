@@ -17,14 +17,13 @@ import {
     JsonElement,
     LitIvemId,
     LitIvemIdArrayRankedLitIvemIdListDefinition,
-    RevGridLayoutDefinition,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { lowestValidServerNotificationId } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import {

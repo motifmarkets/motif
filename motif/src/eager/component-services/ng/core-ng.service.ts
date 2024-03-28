@@ -18,7 +18,6 @@ import {
     ReferenceableDataSourceDefinitionsStoreService,
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    RevFieldCustomHeadingsService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
@@ -26,6 +25,7 @@ import {
     TableFieldSourceDefinitionCachingFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 @Injectable({
     providedIn: 'root'

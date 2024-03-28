@@ -27,8 +27,6 @@ import {
     ModifierKeyId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
-    RevGridLayout,
-    RevReferenceableGridLayoutDefinition,
     StringId,
     Strings,
     TypedMappedExplicitElementsArrayUiAction,
@@ -38,6 +36,7 @@ import {
     assigned,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayout, RevReferenceableGridLayoutDefinition } from '@xilytix/rev-data-source';
 import {
     AdiNgService,
     CommandRegisterNgService,

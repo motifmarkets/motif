@@ -11,10 +11,10 @@ import {
     CommandRegisterService,
     JsonElement,
     LitIvemId,
-    RevGridLayoutDefinition,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';

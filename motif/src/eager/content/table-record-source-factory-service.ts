@@ -35,7 +35,6 @@ import {
     RankedLitIvemIdListFactoryService,
     RankedLitIvemIdListTableRecordSource,
     RankedLitIvemIdListTableRecordSourceDefinition,
-    RevFieldCustomHeadingsService,
     ScanTableRecordSource,
     ScanTableRecordSourceDefinition,
     ScanTestTableRecordSourceDefinition,
@@ -58,6 +57,7 @@ import {
     ScanFieldEditorFrameComparableListTableRecordSource,
     ScanFieldEditorFrameComparableListTableRecordSourceDefinition,
 } from './scan/internal-api';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 /** @public */
 export class TableRecordSourceFactoryService implements TableRecordSourceFactory {

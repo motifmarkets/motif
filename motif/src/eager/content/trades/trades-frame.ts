@@ -22,12 +22,11 @@ import {
     MultiEvent,
     RecordGrid,
     RenderValueRecordGridCellPainter,
-    RevGridLayout,
-    RevGridLayoutDefinition,
     SettingsService,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
+import { RevGridLayout, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {

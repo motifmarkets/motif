@@ -9,12 +9,11 @@ import {
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
     PickEnum,
-    RevFieldCustomHeadingsService,
-    RevGridLayoutDefinition,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { LockerScanAttachedNotificationChannelTableFieldSourceDefinition } from './locker-scan-attached-notification-channel-table-field-source-definition';
 
 export class ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition extends BadnessListTableRecordSourceDefinition<LockerScanAttachedNotificationChannel> {

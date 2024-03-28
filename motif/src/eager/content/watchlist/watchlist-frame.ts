@@ -20,8 +20,6 @@ import {
     RankedLitIvemIdListDefinition,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
-    RevDataSourceOrReferenceDefinition,
-    RevGridLayoutOrReferenceDefinition,
     ScanIdRankedLitIvemIdListDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
@@ -29,6 +27,7 @@ import {
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
+import { RevGridLayoutOrReferenceDefinition, RevDataSourceOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 export class WatchlistFrame extends DelayedBadnessGridSourceFrame {
     gridSourceOpenedEventer: WatchlistFrame.GridSourceOpenedEventer | undefined;

@@ -9,10 +9,10 @@ import {
     CommandRegisterService,
     Integer,
     JsonElement,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { GridSourceFrame, WatchlistFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';

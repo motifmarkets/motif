@@ -17,7 +17,6 @@ import {
     LitIvemDetailFromSearchSymbolsTableRecordSource,
     MarketId,
     MarketInfo,
-    RevGridLayoutOrReferenceDefinition,
     SearchSymbolsDataDefinition,
     SettingsService,
     StringId,
@@ -27,6 +26,7 @@ import {
     SymbolsService,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { SearchSymbolsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';

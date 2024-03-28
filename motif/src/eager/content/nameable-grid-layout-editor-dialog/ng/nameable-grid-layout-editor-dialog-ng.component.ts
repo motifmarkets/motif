@@ -26,7 +26,6 @@ import {
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -34,6 +33,7 @@ import { CommandRegisterNgService, CoreInjectionTokens } from 'component-service
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, definitionColumnListInjectionToken, oldLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 @Component({
     selector: 'app-nameable-grid-layout-editor-dialog',

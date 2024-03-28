@@ -15,7 +15,6 @@ import {
     InternalCommand,
     LitIvemId,
     MultiEvent,
-    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringId,
     Strings,
@@ -33,6 +32,7 @@ import {
     GeneralScanEditorSectionNgComponent,
     ScanEditorAttachedNotificationChannelsNgComponent
 } from '../section/ng-api';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 @Component({
     selector: 'app-scan-editor',

@@ -22,8 +22,6 @@ import {
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
-    RevFieldCustomHeadingsService,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceFactory,
@@ -36,6 +34,7 @@ import { GridSourceFrame } from '../../grid-source/internal-api';
 import { TableRecordSourceDefinitionFactoryService } from '../../table-record-source-definition-factory-service';
 import { LockOpenNotificationChannelListTableRecordSource } from './lock-open-notification-channel-list-table-record-source';
 import { LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channel-list-table-record-source-definition';
+import { RevFieldCustomHeadingsService, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 export class LockOpenNotificationChannelsGridFrame extends GridSourceFrame {
     recordFocusedEventer: LockOpenNotificationChannelsGridFrame.RecordFocusedEventer | undefined

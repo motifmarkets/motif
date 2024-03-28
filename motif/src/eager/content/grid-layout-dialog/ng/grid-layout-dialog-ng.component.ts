@@ -27,10 +27,10 @@ import {
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
-    RevGridLayoutDefinition,
     StringId,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';

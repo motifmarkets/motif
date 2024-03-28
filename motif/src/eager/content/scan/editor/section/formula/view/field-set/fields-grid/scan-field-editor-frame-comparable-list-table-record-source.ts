@@ -9,7 +9,6 @@ import {
     BadnessListTableRecordSource,
     CorrectnessBadness,
     Integer,
-    RevFieldCustomHeadingsService,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecord,
@@ -20,6 +19,7 @@ import { ScanFieldEditorFrame } from '../field/scan-field-editor-frame';
 import { ScanFieldEditorFrameComparableListTableRecordSourceDefinition } from './scan-field-editor-frame-comparable-list-table-record-source-definition';
 import { ScanFieldEditorFrameTableRecordDefinition } from './scan-field-editor-frame-table-record-definition';
 import { ScanFieldEditorFrameTableValueSource } from './scan-field-editor-frame-table-value-source';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 export class ScanFieldEditorFrameComparableListTableRecordSource extends BadnessListTableRecordSource<ScanFieldEditorFrame> {
     declare readonly definition: ScanFieldEditorFrameComparableListTableRecordSourceDefinition;

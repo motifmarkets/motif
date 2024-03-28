@@ -21,7 +21,6 @@ import {
     LockOpenListItem,
     ModifierKey,
     ModifierKeyId,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     StringUiAction,
     Strings,
@@ -30,6 +29,7 @@ import {
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService, ToastNgService } from 'component-services-ng-api';
 import { LitIvemIdListEditorDialogNgComponent, NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';

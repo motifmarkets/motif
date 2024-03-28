@@ -28,9 +28,6 @@ import {
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     Result,
-    RevFieldCustomHeadingsService,
-    RevGridLayout,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
@@ -40,6 +37,7 @@ import {
     TableRecordSourceFactory,
     TableRecordStore
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService, RevGridLayout, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { RevRecordDataServer, Subgrid } from '@xilytix/revgrid';
 import { ToastService } from '../../component-services/toast-service';
 import { ContentFrame } from '../content-frame';
@@ -387,7 +385,7 @@ export abstract class GridSourceFrame extends ContentFrame {
         if (this._openedDataSource === undefined) {
             throw new AssertInternalError('GSFOGLONRD22209');
         } else {
-            return this._openedDataSource.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition, this._opener);
+            return DataSource.tryOpenGridLayoutOrReferenceDefinition(this._openedDataSource, gridLayoutOrReferenceDefinition, this._opener);
         }
     }
 

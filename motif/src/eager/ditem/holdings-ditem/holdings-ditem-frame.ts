@@ -17,8 +17,6 @@ import {
     Integer,
     JsonElement,
     OrderPad,
-    RevGridLayoutDefinition,
-    RevGridLayoutOrReferenceDefinition,
     ScalarSettings,
     SettingsService,
     SingleBrokerageAccountGroup,
@@ -28,6 +26,7 @@ import {
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame, HoldingsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

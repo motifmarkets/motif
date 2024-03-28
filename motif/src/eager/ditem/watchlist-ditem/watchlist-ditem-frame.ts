@@ -15,16 +15,13 @@ import {
     LitIvemId,
     RankedLitIvemIdList,
     Result,
-    RevDataSourceOrReferenceDefinition,
-    RevFavouriteReferenceableGridLayoutDefinitionsStoreService,
-    RevGridLayout,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevDataSourceOrReferenceDefinition, RevFavouriteReferenceableGridLayoutDefinitionsStoreService, RevGridLayout, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import {
     GridSourceFrame,

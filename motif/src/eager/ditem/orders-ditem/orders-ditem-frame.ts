@@ -15,7 +15,6 @@ import {
     Order,
     OrderPad,
     OrderTableRecordSourceDefinition,
-    RevGridLayoutOrReferenceDefinition,
     ScalarSettings,
     SettingsService,
     StringId,
@@ -23,6 +22,7 @@ import {
     SymbolDetailCacheService,
     SymbolsService,
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import { OrdersFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

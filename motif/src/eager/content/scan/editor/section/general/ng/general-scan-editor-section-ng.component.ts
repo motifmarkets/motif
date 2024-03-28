@@ -3,13 +3,13 @@ import {
     AllowedFieldsGridLayoutDefinition,
     BooleanUiAction,
     LitIvemId,
-    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     StringId,
     StringUiAction,
     Strings,
     UiComparableList
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import {
     CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CheckboxInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';

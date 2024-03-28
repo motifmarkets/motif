@@ -13,8 +13,6 @@ import {
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
-    RevFieldCustomHeadingsService,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceFactory,
@@ -26,6 +24,7 @@ import { DatalessViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
 import { TableRecordSourceDefinitionFactoryService } from '../table-record-source-definition-factory-service';
+import { RevFieldCustomHeadingsService, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 export class LitIvemIdListFrame extends DelayedBadnessGridSourceFrame {
     getListEventer: LitIvemIdListFrame.GetListEventer | undefined;

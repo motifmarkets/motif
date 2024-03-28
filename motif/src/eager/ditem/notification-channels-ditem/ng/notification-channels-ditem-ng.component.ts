@@ -22,13 +22,13 @@ import {
     ModifierKey,
     ModifierKeyId,
     NotificationDistributionMethod,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     Strings,
     UiAction,
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, NotificationChannelsNgService, SettingsNgService, SymbolsNgService, ToastNgService } from 'component-services-ng-api';
 import { LockOpenNotificationChannelPropertiesNgComponent, LockOpenNotificationChannelsGridNgComponent, NameableGridLayoutEditorDialogNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, IntegerEnumInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';

@@ -17,10 +17,10 @@ import {
     GridField,
     Integer,
     RenderValueRecordGridCellPainter,
-    RevGridLayoutOrReferenceDefinition,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { CellEditor, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { GridSourceFrame } from '../../../../../../../grid-source/internal-api';
 import { ScanFieldEditorFrame } from '../field/internal-api';

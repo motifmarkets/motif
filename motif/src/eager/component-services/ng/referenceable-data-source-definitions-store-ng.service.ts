@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { RevReferenceableDataSourceDefinitionsStoreService } from '@motifmarkets/motif-core';
+import { RevReferenceableDataSourceDefinitionsStoreService } from '@xilytix/rev-data-source';
 import { CoreNgService } from './core-ng.service';
 
 @Injectable({

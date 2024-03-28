@@ -20,7 +20,6 @@ import {
     ExtStringId,
     ExtStrings,
     Integer,
-    ListChangeTypeId,
     logger,
     mSecsPerMin,
     MultiEvent,
@@ -167,7 +166,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         } else {
             const idx = this._installedArray.indexOf(registration);
             this._installedArray.splice(idx, 1);
-            this.notifyInstalledListChanged(ListChangeTypeId.Remove, idx, registration, true);
+            this.notifyInstalledListChanged(ExtensionsAccessService.ListChangeTypeId.Remove, idx, registration, true);
 
             if (registration.loaded) {
                 registration.unload();
@@ -339,7 +338,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private notifyInstalledListChanged(listChangeTypeId: ListChangeTypeId, idx: Integer,
+    private notifyInstalledListChanged(listChangeTypeId: ExtensionsAccessService.ListChangeTypeId, idx: Integer,
         extension: RegisteredExtension, listTransitioning: boolean
     ) {
         const handlers = this._installedListChangedMultiEvent.copyHandlers();
@@ -348,7 +347,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private notifyUninstalledBundledListChange(listChangeTypeId: ListChangeTypeId, idx: Integer,
+    private notifyUninstalledBundledListChange(listChangeTypeId: ExtensionsAccessService.ListChangeTypeId, idx: Integer,
         info: ExtensionInfo, listTransitioning: boolean
     ) {
         const handlers = this._uninstalledBundledListChangedMultiEvent.copyHandlers();
@@ -379,7 +378,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         const listTransitioning = this.checkRemoveFromUninstalledBundled(registration, true);
         const idx = this._installedArray.length;
         this._installedArray.push(registration);
-        this.notifyInstalledListChanged(ListChangeTypeId.Insert, idx, registration, listTransitioning);
+        this.notifyInstalledListChanged(ExtensionsAccessService.ListChangeTypeId.Insert, idx, registration, listTransitioning);
         if (loadAlso) {
             registration.load();
         }
@@ -400,7 +399,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
             const idx = this._uninstalledBundledArray.length;
             this._uninstalledBundledArray.push(bundledInfo);
-            this.notifyUninstalledBundledListChange(ListChangeTypeId.Insert, idx, bundledInfo, listTransitioning);
+            this.notifyUninstalledBundledListChange(ExtensionsAccessService.ListChangeTypeId.Insert, idx, bundledInfo, listTransitioning);
         }
     }
 
@@ -410,7 +409,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             return false;
         } else {
             const uninstalledBundledInfo = this._uninstalledBundledArray[uninstalledBundledIdx];
-            this.notifyUninstalledBundledListChange(ListChangeTypeId.Remove, uninstalledBundledIdx, uninstalledBundledInfo,
+            this.notifyUninstalledBundledListChange(ExtensionsAccessService.ListChangeTypeId.Remove, uninstalledBundledIdx, uninstalledBundledInfo,
                 listTransitioning
             );
             this._uninstalledBundledArray.splice(uninstalledBundledIdx, 1);

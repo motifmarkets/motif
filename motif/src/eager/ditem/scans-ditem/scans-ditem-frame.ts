@@ -12,7 +12,6 @@ import {
     Integer,
     JsonElement,
     LockOpenListItem,
-    RevGridLayoutOrReferenceDefinition,
     ScanEditor,
     ScanList,
     ScansService,
@@ -22,6 +21,7 @@ import {
     SymbolsService,
     logger
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import { ScanListFrame } from 'content-internal-api';
 import { ScanFieldSetEditorFrame } from '../../content/scan/editor/section/formula/view/field-set/scan-field-set-editor-frame';

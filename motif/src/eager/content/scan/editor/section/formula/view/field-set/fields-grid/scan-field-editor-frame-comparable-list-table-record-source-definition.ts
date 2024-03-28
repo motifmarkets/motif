@@ -8,12 +8,11 @@ import {
     BadnessComparableList,
     BadnessListTableRecordSourceDefinition,
     PickEnum,
-    RevFieldCustomHeadingsService,
-    RevGridLayoutDefinition,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { ScanFieldEditorFrame } from '../field/internal-api';
 import { ScanFieldEditorFrameTableFieldSourceDefinition } from './scan-field-editor-frame-table-field-source-definition';
 

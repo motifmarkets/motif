@@ -7,11 +7,11 @@ import {
     InternalCommand,
     LitIvemId,
     LockOpenListItem,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     UiComparableList,
     getErrorMessage,
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent } from '../../../nameable-grid-layout-editor-dialog/ng-api';

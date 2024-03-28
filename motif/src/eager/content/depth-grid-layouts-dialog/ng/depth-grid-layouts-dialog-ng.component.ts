@@ -29,13 +29,13 @@ import {
     InternalCommand,
     LockOpenListItem,
     OrderSideId,
-    RevGridLayoutDefinition,
     StringId,
     Strings,
     UnreachableCaseError,
     assert,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { BidAskAllowedGridFields, GridLayoutEditorNgComponent, allowedFieldsInjectionToken, bidAskAllowedFieldsInjectionToken, definitionColumnListInjectionToken, oldBidAskLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';

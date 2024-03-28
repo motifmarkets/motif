@@ -7,12 +7,12 @@ import {
     LockOpenNotificationChannel,
     MultiEvent,
     NotificationDistributionMethod,
-    RevGridLayoutOrReferenceDefinition,
     StringId,
     StringUiAction,
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import {
     CaptionLabelNgComponent,
     IntegerTextInputNgComponent

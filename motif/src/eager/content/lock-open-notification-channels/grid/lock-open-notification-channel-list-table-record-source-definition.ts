@@ -7,12 +7,11 @@
 import {
     LockOpenNotificationChannel,
     PickEnum,
-    RevFieldCustomHeadingsService,
-    RevGridLayoutDefinition,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceDefinition
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { LockOpenNotificationChannelTableFieldSourceDefinition } from './lock-open-notification-channel-table-field-source-definition';
 
 export class LockOpenNotificationChannelListTableRecordSourceDefinition extends TableRecordSourceDefinition {

@@ -25,13 +25,13 @@ import {
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
-    RevFieldCustomHeadingsService,
     SettingsService,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 import { CellEditor, CellPainter, DatalessViewCell, Subgrid, ViewCell } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
@@ -304,7 +304,7 @@ export class GridLayoutEditorColumnsFrame extends GridSourceFrame {
 
     private tryGetCellEditor(sourcelesFieldName: string, readonly: boolean, subgridRowIndex: Integer): CellEditor<AdaptedRevgridBehavioredColumnSettings, GridField> | undefined {
         if (sourcelesFieldName === EditableGridLayoutDefinitionColumn.FieldName.visible) {
-            this._visibleCheckboxEditor.readonly = readonly || subgridRowIndex < this._recordList.fixedColumnCount;
+            this._visibleCheckboxEditor.readonly = readonly || subgridRowIndex < this._recordList.anchoredRecordCount;
             return this._visibleCheckboxEditor;
         } else {
             if (sourcelesFieldName === EditableGridLayoutDefinitionColumn.FieldName.width) {

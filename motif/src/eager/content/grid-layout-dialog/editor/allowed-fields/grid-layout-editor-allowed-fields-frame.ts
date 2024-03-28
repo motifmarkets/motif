@@ -22,7 +22,6 @@ import {
     ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
     RenderValueRecordGridCellPainter,
-    RevFieldCustomHeadingsService,
     SettingsService,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecordSourceFactory,
@@ -31,6 +30,7 @@ import {
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 import { DatalessViewCell, RevRecord } from '@xilytix/revgrid';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';

@@ -10,7 +10,6 @@ import {
     Integer,
     LockerScanAttachedNotificationChannel,
     LockerScanAttachedNotificationChannelList,
-    RevFieldCustomHeadingsService,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecord,
@@ -20,6 +19,7 @@ import {
 import { LockerScanAttachedNotificationChannelTableRecordDefinition } from './locker-scan-attached-notification-channel-table-record-definition';
 import { LockerScanAttachedNotificationChannelTableValueSource } from './locker-scan-attached-notification-channel-table-value-source';
 import { ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition } from './scan-editor-attached-notification-channel-comparable-list-table-record-source-definition';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 export class ScanEditorAttachedNotificationChannelComparableListTableRecordSource extends BadnessListTableRecordSource<LockerScanAttachedNotificationChannel> {
     declare readonly definition: ScanEditorAttachedNotificationChannelComparableListTableRecordSourceDefinition;

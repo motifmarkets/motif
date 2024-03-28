@@ -14,7 +14,6 @@ import {
     NotificationChannelsService,
     Ok,
     Result,
-    RevFieldCustomHeadingsService,
     TableFieldSourceDefinition,
     TableFieldSourceDefinitionCachingFactoryService,
     TableRecord,
@@ -24,6 +23,7 @@ import {
 import { LockOpenNotificationChannelListTableRecordSourceDefinition } from './lock-open-notification-channel-list-table-record-source-definition';
 import { LockOpenNotificationChannelTableRecordDefinition } from './lock-open-notification-channel-table-record-definition';
 import { LockOpenNotificationChannelTableValueSource } from './lock-open-notification-channel-table-value-source';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 export class LockOpenNotificationChannelListTableRecordSource extends LockOpenListTableRecordSource<LockOpenNotificationChannel, LockOpenNotificationChannelList> {
     declare readonly definition: LockOpenNotificationChannelListTableRecordSourceDefinition;

@@ -62,6 +62,7 @@
     "@motifmarkets/motif-core": "^0.0.44",
     "@ng-select/ng-select": "^11.1.1",
     "@types/toastify-js": "^1.12.3",
+    "@xilytix/rev-data-source": "^0.0.1",
     "@xilytix/revgrid": "^0.8.0",
     "@xilytix/sysutils": "^0.0.1",
     "angular-split": "^16.1.1",

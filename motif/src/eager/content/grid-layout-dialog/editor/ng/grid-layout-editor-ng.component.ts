@@ -19,8 +19,8 @@ import {
     AssertInternalError,
     EditableGridLayoutDefinitionColumnList,
     Integer,
-    RevGridLayoutDefinition
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 import { definitionColumnListInjectionToken } from '../../ng/grid-layout-dialog-ng-injection-tokens';

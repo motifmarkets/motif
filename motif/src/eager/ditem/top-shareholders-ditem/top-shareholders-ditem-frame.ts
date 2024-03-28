@@ -12,7 +12,6 @@ import {
     DataSourceOrReferenceDefinition,
     JsonElement,
     LitIvemId,
-    RevGridLayoutOrReferenceDefinition,
     SettingsService,
     StringId,
     Strings,
@@ -20,6 +19,7 @@ import {
     TopShareholder,
     TopShareholderTableRecordSource
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame, TableRecordSourceDefinitionFactoryService } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';

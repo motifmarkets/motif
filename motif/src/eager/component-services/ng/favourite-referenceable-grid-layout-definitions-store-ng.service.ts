@@ -5,7 +5,7 @@
  */
 
 import { Injectable } from '@angular/core';
-import { RevFavouriteReferenceableGridLayoutDefinitionsStoreService } from '@motifmarkets/motif-core';
+import { RevFavouriteReferenceableGridLayoutDefinitionsStoreService } from '@xilytix/rev-data-source';
 
 @Injectable({
     providedIn: 'root',

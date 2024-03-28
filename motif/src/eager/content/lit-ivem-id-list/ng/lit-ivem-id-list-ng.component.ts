@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Optional, ValueProvider } from '@angular/core';
-import { AdaptedRevgridGridSettings, JsonElement, LitIvemId, LockOpenListItem, RevGridLayoutOrReferenceDefinition, UiComparableList } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, JsonElement, LitIvemId, LockOpenListItem, UiComparableList } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { LitIvemIdListFrame } from '../lit-ivem-id-list-frame';
