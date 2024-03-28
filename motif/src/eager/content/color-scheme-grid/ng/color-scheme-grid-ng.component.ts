@@ -18,10 +18,9 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from '@xilytix/revgrid';
+import { RevGridLayout, RevRecord, RevRecordFieldIndex, RevRecordIndex } from '@xilytix/rev-data-source';
 import { CellPainterFactoryNgService, SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
-import { RevGridLayout } from '@xilytix/rev-data-source';
 
 @Component({
     selector: 'app-color-scheme-grid',

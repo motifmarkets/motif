@@ -31,7 +31,7 @@ import {
     getErrorMessage,
     logger
 } from '@motifmarkets/motif-core';
-import { RevRecordIndex } from '@xilytix/revgrid';
+import { RevRecordIndex } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
