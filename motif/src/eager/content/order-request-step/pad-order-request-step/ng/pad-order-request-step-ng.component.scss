@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/flex-row-items-centered-mixin';
+@use './partials/flex-row-items-centered-mixin';
 @import './partials/horizontal-children-separator';
 @import './partials/horizontal-radio-separator';
 
@@ -53,7 +53,7 @@
 }
 
 #sideDiv {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 }
 
 #symbolDiv {
@@ -61,7 +61,7 @@
     flex-direction: column;
 
     #symbolRoutedIvemIdDiv {
-        @include flexRowItemsCenteredMixin;
+        @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 
         #symbolControl {
             width: 12em;
@@ -78,7 +78,7 @@
 }
 
 #quantityDiv {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 }
 
 #orderTypeDiv {
@@ -96,7 +96,7 @@
 }
 
 #priceDiv {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
     #priceControl {
         width: 9em
     }

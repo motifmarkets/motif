@@ -6,8 +6,8 @@
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, OnDestroy } from '@angular/core';
 import { ScanEditor } from '@motifmarkets/motif-core';
-import { ZenithScanFormulaViewNgDirective } from '../../ng/zenith-scan-formula-view-ng.directive';
 import { ComponentBaseNgDirective } from 'component-ng-api';
+import { ZenithScanFormulaViewNgDirective } from '../../ng/zenith-scan-formula-view-ng.directive';
 
 @Component({
     selector: 'app-rank-zenith-scan-formula-view',

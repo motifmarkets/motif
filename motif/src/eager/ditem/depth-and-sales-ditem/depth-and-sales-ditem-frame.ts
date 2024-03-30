@@ -14,16 +14,18 @@ import {
     BidAskPair,
     CommandRegisterService,
     DepthStyleId,
-    GridLayoutDefinition,
-    GridLayoutOrReferenceDefinition,
     JsonElement,
     LitIvemId,
     LitIvemIdArrayRankedLitIvemIdListDefinition,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { lowestValidServerNotificationId } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import {
     DepthFrame,
     TradesFrame,
@@ -49,6 +51,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
+        private readonly _toastService: ToastService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.DepthAndTrades, _componentAccess,
             settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -77,7 +80,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame.fixedRowCount = 1;
         this._watchlistFrame.focusedRowColoredAllowed = false;
 
-        let watchlistLayoutDefinition: GridLayoutOrReferenceDefinition | undefined;
+        let watchlistLayoutDefinition: RevGridLayoutOrReferenceDefinition | undefined;
         if (frameElement === undefined) {
             this._tradesFrame.initialise(undefined);
             this._depthFrame.initialise(undefined);
@@ -111,9 +114,9 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
         this._watchlistFrame.initialiseGrid(this.opener, watchlistLayoutDefinition, true);
         const watchlistOpenPromise = this._watchlistFrame.tryOpenLitIvemIdArray([], true);
         watchlistOpenPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('OADFIPWU50137');
+            (watchlistOpenResult) => {
+                if (watchlistOpenResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.DepthAndSalesWatchlist]}: ${watchlistOpenResult.error}`);
                 } else {
                     this.applyLinked();
                 }
@@ -154,9 +157,15 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
                     undefined,
                     undefined
                 );
-                const gridSourceOrReferencePromise = this._watchlistFrame.tryOpenGridSource(definition, false);
-                gridSourceOrReferencePromise.then(
-                    () => { this._watchlistFrame.focusItem(0) },
+                const watchlistOpenPromise = this._watchlistFrame.tryOpenGridSource(definition, false);
+                watchlistOpenPromise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.DepthAndSalesWatchlist]}: ${openResult.error}`);
+                        } else {
+                            this._watchlistFrame.focusItem(0);
+                        }
+                    },
                     (reason) => { throw AssertInternalError.createIfNotError(reason, 'DASDFO88552', litIvemId.name)}
                 );
             } else {
@@ -228,7 +237,7 @@ export class DepthAndSalesDitemFrame extends BuiltinDitemFrame {
 
     applyGridLayoutDefinitions(layouts: DepthAndSalesDitemFrame.GridLayoutDefinitions) {
         this._depthFrame.applyGridLayoutDefinitions(layouts.depth);
-        const watchlistGridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.watchlist);
+        const watchlistGridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layouts.watchlist);
         this._watchlistFrame.applyGridLayoutDefinition(watchlistGridLayoutOrReferenceDefinition);
         this._tradesFrame.applyGridLayoutDefinition(layouts.trades);
     }
@@ -304,9 +313,9 @@ export namespace DepthAndSalesDitemFrame {
     }
 
     export interface GridLayoutDefinitions {
-        watchlist: GridLayoutDefinition;
+        watchlist: RevGridLayoutDefinition;
         depth: BidAskGridLayoutDefinitions;
-        trades: GridLayoutDefinition;
+        trades: RevGridLayoutDefinition;
     }
 
     export interface AllowedFieldsAndLayoutDefinitions {

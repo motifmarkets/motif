@@ -9,12 +9,12 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutDefinition,
     JsonElement,
     LitIvemId,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { TradesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -111,7 +111,7 @@ export class TradesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition): void {
+    applyGridLayoutDefinition(layoutDefinition: RevGridLayoutDefinition): void {
         if (this._tradesFrame === undefined) {
             throw new Error('Condition not handled [ID:5326171853]');
         } else {

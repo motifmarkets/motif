@@ -5,8 +5,8 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Injector, OnDestroy, ValueProvider, ViewChild, ViewContainerRef } from '@angular/core';
-import { CommandRegisterService, IconButtonUiAction, InternalCommand, LockOpenListItem, StringId, Strings, UnreachableCaseError, delay1Tick } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
+import { CommandRegisterService, Err, IconButtonUiAction, InternalCommand, LockOpenListItem, Ok, Result, ScanList, StringId, Strings, UnreachableCaseError, delay1Tick } from '@motifmarkets/motif-core';
+import { CommandRegisterNgService, CoreInjectionTokens, ScansNgService } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
@@ -28,27 +28,30 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     public symbolListVisible = false;
     public watchlistVisible = false;
 
-    private _commandRegisterService: CommandRegisterService;
+    private readonly _scanList: ScanList;
 
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
 
     private _visibleExistingListsTypeId: OpenWatchlistDialogNgComponent.ExistingListsTypeId;
 
-    private _closeResolve: (this: void) => void;
+    private _closeResolve: ((this: void, scanId: Result<string>) => void);
 
     constructor(
         elRef: ElementRef<HTMLElement>,
         private _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        scansNgService: ScansNgService,
         @Inject(OpenWatchlistDialogNgComponent.captionInjectionToken) public readonly caption: string,
     ) {
         super(elRef, ++OpenWatchlistDialogNgComponent.typeInstanceCreateCount);
 
-        this._commandRegisterService = commandRegisterNgService.service;
+        this._scanList = scansNgService.service.scanList;
 
-        this._okUiAction = this.createOkUiAction();
-        this._cancelUiAction = this.createCancelUiAction();
+        const commandRegisterService = commandRegisterNgService.service;
+
+        this._okUiAction = this.createOkUiAction(commandRegisterService);
+        this._cancelUiAction = this.createCancelUiAction(commandRegisterService);
     }
 
     ngAfterViewInit() {
@@ -61,9 +64,26 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     }
 
     open(): OpenWatchlistDialogNgComponent.ClosePromise {
-        return new Promise<void>((resolve) => {
+        return new Promise((resolve) => {
             this._closeResolve = resolve;
         });
+    }
+
+    handleFirstAvailableSymbolListScanButtonClick() {
+        const list = this._scanList;
+        const count = list.count;
+        let found = false;
+        for (let i = 0; i < count; i++) {
+            const scan = list.getAt(i);
+            if (scan.id === '1OYjBz') {
+                found = true;
+                this._closeResolve(new Ok(scan.id));
+                break;
+            }
+        }
+        if (!found) {
+            this._closeResolve(new Err('No symbol list enabled scan'));
+        }
     }
 
     private handleOkSignal() {
@@ -80,20 +100,20 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
         }
     }
 
-    private createOkUiAction() {
+    private createOkUiAction(commandRegisterService: CommandRegisterService) {
         const commandName = InternalCommand.Id.OpenWatchlistDialog_Ok;
         const displayId = StringId.Ok;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushIcon(IconButtonUiAction.IconId.ReturnOk);
         action.signalEvent = () => this.handleOkSignal();
         return action;
     }
 
-    private createCancelUiAction() {
+    private createCancelUiAction(commandRegisterService: CommandRegisterService) {
         const commandName = InternalCommand.Id.OpenWatchlistDialog_Cancel;
         const displayId = StringId.Cancel;
-        const command = this._commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
+        const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushIcon(IconButtonUiAction.IconId.ReturnCancel);
         action.signalEvent = () => this.handleCancelSignal();
@@ -152,7 +172,7 @@ export class OpenWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
             //     balances: this._balancesLayoutDefinition,
             // };
         }
-        this._closeResolve();
+        this._closeResolve(new Ok(''));
     }
 }
 
@@ -162,7 +182,7 @@ export namespace OpenWatchlistDialogNgComponent {
         Watchlist,
     }
 
-    export type ClosePromise = Promise<void>;
+    export type ClosePromise = Promise<Result<string>>;
     export const captionInjectionToken = new InjectionToken<string>('OpenWatchlistDialogNgComponent.Caption');
 
     export function open(

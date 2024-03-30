@@ -1,0 +1,15 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/revgrid';
+
+:host {
+    height: 100%;
+
+    #gridHost {
+        @include revgrid.hostAsColumnFlexItem;
+    }
+}

@@ -4,8 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-import { cloneDecimal, newDecimal } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
+import { Decimal, cloneDecimal, newDecimal } from '@motifmarkets/motif-core';
 import { Decimal as DecimalApi, DecimalSvc } from '../../../api/extension-api';
 import { DecimalImplementation } from '../../exposed/sys/decimal-implementation';
 

@@ -17,6 +17,7 @@ export class ApiErrorImplementation extends Error implements ApiErrorApi {
 
 export class UnreachableCaseApiErrorImplementation extends ApiErrorImplementation {
     constructor(code: ApiErrorApi.Code, value: never) {
+        // eslint-disable-next-line @typescript-eslint/restrict-template-expressions
         super(code, `"${value}"`);
     }
 }
@@ -62,6 +63,14 @@ export namespace ApiErrorImplementation {
             InvalidBadness: {
                 id: ApiErrorApi.CodeEnum.InvalidBadness,
                 code: 'InvalidBadness',
+            },
+            InvalidJsonELementErrorCode: {
+                id: ApiErrorApi.CodeEnum.InvalidJsonELementErrorCode,
+                code: 'InvalidJsonELementErrorCode',
+            },
+            InvalidCommaTextErrorCode: {
+                id: ApiErrorApi.CodeEnum.InvalidCommaTextErrorCode,
+                code: 'InvalidCommaTextErrorCode',
             },
             InvalidFeedClass: {
                 id: ApiErrorApi.CodeEnum.InvalidFeedClass,

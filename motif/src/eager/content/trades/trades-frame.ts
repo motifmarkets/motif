@@ -16,7 +16,6 @@ import {
     DayTradesDataItem,
     DayTradesGridField,
     DayTradesGridRecordStore,
-    GridLayout,
     GridLayoutDefinition,
     JsonElement,
     LitIvemId,
@@ -27,6 +26,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
+import { RevGridLayout, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { ContentFrame } from '../content-frame';
 
 export class TradesFrame extends ContentFrame {
@@ -41,7 +41,7 @@ export class TradesFrame extends ContentFrame {
     private _gridHeaderCellPainter: TextHeaderCellPainter;
     private _gridMainCellPainter: RenderValueRecordGridCellPainter<TextRenderValueCellPainter>;
 
-    private _gridLayout: GridLayout;
+    private _gridLayout: RevGridLayout;
 
     constructor(
         private readonly _settingsService: SettingsService,
@@ -74,7 +74,7 @@ export class TradesFrame extends ContentFrame {
                 if (definitionResult.isErr()) {
                     this._gridLayout = this.createDefaultGridLayout();
                 } else {
-                    this._gridLayout = new GridLayout(definitionResult.value);
+                    this._gridLayout = new RevGridLayout(definitionResult.value);
                 }
             }
         }
@@ -120,7 +120,7 @@ export class TradesFrame extends ContentFrame {
         );
         this._dataItemDataCorrectnessId = this._dataItem.correctnessId;
 
-        this._dataItemBadnessChangeEventSubscriptionId = this._dataItem.subscribeBadnessChangeEvent(
+        this._dataItemBadnessChangeEventSubscriptionId = this._dataItem.subscribeBadnessChangedEvent(
             () => this.handleDataItemBadnessChangeEvent()
         );
         this._componentAccess.hideBadnessWithVisibleDelay(this._dataItem.badness);
@@ -139,7 +139,7 @@ export class TradesFrame extends ContentFrame {
         return this._grid.createAllowedFieldsGridLayoutDefinition(allowedFields);
     }
 
-    applyGridLayoutDefinition(layoutDefinition: GridLayoutDefinition) {
+    applyGridLayoutDefinition(layoutDefinition: RevGridLayoutDefinition) {
         this._grid.applyGridLayoutDefinition(layoutDefinition);
     }
 
@@ -220,13 +220,13 @@ export class TradesFrame extends ContentFrame {
 
     private createDefaultGridLayout() {
         const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
-        return new GridLayout(definition);
+        return new RevGridLayout(definition);
     }
 
     private checkClose() {
         if (this._dataItem !== undefined) {
             this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemDataCorrectnessChangeEventSubscriptionId);
-            this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeEventSubscriptionId);
+            this._dataItem.unsubscribeBadnessChangedEvent(this._dataItemBadnessChangeEventSubscriptionId);
             this._recordStore.clearDataItem();
             this.adiService.unsubscribe(this._dataItem);
             this._dataItem = undefined;

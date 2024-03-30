@@ -11,7 +11,6 @@ import {
     ColorScheme,
     ColorSchemeGridField,
     ColorSchemeGridRecordStore,
-    GridLayout,
     Integer,
     RecordGrid,
     RenderValueRecordGridCellPainter,
@@ -19,7 +18,7 @@ import {
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
-import { RevRecord, RevRecordFieldIndex, RevRecordIndex } from '@xilytix/revgrid';
+import { RevGridLayout, RevRecord, RevRecordFieldIndex, RevRecordIndex } from '@xilytix/rev-data-source';
 import { CellPainterFactoryNgService, SettingsNgService } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
@@ -70,7 +69,7 @@ export class ColorSchemeGridNgComponent extends ContentComponentBaseNgDirective 
         this._recordStore.recordsInserted(0, this._recordStore.recordCount);
 
         const gridLayoutDefinition = ColorSchemeGridField.createDefaultGridLayoutDefinition();
-        const gridLayout = new GridLayout(gridLayoutDefinition);
+        const gridLayout = new RevGridLayout(gridLayoutDefinition);
         grid.applyFirstUsable(undefined, undefined, gridLayout);
 
         this.applyFilter();

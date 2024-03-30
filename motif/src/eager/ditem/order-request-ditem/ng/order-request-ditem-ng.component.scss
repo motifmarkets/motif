@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @import 'partials/variables';
 
 :host {
@@ -35,6 +36,7 @@
     flex: 0 1 auto;
     display: flex;
     flex-direction: row;
+    @include svg-icon-button-size.toolbarChildMixin;
 }
 
 #linkButtonsDiv :not(:first-child) {

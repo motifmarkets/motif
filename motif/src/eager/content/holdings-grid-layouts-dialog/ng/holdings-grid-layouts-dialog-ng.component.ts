@@ -24,7 +24,6 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
@@ -35,6 +34,7 @@ import {
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { HoldingsDitemFrame } from 'ditem-internal-api';
@@ -63,10 +63,10 @@ export class HoldingsGridLayoutsDialogNgComponent extends ContentComponentBaseNg
     private _holdingsAllowedFields: readonly GridField[];
     private _balancesAllowedFields: readonly GridField[];
 
-    private _depthBidLayoutDefinition: GridLayoutDefinition;
-    private _depthAskLayoutDefinition: GridLayoutDefinition;
-    private _holdingsLayoutDefinition: GridLayoutDefinition;
-    private _balancesLayoutDefinition: GridLayoutDefinition;
+    private _depthBidLayoutDefinition: RevGridLayoutDefinition;
+    private _depthAskLayoutDefinition: RevGridLayoutDefinition;
+    private _holdingsLayoutDefinition: RevGridLayoutDefinition;
+    private _balancesLayoutDefinition: RevGridLayoutDefinition;
 
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
@@ -198,7 +198,7 @@ export class HoldingsGridLayoutsDialogNgComponent extends ContentComponentBaseNg
         this.setSubFrameId(HoldingsGridLayoutsDialogNgComponent.SubFrameId.Holdings);
     }
 
-    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: GridLayoutDefinition) {
+    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: RevGridLayoutDefinition) {
         this.checkLoadLayoutFromEditor();
 
         if (this._editorComponent !== undefined) {

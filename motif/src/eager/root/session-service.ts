@@ -16,11 +16,13 @@ import {
     Integer,
     JsonElement,
     KeyValueStore,
+    logger,
     Logger,
     MotifServicesError,
     MotifServicesService,
     mSecsPerSec,
     MultiEvent,
+    NotificationChannelsService,
     PublisherSessionTerminatedReasonId,
     ScansService,
     ServiceOperatorId,
@@ -30,7 +32,8 @@ import {
     SettingsService,
     StringId,
     Strings,
-    SymbolsService, TradingEnvironment,
+    SymbolsService,
+    TradingEnvironment,
     UserAlertService,
     ZenithExtConnectionDataDefinition,
     ZenithExtConnectionDataItem,
@@ -92,6 +95,7 @@ export class SessionService {
         private readonly _workspaceService: WorkspaceService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
+        private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _scansService: ScansService,
         private readonly _hideUnloadSaveService: HideUnloadSaveService,
         private readonly _signoutService: SignOutService,
@@ -183,10 +187,15 @@ export class SessionService {
     }
 
     finalise() {
-        this._openIdService.finalise();
-
         if (!this.final) {
             this.setStateId(SessionStateId.Finalising);
+
+            this._openIdService.finalise();
+            this._adiService.stop();
+            this._symbolsService.finalise();
+            this._notificationChannelsService.finalise();
+            this._scansService.finalise();
+
             this.unsubscribeZenithExtConnection();
 
             this._hideUnloadSaveService.deregisterSaveManagement(this._settingsService);
@@ -352,7 +361,7 @@ export class SessionService {
     }
 
     private log(logLevelId: Logger.LevelId, text: string) {
-        Logger.log(logLevelId, text);
+        logger.log(logLevelId, text);
         this.notifyConsolidatedLog(new Date(), logLevelId, text);
     }
 
@@ -500,6 +509,7 @@ export class SessionService {
         this._adiService.start();
         this.subscribeZenithExtConnection();
         this._symbolsService.start();
+        this._notificationChannelsService.initialise();
         this._scansService.initialise();
     }
 

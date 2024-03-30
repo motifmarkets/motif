@@ -7,12 +7,12 @@
 import { AfterViewInit, ChangeDetectorRef, Directive, ElementRef, Inject, Injector, OnDestroy, ViewChild, ViewContainerRef, createNgModule } from '@angular/core';
 import { AssertInternalError, IdleService, Integer, MultiEvent, ScanEditor, ScanFormulaZenithEncoding, StringId, StringUiAction, Strings, delay1Tick } from '@motifmarkets/motif-core';
 import { CodeMirrorNgComponent } from 'code-mirror-ng-api';
+import { ComponentBaseNgDirective } from 'component-ng-api';
 import { IdleNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { TextInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 import { ZenithScanFormulaViewDecodeProgressNgComponent } from '../decode-progress/ng-api';
-import { ComponentBaseNgDirective } from 'component-ng-api';
 
 @Directive({
     selector: '[appZenithScanFormulaView]',
@@ -150,15 +150,17 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     }
 
     private processDocChanged() {
-        if (this._decodePromise !== undefined) {
-            this._idleService.cancelRequest(this._decodePromise);
-        }
-        if (!this._editorClearing) {
-            this._decodePromise = this._idleService.addRequest(
-                () => this.decodeDoc(),
-                ZenithScanFormulaViewNgDirective.docChangedIdleWaitTime,
-                ZenithScanFormulaViewNgDirective.docChangedDebounceInterval,
-            );
+        if (!this._editorComponent.textSetting) {
+            if (this._decodePromise !== undefined) {
+                this._idleService.cancelRequest(this._decodePromise);
+            }
+            if (!this._editorClearing) {
+                this._decodePromise = this._idleService.addRequest(
+                    () => this.decodeDoc(),
+                    ZenithScanFormulaViewNgDirective.docChangedIdleWaitTime,
+                    ZenithScanFormulaViewNgDirective.docChangedDebounceInterval,
+                );
+            }
         }
     }
 
@@ -167,7 +169,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
         const scanEditor = this.scanEditor;
         if (scanEditor !== undefined) {
             const text = this._editorComponent.text;
-            const setResult = this.setFormulaAsZenithText(scanEditor, text, this);
+            const setResult = this.setFormulaAsZenithText(scanEditor, text, this.instanceId);
             if (setResult !== undefined) {
                 const progress = setResult.progress;
                 const error = setResult.error;
@@ -194,7 +196,7 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
 
     private processScanEditorFieldChanges(editor: ScanEditor, changedFieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier | undefined) {
         const text = this.getFormulaAsZenithTextIfChanged(editor, changedFieldIds);
-        if (text !== undefined && fieldChanger !== this) {
+        if (text !== undefined && fieldChanger !== this.instanceId) {
             this._editorComponent.text = text;
         }
     }
@@ -238,7 +240,8 @@ export abstract class ZenithScanFormulaViewNgDirective extends ScanFormulaViewNg
     protected abstract getFormulaAsZenithText(editor: ScanEditor): string | undefined;
     protected abstract setFormulaAsZenithText(
         editor: ScanEditor,
-        text: string, fieldChanger: ScanEditor.Modifier
+        text: string,
+        fieldChanger: ScanEditor.Modifier,
     ): ScanEditor.SetAsZenithTextResult | undefined;
 }
 

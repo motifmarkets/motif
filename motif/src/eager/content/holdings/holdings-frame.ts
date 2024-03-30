@@ -7,10 +7,10 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     BrokerageAccountGroup,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Holding,
     HoldingTableRecordSource,
     Integer,
@@ -58,7 +58,7 @@ export class HoldingsFrame extends DelayedBadnessGridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition(HoldingsFrame.defaultBrokerageAccountGroup);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as HoldingTableRecordSource;
         this._recordList = this._recordSource.recordList;
@@ -88,8 +88,8 @@ export class HoldingsFrame extends DelayedBadnessGridSourceFrame {
 
     private createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createHolding(brokerageAccountGroup);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 }
 

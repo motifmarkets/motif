@@ -24,7 +24,6 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
@@ -36,6 +35,7 @@ import {
     assert,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
 import { DepthAndSalesDitemFrame } from 'ditem-internal-api';
@@ -64,10 +64,10 @@ export class DepthAndSalesGridLayoutsDialogNgComponent extends ContentComponentB
     private _watchlistAllowedFields: readonly GridField[];
     private _tradesAllowedFields: readonly GridField[];
 
-    private _depthBidLayoutDefinition: GridLayoutDefinition;
-    private _depthAskLayoutDefinition: GridLayoutDefinition;
-    private _watchlistLayoutDefinition: GridLayoutDefinition;
-    private _tradesLayoutDefinition: GridLayoutDefinition;
+    private _depthBidLayoutDefinition: RevGridLayoutDefinition;
+    private _depthAskLayoutDefinition: RevGridLayoutDefinition;
+    private _watchlistLayoutDefinition: RevGridLayoutDefinition;
+    private _tradesLayoutDefinition: RevGridLayoutDefinition;
 
     private _okUiAction: IconButtonUiAction;
     private _cancelUiAction: IconButtonUiAction;
@@ -223,7 +223,7 @@ export class DepthAndSalesGridLayoutsDialogNgComponent extends ContentComponentB
         this.setSubFrameId(DepthAndSalesGridLayoutsDialogNgComponent.SubFrameId.Watchlist);
     }
 
-    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: GridLayoutDefinition) {
+    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: RevGridLayoutDefinition) {
         this.checkLoadLayoutFromEditor();
 
         if (this._editorComponent !== undefined) {

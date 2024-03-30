@@ -4,16 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
-:host {
-    height: 100%;
-    flex: 1 1 0;
-}
-
+@use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import 'partials/variables';
 @import './partials/main-toolbar-css-mixin';
 @import './partials/centered-toolbar-group-mixin';
 @import './partials/caption-followed-by-input';
-@import './partials/flex-row-items-centered-mixin';
 @import './partials/horizontal-children-separator';
 
 :host {
@@ -22,6 +18,7 @@
     flex-direction: column;
     overflow: clip;
     height: 100%;
+    flex: 1 1 0;
     // min-height: 0;
     // width: 100%;
 }
@@ -47,12 +44,13 @@
 
         > #columnButtonsSection {
             @include centeredToolbarGroupMixin;
+            @include svg-icon-button-size.toolbarDescendantMixin;
             margin-left: $toolbar-button-group-separation;
         }
     }
 
     > #categorySection {
-        @include flexRowItemsCenteredMixin;
+        @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
         @include horizontalChildrenSeparatorMixin;
     }
 
@@ -61,7 +59,7 @@
         height: 100%;
 
         > #resultsHeading {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
             > #searchDescriptionLabel {
                 font-style: italic;

@@ -7,7 +7,7 @@
 <section id="genericSelectorSection" *ngIf="genericSelectorWidth !== undefined">
     <div id="preGenericSelectorLine" class="line" [style.background-color]="lineColor"></div>
     <span id="genericSelectorCaption" *ngIf="genericSelectorCaption !== undefined">{{genericSelectorCaption}}</span>
-    <app-enum-input #genericSelector id="genericSelectorControl" inputId="genericSelectorInput" [style.width]="genericSelectorWidth"></app-enum-input>
+    <app-integer-enum-input #genericSelector id="genericSelectorControl" inputId="genericSelectorInput" [style.width]="genericSelectorWidth"></app-integer-enum-input>
 </section>
 <div id="midLine" class="line" [style.background-color]="lineColor"></div>
 <div id="buttons">

@@ -32,10 +32,11 @@ export namespace MarketIdImplementation {
             case MarketId.Nzx: return MarketIdEnumApi.Nzx;
             case MarketId.Calastone: throw new AssertInternalError('MIAITACLS98887722');
             case MarketId.AsxCxa: throw new AssertInternalError('MIAITAASC98887722');
-            case MarketId.Ptx: return MarketIdEnumApi.Ptx;
-            case MarketId.Fnsx: return MarketIdEnumApi.Fnsx;
-            case MarketId.Fpsx: return MarketIdEnumApi.Fpsx;
-            case MarketId.Cfxt: return MarketIdEnumApi.Cfxt;
+            case MarketId.PtxMain: return MarketIdEnumApi.PtxMain;
+            case MarketId.FnsxMain: return MarketIdEnumApi.FnsxMain;
+            case MarketId.FpsxMain: return MarketIdEnumApi.FpsxMain;
+            case MarketId.CfxMain: return MarketIdEnumApi.CfxMain;
+            case MarketId.DaxMain: return MarketIdEnumApi.DaxMain;
             default: throw new UnreachableCaseError('MIAITADEF98887722', value);
         }
     }
@@ -51,10 +52,11 @@ export namespace MarketIdImplementation {
             case MarketIdEnumApi.MyxOddLot: return MarketId.MyxOddLot;
             case MarketIdEnumApi.MyxBuyIn: return MarketId.MyxBuyIn;
             case MarketIdEnumApi.Nzx: return MarketId.Nzx;
-            case MarketIdEnumApi.Ptx: return MarketId.Ptx;
-            case MarketIdEnumApi.Fnsx: return MarketId.Fnsx;
-            case MarketIdEnumApi.Fpsx: return MarketId.Fpsx;
-            case MarketIdEnumApi.Cfxt: return MarketId.Cfxt;
+            case MarketIdEnumApi.PtxMain: return MarketId.PtxMain;
+            case MarketIdEnumApi.FnsxMain: return MarketId.FnsxMain;
+            case MarketIdEnumApi.FpsxMain: return MarketId.FpsxMain;
+            case MarketIdEnumApi.CfxMain: return MarketId.CfxMain;
+            case MarketIdEnumApi.DaxMain: return MarketId.DaxMain;
             default: throw new UnreachableCaseApiErrorImplementation(ApiErrorApi.CodeEnum.InvalidMarketId, enumValue);
         }
     }

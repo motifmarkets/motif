@@ -19,7 +19,6 @@ import {
     ColorScheme,
     ExtensionInfo,
     Integer,
-    ListChangeTypeId,
     MultiEvent,
     SettingsService,
     StringId,
@@ -106,17 +105,17 @@ export class InstalledExtensionListNgComponent extends ContentComponentBaseNgDir
     }
 
     private handleInstalledListChangedEvent(
-        listChangeTypeId: ListChangeTypeId,
+        listChangeTypeId: ExtensionsAccessService.ListChangeTypeId,
         idx: Integer,
         info: ExtensionInfo,
         listTransitioning: boolean
     ) {
         if (listTransitioning) {
             switch (listChangeTypeId) {
-                case ListChangeTypeId.Insert:
+                case ExtensionsAccessService.ListChangeTypeId.Insert:
                     this.infoListTransitionFinishEmitter.emit(info);
                     break;
-                case ListChangeTypeId.Remove:
+                case ExtensionsAccessService.ListChangeTypeId.Remove:
                     this.infoListTransitionStartEmitter.emit(info);
                     break;
             }

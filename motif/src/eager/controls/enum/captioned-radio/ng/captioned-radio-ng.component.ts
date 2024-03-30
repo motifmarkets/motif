@@ -8,7 +8,7 @@ import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inpu
 import { Integer, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
-import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-component-base-ng.directive';
+import { IntegerEnumElementComponentBaseNgDirective } from '../../ng/ng-api';
 
 @Component({
     selector: 'app-captioned-radio',
@@ -17,7 +17,7 @@ import { EnumElementComponentBaseNgDirective } from '../../ng/enum-element-compo
 
     changeDetection: ChangeDetectionStrategy.OnPush
 })
-export class CaptionedRadioNgComponent extends EnumElementComponentBaseNgDirective implements OnDestroy {
+export class CaptionedRadioNgComponent extends IntegerEnumElementComponentBaseNgDirective implements OnDestroy {
     private static typeInstanceCreateCount = 0;
 
     @Input() name = '';

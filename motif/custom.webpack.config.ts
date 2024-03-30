@@ -215,7 +215,7 @@ function updateDevtool(config: webpack.WebpackOptionsNormalized, development: bo
 
 function updateDevServer(config: webpack.WebpackOptionsNormalized) {
     const configDevServer = config.devServer;
-    if (configDevServer !== undefined) {
+    if (configDevServer !== undefined && configDevServer !== false) {
         updateDevServerStatic(configDevServer);
     }
 }

@@ -1,0 +1,71 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/caption-followed-by-input';
+@use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
+
+:host {
+    display: flex;
+    flex-direction: column;
+
+    #fieldAndConditions {
+        flex: 1 1 0;
+        display: flex;
+        flex-direction: column;
+        flex: 1 1 0;
+        overflow-y: auto;
+
+        #field {
+            display: flex;
+            column-gap: 1.5em;
+
+            #properties {
+                display: grid;
+                grid-template-columns: max-content max-content;
+                row-gap: .3em;
+                column-gap: 1.5em;
+
+                #requires {
+                    display: flex;
+                    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+                    gap: 1em;
+                }
+
+                #conditionsLabel {
+                    align-self: end;
+                    font-size: larger;
+                }
+
+                #addConditionControl {
+                    width: 10em;
+                }
+            }
+
+            #deleteMeControl {
+                height: svg-icon-button-size.$larger-text-inline-height;
+            }
+        }
+
+        // #conditionsHeaderBar {
+        //     display: flex;
+        //     @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+        //     padding-top: .4em;
+        // }
+
+        #conditionsContainer {
+            display: grid;
+            grid-template-columns: max-content max-content;
+            column-gap: 1.5em;
+            align-content: start;
+            overflow-y: auto;
+        }
+    }
+
+    #errorBar {
+        flex: 0 0 auto;
+    }
+}

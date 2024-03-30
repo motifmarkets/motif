@@ -13,6 +13,7 @@ import {
     CapabilitiesNgService,
     HideUnloadSaveNgService,
     MotifServicesNgService,
+    NotificationChannelsNgService,
     ScansNgService,
     SessionInfoNgService,
     SettingsNgService,
@@ -49,6 +50,7 @@ export class SessionNgService implements OnDestroy {
         workspaceNgService: WorkspaceNgService,
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
+        notificationChannelsNgService: NotificationChannelsNgService,
         scansNgService: ScansNgService,
         sessionInfoNgService: SessionInfoNgService,
         hideUnloadSaveNgService: HideUnloadSaveNgService,
@@ -56,7 +58,7 @@ export class SessionNgService implements OnDestroy {
     ) {
         this._config = configNgService.config;
         this._session = new SessionService(
-            telemetryNgService.telemetry,
+            telemetryNgService.service,
             userAlertNgService.service,
             settingsNgService.service,
             openIdNgService.service,
@@ -67,6 +69,7 @@ export class SessionNgService implements OnDestroy {
             workspaceNgService.service,
             adiNgService.service,
             symbolsNgService.service,
+            notificationChannelsNgService.service,
             scansNgService.service,
             hideUnloadSaveNgService.service,
             signOutNgService.service,

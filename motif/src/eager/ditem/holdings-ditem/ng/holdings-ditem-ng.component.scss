@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @import './partials/main-toolbar-css-mixin';
 @import './partials/centered-toolbar-group-mixin';
 
@@ -20,6 +21,7 @@
 
         > #mainToolbarDiv {
             @include mainToolbarCssMixin;
+            @include svg-icon-button-size.toolbarDescendantMixin;
 
             > #accountGroupInput {
                 width: 8em;

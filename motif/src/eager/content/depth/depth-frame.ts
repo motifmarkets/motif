@@ -11,6 +11,7 @@ import {
     BidAskAllowedFieldsGridLayoutDefinitions,
     BidAskGridLayoutDefinitions,
     CommaText,
+    CommaTextErr,
     Correctness,
     DepthDataDefinition,
     DepthDataItem,
@@ -20,16 +21,16 @@ import {
     Integer,
     JsonElement,
     LitIvemId,
-    Logger,
     MultiEvent,
     OrderSideId,
     PublisherSubscriptionDataTypeId,
     SecurityDataDefinition,
     SecurityDataItem,
     UnreachableCaseError,
-    uniqueElementArraysOverlap,
+    uniqueElementArraysOverlap
 } from '@motifmarkets/motif-core';
 import { ServerNotificationId } from '@xilytix/revgrid';
+import { Decimal, logger } from '@xilytix/sysutils';
 import { ContentFrame } from '../content-frame';
 import { DepthSideFrame } from '../depth-side/depth-side-frame';
 
@@ -95,7 +96,7 @@ export class DepthFrame extends ContentFrame {
                 if (commaTextResult.isErr()) {
                     this._filterActive = false;
                     this._filterXrefs = DepthFrame.JsonDefault.filterXrefs;
-                    Logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${commaTextResult.error})`);
+                    logger.logWarning(`DepthDataItem LoadLayoutConfig: Invalid FilterXrefs: (${CommaTextErr.errorIdPlusExtraToCodePlusExtra(commaTextResult.error)})`);
                 } else {
                     this._filterXrefs = commaTextResult.value;
                 }
@@ -197,7 +198,7 @@ export class DepthFrame extends ContentFrame {
         if (this._depthDataItem !== undefined) {
             // this._depthDataItem.unsubscribeCorrectnessChangedEvent(this._depthDataCorrectnessChangeSubscritionId);
             // this._depthDataCorrectnessChangeSubscritionId = undefined;
-            this._depthDataItem.unsubscribeBadnessChangeEvent(this._depthBadnessChangeSubscritionId);
+            this._depthDataItem.unsubscribeBadnessChangedEvent(this._depthBadnessChangeSubscritionId);
             this._depthBadnessChangeSubscritionId = undefined;
             this._adi.unsubscribe(this._depthDataItem);
             this._depthDataItem = undefined;
@@ -205,7 +206,7 @@ export class DepthFrame extends ContentFrame {
         if (this._levelDataItem !== undefined) {
             // this._levelDataItem.unsubscribeCorrectnessChangedEvent(this._levelDataCorrectnessChangeSubscritionId);
             // this._levelDataCorrectnessChangeSubscritionId = undefined;
-            this._levelDataItem.unsubscribeBadnessChangeEvent(this._levelBadnessChangeSubscritionId);
+            this._levelDataItem.unsubscribeBadnessChangedEvent(this._levelBadnessChangeSubscritionId);
             this._levelBadnessChangeSubscritionId = undefined;
             this._adi.unsubscribe(this._levelDataItem);
             this._levelDataItem = undefined;
@@ -406,7 +407,7 @@ export class DepthFrame extends ContentFrame {
                 // this._depthDataCorrectnessChangeSubscritionId =
                 //     this._depthDataItem.subscribeCorrectnessChangedEvent(() => this.handleDepthDataCorrectnessChangeEvent());
                 this._depthBadnessChangeSubscritionId =
-                    this._depthDataItem.subscribeBadnessChangeEvent(() => this.handleDepthBadnessChangeEvent());
+                    this._depthDataItem.subscribeBadnessChangedEvent(() => this.handleDepthBadnessChangeEvent());
                 this.openFull();
                 break;
             }
@@ -417,7 +418,7 @@ export class DepthFrame extends ContentFrame {
                 // this._levelDataCorrectnessChangeSubscritionId =
                 //     this._levelDataItem.subscribeCorrectnessChangedEvent(() => this.handleLevelDataCorrectnessChangeEvent());
                 this._levelBadnessChangeSubscritionId =
-                    this._levelDataItem.subscribeBadnessChangeEvent(() => this.handleLevelBadnessChangeEvent());
+                    this._levelDataItem.subscribeBadnessChangedEvent(() => this.handleLevelBadnessChangeEvent());
                 this.openShort();
                 break;
             }
@@ -445,7 +446,7 @@ export class DepthFrame extends ContentFrame {
         const subscriptionDataTypeIds = this._securityDataItem.subscriptionDataTypeIds;
         let resolvedDepthStyleId: DepthStyleId;
         if (subscriptionDataTypeIds === undefined) {
-            Logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
+            logger.logWarning(`Security ${this._litIvemId.name} does not have Subscription Data`);
             resolvedDepthStyleId = this._preferredDepthStyleId; // try this
         } else {
             switch (this._preferredDepthStyleId) {
@@ -459,7 +460,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthShort)) {
                                 resolvedDepthStyleId = DepthStyleId.Short;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
+                                logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Full; // try this - probably wont work
                             }
                         }
@@ -476,7 +477,7 @@ export class DepthFrame extends ContentFrame {
                             if (subscriptionDataTypeIds.includes(PublisherSubscriptionDataTypeId.DepthFull)) {
                                 resolvedDepthStyleId = DepthStyleId.Full;
                             } else {
-                                Logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
+                                logger.logWarning(`Symbol ${this._litIvemId.name} does not have any Depth`);
                                 resolvedDepthStyleId = DepthStyleId.Short; // try this - probably wont work
                             }
                         }
@@ -517,7 +518,7 @@ export class DepthFrame extends ContentFrame {
         this._askDepthSideFrame.deactivateFilter();
     }
 
-    private processAuctionQuantityChanged(newValue: Integer | undefined) {
+    private processAuctionQuantityChanged(newValue: Decimal | undefined) {
         this._bidDepthSideFrame.setAuctionQuantity(newValue);
         this._askDepthSideFrame.setAuctionQuantity(newValue);
     }

@@ -9,29 +9,32 @@ import {
     AssertInternalError,
     Badness,
     CellPainterFactoryService,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     EditableGridLayoutDefinitionColumnList,
     GridField,
     GridFieldTableRecordSource,
-    GridSourceDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Integer,
     ModifierKey,
     ModifierKeyId,
     MultiEvent,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourcesService,
     RenderValueRecordGridCellPainter,
     SettingsService,
-    TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextHeaderCellPainter,
     TextRenderValueCellPainter,
     UsableListChangeTypeId,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { DatalessViewCell, RevRecord } from '@xilytix/revgrid';
+import { RevFieldCustomHeadingsService, RevRecord } from '@xilytix/rev-data-source';
+import { DatalessViewCell } from '@xilytix/revgrid';
+import { ToastService } from 'component-services-internal-api';
 import { GridSourceFrame } from '../../../grid-source/internal-api';
+import { TableRecordSourceDefinitionFactoryService } from '../../../table-record-source-definition-factory-service';
 
 export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
     selectionChangedEventer: GridLayoutEditorAllowedFieldsFrame.SelectionChangedEventer | undefined;
@@ -45,21 +48,27 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     constructor(
         settingsService: SettingsService,
+        gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         namedGridLayoutsService: ReferenceableGridLayoutsService,
+        tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        namedGridSourcesService: ReferenceableGridSourcesService,
+        tableRecordSourceFactory: TableRecordSourceFactory,
+        namedGridSourcesService: ReferenceableDataSourcesService,
         cellPainterFactoryService: CellPainterFactoryService,
+        toastService: ToastService,
         private readonly _allowedFields: readonly GridField[],
         private readonly _columnList: EditableGridLayoutDefinitionColumnList,
     ) {
         super(
             settingsService,
+            gridFieldCustomHeadingsService,
             namedGridLayoutsService,
+            tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryService,
-            tableRecordSourceFactoryService,
+            tableRecordSourceFactory,
             namedGridSourcesService,
             cellPainterFactoryService,
+            toastService,
         );
 
         this._columnListChangeSubscriptionId = this._columnList.subscribeListChangeEvent(
@@ -114,12 +123,6 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return grid;
     }
 
-    tryOpenDefault(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView);
-    }
-
-
     applyColumnListFilter() {
         this.grid.applyFilter((record) => this.filterInuseFields(record));
     }
@@ -158,7 +161,7 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as GridFieldTableRecordSource;
         this._records = recordSource.records;
@@ -176,8 +179,8 @@ export class GridLayoutEditorAllowedFieldsFrame extends GridSourceFrame {
 
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createGridField(this._allowedFields.slice());
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private handleGridSelectionChangedEventer() {

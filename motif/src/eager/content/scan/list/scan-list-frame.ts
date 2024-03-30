@@ -1,9 +1,9 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Integer,
     RenderValueRecordGridCellPainter,
     Scan,
@@ -68,16 +68,11 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
         return grid;
     }
 
-    tryOpenDefault(keepView: boolean) {
-        const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition();
-        return this.tryOpenGridSource(definition, keepView);
-    }
-
     protected override getDefaultGridSourceOrReferenceDefinition() {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition();
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as ScanTableRecordSource;
         this._scanList = this._recordSource.recordList;
@@ -106,8 +101,8 @@ export class ScanListFrame extends DelayedBadnessGridSourceFrame {
 
     private createDefaultLayoutGridSourceOrReferenceDefinition() {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScan();
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private filterItems(scan: Scan) {

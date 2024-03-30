@@ -39,7 +39,7 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, OrdersNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -96,7 +96,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -116,7 +116,7 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
             symbolsNgService.service,
             adiNgService.service,
             symbolDetailCacheNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
+            this._toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
@@ -280,7 +280,15 @@ export class OrdersDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirecti
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Orders]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'OADNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },

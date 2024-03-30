@@ -5,16 +5,16 @@
  */
 
 import { Injectable } from '@angular/core';
-import { FavouriteReferenceableGridLayoutDefinitionsStoreService } from '@motifmarkets/motif-core';
+import { RevFavouriteReferenceableGridLayoutDefinitionsStoreService } from '@xilytix/rev-data-source';
 
 @Injectable({
     providedIn: 'root',
 })
 export class FavouriteReferenceableGridLayoutDefinitionsStoreNgService {
-    private _service: FavouriteReferenceableGridLayoutDefinitionsStoreService;
+    private _service: RevFavouriteReferenceableGridLayoutDefinitionsStoreService;
 
     constructor() {
-        this._service = new FavouriteReferenceableGridLayoutDefinitionsStoreService();
+        this._service = new RevFavouriteReferenceableGridLayoutDefinitionsStoreService();
     }
 
     get service() { return this._service; }

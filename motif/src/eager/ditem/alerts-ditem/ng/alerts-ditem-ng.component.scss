@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @use './partials/revgrid';
 
 :host {
@@ -27,11 +28,13 @@
 
             > #buttonsSection {
                 @include centeredToolbarGroupMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
                 margin-left: $toolbar-button-group-separation;
             }
 
             > #columnButtonsSection {
                 @include centeredToolbarGroupMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
                 margin-left: $toolbar-button-group-separation;
             }
         }

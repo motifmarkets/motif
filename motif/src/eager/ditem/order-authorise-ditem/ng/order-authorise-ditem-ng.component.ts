@@ -8,13 +8,13 @@ import {
     AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, OnDestroy, ViewChild, ViewContainerRef
 } from '@angular/core';
 import {
+    AssertInternalError,
     BrokerageAccountGroup,
     BrokerageAccountGroupUiAction,
     IconButtonUiAction,
     Integer,
     InternalCommand,
     JsonElement,
-    Logger,
     StringId,
     Strings,
     UiAction,
@@ -22,7 +22,8 @@ import {
     assert,
     assigned,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
@@ -30,7 +31,7 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, OrderAuthoriseNgComponent } from 'content-ng-api';
 import { BrokerageAccountGroupInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
@@ -86,7 +87,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         adiNgService: AdiNgService,
         symbolsNgService: SymbolsNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -106,7 +107,7 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
             symbolsNgService.service,
             adiNgService.service,
             symbolDetailCacheNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
+            this._toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleRecordFocusedEvent(recordIndex),
         );
@@ -277,13 +278,21 @@ export class OrderAuthoriseDitemNgComponent extends BuiltinDitemNgComponentBaseN
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.OrderAuthorise]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'OADNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`Orders Authorise Ditem Layout Dialog error: ${errorText}`);
+                logger.logError(`Orders Authorise Ditem Layout Dialog error: ${errorText}`);
                 this.closeDialog();
             }
         );

@@ -25,6 +25,7 @@ export * from './ng/ng-select-overlay-ng.service';
 export * from './number/ng-api';
 export * from './order-route/ng-api';
 export * from './routed-ivem-id/ng-api';
+export * from './string-array/ng-api';
 export * from './string/ng-api';
 export * from './tab-list/ng-api';
 

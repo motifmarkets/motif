@@ -18,8 +18,14 @@ import { SvgIconComponent, SvgIconRegistryService } from 'angular-svg-icon';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../../../ng/control-component-base-ng.directive';
 import nounArrowDownSvg from './svg/noun-arrow-down-70422.svg';
-import nounClose82107Svg from './svg/noun-close-82107.svg';
+import nounCancelLeft from './svg/noun-arrow-left-70423.svg';
+import nounCloseSvg from './svg/noun-close-3523569.svg';
+import nounRemoveSelectedFromListSvg from './svg/noun-close-82107.svg';
 import nounCollapseVerticalSvg from './svg/noun-collapse-vertical-2439339.svg';
+import nounDeleteSvg from './svg/noun-delete-1902723.svg';
+import nounDetachSvg from './svg/noun-detach-3039217.svg';
+import nounDropdownSvg from './svg/noun-dropdown-3039057.svg';
+import nounExclamationSvg from './svg/noun-exclamation-1447148-cropped.svg';
 import nounExpandVerticalSvg from './svg/noun-expand-vertical-2439362.svg';
 import nounLoginSvg from './svg/noun-login-4123950.svg';
 import nounLogoutSvg from './svg/noun-logout-4124631.svg';
@@ -31,7 +37,6 @@ import nounResize4146882Svg from './svg/noun-resize-4146882.svg';
 import nounArrowUpSvg from './svg/noun-up-70478.svg';
 import nounBrightnessFullSvg from './svg/noun_Brightness-Full_218687.svg';
 import nounCancelSearchSvg from './svg/noun_Cancel-Search_677094.svg';
-import nounCloseSvg from './svg/noun_Close_82107.svg';
 import nounFilePlusSvg from './svg/noun_File-Plus_1669467.svg';
 import nounFolderSvg from './svg/noun_Folder_3438446.svg';
 import nounLightBulbSvg from './svg/noun_Light-Bulb_3019480.svg';
@@ -46,7 +51,6 @@ import nounTintHollowSvg from './svg/noun_Tint-Hollow_120409.svg';
 import nounWriteFileSvg from './svg/noun_Write-File_1669429.svg';
 import nounBlankSvg from './svg/noun_blank_1667007.svg';
 import nounBoltSvg from './svg/noun_bolt_3396896.svg';
-import nounCancelSvg from './svg/noun_cancel_1896724.svg';
 import nounClipboardSvg from './svg/noun_clipboard_158395.svg';
 import nounCodeEventSvg from './svg/noun_code-event_515475.svg';
 import nounDetailsSvg from './svg/noun_details_251351.svg';
@@ -360,10 +364,6 @@ export namespace SvgButtonNgComponent {
                 name: 'Save',
                 svg: nounSaveOperationSvg
             },
-            DeleteSymbol: { id: IconButtonUiAction.IconId.DeleteSymbol,
-                name: 'DeleteSymbol',
-                svg: nounCloseSvg
-            },
             NewWatchlist: { id: IconButtonUiAction.IconId.NewWatchlist,
                 name: 'NewWatchlist',
                 svg: nounListSvg
@@ -414,7 +414,7 @@ export namespace SvgButtonNgComponent {
             },
             ReturnCancel: { id: IconButtonUiAction.IconId.ReturnCancel,
                 name: 'ReturnCancel',
-                svg: nounCancelSvg
+                svg: nounCancelLeft
             },
             SearchNext: { id: IconButtonUiAction.IconId.SearchNext,
                 name: 'SearchNext',
@@ -486,7 +486,7 @@ export namespace SvgButtonNgComponent {
             },
             RemoveSelectedFromList: { id: IconButtonUiAction.IconId.RemoveSelectedFromList,
                 name: 'RemoveSelectedFromList',
-                svg: nounClose82107Svg
+                svg: nounRemoveSelectedFromListSvg
             },
             EnlargeToTopLeft: { id: IconButtonUiAction.IconId.EnlargeToTopLeft,
                 name: 'EnlargeToTopLeft',
@@ -495,6 +495,26 @@ export namespace SvgButtonNgComponent {
             Dot: { id: IconButtonUiAction.IconId.Dot,
                 name: 'Dot',
                 svg: nounDotSvg
+            },
+            Exclamation: { id: IconButtonUiAction.IconId.Exclamation,
+                name: 'Exclamation',
+                svg: nounExclamationSvg
+            },
+            Delete: { id: IconButtonUiAction.IconId.Delete,
+                name: 'Delete',
+                svg: nounDeleteSvg
+            },
+            Detach: { id: IconButtonUiAction.IconId.Detach,
+                name: 'Detach',
+                svg: nounDetachSvg
+            },
+            Dropdown: { id: IconButtonUiAction.IconId.Dropdown,
+                name: 'Dropdown',
+                svg: nounDropdownSvg
+            },
+            Close: { id: IconButtonUiAction.IconId.Close,
+                name: 'Close',
+                svg: nounCloseSvg
             },
         };
 

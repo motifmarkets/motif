@@ -5,7 +5,7 @@
  */
 
 import { Decimal } from './decimal-api';
-import { Result } from './result-api';
+import { JsonElementResult } from './json-element-result-api';
 import { Guid, Integer, Json, JsonValue } from './types-api';
 
 /** @public */
@@ -17,37 +17,37 @@ export interface JsonElement {
     deepExtend(other: Json): void;
 
     stringify(): string;
-    parse(jsonText: string): Result<void>;
+    parse(jsonText: string): JsonElementResult<void>;
 
-    tryGetElement(name: string): Result<JsonElement>;
+    tryGetElement(name: string): JsonElementResult<JsonElement>;
     tryGetJsonValue(name: string): JsonValue | undefined;
     // eslint-disable-next-line @typescript-eslint/ban-types
-    tryGetNativeObject(name: string): Result<object>;
-    tryGetJsonObject(name: string): Result<Json>;
+    tryGetNativeObject(name: string): JsonElementResult<object>;
+    tryGetJsonObject(name: string): JsonElementResult<Json>;
 
-    tryGetString(name: string): Result<string>;
+    tryGetString(name: string): JsonElementResult<string>;
     getString(name: string, defaultValue: string): string;
-    tryGetNumber(name: string): Result<number>;
+    tryGetNumber(name: string): JsonElementResult<number>;
     getNumber(name: string, defaultValue: number): number;
-    tryGetBoolean(name: string): Result<boolean>;
+    tryGetBoolean(name: string): JsonElementResult<boolean>;
     getBoolean(name: string, defaultValue: boolean): boolean;
 
-    tryGetElementArray(name: string): Result<JsonElement[], Integer>;
-    tryGetJsonObjectArray(name: string): Result<Json[], Integer>;
-    tryGetStringArray(name: string): Result<string[], Integer>;
-    tryGetNumberArray(name: string): Result<number[], Integer>;
-    tryGetBooleanArray(name: string): Result<boolean[], Integer>;
-    tryGetAnyJsonValueTypeArray(name: string): Result<JsonValue[], Integer>;
+    tryGetElementArray(name: string): JsonElementResult<JsonElement[]>;
+    tryGetJsonObjectArray(name: string): JsonElementResult<Json[]>;
+    tryGetStringArray(name: string): JsonElementResult<string[]>;
+    tryGetNumberArray(name: string): JsonElementResult<number[]>;
+    tryGetBooleanArray(name: string): JsonElementResult<boolean[]>;
+    tryGetAnyJsonValueTypeArray(name: string): JsonElementResult<JsonValue[]>;
 
-    tryGetInteger(name: string): Result<Integer>;
+    tryGetInteger(name: string): JsonElementResult<Integer>;
     getInteger(name: string, defaultValue: Integer): Integer;
-    tryGetDate(name: string): Result<Date>;
+    tryGetDate(name: string): JsonElementResult<Date>;
     getDate(name: string, defaultValue: Date): Date;
-    tryGetDateTime(name: string): Result<Date>;
+    tryGetDateTime(name: string): JsonElementResult<Date>;
     getDateTime(name: string, defaultValue: Date): Date;
-    tryGetGuid(name: string): Result<Guid>;
+    tryGetGuid(name: string): JsonElementResult<Guid>;
     getGuid(name: string, defaultValue: Guid): Guid;
-    tryGetDecimal(name: string): Result<Decimal>;
+    tryGetDecimal(name: string): JsonElementResult<Decimal>;
     getDecimal(name: string, defaultValue: Decimal): Decimal;
 
     newElement(name: string): JsonElement;

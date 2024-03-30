@@ -7,16 +7,18 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     AssertInternalError,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Integer,
     LitIvemIdExecuteScanDataDefinition,
     LitIvemIdExecuteScanRankedLitIvemIdListDefinition,
     RankedLitIvemIdList,
     RankedLitIvemIdListTableRecordSource,
     RenderValueRecordGridCellPainter,
+    StringId,
+    Strings,
     TextHeaderCellPainter,
     TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
@@ -61,16 +63,23 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
 
         const gridSourceOrReferenceDefinition = this.createDefaultLayoutGridSourceOrReferenceDefinition(name, description, category, dataDefinition);
 
-        const gridSourceOrReferencePromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
-        AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'SSFER13971', `${this.opener.lockerName}: ${dataDefinition.description}`);
+        const openPromise = this.tryOpenGridSource(gridSourceOrReferenceDefinition, false);
+        openPromise.then(
+            (result) => {
+                if (result.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.ScanTestMatches]}: ${result.error}`);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSFER13971') }
+        );
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
         throw new AssertInternalError('SCMFGDGSORD44218');
-        return new GridSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
+        return new DataSourceOrReferenceDefinition(''); // Invalid definition - should never be returned
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         const recordSource = table.recordSource as RankedLitIvemIdListTableRecordSource;
         this._rankedLitIvemIdList = recordSource.recordList;
@@ -98,8 +107,8 @@ export class ScanTestMatchesFrame extends DelayedBadnessGridSourceFrame {
             dataDefinition
         )
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createScanTest(listDefinition);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     private customiseSettingsForNewGridColumn(_columnSettings: AdaptedRevgridBehavioredColumnSettings) {

@@ -7,17 +7,17 @@
 import {
     AdaptedRevgridBehavioredColumnSettings,
     BrokerageAccountGroup,
+    DataSourceDefinition,
+    DataSourceOrReference,
+    DataSourceOrReferenceDefinition,
     GridField,
-    GridSourceDefinition,
-    GridSourceOrReference,
-    GridSourceOrReferenceDefinition,
     Integer,
     KeyedCorrectnessList,
     Order,
     OrderTableRecordSource,
     RenderValueRecordGridCellPainter,
     TextHeaderCellPainter,
-    TextRenderValueCellPainter,
+    TextRenderValueCellPainter
 } from '@motifmarkets/motif-core';
 import { DatalessViewCell } from '@xilytix/revgrid';
 import { DelayedBadnessGridSourceFrame } from '../delayed-badness-grid-source/internal-api';
@@ -76,22 +76,22 @@ export class OrderAuthoriseFrame extends DelayedBadnessGridSourceFrame {
         }
     }
 
-    tryOpenWithDefaultLayout(group: BrokerageAccountGroup, keepView: boolean) {
+    tryOpenBrokerageAccountGroup(group: BrokerageAccountGroup, keepView: boolean) {
         const definition = this.createDefaultLayoutGridSourceOrReferenceDefinition(group);
         return this.tryOpenGridSource(definition, keepView);
     }
 
     createDefaultLayoutGridSourceOrReferenceDefinition(brokerageAccountGroup: BrokerageAccountGroup) {
         const tableRecordSourceDefinition = this.tableRecordSourceDefinitionFactoryService.createOrder(brokerageAccountGroup);
-        const gridSourceDefinition = new GridSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
-        return new GridSourceOrReferenceDefinition(gridSourceDefinition);
+        const gridSourceDefinition = new DataSourceDefinition(tableRecordSourceDefinition, undefined, undefined);
+        return new DataSourceOrReferenceDefinition(gridSourceDefinition);
     }
 
     protected override getDefaultGridSourceOrReferenceDefinition() {
         return this.createDefaultLayoutGridSourceOrReferenceDefinition(OrderAuthoriseFrame.defaultBrokerageAccountGroup);
     }
 
-    protected override processGridSourceOpenedEvent(_gridSourceOrReference: GridSourceOrReference) {
+    protected override processGridSourceOpenedEvent(_gridSourceOrReference: DataSourceOrReference) {
         const table = this.openedTable;
         this._recordSource = table.recordSource as OrderTableRecordSource;
         this._recordList = this._recordSource.recordList;

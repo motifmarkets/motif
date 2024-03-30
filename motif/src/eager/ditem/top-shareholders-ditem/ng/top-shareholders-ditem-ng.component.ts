@@ -25,7 +25,6 @@ import {
     IvemIdUiAction,
     JsonElement,
     LitIvemId,
-    Logger,
     MarketId,
     StringId,
     Strings,
@@ -34,16 +33,17 @@ import {
     UnreachableCaseError,
     assert,
     assigned,
-    delay1Tick
+    delay1Tick,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    ToastNgService
 } from 'component-services-ng-api';
-import { GridSourceNgDirective } from 'content-ng-api';
+import { GridSourceNgDirective, TableRecordSourceDefinitionFactoryNgService } from 'content-ng-api';
 import { DateInputNgComponent, IvemIdInputNgComponent, SvgButtonNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
 import { BuiltinDitemNgComponentBaseNgDirective } from '../../ng/builtin-ditem-ng-component-base.directive';
@@ -111,6 +111,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         private readonly _symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -130,6 +131,7 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
             this._symbolsNgService.service,
             adiNgService.service,
             tableRecordSourceDefinitionFactoryNgService.service,
+            toastNgService.service,
         );
 
         this._toggleSymbolLinkingButtonUiAction = this.createToggleSymbolLinkingButtonUiAction();
@@ -472,14 +474,14 @@ export class TopShareholdersDitemNgComponent extends BuiltinDitemNgComponentBase
         switch (this._modeId) {
             case TopShareholdersDitemNgComponent.ModeId.Historical:
                 if (!this.isHistoryValid()) {
-                    Logger.logWarning('TopShareholders history clicked when not all history controls valid');
+                    logger.logWarning('TopShareholders history clicked when not all history controls valid');
                 } else {
                     this.tryOpenGridSource();
                 }
                 break;
             case TopShareholdersDitemNgComponent.ModeId.Compare:
                 if (!this.isCompareValid()) {
-                    Logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
+                    logger.logWarning('TopShareholders compare clicked when not all compare controls valid');
                 } else {
                     this.tryOpenGridSource();
                 }

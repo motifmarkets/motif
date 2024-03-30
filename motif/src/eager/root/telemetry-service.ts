@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-import { Logger, UnreachableCaseError } from '@motifmarkets/motif-core';
+import { UnreachableCaseError } from '@motifmarkets/motif-core';
+import { Logger } from '@xilytix/sysutils';
 import { Version } from 'generated-internal-api';
 import Rollbar, { LogArgument } from 'rollbar';
 import { environment } from 'src/environments/environment';
@@ -52,8 +53,6 @@ export class TelemetryService {
             },
             checkIgnore: (isUncaught, args, item) => this.checkIgnore(isUncaught, args, item),
         });
-
-        Logger.telemetryLogEvent = (levelId, text, extraData) => this.handleLoggerEvent(levelId, text, extraData);
     }
 
     applyConfig(config: Config) {
@@ -112,7 +111,7 @@ export class TelemetryService {
         }
     }
 
-    private handleLoggerEvent(levelId: Logger.LevelId, text: string, extraData: string | undefined) {
+    sendLogEvent(levelId: Logger.LevelId, text: string, extraData: string | undefined) {
         switch (levelId) {
             case Logger.LevelId.Debug:
                 if (extraData === undefined) {

@@ -8,6 +8,9 @@
 @use './partials/app';
 @use './partials/golden-layout/goldenlayout-var-theme';
 @use './partials/revgrid';
+// @use './partials/toastify';
+
+@import "toastify-js/src/toastify.css";
 
 @include revgrid.scroller;
 

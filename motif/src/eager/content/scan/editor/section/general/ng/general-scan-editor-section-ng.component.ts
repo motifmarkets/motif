@@ -2,17 +2,18 @@ import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, E
 import {
     AllowedFieldsGridLayoutDefinition,
     BooleanUiAction,
-    GridLayoutOrReferenceDefinition,
     LitIvemId,
     ScanEditor,
     StringId,
     StringUiAction,
     Strings,
-    UiBadnessComparableList
+    UiComparableList
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import {
     CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CheckboxInputNgComponent, TextInputNgComponent
 } from 'controls-ng-api';
+import { ComponentBaseNgDirective } from '../../../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../../../expandable-collapsible-lined-heading/ng-api';
 import { ScanEditorSectionNgDirective } from '../../scan-editor-section-ng.directive';
 import { ScanEditorTargetsNgComponent } from '../targets/ng-api';
@@ -44,7 +45,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     public deletingOrDeleted = false;
 
     controlInputOrCommitEventer: GeneralScanEditorSectionNgComponent.ControlInputOrCommitEventer | undefined;
-    editTargetsMultiSymbolGridColumnsEventer: GeneralScanEditorSectionNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
+    editGridColumnsEventer: GeneralScanEditorSectionNgComponent.EditGridColumnsEventer | undefined;
     popoutTargetsMultiSymbolListEditorEventer: GeneralScanEditorSectionNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
     rankDisplayedPossiblyChangedEventer: GeneralScanEditorSectionNgComponent.RankDisplayedPossiblyChangedEventer | undefined;
 
@@ -93,7 +94,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     isDeleted() {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         return scanEditor !== undefined && scanEditor.lifeCycleStateId === ScanEditor.LifeCycleStateId.Deleted;
     }
 
@@ -103,7 +104,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
             this._nameControlComponent.uiAction.isValueOk() &&
             this._descriptionControlComponent.uiAction.isValueOk() &&
             this._symbolListControlComponent.uiAction.isValueOk() &&
-            this._showRankControlComponent.uiAction.isValueOk() &&
+            this._showRankControlComponent.uiAction.isValueOkOrDisabled() &&
             this._targetsComponent.areAllControlValuesOk()
         );
     }
@@ -119,7 +120,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     protected finalise() {
         this._targetsComponent.controlInputOrCommitEventer = undefined;
-        this._targetsComponent.editMultiSymbolGridColumnsEventer = undefined;
+        this._targetsComponent.editGridColumnsEventer = undefined;
         this._targetsComponent.popoutMultiSymbolListEditorEventer = undefined;
 
         this._enabledUiAction.finalise();
@@ -134,9 +135,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
     }
 
-    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier) {
-        const scanEditor = this._scanEditor;
-        if (scanEditor !== undefined && fieldChanger !== this) {
+    protected override processFieldChanges(fieldIds: ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId) {
+        const scanEditor = this.scanEditor;
+        if (scanEditor !== undefined && fieldChanger !== this.instanceId) {
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
                     case ScanEditor.FieldId.Id:
@@ -183,9 +184,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         this._showRankControlComponent.initialise(this._showRankUiAction);
 
         this._targetsComponent.controlInputOrCommitEventer = () => { this.notifyControlInputOrCommit() };
-        this._targetsComponent.editMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
-            if (this.editTargetsMultiSymbolGridColumnsEventer !== undefined) {
-                return this.editTargetsMultiSymbolGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+        this._targetsComponent.editGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
             } else {
                 return Promise.resolve(undefined);
             }
@@ -204,9 +205,11 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
-                // this._scan.enabled = this._enabledUiAction.definedValue;
+                editor.beginFieldChanges(this.instanceId);
+                editor.setEnabled(this._enabledUiAction.definedValue);
+                editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
             }
         };
@@ -220,9 +223,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setName(this._nameUiAction.definedValue);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
@@ -238,9 +241,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.commitOnAnyValidInput = true;
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setDescription(this._descriptionUiAction.definedValue);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit()
@@ -257,9 +260,9 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         action.inputEvent = () => { this.notifyControlInputOrCommit() };
         action.commitEvent = () => {
             const value = this._symbolListUiAction.definedValue;
-            const editor = this._scanEditor;
+            const editor = this.scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 editor.setSymbolListEnabled(value);
                 editor.endFieldChanges();
                 this.notifyControlInputOrCommit();
@@ -285,7 +288,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
     }
 
     private pushValues() {
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor === undefined) {
             this.deletingOrDeleted = false;
 
@@ -311,7 +314,7 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
         let newDeleteStateText: string | undefined;
         let deletingOrDeleted: boolean;
 
-        const scanEditor = this._scanEditor;
+        const scanEditor = this.scanEditor;
         if (scanEditor === undefined) {
             newDeleteStateText = undefined;
             deletingOrDeleted = false;
@@ -378,15 +381,15 @@ export class GeneralScanEditorSectionNgComponent extends ScanEditorSectionNgDire
 
 export namespace GeneralScanEditorSectionNgComponent {
     export type ControlInputOrCommitEventer = (this: void) => void;
-    export type EditTargetsMultiSymbolGridColumnsEventer = (
+    export type EditGridColumnsEventer = (
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition,
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
     export type RankDisplayedPossiblyChangedEventer = (this: void) => void;

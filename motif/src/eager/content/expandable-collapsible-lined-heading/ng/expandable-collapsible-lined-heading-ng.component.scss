@@ -1,3 +1,11 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/svg-icon-button-size';
+
 :host {
     display: flex;
     align-items: center;
@@ -7,9 +15,8 @@
         display: flex;
         align-items: center;
         height: 1.4em;
-        > * {
-            height: inherit;
-            width: 1.4em;
+        > app-svg-button {
+            height: 1.4em;
         }
     }
 

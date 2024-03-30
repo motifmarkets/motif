@@ -14,8 +14,8 @@ import {
     ValueProvider,
     ViewContainerRef
 } from '@angular/core';
-import { AssertInternalError, LockOpenListItem } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from 'component-services-ng-api';
+import { AssertInternalError, LockOpenListItem, StringId, Strings } from '@motifmarkets/motif-core';
+import { CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { FeedsFrame } from '../feeds-frame';
@@ -34,6 +34,7 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
     constructor(
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
+        private readonly _toastNgService: ToastNgService,
         contentNgService: ContentNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
@@ -44,11 +45,11 @@ export class FeedsNgComponent extends DelayedBadnessGridSourceNgDirective {
     protected override processAfterViewInit() {
         super.processAfterViewInit();
         this.frame.initialiseGrid(this._opener, undefined, false);
-        const openPromise = this.frame.tryOpenWithDefaultLayout(false);
+        const openPromise = this.frame.tryOpenDefault(false);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('FNCPU50139');
+            (result) => {
+                if (result.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Feeds]}: ${result.error}`);
                 }
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'FNCPR50139') }

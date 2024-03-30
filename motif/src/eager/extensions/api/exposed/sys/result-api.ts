@@ -8,31 +8,18 @@
 export type Result<T, E = string> = Ok<T, E> | Err<T, E>;
 
 /** @public */
-export class Ok<T, E> {
-    constructor(public readonly value: T) {}
+export interface Ok<T, E> {
+    readonly value: T;
 
-    public isOk(): this is Ok<T, E> {
-        return true;
-    }
-
-    public isErr(): this is Err<T, E> {
-        return false;
-    }
+    isOk(): this is Ok<T, E>;
+    isErr(): this is Err<T, E>;
 }
 
 /** @public */
-export class Err<T, E = string> {
-    constructor(public readonly error: E) {}
+export interface Err<T = undefined, E = string> {
+    readonly error: E;
 
-    public isOk(): this is Ok<T, E> {
-        return false;
-    }
-
-    public isErr(): this is Err<T, E> {
-        return true;
-    }
-
-    createOuter<OuterT>(outerError: string) {
-        return new Err<OuterT>(outerError + ': ' + this.error);
-    }
+    isOk(): this is Ok<T, E>;
+    isErr(): this is Err<T, E>;
+    createOuter<OuterT = undefined>(outerError: string): Err<OuterT>;
 }

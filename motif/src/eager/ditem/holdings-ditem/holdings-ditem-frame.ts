@@ -12,8 +12,6 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutDefinition,
-    GridLayoutOrReferenceDefinition,
     Holding,
     HoldingTableRecordSourceDefinition,
     Integer,
@@ -22,11 +20,14 @@ import {
     ScalarSettings,
     SettingsService,
     SingleBrokerageAccountGroup,
+    StringId,
+    Strings,
     SymbolDetailCacheService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition, RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
+import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame, HoldingsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -50,7 +51,7 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         adiService: AdiService,
         private readonly _textFormatterService: TextFormatterService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: HoldingsDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: HoldingsDitemFrame.RecordFocusedEventer,
     ) {
@@ -94,27 +95,28 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         holdingsFrame.initialiseGrid(this.opener, undefined, true);
         balancesFrame.initialiseGrid(this.opener, undefined, true);
 
-        const holdingsOpenPromise = holdingsFrame.openJsonOrDefault(holdingsFrameElement, true);
-        const balancesOpenPromise = balancesFrame.openJsonOrDefault(balancesFrameElement, true);
+        const holdingsOpenPromise = holdingsFrame.tryOpenJsonOrDefault(holdingsFrameElement, true);
+        const balancesOpenPromise = balancesFrame.tryOpenJsonOrDefault(balancesFrameElement, true);
 
-        const allInitialisePromise = Promise.all([holdingsOpenPromise, balancesOpenPromise]);
+        const allOpenPromise = Promise.all([holdingsOpenPromise, balancesOpenPromise]);
 
-        allInitialisePromise.then(
-            (gridSourceOrReferences) => {
+        allOpenPromise.then(
+            (openResults) => {
                 // Show balances if balances initialised and opened
-                if (gridSourceOrReferences[0] === undefined) {
-                    throw new AssertInternalError('HDFIPHU50137');
-                } else {
-                    if (gridSourceOrReferences[1] === undefined) {
-                        throw new AssertInternalError('HDFIPBU50137');
-                    } else {
-                        if (balancesFrame.opened) {
-                            this._componentAccess.setBalancesVisible(true);
-                        }
-
-                        this.applyLinked();
-                    }
+                const holdingsOpenResult = openResults[0];
+                if (holdingsOpenResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Holdings]}: ${holdingsOpenResult.error}`);
                 }
+                const balancesOpenResult = openResults[1];
+                if (balancesOpenResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Balances]}: ${balancesOpenResult.error}`);
+                }
+
+                if (balancesFrame.opened) {
+                    this._componentAccess.setBalancesVisible(true);
+                }
+
+                this.applyLinked();
             },
             (reason) => { throw AssertInternalError.createIfNotError(reason, 'HDFIPR50137') }
         );
@@ -175,13 +177,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
         if (this._holdingsFrame === undefined) {
             throw new AssertInternalError('HDFAGLDH22298');
         } else {
-            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.holdings);
+            const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layouts.holdings);
             this._holdingsFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('HDFAGLDB22298');
         } else {
-            const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layouts.balances);
+            const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layouts.balances);
             this._balancesFrame.applyGridLayoutDefinition(gridLayoutOrReferenceDefinition);
         }
     }
@@ -263,7 +265,13 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             } else {
                 const promise = balancesFrame.tryOpenBrokerageAccountGroup(group, false);
                 promise.then(
-                    () => { this._componentAccess.setBalancesVisible(true); },
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Balances]}: ${openResult.error}`);
+                        } else {
+                            this._componentAccess.setBalancesVisible(true);
+                        }
+                    },
                     (reason) => { throw AssertInternalError.createIfNotError(reason, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`); }
                 );
             }
@@ -295,11 +303,11 @@ export class HoldingsDitemFrame extends BuiltinDitemFrame {
             if (group !== undefined) {
                 // TODO add support for clearTable
 
-                const gridSourceOrReferencePromise = holdingsFrame.tryOpenBrokerageAccountGroup(group, keepView);
-                gridSourceOrReferencePromise.then(
-                    (gridSourceOrReference) => {
-                        if (gridSourceOrReference === undefined) {
-                            this.closeAndHideBalances();
+                const openPromise = holdingsFrame.tryOpenBrokerageAccountGroup(group, keepView);
+                openPromise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Holdings]}: ${openResult.error}`);
                         } else {
                             if (BrokerageAccountGroup.isSingle(group)) {
                                 this.checkApplyBalancesSingleGroup(group);
@@ -343,8 +351,8 @@ export namespace HoldingsDitemFrame {
     }
 
     export interface GridLayoutDefinitions {
-        holdings: GridLayoutDefinition;
-        balances: GridLayoutDefinition;
+        holdings: RevGridLayoutDefinition;
+        balances: RevGridLayoutDefinition;
     }
 
     export interface AllowedFieldsAndLayoutDefinitions {

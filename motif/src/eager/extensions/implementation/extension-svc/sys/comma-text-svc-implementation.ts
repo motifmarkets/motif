@@ -4,8 +4,9 @@
  * License: motionite.trade/license/motif
  */
 
-import { CommaText } from '@motifmarkets/motif-core';
+import { CommaText, Ok } from '@motifmarkets/motif-core';
 import { CommaTextSvc, Result as ResultApi } from '../../../api/extension-api';
+import { CommaTextErrImplementation } from '../../exposed/internal-api';
 
 export class CommaTextSvcImplementation implements CommaTextSvc {
     get delimiterChar(): string { return CommaText.delimiterChar; }
@@ -37,13 +38,31 @@ export class CommaTextSvcImplementation implements CommaTextSvc {
     }
 
     toStringArrayWithResult(value: string, strict?: boolean): ResultApi<string[]> {
-        return CommaText.tryToStringArray(value, strict !== false);
+        const actualResult = CommaText.tryToStringArray(value, strict !== false);
+        if (actualResult.isErr()) {
+            const errorIdPlusExtra = actualResult.error;
+            return new CommaTextErrImplementation(errorIdPlusExtra.errorId, errorIdPlusExtra.extraInfo);
+        } else {
+            return new Ok(actualResult.value);
+        }
     }
     toIntegerArrayWithResult(value: string): ResultApi<number[]> {
-        return CommaText.toIntegerArrayWithResult(value);
+        const actualResult = CommaText.toIntegerArrayWithResult(value);
+        if (actualResult.isErr()) {
+            const errorIdPlusExtra = actualResult.error;
+            return new CommaTextErrImplementation(errorIdPlusExtra.errorId, errorIdPlusExtra.extraInfo);
+        } else {
+            return new Ok(actualResult.value);
+        }
     }
 
     strictValidate(value: string): ResultApi<boolean> {
-        return CommaText.strictValidate(value);
+        const actualResult = CommaText.strictValidate(value);
+        if (actualResult.isErr()) {
+            const errorIdPlusExtra = actualResult.error;
+            return new CommaTextErrImplementation(errorIdPlusExtra.errorId, errorIdPlusExtra.extraInfo);
+        } else {
+            return new Ok(actualResult.value);
+        }
     }
 }

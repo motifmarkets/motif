@@ -14,7 +14,7 @@ import {
     Strings,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CoreInjectionTokens } from 'component-services-ng-api';
+import { CoreInjectionTokens, ToastNgService } from 'component-services-ng-api';
 import { GridSourceNgDirective } from '../../../../grid-source/ng-api';
 import { ContentNgService } from '../../../../ng/content-ng.service';
 import { allowedFieldsInjectionToken, definitionColumnListInjectionToken } from '../../../ng/grid-layout-dialog-ng-injection-tokens';
@@ -43,6 +43,7 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         elRef: ElementRef<HTMLElement>,
         cdr: ChangeDetectorRef,
         contentNgService: ContentNgService,
+        private readonly _toastNgService: ToastNgService,
         @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
         @Inject(allowedFieldsInjectionToken) allowedFields: GridField[],
         @Inject(definitionColumnListInjectionToken) columnList: EditableGridLayoutDefinitionColumnList,
@@ -68,9 +69,9 @@ export class GridLayoutEditorAllowedFieldsNgComponent extends GridSourceNgDirect
         this.frame.initialiseGrid(this._opener, undefined, false);
         const openPromise = this.frame.tryOpenDefault(false);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('GLEAFNCIPU31310');
+            (result) => {
+                if (result.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.AllowedFields]}: ${result.error}`);
                 } else {
                     this.frame.applyColumnListFilter();
                 }

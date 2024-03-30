@@ -6,13 +6,15 @@
 
 import { Directive } from '@angular/core';
 import { MultiEvent, ScanEditor } from '@motifmarkets/motif-core';
+import { ComponentBaseNgDirective } from '../../../../component/ng-api';
 import { ExpandableCollapsibleLinedHeadingNgComponent } from '../../../expandable-collapsible-lined-heading/ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
 
 @Directive()
 export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseNgDirective {
     protected _sectionHeadingComponent: ExpandableCollapsibleLinedHeadingNgComponent;
-    protected _scanEditor: ScanEditor | undefined;
+
+    private _scanEditor: ScanEditor | undefined;
 
     private _scanEditorFieldChangesSubscriptionId: MultiEvent.SubscriptionId | undefined;
     private _scanEditorLifeCycleStateChangeSubscriptionId: MultiEvent.SubscriptionId | undefined;
@@ -21,6 +23,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
     public abstract sectionHeadingText: string;
 
     get expandCollapseRestoreStateId() { return this._sectionHeadingComponent.stateId; }
+    get scanEditor() { return this._scanEditor; }
 
     initialiseSectionHeadingComponent() {
         this._sectionHeadingComponent.expandEventer = () => this.processExpandCollapseRestoreStateChanged();
@@ -55,7 +58,7 @@ export abstract class ScanEditorSectionNgDirective extends ContentComponentBaseN
 
     protected abstract processExpandCollapseRestoreStateChanged(): void;
 
-    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ScanEditor.Modifier| undefined): void;
+    protected abstract processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], fieldChanger: ComponentBaseNgDirective.InstanceId | undefined): void;
     protected abstract processLifeCycleStateChange(): void;
     protected abstract processModifiedStateChange(): void;
 }

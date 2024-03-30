@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-@use './partials/close-button-mixin';
+@use './partials/close-button';
 
 :host {
     display: flex;
@@ -25,6 +25,6 @@
     }
 
     #closeButton {
-        @include close-button-mixin.closeButtonMixin;
+        @include close-button.smallHeightMixin;
     }
 }

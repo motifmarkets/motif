@@ -7,12 +7,12 @@
 import {
     AdiService,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     SettingsService,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { GridSourceFrame, WatchlistFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -103,7 +103,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = watchElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = RevGridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
                         this._watchGridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }
@@ -123,7 +123,7 @@ export class EtoPriceQuotationDitemFrame extends BuiltinDitemFrame {
                 const keptLayoutElementResult = callPutElement.tryGetElement(EtoPriceQuotationDitemFrame.JsonName.keptLayout);
                 if (keptLayoutElementResult.isOk()) {
                     const keptLayoutElement = keptLayoutElementResult.value;
-                    const keptLayoutResult = GridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
+                    const keptLayoutResult = RevGridLayoutOrReferenceDefinition.tryCreateFromJson(keptLayoutElement);
                     if (keptLayoutResult.isOk()) {
                         this._callPutGridSourceFrame.keptGridLayoutOrReferenceDefinition = keptLayoutResult.value;
                     }

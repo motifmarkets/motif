@@ -28,9 +28,9 @@ import {
 } from '../enum-array/ng-api';
 import {
     CaptionedRadioNgComponent,
-    EnumCaptionNgComponent,
     EnumElementCaptionNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumCaptionNgComponent,
+    IntegerEnumInputNgComponent,
     RadioInputNgComponent
 } from '../enum/ng-api';
 import { IvemIdInputNgComponent } from '../ivem-id/ng-api';
@@ -52,6 +52,9 @@ import { IntegerLabelNgComponent, IntegerTextInputNgComponent, NumberInputNgComp
 import { OrderRouteInputNgComponent } from '../order-route/ng-api';
 import { RoutedIvemIdInputNgComponent, RoutedIvemIdSelectNgComponent, SymbolNameLabelNgComponent } from '../routed-ivem-id/ng-api';
 import { StaticInitialise } from '../static-initialise';
+import {
+    StringArrayInputNgComponent
+} from '../string-array/ng-api';
 import { TextInputNgComponent } from '../string/ng-api';
 import { TabListNgComponent } from '../tab-list/ng-api';
 
@@ -72,9 +75,9 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         EnumArrayCheckboxNgComponent,
         EnumArrayElementCaptionNgComponent,
         EnumArrayInputNgComponent,
-        EnumCaptionNgComponent,
+        IntegerEnumCaptionNgComponent,
         EnumElementCaptionNgComponent,
-        EnumInputNgComponent,
+        IntegerEnumInputNgComponent,
         IntegerLabelNgComponent,
         IntegerTextInputNgComponent,
         IvemIdInputNgComponent,
@@ -94,6 +97,7 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         RadioInputNgComponent,
         RoutedIvemIdInputNgComponent,
         RoutedIvemIdSelectNgComponent,
+        StringArrayInputNgComponent,
         SvgButtonNgComponent,
         SymbolNameLabelNgComponent,
         TabListNgComponent,
@@ -121,9 +125,9 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         EnumArrayCheckboxNgComponent,
         EnumArrayElementCaptionNgComponent,
         EnumArrayInputNgComponent,
-        EnumCaptionNgComponent,
+        IntegerEnumCaptionNgComponent,
         EnumElementCaptionNgComponent,
-        EnumInputNgComponent,
+        IntegerEnumInputNgComponent,
         IntegerLabelNgComponent,
         IntegerTextInputNgComponent,
         IvemIdInputNgComponent,
@@ -136,6 +140,7 @@ import { TabListNgComponent } from '../tab-list/ng-api';
         RadioInputNgComponent,
         RoutedIvemIdInputNgComponent,
         RoutedIvemIdSelectNgComponent,
+        StringArrayInputNgComponent,
         SvgButtonNgComponent,
         SymbolNameLabelNgComponent,
         TabListNgComponent,

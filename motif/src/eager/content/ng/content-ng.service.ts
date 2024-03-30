@@ -5,20 +5,12 @@
  */
 
 import { Injectable } from '@angular/core';
-import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, SessionInfoService } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, EditableGridLayoutDefinitionColumnList, GridField, LockOpenListItem, SessionInfoService } from '@motifmarkets/motif-core';
 import {
-    AdiNgService,
-    AppStorageNgService,
     CellPainterFactoryNgService,
-    ReferenceableGridLayoutsNgService,
-    ReferenceableGridSourceDefinitionsStoreNgService,
-    ReferenceableGridSourcesNgService,
+    CoreNgService,
     SessionInfoNgService,
-    SettingsNgService,
-    SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
-    TableRecordSourceFactoryNgService,
-    TextFormatterNgService
+    ToastNgService
 } from 'component-services-ng-api';
 import { ContentService } from '../content-service';
 import { DepthFrame } from '../depth/internal-api';
@@ -27,6 +19,8 @@ import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderReque
 import { StatusSummaryFrame } from '../status-summary/status-summary-frame';
 import { TradesFrame } from '../trades/internal-api';
 import { ZenithStatusFrame } from '../zenith-status/internal-api';
+import { TableRecordSourceDefinitionFactoryNgService } from './table-record-source-definition-factory-ng.service';
+import { TableRecordSourceFactoryNgService } from './table-record-source-factory-ng.service';
 
 @Injectable({
     providedIn: 'root'
@@ -35,32 +29,30 @@ export class ContentNgService {
     private _content: ContentService;
 
     constructor(
-        settingsNgService: SettingsNgService,
-        appStorageNgService: AppStorageNgService,
-        adiNgService: AdiNgService,
-        symbolsNgService: SymbolsNgService,
-        sessionInfoNgService: SessionInfoNgService,
-        textFormatterNgService: TextFormatterNgService,
-        tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
+        coreNgService: CoreNgService,
         tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
-        referenceableGridLayoutsNgService: ReferenceableGridLayoutsNgService,
-        referenceableGridSourceDefinitionsStoreNgService: ReferenceableGridSourceDefinitionsStoreNgService,
-        referenceableGridSourcesNgService: ReferenceableGridSourcesNgService,
+        tableRecordSourceFactoryNgService: TableRecordSourceFactoryNgService,
+        sessionInfoNgService: SessionInfoNgService,
         cellPainterFactoryNgService: CellPainterFactoryNgService,
+        toastNgService: ToastNgService,
     ) {
         this._content = new ContentService(
-            settingsNgService.service,
-            appStorageNgService.service,
-            adiNgService.service,
-            symbolsNgService.service,
-            sessionInfoNgService.service,
-            textFormatterNgService.service,
-            referenceableGridLayoutsNgService.service,
+            coreNgService.settingsService,
+            coreNgService.appStorageService,
+            coreNgService.adiService,
+            coreNgService.symbolsService,
+            coreNgService.notificationChannelsService,
+            coreNgService.textFormatterService,
+            coreNgService.revFieldCustomHeadingsService,
+            coreNgService.referenceableGridLayoutsService,
+            coreNgService.tableFieldSourceDefinitionCachingFactoryService,
             tableRecordSourceDefinitionFactoryNgService.service,
             tableRecordSourceFactoryNgService.service,
-            referenceableGridSourceDefinitionsStoreNgService.service,
-            referenceableGridSourcesNgService.service,
+            coreNgService.referenceableDataSourceDefinitionsStoreService,
+            coreNgService.referenceableDataSourcesService,
+            sessionInfoNgService.service,
             cellPainterFactoryNgService.service,
+            toastNgService.service,
         );
     }
 
@@ -136,6 +128,18 @@ export class ContentNgService {
 
     createScanListFrame() {
         return this._content.createScanListFrame();
+    }
+
+    createScanFieldEditorFramesGridFrame() {
+        return this._content.createScanFieldEditorFramesGridFrame();
+    }
+
+    createScanEditorAttachedNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return this._content.createScanEditorAttachedNotificationChannelsGridFrame(opener);
+    }
+
+    createLockOpenNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return this._content.createLockOpenNotificationChannelsGridFrame(opener);
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {

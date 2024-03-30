@@ -4,10 +4,10 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/flex-row-items-centered-mixin';
+@use './partials/flex-row-items-centered-mixin';
 
 @mixin controlFollowedByIconMixin {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 
     > :nth-child(2) {
         margin-left: 0.2em;

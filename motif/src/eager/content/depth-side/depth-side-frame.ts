@@ -10,6 +10,7 @@ import {
     AssertInternalError,
     CellPainterFactoryService,
     DataItem,
+    Decimal,
     DepthDataItem,
     DepthLevelsDataItem,
     DepthRecord,
@@ -19,7 +20,6 @@ import {
     DepthStyleId,
     FullDepthSideGridField,
     FullDepthSideGridRecordStore,
-    GridLayout,
     GridLayoutDefinition,
     Integer,
     JsonElement,
@@ -34,7 +34,7 @@ import {
     TextRenderValueCellPainter,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { RevRecordStore } from '@xilytix/revgrid';
+import { RevRecordStore, RevGridLayout, RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { ContentFrame } from '../content-frame';
 
 export class DepthSideFrame extends ContentFrame {
@@ -73,7 +73,7 @@ export class DepthSideFrame extends ContentFrame {
     initialise(sideId: OrderSideId, element: JsonElement | undefined) {
         this._sideId = sideId;
 
-        const initialGridLayoutDefinitions = new Array<GridLayoutDefinition | undefined>(DepthStyle.idCount);
+        const initialGridLayoutDefinitions = new Array<RevGridLayoutDefinition | undefined>(DepthStyle.idCount);
         if (element !== undefined) {
             const tryGetFullResult = element.tryGetElement(DepthSideFrame.JsonName.fullLayout);
             if (tryGetFullResult.isOk()) {
@@ -178,7 +178,7 @@ export class DepthSideFrame extends ContentFrame {
     //     return this._grid.getRenderedActiveWidth();
     // }
 
-    setAuctionQuantity(value: Integer | undefined) {
+    setAuctionQuantity(value: Decimal | undefined) {
         if (this._activeStore !== undefined) {
             this._activeStore.setAuctionQuantity(value);
         }
@@ -273,7 +273,7 @@ export class DepthSideFrame extends ContentFrame {
         }
     }
 
-    applyGridLayoutDefinition(definition: GridLayoutDefinition) {
+    applyGridLayoutDefinition(definition: RevGridLayoutDefinition) {
         this._grid.applyGridLayoutDefinition(definition);
     }
 
@@ -281,7 +281,7 @@ export class DepthSideFrame extends ContentFrame {
         return this._dataItem.correctnessId;
     }
 
-    private initialiseStyle(styleId: DepthStyleId, initialGridLayoutDefinition: GridLayoutDefinition | undefined) {
+    private initialiseStyle(styleId: DepthStyleId, initialGridLayoutDefinition: RevGridLayoutDefinition | undefined) {
         let fields: DepthSideGridField[];
         let store: DepthSideGridRecordStore;
         switch (styleId) {
@@ -320,10 +320,10 @@ export class DepthSideFrame extends ContentFrame {
 
     private createDefaultGridLayoutDefinition(fields: DepthSideGridField[], fieldVisibles: boolean[]) {
         const fieldCount = fields.length;
-        const layoutDefinitionColumns = new Array<GridLayoutDefinition.Column>(fieldCount);
+        const layoutDefinitionColumns = new Array<RevGridLayoutDefinition.Column>(fieldCount);
         for (let i = 0; i < fieldCount; i++) {
             const field = fields[i];
-            const layoutDefinitionColumn: GridLayoutDefinition.Column = {
+            const layoutDefinitionColumn: RevGridLayoutDefinition.Column = {
                 fieldName: field.name,
                 visible: fieldVisibles[i],
                 autoSizableWidth: undefined,
@@ -336,7 +336,7 @@ export class DepthSideFrame extends ContentFrame {
             layoutDefinitionColumns.reverse();
         }
 
-        return new GridLayoutDefinition(layoutDefinitionColumns);
+        return new RevGridLayoutDefinition(layoutDefinitionColumns);
     }
 
     private activateStyle(newStyleId: DepthStyleId) {
@@ -458,7 +458,7 @@ export class DepthSideFrame extends ContentFrame {
 
     private applyFirstUsable(styleId: DepthStyleId) {
         const styleCacheElement = this._styleCache[styleId];
-        const gridLayout = new GridLayout(styleCacheElement.lastLayoutDefinition);
+        const gridLayout = new RevGridLayout(styleCacheElement.lastLayoutDefinition);
         this._grid.applyFirstUsable(undefined, undefined, gridLayout);
     }
 
@@ -489,7 +489,7 @@ export namespace DepthSideFrame {
         allowedGridFields: readonly DepthSideGridField[];
         // defaultGridFieldStates: readonly GridRecordFieldState[];
         // defaultGridFieldVisibles: readonly boolean[];
-        lastLayoutDefinition: GridLayoutDefinition | undefined;
+        lastLayoutDefinition: RevGridLayoutDefinition | undefined;
         store: DepthSideGridRecordStore;
     }
 

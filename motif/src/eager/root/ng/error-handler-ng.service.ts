@@ -18,7 +18,7 @@ export class ErrorHandlerNgService implements ErrorHandler {
     private _userAlertService: UserAlertService;
 
     constructor(telemetryService: TelemetryNgService, userAlertNgService: UserAlertNgService) {
-        this._telemetry = telemetryService.telemetry;
+        this._telemetry = telemetryService.service;
         this._userAlertService = userAlertNgService.service;
     }
 

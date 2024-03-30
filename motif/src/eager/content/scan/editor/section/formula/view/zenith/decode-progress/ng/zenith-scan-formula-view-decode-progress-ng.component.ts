@@ -112,7 +112,7 @@ export class ZenithScanFormulaViewDecodeProgressNgComponent extends ContentCompo
         const displayId = StringId.Close;
         const command = commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
-        action.pushIcon(IconButtonUiAction.IconId.ReturnCancel);
+        action.pushIcon(IconButtonUiAction.IconId.Close);
         action.signalEvent = () => this.handleCloseSignal();
         return action;
     }

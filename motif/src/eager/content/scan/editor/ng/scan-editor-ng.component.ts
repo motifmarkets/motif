@@ -10,21 +10,19 @@ import {
     AssertInternalError,
     ButtonUiAction,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     HtmlTypes,
     Integer,
     InternalCommand,
     LitIvemId,
     MultiEvent,
     ScanEditor,
-    ScanTargetTypeId,
     StringId,
     Strings,
-    UiBadnessComparableList,
+    UiComparableList,
     UnreachableCaseError,
     delay1Tick
 } from '@motifmarkets/motif-core';
-import { CommandRegisterNgService } from 'component-services-ng-api';
+import { CommandRegisterNgService, ToastNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { ButtonInputNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
@@ -32,8 +30,9 @@ import { ScanTestNgComponent } from '../../test/ng-api';
 import {
     FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
-    NotifiersScanEditorSectionNgComponent
+    ScanEditorAttachedNotificationChannelsNgComponent
 } from '../section/ng-api';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 @Component({
     selector: 'app-scan-editor',
@@ -50,14 +49,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
     @ViewChild('generalSection', { static: true }) private _generalSectionComponent: GeneralScanEditorSectionNgComponent;
     @ViewChild('criteriaSection', { static: true }) private _criteriaSectionComponent: FormulaScanEditorSectionNgComponent;
     @ViewChild('rankSection', { static: true }) private _rankSectionComponent: FormulaScanEditorSectionNgComponent;
-    @ViewChild('notifiersSection', { static: true }) private _notifiersSectionComponent: NotifiersScanEditorSectionNgComponent;
+    @ViewChild('notificationChannelsSection', { static: true }) private _notificationChannelsSectionComponent: ScanEditorAttachedNotificationChannelsNgComponent;
     @ViewChild('test', { static: true }) private _testComponent: ScanTestNgComponent;
     @ViewChild('applyButton', { static: true }) private _applyButtonComponent: ButtonInputNgComponent;
     @ViewChild('revertButton', { static: false }) private _revertButtonComponent: ButtonInputNgComponent;
     @ViewChild('deleteButton', { static: true }) private _deleteButtonComponent: ButtonInputNgComponent;
     @ViewChild('testButton', { static: true }) private _testButtonComponent: ButtonInputNgComponent;
 
-    editTargetsMultiSymbolGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
+    editGridColumnsEventer: ScanEditorNgComponent.EditTargetsMultiSymbolGridColumnsEventer | undefined;
     popoutTargetsMultiSymbolListEditorEventer: ScanEditorNgComponent.PopoutTargetsMultiSymbolListEditorEventer | undefined;
 
     public criteriaFieldId = ScanEditor.FieldId.Criteria;
@@ -85,6 +84,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         elRef: ElementRef<HTMLElement>,
         private readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(elRef, ++ScanEditorNgComponent.typeInstanceCreateCount);
 
@@ -117,7 +117,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._generalSectionComponent.setEditor(scanEditor);
         this._criteriaSectionComponent.setEditor(scanEditor);
         this._rankSectionComponent.setEditor(scanEditor);
-        this._notifiersSectionComponent.setEditor(scanEditor);
+        this._notificationChannelsSectionComponent.setEditor(scanEditor);
 
         if (this._scanEditor !== undefined) {
             this._scanEditor.unsubscribeFieldChangesEvents(this._scanEditorFieldChangesSubscriptionId);
@@ -166,7 +166,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     protected finalise() {
         this._generalSectionComponent.controlInputOrCommitEventer = undefined;
-        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._generalSectionComponent.editGridColumnsEventer = undefined;
         this._generalSectionComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
         this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = undefined;
 
@@ -251,9 +251,9 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     private initialiseComponents() {
         this._generalSectionComponent.controlInputOrCommitEventer = () => { this.handleControlInputOrCommitEvent(); }
-        this._generalSectionComponent.editTargetsMultiSymbolGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
-            if (this.editTargetsMultiSymbolGridColumnsEventer !== undefined) {
-                return this.editTargetsMultiSymbolGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+        this._generalSectionComponent.editGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
             } else {
                 return Promise.resolve(undefined);
             }
@@ -264,6 +264,14 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
             }
         }
         this._generalSectionComponent.rankDisplayedPossiblyChangedEventer = () => { this.checkUpdateRankDisplayed(); }
+
+        this._notificationChannelsSectionComponent.editGridColumnsEventer = (caption, allowedFieldsAndLayoutDefinition) => {
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(caption, allowedFieldsAndLayoutDefinition);
+            } else {
+                return Promise.resolve(undefined);
+            }
+        };
 
         this._applyButtonComponent.initialise(this._applyUiAction);
         this._revertButtonComponent.initialise(this._revertUiAction);
@@ -276,7 +284,33 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (editor === undefined) {
             throw new AssertInternalError('SENCHAUASE20241');
         } else {
-            editor.apply();
+            const lifeCycleStateId = editor.lifeCycleStateId;
+            const promise = editor.apply();
+            promise.then(
+                (result) => {
+                    if (result.isErr()) {
+                        let applyTypeErrorStringId: StringId;
+                        switch (lifeCycleStateId) {
+                            case ScanEditor.LifeCycleStateId.NotYetCreated:
+                                applyTypeErrorStringId = StringId.ErrorCreating;
+                                break;
+                            case ScanEditor.LifeCycleStateId.ExistsDetailLoaded:
+                                applyTypeErrorStringId = StringId.ErrorUpdating;
+                                break;
+                            case ScanEditor.LifeCycleStateId.Creating:
+                            case ScanEditor.LifeCycleStateId.ExistsInitialDetailLoading:
+                            case ScanEditor.LifeCycleStateId.Updating:
+                            case ScanEditor.LifeCycleStateId.Deleted:
+                            case ScanEditor.LifeCycleStateId.Deleting:
+                                throw new AssertInternalError('SENCHAIASEE55716', lifeCycleStateId.toString());
+                            default:
+                                throw new UnreachableCaseError('SENCHAIASEU55716', lifeCycleStateId);
+                        }
+                        this._toastNgService.popup(`${Strings[applyTypeErrorStringId]} ${Strings[StringId.Scan]}: ${result.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'SENCHAIASER55716'); }
+            );
         }
     }
 
@@ -295,7 +329,15 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         if (editor === undefined) {
             throw new AssertInternalError('SENCHDUASE20241');
         } else {
-            editor.deleteScan();
+            const promise = editor.deleteScan();
+            promise.then(
+                (result) => {
+                    if (result.isErr()) {
+                        this._toastNgService.popup(`${Strings[StringId.ErrorDeleting]} ${Strings[StringId.Scan]}: ${result.error}`);
+                    }
+                },
+                (reason) => { throw AssertInternalError.createIfNotError(reason, 'SENCHDIASER55716'); }
+            );
         }
     }
 
@@ -309,7 +351,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
                 throw new AssertInternalError('SENCHTUASETT20241');
             } else {
                 const maxMatchCount = editor.maxMatchCount;
-                if (targetTypeId === ScanTargetTypeId.Markets && maxMatchCount === undefined) {
+                if (maxMatchCount === undefined) {
                     throw new AssertInternalError('SENCHTUASESM20241');
                 } else {
                     const targets = editor.targets;
@@ -514,10 +556,10 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
 
     private areAllControlValuesOk() {
         return (
-            this._generalSectionComponent.areAllControlValuesOk() &&
-            this._criteriaSectionComponent.areAllControlValuesOk() &&
-            this._rankSectionComponent.areAllControlValuesOk() &&
-            this._notifiersSectionComponent.areAllControlValuesOk()
+            this._generalSectionComponent.areAllControlValuesOk()
+            // this._criteriaSectionComponent.areAllControlValuesOk() &&
+            // this._rankSectionComponent.areAllControlValuesOk() &&
+            // this._notificationChannelsSectionComponent.areAllControlValuesOk()
         );
     }
 
@@ -525,7 +567,7 @@ export class ScanEditorNgComponent extends ContentComponentBaseNgDirective imple
         this._generalSectionComponent.cancelAllControlsEdited();
         this._criteriaSectionComponent.cancelAllControlsEdited();
         this._rankSectionComponent.cancelAllControlsEdited();
-        this._notifiersSectionComponent.cancelAllControlsEdited();
+        this._notificationChannelsSectionComponent.cancelAllControlsEdited();
     }
 }
 
@@ -534,11 +576,11 @@ export namespace ScanEditorNgComponent {
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutTargetsMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 }

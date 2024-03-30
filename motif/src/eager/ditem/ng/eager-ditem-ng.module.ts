@@ -20,11 +20,12 @@ import { ExtensionsDitemNgComponent } from '../extensions-ditem/ng-api';
 import { HoldingsDitemNgComponent } from '../holdings-ditem/ng-api';
 import { NewsBodyDitemNgComponent } from '../news-body-ditem/ng-api';
 import { NewsHeadlinesDitemNgComponent } from '../news-headlines-ditem/ng-api';
+import { NotificationChannelsDitemNgComponent } from '../notification-channels-ditem/ng-api';
 import { OrderAuthoriseDitemNgComponent } from '../order-authorise-ditem/ng-api';
 import { OrderRequestDitemNgComponent } from '../order-request-ditem/ng-api';
 import { OrdersDitemNgComponent } from '../orders-ditem/ng-api';
 import { PlaceholderDitemNgComponent } from '../placeholder-ditem/ng-api';
-import { ScansDitemNgComponent } from '../scans-ditem/ng/scans-ditem-ng.component';
+import { ScansDitemNgComponent } from '../scans-ditem/ng-api';
 import { SearchDitemNgComponent } from '../search-ditem/ng-api';
 import { SearchSymbolsDitemNgComponent } from '../search-symbols-ditem/ng-api';
 import { SettingsDitemNgComponent } from '../settings-ditem/ng-api';
@@ -37,31 +38,32 @@ import { AdvertWebPageDitemNgComponent, BrandingSplashWebPageDitemNgComponent } 
 
 @NgModule({
     declarations: [
+        AdvertWebPageDitemNgComponent,
+        AlertsDitemNgComponent,
         BalancesDitemNgComponent,
+        BrandingSplashWebPageDitemNgComponent,
         BrokerageAccountsDitemNgComponent,
+        DepthAndSalesDitemNgComponent,
         DepthDitemNgComponent,
         DiagnosticsDitemNgComponent,
         EtoPriceQuotationDitemNgComponent,
+        ExtensionsDitemNgComponent,
         HoldingsDitemNgComponent,
         NewsBodyDitemNgComponent,
         NewsHeadlinesDitemNgComponent,
+        NotificationChannelsDitemNgComponent,
+        OrderAuthoriseDitemNgComponent,
         OrderRequestDitemNgComponent,
         OrdersDitemNgComponent,
-        OrderAuthoriseDitemNgComponent,
-        DepthAndSalesDitemNgComponent,
         PlaceholderDitemNgComponent,
-        StatusDitemNgComponent,
+        ScansDitemNgComponent,
+        SearchDitemNgComponent,
         SearchSymbolsDitemNgComponent,
         SettingsDitemNgComponent,
+        StatusDitemNgComponent,
         TopShareholdersDitemNgComponent,
         TradesDitemNgComponent,
         WatchlistDitemNgComponent,
-        ExtensionsDitemNgComponent,
-        BrandingSplashWebPageDitemNgComponent,
-        AdvertWebPageDitemNgComponent,
-        AlertsDitemNgComponent,
-        SearchDitemNgComponent,
-        ScansDitemNgComponent,
     ],
     imports: [
         CommonModule,

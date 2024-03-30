@@ -30,6 +30,7 @@ import {
     HoldingsDitemNgComponent,
     NewsBodyDitemNgComponent,
     NewsHeadlinesDitemNgComponent,
+    NotificationChannelsDitemNgComponent,
     OrderAuthoriseDitemNgComponent,
     OrderRequestDitemNgComponent,
     OrdersDitemNgComponent,
@@ -123,6 +124,10 @@ export namespace DitemComponentFactoryNgService {
             Scans: {
                 id: BuiltinDitemFrame.BuiltinTypeId.Scans,
                 type: ScansDitemNgComponent,
+            },
+            NotificationChannels: {
+                id: BuiltinDitemFrame.BuiltinTypeId.NotificationChannels,
+                type: NotificationChannelsDitemNgComponent,
             },
             Alerts: {
                 id: BuiltinDitemFrame.BuiltinTypeId.Alerts,

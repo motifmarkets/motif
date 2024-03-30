@@ -38,8 +38,8 @@ import {
     SettingsNgService,
     SymbolDetailCacheNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
-    TextFormatterNgService
+    TextFormatterNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import { BalancesNgComponent, HoldingsGridLayoutsDialogNgComponent, HoldingsNgComponent } from 'content-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
@@ -96,7 +96,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
         symbolsNgService: SymbolsNgService,
         textFormatterNgService: TextFormatterNgService,
         symbolDetailCacheNgService: SymbolDetailCacheNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(
@@ -118,7 +118,7 @@ export class HoldingsDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirec
             adiNgService.service,
             textFormatterNgService.service,
             symbolDetailCacheNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
+            toastNgService.service,
             (group) => this.handleGridSourceOpenedEvent(group),
             (recordIndex) => this.handleHoldingsRecordFocusEvent(recordIndex),
         );

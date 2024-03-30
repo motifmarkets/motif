@@ -24,13 +24,13 @@ import {
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
     StringId,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
@@ -59,7 +59,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
 
     private _editor: GridLayoutEditorNgComponent;
 
-    private _closeResolve: (value: GridLayoutDefinition | undefined) => void;
+    private _closeResolve: (value: RevGridLayoutDefinition | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
     constructor(
@@ -91,7 +91,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
     }
 
     waitClose(): GridLayoutDialogNgComponent.ClosePromise {
-        return new Promise<GridLayoutDefinition | undefined>((resolve, reject) => {
+        return new Promise<RevGridLayoutDefinition | undefined>((resolve, reject) => {
             this._closeResolve = resolve;
             this._closeReject = reject;
         });
@@ -146,7 +146,7 @@ export class GridLayoutDialogNgComponent extends ContentComponentBaseNgDirective
 }
 
 export namespace GridLayoutDialogNgComponent {
-    export type ClosePromise = Promise<GridLayoutDefinition | undefined>;
+    export type ClosePromise = Promise<RevGridLayoutDefinition | undefined>;
     export const captionInjectionToken = new InjectionToken<string>('GridLayoutDialogNgComponent.Caption');
 
     export function create(

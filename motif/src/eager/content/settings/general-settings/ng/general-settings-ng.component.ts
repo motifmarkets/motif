@@ -16,22 +16,22 @@ import {
     ViewContainerRef
 } from '@angular/core';
 import {
-    ArrayUiAction,
     BooleanUiAction,
-    EnumUiAction,
+    EnumMappedExplicitElementsArrayUiAction,
     ExchangeInfo,
-    ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     MasterSettings,
     MultiEvent,
     SourceTzOffsetDateTime,
+    SourceTzOffsetDateTimeTimezoneMode,
     StringId,
     StringUiAction,
     Strings,
     SymbolField,
     SymbolFieldId,
     SymbolsService,
+    TypedExplicitElementsArrayUiAction,
     assert,
     delay1Tick
 } from '@motifmarkets/motif-core';
@@ -42,7 +42,7 @@ import {
     CaptionedRadioNgComponent,
     CheckboxInputNgComponent,
     EnumArrayInputNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumInputNgComponent,
     IntegerTextInputNgComponent,
     TextInputNgComponent
 } from 'controls-ng-api';
@@ -63,7 +63,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     @ViewChild('fontSizeLabel', { static: true }) private _fontSizeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('fontSizeControl', { static: true }) private _fontSizeControlComponent: TextInputNgComponent;
     @ViewChild('defaultExchangeLabel', { static: true }) private _defaultExchangeLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('defaultExchangeControl', { static: true }) private _defaultExchangeControlComponent: EnumInputNgComponent;
+    @ViewChild('defaultExchangeControl', { static: true }) private _defaultExchangeControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('dropDownEditableSearchTermLabel', { static: true })
         private _dropDownEditableSearchTermLabelComponent: CaptionLabelNgComponent;
     @ViewChild('dropDownEditableSearchTermControl', { static: true })
@@ -84,10 +84,10 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     @ViewChild('utcDateTimeTimezoneModeControl', { static: true })
         private _utcDateTimeTimezoneModeControlComponent: CaptionedRadioNgComponent;
     @ViewChild('settingsProfileLabel', { static: true }) private _settingsProfileLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('settingsProfileControl', { static: true }) private _settingsProfileControlComponent: EnumInputNgComponent;
+    @ViewChild('settingsProfileControl', { static: true }) private _settingsProfileControlComponent: IntegerEnumInputNgComponent;
 
     @ViewChild('exchangeHideModeLabel', { static: true }) private _exchangeHideModeLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('exchangeHideModeControl', { static: true }) private _exchangeHideModeControlComponent: EnumInputNgComponent;
+    @ViewChild('exchangeHideModeControl', { static: true }) private _exchangeHideModeControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('defaultMarketHiddenLabel', { static: true }) private _defaultMarketHiddenLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultMarketHiddenControl', { static: true }) private _defaultMarketHiddenControlComponent: CheckboxInputNgComponent;
     @ViewChild('marketCodeAsLocalWheneverPossibleLabel', { static: true })
@@ -110,18 +110,18 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
     private readonly _fontFamilyUiAction: StringUiAction;
     private readonly _fontSizeUiAction: StringUiAction;
-    private readonly _defaultExchangeUiAction: ExplicitElementsEnumUiAction;
-    private readonly _exchangeHideModeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _defaultExchangeUiAction: IntegerExplicitElementsEnumUiAction;
+    private readonly _exchangeHideModeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _defaultMarketHiddenUiAction: BooleanUiAction;
     private readonly _marketCodeAsLocalWheneverPossibleUiAction: BooleanUiAction;
     private readonly _dropDownEditableSearchTermUiAction: BooleanUiAction;
     private readonly _numberGroupingActiveUiAction: BooleanUiAction;
     private readonly _minimumPriceFractionDigitsCountUiAction: IntegerUiAction;
     private readonly _24HourUiAction: BooleanUiAction;
-    private readonly _dateTimeTimezoneModeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _dateTimeTimezoneModeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _explicitSymbolSearchFieldsEnabledUiAction: BooleanUiAction;
-    private readonly _explicitSymbolSearchFieldsUiAction: ExplicitElementsEnumArrayUiAction;
-    private readonly _settingsProfileUiAction: ExplicitElementsEnumUiAction;
+    private readonly _explicitSymbolSearchFieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
+    private readonly _settingsProfileUiAction: IntegerExplicitElementsEnumUiAction;
 
     private _allowedExchangeIdsChangedSubscriptionId: MultiEvent.SubscriptionId;
 
@@ -219,7 +219,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private createDefaultExchangeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Symbol_DefaultExchange]);
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_DefaultExchange]);
         action.commitEvent = () => {
@@ -229,11 +229,11 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private createExchangeHideModeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExchangeHideMode]);
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExchangeHideMode]);
         const modeIds = SymbolsService.ExchangeHideMode.getAll();
-        const elementPropertiesArray = modeIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = modeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (modeId) => (
                 {
                     element: modeId,
@@ -310,16 +310,16 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private createDateTimeTimezoneModeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Format_DateTimeTimezoneModeId]);
         action.pushTitle(Strings[StringId.SettingTitle_Format_DateTimeTimezoneModeId]);
-        const modeIds = SourceTzOffsetDateTime.TimezoneMode.allIds;
-        const elementPropertiesArray = modeIds.map<EnumUiAction.ElementProperties>(
+        const modeIds = SourceTzOffsetDateTimeTimezoneMode.allIds;
+        const elementPropertiesArray = modeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (modeId) => (
                 {
                     element: modeId,
-                    caption: SourceTzOffsetDateTime.TimezoneMode.idToDisplay(modeId),
-                    title: SourceTzOffsetDateTime.TimezoneMode.idToDescription(modeId),
+                    caption: SourceTzOffsetDateTimeTimezoneMode.idToDisplay(modeId),
+                    title: SourceTzOffsetDateTimeTimezoneMode.idToDescription(modeId),
                 }
             )
         );
@@ -342,13 +342,13 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private createExplicitSymbolSearchFieldsUiAction() {
-        const action = new ExplicitElementsEnumArrayUiAction();
+        const action = new EnumMappedExplicitElementsArrayUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Symbol_ExplicitSearchFields]);
         action.pushTitle(Strings[StringId.SettingTitle_Symbol_ExplicitSearchFields]);
 
         const allowableSymbolSearchFieldIds = SymbolField.allIds;
         const entryCount = allowableSymbolSearchFieldIds.length;
-        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
+        const elementPropertiesArray = new Array<TypedExplicitElementsArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let i = 0; i < entryCount; i++) {
             const id = allowableSymbolSearchFieldIds[i];
             elementPropertiesArray[i] = {
@@ -366,7 +366,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
     }
 
     private createSettingsProfileUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.SettingCaption_Master_SettingsProfile]);
         action.pushTitle(Strings[StringId.SettingTitle_Master_SettingsProfile]);
         const selectorIds: MasterSettings.ApplicationUserEnvironmentSelector.SelectorId[] = [
@@ -374,7 +374,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
             MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.DataEnvironment,
             MasterSettings.ApplicationUserEnvironmentSelector.SelectorId.Test,
         ];
-        const elementPropertiesArray = selectorIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = selectorIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (selectorId) => (
                 {
                     element: selectorId,
@@ -450,7 +450,7 @@ export class GeneralSettingsNgComponent extends SettingsComponentBaseNgDirective
 
     private updateAllowedExchangeIds() {
         const exchangeIds = this._symbolsService.allowedExchangeIds;
-        const elementPropertiesArray = exchangeIds.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = exchangeIds.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (exchangeId) => (
                 {
                     element: exchangeId,

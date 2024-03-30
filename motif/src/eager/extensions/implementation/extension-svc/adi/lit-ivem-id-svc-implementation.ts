@@ -8,20 +8,20 @@ import { DataEnvironmentId, LitIvemId } from '@motifmarkets/motif-core';
 import {
     ComparisonResult as ComparisonResultApi,
     DataEnvironmentId as ExchangeEnvironmentIdApi,
-    Err as ErrApi,
     JsonElement as JsonElementApi,
     LitIvemId as LitIvemIdApi,
     LitIvemIdSvc,
     MarketId as MarketIdApi,
-    Ok as OkApi,
     Result as ResultApi
 } from '../../../api/extension-api';
 import {
     ComparisonResultImplementation,
     DataEnvironmentIdImplementation,
+    ErrImplementation,
     JsonElementImplementation,
     LitIvemIdImplementation,
-    MarketIdImplementation
+    MarketIdImplementation,
+    OkImplementation
 } from '../../exposed/internal-api';
 
 export class LitIvemIdSvcImplementation implements LitIvemIdSvc {
@@ -61,10 +61,10 @@ export class LitIvemIdSvcImplementation implements LitIvemIdSvc {
         const element = JsonElementImplementation.fromApi(elementApi);
         const result = LitIvemId.tryCreateFromJson(element);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const litIvemIdApi = LitIvemIdImplementation.toApi(result.value);
-            return new OkApi(litIvemIdApi);
+            return new OkImplementation(litIvemIdApi);
         }
     }
 
@@ -72,10 +72,10 @@ export class LitIvemIdSvcImplementation implements LitIvemIdSvc {
         const elements = JsonElementImplementation.arrayFromApi(elementsApi);
         const result = LitIvemId.tryCreateArrayFromJsonElementArray(elements);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const litIvemIdArrayApi = LitIvemIdImplementation.arrayToApi(result.value);
-            return new OkApi(litIvemIdArrayApi);
+            return new OkImplementation(litIvemIdArrayApi);
         }
     }
 }

@@ -14,8 +14,11 @@ import {
     Integer,
     JsonElement,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { ToastService } from 'component-services-internal-api';
 import { BrokerageAccountsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -33,6 +36,7 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _toastService: ToastService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.BrokerageAccounts,
             ditemComponentAccess, settingsService, commandRegisterService, desktopAccessService, symbolsService, adiService
@@ -56,11 +60,11 @@ export class BrokerageAccountsDitemFrame extends BuiltinDitemFrame {
 
         brokerageAccountsFrame.initialiseGrid(this.opener, undefined, true);
 
-        const openPromise = brokerageAccountsFrame.openJsonOrDefault(brokerageAccountsFrameElement, true);
+        const openPromise = brokerageAccountsFrame.tryOpenJsonOrDefault(brokerageAccountsFrameElement, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('BADFIPU50137');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.BrokerageAccounts]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }

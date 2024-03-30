@@ -12,12 +12,15 @@ import {
     BalancesTableRecordSourceDefinition,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     SettingsService,
+    StringId,
+    Strings,
     SymbolsService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
+import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -34,6 +37,7 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsService: SymbolsService,
         adiService: AdiService,
+        private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: BalancesDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: BalancesDitemFrame.RecordFocusedEventer,
     ) {
@@ -67,11 +71,11 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
 
         balancesFrame.initialiseGrid(this.opener, undefined, false);
 
-        const openPromise = balancesFrame.openJsonOrDefault(balancesFrameElement, true);
+        const openPromise = balancesFrame.tryOpenJsonOrDefault(balancesFrameElement, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('BDFIPU50139');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Balances]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }
@@ -107,11 +111,11 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._balancesFrame === undefined) {
             throw new AssertInternalError('BDFOGLONRD04418');
         } else {
-            this._balancesFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return this._balancesFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -189,9 +193,15 @@ export class BalancesDitemFrame extends BuiltinDitemFrame {
         try {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
-                // TODO add support for clearTable
                 const promise = balancesFrame.tryOpenBrokerageAccountGroup(group, keepView);
-                AssertInternalError.throwErrorIfPromiseRejected(promise, 'BDFABAGWO33008', `${balancesFrame.opener.lockerName}: ${group.id}`)
+                promise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Balances]}: ${openResult.error}`);
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'BDFABAGWO54122'); }
+                );
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

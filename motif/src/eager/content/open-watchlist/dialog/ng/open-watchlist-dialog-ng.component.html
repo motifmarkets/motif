@@ -5,18 +5,26 @@
 -->
 
 <div id="toolbar">
-    <app-svg-button #okButton id="okButton"></app-svg-button>
-    <app-svg-button #cancelButton id="cancelButton"></app-svg-button>
+    <div id="okCancelReturnButtons">
+        <app-svg-button #okButton id="okButton"></app-svg-button>
+        <app-svg-button #cancelButton id="cancelButton"></app-svg-button>
+    </div>
     <div id="caption">{{caption}}</div>
     <app-tab-list #tabList></app-tab-list>
 </div>
 
 <div id="existingLists">
+    <button
+        #firstAvailableSymbolListScan
+        id="firstAvailableSymbolListScanButton"
+        (click)="handleFirstAvailableSymbolListScanButtonClick()">
+        First Available Symbol list Scan
+    </button>
     <!-- <app-open-symbollist-directory [style.display]="symbolListVisible ? null : 'none'"></app-open-symbollist-directory>
     <app-open-watchlist-directory [style.display]="watchlistVisible ? null : 'none'"></app-open-watchlist-directory> -->
 </div>
 
-<div id="selectedBar">
+<!-- <div id="selectedBar">
     <app-text-input #existingListName id="existingListName"></app-text-input>
     <app-button-input #openButton id="openButton"></app-button-input>
-</div>
+</div> -->

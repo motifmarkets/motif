@@ -11,7 +11,7 @@
                 <app-general-scan-editor-section #generalSection></app-general-scan-editor-section>
                 <app-formula-scan-editor-section #criteriaSection [formulaField]="'Criteria'"></app-formula-scan-editor-section>
                 <app-formula-scan-editor-section #rankSection [formulaField]="'Rank'" [style.display]="rankDisplayed ? null : 'none'"></app-formula-scan-editor-section>
-                <app-notifiers-scan-editor-section #notifiersSection></app-notifiers-scan-editor-section>
+                <app-scan-editor-attached-notification-channels #notificationChannelsSection></app-scan-editor-attached-notification-channels>
             </div>
         </as-split-area>
         <as-split-area [size]="testSize"> <!-- was size="*"-->

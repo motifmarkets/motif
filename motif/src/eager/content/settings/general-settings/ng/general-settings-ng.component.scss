@@ -4,7 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/flex-row-items-centered-mixin';
+@use './partials/flex-row-items-centered-mixin';
 @import './partials/horizontal-children-separator';
 @import './partials/horizontal-radio-separator';
 
@@ -70,7 +70,7 @@
     }
 
     #explicitSearchFields {
-        @include flexRowItemsCenteredMixin;
+        @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
         @include horizontalChildrenSeparatorMixin;
     }
 }

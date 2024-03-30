@@ -26,6 +26,7 @@ import {
     KeyboardService,
     KeyValueStore,
     LitIvemId,
+    logger,
     Logger,
     MarketOrderId,
     mSecsPerSec,
@@ -106,6 +107,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     private _newNewsHeadlinesDitemUiAction: CommandUiAction;
     private _newNewsBodyDitemUiAction: CommandUiAction;
     private _newScansDitemUiAction: CommandUiAction;
+    private _newNotificationChannelsDitemUiAction: CommandUiAction;
     private _newAlertsDitemUiAction: CommandUiAction;
     private _newSearchDitemUiAction: CommandUiAction;
     private _newAdvertWebPageDitemUiAction: CommandUiAction;
@@ -136,6 +138,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     private _newDepthDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newNewsHeadlinesDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newScansDitemMenuItem: MenuBarService.CommandMenuItem;
+    private _newNotificationChannelsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAlertsDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newSearchDitemMenuItem: MenuBarService.CommandMenuItem;
     private _newAdvertWebPageDitemMenuItem: MenuBarService.CommandMenuItem;
@@ -253,7 +256,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
+                logger.logWarning(`Error loading layout "${DesktopFrame.mainLayoutName}": "${errorText}". Resetting Layout`);
                 this._goldenLayoutHostFrame.resetLayout();
                 this.checkLoadBrandingSplashWebPage();
                 this.notifInitialLoaded();
@@ -460,7 +463,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         // this._goldenLayoutHostFrame.resetLayout();
         const result = await this._storage.removeSubNamedItem(KeyValueStore.Key.Layout, DesktopFrame.mainLayoutName, true);
         if (result.isErr()) {
-            Logger.logError(`DesktopService save layout error: ${result.error}`);
+            logger.logError(`DesktopService save layout error: ${result.error}`);
         } else {
             this._userAlertService.queueAlert(UserAlertService.Alert.Type.Id.ResetLayout, 'Reset Layout');
         }
@@ -570,12 +573,12 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
     processSaveResult(result: Result<void>, initiateReasonId: SaveManagement.InitiateReasonId) {
         if (result.isOk()) {
             if (this._lastLayoutSaveFailed) {
-                // Logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
+                // logger.log(Logger.LevelId.Warning, 'Save layout succeeded');
                 this._lastLayoutSaveFailed = false;
             }
         } else {
             if (!this._lastLayoutSaveFailed) {
-                Logger.log(Logger.LevelId.Warning, `${SaveManagement.InitiateReason.idToName(initiateReasonId)} save layout error: ${getErrorMessage(result.error)}`);
+                logger.log(Logger.LevelId.Warning, `${SaveManagement.InitiateReason.idToName(initiateReasonId)} save layout error: ${getErrorMessage(result.error)}`);
                 this._lastLayoutSaveFailed = true;
             }
         }
@@ -708,6 +711,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         this._newNewsHeadlinesDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsHeadlines);
         this._newNewsBodyDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NewsBody);
         this._newScansDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Scans);
+        this._newNotificationChannelsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.NotificationChannels);
         this._newAlertsDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Alerts);
         this._newSearchDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.Search);
         this._newAdvertWebPageDitemUiAction = this.createNewDitemUiAction(BuiltinDitemFrame.BuiltinTypeId.AdvertWebPage);
@@ -776,6 +780,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
         this._newNewsHeadlinesDitemUiAction.finalise();
         this._newNewsBodyDitemUiAction.finalise();
         this._newScansDitemUiAction.finalise();
+        this._newNotificationChannelsDitemUiAction.finalise();
         this._newAlertsDitemUiAction.finalise();
         this._newSearchDitemUiAction.finalise();
         this._newAdvertWebPageDitemUiAction.finalise();
@@ -833,6 +838,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             this._newExtensionsDitemMenuItem = this._menuBarService.connectMenuItem(this._newExtensionsDitemUiAction);
             this._newSymbolsDitemMenuItem = this._menuBarService.connectMenuItem(this._newSymbolsDitemUiAction);
             this._newScansDitemMenuItem = this._menuBarService.connectMenuItem(this._newScansDitemUiAction);
+            this._newNotificationChannelsDitemMenuItem = this._menuBarService.connectMenuItem(this._newNotificationChannelsDitemUiAction);
             this._newDepthAndTradesDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthAndTradesDitemUiAction);
             this._newWatchlistDitemMenuItem = this._menuBarService.connectMenuItem(this._newWatchlistDitemUiAction);
             this._newDepthDitemMenuItem = this._menuBarService.connectMenuItem(this._newDepthDitemUiAction);
@@ -870,6 +876,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             this._menuBarService.disconnectMenuItem(this._newExtensionsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newSymbolsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newScansDitemMenuItem);
+            this._menuBarService.disconnectMenuItem(this._newNotificationChannelsDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthAndTradesDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newWatchlistDitemMenuItem);
             this._menuBarService.disconnectMenuItem(this._newDepthDitemMenuItem);
@@ -1014,7 +1021,7 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             result = new Ok(undefined);
         } catch (e) {
             const errorText = `${Strings[StringId.Layout_InvalidJson]}: "${getErrorMessage(e)}": ${layoutAsStr}`;
-            Logger.logError(errorText, 1000);
+            logger.logError(errorText, 1000);
             result = new Err(errorText);
             layoutJson = undefined;
         }
@@ -1025,17 +1032,17 @@ export class DesktopFrame implements DitemFrame.DesktopAccessService, SaveManage
             const name = this._activeLayoutName;
             const schemaVersionResult = layoutElement.tryGetString(DesktopFrame.JsonName.layoutSchemaVersion);
             if (schemaVersionResult.isErr()) {
-                Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
+                logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatNotDefinedLoadingDefault]}: ${name}`);
                 this.loadDefaultLayout();
             } else {
                 if (schemaVersionResult.value !== DesktopFrame.layoutStateSchemaVersion) {
-                    Logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
+                    logger.logWarning(`${Strings[StringId.Layout_SerialisationFormatIncompatibleLoadingDefault]}: "${name}", ` +
                         `${schemaVersionResult.value}, ${DesktopFrame.layoutStateSchemaVersion}`);
                     this.loadDefaultLayout();
                 } else {
                     const goldenResult = layoutElement.tryGetJsonObject(DesktopFrame.JsonName.layoutGolden);
                     if (goldenResult.isErr()) {
-                        Logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
+                        logger.logWarning(`${Strings[StringId.Layout_GoldenNotDefinedLoadingDefault]}: ${name}`);
                         this.loadDefaultLayout();
                     } else {
                         this._goldenLayoutHostFrame.loadLayout(goldenResult.value as LayoutConfig);

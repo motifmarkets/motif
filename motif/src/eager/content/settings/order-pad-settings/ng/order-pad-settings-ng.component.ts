@@ -17,8 +17,7 @@ import {
 } from '@angular/core';
 import {
     BooleanUiAction,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
+    IntegerExplicitElementsEnumUiAction,
     OrderType,
     StringId,
     Strings,
@@ -26,7 +25,7 @@ import {
     delay1Tick
 } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
-import { CaptionLabelNgComponent, CheckboxInputNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { CaptionLabelNgComponent, CheckboxInputNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { SettingsComponentBaseNgDirective } from '../../ng/settings-component-base-ng.directive';
 
 @Component({
@@ -41,13 +40,13 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     @ViewChild('reviewEnabledLabel', { static: true }) private _reviewEnabledComponent: CaptionLabelNgComponent;
     @ViewChild('reviewEnabledControl', { static: true }) private _reviewEnabledControlComponent: CheckboxInputNgComponent;
     @ViewChild('defaultOrderTypeIdLabel', { static: true }) private _defaultOrderTypeIdLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('defaultOrderTypeIdControl', { static: true }) private _defaultOrderTypeIdControlComponent: EnumInputNgComponent;
+    @ViewChild('defaultOrderTypeIdControl', { static: true }) private _defaultOrderTypeIdControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('defaultTimeInForceIdLabel', { static: true }) private _defaultTimeInForceIdLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('defaultTimeInForceIdControl', { static: true }) private _defaultTimeInForceIdControlComponent: EnumInputNgComponent;
+    @ViewChild('defaultTimeInForceIdControl', { static: true }) private _defaultTimeInForceIdControlComponent: IntegerEnumInputNgComponent;
 
     private _reviewEnabledUiAction: BooleanUiAction;
-    private _defaultOrderTypeIdUiAction: ExplicitElementsEnumUiAction;
-    private _defaultTimeInForceIdUiAction: ExplicitElementsEnumUiAction;
+    private _defaultOrderTypeIdUiAction: IntegerExplicitElementsEnumUiAction;
+    private _defaultTimeInForceIdUiAction: IntegerExplicitElementsEnumUiAction;
 
     constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(elRef, ++OrderPadSettingsNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service);
@@ -104,15 +103,15 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     }
 
     private createDefaultOrderTypeIdUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.SettingCaption_OrderPad_DefaultOrderTypeId]);
         action.pushTitle(Strings[StringId.SettingTitle_OrderPad_DefaultOrderTypeId]);
 
         const allIds = OrderType.all;
         const allIdsCount = allIds.length;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(allIdsCount + 1);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(allIdsCount + 1);
 
-        const undefinedElementProperties: EnumUiAction.ElementProperties = {
+        const undefinedElementProperties: IntegerExplicitElementsEnumUiAction.ElementProperties = {
             element: -1,
             caption: Strings[StringId.Undefined],
             title: Strings[StringId.DefaultOrderTypeIdNotSpecified],
@@ -122,7 +121,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         let idx = 1;
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
-            const elementProperties: EnumUiAction.ElementProperties = {
+            const elementProperties: IntegerExplicitElementsEnumUiAction.ElementProperties = {
                 element: id,
                 caption: OrderType.idToDisplay(id),
                 title: OrderType.idToDisplay(id),
@@ -135,16 +134,16 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
     }
 
     private createDefaultTimeInForceIdUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.valueRequired = false;
         action.pushCaption(Strings[StringId.SettingCaption_OrderPad_DefaultTimeInForceId]);
         action.pushTitle(Strings[StringId.SettingTitle_OrderPad_DefaultTimeInForceId]);
 
         const allIds = TimeInForce.all;
         const allIdsCount = allIds.length;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(allIdsCount + 1);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(allIdsCount + 1);
 
-        const undefinedElementProperties: EnumUiAction.ElementProperties = {
+        const undefinedElementProperties: IntegerExplicitElementsEnumUiAction.ElementProperties = {
             element: -1,
             caption: Strings[StringId.Undefined],
             title: Strings[StringId.DefaultTimeInForceIdNotSpecified],
@@ -154,7 +153,7 @@ export class OrderPadSettingsNgComponent extends SettingsComponentBaseNgDirectiv
         let idx = 1;
         for (let i = 0; i < allIdsCount; i++) {
             const id = allIds[i];
-            const elementProperties: EnumUiAction.ElementProperties = {
+            const elementProperties: IntegerExplicitElementsEnumUiAction.ElementProperties = {
                 element: id,
                 caption: TimeInForce.idToDisplay(id),
                 title: TimeInForce.idToDisplay(id),

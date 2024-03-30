@@ -4,6 +4,7 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
 @import "./partials/ng-select/_ng-select-id-element";
 
 #rootDiv {
@@ -11,6 +12,7 @@
     flex-direction: row;
     align-items: center;
     width: 100%;
+    @include svg-icon-button-size.toolbarChildMixin;
 
     > ng-select {
         display: inline-block!important;

@@ -5,9 +5,10 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, Component, ElementRef, InjectionToken, Injector, OnDestroy, ValueProvider, ViewContainerRef } from '@angular/core';
-import { GridSourceOrReferenceDefinition, LockOpenListItem } from '@motifmarkets/motif-core';
+import { LockOpenListItem } from '@motifmarkets/motif-core';
 import { CoreInjectionTokens } from 'component-services-ng-api';
 import { ContentComponentBaseNgDirective } from '../../../ng/content-component-base-ng.directive';
+import { RevDataSourceOrReferenceDefinition } from '@xilytix/rev-data-source';
 
 @Component({
     selector: 'app-save-watchlist-dialog',
@@ -19,7 +20,7 @@ import { ContentComponentBaseNgDirective } from '../../../ng/content-component-b
 export class SaveWatchlistDialogNgComponent extends ContentComponentBaseNgDirective implements AfterViewInit, OnDestroy {
     private static typeInstanceCreateCount = 0;
 
-    private _closeResolve: (value: GridSourceOrReferenceDefinition.SaveAsDefinition | undefined) => void;
+    private _closeResolve: (value: RevDataSourceOrReferenceDefinition.SaveAsDefinition | undefined) => void;
 
     constructor(elRef: ElementRef<HTMLElement>) {
         super(elRef, ++SaveWatchlistDialogNgComponent.typeInstanceCreateCount);
@@ -35,14 +36,14 @@ export class SaveWatchlistDialogNgComponent extends ContentComponentBaseNgDirect
     }
 
     open(): SaveWatchlistDialogNgComponent.ClosePromise {
-        return new Promise<GridSourceOrReferenceDefinition.SaveAsDefinition | undefined>((resolve) => {
+        return new Promise<RevDataSourceOrReferenceDefinition.SaveAsDefinition | undefined>((resolve) => {
             this._closeResolve = resolve;
         });
     }
 }
 
 export namespace SaveWatchlistDialogNgComponent {
-    export type ClosePromise = Promise<GridSourceOrReferenceDefinition.SaveAsDefinition | undefined>;
+    export type ClosePromise = Promise<RevDataSourceOrReferenceDefinition.SaveAsDefinition | undefined>;
     export const captionInjectionToken = new InjectionToken<string>('SaveWatchlistDialogNgComponent.Caption');
 
     export function open(

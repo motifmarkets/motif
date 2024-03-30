@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Inject, InjectionToken, Optional, ValueProvider } from '@angular/core';
-import { AdaptedRevgridGridSettings, GridLayoutOrReferenceDefinition, JsonElement, LitIvemId, LockOpenListItem, UiBadnessComparableList } from '@motifmarkets/motif-core';
+import { AdaptedRevgridGridSettings, JsonElement, LitIvemId, LockOpenListItem, UiComparableList } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { DelayedBadnessGridSourceNgDirective } from '../../delayed-badness-grid-source/ng-api';
 import { ContentNgService } from '../../ng/content-ng.service';
 import { LitIvemIdListFrame } from '../lit-ivem-id-list-frame';
@@ -18,7 +19,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     selectionChangedEventer: LitIvemIdListFrame.SelectionChangedEventer | undefined;
 
-    private _list: UiBadnessComparableList<LitIvemId> | undefined;
+    private _list: UiComparableList<LitIvemId> | undefined;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -43,7 +44,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
 
     initialise(
         opener: LockOpenListItem.Opener,
-        layoutDefinition: GridLayoutOrReferenceDefinition | undefined,
+        layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined,
         frameElement: JsonElement | undefined,
         keepPreviousLayoutIfPossible: boolean,
     ) {
@@ -59,11 +60,7 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         this.frame.initialiseGrid(opener, layoutDefinition, keepPreviousLayoutIfPossible);
     }
 
-    tryOpenJson(frameElement: JsonElement | undefined, keepView: boolean) {
-        return this.frame.tryOpenJson(frameElement, keepView)
-    }
-
-    tryOpenList(list: UiBadnessComparableList<LitIvemId>, keepView: boolean) {
+    tryOpenList(list: UiComparableList<LitIvemId>, keepView: boolean) {
         this._list = list;
         return this.frame.tryOpenList(list, keepView);
     }
@@ -80,8 +77,8 @@ export class LitIvemIdListNgComponent extends DelayedBadnessGridSourceNgDirectiv
         return this.frame.createAllowedFieldsGridLayoutDefinition();
     }
 
-    openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
-        this.frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
+    tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
+        return this.frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition)
     }
 
     areRowsSelected(includeAllAuto: boolean) {

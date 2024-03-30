@@ -12,7 +12,7 @@ export abstract class SequenceHistoryImplementation implements SequenceHistoryAp
     badnessChangeEventer: SequenceHistoryApi.BadnessChangeEventHandler | undefined;
 
     constructor(private readonly _baseActual: SequenceHistory) {
-        this._baseActual.badnessChangeEvent = () => this.handleBadnessChangeEvent();
+        this._baseActual.badnessChangedEvent = () => this.handleBadnessChangedEvent();
     }
 
     get actual() { return this._baseActual; }
@@ -25,7 +25,7 @@ export abstract class SequenceHistoryImplementation implements SequenceHistoryAp
         this.badnessChangeEventer = undefined;
     }
 
-    private handleBadnessChangeEvent() {
+    private handleBadnessChangedEvent() {
         if (this.badnessChangeEventer !== undefined) {
             this.badnessChangeEventer();
         }

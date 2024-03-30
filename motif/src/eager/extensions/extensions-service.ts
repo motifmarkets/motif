@@ -12,6 +12,7 @@ import {
     ComparisonResult,
     Err,
     ErrorCode,
+    ErrorCodeLogger,
     ExtensionError,
     ExtensionHandle,
     ExtensionId,
@@ -19,9 +20,7 @@ import {
     ExtStringId,
     ExtStrings,
     Integer,
-    invalidHandle,
-    ListChangeTypeId,
-    Logger,
+    logger,
     mSecsPerMin,
     MultiEvent,
     Ok,
@@ -167,7 +166,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         } else {
             const idx = this._installedArray.indexOf(registration);
             this._installedArray.splice(idx, 1);
-            this.notifyInstalledListChanged(ListChangeTypeId.Remove, idx, registration, true);
+            this.notifyInstalledListChanged(ExtensionsAccessService.ListChangeTypeId.Remove, idx, registration, true);
 
             if (registration.loaded) {
                 registration.unload();
@@ -339,7 +338,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private notifyInstalledListChanged(listChangeTypeId: ListChangeTypeId, idx: Integer,
+    private notifyInstalledListChanged(listChangeTypeId: ExtensionsAccessService.ListChangeTypeId, idx: Integer,
         extension: RegisteredExtension, listTransitioning: boolean
     ) {
         const handlers = this._installedListChangedMultiEvent.copyHandlers();
@@ -348,7 +347,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         }
     }
 
-    private notifyUninstalledBundledListChange(listChangeTypeId: ListChangeTypeId, idx: Integer,
+    private notifyUninstalledBundledListChange(listChangeTypeId: ExtensionsAccessService.ListChangeTypeId, idx: Integer,
         info: ExtensionInfo, listTransitioning: boolean
     ) {
         const handlers = this._uninstalledBundledListChangedMultiEvent.copyHandlers();
@@ -379,7 +378,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         const listTransitioning = this.checkRemoveFromUninstalledBundled(registration, true);
         const idx = this._installedArray.length;
         this._installedArray.push(registration);
-        this.notifyInstalledListChanged(ListChangeTypeId.Insert, idx, registration, listTransitioning);
+        this.notifyInstalledListChanged(ExtensionsAccessService.ListChangeTypeId.Insert, idx, registration, listTransitioning);
         if (loadAlso) {
             registration.load();
         }
@@ -400,7 +399,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
 
             const idx = this._uninstalledBundledArray.length;
             this._uninstalledBundledArray.push(bundledInfo);
-            this.notifyUninstalledBundledListChange(ListChangeTypeId.Insert, idx, bundledInfo, listTransitioning);
+            this.notifyUninstalledBundledListChange(ExtensionsAccessService.ListChangeTypeId.Insert, idx, bundledInfo, listTransitioning);
         }
     }
 
@@ -410,7 +409,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             return false;
         } else {
             const uninstalledBundledInfo = this._uninstalledBundledArray[uninstalledBundledIdx];
-            this.notifyUninstalledBundledListChange(ListChangeTypeId.Remove, uninstalledBundledIdx, uninstalledBundledInfo,
+            this.notifyUninstalledBundledListChange(ExtensionsAccessService.ListChangeTypeId.Remove, uninstalledBundledIdx, uninstalledBundledInfo,
                 listTransitioning
             );
             this._uninstalledBundledArray.splice(uninstalledBundledIdx, 1);
@@ -453,15 +452,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             loadCallback: ExtensionsService.nullLoadCallback,
         };
 
-        const registration = this.registerExtension(extensionRequest, ExtensionsService.invalidExtensionInfo);
-
-        if (registration === undefined) {
-            throw new AssertInternalError('ESCVU877333');
-        } else {
-            if (registration.handle !== invalidHandle) {
-                throw new AssertInternalError('IESCVH877333');
-            }
-        }
+        return this.registerExtension(extensionRequest, ExtensionsService.invalidExtensionInfo);
     }
 
     private registerInternalExtension() {
@@ -474,13 +465,7 @@ export class ExtensionsService implements FrameExtensionsAccessService {
             loadCallback: ExtensionsService.nullLoadCallback,
         };
 
-        const registration = this.registerExtension(extensionRequest, ExtensionsService.internalExtensionInfo);
-
-        if (registration === undefined) {
-            throw new AssertInternalError('IESCIU877333');
-        } else {
-            return registration;
-        }
+        return this.registerExtension(extensionRequest, ExtensionsService.internalExtensionInfo);
     }
 
     private processRegistrationRequest(request: ExtensionRegistrarApi.Request) {
@@ -488,12 +473,12 @@ export class ExtensionsService implements FrameExtensionsAccessService {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         if (publisherType === undefined) {
             // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-            Logger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
+            ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_PublisherTypeNotSpecified, request.name ?? '');
         } else {
             const publisherTypeId = PublisherTypeImplementation.tryFromApi(publisherType);
             if (publisherTypeId === undefined) {
                 // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-                Logger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
+                ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_InvalidPublisherType, request.name ?? '');
             } else {
                 const publisherId: PublisherId = {
                     typeId: publisherTypeId,
@@ -513,20 +498,20 @@ export class ExtensionsService implements FrameExtensionsAccessService {
                 const activeDownload = this.extractActiveDownload(requestExtensionInfo);
                 if (activeDownload === undefined) {
                     // must have timed out
-                    Logger.logWarning('Extension active download not found:',
+                    logger.logWarning('Extension active download not found:',
                         `ESHSLE21110332 ${this.generateExtensionKeyText(requestExtensionInfo)}`
                     );
                 } else {
                     const matchingExtension = this.findExtensionRegistration(requestExtensionInfo);
                     if (matchingExtension !== undefined) {
-                        Logger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
+                        ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_AddDuplicateName,
                             `${this.generateExtensionKeyText(requestExtensionInfo)}`
                         );
                     } else {
                         const requestedInfo = activeDownload.info;
                         const matchResult = this.matchRequestWithInfo(request, requestedInfo);
                         if (matchResult.isErr()) {
-                            Logger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
+                            ErrorCodeLogger.logExternalError(ErrorCode.ExtensionsService_MismatchedExtensionInfo,
                                 `${this.generateExtensionKeyText(requestExtensionInfo)}: ${matchResult.error}`
                             );
                         } else {

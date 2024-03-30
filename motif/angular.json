@@ -70,7 +70,8 @@
             "allowedCommonJsDependencies": [
               "crypto-js",
               "decimal.js-light",
-              "rollbar"
+              "rollbar",
+              "toastify-js"
             ]
           },
           "configurations": {
@@ -149,7 +150,7 @@
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "motif:build"
+            "buildTarget": "motif:build"
           }
         },
         "test": {

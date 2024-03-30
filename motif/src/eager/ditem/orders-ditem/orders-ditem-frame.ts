@@ -10,7 +10,6 @@ import {
     AssertInternalError,
     BrokerageAccountGroup,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     Order,
@@ -18,10 +17,13 @@ import {
     OrderTableRecordSourceDefinition,
     ScalarSettings,
     SettingsService,
+    StringId,
+    Strings,
     SymbolDetailCacheService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
+import { ToastService } from 'component-services-internal-api';
 import { OrdersFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -41,7 +43,7 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         symbolsService: SymbolsService,
         adiService: AdiService,
         private readonly _symbolDetailCacheService: SymbolDetailCacheService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
+        private readonly _toastService: ToastService,
         private readonly _gridSourceOpenedEventer: OrdersDitemFrame.GridSourceOpenedEventer,
         private readonly _recordFocusedEventer: OrdersDitemFrame.RecordFocusedEventer,
     ) {
@@ -72,11 +74,11 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
 
         ordersFrame.initialiseGrid(this.opener, undefined, true);
 
-        const openPromise = ordersFrame.openJsonOrDefault(ordersFrameElement, true);
+        const openPromise = ordersFrame.tryOpenJsonOrDefault(ordersFrameElement, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('ODFIPU50137');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Orders]}: ${openResult.error}`);
                 } else {
                     this.applyLinked();
                 }
@@ -113,11 +115,11 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         if (this._ordersFrame === undefined) {
             throw new AssertInternalError('ODFOGLONRD04418');
         } else {
-            this._ordersFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return this._ordersFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
@@ -291,9 +293,15 @@ export class OrdersDitemFrame extends BuiltinDitemFrame {
         try {
             result = super.applyBrokerageAccountGroup(group, selfInitiated);
             if (group !== undefined) {
-                // TODO add support for clearTable
-                const gridSourceOrReferencePromise = ordersFrame.tryOpenWithDefaultLayout(group, keepView);
-                AssertInternalError.throwErrorIfPromiseRejected(gridSourceOrReferencePromise, 'ODFABAGWO55540', `${this.opener.lockerName}: ${group.id}`);
+                const openPromise = ordersFrame.tryOpenBrokerageAccountGroup(group, keepView);
+                openPromise.then(
+                    (openResult) => {
+                        if (openResult.isErr()) {
+                            this._toastService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Orders]}: ${openResult.error}`);
+                        }
+                    },
+                    (reason) => { throw AssertInternalError.createIfNotError(reason, 'ODFABAGWO68100', `${this.opener.lockerName}: ${group.id}`); }
+                );
             }
         } finally {
             this._brokerageAccountGroupApplying = false;

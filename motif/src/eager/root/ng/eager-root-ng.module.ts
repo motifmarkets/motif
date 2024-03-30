@@ -31,6 +31,7 @@ import { AuthGuardNgService } from './auth-guard-ng.service';
 import { ConfigNgService } from './config-ng.service';
 import { CurrentVersionGuardNgService } from './current-version-guard-ng.service';
 import { ErrorHandlerNgService } from './error-handler-ng.service';
+import { LogNgService } from './log-ng.service';
 
 @NgModule({
     declarations: [
@@ -59,10 +60,15 @@ import { ErrorHandlerNgService } from './error-handler-ng.service';
     providers: [
         {
             provide: APP_INITIALIZER,
-            useFactory: (domSanitizer: DomSanitizer, configNgService: ConfigNgService) => ConfigNgService.getLoadConfigFtn(domSanitizer, configNgService),
+            useFactory: (
+                domSanitizer: DomSanitizer,
+                _logNgService: LogNgService, // Make sure log service is started ASAP
+                configNgService: ConfigNgService
+            ) => ConfigNgService.getLoadConfigFtn(domSanitizer, configNgService),
             deps: [
                 // order must match parameters in useFactory
                 DomSanitizer,
+                LogNgService,
                 ConfigNgService,
             ],
             multi: true

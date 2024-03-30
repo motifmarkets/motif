@@ -5,8 +5,8 @@
  */
 
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Injector, OnDestroy, ViewChild } from '@angular/core';
-import { BooleanUiAction, EnumInfoOutOfOrderError, EnumUiAction, ExplicitElementsEnumUiAction, ScanConditionSet, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
-import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, EnumInputNgComponent } from 'controls-ng-api';
+import { BooleanUiAction, EnumInfoOutOfOrderError, IntegerExplicitElementsEnumUiAction, ScanConditionSet, StringId, Strings, delay1Tick } from '@motifmarkets/motif-core';
+import { CaptionLabelNgComponent, CaptionedCheckboxNgComponent, CaptionedRadioNgComponent, IntegerEnumInputNgComponent } from 'controls-ng-api';
 import { ScanFormulaViewNgDirective } from '../../scan-formula-view-ng.directive';
 
 @Component({
@@ -20,11 +20,11 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
     @ViewChild('anyControl', { static: true }) private _anyControlComponent: CaptionedRadioNgComponent;
     @ViewChild('excludeControl', { static: true }) private _excludeControlComponent: CaptionedCheckboxNgComponent;
     @ViewChild('newConditionLabel', { static: true }) private _newConditionLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('newConditionControl', { static: true }) private _newConditionControlComponent: EnumInputNgComponent;
+    @ViewChild('newConditionControl', { static: true }) private _newConditionControlComponent: IntegerEnumInputNgComponent;
 
-    private readonly _setOperationUiAction: ExplicitElementsEnumUiAction;
+    private readonly _setOperationUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _excludeUiAction: BooleanUiAction;
-    private readonly _newConditionUiAction: ExplicitElementsEnumUiAction;
+    private readonly _newConditionUiAction: IntegerExplicitElementsEnumUiAction;
 
     constructor(
         elRef: ElementRef<HTMLElement>,
@@ -38,7 +38,7 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
         this._newConditionUiAction = this.createNewConditionUiAction();
 
         // remove these when ScanConditionSet properly used
-        this._setOperationUiAction.pushValue(ScanConditionSet.SetOperationId.And);
+        this._setOperationUiAction.pushValue(ScanConditionSet.BooleanOperationId.And);
         this._excludeUiAction.pushValue(false);
     }
 
@@ -56,8 +56,8 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
     }
 
     private initialiseComponents() {
-        this._allControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.SetOperationId.And);
-        this._anyControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.SetOperationId.Or);
+        this._allControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.And);
+        this._anyControlComponent.initialiseEnum(this._setOperationUiAction, ScanConditionSet.BooleanOperationId.Or);
         this._excludeControlComponent.initialise(this._excludeUiAction);
         this._newConditionLabelComponent.initialise(this._newConditionUiAction);
         this._newConditionControlComponent.initialise(this._newConditionUiAction);
@@ -70,11 +70,11 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
     }
 
     private createSetOperationUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushCaption(Strings[StringId.ConditionSetScanFormulaViewNgComponentCaption_SetOperation]);
         action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_SetOperation]);
         const ids = ConditionSetScanFormulaViewNgComponent.SetOperation.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ConditionSetScanFormulaViewNgComponent.SetOperation.idToCaption(id),
@@ -102,11 +102,11 @@ export class ConditionSetScanFormulaViewNgComponent extends ScanFormulaViewNgDir
     }
 
     private createNewConditionUiAction() {
-        const action = new ExplicitElementsEnumUiAction(false);
+        const action = new IntegerExplicitElementsEnumUiAction(false);
         action.pushCaption(Strings[StringId.New]);
         action.pushTitle(Strings[StringId.ConditionSetScanFormulaViewNgComponentTitle_NewCondition]);
         const ids = ConditionSetScanFormulaViewNgComponent.ConditionKind.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ConditionSetScanFormulaViewNgComponent.ConditionKind.idToCaption(id),
@@ -131,7 +131,7 @@ export namespace ConditionSetScanFormulaViewNgComponent {
     export let typeInstanceCreateCount = 0;
 
     export namespace SetOperation {
-        export type Id = ScanConditionSet.SetOperationId;
+        export type Id = ScanConditionSet.BooleanOperationId;
 
         interface Info {
             readonly id: Id;
@@ -139,15 +139,15 @@ export namespace ConditionSetScanFormulaViewNgComponent {
             readonly titleId: StringId;
         }
 
-        type InfosObject = { [id in keyof typeof ScanConditionSet.SetOperationId]: Info };
+        type InfosObject = { [id in keyof typeof ScanConditionSet.BooleanOperationId]: Info };
         const infosObject: InfosObject = {
             Or: {
-                id: ScanConditionSet.SetOperationId.Or,
+                id: ScanConditionSet.BooleanOperationId.Or,
                 captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_Any,
                 titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_Any,
             },
             And: {
-                id: ScanConditionSet.SetOperationId.And,
+                id: ScanConditionSet.BooleanOperationId.And,
                 captionId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationCaption_All,
                 titleId: StringId.ConditionSetScanFormulaViewNgComponent_SetOperationTitle_All,
             },
@@ -159,7 +159,7 @@ export namespace ConditionSetScanFormulaViewNgComponent {
         export function initialise() {
             for (let i = 0; i < idCount; i++) {
                 const info = infos[i];
-                if (info.id !== i as ScanConditionSet.SetOperationId) {
+                if (info.id !== i as ScanConditionSet.BooleanOperationId) {
                     throw new EnumInfoOutOfOrderError('ConditionSetScanFormulaViewNgComponent.SetOperationId', i, Strings[info.captionId]);
                 }
             }

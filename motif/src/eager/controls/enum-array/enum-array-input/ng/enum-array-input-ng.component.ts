@@ -11,7 +11,7 @@ import { SettingsNgService } from 'component-services-ng-api';
 import { NgSelectUtils } from '../../../ng-select-utils';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 import { NgSelectOverlayNgService } from '../../../ng/ng-select-overlay-ng.service';
-import { EnumArrayComponentBaseNgDirective } from '../../ng/enum-array-component-base-ng.directive';
+import { EnumExplicitElementsArrayUiActionNgDirective } from '../../ng/enum-explicit-elements-array-ui-action-ng.directive';
 
 @Component({
     selector: 'app-enum-array-input',
@@ -21,7 +21,7 @@ import { EnumArrayComponentBaseNgDirective } from '../../ng/enum-array-component
     changeDetection: ChangeDetectionStrategy.OnPush,
     encapsulation: ViewEncapsulation.None,
 })
-export class EnumArrayInputNgComponent extends EnumArrayComponentBaseNgDirective implements AfterViewInit {
+export class EnumArrayInputNgComponent extends EnumExplicitElementsArrayUiActionNgDirective implements AfterViewInit {
     private static typeInstanceCreateCount = 0;
 
     @Input() inputSize = '8em';

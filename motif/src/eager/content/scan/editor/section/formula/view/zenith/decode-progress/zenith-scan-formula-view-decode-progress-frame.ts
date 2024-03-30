@@ -145,7 +145,7 @@ export class ZenithScanFormulaViewDecodeProgressFrame {
 
     // private createDefaultGridLayout() {
     //     const definition = DayTradesGridField.createDefaultGridLayoutDefinition();
-    //     return new GridLayout(definition);
+    //     return new RevGridLayout(definition);
     // }
 
 }

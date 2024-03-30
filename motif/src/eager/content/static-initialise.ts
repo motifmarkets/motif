@@ -5,8 +5,17 @@
  */
 
 import { ColorControlsComponentModule } from './color-controls/ng-api';
+import { LockOpenNotificationChannelTableFieldSourceDefinitionModule } from './lock-open-notification-channels/internal-api';
 import { ResultOrderRequestStepFrameModule } from './order-request-step/internal-api';
-import { ConditionSetScanFormulaViewNgComponentModule, FormulaScanPropertiesSectionNgComponentModule, ScanTargetsNgComponentModule } from './scan/ng-api';
+import {
+    LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule,
+    ScanFieldEditorFrameTableFieldSourceDefinitionModule,
+} from './scan/internal-api';
+import {
+    ConditionSetScanFormulaViewNgComponentModule,
+    FormulaScanPropertiesSectionNgComponentModule,
+    ScanTargetsNgComponentModule
+} from './scan/ng-api';
 
 export namespace StaticInitialise {
     export function initialise() {
@@ -15,5 +24,8 @@ export namespace StaticInitialise {
         FormulaScanPropertiesSectionNgComponentModule.initialiseStatic();
         ScanTargetsNgComponentModule.initialiseStatic();
         ConditionSetScanFormulaViewNgComponentModule.initialiseStatic();
+        ScanFieldEditorFrameTableFieldSourceDefinitionModule.initialiseStatic();
+        LockerScanAttachedNotificationChannelTableFieldSourceDefinitionModule.initialiseStatic();
+        LockOpenNotificationChannelTableFieldSourceDefinitionModule.initialiseStatic();
     }
 }

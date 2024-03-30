@@ -37,18 +37,23 @@ export class CodeMirrorNgComponent implements OnDestroy {
     docChangedEventer: CodeMirrorNgComponent.DocChangedEventer;
 
     private _editor: EditorView;
+    private _textSetting = false;
     constructor(private _ngZone: NgZone, private readonly _elRef: ElementRef<HTMLElement>) {
     }
+
+    get textSetting() { return this._textSetting; }
 
     get text() {
         return this._editor.state.doc.sliceString(0);
     }
 
     set text(value: string) {
+        this._textSetting = true;
         const editor = this._editor;
         editor.dispatch({
             changes: { from: 0, to: editor.state.doc.length, insert: value }
         });
+        this._textSetting = false;
     }
 
     ngOnDestroy(): void {

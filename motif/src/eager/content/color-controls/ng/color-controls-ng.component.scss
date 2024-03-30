@@ -4,12 +4,13 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/flex-row-items-centered-mixin';
+@use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import './partials/caption-followed-by-input';
 @import './partials/horizontal-radio-separator';
 
 @mixin flexRowColorControlsCenteredMixin {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 
     > *:not(:first-child) {
         margin-left: 0.7em;
@@ -27,7 +28,7 @@
 }
 
 #hexAndHideSection {
-    @include flexRowItemsCenteredMixin;
+    @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
 
     #hexControl {
         width: 10em;
@@ -39,6 +40,7 @@
 
 #buttonsSection {
     display: flex;
+    @include svg-icon-button-size.toolbarChildMixin;
 }
 
 #hsvControlsSection {

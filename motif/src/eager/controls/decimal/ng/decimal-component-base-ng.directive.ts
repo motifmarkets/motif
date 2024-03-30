@@ -5,8 +5,7 @@
  */
 
 import { Directive } from '@angular/core';
-import { DecimalUiAction, MultiEvent, UiAction } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
+import { Decimal, DecimalUiAction, MultiEvent, UiAction } from '@motifmarkets/motif-core';
 import { ControlComponentBaseNgDirective } from '../../ng/control-component-base-ng.directive';
 
 @Directive()

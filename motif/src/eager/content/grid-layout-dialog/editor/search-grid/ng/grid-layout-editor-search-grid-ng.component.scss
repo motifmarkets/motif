@@ -4,8 +4,12 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
+
 :host {
     display: flex;
+
+    @include svg-icon-button-size.toolbarChildMixin;
 
     #searchInput {
         width: 3em;

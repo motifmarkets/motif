@@ -21,7 +21,6 @@ import {
     IconButtonUiAction,
     Integer,
     InternalCommand,
-    Logger,
     ModifierKey,
     ModifierKeyId,
     StringId,
@@ -29,9 +28,10 @@ import {
     UiAction,
     assert,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
-import { RevRecordIndex } from '@xilytix/revgrid';
+import { RevRecordIndex } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, SettingsNgService } from 'component-services-ng-api';
 import { AngularSplitTypes } from 'controls-internal-api';
 import { SvgButtonNgComponent } from 'controls-ng-api';
@@ -175,7 +175,7 @@ export class ColorSettingsNgComponent extends SettingsComponentBaseNgDirective i
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`ColorSchemePresetCode error: ${errorText}`);
+                logger.logError(`ColorSchemePresetCode error: ${errorText}`);
                 this.closePresetCode();
             }
         );

@@ -4,6 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
+@use './partials/svg-icon-button-size';
+
 :host {
     display: flex;
     flex-direction: column;
@@ -15,11 +17,13 @@
         flex-direction: column;
         align-items: flex-end;
         gap: .5em;
+        @include svg-icon-button-size.toolbarChildMixin;
     }
 
     #insertRemoveFieldsControls {
         display: flex;
         gap: .2em;
+        @include svg-icon-button-size.toolbarChildMixin;
     }
 
     #moveFieldsDownControls {
@@ -27,5 +31,6 @@
         flex-direction: column;
         align-items: flex-end;
         gap: .5em;
+        @include svg-icon-button-size.toolbarChildMixin;
     }
 }

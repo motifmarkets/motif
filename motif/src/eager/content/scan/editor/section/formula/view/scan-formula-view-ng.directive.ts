@@ -10,7 +10,7 @@ import { ContentComponentBaseNgDirective } from '../../../../../ng/content-compo
 
 @Directive()
 export abstract class ScanFormulaViewNgDirective extends ContentComponentBaseNgDirective {
-    private _scanEditor: ScanEditor | undefined;
+    protected _scanEditor: ScanEditor | undefined;
 
     get scanEditor() { return this._scanEditor; }
 

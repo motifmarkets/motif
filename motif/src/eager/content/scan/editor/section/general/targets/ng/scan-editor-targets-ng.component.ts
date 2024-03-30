@@ -1,14 +1,12 @@
 import { AfterViewInit, ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, OnDestroy, ViewChild } from '@angular/core';
 import {
     AllowedFieldsGridLayoutDefinition,
-    AllowedMarketsEnumArrayUiAction,
     AllowedMarketsEnumUiAction,
+    AllowedMarketsExplicitElementsArrayUiAction,
     AssertInternalError,
     EnumInfoOutOfOrderError,
-    EnumUiAction,
-    ExplicitElementsEnumUiAction,
-    GridLayoutOrReferenceDefinition,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     LitIvemId,
     LitIvemIdUiAction,
@@ -19,15 +17,17 @@ import {
     StringId,
     Strings,
     SymbolsService,
-    UiBadnessComparableList,
-    UnreachableCaseError
+    UiComparableList,
+    UnreachableCaseError,
+    delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { SymbolsNgService } from 'component-services-ng-api';
 import {
     CaptionLabelNgComponent,
     CaptionedRadioNgComponent,
     EnumArrayInputNgComponent,
-    EnumInputNgComponent, IntegerTextInputNgComponent,
+    IntegerEnumInputNgComponent, IntegerTextInputNgComponent,
     LitIvemIdSelectNgComponent
 } from 'controls-ng-api';
 import { LitIvemIdListEditorNgComponent } from '../../../../../../lit-ivem-id-list-editor/ng-api';
@@ -48,33 +48,29 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     @ViewChild('multiMarketTargetSubTypeControl', { static: true }) private _multiMarketTargetSubTypeControlComponent: CaptionedRadioNgComponent;
 
     @ViewChild('singleSymbolControl', { static: true }) private _singleSymbolControlComponent: LitIvemIdSelectNgComponent;
-
     @ViewChild('multiSymbolEditor', { static: true }) private _multiSymbolEditorComponent: LitIvemIdListEditorNgComponent;
-
-    @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: EnumInputNgComponent;
-    @ViewChild('singleMarketMaxMatchCountLabel', { static: true }) private _singleMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('singleMarketMaxMatchCountControl', { static: true }) private _singleMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
-
+    @ViewChild('singleMarketControl', { static: true }) private _singleMarketControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('multiMarketControl', { static: true }) private _multiMarketControlComponent: EnumArrayInputNgComponent;
-    @ViewChild('multiMarketMaxMatchCountLabel', { static: true }) private _multiMarketMaxMatchCountLabelComponent: CaptionLabelNgComponent;
-    @ViewChild('multiMarketMaxMatchCountControl', { static: true }) private _multiMarketMaxMatchCountControlComponent: IntegerTextInputNgComponent;
+
+    @ViewChild('maxMatchCountLabel', { static: true }) private _maxMatchCountLabelComponent: CaptionLabelNgComponent;
+    @ViewChild('maxMatchCountControl', { static: true }) private _maxMatchCountControlComponent: IntegerTextInputNgComponent;
 
     public readonly targetSubTypeRadioName: string;
 
     controlInputOrCommitEventer: ScanEditorTargetsNgComponent.ControlInputOrCommitEventer | undefined;
-    editMultiSymbolGridColumnsEventer: ScanEditorTargetsNgComponent.EditMultiSymbolGridColumnsEventer | undefined;
+    editGridColumnsEventer: ScanEditorTargetsNgComponent.EditGridColumnsEventer | undefined;
     popoutMultiSymbolListEditorEventer: ScanEditorTargetsNgComponent.PopoutMultiSymbolListEditorEventer | undefined;
 
     private readonly _symbolsService: SymbolsService;
 
-    private readonly _targetSubTypeUiAction: ExplicitElementsEnumUiAction;
+    private readonly _targetSubTypeUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _singleSymbolUiAction: LitIvemIdUiAction;
     private readonly _singleMarketUiAction: AllowedMarketsEnumUiAction;
-    private readonly _multiMarketUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _multiMarketUiAction: AllowedMarketsExplicitElementsArrayUiAction;
     private readonly _maxMatchCountUiAction: IntegerUiAction;
 
     private _scanEditor: ScanEditor | undefined;
-    private _multiSymbolList: UiBadnessComparableList<LitIvemId>;
+    private _multiSymbolList: UiComparableList<LitIvemId>;
     // private _targetSubTypeId: ScanEditorTargetsNgComponent.TargetSubTypeId | undefined;
     // private _lastTargetTypeIdWasMulti = false;
 
@@ -181,17 +177,21 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         if (targetSubTypeId === undefined) {
             return false;
         } else {
-            switch (targetSubTypeId) {
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
-                    return this._singleSymbolControlComponent.uiAction.isValueOk();
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
-                    return true;
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
-                    return this._singleMarketControlComponent.uiAction.isValueOk() && this._singleMarketMaxMatchCountControlComponent.uiAction.isValueOk();
-                case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
-                    return this._multiMarketControlComponent.uiAction.isValueOk() && this._multiMarketMaxMatchCountControlComponent.uiAction.isValueOk();
-                default:
-                    throw new UnreachableCaseError('SETNCAACED65134', targetSubTypeId);
+            if (!this._maxMatchCountControlComponent.uiAction.isValueOk()) {
+                return false;
+            } else {
+                switch (targetSubTypeId) {
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleSymbol:
+                        return this._singleSymbolControlComponent.uiAction.isValueOk();
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiSymbol:
+                        return true;
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.SingleMarket:
+                        return this._singleMarketControlComponent.uiAction.isValueOk();
+                    case ScanEditorTargetsNgComponent.TargetSubTypeId.MultiMarket:
+                        return this._multiMarketControlComponent.uiAction.isValueOk();
+                    default:
+                        throw new UnreachableCaseError('SETNCAACED65134', targetSubTypeId);
+                }
             }
         }
     }
@@ -199,9 +199,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     cancelAllControlsEdited() {
         this._singleSymbolControlComponent.uiAction.cancelEdit();
         this._singleMarketControlComponent.uiAction.cancelEdit();
-        this._singleMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
+        this._maxMatchCountControlComponent.uiAction.cancelEdit();
         this._multiMarketControlComponent.uiAction.cancelEdit();
-        this._multiMarketMaxMatchCountControlComponent.uiAction.cancelEdit();
         this._multiSymbolEditorComponent.cancelAllControlsEdited();
     }
 
@@ -233,11 +232,9 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         );
         this._singleSymbolControlComponent.initialise(this._singleSymbolUiAction);
         this._singleMarketControlComponent.initialise(this._singleMarketUiAction);
-        this._singleMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
-        this._singleMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
+        this._maxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
+        this._maxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
         this._multiMarketControlComponent.initialise(this._multiMarketUiAction);
-        this._multiMarketMaxMatchCountLabelComponent.initialise(this._maxMatchCountUiAction);
-        this._multiMarketMaxMatchCountControlComponent.initialise(this._maxMatchCountUiAction);
 
         this._multiSymbolList = this._multiSymbolEditorComponent.list;
         this._multiSymbolEditorComponentAfterListChangedSubscriptionId = this._multiSymbolEditorComponent.subscribeAfterListChangedEvent(
@@ -245,7 +242,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                 if (ui) {
                     const editor = this._scanEditor;
                     if (editor !== undefined) {
-                        editor.beginFieldChanges(this);
+                        editor.beginFieldChanges(this.instanceId);
                         const litIvemIds = this._multiSymbolEditorComponent.list.toArray();
                         editor.setTargetLitIvemIds(litIvemIds);
                         editor.endFieldChanges();
@@ -256,8 +253,8 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         )
 
         this._multiSymbolEditorComponent.editGridColumnsEventer = (allowedFieldsAndLayoutDefinition) => {
-            if (this.editMultiSymbolGridColumnsEventer !== undefined) {
-                return this.editMultiSymbolGridColumnsEventer(
+            if (this.editGridColumnsEventer !== undefined) {
+                return this.editGridColumnsEventer(
                     Strings[StringId.ScanEditorTargetsComponent_EditMultiSymbolGridColumns],
                     allowedFieldsAndLayoutDefinition
                 );
@@ -277,12 +274,12 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createTargetSubTypeUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_TargetType]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_TargetType]);
         const ids = ScanEditorTargetsNgComponent.TargetSubType.getAllIds();
-        const elementPropertiesArray = ids.map<EnumUiAction.ElementProperties>(
+        const elementPropertiesArray = ids.map<IntegerExplicitElementsEnumUiAction.ElementProperties>(
             (id) => ({
                     element: id,
                     caption: ScanEditorTargetsNgComponent.TargetSubType.idToDisplay(id),
@@ -308,7 +305,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 const litItemId = this._singleSymbolUiAction.definedValue;
                 editor.setTargetLitIvemIds([litItemId]);
                 editor.endFieldChanges();
@@ -327,7 +324,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 const id = this._singleMarketUiAction.definedValue as MarketId;
                 editor.setTargetMarketIds([id]);
                 editor.endFieldChanges();
@@ -338,7 +335,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private createMultiMarketUiAction() {
-        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
+        const action = new AllowedMarketsExplicitElementsArrayUiAction(this._symbolsService);
         action.commitOnAnyValidInput = true;
         action.pushCaption(Strings[StringId.ScanTargetsCaption_MultiMarket]);
         action.pushTitle(Strings[StringId.ScanTargetsDescription_MultiMarket]);
@@ -346,7 +343,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 const ids = this._multiMarketUiAction.definedValue as readonly MarketId[];
                 editor.setTargetMarketIds(ids);
                 editor.endFieldChanges();
@@ -365,10 +362,14 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
         action.commitEvent = () => {
             const editor = this._scanEditor;
             if (editor !== undefined) {
-                editor.beginFieldChanges(this);
+                editor.beginFieldChanges(this.instanceId);
                 const maxMatchCount = this._maxMatchCountUiAction.definedValue;
                 editor.setMaxMatchCount(maxMatchCount);
                 editor.endFieldChanges();
+                const editorMaxMatchCount = editor.maxMatchCount;
+                if (editorMaxMatchCount !== maxMatchCount) {
+                    delay1Tick(() => this._maxMatchCountUiAction.pushValue(editorMaxMatchCount));
+                }
                 this.notifyControlInputOrCommit();
             }
         };
@@ -376,7 +377,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
     }
 
     private processFieldChanges(fieldIds: readonly ScanEditor.FieldId[], modifier: ScanEditor.Modifier | undefined) {
-        if (modifier !== this) {
+        if (modifier !== this.instanceId) {
             let targetTypeIdPushRequired = false;
             for (const fieldId of fieldIds) {
                 switch (fieldId) {
@@ -580,7 +581,7 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
                     throw new UnreachableCaseError('SETNCSTSTIU66821', targetSubTypeId);
             }
 
-            scanEditor.beginFieldChanges(this);
+            scanEditor.beginFieldChanges(this.instanceId);
             scanEditor.setLastTargetTypeIdWasMulti(lastTargetTypeIdWasMulti); // make sure this is set before TargetTypeId
             scanEditor.setTargetTypeId(targetTypeId);
             scanEditor.endFieldChanges();
@@ -596,15 +597,15 @@ export class ScanEditorTargetsNgComponent extends ContentComponentBaseNgDirectiv
 
 export namespace ScanEditorTargetsNgComponent {
     export type ControlInputOrCommitEventer = (this: void) => void;
-    export type EditMultiSymbolGridColumnsEventer = (
+    export type EditGridColumnsEventer = (
         this: void,
         caption: string,
         allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition
-    ) => Promise<GridLayoutOrReferenceDefinition | undefined>;
+    ) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
     export type PopoutMultiSymbolListEditorEventer = (
         this: void,
         caption: string,
-        list: UiBadnessComparableList<LitIvemId>,
+        list: UiComparableList<LitIvemId>,
         columnsEditCaption: string
     ) => void;
 

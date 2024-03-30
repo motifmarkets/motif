@@ -1,0 +1,28 @@
+<!--
+    @license Motif
+    (c) 2021 Paritech Wealth Technology
+    License: motionite.trade/license/motif
+-->
+
+<svg-icon id="exclamationIcon" name="Exclamation" [svgStyle]="{ 'fill': exclamationColor }" [style.visibility]="valid ? 'hidden' : 'visible'"></svg-icon>
+<app-captioned-checkbox #notControl id="notControl"></app-captioned-checkbox>
+<div id="affirmativeOperatorDisplayLines">
+    <ng-container *ngFor="let line of affirmativeOperatorDisplayLines">
+        <span id="affirmativeOperatorDisplayLine">{{line}}</span>
+    </ng-container>
+</div>
+<div id="value">
+    <div id="fromStart">
+        <!-- <app-caption-label #fromStartLabel id="fromStartLabel"></app-caption-label> -->
+        <app-checkbox-input #fromStartControl id="fromStartControl"></app-checkbox-input>
+    </div>
+    <app-text-input #valueControl id="valueControl"></app-text-input>
+    <div id="fromEnd">
+        <!-- <app-caption-label #fromEndLabel id="fromEndLabel"></app-caption-label> -->
+        <app-checkbox-input #fromEndControl id="fromEndControl"></app-checkbox-input>
+    </div>
+</div>
+<div id="exactAndIgnoreCase">
+    <app-captioned-checkbox #exactControl id="exactControl"></app-captioned-checkbox>
+    <app-captioned-checkbox #ignoreCaseControl id="ignoreCaseControl"></app-captioned-checkbox>
+</div>

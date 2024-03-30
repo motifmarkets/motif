@@ -11,16 +11,20 @@ import {
     CellPainterFactoryService,
     EditableGridLayoutDefinitionColumnList,
     GridField,
+    LockOpenListItem,
+    NotificationChannelsService,
+    ReferenceableDataSourceDefinitionsStoreService,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourceDefinitionsStoreService,
-    ReferenceableGridSourcesService,
     SessionInfoService,
     SettingsService,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
+    TableFieldSourceDefinitionCachingFactoryService,
+    TableRecordSourceFactory,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
+import { ToastService } from 'component-services-internal-api';
 import { BalancesFrame } from './balances/internal-api';
 import { BrokerageAccountsFrame } from './brokerage-accounts/internal-api';
 import { DepthSideFrame } from './depth-side/internal-api';
@@ -29,13 +33,15 @@ import { FeedsFrame } from './feeds/internal-api';
 import { GridLayoutEditorAllowedFieldsFrame, GridLayoutEditorColumnsFrame } from './grid-layout-dialog/internal-api';
 import { HoldingsFrame } from './holdings/internal-api';
 import { LitIvemIdListFrame } from './lit-ivem-id-list/lit-ivem-id-list-frame';
+import { LockOpenNotificationChannelsGridFrame } from './lock-open-notification-channels/internal-api';
 import { MarketsFrame } from './markets/internal-api';
 import { OrderAuthoriseFrame } from './order-authorise/internal-api';
 import { PadOrderRequestStepFrame, ResultOrderRequestStepFrame, ReviewOrderRequestStepFrame } from './order-request-step/internal-api';
 import { OrdersFrame } from './orders/internal-api';
-import { ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
+import { ScanEditorAttachedNotificationChannelsGridFrame, ScanFieldEditorFramesGridFrame, ScanListFrame, ScanTestMatchesFrame } from './scan/internal-api';
 import { SearchSymbolsFrame } from './search-symbols/internal-api';
 import { StatusSummaryFrame } from './status-summary/internal-api';
+import { TableRecordSourceDefinitionFactoryService } from './table-record-source-definition-factory-service';
 import { TradesFrame } from './trades/internal-api';
 import { WatchlistFrame } from './watchlist/internal-api';
 import { ZenithStatusFrame } from './zenith-status/internal-api';
@@ -46,14 +52,18 @@ export class ContentService {
         private readonly _appStorageService: AppStorageService,
         private readonly _adiService: AdiService,
         private readonly _symbolsService: SymbolsService,
-        private readonly _sessionInfoService: SessionInfoService,
+        private readonly _notificationChannelsService: NotificationChannelsService,
         private readonly _textFormatterService: TextFormatterService,
+        private readonly _gridFieldCustomHeadingsService: RevFieldCustomHeadingsService,
         private readonly _referenceableGridLayoutsService: ReferenceableGridLayoutsService,
+        private readonly _tableFieldSourceDefinitionCachingFactoryService: TableFieldSourceDefinitionCachingFactoryService,
         private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
-        private readonly _tableRecordSourceFactoryService: TableRecordSourceFactoryService,
-        private readonly _referenceableGridSourceDefinitionsStoreService: ReferenceableGridSourceDefinitionsStoreService,
-        private readonly _referenceableGridSourcesService: ReferenceableGridSourcesService,
+        private readonly _tableRecordSourceFactory: TableRecordSourceFactory,
+        private readonly _referenceableDataSourceDefinitionsStoreService: ReferenceableDataSourceDefinitionsStoreService,
+        private readonly _referenceableDataSourcesService: ReferenceableDataSourcesService,
+        private readonly _sessionInfoService: SessionInfoService,
         private readonly _cellPainterFactoryService: CellPainterFactoryService,
+        private readonly _toastService: ToastService,
 ) { }
 
     createZenithStatusFrame(componentAccess: ZenithStatusFrame.ComponentAccess, zenithEndpoints: readonly string[]) {
@@ -63,11 +73,14 @@ export class ContentService {
     createFeedsFrame() {
         return new FeedsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
@@ -100,11 +113,14 @@ export class ContentService {
     createLitIvemIdListFrame(initialCustomGridSettings: Partial<AdaptedRevgridGridSettings> | undefined) {
         return new LitIvemIdListFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             initialCustomGridSettings,
         );
     }
@@ -112,111 +128,186 @@ export class ContentService {
     createWatchlistFrame() {
         return new WatchlistFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourceDefinitionsStoreService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createScanTestMatchesFrame() {
         return new ScanTestMatchesFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createBrokerageAccountsFrame() {
         return new BrokerageAccountsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createOrdersFrame() {
         return new OrdersFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createOrderAuthoriseFrame() {
         return new OrderAuthoriseFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createHoldingsFrame() {
         return new HoldingsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createBalancesFrame() {
         return new BalancesFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createSearchSymbolsFrame() {
         return new SearchSymbolsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
         );
     }
 
     createScanListFrame() {
         return new ScanListFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
+        );
+    }
+
+    createScanFieldEditorFramesGridFrame() {
+        return new ScanFieldEditorFramesGridFrame(
+            this._settingsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
+            this._cellPainterFactoryService,
+            this._toastService,
+        );
+    }
+
+    createScanEditorAttachedNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return new ScanEditorAttachedNotificationChannelsGridFrame(
+            this._settingsService,
+            this._notificationChannelsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
+            this._cellPainterFactoryService,
+            this._toastService,
+            opener,
+        );
+    }
+
+    createLockOpenNotificationChannelsGridFrame(opener: LockOpenListItem.Opener) {
+        return new LockOpenNotificationChannelsGridFrame(
+            this._settingsService,
+            this._notificationChannelsService,
+            this._gridFieldCustomHeadingsService,
+            this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
+            this._tableRecordSourceDefinitionFactoryService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
+            this._cellPainterFactoryService,
+            this._toastService,
+            opener,
         );
     }
 
     createGridLayoutEditorAllowedFieldsFrame(allowedFields: readonly GridField[], columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorAllowedFieldsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             allowedFields,
             columnList,
         );
@@ -225,11 +316,14 @@ export class ContentService {
     createGridLayoutEditorColumnsFrame(columnList: EditableGridLayoutDefinitionColumnList) {
         return new GridLayoutEditorColumnsFrame(
             this._settingsService,
+            this._gridFieldCustomHeadingsService,
             this._referenceableGridLayoutsService,
+            this._tableFieldSourceDefinitionCachingFactoryService,
             this._tableRecordSourceDefinitionFactoryService,
-            this._tableRecordSourceFactoryService,
-            this._referenceableGridSourcesService,
+            this._tableRecordSourceFactory,
+            this._referenceableDataSourcesService,
             this._cellPainterFactoryService,
+            this._toastService,
             columnList,
         );
     }

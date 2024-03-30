@@ -1,0 +1,41 @@
+/**
+ * @license Motif
+ * (c) 2021 Paritech Wealth Technology
+ * License: motionite.trade/license/motif
+ */
+
+@use './partials/caption-followed-by-input';
+
+:host {
+    // height: 100%;
+    display: block;
+    height: 12em; // until we get splitter working
+
+    #compatible {
+        display: flex;
+        height: 100%;
+        gap: 1em;
+
+        #fields {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+
+            #addFieldMoreDiv {
+                display: none;
+            }
+
+            #fieldsGrid {
+                width: 12em;
+            }
+        }
+    }
+
+    #notCompatible {
+        height: 100%;
+
+        #notCompatibleHeadingSpan {
+            font-size: larger;
+        }
+    }
+}

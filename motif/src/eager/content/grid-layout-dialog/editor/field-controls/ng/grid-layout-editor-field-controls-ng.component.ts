@@ -201,7 +201,7 @@ export class GridLayoutEditorFieldControlsNgComponent extends ContentComponentBa
             this.setMoveBottomEnabled(false);
         } else {
             selectedRecordIndices.sort((left, right) => left - right);
-            const allIndexedRecordsFixed = this._columnList.areAllIndexedRecordsFixed(selectedRecordIndices);
+            const allIndexedRecordsFixed = this._columnList.areAllIndexedRecordsAnchored(selectedRecordIndices);
             this.setRemoveEnabled(!allIndexedRecordsFixed);
             const allSelectedNotAtTop = !this._columnList.areSortedIndexedRecordsAllAtStart(selectedRecordIndices);
             this.setMoveTopEnabled(allSelectedNotAtTop);

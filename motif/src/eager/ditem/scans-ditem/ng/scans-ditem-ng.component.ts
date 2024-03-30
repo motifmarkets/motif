@@ -14,7 +14,6 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     ButtonUiAction,
-    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     InternalCommand,
     JsonElement,
@@ -26,11 +25,12 @@ import {
     StringUiAction,
     Strings,
     UiAction,
-    UiBadnessComparableList,
+    UiComparableList,
     delay1Tick,
     getErrorMessage
 } from '@motifmarkets/motif-core';
-import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService } from 'component-services-ng-api';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
+import { AdiNgService, CommandRegisterNgService, CoreInjectionTokens, LockOpenListItemOpenerNgUseClass, ScansNgService, SettingsNgService, SymbolsNgService, ToastNgService } from 'component-services-ng-api';
 import { LitIvemIdListEditorDialogNgComponent, NameableGridLayoutEditorDialogNgComponent, ScanEditorNgComponent, ScanListNgComponent } from 'content-ng-api';
 import { ButtonInputNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { ComponentContainer } from 'golden-layout';
@@ -85,6 +85,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
         scansNgService: ScansNgService,
+        private readonly _toastNgService: ToastNgService,
         @Self() @Inject(CoreInjectionTokens.lockOpenListItemOpener) private readonly _opener: LockOpenListItem.Opener,
     ) {
         super(
@@ -108,6 +109,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
             symbolsNgService.service,
             adiNgService.service,
             scansNgService.service,
+            this._toastNgService.service,
             this._opener,
             (editor) => this._editorComponent.setEditor(editor),
         );
@@ -157,7 +159,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
     }
 
     protected override finalise() {
-        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = undefined;
+        this._editorComponent.editGridColumnsEventer = undefined;
         this._editorComponent.popoutTargetsMultiSymbolListEditorEventer = undefined;
 
         this._newUiAction.finalise();
@@ -206,7 +208,15 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Scans]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'SDNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },
@@ -284,7 +294,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         this._autoSizeColumnWidthsButtonComponent.initialise(this._autoSizeColumnWidthsUiAction);
         this._columnsButtonComponent.initialise(this._columnsUiAction);
 
-        this._editorComponent.editTargetsMultiSymbolGridColumnsEventer = (
+        this._editorComponent.editGridColumnsEventer = (
             caption,
             allowedFieldsAndLayoutDefinition
         ) => this.openGridColumnsEditorDialog(caption, allowedFieldsAndLayoutDefinition);
@@ -313,9 +323,9 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
 
         // We cannot just return the promise from the dialog as we need to close the dialog as well.
         // So return a separate promise which is resolved when dialog is closed.
-        let definitonResolveFtn: (this: void, definition: GridLayoutOrReferenceDefinition | undefined) => void;
+        let definitonResolveFtn: (this: void, definition: RevGridLayoutOrReferenceDefinition | undefined) => void;
 
-        const definitionPromise = new Promise<GridLayoutOrReferenceDefinition | undefined>(
+        const definitionPromise = new Promise<RevGridLayoutOrReferenceDefinition | undefined>(
             (resolve) => {
                 definitonResolveFtn = resolve;
             }
@@ -342,7 +352,7 @@ export class ScansDitemNgComponent extends BuiltinDitemNgComponentBaseNgDirectiv
         return definitionPromise;
     }
 
-    private openTargetMultiSymbolListEditorDialog(caption: string, list: UiBadnessComparableList<LitIvemId>, columnsEditCaption: string) {
+    private openTargetMultiSymbolListEditorDialog(caption: string, list: UiComparableList<LitIvemId>, columnsEditCaption: string) {
         this.dialogActive = true;
 
         const closePromise = LitIvemIdListEditorDialogNgComponent.open(

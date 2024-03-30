@@ -9,7 +9,6 @@ import {
     ExtensionInfo,
     ExtStringId,
     Integer,
-    ListChangeTypeId,
     MultiEvent,
     RegisteredExtension,
     StringId
@@ -48,6 +47,10 @@ export interface ExtensionsAccessService {
 }
 
 export namespace ExtensionsAccessService {
+    export const enum ListChangeTypeId {
+        Insert,
+        Remove,
+    }
     export type InstalledListChangedEventHandler = (this: void, listChangeTypeId: ListChangeTypeId, idx: Integer,
         extension: RegisteredExtension, listTransitioning: boolean
     ) => void;

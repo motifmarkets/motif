@@ -4,7 +4,8 @@
  * License: motionite.trade/license/motif
  */
 
-@import './partials/flex-row-items-centered-mixin';
+@use './partials/flex-row-items-centered-mixin';
+@use './partials/svg-icon-button-size';
 @import './partials/horizontal-children-separator';
 @import './partials/horizontal-radio-separator';
 @import './partials/control-followed-by-icon';
@@ -25,10 +26,11 @@
     #mainToolbarSection {
         flex: 0 0 auto;
 
-        @include flexRowItemsCenteredMixin;
+        @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
+        @include svg-icon-button-size.toolbarDescendantMixin;
 
         #firstIconSet {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             margin-left: 2em;
         }
     }
@@ -42,12 +44,12 @@
         align-items: center;
 
         #exchangeSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
         }
 
         #marketsSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
         }
 
@@ -56,26 +58,27 @@
         }
 
         #fieldsSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
         }
 
         #indicesSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
         }
 
         #optionsSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
         }
 
         #searchSection {
-            @include flexRowItemsCenteredMixin;
+            @include flex-row-items-centered-mixin.flexRowItemsCenteredMixin;
             @include horizontalChildrenSeparatorMixin;
 
             #searchTextSection {
                 @include controlFollowedByIconMixin;
+                @include svg-icon-button-size.toolbarChildMixin;
             }
 
             #pageSizeSection {

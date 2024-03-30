@@ -14,18 +14,18 @@ import {
     CoreService,
     KeyboardService,
     MotifServicesService,
+    NotificationChannelsService,
+    ReferenceableDataSourceDefinitionsStoreService,
+    ReferenceableDataSourcesService,
     ReferenceableGridLayoutsService,
-    ReferenceableGridSourceDefinitionsStoreService,
-    ReferenceableGridSourcesService,
     ScansService,
     SettingsService,
     SymbolDetailCacheService,
     SymbolsService,
-    TableFieldSourceDefinitionRegistryService,
-    TableRecordSourceDefinitionFactoryService,
-    TableRecordSourceFactoryService,
+    TableFieldSourceDefinitionCachingFactoryService,
     TextFormatterService
 } from '@motifmarkets/motif-core';
+import { RevFieldCustomHeadingsService } from '@xilytix/rev-data-source';
 
 @Injectable({
     providedIn: 'root'
@@ -47,19 +47,17 @@ export class CoreNgService implements OnDestroy {
     get capabilitiesService(): CapabilitiesService { return this._service.capabilitiesService; }
     get symbolsService(): SymbolsService { return this._service.symbolsService; }
     get symbolDetailCacheService(): SymbolDetailCacheService { return this._service.symbolDetailCacheService; }
+    get notificationChannelsService(): NotificationChannelsService { return this._service.notificationChannelsService; }
     get scansService(): ScansService { return this._service.scansService; }
 
     get textFormatterService(): TextFormatterService { return this._service.textFormatterService; }
-    get tableFieldSourceDefinitionRegistryService(): TableFieldSourceDefinitionRegistryService {
-        return this._service.tableFieldSourceDefinitionRegistryService;
+    get revFieldCustomHeadingsService(): RevFieldCustomHeadingsService { return this._service.gridFieldCustomHeadingsService; }
+    get tableFieldSourceDefinitionCachingFactoryService(): TableFieldSourceDefinitionCachingFactoryService {
+        return this._service.tableFieldSourceDefinitionCachingFactoryService;
     }
-    get tableRecordSourceDefinitionFactoryService(): TableRecordSourceDefinitionFactoryService {
-        return this._service.tableRecordSourceDefinitionFactoryService;
-    }
-    get tableRecordSourceFactoryService(): TableRecordSourceFactoryService { return this._service.tableRecordSourceFactoryService; }
     get referenceableGridLayoutsService(): ReferenceableGridLayoutsService { return this._service.referenceableGridLayoutsService; }
-    get referenceableGridSourceDefinitionsStoreService(): ReferenceableGridSourceDefinitionsStoreService { return this._service.referenceableGridSourceDefinitionsStoreService; }
-    get referenceableGridSourcesService(): ReferenceableGridSourcesService { return this._service.referenceableGridSourcesService; }
+    get referenceableDataSourceDefinitionsStoreService(): ReferenceableDataSourceDefinitionsStoreService { return this._service.referenceableDataSourceDefinitionsStoreService; }
+    get referenceableDataSourcesService(): ReferenceableDataSourcesService { return this._service.referenceableDataSourcesService; }
     get cellPainterFactoryService(): CellPainterFactoryService { return this._service.cellPainterFactoryService; }
     get commandRegisterService(): CommandRegisterService { return this._service.commandRegisterService; }
     get keyboardService(): KeyboardService { return this._service.keyboardService; }

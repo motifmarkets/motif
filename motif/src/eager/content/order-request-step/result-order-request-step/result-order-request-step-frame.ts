@@ -8,6 +8,7 @@ import {
     AdiService,
     AssertInternalError,
     Badness,
+    Decimal,
     EnumInfoOutOfOrderError,
     Integer,
     MultiEvent,
@@ -25,7 +26,6 @@ import {
     Strings,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
-import { Decimal } from 'decimal.js-light';
 import { OrderRequestStepFrame } from '../order-request-step-frame';
 
 export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
@@ -80,7 +80,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
             this.pushAll();
 
             this._dataItem = this._adi.subscribe(definition) as OrderRequestDataItem;
-            this._dataItemBadnessChangeSubscriptionId = this._dataItem.subscribeBadnessChangeEvent(
+            this._dataItemBadnessChangeSubscriptionId = this._dataItem.subscribeBadnessChangedEvent(
                 () => this.handleDataItemBadnessChangeEvent()
             );
             this._dataItemCorrectnessChangeSubscriptionId = this._dataItem.subscribeCorrectnessChangedEvent(
@@ -112,7 +112,7 @@ export class ResultOrderRequestStepFrame extends OrderRequestStepFrame {
 
     private checkUnsubscribeDataItem() {
         if (this._dataItem !== undefined) {
-            this._dataItem.unsubscribeBadnessChangeEvent(this._dataItemBadnessChangeSubscriptionId);
+            this._dataItem.unsubscribeBadnessChangedEvent(this._dataItemBadnessChangeSubscriptionId);
             this._dataItemBadnessChangeSubscriptionId = undefined;
             this._dataItem.unsubscribeCorrectnessChangedEvent(this._dataItemCorrectnessChangeSubscriptionId);
             this._dataItemCorrectnessChangeSubscriptionId = undefined;

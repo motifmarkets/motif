@@ -20,6 +20,7 @@ import {
 import { ComponentBaseNgDirective } from 'component-ng-api';
 import { SessionNgService } from '../../ng/session-ng.service';
 import { SessionService } from '../../session-service';
+import { LogService } from '../../log-service';
 
 @Component({
     selector: 'app-startup',
@@ -125,7 +126,7 @@ export class StartupNgComponent extends ComponentBaseNgDirective implements OnIn
     }
 
     private formatLine(time: Date, logLevel: Logger.LevelId, text: string) {
-        return time.toLocaleTimeString() + '\t' + Logger.Level.idToDisplay(logLevel) + '\t' + text;
+        return time.toLocaleTimeString() + '\t' + LogService.Level.idToDisplay(logLevel) + '\t' + text;
     }
 
     private addLogEntry(time: Date, logLevel: Logger.LevelId, text: string) {

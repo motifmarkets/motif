@@ -17,20 +17,18 @@ import {
 } from '@angular/core';
 import {
     AllowedExchangesEnumUiAction,
-    AllowedMarketsEnumArrayUiAction,
-    ArrayUiAction,
+    AllowedMarketsExplicitElementsArrayUiAction,
+    AssertInternalError,
     BooleanUiAction,
-    EnumUiAction,
+    EnumMappedExplicitElementsArrayUiAction,
     ExchangeId,
     ExchangeInfo,
-    ExplicitElementsEnumArrayUiAction,
-    ExplicitElementsEnumUiAction,
     IconButtonUiAction,
     Integer,
+    IntegerExplicitElementsEnumUiAction,
     IntegerUiAction,
     InternalCommand,
     JsonElement,
-    Logger,
     MarketId,
     StringId,
     StringUiAction,
@@ -38,15 +36,17 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsService,
+    TypedExplicitElementsArrayUiAction,
     delay1Tick,
-    getErrorMessage
+    getErrorMessage,
+    logger
 } from '@motifmarkets/motif-core';
 import {
     AdiNgService,
     CommandRegisterNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService
+    ToastNgService
 } from 'component-services-ng-api';
 import { NameableGridLayoutEditorDialogNgComponent, SearchSymbolsNgComponent } from 'content-ng-api';
 import {
@@ -56,7 +56,7 @@ import {
     CaptionedEnumArrayCheckboxNgComponent,
     CaptionedRadioNgComponent,
     EnumArrayInputNgComponent,
-    EnumInputNgComponent,
+    IntegerEnumInputNgComponent,
     IntegerLabelNgComponent,
     IntegerTextInputNgComponent,
     SvgButtonNgComponent,
@@ -86,7 +86,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     // Parameters
     @ViewChild('exchangeLabel', { static: true }) private _exchangeLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultExchangeControl', { static: true }) private _defaultExchangeControlComponent: CaptionedRadioNgComponent;
-    @ViewChild('exchangeControl', { static: true }) private _exchangeControlComponent: EnumInputNgComponent;
+    @ViewChild('exchangeControl', { static: true }) private _exchangeControlComponent: IntegerEnumInputNgComponent;
     @ViewChild('marketsLabel', { static: true }) private _marketsLabelComponent: CaptionLabelNgComponent;
     @ViewChild('defaultMarketControl', { static: true }) private _defaultMarketControlComponent: CaptionedEnumArrayCheckboxNgComponent;
     @ViewChild('marketsControl', { static: true }) private _marketsControlComponent: EnumArrayInputNgComponent;
@@ -143,11 +143,11 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     // Query
     private readonly _sourceUiAction: StringUiAction;
     private readonly _exchangeUiAction: AllowedExchangesEnumUiAction;
-    private readonly _marketsUiAction: AllowedMarketsEnumArrayUiAction;
+    private readonly _marketsUiAction: AllowedMarketsExplicitElementsArrayUiAction;
     private readonly _cfiUiAction: StringUiAction;
-    private readonly _fieldsUiAction: ExplicitElementsEnumArrayUiAction;
+    private readonly _fieldsUiAction: EnumMappedExplicitElementsArrayUiAction;
     private readonly _optionsUiAction: StringUiAction;
-    private readonly _indicesInclusionUiAction: EnumUiAction;
+    private readonly _indicesInclusionUiAction: IntegerExplicitElementsEnumUiAction;
     private readonly _partialUiAction: BooleanUiAction;
     private readonly _preferExactUiAction: BooleanUiAction;
     private readonly _showFullUiAction: BooleanUiAction;
@@ -179,7 +179,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         desktopAccessNgService: DesktopAccessNgService,
         symbolsNgService: SymbolsNgService,
         adiNgService: AdiNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
     ) {
         super(
             elRef,
@@ -203,7 +203,6 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
             desktopAccessNgService.service,
             symbolsNgService.service,
             adiNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
         );
 
         this._toggleSymbolLinkingUiAction = this.createToggleSymbolLinkingUiAction();
@@ -445,13 +444,21 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.SearchSymbols]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSDNCSLECPOP68823'); }
+                    );
                 }
                 this.closeLayoutEditor();
             },
             (reason) => {
                 const errorText = getErrorMessage(reason);
-                Logger.logError(`Symbols Layout Editor error: ${errorText}`);
+                logger.logError(`Symbols Layout Editor error: ${errorText}`);
                 this.closeLayoutEditor();
             }
         );
@@ -503,7 +510,7 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createMarketsUiAction() {
-        const action = new AllowedMarketsEnumArrayUiAction(this._symbolsService);
+        const action = new AllowedMarketsExplicitElementsArrayUiAction(this._symbolsService);
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Markets]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Markets]);
         action.commitEvent = () => this.handleMarketsCommitEvent();
@@ -519,12 +526,12 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createFieldsUiAction() {
-        const action = new ExplicitElementsEnumArrayUiAction();
+        const action = new EnumMappedExplicitElementsArrayUiAction();
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Fields]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Fields]);
 
         const entryCount = SymbolField.idCount;
-        const elementPropertiesArray = new Array<ArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
+        const elementPropertiesArray = new Array<TypedExplicitElementsArrayUiAction.ElementProperties<SymbolFieldId>>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,
@@ -546,12 +553,12 @@ export class SearchSymbolsDitemNgComponent extends BuiltinDitemNgComponentBaseNg
     }
 
     private createIndicesInclusionUiAction() {
-        const action = new ExplicitElementsEnumUiAction();
+        const action = new IntegerExplicitElementsEnumUiAction();
         action.pushTitle(Strings[StringId.SymbolsDitemControlTitle_Indices]);
         action.pushCaption(Strings[StringId.SymbolsDitemControlCaption_Indices]);
 
         const entryCount = SearchSymbolsDitemFrame.IndicesInclusion.idCount;
-        const elementPropertiesArray = new Array<EnumUiAction.ElementProperties>(entryCount);
+        const elementPropertiesArray = new Array<IntegerExplicitElementsEnumUiAction.ElementProperties>(entryCount);
         for (let id = 0; id < entryCount; id++) {
             elementPropertiesArray[id] = {
                 element: id,

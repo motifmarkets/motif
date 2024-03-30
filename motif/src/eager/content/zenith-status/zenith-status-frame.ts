@@ -197,7 +197,7 @@ export class ZenithStatusFrame extends ContentFrame {
         this._serverInfoFieldValuesChangedSubscriptionId = this._serverInfoDataItem.subscribeFieldValuesChangedEvent(
             () => { this.handleServerInfoFieldValuesChangedEvent(); }
         );
-        this._serverInfoCorrectnessChangeSubscriptionId = this._serverInfoDataItem.subscribeBadnessChangeEvent(
+        this._serverInfoCorrectnessChangeSubscriptionId = this._serverInfoDataItem.subscribeBadnessChangedEvent(
             () => { this.handleServerInfoBadnessChangeEvent(); }
         );
     }
@@ -207,7 +207,7 @@ export class ZenithStatusFrame extends ContentFrame {
         if (this._serverInfoDataItem !== undefined) {
             this._serverInfoDataItem.unsubscribeFieldValuesChangedEvent(this._serverInfoFieldValuesChangedSubscriptionId);
             this._serverInfoFieldValuesChangedSubscriptionId = undefined;
-            this._serverInfoDataItem.unsubscribeBadnessChangeEvent(this._serverInfoCorrectnessChangeSubscriptionId);
+            this._serverInfoDataItem.unsubscribeBadnessChangedEvent(this._serverInfoCorrectnessChangeSubscriptionId);
             this._serverInfoCorrectnessChangeSubscriptionId = undefined;
             this._adi.unsubscribe(this._serverInfoDataItem);
             this._serverInfoDataItem = undefined as unknown as ZenithServerInfoDataItem;

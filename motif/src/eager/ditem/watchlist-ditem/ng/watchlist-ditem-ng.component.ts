@@ -17,8 +17,6 @@ import {
 } from '@angular/core';
 import {
     AssertInternalError,
-    ExplicitElementsArrayUiAction,
-    GridLayout,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -29,23 +27,24 @@ import {
     ModifierKeyId,
     RankedLitIvemIdList,
     RankedLitIvemIdListDefinition,
-    ReferenceableGridLayoutDefinition,
     StringId,
     Strings,
+    TypedMappedExplicitElementsArrayUiAction,
     UiAction,
     UnreachableCaseError,
     assert,
     assigned,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayout, RevReferenceableGridLayoutDefinition } from '@xilytix/rev-data-source';
 import {
     AdiNgService,
     CommandRegisterNgService,
     FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
     SettingsNgService,
     SymbolsNgService,
-    TableRecordSourceDefinitionFactoryNgService,
-    TextFormatterNgService
+    TextFormatterNgService,
+    ToastNgService
 } from 'component-services-ng-api';
 import {
     NameableGridLayoutEditorDialogNgComponent,
@@ -93,7 +92,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
     private _newUiAction: IconButtonUiAction;
     private _openUiAction: IconButtonUiAction;
     private _saveUiAction: IconButtonUiAction;
-    private _favouriteLayoutsUiAction: ExplicitElementsArrayUiAction<ReferenceableGridLayoutDefinition>;
+    private _favouriteLayoutsUiAction: TypedMappedExplicitElementsArrayUiAction<RevReferenceableGridLayoutDefinition>;
     private _columnsUiAction: IconButtonUiAction;
     private _autoSizeColumnWidthsUiAction: IconButtonUiAction;
     private _toggleSymbolLinkingUiAction: IconButtonUiAction;
@@ -112,7 +111,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         adiNgService: AdiNgService,
         textFormatterNgService: TextFormatterNgService,
         favouriteNamedGridLayoutDefinitionReferencesNgService: FavouriteReferenceableGridLayoutDefinitionsStoreNgService,
-        tableRecordSourceDefinitionFactoryNgService: TableRecordSourceDefinitionFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
         @Inject(BuiltinDitemNgComponentBaseNgDirective.goldenLayoutContainerInjectionToken) container: ComponentContainer,
     ) {
         super(
@@ -134,7 +133,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             adiNgService.service,
             textFormatterNgService.service,
             favouriteNamedGridLayoutDefinitionReferencesNgService.service,
-            tableRecordSourceDefinitionFactoryNgService.service,
+            this._toastNgService.service,
             (rankedLitIvemIdList, rankedLitIvemIdListName) => this.handleGridSourceOpenedEvent(
                 rankedLitIvemIdList,
                 rankedLitIvemIdListName
@@ -286,7 +285,15 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
 
     private handleNewUiActionSignalEvent(downKeys: ModifierKey.IdSet) {
         const keepView = ModifierKey.idSetIncludes(downKeys, ModifierKeyId.Shift);
-        this._frame.newEmpty(keepView);
+        const openPromise = this._frame.newEmpty(keepView);
+        openPromise.then(
+            (result) => {
+                if (result.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorCreatingNew]} ${Strings[StringId.Watchlist]}: ${result.error}`);
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCHNUASE44432') }
+        );
     }
 
     private handleOpenUiActionSignalEvent() {
@@ -333,7 +340,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         this._symbolApplyUiAction.pushDisabled();
     }
 
-    private handleGridLayoutSetEvent(layout: GridLayout) {
+    private handleGridLayoutSetEvent(layout: RevGridLayout) {
         // not implemented
     }
 
@@ -364,7 +371,7 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         const command = this.commandRegisterService.getOrRegisterInternalCommand(commandName, displayId);
         const action = new IconButtonUiAction(command);
         action.pushTitle(Strings[StringId.Watchlist_DeleteSymbolTitle]);
-        action.pushIcon(IconButtonUiAction.IconId.DeleteSymbol);
+        action.pushIcon(IconButtonUiAction.IconId.RemoveSelectedFromList);
         action.signalEvent = () => this.handleDeleteSymbolUiActionEvent();
         return action;
     }
@@ -449,8 +456,24 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
             Strings[StringId.Watchlist_OpenDialogCaption],
         );
         closePromise.then(
-            () => { this.closeDialog(); },
-            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSOD32223', this._frame.opener.lockerName); }
+            (closeResult) => {
+                this.closeDialog();
+                if (closeResult.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Scan]}: ${closeResult.error}`);
+                } else {
+                    const scanId = closeResult.value;
+                    const newPromise = this._frame.newScan(scanId, true);
+                    newPromise.then(
+                        (newResult) => {
+                            if (newResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorCreatingNew]} ${Strings[StringId.Scan]}: ${newResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSODN32223', this._frame.opener.lockerName); }
+                    );
+                }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'WDNCSODO32223', this._frame.opener.lockerName); }
         );
 
         this.markForCheck();
@@ -490,7 +513,15 @@ export class WatchlistDitemNgComponent extends BuiltinDitemNgComponentBaseNgDire
         closePromise.then(
             (layoutOrReferenceDefinition) => {
                 if (layoutOrReferenceDefinition !== undefined) {
-                    this._frame.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    const openPromise = this._frame.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.Watchlist]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'SSDNCSLECPOP68823'); }
+                    );
                 }
                 this.closeDialog();
             },

@@ -7,6 +7,7 @@
 import { CommonModule } from '@angular/common';
 import { NgModule } from '@angular/core';
 import { AngularSplitModule } from 'angular-split';
+import { AngularSvgIconModule } from 'angular-svg-icon';
 import { EagerControlsNgModule } from 'controls-ng-api';
 import { RowDataArrayGridNgComponent } from '../adapted-revgrid/ng-api';
 import {
@@ -50,6 +51,7 @@ import { HoldingsNgComponent } from '../holdings/ng-api';
 import { IvemHoldingsNgComponent } from '../ivem-holdings/ng-api';
 import { LitIvemIdListEditorDialogNgComponent, LitIvemIdListEditorNgComponent } from '../lit-ivem-id-list-editor/ng-api';
 import { LitIvemIdListNgComponent } from '../lit-ivem-id-list/ng-api';
+import { LockOpenNotificationChannelPropertiesNgComponent, LockOpenNotificationChannelsGridNgComponent } from '../lock-open-notification-channels/ng-api';
 import { MarketsNgComponent } from '../markets/ng-api';
 import { MultiColorPickerNgComponent } from '../multi-color-picker/ng/multi-color-picker-ng.component';
 import { NameableGridLayoutEditorDialogNgComponent } from '../nameable-grid-layout-editor-dialog/ng-api';
@@ -68,20 +70,40 @@ import {
 import { OrdersNgComponent } from '../orders/ng-api';
 import { SaveWatchlistDialogNgComponent } from '../save-watchlist/dialog/ng-api';
 import {
+    CategoryValueScanFieldConditionOperandsEditorNgComponent,
     ConditionSetScanFormulaViewNgComponent,
     CriteriaZenithScanFormulaViewNgComponent,
+    CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent,
+    DateRangeScanFieldConditionOperandsEditorNgComponent,
+    DateValueScanFieldConditionOperandsEditorNgComponent,
+    DeleteScanFieldConditionNgComponent,
+    ExchangeOverlapsScanFieldConditionOperandsEditorNgComponent,
     FormulaScanEditorSectionNgComponent,
     GeneralScanEditorSectionNgComponent,
-    NotifiersScanEditorSectionNgComponent,
+    HasValueScanFieldConditionOperandsEditorNgComponent,
+    MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent,
+    MarketOverlapsScanFieldConditionOperandsEditorNgComponent,
+    NumericComparisonValueScanFieldConditionOperandsEditorNgComponent,
+    NumericRangeScanFieldConditionOperandsEditorNgComponent,
+    NumericValueScanFieldConditionOperandsEditorNgComponent,
     RankZenithScanFormulaViewNgComponent,
+    ScanEditorAttachedNotificationChannelPropertiesNgComponent,
+    ScanEditorAttachedNotificationChannelsGridNgComponent,
+    ScanEditorAttachedNotificationChannelsNgComponent,
     ScanEditorNgComponent,
     ScanEditorTargetsNgComponent,
+    ScanFieldEditorFramesGridNgComponent,
+    ScanFieldEditorNgComponent,
+    ScanFieldSetEditorNgComponent,
     ScanListNgComponent,
     ScanTestMatchesNgComponent,
     ScanTestNgComponent,
     ScanTypeDescriptionNgComponent,
     ScanTypesControlsNgComponent,
     ScanTypesGridNgComponent,
+    StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+    TextContainsScanFieldConditionOperandsEditorNgComponent,
+    TextValueScanFieldConditionOperandsEditorNgComponent,
     ZenithScanFormulaViewDecodeProgressNgComponent,
 } from '../scan/ng-api';
 import { SearchSymbolsConditionNgComponent } from '../search-symbols-condition/ng-api';
@@ -108,6 +130,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         BannerAdvertNgComponent,
         BrokerageAccountsNgComponent,
         CashHoldingsNgComponent,
+        CategoryValueScanFieldConditionOperandsEditorNgComponent,
         ColorControlsNgComponent,
         ColorSchemeGridNgComponent,
         ColorSchemeItemPropertiesNgComponent,
@@ -115,11 +138,16 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         ColorSettingsNgComponent,
         ConditionSetScanFormulaViewNgComponent,
         CriteriaZenithScanFormulaViewNgComponent,
+        CurrencyOverlapsScanFieldConditionOperandsEditorNgComponent,
+        DateRangeScanFieldConditionOperandsEditorNgComponent,
+        DateValueScanFieldConditionOperandsEditorNgComponent,
         DelayedBadnessNgComponent,
+        DeleteScanFieldConditionNgComponent,
         DepthAndSalesGridLayoutsDialogNgComponent,
         DepthGridLayoutsDialogNgComponent,
         DepthNgComponent,
         DepthSideNgComponent,
+        ExchangeOverlapsScanFieldConditionOperandsEditorNgComponent,
         ExchangeSettingsNgComponent,
         ExchangesSettingsNgComponent,
         ExpandableCollapsibleLinedHeadingNgComponent,
@@ -140,17 +168,27 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridLayoutEditorNgComponent,
         GridLayoutEditorSearchGridNgComponent,
         GridSettingsNgComponent,
+        HasValueScanFieldConditionOperandsEditorNgComponent,
         HoldingsGridLayoutsDialogNgComponent,
         HoldingsNgComponent,
         InstalledExtensionListNgComponent,
         IvemHoldingsNgComponent,
-        LitIvemIdListNgComponent,
         LitIvemIdListEditorDialogNgComponent,
         LitIvemIdListEditorNgComponent,
+        LitIvemIdListNgComponent,
+        LockOpenNotificationChannelPropertiesNgComponent,
+        LockOpenNotificationChannelsGridNgComponent,
+        MarketBoardOverlapsScanFieldConditionOperandsEditorNgComponent,
+        MarketOverlapsScanFieldConditionOperandsEditorNgComponent,
         MarketsNgComponent,
         MultiColorPickerNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
-        NotifiersScanEditorSectionNgComponent,
+        NumericComparisonValueScanFieldConditionOperandsEditorNgComponent,
+        NumericRangeScanFieldConditionOperandsEditorNgComponent,
+        NumericValueScanFieldConditionOperandsEditorNgComponent,
+        ScanEditorAttachedNotificationChannelsGridNgComponent,
+        ScanEditorAttachedNotificationChannelPropertiesNgComponent,
+        ScanEditorAttachedNotificationChannelsNgComponent,
         OpenWatchlistDialogNgComponent,
         OrderAuthoriseNgComponent,
         OrderPadSettingsNgComponent,
@@ -168,6 +206,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SaveWatchlistDialogNgComponent,
         ScanEditorNgComponent,
         ScanEditorTargetsNgComponent,
+        ScanFieldEditorFramesGridNgComponent,
+        ScanFieldEditorNgComponent,
+        ScanFieldSetEditorNgComponent,
         ScanListNgComponent,
         ScanTestMatchesNgComponent,
         ScanTestNgComponent,
@@ -177,6 +218,9 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         SearchSymbolsConditionNgComponent,
         SearchSymbolsNgComponent,
         StatusSummaryNgComponent,
+        StringOverlapsScanFieldConditionOperandsEditorNgComponent,
+        TextContainsScanFieldConditionOperandsEditorNgComponent,
+        TextValueScanFieldConditionOperandsEditorNgComponent,
         TradesNgComponent,
         WatchlistNgComponent,
         ZenithScanFormulaViewDecodeProgressNgComponent,
@@ -202,6 +246,8 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
         GridSettingsNgComponent,
         HoldingsGridLayoutsDialogNgComponent,
         HoldingsNgComponent,
+        LockOpenNotificationChannelPropertiesNgComponent,
+        LockOpenNotificationChannelsGridNgComponent,
         MarketsNgComponent,
         NameableGridLayoutEditorDialogNgComponent,
         OpenWatchlistDialogNgComponent,
@@ -222,6 +268,7 @@ import { ZenithStatusNgComponent } from '../zenith-status/ng-api';
     ],
     imports: [
         AngularSplitModule,
+        AngularSvgIconModule,
         CommonModule,
         EagerControlsNgModule
     ]

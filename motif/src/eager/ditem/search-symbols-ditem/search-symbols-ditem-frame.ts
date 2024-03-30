@@ -6,11 +6,11 @@
 
 import {
     AdiService,
+    AssertInternalError,
     CommandRegisterService,
     EnumInfoOutOfOrderError,
     ExchangeId,
     ExchangeInfo,
-    GridLayoutOrReferenceDefinition,
     Integer,
     JsonElement,
     LitIvemBaseDetail,
@@ -24,10 +24,9 @@ import {
     SymbolField,
     SymbolFieldId,
     SymbolsService,
-    TableRecordSourceDefinitionFactoryService,
-    UnexpectedUndefinedError,
     UnreachableCaseError
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import { SearchSymbolsFrame } from 'content-internal-api';
 import { BuiltinDitemFrame } from '../builtin-ditem-frame';
 import { DitemFrame } from '../ditem-frame';
@@ -46,7 +45,6 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         desktopAccessService: DitemFrame.DesktopAccessService,
         symbolsMgr: SymbolsService,
         adiService: AdiService,
-        private readonly _tableRecordSourceDefinitionFactoryService: TableRecordSourceDefinitionFactoryService,
     ) {
         super(BuiltinDitemFrame.BuiltinTypeId.Symbols, _componentAccess,
             settingsService, commandRegisterService, desktopAccessService, symbolsMgr, adiService
@@ -161,7 +159,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         searchSymbolsFrame.gridSourceOpenedEventer = (dataDefinition) => this.handleGridSourceOpenedEvent(dataDefinition);
         searchSymbolsFrame.recordFocusedEventer = (newRecordIndex) => this.handleRecordFocusedEvent(newRecordIndex);
 
-        let layoutDefinition: GridLayoutOrReferenceDefinition | undefined;
+        let layoutDefinition: RevGridLayoutOrReferenceDefinition | undefined;
         if (ditemFrameElement !== undefined) {
             const searchSymbolsFrameElementResult = ditemFrameElement.tryGetElement(SearchSymbolsDitemFrame.JsonName.searchSymbolsFrame);
             if (searchSymbolsFrameElementResult.isOk()) {
@@ -197,26 +195,26 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
     executeRequest() {
         const searchSymbolsFrame = this._searchSymbolsFrame;
         if (searchSymbolsFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFER13133');
+            throw new AssertInternalError('SSDFER13133');
         } else {
             const dataDefinition = this._uiDataDefinition.createCopy();
             searchSymbolsFrame.executeRequest(dataDefinition);
         }
     }
 
-    openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: GridLayoutOrReferenceDefinition) {
+    tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition: RevGridLayoutOrReferenceDefinition) {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFOGLONRD13133');
+            throw new AssertInternalError('SSDFOGLONRD13133');
         } else {
-            gridSourceFrame.openGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
+            return gridSourceFrame.tryOpenGridLayoutOrReferenceDefinition(gridLayoutOrReferenceDefinition);
         }
     }
 
     createAllowedFieldsAndLayoutDefinition() {
         const gridSourceFrame = this._searchSymbolsFrame;
         if (gridSourceFrame === undefined) {
-            throw new UnexpectedUndefinedError('SSDFCAFALD13133');
+            throw new AssertInternalError('SSDFCAFALD13133');
         } else {
             return gridSourceFrame.createAllowedFieldsGridLayoutDefinition();
         }
@@ -231,7 +229,7 @@ export class SearchSymbolsDitemFrame extends BuiltinDitemFrame {
         if (newRecordIndex !== undefined) {
             const searchSymbolsFrame = this._searchSymbolsFrame;
             if (searchSymbolsFrame === undefined) {
-                throw new UnexpectedUndefinedError('SSDHGSOE13133');
+                throw new AssertInternalError('SSDHGSOE13133');
             } else {
                 const record = searchSymbolsFrame.recordList[newRecordIndex];
                 this.processRecordFocusChange(record);

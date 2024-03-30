@@ -22,11 +22,9 @@ import {
     AllowedGridField,
     AssertInternalError,
     BidAskAllowedFieldsGridLayoutDefinitions,
-    BidAskAllowedGridFields,
     BidAskGridLayoutDefinitions,
     CommandRegisterService,
     EditableGridLayoutDefinitionColumnList,
-    GridLayoutDefinition,
     IconButtonUiAction,
     InternalCommand,
     LockOpenListItem,
@@ -37,9 +35,10 @@ import {
     assert,
     delay1Tick
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutDefinition } from '@xilytix/rev-data-source';
 import { CommandRegisterNgService, CoreInjectionTokens } from 'component-services-ng-api';
 import { SvgButtonNgComponent, TabListNgComponent } from 'controls-ng-api';
-import { GridLayoutEditorNgComponent, allowedFieldsInjectionToken, bidAskAllowedFieldsInjectionToken, definitionColumnListInjectionToken, oldBidAskLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
+import { BidAskAllowedGridFields, GridLayoutEditorNgComponent, allowedFieldsInjectionToken, bidAskAllowedFieldsInjectionToken, definitionColumnListInjectionToken, oldBidAskLayoutDefinitionInjectionToken } from '../../grid-layout-dialog/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
 
 @Component({
@@ -65,8 +64,8 @@ export class DepthGridLayoutsDialogNgComponent extends ContentComponentBaseNgDir
     private _closeResolve: (value: BidAskGridLayoutDefinitions | undefined) => void;
     private _closeReject: (reason: unknown) => void;
 
-    private _bidLayoutDefinition: GridLayoutDefinition;
-    private _askLayoutDefinition: GridLayoutDefinition;
+    private _bidLayoutDefinition: RevGridLayoutDefinition;
+    private _askLayoutDefinition: RevGridLayoutDefinition;
     private _sideId: OrderSideId | undefined;
     private _editorComponent: GridLayoutEditorNgComponent | undefined;
 
@@ -185,7 +184,7 @@ export class DepthGridLayoutsDialogNgComponent extends ContentComponentBaseNgDir
         }
     }
 
-    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: GridLayoutDefinition) {
+    private recreateEditor(allowedFields: readonly AllowedGridField[], layoutDefinition: RevGridLayoutDefinition) {
         this.checkLoadLayoutFromEditor();
 
         if (this._editorComponent !== undefined) {

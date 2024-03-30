@@ -7,11 +7,9 @@
 import { IvemId, RoutedIvemId } from '@motifmarkets/motif-core';
 import {
     ApiError as ApiErrorApi,
-    Err as ErrApi,
     ExchangeId as ExchangeIdApi,
     IvemId as IvemIdApi,
     JsonElement as JsonElementApi,
-    Ok as OkApi,
     OrderRoute as OrderRouteApi,
     Result as ResultApi,
     RoutedIvemId as RoutedIvemIdApi,
@@ -19,9 +17,11 @@ import {
 } from '../../../api/extension-api';
 import {
     ApiErrorImplementation,
+    ErrImplementation,
     ExchangeIdImplementation,
     IvemIdImplementation,
     JsonElementImplementation,
+    OkImplementation,
     OrderRouteImplementation,
     RoutedIvemIdImplementation
 } from '../../exposed/internal-api';
@@ -62,10 +62,10 @@ export class RoutedIvemIdSvcImplementation implements RoutedIvemIdSvc {
         const element = JsonElementImplementation.fromApi(elementApi);
         const result = RoutedIvemId.tryCreateFromJson(element);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const routedIvemIdApi = RoutedIvemIdImplementation.toApi(result.value);
-            return new OkApi(routedIvemIdApi);
+            return new OkImplementation(routedIvemIdApi);
         }
     }
 
@@ -73,10 +73,10 @@ export class RoutedIvemIdSvcImplementation implements RoutedIvemIdSvc {
         const elements = JsonElementImplementation.arrayFromApi(elementsApi);
         const result = RoutedIvemId.tryCreateArrayFromJsonElementArray(elements);
         if (result.isErr()) {
-            return new ErrApi(result.error);
+            return new ErrImplementation(result.error);
         } else {
             const routedIvemIdArrayApi = RoutedIvemIdImplementation.arrayToApi(result.value);
-            return new OkApi(routedIvemIdArrayApi);
+            return new OkImplementation(routedIvemIdArrayApi);
         }
     }
 

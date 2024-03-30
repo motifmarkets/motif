@@ -3,7 +3,6 @@ import {
     AllowedFieldsGridLayoutDefinition,
     AssertInternalError,
     CommandRegisterService,
-    GridLayoutOrReferenceDefinition,
     IconButtonUiAction,
     Integer,
     InternalCommand,
@@ -19,17 +18,17 @@ import {
     StringUiAction,
     Strings,
     TableFieldSourceDefinition,
-    TableFieldSourceDefinitionRegistryService,
-    UiBadnessComparableList,
-    getErrorMessage
+    TableFieldSourceDefinitionCachingFactoryService,
+    UiComparableList
 } from '@motifmarkets/motif-core';
+import { RevGridLayoutOrReferenceDefinition } from '@xilytix/rev-data-source';
 import {
-    CommandRegisterNgService,
-    TableFieldSourceDefinitionRegistryNgService,
+    CommandRegisterNgService, ToastNgService,
 } from 'component-services-ng-api';
 import { LitIvemIdSelectNgComponent, SvgButtonNgComponent, TextInputNgComponent } from 'controls-ng-api';
 import { LitIvemIdListNgComponent } from '../../lit-ivem-id-list/ng-api';
 import { ContentComponentBaseNgDirective } from '../../ng/content-component-base-ng.directive';
+import { TableFieldSourceDefinitionCachingFactoryNgService } from '../../ng/table-field-source-definition-caching-factory-ng.service';
 
 @Directive()
 export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBaseNgDirective implements OnDestroy, AfterViewInit {
@@ -46,9 +45,9 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
     editGridColumnsEventer: LitIvemIdListEditorNgDirective.EditGridColumnsEventer | undefined;
     popoutEventer: LitIvemIdListEditorNgDirective.PopoutEventer | undefined;
 
-    readonly list: UiBadnessComparableList<LitIvemId>;
+    readonly list: UiComparableList<LitIvemId>;
 
-    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionRegistryService;
+    private readonly _fieldSourceDefinitionRegistryService: TableFieldSourceDefinitionCachingFactoryService;
 
     private readonly _addLitIvemIdUiAction: LitIvemIdUiAction;
     private readonly _selectAllUiAction: IconButtonUiAction;
@@ -66,20 +65,21 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         elRef: ElementRef<HTMLElement>,
         protected readonly _cdr: ChangeDetectorRef,
         commandRegisterNgService: CommandRegisterNgService,
-        fieldSourceDefinitionRegistryNgService: TableFieldSourceDefinitionRegistryNgService,
+        fieldSourceDefinitionCachedFactoryNgService: TableFieldSourceDefinitionCachingFactoryNgService,
+        private readonly _toastNgService: ToastNgService,
         typeInstanceCreateCount: Integer,
         protected readonly opener: LockOpenListItem.Opener,
-        list: UiBadnessComparableList<LitIvemId> | null,
+        list: UiComparableList<LitIvemId> | null,
     ) {
         super(elRef, typeInstanceCreateCount);
 
         if (list === null) {
-            this.list = new UiBadnessComparableList<LitIvemId>();
+            this.list = new UiComparableList<LitIvemId>();
         } else {
             this.list = list;
         }
 
-        this._fieldSourceDefinitionRegistryService = fieldSourceDefinitionRegistryNgService.service;
+        this._fieldSourceDefinitionRegistryService = fieldSourceDefinitionCachedFactoryNgService.service;
 
         const commandRegisterService = commandRegisterNgService.service;
 
@@ -155,15 +155,15 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
         }
 
         const layoutDefinition = this.createDefaultLayoutDefinition();
-        const gridLayoutOrReferenceDefinition = new GridLayoutOrReferenceDefinition(layoutDefinition);
+        const gridLayoutOrReferenceDefinition = new RevGridLayoutOrReferenceDefinition(layoutDefinition);
 
         this._litIvemIdListComponent.initialise(this.opener, gridLayoutOrReferenceDefinition, undefined, true);
 
         const openPromise = this._litIvemIdListComponent.tryOpenList(this.list, true);
         openPromise.then(
-            (gridSourceOrReference) => {
-                if (gridSourceOrReference === undefined) {
-                    throw new AssertInternalError('LIILENCICU56569');
+            (openResult) => {
+                if (openResult.isErr()) {
+                    this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.LitIvemIdListEditor]}: ${openResult.error}`);
                 } else {
                     this._litIvemIdListComponent.frame.grid.dataServersRowListChangedEventer = () => this.updateCounts();
                     this.updateControlsEnabled();
@@ -190,7 +190,7 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     protected editGridColumns(allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) {
         if (this.editGridColumnsEventer === undefined) {
-            return undefined;
+            return Promise.resolve(undefined);
         } else {
             return this.editGridColumnsEventer(allowedFieldsAndLayoutDefinition);
         }
@@ -292,19 +292,23 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
     private handleColumnsSignalEvent() {
         const allowedFieldsAndLayoutDefinition = this._litIvemIdListComponent.createAllowedFieldsGridLayoutDefinition();
-        const promise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
-        if (promise !== undefined) {
-            promise.then(
-                (layoutOrReferenceDefinition) => {
-                    if (layoutOrReferenceDefinition !== undefined) {
-                        this._litIvemIdListComponent.openGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
-                    }
-                },
-                (reason) => {
-                    throw new AssertInternalError('LIIENCHLGCUASEE56668', getErrorMessage(reason));
+        const editFinishPromise = this.editGridColumns(allowedFieldsAndLayoutDefinition);
+        editFinishPromise.then(
+            (layoutOrReferenceDefinition) => {
+                if (layoutOrReferenceDefinition !== undefined) {
+                    const openPromise = this._litIvemIdListComponent.tryOpenGridLayoutOrReferenceDefinition(layoutOrReferenceDefinition);
+                    openPromise.then(
+                        (openResult) => {
+                            if (openResult.isErr()) {
+                                this._toastNgService.popup(`${Strings[StringId.ErrorOpening]} ${Strings[StringId.LitIvemIdListEditor]} ${Strings[StringId.GridLayout]}: ${openResult.error}`);
+                            }
+                        },
+                        (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEOP56668'); }
+                    );
                 }
-            );
-        }
+            },
+            (reason) => { throw AssertInternalError.createIfNotError(reason, 'LIILENDHCSEEFP56668'); }
+        );
     }
 
     private updateCounts() {
@@ -349,10 +353,10 @@ export abstract class LitIvemIdListEditorNgDirective extends ContentComponentBas
 
 export namespace LitIvemIdListEditorNgDirective {
     export type AfterListChangedEventHandler = (this: void, ui: boolean) => void;
-    export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<GridLayoutOrReferenceDefinition | undefined>;
-    export type PopoutEventer = (this: void, list: UiBadnessComparableList<LitIvemId>) => void;
+    export type EditGridColumnsEventer = (this: void, allowedFieldsAndLayoutDefinition: AllowedFieldsGridLayoutDefinition) => Promise<RevGridLayoutOrReferenceDefinition | undefined>;
+    export type PopoutEventer = (this: void, list: UiComparableList<LitIvemId>) => void;
 
-    export const listInjectionToken = new InjectionToken<UiBadnessComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
+    export const listInjectionToken = new InjectionToken<UiComparableList<LitIvemId>>('LitIvemIdListEditorNgDirective.list');
 
     export const initialCustomGridSettingsProvider: LitIvemIdListNgComponent.InitialCustomGridSettingsProvider = {
         provide: LitIvemIdListNgComponent.initialCustomGridSettingsInjectionToken,

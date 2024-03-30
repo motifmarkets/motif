@@ -5,7 +5,7 @@
  */
 
 import { ChangeDetectionStrategy, ChangeDetectorRef, Component, ElementRef, Input, OnInit, ViewChild } from '@angular/core';
-import { DateText, DateUiAction, MultiEvent, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
+import { DateText, DateUiAction, Err, MultiEvent, Ok, Result, StringId, Strings, UiAction } from '@motifmarkets/motif-core';
 import { SettingsNgService } from 'component-services-ng-api';
 import { ControlComponentBaseNgDirective } from '../../../ng/control-component-base-ng.directive';
 
@@ -26,12 +26,15 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
 
     public dateAsStr = DateInputNgComponent.emptyDateStr;
 
+    private _utc = true;
     private _pushDateEventsSubscriptionId: MultiEvent.SubscriptionId;
 
     constructor(elRef: ElementRef<HTMLElement>, cdr: ChangeDetectorRef, settingsNgService: SettingsNgService) {
         super(elRef, ++DateInputNgComponent.typeInstanceCreateCount, cdr, settingsNgService.service, ControlComponentBaseNgDirective.textControlStateColorItemIdArray);
         this.inputId = 'DateInput' + this.typeInstanceId;
     }
+
+    get utc() { return this._utc; }
 
     public override get uiAction() { return super.uiAction as DateUiAction; }
 
@@ -52,6 +55,12 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
     }
 
     onBlur(text: string): void {
+        if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
+            this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
+        }
+    }
+
+    onChange(text: string): void {
         if (this.uiAction.stateId !== UiAction.StateId.Readonly) {
             this.tryCommitText(text, UiAction.CommitTypeId.Implicit);
         }
@@ -88,7 +97,7 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
             if (value === undefined) {
                 dateAsStr = DateInputNgComponent.emptyDateStr;
             } else {
-                dateAsStr = DateText.toStr(value);
+                dateAsStr = DateText.fromDate(value, this._utc);
             }
 
             this.applyValueAsString(dateAsStr);
@@ -106,12 +115,12 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
             this.markForCheck();
     }
 
-    private parseString(value: string): DateInputNgComponent.ParseStringResult {
-        const parsedDate = DateText.toDate(value);
+    private parseString(value: string): Result<Date> {
+        const parsedDate = DateText.toDate(value, this._utc);
         if (parsedDate === undefined) {
-            return { errorText: Strings[StringId.InvalidDate] };
+            return new Err(Strings[StringId.InvalidDate]);
         } else {
-            return { date: new Date(parsedDate) };
+            return new Ok(parsedDate);
         }
     }
 
@@ -122,19 +131,20 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
         let errorText: string | undefined;
         if (text !== DateInputNgComponent.emptyDateStr) {
             const parseResult = this.parseString(text);
-            value = parseResult.date;
+            if (parseResult.isErr()) {
+                errorText = parseResult.error;
+            } else {
+                value = parseResult.value
+            }
             valid = value !== undefined;
             missing = false;
-            errorText = parseResult.errorText;
         } else {
-            value = undefined;
             missing = this.uiAction.valueRequired;
             if (missing) {
                 valid = false;
                 errorText = Strings[StringId.ValueRequired];
             } else {
                 valid = true;
-                errorText = undefined;
             }
         }
 
@@ -156,8 +166,8 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
             }
         } else {
             const parseResult = this.parseString(text);
-            if (parseResult.date !== undefined) {
-                this.commitValue(parseResult.date, typeId);
+            if (parseResult.isOk()) {
+                this.commitValue(parseResult.value, typeId);
             }
         }
     }
@@ -165,9 +175,4 @@ export class DateInputNgComponent extends ControlComponentBaseNgDirective implem
 
 export namespace DateInputNgComponent {
     export const emptyDateStr = '';
-
-    export interface ParseStringResult {
-        date?: Date;
-        errorText?: string;
-    }
 }
